@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bitcoinScaleUnit"
+        android:orderInCategory="50"
+        android:title="@string/bitcoinScaleUnitText"
+
+        />
+    <item
+        android:id="@+id/bitcoinScaleMilli"
+        android:orderInCategory="60"
+        android:title="@string/bitcoinScaleMilliText" />
+    <item
+        android:id="@+id/bitcoinScaleMicro"
+        android:orderInCategory="70"
+        android:title="@string/bitcoinScaleMicroText" />
+    <item
+        android:id="@+id/bitcoinScaleBits"
+        android:orderInCategory="80"
+        android:title="@string/bitcoinScaleBitsText" />
+    <!--<item android:id="@+id/bitcoinScaleSatoshi"-->
+    <!--android:title="@string/bitcoinScaleSatoshiText"-->
+    <!--android:orderInCategory="70" />-->
+</menu>

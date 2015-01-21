@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/sweepAddressMainText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="text"
+        android:textColor="@color/whiteSecondary"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/sweepAddressAddressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:lines="3"
+        android:maxLines="3"
+        android:singleLine="false"
+        android:text="1\n2\n3"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:typeface="monospace" />
+
+    <TextView
+        android:id="@+id/sweepAddressPasswordPromptText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="text"
+        android:textColor="@color/whiteSecondary" />
+
+    <EditText
+        android:id="@+id/sweepAddressPasswordText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:inputType="text"
+        android:textColor="@color/whiteSecondary" />
+
+
+</LinearLayout>

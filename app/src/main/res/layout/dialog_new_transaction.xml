@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/newTxAmount"
+            android:textColor="@color/whiteSecondary"
+            android:textSize="20sp"
+            />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newTxAmountScaleText"
+            android:text="m"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            />
+        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+            android:id="@+id/newTxAmountUnitText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&#xf15a; "
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newTxAmountText"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/newTxFee"
+            android:textColor="@color/whiteSecondary"
+            android:textSize="20sp"
+            />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newTxFeeScale"
+            android:text="m"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            />
+        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newTxFeeUnit"
+            android:text="&#xf15a; "
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newTxFeeText"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:paddingTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newTxRecipient"
+        android:textColor="@color/whiteSecondary"
+        android:textSize="20sp" />
+    <TextView
+        android:id="@+id/newTxRecipientText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:lines="3"
+        android:maxLines="3"
+        android:singleLine="false"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:typeface="monospace" />
+
+    <TextView
+        android:id="@+id/newTx2FATypeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:textColor="@color/whiteSecondary" />
+
+    <EditText
+        android:id="@+id/newTx2FACodeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/whiteSecondary"
+        android:inputType="numberPassword"
+
+        />
+
+
+</LinearLayout>

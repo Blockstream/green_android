@@ -1,0 +1,141 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.greenaddress.greenbits.ui.ReceiveActivity">
+
+    <LinearLayout
+        android:id="@+id/receiveAddressLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        >
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="droid"
+            android:text="@string/receiveAddressSubTitle"
+            android:textColor="@color/textColor"
+            android:textSize="24sp" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/receiveAddressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:enabled="false"
+                android:lines="3"
+                android:maxLines="3"
+                android:singleLine="false"
+                android:text="\n\n"
+                android:textColor="@color/secondaryTextColor"
+                android:textIsSelectable="true"
+                android:textSize="24sp"
+                android:typeface="monospace" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="right">
+
+                <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                    android:id="@+id/receiveCopyIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="&#xf0c5;"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/accent"
+                    android:textSize="34sp" />
+
+                <com.greenaddress.greenbits.ui.FontAwesomeTextView
+
+                    android:id="@+id/receiveNewAddressIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="&#xf021;"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/accent"
+                    android:textSize="34sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/receiveAddressLayout"
+        android:gravity="center"
+        android:paddingBottom="40dp">
+
+
+        <ImageView
+            android:id="@+id/receiveQrImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/receiveFooter"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:background="@color/primary"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/sendAccountNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="@string/footerAccount"
+            android:textSize="20sp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "/>
+        <LinearLayout
+            android:id="@+id/footerClickableArea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/sendAccountName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                />
+            <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text=" &#xf0d7;"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

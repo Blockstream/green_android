@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+index cbb27b2..c707bd4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -24,10 +24,14 @@ SRC := $(wildcard src/main/c/*.c)
+ OBJ  = $(patsubst src/main/c/%.c,$(OBJ_DIR)/%.o,$(SRC))
+ 
+ ifeq ($(TARGET), android)
+-	CC      := arm-linux-androideabi-gcc
+-	SYSROOT := $(NDK_ROOT)/platforms/android-9/arch-arm/
++	CC      := $(ARCH)-gcc
++	SYSROOT := $(NDK_ROOT)/platforms/android-9/arch-$(ARCH_SHORT)/
+ 	CFLAGS  += --sysroot=$(SYSROOT)
+-	LDFLAGS += -lc -Wl,--fix-cortex-a8 --sysroot=$(SYSROOT)
++	ifeq ($(ARCH_SHORT), arm)
++		LDFLAGS += -lc -Wl,--fix-cortex-a8 --sysroot=$(SYSROOT)
++	else
++		LDFLAGS += -lc --sysroot=$(SYSROOT)
++	endif
+ 	SSE2    :=
+ endif

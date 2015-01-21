@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+
+    >
+
+
+    <RelativeLayout
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+
+
+        android:id="@+id/listInOutRelative">
+        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+            android:id="@+id/listInOutIcon"
+            android:layout_width="64dp"
+            android:layout_height="fill_parent"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:text="&#xf063;"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="34sp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:padding="6dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/listNumberConfirmation"
+
+            android:text="1"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+
+            android:textColor="@color/white"
+            android:background="@drawable/rounded_bg"
+
+            /></RelativeLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:id="@+id/listRightElement"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical|right"
+
+        android:textColor="@color/textColor">
+
+        <TextView
+            android:id="@+id/listBitcoinScaleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="m"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="20sp" />
+        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+            android:id="@+id/listBitcoinIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/secondaryTextColor"
+
+            android:text="&#xf15a; "
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/listValueText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="123"
+
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/listInOutRelative"
+        android:layout_toEndOf="@id/listInOutRelative"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/listRightElement"
+        android:gravity="center_vertical"
+        android:id="@+id/listCentralElement"
+        >
+
+        <TextView
+            android:id="@+id/listWhoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/listWhenText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:text="when"
+            android:textColor="@color/tertiaryTextColor" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

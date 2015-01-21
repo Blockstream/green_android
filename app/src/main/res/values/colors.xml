@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="primary">#4CAF50</color>
+    <color name="primaryDark">#388E3C</color>
+    <color name="accent">#FF4081</color>
+    <color name="accentLight">#FF80AB</color>
+    <color name="accentPressed">#F50057</color>
+    <color name="textColor">#DE000000</color>
+    <color name="secondaryTextColor">#8A000000</color>
+    <color name="tertiaryTextColor">#42000000</color>
+
+    <color name="white">#ffffff</color>
+    <color name="whiteSecondary">#b3ffffff</color>
+
+    <color name="hide">#00ffffff</color>
+    <color name="hide2">#00000000</color>
+
+    <color name="superLightGreen">#0D4CAF50</color>
+    <color name="superLightPink">#0DFF4081</color>
+
+
+</resources>

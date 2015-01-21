@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.greenaddress.greenbits.ui.MainActivity">
+
+
+    <item
+        android:id="@+id/network_unavailable"
+        android:icon="@drawable/plug_ffffff"
+        android:orderInCategory="90"
+        android:title="@string/network_unavailable"
+        android:visible="false"
+        app:showAsAction="always" />
+</menu>

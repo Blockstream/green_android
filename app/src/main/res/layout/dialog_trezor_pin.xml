@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/trezorProvidePin"
+        android:textColor="@color/whiteSecondary"
+        android:textSize="20sp" />
+
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rowCount="3"
+        android:columnCount="3">
+
+        <Button
+            android:id="@+id/trezorPinButton1"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton2"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton3"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton4"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton5"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton6"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton7"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton8"
+            android:text="\?" />
+
+        <Button
+            android:id="@+id/trezorPinButton9"
+            android:text="\?" />
+
+    </GridLayout>
+
+    <EditText
+        android:id="@+id/trezorPinValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberPassword"
+        android:editable="false" />
+
+</LinearLayout>

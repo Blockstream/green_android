@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:textColor">@color/textColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:colorButtonNormal">@color/accent</item>
+    </style>
+
+    <style name="myButton">
+
+    </style>
+</resources>

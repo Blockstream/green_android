@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Configurazione</string>
+    <string name="title_activity_mnemonic">Accedi</string>
+    <string name="title_activity_send">Invia</string>
+    <string name="title_activity_receive">Ricevi</string>
+
+    <string name="sendToText">A</string>
+    <string name="sendAmountText">Ammontare</string>
+    <string name="sendSendButton">INVIA</string>
+    <string name="title_activity_pin">Pin</string>
+    <string name="pinSaveText">Salva</string>
+    <string name="pinLoginText">Login</string>
+    <string name="sendAvailableText">Disponibile</string>
+    <string name="title_activity_qr_scanner">QR Scanner</string>
+    <string name="title_activity_sign_up">Registrati</string>
+    <string name="signupContinueButtonText">CONTINUA</string>
+    <string name="signupCheckBoxText">Ho custodito la passphrase e ho letto il <a href="https://greenaddress.it/it/tos/">ToS</a></string>
+    <string name="firstSignUpText">REGISTRATI</string>
+    <string name="firstLogInText">ACCEDI</string>
+    <string name="bitcoinScaleUnitText">Unit</string>
+    <string name="bitcoinScaleMilliText">Milli</string>
+    <string name="bitcoinScaleMicroText">Micro</string>
+    <string name="bitcoinScaleBitsText">Bits</string>
+    <string name="receive_title">RICEVI</string>
+    <string name="main_title">BILANCIO</string>
+    <string name="send_title">INVIA</string>
+    <string name="action_search">Cerca</string>
+    <string name="pinTitleText">PIN</string>
+    <string name="network_unavailable">Disconnesso</string>
+    <string name="newTxTitle">Nuova transazione</string>
+    <string name="sweepAddressTitle">Preleva tutto da qrcode</string>
+    <string name="twoFactorChoicesTitle">Scegli l\'autenticazione a due fattori</string>
+    <string name="choose">SCEGLI</string>
+    <string name="cancel">CANCELLA</string>
+    <string name="attemptsLeft">%s tentativi rimasti</string>
+
+
+    <string-array name="twoFactorChoices">
+        <item>Email</item>
+        <item>SMS</item>
+        <item>Chiamata</item>
+        <item>Google Auth</item>
+    </string-array>
+
+    <string name="setup">CONFIGURAZIONE 2FA</string>
+    <string name="send">INVIA</string>
+    <string name="sweep">PRELEVA</string>
+    <string name="sweep_bip38_passphrase_prompt">Per piacere inserisci la password BIP38:</string>
+    <string name="invalid_passphrase">Password incorretta</string>
+    <string name="invalid_key">Chiave invalida</string>
+    <string name="title_mnemonic">Mnemonica</string>
+    <string name="warning">Attenzione!</string>
+    <string name="save_password_now">Devi salvarti la passphrase, adesso.</string>
+    <string name="greenaddress_headline">il più semplice, sicuro e veloce wallet bitcoin</string>
+    <string name="pinSkipText">SALTA</string>
+    <string name="sendOptionalMemo">Memo opzionale</string>
+    <string name="madeBy">da GreenAddress</string>
+    <string name="welcomeGreenBits">Benvenuti a GreenBits</string>
+    <string name="attemptsFinished">PIN non valido, non sono rimasti tentativi. Per piacere accedi con la passphrase.</string>
+    <string name="attemptsLeftLong">PIN non valido, hai %s tentativi rimanenti</string>
+    <string name="warnOnPaste">Agire con cautela, altre applicazioni posso leggere o cambiare la clipboard</string>
+    <string name="toastOnCopyAddress">Indirizzo copiato.</string>
+    <string name="receiveAddressSubTitle">Indirizzo</string>
+    <string name="sendPayTo">Paga a</string>
+    <string name="action_sweep">Sweep</string>
+    <string name="action_exit">Esci</string>
+    <string name="txTypeIn" >Deposito</string>
+    <string name="txTypeOut" >Prelievo</string>
+    <string name="txTypeRedeposit" >Giroconto</string>
+    <string name="mnemonicHint">Inserisci la tua passphrase GreenAddress o fai lo scan del qrcode</string>
+    <string name="title_activity_settings">Configurazione</string>
+
+    <string name="ago"> fa</string>
+    <string-array name="timesStrings" >
+        <item>anno</item>
+        <item>mese</item>
+        <item>giorno</item>
+        <item>ora</item>
+        <item>minuto</item>
+        <item>secondo</item>
+    </string-array>
+    <string-array name="timesStringPlurals" >
+        <item>anni</item>
+        <item>mesi</item>
+        <item>giorni</item>
+        <item>ore</item>
+        <item>minuti</item>
+        <item>secondi</item>
+    </string-array>
+    <string name="bitcoinScaleSatoshiText">Satoshi</string>
+    <string name="pref_header_notifications">Backup</string>
+    <string name="txSubTitle">Dettagli transazione</string>
+    <string name="txHashText">Hash</string>
+    <string name="txRecipientText">Destinatario</string>
+    <string name="txMemoText">Memo</string>
+
+    <string name="txDateText">Data</string>
+    <string name="txAmountText">Importo</string>
+    <string name="newTxAmount">Importo: </string>
+    <string name="newTxRecipient">Destinatario: </string>
+    <string name="newTxFee">Commissione: </string>
+    <string name="network_unavailable_text">Rete non disponibile</string>
+    <string name="invalidAmountAndAddress">Indirizzo ed importo non validi</string>
+    <string name="invalidAddress">Indirizzo non valido</string>
+    <string name="invalidAmount">Importo non valido</string>
+    <string name="noBalanceFirstLine">Iniziare con i <a href="https://bitcoin.org/it/getting-started">Bitcoin</a></string>
+    <string name="noBalanceSecondLine">Dove <a href="http://howtobuybitcoins.info/">comprare</a></string>
+    <string name="noBalanceThirdLine">Leggi le nostre <a href="https://greenaddress.it/it/faq">FAQ</a></string>
+    <string name="trezor_headline">Per piacere segui le istruzioni sul Trezor</string>
+    <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Trezor per la posizione dei tasti:</string>
+    <string name="trezorProvidePassphrase">Per piacere inserisci la passphrase del tuo Trezor</string>
+    <string name="main_account">Principale</string>
+    <string name="footerAccount">Account: </string>
+    <string name="btchipProvidePIN">Digita il tuo PIN per BTChip:</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">Rilevato TREZOR firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.3.0 da http://mytrezor.com/ dal tuo PC.</string>
+    <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
+    <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
+</resources>

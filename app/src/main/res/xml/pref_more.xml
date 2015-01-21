@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <Preference android:key="go_to_app_for_more_settings"
+        android:title="See GreenAddress app for more settings"
+        android:summary="Our previous app allows changing other settings like two factor authentication and more." />
+
+    <Preference android:key="ledger_wallet"
+        android:title="Improve your security with Ledger"
+        android:summary="Ledger Wallet: Smartcard security for your Bitcoins." />
+
+</PreferenceScreen>
