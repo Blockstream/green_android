@@ -116,4 +116,6 @@
     <string name="firstLoginRequestedInstructionsOldTrezor">Rilevato TREZOR firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.3.0 da http://mytrezor.com/ dal tuo PC.</string>
     <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
     <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
+    <string name="instantConfirmation">Conferma istantanea</string>
+    <string name="pref_header_more">Configurazione aggiuntiva</string>
 </resources>
