@@ -21,13 +21,13 @@ import com.afollestad.materialdialogs.Theme;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.btchip.comm.android.BTChipTransportAndroidNFC;
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.LoginData;
+import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.satoshilabs.trezor.Trezor;
@@ -181,7 +181,20 @@ public class RequestLoginActivity extends Activity implements Observer {
 
                             @Override
                             public void onFailure(final Throwable t) {
-                                RequestLoginActivity.this.finish();
+                                if (t instanceof LoginFailed) {
+                                    // login failed - most likely TREZOR not paired
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            new MaterialDialog.Builder(RequestLoginActivity.this)
+                                                    .title(getResources().getString(R.string.trezor_login_failed))
+                                                    .content(getResources().getString(R.string.trezor_login_failed_details))
+                                                    .build().show();
+                                        }
+                                    });
+                                } else {
+                                    RequestLoginActivity.this.finish();
+                                }
                             }
                         });
                     }

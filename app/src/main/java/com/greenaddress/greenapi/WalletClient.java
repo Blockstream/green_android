@@ -538,10 +538,15 @@ public class WalletClient {
                     @Override
                     public void onResult(final Object loginData) {
                         try {
-                            WalletClient.this.loginData = new LoginData((Map) loginData);
-                            WalletClient.this.hdWallet = deterministicKey;
+                            if (loginData instanceof Boolean) {
+                                // login failed
+                                asyncWamp.setException(new LoginFailed());
+                            } else {
+                                WalletClient.this.loginData = new LoginData((Map) loginData);
+                                WalletClient.this.hdWallet = deterministicKey;
 
-                            asyncWamp.set(WalletClient.this.loginData);
+                                asyncWamp.set(WalletClient.this.loginData);
+                            }
                         }
                         catch (final ClassCastException | IOException e) {
 

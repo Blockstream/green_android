@@ -119,5 +119,7 @@
     <string name="btchipNotSetup">התקן לא מוכן. אנא הגדירו אותו באמצעות תוכנת המחשב בכדי להשתמש בו.</string>
     <string name="instantConfirmation">Instant Confirmation</string>
     <string name="pref_header_more">More settings</string>
+    <string name="trezor_login_failed">TREZOR login failed</string>
+    <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
 </resources>
 

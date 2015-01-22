@@ -118,4 +118,6 @@
     <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
     <string name="instantConfirmation">Conferma istantanea</string>
     <string name="pref_header_more">Configurazione aggiuntiva</string>
+    <string name="trezor_login_failed">TREZOR login failed</string>
+    <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
 </resources>
