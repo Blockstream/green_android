@@ -740,10 +740,10 @@ public class SendFragment extends Fragment {
             @Nullable
             @Override
             public Object apply(@Nullable final Map<?, ?> result) {
-                convertBtcToFiat(Float.valueOf((String) result.get("fiat_exchange")).floatValue());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        convertBtcToFiat(Float.valueOf((String) result.get("fiat_exchange")).floatValue());
                         changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon), currency);
                         fiatPopup.getMenu().setGroupEnabled(selected_group++, true);
                         fiatPopup.getMenu().removeItem(order);
