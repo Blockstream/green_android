@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -25,31 +26,60 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.ui.BTChipHWWallet;
 
+import org.bitcoinj.core.AbstractBlockChain;
 import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.core.Block;
+import org.bitcoinj.core.BlockChain;
+import org.bitcoinj.core.BlockChainListener;
+import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.DownloadListener;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Peer;
+import org.bitcoinj.core.PeerAddress;
+import org.bitcoinj.core.PeerFilterProvider;
+import org.bitcoinj.core.PeerGroup;
+import org.bitcoinj.core.ScriptException;
+import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.StoredBlock;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.VerificationException;
+import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.crypto.MnemonicException;
 import org.bitcoinj.crypto.TransactionSignature;
+import org.bitcoinj.net.discovery.DnsDiscovery;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.store.SPVBlockStore;
 import org.bitcoinj.utils.Fiat;
 import org.spongycastle.util.encoders.Hex;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.Nullable;
 
@@ -61,6 +91,7 @@ public class GaService extends Service {
     private final IBinder mBinder = new GaBinder(this);
     final private Map<Long, GaObservable> balanceObservables = new HashMap<>();
     final private GaObservable newTransactionsObservable = new GaObservable();
+    final private GaObservable newTxVerifiedObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
     private int refcount = 0;
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
@@ -78,6 +109,13 @@ public class GaService extends Service {
     private String fiatCurrency;
     private String fiatExchange;
     private ArrayList subaccounts;
+    private BlockStore blockStore;
+    private BlockChain blockChain;
+    private BlockChainListener blockChainListener;
+    private PeerGroup peerGroup;
+    private PeerFilterProvider pfProvider;
+    private Set<Sha256Hash> unspentOutputs;
+    private String receivingId;
 
     private FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
         @Override
@@ -85,6 +123,8 @@ public class GaService extends Service {
             fiatCurrency = result.currency;
             fiatExchange = result.exchange;
             subaccounts = result.subaccounts;
+            receivingId = result.receiving_id;
+
             getLatestOrNewAddress(getSharedPreferences("receive", MODE_PRIVATE).getInt("curSubaccount", 0));
             balanceObservables.put(new Long(0), new GaObservable());
             updateBalance(0);
@@ -95,6 +135,50 @@ public class GaService extends Service {
                 updateBalance(pointer);
             }
             getAvailableTwoFacMethods();
+
+            unspentOutputs = new HashSet<>();
+            setUpSPV();
+            Futures.addCallback(client.getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
+                @Override
+                public void onSuccess(@Nullable ArrayList result) {
+
+                    final int count = result.size();
+
+                    for (int i = 0; i < count; ++i) {
+                        Map<?, ?> utxo = (Map) result.get(i);
+                        unspentOutputs.add(new Sha256Hash(Hex.decode((String) utxo.get("txhash"))));
+                    }
+                    peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
+
+                    Futures.addCallback(peerGroup.start(), new FutureCallback<Object>() {
+                        @Override
+                        public void onSuccess(@Nullable Object result) {
+                            peerGroup.startBlockChainDownload(new DownloadListener() {
+                                @Override
+                                public void onChainDownloadStarted(Peer peer, int blocksLeft) {
+                                    spvBlocksLeft = blocksLeft;
+                                }
+
+                                @Override
+                                public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
+                                    spvBlocksLeft = blocksLeft;
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+
             connectionObservable.setState(ConnectivityObservable.State.LOGGEDIN);
         }
 
@@ -104,6 +188,48 @@ public class GaService extends Service {
             connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
         }
     };
+    private int spvBlocksLeft;
+
+    private PeerFilterProvider makePeerFilterProvider() {
+        pfProvider = new PeerFilterProvider() {
+            @Override
+            public long getEarliestKeyCreationTime() {
+                return 1393628400;
+            }
+
+            @Override
+            public int getBloomFilterElementCount() {
+                return unspentOutputs.size();
+            }
+
+            @Override
+            public BloomFilter getBloomFilter(int size, double falsePositiveRate, long nTweak) {
+                final byte[][] hashes = new byte[unspentOutputs.size()][];
+
+                int i = 0;
+                for (Sha256Hash hash : unspentOutputs) {
+                    hashes[i++] = Utils.reverseBytes(hash.getBytes());
+                }
+
+                BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
+                for (i = 0; i < hashes.length; ++i) {
+                    res.insert(hashes[i]);
+                }
+                return res;
+            }
+
+            @Override
+            public boolean isRequiringUpdateAllBloomFilter() {
+                return false;
+            }
+
+            @Override
+            public Lock getLock() {
+                return new ReentrantLock();
+            }
+        };
+        return pfProvider;
+    }
 
     private Map<?, ?> twoFacConfig;
     private String deviceId;
@@ -227,6 +353,7 @@ public class GaService extends Service {
             @Override
             public void onNewTransaction(final long wallet_id, final long[] subaccounts, final long value, final String txhash) {
                 Log.i("GaService", "onNewTransactions");
+                addToBloomFilter(null, new Sha256Hash(txhash));
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
                 for (long subaccount : subaccounts) {
@@ -237,6 +364,26 @@ public class GaService extends Service {
 
             @Override
             public void onConnectionClosed(final int code) {
+                if (blockChain != null) {
+                    blockChain.removeListener(blockChainListener);
+                    blockChainListener = null;
+
+                    peerGroup.removePeerFilterProvider(pfProvider);
+                    pfProvider = null;
+
+                    peerGroup.stopAsync();
+                    peerGroup.awaitTerminated();
+                    peerGroup = null;
+
+                    try {
+                        blockStore.close();
+                        blockStore = null;
+                    } catch (final BlockStoreException x) {
+                        throw new RuntimeException(x);
+                    }
+                }
+
+
                 if (code == 4000) {
                     connectionObservable.setForcedLoggedOut();
                 }
@@ -263,6 +410,80 @@ public class GaService extends Service {
                 }
             }
         }, es);
+    }
+
+    private void setUpSPV() {
+        File blockChainFile = new File(getDir("blockstore_"+receivingId, Context.MODE_PRIVATE), "blockchain.spvchain");
+
+        try {
+            blockStore = new SPVBlockStore(Network.NETWORK, blockChainFile);
+            blockStore.getChainHead(); // detect corruptions as early as possible
+
+            blockChain = new BlockChain(Network.NETWORK, blockStore);
+            blockChain.addListener(makeBlockChainListener());
+
+            peerGroup = new PeerGroup(Network.NETWORK, blockChain);
+            peerGroup.addPeerFilterProvider(makePeerFilterProvider());
+
+            if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
+                try {
+                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+                peerGroup.setMaxConnections(1);
+            } else {
+                peerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
+            }
+        } catch (BlockStoreException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private BlockChainListener makeBlockChainListener() {
+        blockChainListener = new BlockChainListener() {
+            @Override
+            public void notifyNewBestBlock(StoredBlock block) throws VerificationException {
+
+            }
+
+            @Override
+            public void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks, List<StoredBlock> newBlocks) throws VerificationException {
+
+            }
+
+            @Override
+            public boolean isTransactionRelevant(Transaction tx) throws ScriptException {
+                return unspentOutputs.contains(tx.getHash());
+            }
+
+            @Override
+            public void receiveFromBlock(Transaction tx, StoredBlock block, AbstractBlockChain.NewBlockType blockType, int relativityOffset) throws VerificationException {
+                // FIXME: atm addToBloomFilter is called on tx notification even for outgoing txs,
+                // so verified_utxo can contain unnecessary outputs too
+                SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_"+receivingId, MODE_PRIVATE);
+                SharedPreferences.Editor editor = verified_utxo.edit();
+                editor.putBoolean(tx.getHash().toString(), true);
+                editor.commit();
+                newTxVerifiedObservable.setChanged();
+                newTxVerifiedObservable.notifyObservers();
+            }
+
+            @Override
+            public boolean notifyTransactionIsInBlock(Sha256Hash txHash, StoredBlock block, AbstractBlockChain.NewBlockType blockType, int relativityOffset) throws VerificationException {
+                // FIXME: atm addToBloomFilter is called on tx notification even for outgoing txs,
+                // so verified_utxo can contain unnecessary outputs too
+                SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_"+receivingId, MODE_PRIVATE);
+                SharedPreferences.Editor editor = verified_utxo.edit();
+                editor.putBoolean(txHash.toString(), true);
+                editor.commit();
+                newTxVerifiedObservable.setChanged();
+                newTxVerifiedObservable.notifyObservers();
+                return unspentOutputs.contains(txHash);
+            }
+        };
+        return blockChainListener;
     }
 
     private ListenableFuture<LoginData> login() {
@@ -369,7 +590,55 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<Map<?, ?>> getMyTransactions(int subaccount) {
-        return client.getMyTransactions(subaccount);
+        return Futures.transform(client.getMyTransactions(subaccount), new Function<Map<?, ?>, Map<?, ?>>() {
+            @Nullable
+            @Override
+            public Map<?, ?> apply(@Nullable Map<?, ?> input) {
+                final List resultList = (List) input.get("list");
+
+                if (resultList != null) {
+                    for (int i = 0; i < resultList.size(); ++i) {
+                        Map<String, Object> txJSON = (Map<String, Object>) resultList.get(i);
+                        final Integer blockHeight = txJSON.containsKey("block_height") && txJSON.get("block_height") != null?
+                                (int) txJSON.get("block_height"): null;
+                        final Sha256Hash txhash = new Sha256Hash((String) txJSON.get("txhash"));
+                        addToBloomFilter(blockHeight, txhash);
+                    }
+
+                }
+
+                return input;
+            }
+        });
+    }
+
+    private void addToBloomFilter(final Integer blockHeight, Sha256Hash txhash) {
+        if (txhash != null) {
+            unspentOutputs.add(txhash);
+        }
+        peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
+        if (blockHeight != null && blockHeight <= blockChain.getBestChainHeight() &&
+                (txhash == null || !unspentOutputs.contains(txhash))) {
+            // new tx or block notification with blockHeight <= current blockHeight means we might've [1]
+            // synced the height already while we haven't seen the tx, so we need to re-sync to be able
+            // to verify it.
+            // [1] - "might've" in case of txhash == null (block height notification),
+            //       because it depends on the order of notifications
+            //     - "must've" in case of txhash != null, because this means the tx arrived only after
+            //       requesting it manually and we already had higher blockHeight
+            //
+            // We do it using the special case in bitcoinj for VM crashed because of
+            // a transaction received.
+            Wallet fakeWallet = new Wallet(Network.NETWORK) {
+                @Override
+                public int getLastBlockSeenHeight() {
+                    return blockHeight.intValue() - 1;
+                }
+            };
+            blockChain.addWallet(fakeWallet);
+            blockChain.removeWallet(fakeWallet);  // can be removed, because the call above
+                                                  // should rollback already
+        }
     }
 
     public ListenableFuture<PinData> setPin(final byte[] seed, final String mnemonic, final String pin, final String device_name) {
@@ -519,6 +788,10 @@ public class GaService extends Service {
         return newTransactionsObservable;
     }
 
+    public Observable getNewTxVerifiedObservable() {
+        return newTxVerifiedObservable;
+    }
+
     public Coin getBalanceCoin(long subaccount) {
         return balancesCoin.get(new Long(subaccount));
     }
@@ -577,6 +850,14 @@ public class GaService extends Service {
 
     public boolean isBTChip() {
         return client.getHdWallet() instanceof BTChipHWWallet;
+    }
+
+    public String getReceivingId() {
+        return receivingId;
+    }
+
+    public int getSpvBlocksLeft() {
+        return spvBlocksLeft;
     }
 
     private static class GaObservable extends Observable {

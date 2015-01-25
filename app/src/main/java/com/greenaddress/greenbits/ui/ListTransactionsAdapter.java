@@ -39,6 +39,7 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             holder = new Holder();
             holder.current = current;
             holder.textValue = (TextView) returnedView.findViewById(R.id.listValueText);
+            holder.textValueQuestionMark = (TextView) returnedView.findViewById(R.id.listValueQuestionMark);
             holder.textWhen = (TextView) returnedView.findViewById(R.id.listWhenText);
             holder.textWho = (TextView) returnedView.findViewById(R.id.listWhoText);
             holder.inOutIcon = (TextView) returnedView.findViewById(R.id.listInOutIcon);
@@ -69,6 +70,12 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             holder.textValue.setText(formatter.format(formatter.parse(btcBalance)));
         } catch (final ParseException e) {
             holder.textValue.setText(btcBalance);
+        }
+
+        if (current.spvVerified || current.isSpent || current.type == Transaction.TYPE_OUT) {
+            holder.textValueQuestionMark.setVisibility(View.GONE);
+        } else {
+            holder.textValueQuestionMark.setVisibility(View.VISIBLE);
         }
 
         holder.textWhen.setText(TimeAgo.fromNow(current.date.getTime(), getContext()));
@@ -133,6 +140,7 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         protected TextView textWho;
         protected TextView inOutIcon;
         protected TextView bitcoinScale;
+        protected TextView textValueQuestionMark;
 
         protected RelativeLayout mainLayout;
         public TextView listNumberConfirmation;

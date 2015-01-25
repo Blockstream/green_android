@@ -48,6 +48,7 @@ public class MainFragment extends Fragment implements Observer {
     private List<Transaction> currentList;
     private Observer curBalanceObserver;
     private int curSubaccount;
+    private Observer txVerifiedObservable;
 
     private Transaction processGATransaction(final Map<String, Object> txJSON, final int curBlock) throws ParseException {
 
@@ -63,6 +64,7 @@ public class MainFragment extends Fragment implements Observer {
         String counterparty = null;
         long amount = 0;
         int type;
+        boolean isSpent = true;
         for (int i = 0; i < eps.size(); ++i) {
             final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
             if (ep.get("social_destination") != null) {
@@ -87,6 +89,9 @@ public class MainFragment extends Fragment implements Observer {
                             ((Number) ep.get("script_type")).intValue() != P2SH_FORTIFIED_OUT;
                     if (!external_social) {
                         amount += Long.valueOf((String) ep.get("value")).longValue();
+                        if (!((Boolean) ep.get("is_spent")).booleanValue()) {
+                            isSpent = false;
+                        }
                     }
                 } else {
                     amount -= Long.valueOf((String) ep.get("value"));
@@ -123,8 +128,11 @@ public class MainFragment extends Fragment implements Observer {
                 type = Transaction.TYPE_REDEPOSIT;
             }
         }
+        boolean spvVerified = getActivity().getSharedPreferences("verified_utxo_"
+                +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
+                Context.MODE_PRIVATE).getBoolean(txhash, false);
         return new Transaction(type, amount, counterparty,
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight);
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent);
     }
 
     private void updateBalance(final Activity activity) {
@@ -291,12 +299,31 @@ public class MainFragment extends Fragment implements Observer {
     public void onPause() {
         super.onPause();
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().deleteObserver(this);
+        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().addObserver(txVerifiedObservable);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().addObserver(this);
+        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
+    }
+
+    private Observer makeTxVerifiedObservable() {
+        txVerifiedObservable = new Observer() {
+            @Override
+            public void update(Observable observable, Object data) {
+                if (currentList == null) return;
+                for (Transaction tx : currentList) {
+                    tx.spvVerified = getActivity().getSharedPreferences("verified_utxo_"
+                                    +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
+                            Context.MODE_PRIVATE).getBoolean(tx.txhash, false);
+                }
+                final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
+                ((ListTransactionsAdapter) listView.getAdapter()).notifyDataSetChanged();
+            }
+        };
+        return txVerifiedObservable;
     }
 
     private void reloadTransactions(final Activity activity) {

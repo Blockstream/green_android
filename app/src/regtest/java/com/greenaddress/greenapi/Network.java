@@ -3,7 +3,7 @@ package com.greenaddress.greenapi;
 import org.bitcoinj.core.NetworkParameters;
 
 public abstract class Network {
-    public final static NetworkParameters NETWORK = NetworkParameters.fromID(NetworkParameters.ID_TESTNET);
+    public final static NetworkParameters NETWORK = NetworkParameters.fromID(NetworkParameters.ID_REGTEST);
     public final static String GAIT_TOKEN_URL = "http://192.168.56.1:9908/token/";
     public final static String GAIT_WAMP_URL = "ws://192.168.56.1:9335/ws/inv";
     public final static String BLOCKEXPLORER = "http://192.58.56.1:8080";

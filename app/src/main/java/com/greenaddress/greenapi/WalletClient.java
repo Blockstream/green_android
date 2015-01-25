@@ -1028,4 +1028,20 @@ public class WalletClient {
     public ISigningWallet getHdWallet() {
         return hdWallet;
     }
+
+    public SettableFuture<ArrayList> getAllUnspentOutputs() {
+        final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object txs) {
+                asyncWamp.set((ArrayList) txs);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        });
+        return asyncWamp;
+    }
 }
