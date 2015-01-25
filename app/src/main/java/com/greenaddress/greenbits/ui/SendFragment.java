@@ -510,11 +510,13 @@ public class SendFragment extends Fragment {
 
                                         updateBalance(getActivity());
                                         try {
-                                            Coin oldValue = bitcoinFormat.parse(amountEdit.getText().toString());
+                                            final DecimalFormat formatter = new DecimalFormat("#,###.########");
+                                            Coin oldValue = bitcoinFormat.parse(formatter.parse(amountEdit.getText().toString()).toString());
                                             bitcoinFormat = newFormat;
                                             amountEdit.setText(newFormat.noCode().format(oldValue));
-                                        } catch (IllegalArgumentException e) {
+                                        } catch (IllegalArgumentException | ParseException e) {
                                             bitcoinFormat = newFormat;
+                                            amountEdit.setText("");
                                         }
                                         return false;
                                     }
