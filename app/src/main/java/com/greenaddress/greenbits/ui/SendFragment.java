@@ -502,8 +502,9 @@ public class SendFragment extends Fragment {
                                                 bitcoinUnitText.setText("bits");
                                                 newFormat = CurrencyMapper.mapBtcUnitToFormat("bits");
                                         }
+                                        // update the values in main fragment
+                                        gaService.fireBalanceChanged(0);
                                         for (Object subaccount : gaService.getSubaccounts()) {
-                                            // update the value in main fragment
                                             Map<String, ?> subaccountMap = (Map) subaccount;
                                             gaService.fireBalanceChanged(((Number) subaccountMap.get("pointer")).longValue());
                                         }
