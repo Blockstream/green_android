@@ -346,6 +346,7 @@ public class GaService extends Service {
             @Override
             public void onNewBlock(final long count) {
                 Log.i("GaService", "onNewBlock");
+                addToBloomFilter((int) count, null);
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
             }

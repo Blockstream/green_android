@@ -321,6 +321,7 @@ public class MainFragment extends Fragment implements Observer {
                 }
                 final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
                 ((ListTransactionsAdapter) listView.getAdapter()).notifyDataSetChanged();
+                listView.invalidateViews();  // hopefully we don't need http://stackoverflow.com/a/19655916
             }
         };
         return txVerifiedObservable;
