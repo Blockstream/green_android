@@ -48,14 +48,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                 new FutureCallback<PinData>() {
                     @Override
                     public void onSuccess(@Nullable final PinData result) {
-                        PinSaveActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pinSaveButton.setProgress(100);
-                                pinSkipButton.setVisibility(View.VISIBLE);
-
-                            }
-                        });
                         final SharedPreferences.Editor editor = getSharedPreferences("pin", MODE_PRIVATE).edit();
                         editor.putString("ident", result.ident);
                         editor.putInt("counter", 0);
@@ -64,7 +56,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                         final Intent tabbedMainActivity = new Intent(PinSaveActivity.this, TabbedMainActivity.class);
                         startActivity(tabbedMainActivity);
                         PinSaveActivity.this.finish();
-
                     }
 
                     @Override
