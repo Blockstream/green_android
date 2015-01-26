@@ -157,6 +157,7 @@ public class GaService extends Service {
             unspentOutpointsPointers = new HashMap<>();
             unspentOutputsOutpoints = new HashMap<>();
             countedUtxoValues = new HashMap<>();
+            verifiedBalancesCoin = new HashMap<>();
             gaDeterministicKeys = new HashMap<>();
             setUpSPV();
             updateUnspentOutputs();
