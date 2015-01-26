@@ -615,7 +615,7 @@ public class GaService extends Service {
 
 
 
-    private ListenableFuture<Boolean> verifySpendableBy(TransactionOutput txOutput, Long subaccount, Long pointer) {
+    private ListenableFuture<Boolean> verifySpendableBy(final TransactionOutput txOutput, final Long subaccount, final Long pointer) {
         if (!txOutput.getScriptPubKey().isPayToScriptHash()) return Futures.immediateFuture(false);
         final byte[] gotP2SH = txOutput.getScriptPubKey().getPubKeyHash();
 
@@ -637,6 +637,26 @@ public class GaService extends Service {
             @Override
             public Boolean apply(@Nullable ECKey input) {
                 pubkeys.add(input);
+
+                String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
+                for (Object subaccount_ : subaccounts) {
+                    Map <String, ?> subaccountMap = (Map) subaccount_;
+                    if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount.intValue())) {
+                        twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
+                        twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
+                    }
+                }
+
+                if (twoOfThreeBackupChaincode != null) {
+                    DeterministicKey backupWallet = new DeterministicKey(
+                            new ImmutableList.Builder<ChildNumber>().build(),
+                            Hex.decode(twoOfThreeBackupChaincode),
+                            ECKey.fromPublicOnly(Hex.decode(twoOfThreeBackupPubkey)).getPubKeyPoint(),
+                            null, null);
+                    backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(1));
+                    backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(pointer.intValue()));
+                    pubkeys.add(backupWallet);
+                }
 
                 byte[] expectedP2SH = Utils.sha256hash160(Script.createMultiSigOutputScript(2, pubkeys));
                 return Arrays.equals(gotP2SH, expectedP2SH);
