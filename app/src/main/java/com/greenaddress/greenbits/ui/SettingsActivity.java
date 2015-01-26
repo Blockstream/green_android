@@ -44,14 +44,9 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         getPreferenceScreen().addPreference(fakeHeaderMore);
         addPreferencesFromResource(R.xml.pref_more);
 
-        // Add 'data and sync' preferences, and a corresponding header.
-        //fakeHeader = new PreferenceCategory(this);
-        //fakeHeader.setTitle(R.string.pref_header_data_sync);
-        //getPreferenceScreen().addPreference(fakeHeader);
-        //addPreferencesFromResource(R.xml.pref_data_sync);
         final String mnemonic = ((GreenAddressApplication) getApplication()).gaService.getMnemonics();
         if (mnemonic != null) {
-            getPreferenceManager().findPreference("mnemonic_passphrase").setSummary("Touch to display");
+            getPreferenceManager().findPreference("mnemonic_passphrase").setSummary(getString(R.string.touch_to_display));
 
             getPreferenceManager().findPreference("mnemonic_passphrase").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -99,7 +94,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         } catch (final Exception e) {
             // not set
         }
-        altime.setSummary(Integer.toString(timeout) + " minutes");
+        altime.setSummary(Integer.toString(timeout) + getString(R.string.autologout_time_default));
 
         altime.setText(Integer.toString(timeout));
         altime.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

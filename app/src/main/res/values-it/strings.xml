@@ -118,6 +118,16 @@
     <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
     <string name="instantConfirmation">Conferma istantanea</string>
     <string name="pref_header_more">Configurazione aggiuntiva</string>
-    <string name="trezor_login_failed">TREZOR login failed</string>
-    <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
+    <string name="trezor_login_failed">TREZOR accesso fallito</string>
+    <string name="trezor_login_failed_details">Probabilmente significa che devi usare l\'app su desktop per configurare TREZOR con GreenAddress.</string>
+    <string name="more_settings">Vedi altra app per più opzioni di configurazione</string>
+    <string name="more_settings_detail">L\'altra app permette di configurare l\'autenticazione a due fattori e più.</string>
+    <string name="improve_security_ledger">Migliora la tua sicurezza con Ledger</string>
+    <string name="improve_security_ledger_detail">Ledger Wallet: Sicurezza da Smartcard per i tuoi Bitcoins.</string>
+    <string name="mnemonic_passphrase">Passphrase mnemonica</string>
+    <string name="mnemonic_passphrase_not_available">Passphrase non disponibile</string>
+    <string name="autologout_time">Logout automatico</string>
+    <string name="autologout_time_default"> minuti</string>
+    <string name="touch_to_display">Tocca per mostrare</string>
+
 </resources>

@@ -121,4 +121,13 @@
     <string name="pref_header_more">הגדרות נוספות</string>
     <string name="trezor_login_failed">TREZOR login failed</string>
     <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
+    <string name="more_settings">See GreenAddress app for more settings</string>
+    <string name="more_settings_detail">Our previous app allows changing other settings like two factor authentication and more.</string>
+    <string name="improve_security_ledger">Improve your security with Ledger</string>
+    <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard security for your Bitcoins.</string>
+    <string name="mnemonic_passphrase">Mnemonic passphrase</string>
+    <string name="mnemonic_passphrase_not_available">Passphrase not available</string>
+    <string name="autologout_time">Auto logout timeout</string>
+    <string name="autologout_time_default"> minutes</string>
+    <string name="touch_to_display">Touch to display</string>
 </resources>
