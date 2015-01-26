@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
@@ -9,8 +10,10 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -236,7 +239,7 @@ public class RequestLoginActivity extends Activity implements Observer {
     private void showPinDialog(final IsoDep device) {
         showPinDialog(null, device, -1);
     }
-
+    Dialog btchipDialog = null;
     private void showPinDialog(final UsbDevice device, final IsoDep isoDep, final int remainingAttempts) {
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
@@ -254,6 +257,7 @@ public class RequestLoginActivity extends Activity implements Observer {
                     }
                     pinValue.setVisibility(View.GONE);
                 }
+
                 MaterialDialog.Builder builder = new MaterialDialog.Builder(RequestLoginActivity.this)
                         .title("BTChip PIN")
                         .customView(inflatedLayout)
@@ -275,12 +279,35 @@ public class RequestLoginActivity extends Activity implements Observer {
                             .positiveText("OK")
                             .negativeText("CANCEL");
                 }
-                MaterialDialog dialog = builder.build();
+                if (btchipDialog == null) {
+                    btchipDialog = builder.build();
+                }
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
                 pinValue.requestFocus();
-                dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                dialog.show();
+                btchipDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                btchipDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                pinValue.setOnEditorActionListener(
+                        new EditText.OnEditorActionListener() {
+                            @Override
+                            public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+                                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                                        actionId == EditorInfo.IME_ACTION_DONE ||
+                                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                                    if (event == null || !event.isShiftPressed()) {
+                                        // the user is done typing.
+                                        final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
+                                        prog.setVisibility(View.VISIBLE);
+                                        btchipDialog.hide();
+                                        pinFuture.set(pinValue.getText().toString());
+                                        return true; // consume.
+                                    }
+                                }
+                                return false; // pass on to other listeners.
+                            }
+                        }
+                );
+                btchipDialog.show();
             }
         });
         final BTChipTransport transport;
@@ -344,7 +371,13 @@ public class RequestLoginActivity extends Activity implements Observer {
             }
         });
     }
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (btchipDialog != null) {
+            btchipDialog.dismiss();
+        }
+    }
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
