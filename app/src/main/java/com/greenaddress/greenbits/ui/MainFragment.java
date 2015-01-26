@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -49,6 +50,7 @@ public class MainFragment extends Fragment implements Observer {
     private Observer curBalanceObserver;
     private int curSubaccount;
     private Observer txVerifiedObservable;
+    private View.OnClickListener unconfirmedClickListener;
 
     private Transaction processGATransaction(final Map<String, Object> txJSON, final int curBlock) throws ParseException {
 
@@ -148,6 +150,13 @@ public class MainFragment extends Fragment implements Observer {
         }
         final String btcBalance = bitcoinFormat.noCode().format(
                 ((GreenAddressApplication) activity.getApplication()).gaService.getBalanceCoin(curSubaccount)).toString();
+        final String btcBalanceVerified;
+        if (((GreenAddressApplication) activity.getApplication()).gaService.getVerifiedBalanceCoin(curSubaccount) != null) {
+            btcBalanceVerified = bitcoinFormat.noCode().format(
+                    ((GreenAddressApplication) activity.getApplication()).gaService.getVerifiedBalanceCoin(curSubaccount)).toString();
+        } else {
+            btcBalanceVerified = "";
+        }
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
                         ((GreenAddressApplication) activity.getApplication()).gaService.getBalanceFiat(curSubaccount))
@@ -156,6 +165,12 @@ public class MainFragment extends Fragment implements Observer {
         final String converted = CurrencyMapper.map(fiatCurrency);
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
+        final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
+        if (btcBalance.equals(btcBalanceVerified)) {
+            balanceQuestionMark.setVisibility(View.GONE);
+        } else {
+            balanceQuestionMark.setVisibility(View.VISIBLE);
+        }
         final TextView balanceFiatText = (TextView) rootView.findViewById(R.id.mainLocalBalanceText);
         final FontAwesomeTextView balanceFiatIcon = (FontAwesomeTextView) rootView.findViewById(R.id.mainLocalBalanceIcon);
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
@@ -201,6 +216,27 @@ public class MainFragment extends Fragment implements Observer {
         /* currentSize = balanceText.getTextSize();
         maxSize = currentSize;
         minSize = currentSize / 2.0f; */
+
+
+
+        final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
+        final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
+        unconfirmedClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (balanceQuestionMark.getVisibility() != View.VISIBLE) {
+                    // show the message only if question mark is visible
+                    return;
+                }
+                new MaterialDialog.Builder(getActivity())
+                        .title(getResources().getString(R.string.unconfirmedBalanceTitle))
+                        .content(getResources().getString(R.string.unconfirmedBalanceText) + " " +
+                                ((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft())
+                        .build().show();
+            }
+        };
+        balanceText.setOnClickListener(unconfirmedClickListener);
+        balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         curBalanceObserver = makeBalanceObserver();
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
@@ -274,6 +310,7 @@ public class MainFragment extends Fragment implements Observer {
                     }
                 }
         );
+
         return rootView;
     }
 
@@ -299,7 +336,7 @@ public class MainFragment extends Fragment implements Observer {
     public void onPause() {
         super.onPause();
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().deleteObserver(this);
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().addObserver(txVerifiedObservable);
+        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
     }
 
     @Override
@@ -314,14 +351,22 @@ public class MainFragment extends Fragment implements Observer {
             @Override
             public void update(Observable observable, Object data) {
                 if (currentList == null) return;
-                for (Transaction tx : currentList) {
-                    tx.spvVerified = getActivity().getSharedPreferences("verified_utxo_"
-                                    +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
-                            Context.MODE_PRIVATE).getBoolean(tx.txhash, false);
-                }
-                final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
-                ((ListTransactionsAdapter) listView.getAdapter()).notifyDataSetChanged();
-                listView.invalidateViews();  // hopefully we don't need http://stackoverflow.com/a/19655916
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // "Make sure the content of your adapter is not modified from a background
+                        //  thread, but only from the UI thread. Make sure your adapter calls
+                        //  notifyDataSetChanged() when its content changes."
+                        for (Transaction tx : currentList) {
+                            tx.spvVerified = getActivity().getSharedPreferences("verified_utxo_"
+                                            +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
+                                    Context.MODE_PRIVATE).getBoolean(tx.txhash, false);
+                        }
+                        final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
+                        ((ListTransactionsAdapter) listView.getAdapter()).notifyDataSetChanged();
+                        listView.invalidateViews();  // hopefully we don't need http://stackoverflow.com/a/19655916
+                    }
+                });
             }
         };
         return txVerifiedObservable;
@@ -408,6 +453,7 @@ public class MainFragment extends Fragment implements Observer {
                         mainEmptyTransText.setVisibility(View.VISIBLE);
                     }
                 });
+                t.printStackTrace();
 
                 }
             }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);

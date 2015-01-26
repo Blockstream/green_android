@@ -43,6 +43,7 @@ import org.bitcoinj.core.ScriptException;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.VerificationException;
 import org.bitcoinj.core.Wallet;
@@ -68,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -104,6 +106,7 @@ public class GaService extends Service {
     private Map<Long, ListenableFuture<QrBitmap>> latestAddresses;
 
     private Map<Long, Coin> balancesCoin = new HashMap<>();
+    private Map<Long, Coin> verifiedBalancesCoin = new HashMap<>();
     private Map<Long, Fiat> balancesFiat = new HashMap<>();
     private float fiatRate;
     private String fiatCurrency;
@@ -114,7 +117,9 @@ public class GaService extends Service {
     private BlockChainListener blockChainListener;
     private PeerGroup peerGroup;
     private PeerFilterProvider pfProvider;
-    private Set<Sha256Hash> unspentOutputs;
+    private Map<TransactionOutPoint, Long> unspentOutpoints;
+    private Map<Sha256Hash, List<Long>> unspentOutputsOutpoints;
+    private Map<TransactionOutPoint, Coin> countedUtxoValues;
     private String receivingId;
 
     private FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
@@ -136,49 +141,11 @@ public class GaService extends Service {
             }
             getAvailableTwoFacMethods();
 
-            unspentOutputs = new HashSet<>();
+            unspentOutpoints = new HashMap<>();
+            unspentOutputsOutpoints = new HashMap<>();
+            countedUtxoValues = new HashMap<>();
             setUpSPV();
-            Futures.addCallback(client.getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
-                @Override
-                public void onSuccess(@Nullable ArrayList result) {
-
-                    final int count = result.size();
-
-                    for (int i = 0; i < count; ++i) {
-                        Map<?, ?> utxo = (Map) result.get(i);
-                        unspentOutputs.add(new Sha256Hash(Hex.decode((String) utxo.get("txhash"))));
-                    }
-                    peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
-
-                    Futures.addCallback(peerGroup.start(), new FutureCallback<Object>() {
-                        @Override
-                        public void onSuccess(@Nullable Object result) {
-                            peerGroup.startBlockChainDownload(new DownloadListener() {
-                                @Override
-                                public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-                                    spvBlocksLeft = blocksLeft;
-                                }
-
-                                @Override
-                                public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-                                    spvBlocksLeft = blocksLeft;
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-
+            updateUnspentOutputs();
             connectionObservable.setState(ConnectivityObservable.State.LOGGEDIN);
         }
 
@@ -188,6 +155,83 @@ public class GaService extends Service {
             connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
         }
     };
+
+    private void updateUnspentOutputs() {
+        Futures.addCallback(client.getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
+            @Override
+            public void onSuccess(@Nullable ArrayList result) {
+                Set<TransactionOutPoint> newUtxos = new HashSet<>();
+                boolean recalculateBloom = false;
+
+                for (int i = 0; i < result.size(); ++i) {
+                    Map<?, ?> utxo = (Map) result.get(i);
+                    String txhash = (String) utxo.get("txhash");
+                    Integer blockHeight = (Integer) utxo.get("block_height");
+                    final Long pt_idx = ((Number) utxo.get("pt_idx")).longValue();
+                    final Sha256Hash sha256hash = new Sha256Hash(Hex.decode(txhash));
+                    if (!getSharedPreferences("verified_utxo_" + receivingId, MODE_PRIVATE).getBoolean(txhash, false)) {
+                        recalculateBloom = true;
+                        addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Number)utxo.get("subaccount")).longValue());
+                    } else {
+                        // already verified
+                        addToUtxo(new Sha256Hash(txhash), pt_idx, ((Number)utxo.get("subaccount")).longValue());
+                        addUtxo(new Sha256Hash(txhash));
+                    }
+                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, pt_idx, sha256hash));
+                }
+
+                List<Long> changedSubaccounts = new ArrayList<>();
+                for (TransactionOutPoint oldUtxo : new HashSet<>(countedUtxoValues.keySet())) {
+                    if (!newUtxos.contains(oldUtxo)) {
+                        recalculateBloom = true;
+                        Long subaccount = unspentOutpoints.get(oldUtxo);
+                        verifiedBalancesCoin.put(subaccount,
+                                verifiedBalancesCoin.get(subaccount).subtract(countedUtxoValues.get(oldUtxo)));
+                        changedSubaccounts.add(subaccount);
+                        countedUtxoValues.remove(oldUtxo);
+                        unspentOutpoints.remove(oldUtxo);
+                        unspentOutputsOutpoints.get(oldUtxo.getHash()).remove(oldUtxo.getIndex());
+                    }
+                }
+
+                if (recalculateBloom) {
+                    peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
+                }
+
+                for (Long subaccount : changedSubaccounts) {
+                    fireBalanceChanged(subaccount);
+                }
+
+                Futures.addCallback(peerGroup.start(), new FutureCallback<Object>() {
+                    @Override
+                    public void onSuccess(@Nullable Object result) {
+                        peerGroup.startBlockChainDownload(new DownloadListener() {
+                            @Override
+                            public void onChainDownloadStarted(Peer peer, int blocksLeft) {
+                                spvBlocksLeft = blocksLeft;
+                            }
+
+                            @Override
+                            public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
+                                spvBlocksLeft = blocksLeft;
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
     private int spvBlocksLeft;
 
     private PeerFilterProvider makePeerFilterProvider() {
@@ -199,15 +243,15 @@ public class GaService extends Service {
 
             @Override
             public int getBloomFilterElementCount() {
-                return unspentOutputs.size();
+                return unspentOutputsOutpoints.size();
             }
 
             @Override
             public BloomFilter getBloomFilter(int size, double falsePositiveRate, long nTweak) {
-                final byte[][] hashes = new byte[unspentOutputs.size()][];
+                final byte[][] hashes = new byte[unspentOutputsOutpoints.size()][];
 
                 int i = 0;
-                for (Sha256Hash hash : unspentOutputs) {
+                for (Sha256Hash hash : unspentOutputsOutpoints.keySet()) {
                     hashes[i++] = Utils.reverseBytes(hash.getBytes());
                 }
 
@@ -346,7 +390,7 @@ public class GaService extends Service {
             @Override
             public void onNewBlock(final long count) {
                 Log.i("GaService", "onNewBlock");
-                addToBloomFilter((int) count, null);
+                addToBloomFilter((int) count, null, -1, -1);
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
             }
@@ -354,7 +398,7 @@ public class GaService extends Service {
             @Override
             public void onNewTransaction(final long wallet_id, final long[] subaccounts, final long value, final String txhash) {
                 Log.i("GaService", "onNewTransactions");
-                addToBloomFilter(null, new Sha256Hash(txhash));
+                updateUnspentOutputs();
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
                 for (long subaccount : subaccounts) {
@@ -456,35 +500,72 @@ public class GaService extends Service {
 
             @Override
             public boolean isTransactionRelevant(Transaction tx) throws ScriptException {
-                return unspentOutputs.contains(tx.getHash());
+                return unspentOutputsOutpoints.keySet().contains(tx.getHash());
             }
 
             @Override
             public void receiveFromBlock(Transaction tx, StoredBlock block, AbstractBlockChain.NewBlockType blockType, int relativityOffset) throws VerificationException {
-                // FIXME: atm addToBloomFilter is called on tx notification even for outgoing txs,
-                // so verified_utxo can contain unnecessary outputs too
+                // FIXME: later spent outputs can be purged
                 SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_"+receivingId, MODE_PRIVATE);
                 SharedPreferences.Editor editor = verified_utxo.edit();
                 editor.putBoolean(tx.getHash().toString(), true);
                 editor.commit();
+                addUtxo(tx.getHash());
                 newTxVerifiedObservable.setChanged();
                 newTxVerifiedObservable.notifyObservers();
             }
 
             @Override
             public boolean notifyTransactionIsInBlock(Sha256Hash txHash, StoredBlock block, AbstractBlockChain.NewBlockType blockType, int relativityOffset) throws VerificationException {
-                // FIXME: atm addToBloomFilter is called on tx notification even for outgoing txs,
-                // so verified_utxo can contain unnecessary outputs too
+                // FIXME: later spent outputs can be purged
                 SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_"+receivingId, MODE_PRIVATE);
                 SharedPreferences.Editor editor = verified_utxo.edit();
                 editor.putBoolean(txHash.toString(), true);
                 editor.commit();
+                addUtxo(txHash);
                 newTxVerifiedObservable.setChanged();
                 newTxVerifiedObservable.notifyObservers();
-                return unspentOutputs.contains(txHash);
+                return unspentOutputsOutpoints.keySet().contains(txHash);
             }
         };
         return blockChainListener;
+    }
+
+    private void addUtxo(final Sha256Hash txHash) {
+        Futures.addCallback(client.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
+            @Override
+            public void onSuccess(@Nullable Transaction result) {
+                List<Long> changedSubaccounts = new ArrayList<>();
+                if (result.getHash().equals(txHash)) {
+                    for (Long outpoint : unspentOutputsOutpoints.get(txHash)) {
+                        TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
+                        if (countedUtxoValues.keySet().contains(txOutpoint)) continue;
+                        Coin addValue = result.getOutput(outpoint.intValue()).getValue();
+                        countedUtxoValues.put(txOutpoint, addValue);
+                        Long subaccount = unspentOutpoints.get(txOutpoint);
+                        changedSubaccounts.add(subaccount);
+                        if (verifiedBalancesCoin.get(subaccount) == null) {
+                            verifiedBalancesCoin.put(subaccount, addValue);
+                        } else {
+                            verifiedBalancesCoin.put(subaccount,
+                                    verifiedBalancesCoin.get(subaccount).add(addValue));
+                        }
+                    }
+                } else {
+                    Log.e("SPV",
+                            new Formatter().format("txHash mismatch: expected %s != %s received",
+                                    txHash.toString(), result.getHash().toString()).toString());
+                }
+                for (Long subaccount : changedSubaccounts) {
+                    fireBalanceChanged(subaccount);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     private ListenableFuture<LoginData> login() {
@@ -590,36 +671,16 @@ public class GaService extends Service {
         });
     }
 
-    public ListenableFuture<Map<?, ?>> getMyTransactions(int subaccount) {
-        return Futures.transform(client.getMyTransactions(subaccount), new Function<Map<?, ?>, Map<?, ?>>() {
-            @Nullable
-            @Override
-            public Map<?, ?> apply(@Nullable Map<?, ?> input) {
-                final List resultList = (List) input.get("list");
-
-                if (resultList != null) {
-                    for (int i = 0; i < resultList.size(); ++i) {
-                        Map<String, Object> txJSON = (Map<String, Object>) resultList.get(i);
-                        final Integer blockHeight = txJSON.containsKey("block_height") && txJSON.get("block_height") != null?
-                                (int) txJSON.get("block_height"): null;
-                        final Sha256Hash txhash = new Sha256Hash((String) txJSON.get("txhash"));
-                        addToBloomFilter(blockHeight, txhash);
-                    }
-
-                }
-
-                return input;
-            }
-        });
+    public ListenableFuture<Map<?, ?>> getMyTransactions(final int subaccount) {
+        return client.getMyTransactions(subaccount);
     }
 
-    private void addToBloomFilter(final Integer blockHeight, Sha256Hash txhash) {
+    private void addToBloomFilter(final Integer blockHeight, Sha256Hash txhash, final long pt_idx, final long subaccount) {
         if (txhash != null) {
-            unspentOutputs.add(txhash);
+            addToUtxo(txhash, pt_idx, subaccount);
         }
-        peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
         if (blockHeight != null && blockHeight <= blockChain.getBestChainHeight() &&
-                (txhash == null || !unspentOutputs.contains(txhash))) {
+                (txhash == null || !unspentOutputsOutpoints.keySet().contains(txhash))) {
             // new tx or block notification with blockHeight <= current blockHeight means we might've [1]
             // synced the height already while we haven't seen the tx, so we need to re-sync to be able
             // to verify it.
@@ -639,6 +700,17 @@ public class GaService extends Service {
             blockChain.addWallet(fakeWallet);
             blockChain.removeWallet(fakeWallet);  // can be removed, because the call above
                                                   // should rollback already
+        }
+    }
+
+    private void addToUtxo(Sha256Hash txhash, long pt_idx, long subaccount) {
+        unspentOutpoints.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subaccount);
+        if (unspentOutputsOutpoints.get(txhash) == null) {
+            ArrayList<Long> newList = new ArrayList<>();
+            newList.add(pt_idx);
+            unspentOutputsOutpoints.put(txhash, newList);
+        } else {
+            unspentOutputsOutpoints.get(txhash).add(pt_idx);
         }
     }
 
@@ -795,6 +867,10 @@ public class GaService extends Service {
 
     public Coin getBalanceCoin(long subaccount) {
         return balancesCoin.get(new Long(subaccount));
+    }
+
+    public Coin getVerifiedBalanceCoin(int subaccount) {
+        return verifiedBalancesCoin.get(new Long(subaccount));
     }
 
     public Fiat getBalanceFiat(long subaccount) {

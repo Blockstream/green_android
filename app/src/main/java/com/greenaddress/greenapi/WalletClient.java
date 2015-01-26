@@ -1041,7 +1041,23 @@ public class WalletClient {
             public void onError(final String errUri, final String errDesc) {
                 asyncWamp.setException(new GAException(errDesc));
             }
-        });
+        }, 0);
+        return asyncWamp;
+    }
+
+    public SettableFuture<Transaction> getRawUnspentOutput(Sha256Hash txHash) {
+        final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/txs/get_raw_unspent_output", String.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object tx) {
+                asyncWamp.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, txHash.toString());
         return asyncWamp;
     }
 }
