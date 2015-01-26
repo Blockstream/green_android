@@ -10,7 +10,7 @@
     <string name="sendSendButton">INVIA</string>
     <string name="title_activity_pin">Pin</string>
     <string name="pinSaveText">Salva</string>
-    <string name="pinLoginText">Login</string>
+    <string name="pinLoginText">Accedi</string>
     <string name="sendAvailableText">Disponibile</string>
     <string name="title_activity_qr_scanner">QR Scanner</string>
     <string name="title_activity_sign_up">Registrati</string>
