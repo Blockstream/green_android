@@ -358,7 +358,7 @@ public class SendFragment extends Fragment {
                 final Coin amount;
                 Coin nonFinalAmount;
                 try {
-                    nonFinalAmount = bitcoinFormat.parse(amountEdit.getText().toString().replace(String.valueOf(new DecimalFormat().getDecimalFormatSymbols().getGroupingSeparator()), ""));
+                    nonFinalAmount = bitcoinFormat.parse(amountEdit.getText().toString());
                 } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
@@ -511,11 +511,10 @@ public class SendFragment extends Fragment {
 
                                         updateBalance(getActivity());
                                         try {
-                                            final DecimalFormat formatter = new DecimalFormat("#,###.########");
-                                            Coin oldValue = bitcoinFormat.parse(formatter.parse(amountEdit.getText().toString()).toString());
+                                            Coin oldValue = bitcoinFormat.parse(amountEdit.getText().toString());
                                             bitcoinFormat = newFormat;
                                             amountEdit.setText(newFormat.noCode().format(oldValue));
-                                        } catch (IllegalArgumentException | ParseException e) {
+                                        } catch (IllegalArgumentException e) {
                                             bitcoinFormat = newFormat;
                                             amountEdit.setText("");
                                         }
@@ -590,7 +589,6 @@ public class SendFragment extends Fragment {
                     }
                 }
         );
-        amountFiatEdit.addTextChangedListener(new FormatterTextWatcher(amountFiatEdit));
         amountFiatEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
@@ -607,7 +605,6 @@ public class SendFragment extends Fragment {
 
             }
         });
-        amountEdit.addTextChangedListener(new FormatterTextWatcher(amountEdit));
 
         amountEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -835,7 +832,7 @@ public class SendFragment extends Fragment {
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);
 
         try {
-            final Coin btcValue = bitcoinFormat.parse(amountEdit.getText().toString().replace(String.valueOf(new DecimalFormat().getDecimalFormatSymbols().getGroupingSeparator()), ""));
+            final Coin btcValue = bitcoinFormat.parse(amountEdit.getText().toString());
             Fiat fiatValue = rate.coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
@@ -856,7 +853,7 @@ public class SendFragment extends Fragment {
                 .toBigInteger().longValue());
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);
         try {
-            final Fiat fiatValue = Fiat.parseFiat("???", amountFiatEdit.getText().toString().replace(String.valueOf(new DecimalFormat().getDecimalFormatSymbols().getGroupingSeparator()), ""));
+            final Fiat fiatValue = Fiat.parseFiat("???", amountFiatEdit.getText().toString());
             amountEdit.setText(bitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
             amountEdit.setText("");
