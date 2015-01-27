@@ -551,7 +551,38 @@ public class GaService extends Service {
         return blockChainListener;
     }
 
+    private void addUtxoToValues(final TransactionOutPoint txOutpoint, long subaccount, Coin addValue) {
+        if (countedUtxoValues.keySet().contains(txOutpoint)) return;
+        countedUtxoValues.put(txOutpoint, addValue);
+        if (verifiedBalancesCoin.get(subaccount) == null) {
+            verifiedBalancesCoin.put(subaccount, addValue);
+        } else {
+            verifiedBalancesCoin.put(subaccount,
+                    verifiedBalancesCoin.get(subaccount).add(addValue));
+        }
+
+    }
+
     private void addUtxoToValues(final Sha256Hash txHash) {
+        final String txHashStr = txHash.toString();
+        final List<Long> changedSubaccounts = new ArrayList<>();
+        boolean missing = false;
+        for (final Long outpoint : unspentOutputsOutpoints.get(txHash)) {
+            String outPointStr = txHashStr + ":" + outpoint;
+            if (getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).getLong(outPointStr, -1) != -1) {
+                final long value = getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).getLong(outPointStr, -1);
+                final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
+                final Long subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
+                if (!countedUtxoValues.keySet().contains(txOutpoint)) changedSubaccounts.add(subaccount);
+                addUtxoToValues(txOutpoint, subaccount, Coin.valueOf(value));
+            } else {
+                missing = true;
+            }
+        }
+        for (final Long subaccount : changedSubaccounts) {
+            fireBalanceChanged(subaccount);
+        }
+        if (!missing) return;
         Futures.addCallback(client.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
             @Override
             public void onSuccess(@Nullable final Transaction result) {
@@ -569,15 +600,12 @@ public class GaService extends Service {
                             @Override
                             public Boolean apply(@Nullable Boolean input) {
                                 if (input.booleanValue()) {
-                                    Coin addValue = result.getOutput(outpoint.intValue()).getValue();
-                                    countedUtxoValues.put(txOutpoint, addValue);
+                                    final Coin coinValue = result.getOutput(outpoint.intValue()).getValue();
+                                    addUtxoToValues(txOutpoint, subaccount, coinValue);
                                     changedSubaccounts.add(subaccount);
-                                    if (verifiedBalancesCoin.get(subaccount) == null) {
-                                        verifiedBalancesCoin.put(subaccount, addValue);
-                                    } else {
-                                        verifiedBalancesCoin.put(subaccount,
-                                                verifiedBalancesCoin.get(subaccount).add(addValue));
-                                    }
+                                    SharedPreferences.Editor e = getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).edit();
+                                    e.putLong(txHashStr + ":" + outpoint, coinValue.longValue());
+                                    e.commit();
                                 } else {
                                     Log.e("SPV",
                                             new Formatter().format("txHash %s outpoint %s not spendable!",
@@ -787,8 +815,10 @@ public class GaService extends Service {
     }
 
     public void fireBalanceChanged(long subaccount) {
-        balanceObservables.get(subaccount).setChanged();
-        balanceObservables.get(subaccount).notifyObservers();
+        if (balancesCoin != null && getBalanceCoin(subaccount) != null) {  // can be null if called from addUtxoToValues before balance is fetched
+            balanceObservables.get(subaccount).setChanged();
+            balanceObservables.get(subaccount).notifyObservers();
+        }
     }
 
     public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
