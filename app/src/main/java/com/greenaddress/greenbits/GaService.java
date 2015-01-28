@@ -694,7 +694,7 @@ public class GaService extends Service {
         });
     }
 
-    private ListenableFuture<Boolean> verifySpendableBy(final TransactionOutput txOutput, final Long subaccount, final Long pointer) {
+    public ListenableFuture<Boolean> verifySpendableBy(final TransactionOutput txOutput, final Long subaccount, final Long pointer) {
         return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subaccount, pointer);
     }
 
