@@ -411,22 +411,35 @@ public class SendFragment extends Fragment {
                 }
 
                 if (prepared != null) {
-                    final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
+
                     Futures.addCallback(prepared,
                             new FutureCallback<PreparedTransaction>() {
                                 @Override
                                 public void onSuccess(@Nullable final PreparedTransaction result) {
-                                    final Map<?, ?> twoFacConfig = ((GreenAddressApplication) getActivity().getApplication()).gaService.getTwoFacConfig();
-                                    if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
-                                        final List<String> enabledTwoFac = getEnabledTwoFacNames(twoFacConfig, true);
-                                        if (enabledTwoFac.size() > 1) {
-                                            show2FAChoices(fee, amount, recipient, result, twoFacConfig);
-                                        } else {
-                                            showTransactionSummary(enabledTwoFac.get(0), fee, amount, recipient, result);
-                                        }
-                                    } else {
-                                        showTransactionSummary(null, fee, amount, recipient, result);
-                                    }
+                                    // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
+                                    Futures.addCallback(((GreenAddressApplication) getActivity().getApplication()).gaService.validateTxAndCalculateFee(result, recipient, amount),
+                                            new FutureCallback<Coin>() {
+                                                @Override
+                                                public void onSuccess(@Nullable Coin fee) {
+                                                    final Map<?, ?> twoFacConfig = ((GreenAddressApplication) getActivity().getApplication()).gaService.getTwoFacConfig();
+                                                    if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
+                                                        final List<String> enabledTwoFac = getEnabledTwoFacNames(twoFacConfig, true);
+                                                        if (enabledTwoFac.size() > 1) {
+                                                            show2FAChoices(fee, amount, recipient, result, twoFacConfig);
+                                                        } else {
+                                                            showTransactionSummary(enabledTwoFac.get(0), fee, amount, recipient, result);
+                                                        }
+                                                    } else {
+                                                        showTransactionSummary(null, fee, amount, recipient, result);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Throwable t) {
+                                                    t.printStackTrace();
+                                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
                                 }
 
                                 @Override

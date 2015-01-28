@@ -275,18 +275,38 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
                                 private void doSweep() {
                                     final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
-                                    final List<TransactionSignature> signatures = new ArrayList<>();
-                                    for (int i = 0; i < tx.getInputs().size(); ++i) {
-                                        signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
-                                    }
-                                    Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.sendTransaction(signatures, null), new FutureCallback<String>() {
+                                    Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.verifySpendableBy(
+                                            tx.getOutputs().get(0),
+                                            Long.valueOf(0),
+                                            ((Number) result.get("out_pointer")).longValue()
+                                    ), new FutureCallback<Boolean>() {
                                         @Override
-                                        public void onSuccess(final @Nullable String result) {
+                                        public void onSuccess(@Nullable Boolean result) {
+                                            if (result.booleanValue()) {
+                                                final List<TransactionSignature> signatures = new ArrayList<>();
+                                                for (int i = 0; i < tx.getInputs().size(); ++i) {
+                                                    signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
+                                                }
+                                                Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.sendTransaction(signatures, null), new FutureCallback<String>() {
+                                                    @Override
+                                                    public void onSuccess(final @Nullable String result) {
 
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(final Throwable t) {
+                                                        t.printStackTrace();
+                                                        Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                            } else {
+                                                Toast.makeText(TabbedMainActivity.this, "Verification failed: Invalid output address", Toast.LENGTH_LONG).show();
+                                            }
                                         }
 
                                         @Override
-                                        public void onFailure(final Throwable t) {
+                                        public void onFailure(Throwable t) {
+                                            t.printStackTrace();
                                             Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                         }
                                     });
@@ -300,7 +320,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                             key = keyBip38.decrypt(passwordEdit.getText().toString());
                                             Log.d("BIP38", "BIP38 time: " + (System.currentTimeMillis() - t0) + "ms");
                                             Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.prepareSweepSocial(
-                                                    key.getPubKey(), false), new FutureCallback<Map<?, ?>>() {
+                                                    key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
                                                 @Override
                                                 public void onSuccess(@Nullable final Map<?, ?> result) {
                                                     tx = new Transaction(Network.NETWORK,

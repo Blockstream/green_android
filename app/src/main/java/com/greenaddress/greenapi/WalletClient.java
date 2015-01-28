@@ -691,19 +691,19 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<String> getNewAddress(long subaccount) {
-        final SettableFuture<String> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/vault/fund", String.class, new Wamp.CallHandler() {
+    public ListenableFuture<Map> getNewAddress(long subaccount) {
+        final SettableFuture<Map> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/vault/fund", Map.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object address) {
-                asyncWamp.set(Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(com.subgraph.orchid.encoders.Hex.decode(address.toString()))).toString());
+                asyncWamp.set((Map) address);
             }
 
             @Override
             public void onError(final String errUri, final String errDesc) {
                 asyncWamp.setException(new GAException(errDesc));
             }
-        }, subaccount);
+        }, subaccount, true);
         return asyncWamp;
     }
 
@@ -1027,5 +1027,37 @@ public class WalletClient {
 
     public ISigningWallet getHdWallet() {
         return hdWallet;
+    }
+
+    public SettableFuture<ArrayList> getAllUnspentOutputs() {
+        final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object txs) {
+                asyncWamp.set((ArrayList) txs);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, 0);
+        return asyncWamp;
+    }
+
+    public SettableFuture<Transaction> getRawUnspentOutput(Sha256Hash txHash) {
+        final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/txs/get_raw_unspent_output", String.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object tx) {
+                asyncWamp.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, txHash.toString());
+        return asyncWamp;
     }
 }

@@ -131,4 +131,7 @@
     <string name="autologout_time_default"> minutes</string>
     <string name="touch_to_display">Tapez pour afficher</string>
 
+    <string name="txUnconfirmedTx">Transaction not confirmed. Please wait for block confirmations to gain trust in this transaction.</string>
+    <string name="txUnverifiedTx">Transaction not verified. Please wait for synchronization to gain trust in this transaction. Remaining blocks:</string>
+    <string name="unconfirmedBalanceTitle">Unconfirmed balance</string>
 </resources>

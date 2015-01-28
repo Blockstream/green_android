@@ -95,12 +95,26 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final TextView recipientText = (TextView) rootView.findViewById(R.id.txRecipientText);
             final TextView recipientTitle = (TextView) rootView.findViewById(R.id.txRecipientTitle);
 
-
+            final TextView unconfirmedText = (TextView) rootView.findViewById(R.id.txUnconfirmedText);
 
             hashText.setMovementMethod(LinkMovementMethod.getInstance());
 
             final Transaction t = (Transaction) getActivity().getIntent().getSerializableExtra("TRANSACTION");
             hashText.setText(Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.txhash + "\">" + t.txhash + "</a>"));
+
+            if (t.type == Transaction.TYPE_OUT || t.isSpent) {
+                rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
+            } else {
+                // unspent output
+                if (t.getConfirmations() > 0) {
+                    if (t.spvVerified) {
+                        rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
+                    } else {
+                        unconfirmedText.setText(getResources().getString(R.string.txUnverifiedTx) + " " +
+                                ((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft());
+                    }
+                }
+            }
 
             final String btcUnit = (String) ((GreenAddressApplication) getActivity().getApplication()).gaService.getAppearanceValue("unit");
             final Coin coin = Coin.valueOf(t.amount);

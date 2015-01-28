@@ -88,6 +88,7 @@ public class ReceiveFragment extends Fragment {
 
             @Override
             public void onFailure(final Throwable t) {
+                t.printStackTrace();
                 final Activity activity = getActivity();
                 if (activity != null) {
                     activity.runOnUiThread(new Runnable() {

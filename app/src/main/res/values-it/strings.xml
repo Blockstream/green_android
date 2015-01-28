@@ -130,4 +130,9 @@
     <string name="autologout_time_default"> minuti</string>
     <string name="touch_to_display">Tocca per mostrare</string>
 
+    <string name="trezor_login_failed">TREZOR login failed</string>
+    <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
+    <string name="txUnconfirmedTx">Transaction not confirmed. Please wait for block confirmations to gain trust in this transaction.</string>
+    <string name="txUnverifiedTx">Transaction not verified. Please wait for synchronization to gain trust in this transaction. Remaining blocks:</string>
+    <string name="unconfirmedBalanceTitle">Unconfirmed balance</string>
 </resources>
