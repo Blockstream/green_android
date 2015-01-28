@@ -320,7 +320,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                             key = keyBip38.decrypt(passwordEdit.getText().toString());
                                             Log.d("BIP38", "BIP38 time: " + (System.currentTimeMillis() - t0) + "ms");
                                             Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.prepareSweepSocial(
-                                                    key.getPubKey(), false), new FutureCallback<Map<?, ?>>() {
+                                                    key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
                                                 @Override
                                                 public void onSuccess(@Nullable final Map<?, ?> result) {
                                                     tx = new Transaction(Network.NETWORK,
