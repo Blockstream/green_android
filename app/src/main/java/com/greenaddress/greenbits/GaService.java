@@ -46,6 +46,7 @@ import org.bitcoinj.core.ScriptException;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
@@ -1122,6 +1123,82 @@ public class GaService extends Service {
 
     public int getSpvBlocksLeft() {
         return spvBlocksLeft;
+    }
+
+    public ListenableFuture<Coin> validateTxAndCalculateFee(final PreparedTransaction transaction, final String recipientStr, final Coin amount) {
+        Address recipientNonFinal = null;
+        try {
+            recipientNonFinal = new Address(Network.NETWORK, recipientStr);
+        } catch (AddressFormatException e) { }
+        final Address recipient = recipientNonFinal;
+
+        // 1. Find the change output:
+        ListenableFuture<List<Boolean>> changeFuture;
+        if (transaction.decoded.getOutputs().size() > 1) {
+            if (transaction.decoded.getOutputs().size() != 2) {
+                throw new IllegalArgumentException("Verification: Wrong number of transaction outputs.");
+            }
+            List<ListenableFuture<Boolean>> changeVerifications = new ArrayList<>();
+            changeVerifications.add(
+                verifySpendableBy(transaction.decoded.getOutputs().get(0), Long.valueOf(transaction.subaccount_pointer), Long.valueOf(transaction.change_pointer)));
+            changeVerifications.add(
+                verifySpendableBy(transaction.decoded.getOutputs().get(1), Long.valueOf(transaction.subaccount_pointer), Long.valueOf(transaction.change_pointer)));
+            changeFuture = Futures.allAsList(changeVerifications);
+        } else {
+            changeFuture = Futures.immediateFuture(null);
+        }
+
+        // 2. Verify the main output value and address, if available:
+        return Futures.transform(changeFuture, new Function<List<Boolean>, Coin>() {
+            @Nullable
+            @Override
+            public Coin apply(@Nullable List<Boolean> input) {
+                int changeIdx;
+                if (input == null) {
+                    changeIdx = -1;
+                } else if (input.get(0).booleanValue()) {
+                    changeIdx = 0;
+                } else if (input.get(1).booleanValue()) {
+                    changeIdx = 1;
+                } else {
+                    throw new IllegalArgumentException("Verification: Change output missing.");
+                }
+                if (input.get(0).booleanValue() && input.get(1).booleanValue()) {
+                    // Shouldn't happen really. In theory user can send money to a new change address
+                    // of themselves which they've generated manually, but it's unlikely, so for
+                    // simplicity we don't handle it.
+                    throw new IllegalArgumentException("Verification: Cannot send to a change address.");
+                }
+                final TransactionOutput output = transaction.decoded.getOutputs().get(1 - changeIdx);
+                if (recipient != null) {
+                    Address gotAddress = output.getScriptPubKey().getToAddress(Network.NETWORK);
+                    if (!gotAddress.equals(recipient)) {
+                        throw new IllegalArgumentException("Verification: Invalid recipient address.");
+                    }
+                }
+                if (!output.getValue().equals(amount)) {
+                    throw new IllegalArgumentException("Verification: Invalid output amount.");
+                }
+
+                // 3. Verify fee value:
+                Coin inValue = Coin.ZERO, outValue = Coin.ZERO;
+                for (TransactionInput in : transaction.decoded.getInputs()) {
+                    inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
+                }
+                for (TransactionOutput out : transaction.decoded.getOutputs()) {
+                    outValue = outValue.add(out.getValue());
+                }
+                final Coin fee = inValue.subtract(outValue);
+                if (fee.compareTo(Coin.valueOf(10000)) == -1) {
+                    throw new IllegalArgumentException("Verification: Fee is too small (expected at least 10000 satoshi).");
+                }
+                int kB = (transaction.decoded.getMessageSize()+999)/1000;
+                if (fee.compareTo(Coin.valueOf(kB*20000)) == 1) {
+                    throw new IllegalArgumentException("Verification: Fee is too large (expected at most 20000 satoshi per kB).");
+                }
+                return fee;
+            }
+        });
     }
 
     private static class GaObservable extends Observable {
