@@ -28,6 +28,7 @@ import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.ui.BTChipHWWallet;
 
 import org.bitcoinj.core.AbstractBlockChain;
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
@@ -58,6 +59,7 @@ import org.bitcoinj.crypto.MnemonicException;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.script.Script;
+import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
@@ -642,11 +644,9 @@ public class GaService extends Service {
         });
     }
 
-
-
-    private ListenableFuture<Boolean> verifySpendableBy(final TransactionOutput txOutput, final Long subaccount, final Long pointer) {
-        if (!txOutput.getScriptPubKey().isPayToScriptHash()) return Futures.immediateFuture(false);
-        final byte[] gotP2SH = txOutput.getScriptPubKey().getPubKeyHash();
+    private ListenableFuture<Boolean> verifyP2SHSpendableBy(final Script scriptHash, final Long subaccount, final Long pointer) {
+        if (!scriptHash.isPayToScriptHash()) return Futures.immediateFuture(false);
+        final byte[] gotP2SH = scriptHash.getPubKeyHash();
 
         final List<ECKey> pubkeys = new ArrayList<>();
         DeterministicKey gaWallet = getGaDeterministicKey(subaccount);
@@ -691,6 +691,10 @@ public class GaService extends Service {
                 return Arrays.equals(gotP2SH, expectedP2SH);
             }
         });
+    }
+
+    private ListenableFuture<Boolean> verifySpendableBy(final TransactionOutput txOutput, final Long subaccount, final Long pointer) {
+        return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subaccount, pointer);
     }
 
     private DeterministicKey getGaDeterministicKey(Long subaccount) {
@@ -906,7 +910,27 @@ public class GaService extends Service {
         return (latestAddress == null) ? getNewAddress(subaccount) : latestAddress;
     }
 
-    public ListenableFuture<QrBitmap> getNewAddress(long subaccount) {
+    public ListenableFuture<QrBitmap> getNewAddress(final long subaccount) {
+        final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
+            @Override
+            public ListenableFuture<String> apply(Map input) throws Exception {
+                final int pointer = ((Number) input.get("pointer")).intValue();
+                final byte[] scriptHash = Utils.sha256hash160(Hex.decode((String) input.get("script")));
+                return Futures.transform(verifyP2SHSpendableBy(
+                        ScriptBuilder.createP2SHOutputScript(scriptHash),
+                        subaccount, Long.valueOf(pointer)), new Function<Boolean, String>() {
+                    @Nullable
+                    @Override
+                    public String apply(@Nullable Boolean input) {
+                        if (input.booleanValue()) {
+                            return Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
+                        } else {
+                            throw new IllegalArgumentException("Address validation failed");
+                        }
+                    }
+                });
+            }
+        };
         final AsyncFunction<String, QrBitmap> addressToQr = new AsyncFunction<String, QrBitmap>() {
             @Override
             public ListenableFuture<QrBitmap> apply(final String input) {
@@ -914,7 +938,8 @@ public class GaService extends Service {
 
             }
         };
-        latestAddresses.put(subaccount, Futures.transform(client.getNewAddress(subaccount), addressToQr, es));
+        ListenableFuture<String> verifiedAddress = Futures.transform(client.getNewAddress(subaccount), verifyAddress, es);
+        latestAddresses.put(subaccount, Futures.transform(verifiedAddress, addressToQr, es));
         return latestAddresses.get(new Long(subaccount));
     }
 
