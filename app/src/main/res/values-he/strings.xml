@@ -133,5 +133,6 @@
     <string name="txUnconfirmedTx">Transaction not confirmed. Please wait for block confirmations to gain trust in this transaction.</string>
     <string name="txUnverifiedTx">Transaction not verified. Please wait for synchronization to gain trust in this transaction. Remaining blocks:</string>
     <string name="unconfirmedBalanceTitle">Unconfirmed balance</string>
+    <string name="unconfirmedBalanceText">Your balance is not confirmed. It means either you have some unconfirmed incoming transactions, or SPV verification has not finished. Remaining blocks for SPV verification:</string>
 </resources>
 
