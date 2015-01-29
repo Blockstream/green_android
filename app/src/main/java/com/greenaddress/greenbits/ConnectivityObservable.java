@@ -134,14 +134,21 @@ public class ConnectivityObservable extends Observable {
 
     private void checkNetwork() {
         final boolean isNetworkUp = isNetworkUp();
+        boolean stateSet = false;
         if (isNetworkUp) {
             if (state.equals(State.DISCONNECTED) || state.equals(State.OFFLINE)) {
                 setState(ConnectivityObservable.State.DISCONNECTED);
+                stateSet = true;
                 service.reconnect();
             }
         } else {
             setState(ConnectivityObservable.State.DISCONNECTED);
             setState(ConnectivityObservable.State.OFFLINE);
+            stateSet = true;
+        }
+        if (isWiFiUp() && !stateSet) {
+            setChanged();
+            notifyObservers();
         }
     }
 
@@ -155,6 +162,14 @@ public class ConnectivityObservable extends Observable {
         final ConnectivityManager connectivityManager
                 = (ConnectivityManager) service.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public boolean isWiFiUp() {
+        final ConnectivityManager connectivityManager
+                = (ConnectivityManager) service.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }

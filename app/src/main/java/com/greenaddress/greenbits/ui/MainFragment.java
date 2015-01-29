@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +17,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenbits.ConnectivityObservable;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.utils.MonetaryFormat;
@@ -50,6 +54,9 @@ public class MainFragment extends Fragment implements Observer {
     private int curSubaccount;
     private Observer txVerifiedObservable;
     private View.OnClickListener unconfirmedClickListener;
+    Observer wiFiObserver = null;
+    boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
+
 
     private Transaction processGATransaction(final Map<String, Object> txJSON, final int curBlock) throws ParseException {
 
@@ -227,11 +234,41 @@ public class MainFragment extends Fragment implements Observer {
                     // show the message only if question mark is visible
                     return;
                 }
-                new MaterialDialog.Builder(getActivity())
+                final String blocksLeft;
+                if (wiFiObserver != null) {
+                    blocksLeft = getResources().getString(R.string.unconfirmedBalanceSpvNotAvailable) + "\n\n" +
+                                 getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
+                } else {
+                    // no observer means we're synchronizing
+                    blocksLeft = String.valueOf(((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft());
+                }
+                MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                         .title(getResources().getString(R.string.unconfirmedBalanceTitle))
-                        .content(getResources().getString(R.string.unconfirmedBalanceText) + " " +
-                                ((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft())
-                        .build().show();
+                        .content(getResources().getString(R.string.unconfirmedBalanceText) + " " + blocksLeft)
+                        .positiveColorRes(R.color.accent)
+                        .negativeColorRes(R.color.white)
+                        .titleColorRes(R.color.white)
+                        .contentColorRes(android.R.color.white)
+                        .theme(Theme.DARK);
+                if (wiFiObserver != null) {
+                    builder.negativeText(R.string.NO)
+                           .positiveText(R.string.YES);
+                }
+                builder.callback(new MaterialDialog.Callback() {
+                    @Override
+                    public void onNegative(MaterialDialog materialDialog) {
+
+                    }
+
+                    @Override
+                    public void onPositive(MaterialDialog materialDialog) {
+                        ((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable().deleteObserver(wiFiObserver);
+                        wiFiObserver = null;
+                        wiFiObserverRequired = false;
+                        ((GreenAddressApplication) getActivity().getApplication()).gaService.startSpvSync();
+                    }
+                });
+                builder.build().show();
             }
         };
         balanceText.setOnClickListener(unconfirmedClickListener);
@@ -336,6 +373,11 @@ public class MainFragment extends Fragment implements Observer {
         super.onPause();
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().deleteObserver(this);
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
+        final ConnectivityObservable connObservable = ((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable();
+        if (wiFiObserver != null) {
+            connObservable.deleteObserver(wiFiObserver);
+            wiFiObserver = null;
+        }
     }
 
     @Override
@@ -343,6 +385,7 @@ public class MainFragment extends Fragment implements Observer {
         super.onResume();
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().addObserver(this);
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
+        if (wiFiObserverRequired) makeWiFiObserver();
     }
 
     private Observer makeTxVerifiedObservable() {
@@ -393,6 +436,7 @@ public class MainFragment extends Fragment implements Observer {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 final List resultList = (List) result.get("list");
+                final int curBlock = ((Number) result.get("cur_block")).intValue();
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -400,6 +444,21 @@ public class MainFragment extends Fragment implements Observer {
                         // "Make sure the content of your adapter is not modified from a background
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
+
+                        final GaService gaService = ((GreenAddressApplication) activity.getApplication()).gaService;
+                        final ConnectivityObservable connObservable = ((GreenAddressApplication) activity.getApplication()).getConnectionObservable();
+                        if (!gaService.getIsSpvSyncing()) {
+                            if (curBlock - gaService.getSpvHeight() > 1000) {
+                                if (connObservable.isWiFiUp()) {
+                                    gaService.startSpvSync();
+                                } else {
+                                    // no wifi - do we want to sync?
+                                    askUserForSpvNoWiFi();
+                                }
+                            } else {
+                                gaService.startSpvSync();
+                            }
+                        }
 
                         if(resultList!=null && resultList.size()>0) {
                             listView.setVisibility(View.VISIBLE);
@@ -456,6 +515,58 @@ public class MainFragment extends Fragment implements Observer {
 
                 }
             }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+    }
+
+    private void askUserForSpvNoWiFi() {
+        if (spvWiFiDialogShown) return;
+        spvWiFiDialogShown = true;
+        new MaterialDialog.Builder(getActivity())
+                .title(getResources().getString(R.string.spvNoWiFiTitle))
+                .content(getResources().getString(R.string.spvNoWiFiText))
+                .positiveText(R.string.spvNoWiFiSyncAnyway)
+                .negativeText(R.string.spvNoWifiWaitForWiFi)
+                .positiveColorRes(R.color.accent)
+                .negativeColorRes(R.color.white)
+                .titleColorRes(R.color.white)
+                .contentColorRes(android.R.color.white)
+                .theme(Theme.DARK)
+                .callback(new MaterialDialog.Callback() {
+                    @Override
+                    public void onNegative(MaterialDialog materialDialog) {
+                        makeWiFiObserver();
+                    }
+
+                    @Override
+                    public void onPositive(MaterialDialog materialDialog) {
+                        ((GreenAddressApplication) getActivity().getApplication()).gaService.startSpvSync();
+                    }
+                })
+                .build().show();
+    }
+
+    private void makeWiFiObserver() {
+        if (wiFiObserver != null) return;
+        final Activity activity = getActivity();
+        final GaService gaService = ((GreenAddressApplication) activity.getApplication()).gaService;
+        final ConnectivityObservable connObservable = ((GreenAddressApplication) activity.getApplication()).getConnectionObservable();
+        if (connObservable.isWiFiUp()) {
+            gaService.startSpvSync();
+            wiFiObserverRequired = false;
+            return;
+        }
+        wiFiObserver = new Observer() {
+            @Override
+            public void update(Observable observable, Object data) {
+                if (connObservable.isWiFiUp()) {
+                    gaService.startSpvSync();
+                    wiFiObserverRequired = false;
+                    connObservable.deleteObserver(wiFiObserver);
+                    wiFiObserver = null;
+                }
+            }
+        };
+        connObservable.addObserver(wiFiObserver);
+        wiFiObserverRequired = true;
     }
 
     @Override

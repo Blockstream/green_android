@@ -111,7 +111,7 @@ public class GaService extends Service {
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
     private ListenableFuture<String> latestMnemonics;
 
-    private boolean reconnect = true;
+    private boolean reconnect = true, isSpvSyncing = false, startSpvAfterInit = false;
 
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
@@ -165,6 +165,11 @@ public class GaService extends Service {
             verifiedBalancesCoin = new HashMap<>();
             gaDeterministicKeys = new HashMap<>();
             setUpSPV();
+            if (startSpvAfterInit) {
+                startSpvSync();
+                startSpvAfterInit = false;
+            }
+            isSpvSyncing = false;
             updateUnspentOutputs();
             connectionObservable.setState(ConnectivityObservable.State.LOGGEDIN);
         }
@@ -175,6 +180,44 @@ public class GaService extends Service {
             connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
         }
     };
+
+    public int getSpvHeight() {
+        return blockChain.getBestChainHeight();
+    }
+
+    public boolean getIsSpvSyncing() {
+        return isSpvSyncing;
+    }
+
+    public void startSpvSync() {
+        if (isSpvSyncing) return;
+        if (peerGroup == null) {  // disconnected while WiFi got up
+            startSpvAfterInit = true;
+            return;
+        }
+        Futures.addCallback(peerGroup.start(), new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(@Nullable Object result) {
+                peerGroup.startBlockChainDownload(new DownloadListener() {
+                    @Override
+                    public void onChainDownloadStarted(Peer peer, int blocksLeft) {
+                        isSpvSyncing = true;
+                        spvBlocksLeft = blocksLeft;
+                    }
+
+                    @Override
+                    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
+                        spvBlocksLeft = blocksLeft;
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
 
     private void updateUnspentOutputs() {
         Futures.addCallback(client.getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
@@ -224,28 +267,6 @@ public class GaService extends Service {
                 for (Long subaccount : changedSubaccounts) {
                     fireBalanceChanged(subaccount);
                 }
-
-                Futures.addCallback(peerGroup.start(), new FutureCallback<Object>() {
-                    @Override
-                    public void onSuccess(@Nullable Object result) {
-                        peerGroup.startBlockChainDownload(new DownloadListener() {
-                            @Override
-                            public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-                                spvBlocksLeft = blocksLeft;
-                            }
-
-                            @Override
-                            public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-                                spvBlocksLeft = blocksLeft;
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
             }
 
             @Override
