@@ -1213,6 +1213,9 @@ public class GaService extends Service {
                 for (TransactionInput in : transaction.decoded.getInputs()) {
                     if (countedUtxoValues.get(in.getOutpoint()) == null) {
                         Transaction prevTx = transaction.prevoutRawTxs.get(in.getOutpoint().getHash().toString());
+                        if (!prevTx.getHash().equals(in.getOutpoint().getHash())) {
+                            throw new IllegalArgumentException("Verification: Prev tx hash invalid");
+                        }
                         inValue = inValue.add(prevTx.getOutput((int)in.getOutpoint().getIndex()).getValue());
                     } else {
                         inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
