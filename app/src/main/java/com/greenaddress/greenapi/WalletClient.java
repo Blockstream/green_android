@@ -386,7 +386,7 @@ public class WalletClient {
         options.setMaxFramePayloadSize(1024*1024);
         options.setTcpNoDelay(true);
 
-        mConnection.connect(wsuri, new Wamp.ConnectionHandler() {
+        Wamp.ConnectionHandler handler = new Wamp.ConnectionHandler() {
 
             WebSocketMessage.Close c = null;
 
@@ -414,7 +414,22 @@ public class WalletClient {
                 Log.i(TAG, "onCloseMessage code=" + close.getCode() + "; reason=" + close.getReason());
                 c = close;
             }
-        }, options);
+        };
+        try {
+            mConnection.connect(wsuri, handler, options);
+        } catch (NullPointerException e) {
+            // FIXME: it shouldn't be caught here, it's a workaround for the following exception
+            //        which should be fixed in Autobahn-SW:
+            // java.lang.NullPointerException
+            //  at de.tavendo.autobahn.secure.WebSocketConnection.scheduleReconnect(WebSocketConnection.java:255)
+            //  at de.tavendo.autobahn.secure.WebSocketConnection.onClose(WebSocketConnection.java:279)
+            //  at de.tavendo.autobahn.secure.WebSocketConnection.connect(WebSocketConnection.java:226)
+            //  at de.tavendo.autobahn.secure.WebSocketConnection.connect(WebSocketConnection.java:172)
+
+            asyncWamp.setException(new GAException(e.toString()));
+            // don't call onConnectionClosed here because it results in infinite recursive reconnection
+            // in GaService
+        }
         return asyncWamp;
     }
 

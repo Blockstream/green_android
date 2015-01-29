@@ -94,7 +94,7 @@ public class ReceiveFragment extends Fragment {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getActivity(), "Can't get a new address", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, "Can't get a new address", Toast.LENGTH_LONG).show();
                             newAddressIcon.clearAnimation();
                             copyIcon.setVisibility(View.VISIBLE);
                         }

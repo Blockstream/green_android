@@ -20,7 +20,6 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.utils.MonetaryFormat;

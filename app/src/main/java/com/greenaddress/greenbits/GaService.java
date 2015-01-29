@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -99,6 +100,7 @@ import javax.annotation.Nullable;
 public class GaService extends Service {
 
     public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
+    private Handler uiHandler;
 
     private final IBinder mBinder = new GaBinder(this);
     final private Map<Long, GaObservable> balanceObservables = new HashMap<>();
@@ -327,7 +329,7 @@ public class GaService extends Service {
 
 
     void reconnect() {
-        Log.i("GaService", "Submitting reconnect in " + reconnectTimeout);
+        Log.i("GaService", "Submitting reconnect after " + reconnectTimeout);
         onConnected = client.connect();
         connectionObservable.setState(ConnectivityObservable.State.CONNECTING);
 
@@ -338,19 +340,7 @@ public class GaService extends Service {
 
                 Log.i("GaService", "Success CONNECTED callback");
                 if (!connectionObservable.getIsForcedLoggedOut() && !connectionObservable.getIsForcedTimeout() && client.canLogin()) {
-
-                    Futures.addCallback(onConnected, new FutureCallback<Void>() {
-                        @Override
-                        public void onSuccess(@Nullable final Void result) {
-                            // FIXME: Maybe callback to UI to say we are good?
-                            login();
-                        }
-
-                        @Override
-                        public void onFailure(final Throwable t) {
-
-                        }
-                    }, es);
+                    login();
                 }
             }
 
@@ -368,12 +358,12 @@ public class GaService extends Service {
                 }
 
                 // FIXME: handle delayed login
-                es.submit(new Runnable() {
+                uiHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         reconnect();
                     }
-                });
+                }, reconnectTimeout);
             }
         }, es);
     }
@@ -390,6 +380,7 @@ public class GaService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        uiHandler = new Handler();
 
         // FIXME: kinda hacky... maybe better getting background color of the activity?
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -433,16 +424,22 @@ public class GaService extends Service {
                 gaDeterministicKeys = null;
 
                 if (blockChain != null) {
-                    blockChain.removeListener(blockChainListener);
-                    blockChainListener = null;
-
-                    peerGroup.removePeerFilterProvider(pfProvider);
-                    pfProvider = null;
+                    if (blockChainListener != null) {
+                        blockChain.removeListener(blockChainListener);
+                        blockChainListener = null;
+                    }
+                }
+                if (peerGroup != null) {
+                    if (pfProvider != null) {
+                        peerGroup.removePeerFilterProvider(pfProvider);
+                        pfProvider = null;
+                    }
 
                     peerGroup.stopAsync();
                     peerGroup.awaitTerminated();
                     peerGroup = null;
-
+                }
+                if (blockStore != null) {
                     try {
                         blockStore.close();
                         blockStore = null;
@@ -1192,8 +1189,8 @@ public class GaService extends Service {
                 if (fee.compareTo(Coin.valueOf(10000)) == -1) {
                     throw new IllegalArgumentException("Verification: Fee is too small (expected at least 10000 satoshi).");
                 }
-                int kB = (transaction.decoded.getMessageSize()+999)/1000;
-                if (fee.compareTo(Coin.valueOf(kB*20000)) == 1) {
+                int kB = (transaction.decoded.getMessageSize() + 999) / 1000;
+                if (fee.compareTo(Coin.valueOf(kB * 20000)) == 1) {
                     throw new IllegalArgumentException("Verification: Fee is too large (expected at most 20000 satoshi per kB).");
                 }
                 return fee;
