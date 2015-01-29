@@ -226,6 +226,9 @@ public class GaService extends Service {
     }
 
     private void updateUnspentOutputs() {
+        if (!getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
+            return;
+        }
         Futures.addCallback(client.getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
             @Override
             public void onSuccess(@Nullable ArrayList result) {
@@ -429,7 +432,9 @@ public class GaService extends Service {
             @Override
             public void onNewBlock(final long count) {
                 Log.i("GaService", "onNewBlock");
-                addToBloomFilter((int) count, null, -1, -1, -1);
+                if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
+                    addToBloomFilter((int) count, null, -1, -1, -1);
+                }
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
             }
