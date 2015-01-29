@@ -72,7 +72,8 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             holder.textValue.setText(btcBalance);
         }
 
-        if (current.spvVerified || current.isSpent || current.type == Transaction.TYPE_OUT) {
+        if (!getContext().getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true) ||
+                current.spvVerified || current.isSpent || current.type == Transaction.TYPE_OUT) {
             holder.textValueQuestionMark.setVisibility(View.GONE);
         } else {
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);

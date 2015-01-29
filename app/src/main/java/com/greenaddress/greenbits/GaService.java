@@ -164,10 +164,12 @@ public class GaService extends Service {
             countedUtxoValues = new HashMap<>();
             verifiedBalancesCoin = new HashMap<>();
             gaDeterministicKeys = new HashMap<>();
-            setUpSPV();
-            if (startSpvAfterInit) {
-                startSpvSync();
-                startSpvAfterInit = false;
+            if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
+                setUpSPV();
+                if (startSpvAfterInit) {
+                    startSpvSync();
+                    startSpvAfterInit = false;
+                }
             }
             isSpvSyncing = false;
             updateUnspentOutputs();
@@ -182,7 +184,11 @@ public class GaService extends Service {
     };
 
     public int getSpvHeight() {
-        return blockChain.getBestChainHeight();
+        if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true) && blockChain != null) {
+            return blockChain.getBestChainHeight();
+        } else {
+            return 0;
+        }
     }
 
     public boolean getIsSpvSyncing() {
@@ -260,7 +266,7 @@ public class GaService extends Service {
                     }
                 }
 
-                if (recalculateBloom) {
+                if (recalculateBloom && peerGroup != null) {
                     peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
                 }
 
@@ -1140,7 +1146,11 @@ public class GaService extends Service {
     }
 
     public int getSpvBlocksLeft() {
-        return spvBlocksLeft;
+        if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
+            return spvBlocksLeft;
+        } else {
+            return 0;
+        }
     }
 
     public ListenableFuture<Coin> validateTxAndCalculateFee(final PreparedTransaction transaction, final String recipientStr, final Coin amount) {
@@ -1201,7 +1211,12 @@ public class GaService extends Service {
                 // 3. Verify fee value:
                 Coin inValue = Coin.ZERO, outValue = Coin.ZERO;
                 for (TransactionInput in : transaction.decoded.getInputs()) {
-                    inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
+                    if (countedUtxoValues.get(in.getOutpoint()) == null) {
+                        Transaction prevTx = transaction.prevoutRawTxs.get(in.getOutpoint().getHash().toString());
+                        inValue = inValue.add(prevTx.getOutput((int)in.getOutpoint().getIndex()).getValue());
+                    } else {
+                        inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
+                    }
                 }
                 for (TransactionOutput out : transaction.decoded.getOutputs()) {
                     outValue = outValue.add(out.getValue());

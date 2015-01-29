@@ -175,7 +175,8 @@ public class MainFragment extends Fragment implements Observer {
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
-        if (btcBalance.equals(btcBalanceVerified)) {
+        if (!getActivity().getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)
+                || btcBalance.equals(btcBalanceVerified)) {
             balanceQuestionMark.setVisibility(View.GONE);
         } else {
             balanceQuestionMark.setVisibility(View.VISIBLE);

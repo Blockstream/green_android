@@ -89,7 +89,7 @@
         <item>secondi</item>
     </string-array>
     <string name="bitcoinScaleSatoshiText">Satoshi</string>
-    <string name="pref_header_notifications">Backup</string>
+    <string name="pref_header_notifications">GreenBits</string>
     <string name="txSubTitle">Dettagli transazione</string>
     <string name="txHashText">Hash</string>
     <string name="txRecipientText">Destinatario</string>
@@ -141,4 +141,8 @@
     <string name="unconfirmedBalanceDoSyncWithoutWiFi">Do you want to synchronize without WiFi connection? It may incur additional costs from your cellular operator.</string>
     <string name="NO">NO</string>
     <string name="YES">YES</string>
+    <string name="enableSPV">Enable SPV</string>
+    <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connection or low end phones.</string>
+    <string name="changingRequiresRestartTitle">Restart required</string>
+    <string name="changingRequiresRestartText">Changing this value requires restarting the app to take effect. Do you want to quit it now?</string>
 </resources>

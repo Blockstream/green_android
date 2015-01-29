@@ -11,4 +11,8 @@
         android:summary="@string/autologout_time_default"
         />
 
+    <CheckBoxPreference android:key="spvEnabled"
+        android:title="@string/enableSPV"
+        android:summary="@string/enableSPVSummary" />
+
 </PreferenceScreen>

@@ -1,13 +1,17 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 import java.util.Observable;
@@ -111,6 +115,41 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 }
 
                 return false;
+            }
+        });
+
+        final CheckBoxPreference spvEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("spvEnabled");
+        final SharedPreferences spvPreferences = getSharedPreferences("SPV", MODE_PRIVATE);
+        spvEnabled.setChecked(spvPreferences.getBoolean("enabled", true));
+        spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                SharedPreferences.Editor editor = spvPreferences.edit();
+                editor.putBoolean("enabled", (Boolean) newValue);
+                editor.commit();
+
+                new MaterialDialog.Builder(SettingsActivity.this)
+                        .title(getResources().getString(R.string.changingRequiresRestartTitle))
+                        .content(getResources().getString(R.string.changingRequiresRestartText))
+                        .positiveColorRes(R.color.accent)
+                        .negativeColorRes(R.color.white)
+                        .titleColorRes(R.color.white)
+                        .contentColorRes(android.R.color.white)
+                        .theme(Theme.DARK)
+                        .negativeText(R.string.NO)
+                        .positiveText(R.string.YES)
+                        .callback(new MaterialDialog.Callback() {
+                            @Override
+                            public void onNegative(MaterialDialog materialDialog) {
+
+                            }
+
+                            @Override
+                            public void onPositive(MaterialDialog materialDialog) {
+                                System.exit(0);
+                            }
+                        }).build().show();
+                return true;
             }
         });
     }
