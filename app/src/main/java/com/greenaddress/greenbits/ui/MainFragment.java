@@ -2,8 +2,10 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -56,6 +58,7 @@ public class MainFragment extends Fragment implements Observer {
     private View.OnClickListener unconfirmedClickListener;
     Observer wiFiObserver = null;
     boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
+    MaterialDialog spvStatusDialog = null;
 
 
     private Transaction processGATransaction(final Map<String, Object> txJSON, final int curBlock) throws ParseException {
@@ -230,6 +233,9 @@ public class MainFragment extends Fragment implements Observer {
         unconfirmedClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (spvStatusDialog != null) {
+                    return;
+                }
                 if (balanceQuestionMark.getVisibility() != View.VISIBLE) {
                     // show the message only if question mark is visible
                     return;
@@ -254,21 +260,43 @@ public class MainFragment extends Fragment implements Observer {
                     builder.negativeText(R.string.NO)
                            .positiveText(R.string.YES);
                 }
+                builder.cancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        spvStatusDialog = null;
+                    }
+                });
                 builder.callback(new MaterialDialog.Callback() {
                     @Override
                     public void onNegative(MaterialDialog materialDialog) {
-
+                        spvStatusDialog = null;
                     }
 
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
+                        spvStatusDialog = null;
                         ((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable().deleteObserver(wiFiObserver);
                         wiFiObserver = null;
                         wiFiObserverRequired = false;
                         ((GreenAddressApplication) getActivity().getApplication()).gaService.startSpvSync();
                     }
                 });
-                builder.build().show();
+                spvStatusDialog = builder.build();
+                spvStatusDialog.show();
+                if (wiFiObserver == null) {
+                    final Handler handler = new Handler();
+                    final Runnable updateContent = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (spvStatusDialog != null) {
+                                spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
+                                        String.valueOf(((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft()));
+                                handler.postDelayed(this, 2000);
+                            }
+                        }
+                    };
+                    handler.postDelayed(updateContent, 2000);
+                }
             }
         };
         balanceText.setOnClickListener(unconfirmedClickListener);
