@@ -15,8 +15,8 @@ android {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 34
-        versionName "1.34"
+        versionCode 35
+        versionName "1.35"
     }
     buildTypes {
         release {
@@ -35,7 +35,6 @@ android {
         testnet {
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
-
         }
         regtest {
             applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
