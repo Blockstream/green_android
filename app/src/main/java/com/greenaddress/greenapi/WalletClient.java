@@ -185,10 +185,12 @@ public class WalletClient {
 
     private ListenableFuture<LoginData> setupPath(final String mnemonics, final LoginData loginData) {
         final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
+        final String pathHex = Hex.toHexString(mnemonicToPath(mnemonics));
         mConnection.call("http://greenaddressit.com/login/set_gait_path", Void.class, new Wamp.CallHandler() {
 
             @Override
             public void onResult(final Object result) {
+                loginData.gait_path = pathHex;
                 asyncWamp.set(loginData);
             }
 
@@ -196,7 +198,7 @@ public class WalletClient {
             public void onError(final String errorUri, final String errorDesc) {
                 asyncWamp.setException(new GAException(errorDesc));
             }
-        }, new String(com.subgraph.orchid.encoders.Hex.encode(mnemonicToPath(mnemonics))));
+        }, pathHex);
         return asyncWamp;
     }
 

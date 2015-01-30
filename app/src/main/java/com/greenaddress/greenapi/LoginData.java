@@ -17,7 +17,7 @@ public class LoginData {
     public final Map<String, String> last_login;
     public final ArrayList expired_deposits;
     public final ArrayList subaccounts;
-    public final String gait_path;
+    public String gait_path;  // can change on first login (registration)
     public final String receiving_id;
 
     public LoginData(final Map<?, ?> map) throws IOException {
