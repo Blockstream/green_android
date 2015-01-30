@@ -329,6 +329,7 @@ public class GaService extends Service {
     }
 
     private Map<?, ?> twoFacConfig;
+    private GaObservable twoFacConfigObservable = new GaObservable();
     private String deviceId;
     private int background_color;
     // fix me implement Preference change listener?
@@ -338,11 +339,17 @@ public class GaService extends Service {
     private WalletClient client;
     private ConnectivityObservable connectionObservable = null;
 
+    public Observable getTwoFacConfigObservable() {
+        return twoFacConfigObservable;
+    }
+
     private void getAvailableTwoFacMethods() {
         Futures.addCallback(client.getTwoFacConfig(), new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 twoFacConfig = result;
+                twoFacConfigObservable.setChanged();
+                twoFacConfigObservable.notifyObservers();
             }
 
             @Override

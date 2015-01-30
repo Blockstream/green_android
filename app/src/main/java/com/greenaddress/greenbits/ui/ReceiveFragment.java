@@ -145,7 +145,8 @@ public class ReceiveFragment extends Fragment {
                                 onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
                         return null;
                     }
-                }
+                },
+                rootView.findViewById(R.id.receiveNoTwoFacFooter)
         );
 
         return rootView;

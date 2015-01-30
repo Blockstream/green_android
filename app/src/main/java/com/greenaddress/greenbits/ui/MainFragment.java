@@ -373,7 +373,8 @@ public class MainFragment extends Fragment implements Observer {
 
                         return null;
                     }
-                }
+                },
+                rootView.findViewById(R.id.mainNoTwoFacFooter)
         );
 
         return rootView;

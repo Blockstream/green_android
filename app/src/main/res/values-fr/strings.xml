@@ -147,4 +147,5 @@
     <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connection or low end phones.</string>
     <string name="changingRequiresRestartTitle">Restart required</string>
     <string name="changingRequiresRestartText">Changing this value requires restarting the app to take effect. Do you want to quit it now?</string>
+    <string name="noTwoFactorWarning">You have no two factor authentication set up! Please go to settings in our other app to set it up!</string>
 </resources>

@@ -692,7 +692,8 @@ public class SendFragment extends Fragment {
                         });
                         return null;
                     }
-                }
+                },
+                rootView.findViewById(R.id.sendNoTwoFacFooter)
         );
 
         return rootView;

@@ -5,6 +5,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.multidex.MultiDexApplication;
 import android.view.MenuItem;
@@ -28,6 +30,8 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.annotation.Nullable;
 
@@ -81,7 +85,22 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
     }
 
-    public void configureSubaccountsFooter(final int curSubaccount, final Activity activity, final TextView accountName, final LinearLayout footer, final LinearLayout clickableArea, final Function<Integer, Void> accountChangedCallback) {
+    public void configureSubaccountsFooter(final int curSubaccount, final Activity activity, final TextView accountName, final LinearLayout footer, final LinearLayout clickableArea, final Function<Integer, Void> accountChangedCallback, final View noTwoFacFooter) {
+        final Handler handler = new Handler();
+        gaService.getTwoFacConfigObservable().addObserver(new Observer() {
+            @Override
+            public void update(Observable observable, Object data) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        configureNoTwoFacFooter(noTwoFacFooter, activity);
+                    }
+                });
+            }
+        });
+        if (gaService.getTwoFacConfig() != null) {
+            configureNoTwoFacFooter(noTwoFacFooter, activity);
+        }
         if (gaService.getSubaccounts().size() > 0) {
             accountName.setText(getResources().getText(R.string.main_account));
             final ArrayList subaccounts = gaService.getSubaccounts();
@@ -121,6 +140,29 @@ public class GreenAddressApplication extends MultiDexApplication {
                         }
                     });
                     popup.show();
+                }
+            });
+        }
+    }
+
+    private void configureNoTwoFacFooter(View noTwoFacFooter, final Activity activity) {
+        if (((Boolean) gaService.getTwoFacConfig().get("any")).booleanValue()){
+            noTwoFacFooter.setVisibility(View.GONE);
+        } else {
+            noTwoFacFooter.setVisibility(View.VISIBLE);
+            noTwoFacFooter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("it.greenaddress.cordova");
+                    if (launchIntent == null) {
+                        try {
+                            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=it.greenaddress.cordova")));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=it.greenaddress.cordova")));
+                        }
+                    } else {
+                        activity.startActivity(launchIntent);
+                    }
                 }
             });
         }
