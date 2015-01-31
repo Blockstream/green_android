@@ -27,3 +27,6 @@
 -dontwarn org.codehaus.jackson.**
 -dontwarn com.google.common.**
 -dontwarn org.slf4j.**
+
+-keepnames class ** { *; }
+-keepattributes SourceFile,LineNumberTable
