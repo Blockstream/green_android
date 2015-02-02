@@ -85,13 +85,13 @@
         android:layout_height="fill_parent"
         android:layout_below="@id/receiveAddressLayout"
         android:gravity="center"
-        android:paddingBottom="40dp">
+        android:paddingBottom="60dp">
 
 
         <ImageView
             android:id="@+id/receiveQrImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center" />
 
     </RelativeLayout>

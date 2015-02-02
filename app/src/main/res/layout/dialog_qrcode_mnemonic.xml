@@ -9,5 +9,6 @@
         android:id="@+id/signupMnemonicImageView"
         android:layout_width="360dp"
         android:layout_height="360dp"
-        android:background="@color/textColor" />
+        android:background="@color/white"
+        android:padding="15dp" />
 </LinearLayout>
