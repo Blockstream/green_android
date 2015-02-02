@@ -878,7 +878,7 @@ public class GaService extends Service {
     }
 
     private void addToBloomFilter(final Integer blockHeight, Sha256Hash txhash, final long pt_idx, final long subaccount, final long pointer) {
-        if (blockChain == null) return; // can happen before login
+        if (blockChain == null) return; // can happen before login (onNewBlock)
         if (txhash != null) {
             addToUtxo(txhash, pt_idx, subaccount, pointer);
         }
