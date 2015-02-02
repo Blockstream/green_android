@@ -55,6 +55,8 @@ import java.util.Observer;
 
 import javax.annotation.Nullable;
 
+import de.schildbach.wallet.ui.ScanActivity;
+
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends ActionBarActivity implements ActionBar.TabListener, Observer {
     public final static int
@@ -411,7 +413,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             startActivity(settingsActivity);
             return true;
         } else if (id == R.id.action_sweep) {
-            final Intent scanner = new Intent(TabbedMainActivity.this, QrScannerActivity.class);
+            final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
             startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
             return true;
         } else if (id == R.id.network_unavailable) {

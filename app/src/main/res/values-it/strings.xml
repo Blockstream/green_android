@@ -146,4 +146,6 @@
     <string name="changingRequiresRestartTitle">Restart required</string>
     <string name="changingRequiresRestartText">Changing this value requires restarting the app to take effect. Do you want to quit it now?</string>
     <string name="noTwoFactorWarning">You have no two factor authentication set up! Please go to settings in our other app to set it up!</string>
+    <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
+    <string name="scan_camera_problem_dialog_title">Camera problem</string>
 </resources>

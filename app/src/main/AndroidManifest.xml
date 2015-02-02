@@ -105,7 +105,7 @@
             android:name="com.greenaddress.greenbits.ui.SignUpActivity"
             android:label="@string/title_activity_sign_up" />
         <activity
-            android:name="com.greenaddress.greenbits.ui.QrScannerActivity"
+            android:name="de.schildbach.wallet.ui.ScanActivity"
             android:label="@string/title_activity_qr_scanner"
             android:screenOrientation="landscape" />
         <activity

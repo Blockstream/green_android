@@ -64,6 +64,8 @@ import java.util.Observer;
 
 import javax.annotation.Nullable;
 
+import de.schildbach.wallet.ui.ScanActivity;
+
 public class SendFragment extends Fragment {
 
     private Dialog mSummary;
@@ -467,7 +469,7 @@ public class SendFragment extends Fragment {
                                         @Override
                                         public void onClick(final View view) {
                                             scanIcon.startAnimation(iconPressed);
-                                            final Intent qrcodeScanner = new Intent(getActivity(), QrScannerActivity.class);
+                                            final Intent qrcodeScanner = new Intent(getActivity(), ScanActivity.class);
                                             getActivity().startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
                                         }
                                     }

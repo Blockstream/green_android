@@ -19,5 +19,12 @@
     <color name="superLightGreen">#0D4CAF50</color>
     <color name="superLightPink">#0DFF4081</color>
 
+    <!-- scanner -->
+    <color name="scan_mask">#60000000</color>
+    <color name="scan_laser">#cc0000</color>
+    <color name="scan_dot">#ff6600</color>
+    <color name="scan_result_view">#b0000000</color>
+    <color name="scan_result_dots">#c099cc00</color>
+
 
 </resources>

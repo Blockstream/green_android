@@ -50,6 +50,8 @@ import java.util.Observer;
 
 import javax.annotation.Nullable;
 
+import de.schildbach.wallet.ui.ScanActivity;
+
 
 public class MnemonicActivity extends ActionBarActivity implements Observer {
 
@@ -258,7 +260,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         scanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(final View view) {
-                                            final Intent scanner = new Intent(MnemonicActivity.this, QrScannerActivity.class);
+                                            final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
                                             startActivityForResult(scanner, 0);
                                         }
                                     }
