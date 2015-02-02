@@ -243,8 +243,6 @@ public class SendFragment extends Fragment {
     }
 
     public void processBitcoinURI(final BitcoinURI URI) {
-        scanIcon.setVisibility(View.GONE);
-
         if (URI.getPaymentRequestUrl() != null) {
             rootView.findViewById(R.id.sendBip70ProgressBar).setVisibility(View.VISIBLE);
             recipientEdit.setEnabled(false);

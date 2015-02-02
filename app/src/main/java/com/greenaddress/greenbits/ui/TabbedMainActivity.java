@@ -198,18 +198,15 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_SEND_QR_SCAN) {
-            final EditText edit = (EditText) findViewById(R.id.sendToEditText);
-
             if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
                 String scanned = data.getStringExtra("com.greenaddress.greenbits.QrText");
-                if (scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:")) {
-                    Intent browsable = new Intent(this, TabbedMainActivity.class);
-                    browsable.setData(Uri.parse(scanned));
-                    browsable.addCategory(Intent.CATEGORY_BROWSABLE);
-                    startActivity(browsable);
-                } else {
-                    edit.setText(scanned);
+                if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
+                    scanned = "bitcoin:" + scanned;
                 }
+                Intent browsable = new Intent(this, TabbedMainActivity.class);
+                browsable.setData(Uri.parse(scanned));
+                browsable.addCategory(Intent.CATEGORY_BROWSABLE);
+                startActivity(browsable);
             }
         } else if (requestCode == REQUEST_SWEEP_PRIVKEY) {
             if (data == null) {
