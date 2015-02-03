@@ -389,6 +389,7 @@ public class SendFragment extends Fragment {
                 }
 
                 if (instantConfirmationCheckbox.isChecked()) {
+                    if (privData == null) privData = new HashMap<>();
                     privData.put("instant", true);
                 }
 
