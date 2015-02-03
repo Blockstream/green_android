@@ -44,8 +44,8 @@ public class DeterministicSigningKey implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<ECKey> getPubKey() {
-        return Futures.immediateFuture(ECKey.fromPublicOnly(hdWallet.getPubKey()));
+    public ListenableFuture<DeterministicKey> getPubKey() {
+        return Futures.immediateFuture(hdWallet);
     }
 
     @Override

@@ -695,13 +695,13 @@ public class GaService extends Service {
             userWallet = userWallet.deriveChildKey(new ChildNumber(3, true));
             userWallet = userWallet.deriveChildKey(new ChildNumber(subaccount.intValue(), true));
         }
-        userWallet = userWallet.deriveChildKey(new ChildNumber(1));
-        userWallet = userWallet.deriveChildKey(new ChildNumber(pointer.intValue()));
 
-        return Futures.transform(userWallet.getPubKey(), new Function<ECKey, Boolean>() {
+        return Futures.transform(userWallet.getPubKey(), new Function<DeterministicKey, Boolean>() {
             @Nullable
             @Override
-            public Boolean apply(@Nullable ECKey input) {
+            public Boolean apply(@Nullable DeterministicKey input) {
+                input = HDKeyDerivation.deriveChildKey(input, new ChildNumber(1));
+                input = HDKeyDerivation.deriveChildKey(input, new ChildNumber(pointer.intValue()));
                 pubkeys.add(input);
 
                 String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;

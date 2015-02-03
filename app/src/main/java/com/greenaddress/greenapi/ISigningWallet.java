@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.crypto.DeterministicKey;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface ISigningWallet {
 
     boolean canSignHashes();
 
-    ListenableFuture<ECKey> getPubKey();
+    ListenableFuture<DeterministicKey> getPubKey();
 
     ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(PreparedTransaction tx, String coinName, byte[] gait_path);
 }

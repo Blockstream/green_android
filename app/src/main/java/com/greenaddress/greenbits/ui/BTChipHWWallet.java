@@ -6,17 +6,20 @@ import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.ISigningWallet;
+import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.crypto.DeterministicKey;
 import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
@@ -121,13 +124,19 @@ public class BTChipHWWallet implements ISigningWallet {
 
 
     @Override
-    public ListenableFuture<ECKey> getPubKey() {
-        return es.submit(new Callable<ECKey>() {
+    public ListenableFuture<DeterministicKey> getPubKey() {
+        return es.submit(new Callable<DeterministicKey>() {
             @Override
-            public ECKey call() throws Exception {
-                ECKey uncompressed = ECKey.fromPublicOnly(dongle.getWalletPublicKey(getPath()).getPublicKey());
-                ECKey compressed = ECKey.fromPublicOnly(uncompressed.getPubKeyPoint().getEncoded(true));
-                return compressed;
+            public DeterministicKey call() throws Exception {
+                BTChipDongle.BTChipPublicKey pubKey = dongle.getWalletPublicKey(getPath());
+                ECKey uncompressed = ECKey.fromPublicOnly(pubKey.getPublicKey());
+                DeterministicKey retVal = new DeterministicKey(
+                        new ImmutableList.Builder<ChildNumber>().build(),
+                        pubKey.getChainCode(),
+                        uncompressed.getPubKeyPoint(),
+                        null, null
+                );
+                return retVal;
             }
         });
     }

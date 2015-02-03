@@ -412,7 +412,7 @@ public class SendFragment extends Fragment {
                 }
 
                 if (prepared != null) {
-
+                    sendButton.setEnabled(false);
                     Futures.addCallback(prepared,
                             new FutureCallback<PreparedTransaction>() {
                                 @Override
@@ -421,22 +421,30 @@ public class SendFragment extends Fragment {
                                     Futures.addCallback(((GreenAddressApplication) getActivity().getApplication()).gaService.validateTxAndCalculateFee(result, recipient, amount),
                                             new FutureCallback<Coin>() {
                                                 @Override
-                                                public void onSuccess(@Nullable Coin fee) {
+                                                public void onSuccess(@Nullable final Coin fee) {
                                                     final Map<?, ?> twoFacConfig = ((GreenAddressApplication) getActivity().getApplication()).gaService.getTwoFacConfig();
-                                                    if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
-                                                        final List<String> enabledTwoFac = getEnabledTwoFacNames(twoFacConfig, true);
-                                                        if (enabledTwoFac.size() > 1) {
-                                                            show2FAChoices(fee, amount, recipient, result, twoFacConfig);
-                                                        } else {
-                                                            showTransactionSummary(enabledTwoFac.get(0), fee, amount, recipient, result);
+                                                    // can be non-UI because validation talks to USB if hw wallet is used
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            sendButton.setEnabled(true);
+                                                            if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
+                                                                final List<String> enabledTwoFac = getEnabledTwoFacNames(twoFacConfig, true);
+                                                                if (enabledTwoFac.size() > 1) {
+                                                                    show2FAChoices(fee, amount, recipient, result, twoFacConfig);
+                                                                } else {
+                                                                    showTransactionSummary(enabledTwoFac.get(0), fee, amount, recipient, result);
+                                                                }
+                                                            } else {
+                                                                showTransactionSummary(null, fee, amount, recipient, result);
+                                                            }
                                                         }
-                                                    } else {
-                                                        showTransactionSummary(null, fee, amount, recipient, result);
-                                                    }
+                                                    });
                                                 }
 
                                                 @Override
                                                 public void onFailure(Throwable t) {
+                                                    sendButton.setEnabled(true);
                                                     t.printStackTrace();
                                                     Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                                                 }
@@ -445,6 +453,7 @@ public class SendFragment extends Fragment {
 
                                 @Override
                                 public void onFailure(final Throwable t) {
+                                    sendButton.setEnabled(true);
                                     Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -505,10 +514,10 @@ public class SendFragment extends Fragment {
                                                 newFormat = CurrencyMapper.mapBtcUnitToFormat("mBTC");
                                                 break;
                                             case R.id.bitcoinScaleMicro:
-                                                gaService.setAppearanceValue("unit", Html.fromHtml("&micro;").toString()+"BTC", true);
+                                                gaService.setAppearanceValue("unit", Html.fromHtml("&micro;").toString() + "BTC", true);
                                                 bitcoinScale.setText(Html.fromHtml("&micro;"));
                                                 bitcoinUnitText.setText(Html.fromHtml("&#xf15a;"));
-                                                newFormat = CurrencyMapper.mapBtcUnitToFormat(Html.fromHtml("&micro;").toString()+"BTC");
+                                                newFormat = CurrencyMapper.mapBtcUnitToFormat(Html.fromHtml("&micro;").toString() + "BTC");
                                                 break;
                                             case R.id.bitcoinScaleBits:
                                                 gaService.setAppearanceValue("unit", "bits", true);

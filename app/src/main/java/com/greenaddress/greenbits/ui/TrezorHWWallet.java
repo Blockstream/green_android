@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.util.Log;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -16,6 +17,7 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.crypto.DeterministicKey;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -75,15 +77,21 @@ public class TrezorHWWallet implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<ECKey> getPubKey() {
-        return es.submit(new Callable<ECKey>() {
+    public ListenableFuture<DeterministicKey> getPubKey() {
+        return es.submit(new Callable<DeterministicKey>() {
             @Override
-            public ECKey call() throws Exception {
+            public DeterministicKey call() throws Exception {
                 final Integer[] intArray = new Integer[addrn.size()];
                 final String[] xpub = trezor.MessageGetPublicKey(addrn.toArray(intArray)).split("%", -1);
                 final String pkHex = xpub[xpub.length-2];
-                Log.d("TrezorHWWallet pkHex", pkHex);
-                return ECKey.fromPublicOnly(Hex.decode(pkHex));
+                final String chainCodeHex = xpub[xpub.length-4];
+                ECKey pubKey = ECKey.fromPublicOnly(Hex.decode(pkHex));
+                return new DeterministicKey(
+                        new ImmutableList.Builder<ChildNumber>().build(),
+                        Hex.decode(chainCodeHex),
+                        pubKey.getPubKeyPoint(),
+                        null, null
+                );
             }
         });
     }
