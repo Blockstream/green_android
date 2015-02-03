@@ -164,14 +164,14 @@ public class GaService extends Service {
             countedUtxoValues = new HashMap<>();
             verifiedBalancesCoin = new HashMap<>();
             gaDeterministicKeys = new HashMap<>();
+            isSpvSyncing = false;
             if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
                 setUpSPV();
                 if (startSpvAfterInit) {
                     startSpvSync();
-                    startSpvAfterInit = false;
                 }
             }
-            isSpvSyncing = false;
+            startSpvAfterInit = false;
             updateUnspentOutputs();
             connectionObservable.setState(ConnectivityObservable.State.LOGGEDIN);
         }
