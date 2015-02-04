@@ -136,19 +136,8 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                         .titleColorRes(R.color.white)
                         .contentColorRes(android.R.color.white)
                         .theme(Theme.DARK)
-                        .negativeText(R.string.NO)
-                        .positiveText(R.string.YES)
-                        .callback(new MaterialDialog.Callback() {
-                            @Override
-                            public void onNegative(MaterialDialog materialDialog) {
-
-                            }
-
-                            @Override
-                            public void onPositive(MaterialDialog materialDialog) {
-                                System.exit(0);
-                            }
-                        }).build().show();
+                        .positiveText("OK")
+                        .build().show();
                 return true;
             }
         });
