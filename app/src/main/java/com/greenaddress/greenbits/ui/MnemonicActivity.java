@@ -24,16 +24,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.dd.CircularProgressButton;
+import com.google.common.base.Charsets;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.lambdaworks.crypto.SCrypt;
 
+import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.crypto.DRMWorkaround;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.crypto.MnemonicException;
 
@@ -41,6 +50,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +60,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.annotation.Nullable;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import de.schildbach.wallet.ui.ScanActivity;
 
@@ -195,7 +208,41 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
-                return gaService.login(edit.getText().toString().trim());
+                if (edit.getText().toString().trim().split(" ").length == 27) {
+                    // encrypted mnemonic
+                    return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
+                        @Nullable
+                        @Override
+                        public ListenableFuture<LoginData> apply(@Nullable String passphrase) {
+                            try {
+                                byte[] entropy = new MnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
+                                String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
+                                byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
+                                byte[] encrypted = Arrays.copyOf(entropy, 32);
+                                byte[] derived = SCrypt.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, 64);
+                                byte[] key = Arrays.copyOfRange(derived, 32, 64);
+                                SecretKeySpec keyspec = new SecretKeySpec(key, "AES");
+
+                                DRMWorkaround.maybeDisableExportControls();
+                                Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+
+                                cipher.init(Cipher.DECRYPT_MODE, keyspec);
+                                byte[] decrypted = cipher.doFinal(encrypted, 0, 32);
+                                for (int i = 0; i < 32; i++)
+                                    decrypted[i] ^= derived[i];
+
+                                byte[] hash = Sha256Hash.createDouble(decrypted).getBytes();
+                                if (!Arrays.equals(Arrays.copyOf(hash, 4), salt)) throw new RuntimeException("Invalid checksum");
+
+                                return gaService.login(Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted)));
+                            } catch (IOException | GeneralSecurityException | MnemonicException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
+                } else {
+                    return gaService.login(edit.getText().toString().trim());
+                }
             }
         };
 
@@ -218,7 +265,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             public void onFailure(final Throwable t) {
                 final boolean accountDoesntExist = t instanceof ClassCastException;
                 final String message = accountDoesntExist ? "Account doesn't exist" : "Login failed";
-
+                t.printStackTrace();
                 MnemonicActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -229,6 +276,35 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 });
             }
         }, gaService.es);
+    }
+
+    private ListenableFuture<String> askForPassphrase() {
+        final SettableFuture<String> passphraseFuture = SettableFuture.create();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
+                final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.passphraseValue);
+                new MaterialDialog.Builder(MnemonicActivity.this)
+                        .title("Encryption passphrase")
+                        .customView(inflatedLayout)
+                        .positiveText("OK")
+                        .negativeText("CANCEL")
+                        .positiveColorRes(R.color.accent)
+                        .negativeColorRes(R.color.accent)
+                        .titleColorRes(R.color.white)
+                        .contentColorRes(android.R.color.white)
+                        .theme(Theme.DARK)
+                        .callback(new MaterialDialog.SimpleCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog materialDialog) {
+                                passphraseFuture.set(passphraseValue.getText().toString());
+                            }
+                        })
+                        .build().show();
+            }
+        });
+        return passphraseFuture;
     }
 
     @Override
