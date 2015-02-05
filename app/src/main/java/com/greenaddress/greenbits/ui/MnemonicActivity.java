@@ -19,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -217,23 +218,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                             try {
                                 byte[] entropy = new MnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
                                 String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
-                                byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
-                                byte[] encrypted = Arrays.copyOf(entropy, 32);
-                                byte[] derived = SCrypt.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, 64);
-                                byte[] key = Arrays.copyOfRange(derived, 32, 64);
-                                SecretKeySpec keyspec = new SecretKeySpec(key, "AES");
-
-                                DRMWorkaround.maybeDisableExportControls();
-                                Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-
-                                cipher.init(Cipher.DECRYPT_MODE, keyspec);
-                                byte[] decrypted = cipher.doFinal(encrypted, 0, 32);
-                                for (int i = 0; i < 32; i++)
-                                    decrypted[i] ^= derived[i];
-
-                                byte[] hash = Sha256Hash.createDouble(decrypted).getBytes();
-                                if (!Arrays.equals(Arrays.copyOf(hash, 4), salt)) throw new RuntimeException("Invalid checksum");
-
+                                byte[] decrypted = decryptMnemonic(entropy, normalizedPassphrase);
                                 return gaService.login(Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted)));
                             } catch (IOException | GeneralSecurityException | MnemonicException e) {
                                 throw new RuntimeException(e);
@@ -278,6 +263,26 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         }, gaService.es);
     }
 
+    private byte[] decryptMnemonic(byte[] entropy, String normalizedPassphrase) throws GeneralSecurityException {
+        byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
+        byte[] encrypted = Arrays.copyOf(entropy, 32);
+        byte[] derived = SCrypt.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, 64);
+        byte[] key = Arrays.copyOfRange(derived, 32, 64);
+        SecretKeySpec keyspec = new SecretKeySpec(key, "AES");
+
+        DRMWorkaround.maybeDisableExportControls();
+        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+
+        cipher.init(Cipher.DECRYPT_MODE, keyspec);
+        byte[] decrypted = cipher.doFinal(encrypted, 0, 32);
+        for (int i = 0; i < 32; i++)
+            decrypted[i] ^= derived[i];
+
+        byte[] hash = Sha256Hash.createDouble(decrypted).getBytes();
+        if (!Arrays.equals(Arrays.copyOf(hash, 4), salt)) throw new RuntimeException("Invalid checksum");
+        return decrypted;
+    }
+
     private ListenableFuture<String> askForPassphrase() {
         final SettableFuture<String> passphraseFuture = SettableFuture.create();
         runOnUiThread(new Runnable() {
@@ -285,7 +290,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.passphraseValue);
-                new MaterialDialog.Builder(MnemonicActivity.this)
+                MaterialDialog dialog = new MaterialDialog.Builder(MnemonicActivity.this)
                         .title("Encryption passphrase")
                         .customView(inflatedLayout)
                         .positiveText("OK")
@@ -301,7 +306,12 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                                 passphraseFuture.set(passphraseValue.getText().toString());
                             }
                         })
-                        .build().show();
+                        .build();
+                // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
+                passphraseValue.requestFocus();
+                dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                dialog.show();
             }
         });
         return passphraseFuture;
@@ -310,7 +320,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("MnemonicActivity", "" + getIntent());
+        Log.i("MnemonicActivity", getIntent().getType() + "" + getIntent());
         setContentView(R.layout.activity_mnemonic);
         final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
         okButton.setOnClickListener(new View.OnClickListener() {
@@ -374,10 +384,8 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     }
 
 
-                } catch (final IOException e) {
-
-                } catch (final MnemonicException e) {
-
+                } catch (final IOException | MnemonicException e) {
+                    e.printStackTrace();
                 } finally {
                     if (closable != null) {
                         try {
@@ -387,6 +395,41 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         }
                     }
                 }
+            } else if (intent.getType().equals("x-ga/en")) {
+                // encrypted nfc
+                final Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+                final byte[] array = ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload();
+                Futures.addCallback(askForPassphrase(), new FutureCallback<String>() {
+                    @Override
+                    public void onSuccess(@Nullable String passphrase) {
+                        try {
+                            byte[] decrypted = decryptMnemonic(array, passphrase);
+                            final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+                            final String mnemonics = Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted));
+                            edit.setText(mnemonics);
+                            if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
+                                Futures.addCallback(gaService.onConnected, new FutureCallback<Void>() {
+                                    @Override
+                                    public void onSuccess(@Nullable final Void result) {
+                                        login();
+                                    }
+
+                                    @Override
+                                    public void onFailure(final Throwable t) {
+
+                                    }
+                                });
+                            }
+                        } catch (GeneralSecurityException | IOException | MnemonicException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+
+                    }
+                });
             }
 
         }
