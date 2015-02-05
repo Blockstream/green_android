@@ -304,6 +304,10 @@ public class MainFragment extends Fragment implements Observer {
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         curBalanceObserver = makeBalanceObserver();
+        if (((GreenAddressApplication) getActivity().getApplication()).gaService == null) {
+            getActivity().finish();
+            return null;
+        }
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
         if (((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceCoin(curSubaccount) != null) {
