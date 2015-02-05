@@ -189,7 +189,7 @@ public class BTChipHWWallet implements ISigningWallet {
     @Override
     public ISigningWallet deriveChildKey(ChildNumber childNumber) {
         LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
-        addrn_child.add(childNumber.getI() + (childNumber.isHardened() ? 0x80000000 : 0));
+        addrn_child.add(childNumber.getI());
         return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
     }
 }

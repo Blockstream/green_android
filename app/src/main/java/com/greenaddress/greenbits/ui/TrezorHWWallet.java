@@ -40,7 +40,7 @@ public class TrezorHWWallet implements ISigningWallet {
     public ISigningWallet deriveChildKey(ChildNumber childNumber) {
         TrezorHWWallet child = new TrezorHWWallet(trezor);
         child.addrn = new LinkedList<>(addrn);
-        child.addrn.add(childNumber.getI() + (childNumber.isHardened() ? 0x80000000 : 0));
+        child.addrn.add(childNumber.getI());
         return child;
     }
 
