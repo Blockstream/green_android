@@ -16,24 +16,14 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
-import com.greenaddress.greenbits.ui.CurrencyMapper;
 import com.greenaddress.greenbits.ui.R;
 
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.utils.MonetaryFormat;
-
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.annotation.Nullable;
 
 public class GreenAddressApplication extends MultiDexApplication {
 
