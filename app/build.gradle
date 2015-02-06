@@ -15,8 +15,8 @@ android {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 40
-        versionName "1.40"
+        versionCode 41
+        versionName "1.41"
     }
     buildTypes {
         release {
