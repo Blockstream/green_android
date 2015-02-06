@@ -15,7 +15,7 @@
     <string name="title_activity_qr_scanner">סורק ברקוד</string>
     <string name="title_activity_sign_up">הירשם</string>
     <string name="signupContinueButtonText">המשך</string>
-    <string name="signupCheckBoxText">שמרתי את הסיסמא ומסכים <a href="https://greenaddress.it/en/tos/">לתנאי השימוש</a></string>
+    <string name="signupCheckBoxText">מסכים <a href="https://greenaddress.it/en/tos/">לתנאי השימוש</a> ושמרתי את הסיסמא</string>
     <string name="firstSignUpText">הירשם</string>
     <string name="firstLogInText">כניסה</string>
     <string name="bitcoinScaleUnitText">ביטקוין</string>
@@ -43,7 +43,7 @@
         <item>שיחת טלפון</item>
         <item>מאמת גוגל</item>
     </string-array>
-    <string-array name="timesStrings">
+    <string-array name="timesStrings" >
         <item>שנה</item>
         <item>חודש</item>
         <item>יום</item>
@@ -51,7 +51,7 @@
         <item>דקה</item>
         <item>שניה</item>
     </string-array>
-    <string-array name="timesStringPlurals">
+    <string-array name="timesStringPlurals" >
         <item>שנים</item>
         <item>חודשים</item>
         <item>ימים</item>
@@ -70,7 +70,7 @@
     <string name="warning">אזהרה!</string>
     <string name="save_password_now">עליך לשמור את הסיסמא הזאת עכשיו!</string>
     <string name="greenaddress_headline">ארנק הביטקוין הקל המהיר והבטוח</string>
-    <string name="pinSkipText">SKIP</string>
+    <string name="pinSkipText">דלג</string>
     <string name="sendOptionalMemo">Optional memo</string>
     <string name="madeBy">מאת GreenAddress</string>
     <string name="welcomeGreenBits">ברוכים הבאים אל ארנק GreenBits</string>
@@ -111,7 +111,7 @@
     <string name="trezor_headline">אנא פעלו לפי הוראות הטרזור</string>
     <string name="trezorProvidePin">יש להכניס את הקוד PIN של הטרזור. נא להסתכל על המכשיר עבור מיקומי מספרים:</string>
     <string name="trezorProvidePassphrase">יש להכניס סיסמאת טרזור.</string>
-    <string name="main_account">רשאי</string>
+    <string name="main_account">ראשי</string>
     <string name="footerAccount">חשבון: </string>
     <string name="btchipProvidePIN">יש להכניס קוד PIN של BTChip:</string>
     <string name="firstLoginRequestedInstructionsOldTrezor">גרסת טרזור ישנה. יש לעדכן לגרסה 1.3.0 לפחות באתר http://mytrezor.com/ מהמחשב.</string>
@@ -151,3 +151,4 @@
     <string name="scan_camera_problem_dialog_title">Camera problem</string>
     <string name="providePassphrase">Please provide your passphrase:</string>
 </resources>
+
