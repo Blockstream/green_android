@@ -33,7 +33,6 @@
     <string name="action_search">Search</string>
     <string name="pinTitleText">PIN</string>
     <string name="network_unavailable">Disconnected</string>
-
     <string name="newTxTitle">New transaction</string>
     <string name="sweepAddressTitle">Sweep funds</string>
     <string name="twoFactorChoicesTitle">Choose 2 Factor Authentication method</string>
@@ -53,7 +52,7 @@
         <item>phone</item>
         <item>gauth</item>
     </string-array>
-    <string-array name="timesStrings" >
+    <string-array name="timesStrings">
         <item>year</item>
         <item>month</item>
         <item>day</item>
@@ -61,7 +60,7 @@
         <item>minute</item>
         <item>second</item>
     </string-array>
-    <string-array name="timesStringPlurals" >
+    <string-array name="timesStringPlurals">
         <item>years</item>
         <item>months</item>
         <item>days</item>
@@ -117,7 +116,6 @@
     <string name="noBalanceFirstLine">Getting <a href="https://bitcoin.org/en/getting-started">started</a> with Bitcoin</string>
     <string name="noBalanceSecondLine">Where to <a href="http://howtobuybitcoins.info/">buy</a> them</string>
     <string name="noBalanceThirdLine">Read our <a href="https://greenaddress.it/faq">FAQ</a></string>
-
     <string name="trezor_headline">Please follow the instructions on your Trezor</string>
     <string name="trezorProvidePin">Please provide your Trezor PIN. Look at the device for number positions:</string>
     <string name="trezorProvidePassphrase">Please provide your Trezor passphrase.</string>
@@ -160,4 +158,27 @@
     <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
     <string name="scan_camera_problem_dialog_title">Camera problem</string>
     <string name="providePassphrase">Please provide your passphrase:</string>
+    <string name="pref_header_twofactor">Two factor authentication</string>
+    <string name="twoFacPhoneCall">Phone call</string>
+    <string name="twoFacSMS">SMS</string>
+    <string name="twoFacGauth">Google Authenticator</string>
+    <string name="twoFacEmail">E-mail</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="twoFacSetupHeader">%s 2FA setup</string>
+    <string name="progress">Progress:</string>
+    <string name="twoFacStep1Description">First, you need to provide an authentication code from some of your already set up two factor authentication methods. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
+    <string name="twoFacStep1SelectExisting">Select existing 2FA method to authenticate setting up a new one:</string>
+    <string name="twoFacProvideGauthDetailsDescription">You need to provide one code from your new Google Authenticator. You can obtain it by scanning the QR code below in the Google Authenticator app.</string>
+    <string name="twoFacProvideGauthDetails">Please provide your Google Authenticator code.</string>
+    <string name="twoFacProvideDetails">Please provide your %s.</string>
+    <string name="twoFacEmailChangeNotice">Providing an email enables notifications and transactions recovery</string>
+    <string name="twoFacEmailConfirmNotice">You will need to confirm your email in the next step, otherwise you won\'t receive any notifications.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">You need to provide the confirmation code to make sure you have access to the new two factor authentication method. After you providing the code, the method will be enabled.</string>
+    <string name="twoFacProvideConfirmationCode">Please provide your %s code.</string>
+    <string name="continueText">Continue</string>
+    <string name="twoFacProvideAuthCodeDescription">You need to provide existing two factor authentication code. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
+    <string name="recoveryAndNotifications">Recovery and Notifications</string>
+    <string name="emailAddress">email address</string>
+    <string name="phoneNumber">phone number</string>
+
 </resources>

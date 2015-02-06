@@ -149,4 +149,24 @@
     <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
     <string name="scan_camera_problem_dialog_title">Camera problem</string>
     <string name="providePassphrase">Please provide your passphrase:</string>
+    <string name="pref_header_twofactor">Two factor authentication</string>
+    <string name="twoFacPhoneCall">Phone call</string>
+    <string name="twoFacGauth">Google Authenticator</string>
+    <string name="twoFacSMS">SMS</string>
+    <string name="twoFacEmail">E-mail</string>
+    <string name="twoFacSetupHeader">%s 2FA setup</string>
+    <string name="progress">Progress:</string>
+    <string name="twoFacStep1Description">First, you need to provide an authentication code from some of your already set up two factor authentication methods. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
+    <string name="twoFacStep1SelectExisting">Select existing 2FA method to authenticate setting up a new one:</string>
+    <string name="twoFacProvideDetails">Please provide your %s code.</string>
+    <string name="twoFacEmailChangeNotice">Providing an email enables notifications and transactions recovery</string>
+    <string name="twoFacEmailConfirmNotice">You will need to confirm your email in the next step, otherwise you won\'t receive any notifications.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">You need to provide the confirmation code to make sure you have access to the new two factor authentication method. Only after you providing the code, the method will be enabled.</string>
+    <string name="continueText">Continue</string>
+    <string name="twoFacProvideAuthCodeDescription">You need to provide existing two factor authentication code. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
+    <string name="twoFacProvideGauthDetailsDescription">You need to provide one code from your new Google Authenticator. You can obtain it by scanning the QR code below in the Google Authenticator app.</string>
+    <string name="twoFacProvideGauthDetails">Please provide your Google Authenticator code.</string>
+    <string name="twoFacProvideConfirmationCode">Please provide your %s code.</string>
+    <string name="recoveryAndNotifications">Recovery and Notifications</string>
+    <string name="emailAddress">email address</string>
 </resources>

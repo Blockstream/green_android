@@ -1027,26 +1027,32 @@ public class WalletClient {
         }, newJSON);
     }
 
-    public void requestTwoFacCode(final String method, final String action) {
+    public ListenableFuture<Object> requestTwoFacCode(final String method, final String action) {
+        return requestTwoFacCode(method, action, null);
+    }
+
+    public ListenableFuture<Object> requestTwoFacCode(final String method, final String action, final Object data) {
+        final SettableFuture<Object> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/twofactor/request_"+method, Object.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object result) {
-
+                asyncWamp.set(result);
             }
 
             @Override
             public void onError(final String errUri, final String errDesc) {
-                // asyncWamp.setException(new GAException(errDesc));
+                asyncWamp.setException(new GAException(errDesc));
                 Log.e(TAG, errDesc);
             }
-        }, action);
+        }, action, data);
+        return asyncWamp;
     }
 
     public ISigningWallet getHdWallet() {
         return hdWallet;
     }
 
-    public SettableFuture<ArrayList> getAllUnspentOutputs() {
+    public ListenableFuture<ArrayList> getAllUnspentOutputs() {
         final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new Wamp.CallHandler() {
             @Override
@@ -1062,7 +1068,7 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public SettableFuture<Transaction> getRawUnspentOutput(Sha256Hash txHash) {
+    public ListenableFuture<Transaction> getRawUnspentOutput(Sha256Hash txHash) {
         final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/txs/get_raw_unspent_output", String.class, new Wamp.CallHandler() {
             @Override
@@ -1075,6 +1081,71 @@ public class WalletClient {
                 asyncWamp.setException(new GAException(errDesc));
             }
         }, txHash.toString());
+        return asyncWamp;
+    }
+
+    public ListenableFuture<Boolean> initEnableTwoFac(String type, String details, Map<?,?> twoFacData) {
+        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/twofactor/init_enable_" + type, Boolean.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object result) {
+                asyncWamp.set((Boolean) result);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, details, twoFacData);
+        return asyncWamp;
+    }
+
+
+    public ListenableFuture<Boolean> enableTwoFac(String type, String code) {
+        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object result) {
+                asyncWamp.set((Boolean) result);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, code);
+        return asyncWamp;
+    }
+
+    public ListenableFuture<Boolean> enableTwoFac(String type, String code, Object twoFacData) {
+        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object result) {
+                asyncWamp.set((Boolean) result);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, code, twoFacData);
+        return asyncWamp;
+    }
+
+    public ListenableFuture<Boolean> disableTwoFac(String type, Map<String, String> twoFacData) {
+        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/twofactor/disable_" + type, Boolean.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object result) {
+                asyncWamp.set((Boolean) result);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, twoFacData);
         return asyncWamp;
     }
 }

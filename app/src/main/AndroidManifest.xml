@@ -26,19 +26,16 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
-            android:name="com.greenaddress.greenbits.ui.MnemonicActivity"
-            android:label="@string/title_activity_mnemonic">
-
+            android:name=".MnemonicActivity"
+            android:label="@string/title_activity_mnemonic" >
         </activity>
 
         <activity-alias
-
-            android:name="com.greenaddress.greenbits.ui.NFC"
+            android:name=".NFC"
             android:label="@string/app_name"
-            android:targetActivity="com.greenaddress.greenbits.ui.MnemonicActivity">
-
+            android:targetActivity=".MnemonicActivity" >
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
@@ -47,12 +44,11 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
         </activity-alias>
-        <activity
-            android:name="com.greenaddress.greenbits.ui.TabbedMainActivity"
-            android:label="@string/title_activity_main">
 
+        <activity
+            android:name=".TabbedMainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -83,52 +79,61 @@
             android:exported="false" />
 
         <activity
-            android:name="com.greenaddress.greenbits.ui.PinActivity"
+            android:name=".PinActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:windowSoftInputMode="stateVisible">
-            <intent-filter android:label="@string/app_name">
+            android:windowSoftInputMode="stateVisible" >
+            <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.greenaddress.greenbits.ui.PinSaveActivity"
+            android:name=".PinSaveActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:windowSoftInputMode="stateVisible"></activity>
+            android:windowSoftInputMode="stateVisible" />
         <activity
-            android:name="com.greenaddress.greenbits.ui.FirstScreenActivity"
+            android:name=".FirstScreenActivity"
             android:label="@string/title_activity_first_screen" />
         <activity
-            android:name="com.greenaddress.greenbits.ui.SignUpActivity"
+            android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up" />
         <activity
             android:name="de.schildbach.wallet.ui.ScanActivity"
             android:label="@string/title_activity_qr_scanner"
             android:screenOrientation="landscape" />
         <activity
-            android:name="com.greenaddress.greenbits.ui.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
         <activity
-            android:name="com.greenaddress.greenbits.ui.RequestLoginActivity"
-            android:label="Login">
+            android:name=".RequestLoginActivity"
+            android:label="Login" >
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
-            <meta-data android:name="android.nfc.action.TECH_DISCOVERED" android:resource="@xml/nfc_tech_filter" />
+
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
         </activity>
         <activity
-            android:name="com.greenaddress.greenbits.ui.TransactionActivity"
-            android:label="@string/app_name"></activity>
+            android:name=".TransactionActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".TwoFactorActivity"
+            android:label="@string/twoFacSetupHeader" >
+        </activity>
     </application>
 
 </manifest>

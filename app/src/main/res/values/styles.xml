@@ -29,4 +29,8 @@
         <item name="android:layout_margin">4dp</item>
     </style>
 
+    <style name="myProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/material_progress_bar</item>
+    </style>
+
 </resources>

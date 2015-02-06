@@ -27,6 +27,7 @@ import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.ui.BTChipHWWallet;
+import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.AbstractBlockChain;
 import org.bitcoinj.core.Address;
@@ -1134,8 +1135,13 @@ public class GaService extends Service {
         client.setAppearanceValue(key, value, updateImmediately);
     }
 
-    public void requestTwoFacCode(final String method, final String action) {
-        client.requestTwoFacCode(method, action);
+
+    public ListenableFuture<Object> requestTwoFacCode(final String method, final String action) {
+        return client.requestTwoFacCode(method, action);
+    }
+
+    public ListenableFuture<Object> requestTwoFacCode(final String method, final String action, final Object data) {
+        return client.requestTwoFacCode(method, action, data);
     }
 
     public ListenableFuture<Map<?, ?>> prepareSweepSocial(final byte[] pubKey, final boolean useElectrum) {
@@ -1250,10 +1256,64 @@ public class GaService extends Service {
         });
     }
 
+    public ListenableFuture<Boolean> initEnableTwoFac(String type, String details, Map<?,?> twoFacData) {
+        return client.initEnableTwoFac(type, details, twoFacData);
+    }
+
+    public ListenableFuture<Boolean> enableTwoFac(String type, String code) {
+        return Futures.transform(client.enableTwoFac(type, code), new Function<Boolean, Boolean>() {
+            @Nullable
+            @Override
+            public Boolean apply(@Nullable Boolean input) {
+                getAvailableTwoFacMethods();
+                return input;
+            }
+        });
+    }
+
+    public ListenableFuture<Boolean> enableTwoFac(String type, String code, Object twoFacData) {
+        return Futures.transform(client.enableTwoFac(type, code, twoFacData), new Function<Boolean, Boolean>() {
+            @Nullable
+            @Override
+            public Boolean apply(@Nullable Boolean input) {
+                getAvailableTwoFacMethods();
+                return input;
+            }
+        });
+    }
+
+    public ListenableFuture<Boolean> disableTwoFac(String type, Map<String, String> twoFacData) {
+        return Futures.transform(client.disableTwoFac(type, twoFacData), new Function<Boolean, Boolean>() {
+            @Nullable
+            @Override
+            public Boolean apply(@Nullable Boolean input) {
+                getAvailableTwoFacMethods();
+                return input;
+            }
+        });
+    }
+
     private static class GaObservable extends Observable {
         @Override
         public void setChanged() {
             super.setChanged();
         }
+    }
+
+    public List<String> getEnabledTwoFacNames(boolean useSystemNames) {
+        if (twoFacConfig == null) return null;
+        String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
+        String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
+        ArrayList<String> enabledTwoFac = new ArrayList<>();
+        for (int i = 0; i < allTwoFac.length; ++i) {
+            if (((Boolean) twoFacConfig.get(allTwoFacSystem[i])).booleanValue()) {
+                if (useSystemNames) {
+                    enabledTwoFac.add(allTwoFacSystem[i]);
+                } else {
+                    enabledTwoFac.add(allTwoFac[i]);
+                }
+            }
+        }
+        return enabledTwoFac;
     }
 }

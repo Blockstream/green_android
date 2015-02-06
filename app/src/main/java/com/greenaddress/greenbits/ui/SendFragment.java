@@ -202,29 +202,13 @@ public class SendFragment extends Fragment {
         mSummary.show();
     }
 
-    public List<String> getEnabledTwoFacNames(final Map<?, ?> twoFacConfig, boolean useSystemNames) {
-        String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
-        String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
-        ArrayList<String> enabledTwoFac = new ArrayList<>();
-        for (int i = 0; i < allTwoFac.length; ++i) {
-            if (((Boolean) twoFacConfig.get(allTwoFacSystem[i])).booleanValue()) {
-                if (useSystemNames) {
-                    enabledTwoFac.add(allTwoFacSystem[i]);
-                } else {
-                    enabledTwoFac.add(allTwoFac[i]);
-                }
-            }
-        }
-        return enabledTwoFac;
-    }
-
-    public void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared, Map<?, ?> twoFacConfig) {
+    public void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
         Log.i("SendActivity.show2FAChoices", "params " + fee + " " + amount + " " + recipient);
         String[] enabledTwoFacNames = new String[]{};
-        final List<String> enabledTwoFacNamesSystem = getEnabledTwoFacNames(twoFacConfig, true);
+        final List<String> enabledTwoFacNamesSystem = ((GreenAddressApplication) getActivity().getApplication()).gaService.getEnabledTwoFacNames(true);
         mTwoFactor = new MaterialDialog.Builder(getActivity())
                 .title(R.string.twoFactorChoicesTitle)
-                .items(getEnabledTwoFacNames(twoFacConfig, false).toArray(enabledTwoFacNames))
+                .items(((GreenAddressApplication) getActivity().getApplication()).gaService.getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -429,9 +413,10 @@ public class SendFragment extends Fragment {
                                                         public void run() {
                                                             sendButton.setEnabled(true);
                                                             if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
-                                                                final List<String> enabledTwoFac = getEnabledTwoFacNames(twoFacConfig, true);
+                                                                final List<String> enabledTwoFac =
+                                                                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getEnabledTwoFacNames(true);
                                                                 if (enabledTwoFac.size() > 1) {
-                                                                    show2FAChoices(fee, amount, recipient, result, twoFacConfig);
+                                                                    show2FAChoices(fee, amount, recipient, result);
                                                                 } else {
                                                                     showTransactionSummary(enabledTwoFac.get(0), fee, amount, recipient, result);
                                                                 }
