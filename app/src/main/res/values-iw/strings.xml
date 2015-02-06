@@ -122,7 +122,7 @@
     <string name="trezor_login_failed">TREZOR login failed</string>
     <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
     <string name="more_settings">See GreenAddress app for more settings</string>
-    <string name="more_settings_detail">Our previous app allows changing other settings like two factor authentication and more.</string>
+    <string name="more_settings_detail">Our previous app allows changing other settings like subaccounts, watch only login, and more.</string>
     <string name="improve_security_ledger">Improve your security with Ledger</string>
     <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard security for your Bitcoins.</string>
     <string name="mnemonic_passphrase">Mnemonic passphrase</string>
@@ -146,7 +146,7 @@
     <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connection or low end phones.</string>
     <string name="changingRequiresRestartTitle">Restart required</string>
     <string name="changingRequiresRestartText">Changing this value requires restarting the app to take full effect. Please restart GreenBits. </string>
-    <string name="noTwoFactorWarning">You have no two factor authentication set up! Please go to settings in our other app to set it up!</string>
+    <string name="noTwoFactorWarning">You have no two factor authentication set up! Please go to settings to set it up!</string>
     <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
     <string name="scan_camera_problem_dialog_title">Camera problem</string>
     <string name="providePassphrase">Please provide your passphrase:</string>

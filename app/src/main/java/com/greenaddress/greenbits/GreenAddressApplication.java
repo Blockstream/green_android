@@ -19,6 +19,7 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -143,16 +144,7 @@ public class GreenAddressApplication extends MultiDexApplication {
             noTwoFacFooter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("it.greenaddress.cordova");
-                    if (launchIntent == null) {
-                        try {
-                            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=it.greenaddress.cordova")));
-                        } catch (android.content.ActivityNotFoundException anfe) {
-                            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=it.greenaddress.cordova")));
-                        }
-                    } else {
-                        activity.startActivity(launchIntent);
-                    }
+                    activity.startActivity(new Intent(activity, SettingsActivity.class));
                 }
             });
         }
