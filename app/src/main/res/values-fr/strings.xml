@@ -171,4 +171,6 @@
     <string name="twoFacProvideConfirmationCode">Please provide your %s code.</string>
     <string name="recoveryAndNotifications">Recovery and Notifications</string>
     <string name="emailAddress">email address</string>
+    <string name="phoneNumber">phone number</string>
+
 </resources>

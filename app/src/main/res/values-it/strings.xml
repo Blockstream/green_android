@@ -140,8 +140,8 @@
     <string name="unconfirmedBalanceSpvNotAvailable">not available (not synchronizing because no Wi-Fi is available)</string>
     <string name="unconfirmedBalanceDoSyncWithoutWiFi">Do you want to synchronize without WiFi connection? It may incur additional costs from your cellular operator.</string>
     <string name="NO">NO</string>
-    <string name="YES">YES</string>
-    <string name="enableSPV">Enable SPV</string>
+    <string name="YES">SI</string>
+    <string name="enableSPV">Abilita SPV</string>
     <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connection or low end phones.</string>
     <string name="changingRequiresRestartTitle">Restart required</string>
     <string name="changingRequiresRestartText">Changing this value requires restarting the app to take full effect. Please restart GreenBits. </string>
@@ -155,18 +155,20 @@
     <string name="twoFacSMS">SMS</string>
     <string name="twoFacEmail">E-mail</string>
     <string name="twoFacSetupHeader">%s 2FA setup</string>
-    <string name="progress">Progress:</string>
+    <string name="progress">Progresso:</string>
     <string name="twoFacStep1Description">First, you need to provide an authentication code from some of your already set up two factor authentication methods. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
     <string name="twoFacStep1SelectExisting">Select existing 2FA method to authenticate setting up a new one:</string>
     <string name="twoFacProvideDetails">Please provide your %s code.</string>
     <string name="twoFacEmailChangeNotice">Providing an email enables notifications and transactions recovery</string>
     <string name="twoFacEmailConfirmNotice">You will need to confirm your email in the next step, otherwise you won\'t receive any notifications.</string>
     <string name="twoFacProvideConfirmationCodeDescription">You need to provide the confirmation code to make sure you have access to the new two factor authentication method. Only after you providing the code, the method will be enabled.</string>
-    <string name="continueText">Continue</string>
+    <string name="continueText">Continua</string>
     <string name="twoFacProvideAuthCodeDescription">You need to provide existing two factor authentication code. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
     <string name="twoFacProvideGauthDetailsDescription">You need to provide one code from your new Google Authenticator. You can obtain it by scanning the QR code below in the Google Authenticator app.</string>
-    <string name="twoFacProvideGauthDetails">Please provide your Google Authenticator code.</string>
-    <string name="twoFacProvideConfirmationCode">Please provide your %s code.</string>
-    <string name="recoveryAndNotifications">Recovery and Notifications</string>
-    <string name="emailAddress">email address</string>
+    <string name="twoFacProvideGauthDetails">Per piacere fornisci il codice Google Authenticator.</string>
+    <string name="twoFacProvideConfirmationCode">Per piacere fornisci il codice %s.</string>
+    <string name="recoveryAndNotifications">Notifiche e backup</string>
+    <string name="emailAddress">indirizzo email</string>
+    <string name="phoneNumber">numero telefonico</string>
+
 </resources>
