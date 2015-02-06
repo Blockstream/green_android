@@ -36,6 +36,10 @@ public class TwoFactorActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        if (gaService == null) {
+            finish();
+            return;
+        }
         final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();
         twoFacType = getIntent().getStringExtra("method");
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);

@@ -290,9 +290,15 @@ public class MainFragment extends GAFragment implements Observer {
                         @Override
                         public void run() {
                             if (spvStatusDialog != null) {
-                                spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
-                                        String.valueOf(((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft()));
-                                handler.postDelayed(this, 2000);
+                                try {
+                                    spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
+                                            String.valueOf(((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft()));
+                                    handler.postDelayed(this, 2000);
+                                } catch (IllegalStateException e) {
+                                    e.printStackTrace();
+                                    // can happen if the activity is terminated
+                                    // ("Fragment MainFragment not attached to Activity")
+                                }
                             }
                         }
                     };
