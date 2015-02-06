@@ -66,7 +66,7 @@ import javax.annotation.Nullable;
 
 import de.schildbach.wallet.ui.ScanActivity;
 
-public class SendFragment extends Fragment {
+public class SendFragment extends GAFragment {
 
     private Dialog mSummary;
     private Dialog mTwoFactor;
@@ -289,7 +289,7 @@ public class SendFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+    public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_send, container, false);
 

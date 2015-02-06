@@ -44,7 +44,7 @@ import java.util.Observer;
 import javax.annotation.Nullable;
 
 
-public class MainFragment extends Fragment implements Observer {
+public class MainFragment extends GAFragment implements Observer {
     public final static int P2SH_FORTIFIED_OUT = 10;
     private Float maxSize = null;
     private Float currentSize = null;
@@ -209,7 +209,7 @@ public class MainFragment extends Fragment implements Observer {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+    public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         curSubaccount = getActivity().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
@@ -304,10 +304,7 @@ public class MainFragment extends Fragment implements Observer {
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         curBalanceObserver = makeBalanceObserver();
-        if (((GreenAddressApplication) getActivity().getApplication()).gaService == null) {
-            getActivity().finish();
-            return null;
-        }
+
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
         if (((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceCoin(curSubaccount) != null) {
@@ -415,8 +412,7 @@ public class MainFragment extends Fragment implements Observer {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onGAResume() {
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().addObserver(this);
         ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
         if (wiFiObserverRequired) makeWiFiObserver();

@@ -29,12 +29,12 @@ import com.greenaddress.greenbits.QrBitmap;
 import javax.annotation.Nullable;
 
 
-public class ReceiveFragment extends Fragment {
+public class ReceiveFragment extends GAFragment {
     FutureCallback<QrBitmap> onAddress = null;
     private int curSubaccount;
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+    public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         curSubaccount = getActivity().getSharedPreferences("receive", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
@@ -153,8 +153,7 @@ public class ReceiveFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onGAResume() {
         Futures.addCallback(
                 ((GreenAddressApplication) getActivity().getApplication()).gaService.getLatestOrNewAddress(curSubaccount),
                 onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);

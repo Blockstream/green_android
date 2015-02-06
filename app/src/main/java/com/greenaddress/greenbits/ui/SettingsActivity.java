@@ -49,6 +49,12 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+        if (((GreenAddressApplication) getApplication()).gaService == null) {
+            finish();
+            return;
+        }
+
+        // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
 
         // Add 'GreenBits' preferences, and a corresponding header.
@@ -317,6 +323,12 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
+
+        if (((GreenAddressApplication) getApplication()).gaService == null) {
+            finish();
+            return;
+        }
+
         ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
     }
 

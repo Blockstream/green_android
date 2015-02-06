@@ -31,6 +31,10 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (((GreenAddressApplication) getApplication()).gaService == null) {
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_transaction);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -75,10 +79,10 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends GAFragment {
 
         @Override
-        public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+        public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
                                  final Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_transaction, container, false);
 
@@ -156,6 +160,10 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
+        if (((GreenAddressApplication) getApplication()).gaService == null) {
+            finish();
+            return;
+        }
         ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
     }
 
