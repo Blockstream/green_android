@@ -647,6 +647,7 @@ public class SendFragment extends GAFragment {
         });
 
         final GaService gaService = ((GreenAddressApplication) getActivity().getApplication()).gaService;
+        hideInstantIf2of3();
         ((GreenAddressApplication) getActivity().getApplication()).configureSubaccountsFooter(
                 curSubaccount,
                 getActivity(),
@@ -659,6 +660,7 @@ public class SendFragment extends GAFragment {
                     public Void apply(@Nullable Integer input) {
                         ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input.intValue();
+                        hideInstantIf2of3();
                         final SharedPreferences.Editor editor = getActivity().getSharedPreferences("send", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
@@ -692,6 +694,18 @@ public class SendFragment extends GAFragment {
         );
 
         return rootView;
+    }
+
+    private void hideInstantIf2of3() {
+        final GaService gaService = ((GreenAddressApplication) getActivity().getApplication()).gaService;
+        instantConfirmationCheckbox.setVisibility(View.VISIBLE);
+        for (Object subaccount_ : gaService.getSubaccounts()) {
+            Map<String, ?> subaccountMap = (Map) subaccount_;
+            if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(curSubaccount)) {
+                instantConfirmationCheckbox.setVisibility(View.GONE);
+                instantConfirmationCheckbox.setChecked(false);
+            }
+        }
     }
 
     private Observer makeBalanceObserver() {
