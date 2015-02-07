@@ -28,6 +28,7 @@ import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
@@ -164,7 +165,7 @@ public class MainFragment extends GAFragment implements Observer {
             btcBalanceVerified = bitcoinFormat.noCode().format(
                     ((GreenAddressApplication) activity.getApplication()).gaService.getVerifiedBalanceCoin(curSubaccount)).toString();
         } else {
-            btcBalanceVerified = "";
+            btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
         }
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
