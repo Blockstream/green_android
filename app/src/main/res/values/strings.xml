@@ -179,5 +179,6 @@
     <string name="recoveryAndNotifications">Recovery and Notifications</string>
     <string name="emailAddress">email address</string>
     <string name="phoneNumber">phone number</string>
+    <string name="newAddress">New Address</string>
 
 </resources>

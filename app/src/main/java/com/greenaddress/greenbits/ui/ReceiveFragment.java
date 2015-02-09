@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,8 +67,8 @@ public class ReceiveFragment extends GAFragment {
                     }
                 }
         );
-        final Animation rotateAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
-        newAddressIcon.startAnimation(rotateAnim);
+
+        startNewAddressAnimation(rootView);
 
         onAddress = new FutureCallback<QrBitmap>() {
             @Override
@@ -78,7 +80,7 @@ public class ReceiveFragment extends GAFragment {
                         public void run() {
 
                             copyIcon.setVisibility(View.VISIBLE);
-                            newAddressIcon.clearAnimation();
+                            stopNewAddressAnimation(rootView);
                             BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
                             bd.setFilterBitmap(false);
                             imageView.setImageDrawable(bd);
@@ -98,7 +100,7 @@ public class ReceiveFragment extends GAFragment {
                         @Override
                         public void run() {
                             Toast.makeText(activity, "Can't get a new address", Toast.LENGTH_LONG).show();
-                            newAddressIcon.clearAnimation();
+                            stopNewAddressAnimation(rootView);
                             copyIcon.setVisibility(View.VISIBLE);
                         }
                     });
@@ -117,7 +119,7 @@ public class ReceiveFragment extends GAFragment {
                         copyIcon.setVisibility(View.GONE);
                         receiveAddress.setText("");
                         imageView.setImageBitmap(null);
-                        newAddressIcon.startAnimation(rotateAnim);
+                        startNewAddressAnimation(rootView);
 
                         final ListenableFuture<QrBitmap> ft = ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewAddress(curSubaccount);
                         Futures.addCallback(ft, onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
@@ -142,7 +144,7 @@ public class ReceiveFragment extends GAFragment {
                         copyIcon.setVisibility(View.GONE);
                         receiveAddress.setText("");
                         imageView.setImageBitmap(null);
-                        newAddressIcon.startAnimation(rotateAnim);
+                        startNewAddressAnimation(rootView);
                         Futures.addCallback(
                                 ((GreenAddressApplication) getActivity().getApplication()).gaService.getLatestOrNewAddress(curSubaccount),
                                 onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
@@ -153,6 +155,23 @@ public class ReceiveFragment extends GAFragment {
         );
 
         return rootView;
+    }
+
+    private void stopNewAddressAnimation(final View rootView) {
+        final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
+        newAddressIcon.clearAnimation();
+        newAddressIcon.setText(getResources().getString(R.string.newAddress));
+        newAddressIcon.setDefaultTypeface();
+        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+    }
+
+    private void startNewAddressAnimation(final View rootView) {
+        final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
+        final Animation rotateAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
+        newAddressIcon.startAnimation(rotateAnim);
+        newAddressIcon.setText(Html.fromHtml("&#xf021;"));
+        newAddressIcon.setAwesomeTypeface();
+        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
     }
 
     @Override
