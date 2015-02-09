@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
@@ -150,8 +151,10 @@ public class MainFragment extends GAFragment implements Observer {
         boolean spvVerified = getActivity().getSharedPreferences("verified_utxo_"
                 +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
                 Context.MODE_PRIVATE).getBoolean(txhash, false);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return new Transaction(type, amount, counterparty,
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
+                df.parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
                 receivedOn);
     }
 
