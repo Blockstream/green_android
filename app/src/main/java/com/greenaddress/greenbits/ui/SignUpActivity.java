@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -133,7 +134,9 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                                     mnemonicDialog.setContentView(inflatedLayout);
                                 }
                                 mnemonicDialog.show();
-                                qrcodeMnemonic.setImageBitmap(result.qrcode);
+                                BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                                bd.setFilterBitmap(false);
+                                qrcodeMnemonic.setImageDrawable(bd);
                             }
                         });
                     }

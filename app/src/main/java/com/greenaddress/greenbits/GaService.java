@@ -425,12 +425,7 @@ public class GaService extends Service {
         super.onCreate();
         uiHandler = new Handler();
 
-        // FIXME: kinda hacky... maybe better getting background color of the activity?
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.background_color = 0xffffff;
-        } else {
-            this.background_color = 0xeeeeee;
-        }
+        this.background_color = 0; // transparent
         connectionObservable = ((GreenAddressApplication) getApplication()).getConnectionObservable();
 
 

@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -78,7 +79,9 @@ public class ReceiveFragment extends GAFragment {
 
                             copyIcon.setVisibility(View.VISIBLE);
                             newAddressIcon.clearAnimation();
-                            imageView.setImageBitmap(result.qrcode);
+                            BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                            bd.setFilterBitmap(false);
+                            imageView.setImageDrawable(bd);
 
                             receiveAddress.setText(result.data.substring(0, 12) + "\n" + result.data.substring(12, 24) + "\n" + result.data.substring(24));
                         }

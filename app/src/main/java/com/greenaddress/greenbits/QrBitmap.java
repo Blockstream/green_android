@@ -31,7 +31,7 @@ public class QrBitmap implements Callable<QrBitmap> {
         final int SCALE = 4;
         final int height = matrix.getHeight() * SCALE;
         final int width = matrix.getWidth() * SCALE;
-        final Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        final Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 bmp.setPixel(x, y, matrix.get(x / SCALE, y / SCALE) == 1 ? qrcode_color : background_color);

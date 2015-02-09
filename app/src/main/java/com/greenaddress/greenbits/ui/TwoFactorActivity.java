@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -244,7 +245,9 @@ public class TwoFactorActivity extends ActionBarActivity {
 
         String gauth_url = (String) gaService.getTwoFacConfig().get("gauth_url");
         try {
-            imageView.setImageBitmap(new QrBitmap(gauth_url, 0xffffff).call().qrcode);
+            BitmapDrawable bd = new BitmapDrawable(getResources(), new QrBitmap(gauth_url, 0).call().qrcode);
+            bd.setFilterBitmap(false);
+            imageView.setImageDrawable(bd);
         } catch (WriterException e) {
             e.printStackTrace();
         }
