@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,11 +35,55 @@ import javax.annotation.Nullable;
 
 public class ReceiveFragment extends GAFragment {
     FutureCallback<QrBitmap> onAddress = null;
+    QrBitmap address = null;
     private int curSubaccount;
+    private boolean pausing = false;
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("pausing", pausing);
+        if (address != null) {
+            outState.putParcelable("address", address);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // get a new address every time the tab is displayed
+        if (isVisibleToUser && !pausing) {
+            final View rootView = getView();
+
+            // get a new address:
+            final ListenableFuture<QrBitmap> ft = ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewAddress(curSubaccount);
+            Futures.addCallback(ft, onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+            startNewAddressAnimation(rootView);
+        }
+        if (isVisibleToUser) {
+            pausing = false;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onDestroyView();
+
+        if (getUserVisibleHint()) {
+            pausing = true;
+        }
+    }
 
     @Override
     public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            pausing = savedInstanceState.getBoolean("pausing");
+            address = savedInstanceState.getParcelable("address");
+        }
+
         curSubaccount = getActivity().getSharedPreferences("receive", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
         final View rootView = inflater.inflate(R.layout.fragment_receive, container, false);
@@ -68,11 +113,11 @@ public class ReceiveFragment extends GAFragment {
                 }
         );
 
-        startNewAddressAnimation(rootView);
-
         onAddress = new FutureCallback<QrBitmap>() {
             @Override
             public void onSuccess(@Nullable final QrBitmap result) {
+                address = result;
+
                 final Activity activity = getActivity();
                 if (activity != null) {
                     activity.runOnUiThread(new Runnable() {
@@ -108,6 +153,10 @@ public class ReceiveFragment extends GAFragment {
             }
         };
 
+        if (address != null) {
+            onAddress.onSuccess(address);
+        }
+
         newAddressIcon.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -116,9 +165,6 @@ public class ReceiveFragment extends GAFragment {
                             Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        copyIcon.setVisibility(View.GONE);
-                        receiveAddress.setText("");
-                        imageView.setImageBitmap(null);
                         startNewAddressAnimation(rootView);
 
                         final ListenableFuture<QrBitmap> ft = ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewAddress(curSubaccount);
@@ -141,9 +187,6 @@ public class ReceiveFragment extends GAFragment {
                         final SharedPreferences.Editor editor = getActivity().getSharedPreferences("receive", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
-                        copyIcon.setVisibility(View.GONE);
-                        receiveAddress.setText("");
-                        imageView.setImageBitmap(null);
                         startNewAddressAnimation(rootView);
                         Futures.addCallback(
                                 ((GreenAddressApplication) getActivity().getApplication()).gaService.getLatestOrNewAddress(curSubaccount),
@@ -162,27 +205,27 @@ public class ReceiveFragment extends GAFragment {
         newAddressIcon.clearAnimation();
         newAddressIcon.setText(getResources().getString(R.string.newAddress));
         newAddressIcon.setDefaultTypeface();
-        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+
+        final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
+        copyIcon.setVisibility(View.VISIBLE);
     }
 
     private void startNewAddressAnimation(final View rootView) {
+        if (getActivity() == null) return;
+
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         final Animation rotateAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
         newAddressIcon.startAnimation(rotateAnim);
         newAddressIcon.setText(Html.fromHtml("&#xf021;"));
         newAddressIcon.setAwesomeTypeface();
         newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
-    }
 
-    @Override
-    public void onGAResume() {
-        Futures.addCallback(
-                ((GreenAddressApplication) getActivity().getApplication()).gaService.getLatestOrNewAddress(curSubaccount),
-                onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+        final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
+        final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
+        final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
+        copyIcon.setVisibility(View.GONE);
+        receiveAddress.setText("");
+        imageView.setImageBitmap(null);
     }
 }

@@ -148,7 +148,8 @@ public class GaService extends Service {
             receivingId = result.receiving_id;
             gaitPath = Hex.decode(result.gait_path);
 
-            getLatestOrNewAddress(getSharedPreferences("receive", MODE_PRIVATE).getInt("curSubaccount", 0));
+            // do not get latest address - always get a new one in ReceiveFragment
+            // getLatestOrNewAddress(getSharedPreferences("receive", MODE_PRIVATE).getInt("curSubaccount", 0));
             balanceObservables.put(new Long(0), new GaObservable());
             updateBalance(0);
             for (Object subaccount : result.subaccounts) {

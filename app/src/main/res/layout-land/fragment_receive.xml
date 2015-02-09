@@ -87,9 +87,9 @@
                     android:layout_height="fill_parent"
                     android:gravity="center"
                     android:padding="16dp"
-                    android:text="&#xf021;"
+                    android:text="@string/newAddress"
                     android:textColor="@color/accent"
-                    android:textSize="34sp" />
+                    android:textSize="16sp" />
 
 
 

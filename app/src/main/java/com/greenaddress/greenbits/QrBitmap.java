@@ -2,7 +2,8 @@ package com.greenaddress.greenbits;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.Log;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -16,10 +17,16 @@ import com.google.zxing.qrcode.encoder.QRCode;
 import java.util.concurrent.Callable;
 
 
-public class QrBitmap implements Callable<QrBitmap> {
+public class QrBitmap implements Callable<QrBitmap>, Parcelable {
     public final String data;
     public Bitmap qrcode;
     private final int background_color;
+
+    public QrBitmap(Parcel in) {
+        data = in.readString();
+        background_color = in.readInt();
+        qrcode = in.readParcelable(null);
+    }
 
     public QrBitmap(final String data, final int background_color) {
         this.data = data;
@@ -45,4 +52,27 @@ public class QrBitmap implements Callable<QrBitmap> {
         this.qrcode = toBitmap(code, Color.BLACK, background_color);
         return this;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(data);
+        dest.writeInt(background_color);
+        dest.writeParcelable(qrcode, 0);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<QrBitmap> CREATOR
+            = new Parcelable.Creator<QrBitmap>() {
+        public QrBitmap createFromParcel(Parcel in) {
+            return new QrBitmap(in);
+        }
+
+        public QrBitmap[] newArray(int size) {
+            return new QrBitmap[size];
+        }
+    };
 }
