@@ -99,6 +99,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final TextView recipientText = (TextView) rootView.findViewById(R.id.txRecipientText);
             final TextView recipientTitle = (TextView) rootView.findViewById(R.id.txRecipientTitle);
 
+            final TextView receivedOnText = (TextView) rootView.findViewById(R.id.txReceivedOnText);
+            final TextView receivedOnTitle = (TextView) rootView.findViewById(R.id.txReceivedOnTitle);
+
             final TextView unconfirmedText = (TextView) rootView.findViewById(R.id.txUnconfirmedText);
 
             hashText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -151,6 +154,13 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             } else {
                 recipientText.setVisibility(View.GONE);
                 recipientTitle.setVisibility(View.GONE);
+            }
+
+            if(t.receivedOn!=null && t.receivedOn.length()>0) {
+                receivedOnText.setText(t.receivedOn);
+            } else {
+                receivedOnText.setVisibility(View.GONE);
+                receivedOnTitle.setVisibility(View.GONE);
             }
 
             return rootView;

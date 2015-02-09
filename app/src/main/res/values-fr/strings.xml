@@ -173,5 +173,6 @@
     <string name="emailAddress">email address</string>
     <string name="phoneNumber">phone number</string>
     <string name="newAddress">New Address</string>
+    <string name="txReceivedOn">Received on</string>
 
 </resources>

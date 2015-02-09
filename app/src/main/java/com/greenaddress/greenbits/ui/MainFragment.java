@@ -77,6 +77,7 @@ public class MainFragment extends GAFragment implements Observer {
         long amount = 0;
         int type;
         boolean isSpent = true;
+        String receivedOn = null;
         for (int i = 0; i < eps.size(); ++i) {
             final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
             if (ep.get("social_destination") != null) {
@@ -105,6 +106,11 @@ public class MainFragment extends GAFragment implements Observer {
                             isSpent = false;
                         }
                     }
+                    if (receivedOn == null) {
+                        receivedOn = (String) ep.get("ad");
+                    } else {
+                        receivedOn += ", " + ep.get("ad");
+                    }
                 } else {
                     amount -= Long.valueOf((String) ep.get("value"));
                 }
@@ -119,6 +125,7 @@ public class MainFragment extends GAFragment implements Observer {
                 }
             }
         } else {
+            receivedOn = null; // don't show change addresses
             final List<Map<String, Object>> recip_eps = new ArrayList<>();
             for (int i = 0; i < eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
@@ -144,7 +151,8 @@ public class MainFragment extends GAFragment implements Observer {
                 +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
                 Context.MODE_PRIVATE).getBoolean(txhash, false);
         return new Transaction(type, amount, counterparty,
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent);
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
+                receivedOn);
     }
 
     private void updateBalance(final Activity activity) {

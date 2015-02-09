@@ -167,6 +167,26 @@
         android:id="@+id/txMemoText"
         android:layout_height="wrap_content" />
 
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/activity_vertical_margin"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="droid"
+                android:id="@+id/txReceivedOnTitle"
+                android:text="@string/txReceivedOn"
+                android:textColor="@color/textColor"
+                android:textSize="24sp" />
+
+            <TextView android:text="memo"
+                android:textColor="@color/tertiaryTextColor"
+                android:layout_width="wrap_content"
+                android:textIsSelectable="true"
+                android:id="@+id/txReceivedOnText"
+                android:layout_height="wrap_content" />
+
 
         </LinearLayout>
     </ScrollView>

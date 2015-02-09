@@ -13,13 +13,14 @@ public class Transaction implements Serializable {
     public final Integer blockHeight;
     public final long amount;
     public final String counterparty;
+    public final String receivedOn;
     public final String txhash;
     public final Date date;
     public final String memo;
     public boolean spvVerified;
     public boolean isSpent;
 
-    public Transaction(final int type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent) {
+    public Transaction(final int type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn) {
         this.type = type;
         this.amount = amount;
         this.counterparty = counterparty;
@@ -30,6 +31,7 @@ public class Transaction implements Serializable {
         this.blockHeight = blockHeight;
         this.spvVerified = spvVerified;
         this.isSpent = isSpent;
+        this.receivedOn = receivedOn;
     }
 
     public String toString() {
