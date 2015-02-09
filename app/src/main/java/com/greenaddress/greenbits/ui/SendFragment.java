@@ -902,6 +902,12 @@ public class SendFragment extends GAFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        pausing = false;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("pausing", pausing);
