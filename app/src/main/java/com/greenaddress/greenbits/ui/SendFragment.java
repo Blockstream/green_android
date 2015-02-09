@@ -91,6 +91,7 @@ public class SendFragment extends GAFragment {
     private View rootView;
     private int curSubaccount;
     private Observer curBalanceObserver;
+    private boolean pausing;
 
     public void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
         Log.i("SendActivity.showTransactionSummary", "params " + method + " " + fee + " " + amount + " " + recipient);
@@ -291,6 +292,10 @@ public class SendFragment extends GAFragment {
     @Override
     public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            pausing = savedInstanceState.getBoolean("pausing");
+        }
+
         rootView = inflater.inflate(R.layout.fragment_send, container, false);
 
         curSubaccount = getActivity().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
@@ -696,6 +701,12 @@ public class SendFragment extends GAFragment {
         return rootView;
     }
 
+    @Override
+    public void onViewStateRestored(@android.support.annotation.Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        pausing = false;
+    }
+
     private void hideInstantIf2of3() {
         final GaService gaService = ((GreenAddressApplication) getActivity().getApplication()).gaService;
         instantConfirmationCheckbox.setVisibility(View.VISIBLE);
@@ -846,7 +857,7 @@ public class SendFragment extends GAFragment {
     }
 
     private void convertBtcToFiat(final float exchangeRate) {
-        if (converting) {
+        if (converting || pausing) {
             return;
         }
         converting = true;
@@ -867,7 +878,7 @@ public class SendFragment extends GAFragment {
     }
 
     private void convertFiatToBtc() {
-        if (converting) {
+        if (converting || pausing) {
             return;
         }
         converting = true;
@@ -882,6 +893,18 @@ public class SendFragment extends GAFragment {
             amountEdit.setText("");
         }
         converting = false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pausing = true;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("pausing", pausing);
     }
 
     public void onDestroyView() {
