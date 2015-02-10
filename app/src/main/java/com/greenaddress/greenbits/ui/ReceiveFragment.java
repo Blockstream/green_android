@@ -205,7 +205,7 @@ public class ReceiveFragment extends GAFragment {
         newAddressIcon.clearAnimation();
         newAddressIcon.setText(getResources().getString(R.string.newAddress));
         newAddressIcon.setDefaultTypeface();
-        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
 
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
         copyIcon.setVisibility(View.VISIBLE);
