@@ -229,7 +229,17 @@ public class BitBoatActivity extends ActionBarActivity {
                                  payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? sfAvailable :
                                  payMethod == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? mcAvailable :
                                  Coin.valueOf(0);
-                if (bitcoinFormat.parse(amountEdit.getText().toString()).compareTo(available) > 0) {
+                Coin amount = null;
+                try {
+                    amount = bitcoinFormat.parse(amountEdit.getText().toString());
+                } catch (IllegalArgumentException e) {
+                    amount = Coin.ZERO;
+                }
+                if (amount.compareTo(Coin.ZERO) <= 0) {
+                    Toast.makeText(BitBoatActivity.this, getString(R.string.invalidAmount), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (amount.compareTo(available) > 0) {
                     Toast.makeText(BitBoatActivity.this,
                             new Formatter().format(getResources().getString(R.string.onlyBtcForMethodOfPayment),
                                     bitcoinFormat.postfixCode().format(available)).toString(),

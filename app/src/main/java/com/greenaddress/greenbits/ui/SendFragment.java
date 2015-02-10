@@ -389,7 +389,7 @@ public class SendFragment extends GAFragment {
                     } else if (!validAddress) {
                         message = getActivity().getString(R.string.invalidAddress) ;
                     } else if (!validAmount) {
-                        message = getActivity().getString(R.string.invalidAmount) ;
+                        message = getActivity().getString(R.string.invalidAmount);
                     }
                     if (message == null) {
                         prepared = ((GreenAddressApplication) getActivity().getApplication()).gaService.prepareTx(amount, recipient, privData);
