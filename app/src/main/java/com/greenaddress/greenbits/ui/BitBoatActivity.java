@@ -424,18 +424,20 @@ public class BitBoatActivity extends ActionBarActivity {
                         throw new RuntimeException(e);
                     }
                     Map<?, ?> map = (Map<?, ?>) json.get(0);
+                    Date date = new Date(((Number) map.get("timestamp")).longValue());
+                    long age = new Date().getTime() - date.getTime();
                     boolean isRelevant = false;
-                    if (map.get("status").equals("submitted") || map.get("status").equals("pending") || map.get("status").equals("accepted") || map.get("status").equals("queued")) {
+                    if (age < 1000 * 60 * 60 * 24) {
                         newPending.add(pending.get(i));
                         anyToCheckAgain = true;
                         isRelevant = true;
                     }
-                    if (map.get("status").equals("accepted")) {
+                    if (isRelevant && map.get("status").equals("accepted")) {
                         Map<?, ?> vendor = (Map<?, ?>) map.get("vendor");
                         Map<?, ?> vendor_v = (Map<?, ?>) vendor.get("v");
                         Map<?, ?> vendor_v_value = (Map<?, ?>) vendor_v.get("value");
                         currentList.add(0, new BitBoatTransaction(
-                                new Date(((Number) map.get("timestamp")).longValue()),
+                                date,
                                 map.get("fb").toString(),
                                 map.get("ttype").equals("sf") ?
                                         BitBoatTransaction.PAYMETHOD_SUPERFLASH :
@@ -458,11 +460,13 @@ public class BitBoatActivity extends ActionBarActivity {
                             status = getResources().getString(R.string.txStatusAccepted);
                         } else if (map.get("status").equals("queued")) {
                             status = getResources().getString(R.string.txStatusQueued);
+                        } else if (map.get("status").equals("rejected")) {
+                            status = getResources().getString(R.string.txStatusRejected);
                         } else {
                             status = getResources().getString(R.string.txStatusUnknown);
                         }
                         currentList.add(0, new BitBoatTransaction(
-                                new Date(((Number) map.get("timestamp")).longValue()),
+                                date,
                                 map.get("fb") != null ? map.get("fb").toString() : "",
                                 -1,
                                 Coin.parseCoin(map.get("amount").toString()),

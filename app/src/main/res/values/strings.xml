@@ -192,5 +192,6 @@
     <string name="txStatusQueued">Queued</string>
     <string name="txStatusUnknown">Unknown Status</string>
     <string name="onlyBtcForMethodOfPayment">Only %s is available for this method of payment.</string>
+    <string name="txStatusRejected">Rejected</string>
 
 </resources>
