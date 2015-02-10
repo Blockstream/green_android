@@ -68,8 +68,6 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
         holder.textWho.setText(current.key);
         holder.textCF.setText(current.cf);
 
-        holder.bitcoinScale.setText("");
-
         return returnedView;
     }
 
