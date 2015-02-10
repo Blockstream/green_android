@@ -51,7 +51,7 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
         holder.textFirstBits.setText(current.firstbits);
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
-        holder.textValueBtc.setText(bitcoinFormat.format(current.valueBtc));
+        holder.textValueBtc.setText(bitcoinFormat.noCode().format(current.valueBtc));
         if (current.valueFiat == null) {
             holder.textValueFiat.setText("");
         } else {

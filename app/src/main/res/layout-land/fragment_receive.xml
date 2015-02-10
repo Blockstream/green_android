@@ -83,13 +83,14 @@
                 <com.greenaddress.greenbits.ui.FontAwesomeTextView
 
                     android:id="@+id/receiveNewAddressIcon"
-                    android:layout_width="66dp"
+                    android:layout_width="78dp"
                     android:layout_height="fill_parent"
                     android:gravity="center"
-                    android:padding="16dp"
+                    android:padding="4dp"
                     android:text="@string/newAddress"
                     android:textColor="@color/accent"
-                    android:textSize="16sp" />
+                    android:textSize="13sp"
+                    android:textIsSelectable="true" />
 
 
 
