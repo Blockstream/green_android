@@ -462,6 +462,12 @@ public class BitBoatActivity extends ActionBarActivity {
                             status = getResources().getString(R.string.txStatusQueued);
                         } else if (map.get("status").equals("rejected")) {
                             status = getResources().getString(R.string.txStatusRejected);
+                        } else if (map.get("status").equals("timeout")) {
+                            status = getResources().getString(R.string.txStatusExpired);
+                        } else if (map.get("status").equals("completed")) {
+                            status = getResources().getString(R.string.txStatusCompleted);
+                        } else if (map.get("status").equals("loading")) {
+                            status = getResources().getString(R.string.txStatusLoading);
                         } else {
                             status = getResources().getString(R.string.txStatusUnknown);
                         }

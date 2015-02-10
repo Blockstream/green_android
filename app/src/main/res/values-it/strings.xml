@@ -184,5 +184,8 @@
     <string name="txStatusUnknown">Unknown Status</string>
     <string name="onlyBtcForMethodOfPayment">Only %s is available for this method of payment.</string>
     <string name="txStatusRejected">Rejected</string>
+    <string name="txStatusExpired">Expired</string>
+    <string name="txStatusCompleted">Completed</string>
+    <string name="txStatusLoading">Loading</string>
 
 </resources>
