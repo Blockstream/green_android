@@ -400,7 +400,8 @@ public class MainFragment extends GAFragment implements Observer {
         );
 
         final String country = ((GreenAddressApplication) getActivity().getApplication()).gaService.getCountry();
-        if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null || !country.equals("IT")) {
+        if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
+            !(country.equals("IT") || country.equals("FR"))) {
             rootView.findViewById(R.id.buyBtcButton).setVisibility(View.GONE);
         }
         rootView.findViewById(R.id.buyBtcButton).setOnClickListener(new View.OnClickListener() {

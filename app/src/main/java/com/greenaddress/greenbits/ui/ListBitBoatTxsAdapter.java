@@ -62,6 +62,7 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
         holder.textNumber.setText(
                 (current.method == BitBoatTransaction.PAYMETHOD_POSTEPAY ? "Postepay" :
                  current.method == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? "Superflash" :
+                 current.method == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? "Mandat Compte" :
                  "") + " " +
                 current.number);
         holder.textWho.setText(current.key);

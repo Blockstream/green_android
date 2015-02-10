@@ -74,7 +74,8 @@ public class BitBoatActivity extends ActionBarActivity {
     Handler handler;
     final SettableFuture<ExchangeRate> sfPrice = SettableFuture.create();
     final SettableFuture<ExchangeRate> ppPrice = SettableFuture.create();
-    private Coin sfAvailable, ppAvailable;
+    final SettableFuture<ExchangeRate> mcPrice = SettableFuture.create();
+    private Coin sfAvailable, ppAvailable, mcAvailable;
     private EditText amountEdit;
     private EditText amountFiatEdit;
     private MonetaryFormat bitcoinFormat;
@@ -90,6 +91,7 @@ public class BitBoatActivity extends ActionBarActivity {
         amountFiatEdit = (EditText) findViewById(R.id.amountFiatEditText);
 
         final String btcUnit = (String) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("unit");
+        final String country = ((GreenAddressApplication) getApplication()).gaService.getCountry();
         final TextView bitcoinScale = (TextView) findViewById(R.id.bitcoinScaleText);
         final TextView bitcoinUnitText = (TextView) findViewById(R.id.bitcoinUnitText);
         bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -100,13 +102,23 @@ public class BitBoatActivity extends ActionBarActivity {
             bitcoinUnitText.setText(Html.fromHtml("&#xf15a; "));
         }
 
-        List<Map<String, String>> paymentMethods = new ArrayList<>();
-        Map<String, String> superflash = new HashMap<>();
-        Map<String, String> postepay = new HashMap<>();
-        superflash.put("name", "Superflash");
-        postepay.put("name", "Postepay");
-        paymentMethods.add(superflash);
-        paymentMethods.add(postepay);
+        final List<Map<String, Object>> paymentMethods = new ArrayList<>();
+        if (country.equals("IT")) {
+            Map<String, Object> superflash = new HashMap<>();
+            Map<String, Object> postepay = new HashMap<>();
+            superflash.put("name", "Superflash");
+            superflash.put("id", BitBoatTransaction.PAYMETHOD_SUPERFLASH);
+            postepay.put("name", "Postepay");
+            postepay.put("id", BitBoatTransaction.PAYMETHOD_POSTEPAY);
+            paymentMethods.add(superflash);
+            paymentMethods.add(postepay);
+        } else { // FR
+            Map<String, Object> mandatcompte = new HashMap<>();
+            mandatcompte.put("name", "Mandat Compte");
+            mandatcompte.put("id", BitBoatTransaction.PAYMETHOD_MANDATCOMPTE);
+            paymentMethods.add(mandatcompte);
+        }
+
 
         Spinner methodOfPayment = ((Spinner) findViewById(R.id.methodOfPayment));
 
@@ -120,7 +132,8 @@ public class BitBoatActivity extends ActionBarActivity {
         methodOfPayment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                payMethod = position;
+                Map<String, Object> item = paymentMethods.get(position);
+                payMethod = ((Number) item.get("id")).intValue();
                 convertBtcToFiat();
             }
 
@@ -154,11 +167,17 @@ public class BitBoatActivity extends ActionBarActivity {
                 Map<String, Object> sfBtc = (Map<String, Object>) sf.get("btc");
                 Double sfBtcPrice = (Double) sfBtc.get("price");
 
+                Map<String, Object> mc = (Map<String, Object>) json.get("mc");
+                Map<String, Object> mcBtc = (Map<String, Object>) mc.get("btc");
+                Double mcBtcPrice = (Double) sfBtc.get("price");
+
                 ppPrice.set(new ExchangeRate(Fiat.parseFiat("EUR", ppBtcPrice.toString())));
                 sfPrice.set(new ExchangeRate(Fiat.parseFiat("EUR", sfBtcPrice.toString())));
+                mcPrice.set(new ExchangeRate(Fiat.parseFiat("EUR", mcBtcPrice.toString())));
 
                 ppAvailable = Coin.parseCoin(ppBtc.get("disp").toString());
                 sfAvailable = Coin.parseCoin(sfBtc.get("disp").toString());
+                mcAvailable = Coin.parseCoin(mcBtc.get("disp").toString());
             }
 
             @Override
@@ -208,6 +227,7 @@ public class BitBoatActivity extends ActionBarActivity {
 
                 Coin available = payMethod == BitBoatTransaction.PAYMETHOD_POSTEPAY ? ppAvailable :
                                  payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? sfAvailable :
+                                 payMethod == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? mcAvailable :
                                  Coin.valueOf(0);
                 if (bitcoinFormat.parse(amountEdit.getText().toString()).compareTo(available) > 0) {
                     Toast.makeText(BitBoatActivity.this,
@@ -219,7 +239,10 @@ public class BitBoatActivity extends ActionBarActivity {
                 final HttpPost post = new HttpPost("https://www.bitboat.net/__new_order");
                 final List<NameValuePair> nameValuePairs = new ArrayList<>();
                 nameValuePairs.add(new BasicNameValuePair("ctype", "btc"));
-                nameValuePairs.add(new BasicNameValuePair("ttype", payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? "sf" : "pp"));
+                nameValuePairs.add(new BasicNameValuePair("ttype",
+                        payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? "sf" :
+                        payMethod == BitBoatTransaction.PAYMETHOD_POSTEPAY ? "pp" :
+                        "mc"));
                 nameValuePairs.add(new BasicNameValuePair("email", "info@greenaddress.it"));
                 nameValuePairs.add(new BasicNameValuePair("amount", bitcoinFormat.parse(amountEdit.getText().toString()).toPlainString()));
                 nameValuePairs.add(new BasicNameValuePair("eur", amountFiatEdit.getText().toString()));
@@ -227,20 +250,42 @@ public class BitBoatActivity extends ActionBarActivity {
                 nameValuePairs.add(new BasicNameValuePair("userAgent", (String) (new DefaultHttpClient()).getParams().getParameter(CoreProtocolPNames.USER_AGENT)));
 
                 final SettableFuture<Boolean> dialogFuture = SettableFuture.create();
+                final CharSequence title, contents, positive, negative;
+                if (country.equals("IT")) {
+                    title = "Per favore, accetti le condizioni d'uso per procedere all'acquisto";
+                    contents = Html.fromHtml(
+                                    "                        <p>Bitboat (questo sito) è una piattaforma per l'acquisto di Bitcoin o altra valuta digitale, con pagamenti corrisposti mediante circuiti Intesa Superflash o Poste Italiane Postepay.</p>\n" +
+                                    "                        <p>Accettando queste condizioni <strong>l'acquirente (Lei, fruitore del sito) conferma</strong> che:</p>\n" +
+                                    "                        <p>1) In caso di pagamento mediante \"ricarica online\", dichiara di essere il titolare del conto o carta da cui verrà effettuato il pagamento.</p>\n" +
+                                    "                        <p>2) L'indirizzo Bitcoin (o altra valuta digitale) di destinazione è un facente parte di un suo <a target=\"_blank\" href=\"https://bitcoin.org/it/scegli-il-tuo-portafoglio\">wallet</a>, anche noto come \"portafogli digitale\", e non un servizio terzo. L'acquirente non utilizzerà Bitboat per inviare Bitcoin a servizi terzi.</p>\n" +
+                                    "                        <p>3) Sta acquistando Bitcoin (o altra valuta digitale) per finalità lecite.</p>\n" +
+                                    "                        <p>4) Ricaricherà <strong>esattamente</strong> la somma richiesta, o, se impossibilitato, non procederà alla ricarica. Se ritenuto necessario da Bitboat, acconsente a comunicare, successivamente, ulteriori dati inerenti la sua identità ed il pagamento effettuato.</p>\n" +
+                                    "                        <p>5) E' a conoscenza del fatto che né \"Intesa Sanpaolo\" né \"Poste Italiane\" sono affiliate alle attività svolte su questo sito.</p>\n" +
+                                    "                        <hr>\n" +
+                                    "                        <p>Premendo il pulsante \"Accetto\", procederà all'acquisto, confermando espressamente le condizioni di cui sopra. Se non è d'accordo annulli l'acquisto con il pulsante \"Non accetto\".</p>\n");
+                    positive = "Accetto";
+                    negative = "Non accetto";
+                } else {  // FR
+                    title = "Conditions d'utilisation";
+                    contents = Html.fromHtml(
+                                    "                        <p>Bitboat (ce site) est une plateforme d'échange de monnaie numérique (Bitcoin), le réglement s'effectue par mandat compte, un service de la banque postale.</p>\n" +
+                                    "                        <p></p>\n" +
+                                    "                        <p>1) Vous avez pris connaissance et acceptez les points évoqués dans notre FAQ (https://www.bitboat.net/fr/help)</p>\n" +
+                                    "                        <p>2) Vous achetez des bitcoins à des fins licites.</p>\n" +
+                                    "                        <p>3) Vous avez conscience que Bitboat n'est affilié en aucune façon à La banque Postale. Bitboat est un service de mise en relation de particuliers.</p>\n" +
+                                    "                        <p></p>\n" +
+                                    "                        <p></p>\n" +
+                                    "                        <hr>\n" +
+                                    "                        <p>En cliquant sur le bouton «Accepter», vous approuvez les conditions de vente ci-dessus.</p>"
+                    );
+                    positive = "Accepter";
+                    negative = "Refuser";
+                }
                 (new MaterialDialog.Builder(BitBoatActivity.this)).
-                        title("Per favore, accetti le condizioni d'uso per procedere all'acquisto")
-                        .content(Html.fromHtml(
-                                "                        <p>Bitboat (questo sito) è una piattaforma per l'acquisto di Bitcoin o altra valuta digitale, con pagamenti corrisposti mediante circuiti Intesa Superflash o Poste Italiane Postepay.</p>\n" +
-                                "                        <p>Accettando queste condizioni <strong>l'acquirente (Lei, fruitore del sito) conferma</strong> che:</p>\n" +
-                                "                        <p>1) In caso di pagamento mediante \"ricarica online\", dichiara di essere il titolare del conto o carta da cui verrà effettuato il pagamento.</p>\n" +
-                                "                        <p>2) L'indirizzo Bitcoin (o altra valuta digitale) di destinazione è un facente parte di un suo <a target=\"_blank\" href=\"https://bitcoin.org/it/scegli-il-tuo-portafoglio\">wallet</a>, anche noto come \"portafogli digitale\", e non un servizio terzo. L'acquirente non utilizzerà Bitboat per inviare Bitcoin a servizi terzi.</p>\n" +
-                                "                        <p>3) Sta acquistando Bitcoin (o altra valuta digitale) per finalità lecite.</p>\n" +
-                                "                        <p>4) Ricaricherà <strong>esattamente</strong> la somma richiesta, o, se impossibilitato, non procederà alla ricarica. Se ritenuto necessario da Bitboat, acconsente a comunicare, successivamente, ulteriori dati inerenti la sua identità ed il pagamento effettuato.</p>\n" +
-                                "                        <p>5) E' a conoscenza del fatto che né \"Intesa Sanpaolo\" né \"Poste Italiane\" sono affiliate alle attività svolte su questo sito.</p>\n" +
-                                "                        <hr>\n" +
-                                "                        <p>Premendo il pulsante \"Accetto\", procederà all'acquisto, confermando espressamente le condizioni di cui sopra. Se non è d'accordo annulli l'acquisto con il pulsante \"Non accetto\".</p>\n"))
-                        .positiveText("Accetto")
-                        .negativeText("Non accetto")
+                        title(title)
+                        .content(contents)
+                        .positiveText(positive)
+                        .negativeText(negative)
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
@@ -279,9 +324,14 @@ public class BitBoatActivity extends ActionBarActivity {
                     ListenableFuture<String> confirmedHTTP = Futures.transform(dialogFuture, new AsyncFunction<Boolean, String>() {
                         @Override
                         public ListenableFuture<String> apply(Boolean input) throws Exception {
-                            buyBtcButton.setEnabled(false);
-                            amountEdit.setEnabled(false);
-                            amountFiatEdit.setEnabled(false);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    buyBtcButton.setEnabled(false);
+                                    amountEdit.setEnabled(false);
+                                    amountFiatEdit.setEnabled(false);
+                                }
+                            });
                             return execHTTP(post);
                         }
                     });
@@ -323,12 +373,12 @@ public class BitBoatActivity extends ActionBarActivity {
                         }
 
                         @Override
-                        public void onFailure(Throwable t) {
-                            Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                        public void onFailure(final Throwable t) {
                             t.printStackTrace();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                     buyBtcButton.setEnabled(true);
                                     amountEdit.setEnabled(true);
                                     amountFiatEdit.setEnabled(true);
@@ -387,7 +437,11 @@ public class BitBoatActivity extends ActionBarActivity {
                         currentList.add(0, new BitBoatTransaction(
                                 new Date(((Number) map.get("timestamp")).longValue()),
                                 map.get("fb").toString(),
-                                map.get("ttype").equals("sf") ? BitBoatTransaction.PAYMETHOD_SUPERFLASH : BitBoatTransaction.PAYMETHOD_POSTEPAY,
+                                map.get("ttype").equals("sf") ?
+                                        BitBoatTransaction.PAYMETHOD_SUPERFLASH :
+                                map.get("ttype").equals("pp") ?
+                                        BitBoatTransaction.PAYMETHOD_POSTEPAY :
+                                        BitBoatTransaction.PAYMETHOD_MANDATCOMPTE,
                                 Coin.parseCoin(vendor.get("amount").toString()),
                                 Fiat.parseFiat("EUR", vendor.get("eur").toString()),
                                 vendor_v_value.get("pp").toString(),
@@ -567,8 +621,10 @@ public class BitBoatActivity extends ActionBarActivity {
         ListenableFuture<ExchangeRate> exchangeFuture;
         if (payMethod == BitBoatTransaction.PAYMETHOD_POSTEPAY) {
             exchangeFuture = ppPrice;
-        } else {
+        } else if (payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH) {
             exchangeFuture = sfPrice;
+        } else {
+            exchangeFuture = mcPrice;
         }
         return exchangeFuture;
     }
