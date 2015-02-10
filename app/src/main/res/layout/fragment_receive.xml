@@ -70,11 +70,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="center"
-                    android:padding="16dp"
+                    android:padding="4dp"
                     android:text="@string/newAddress"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/accent"
-                    android:textSize="16sp" />
+                    android:textSize="13sp" />
 
             </LinearLayout>
 
