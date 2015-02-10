@@ -724,6 +724,22 @@ public class WalletClient {
         return asyncWamp;
     }
 
+    public ListenableFuture<String> fundReceivingId(String receivingId) {
+        final SettableFuture<String> asyncWamp = SettableFuture.create();
+        mConnection.call("http://greenaddressit.com/vault/fund_receiving_id", String.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object address) {
+                asyncWamp.set((String) address);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, receivingId);
+        return asyncWamp;
+    }
+
     private ListenableFuture<PinData> getPinData(final String pin, final SetPinData setPinData) {
         final SettableFuture<PinData> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/pin/get_password", String.class, new Wamp.CallHandler() {
@@ -992,7 +1008,7 @@ public class WalletClient {
      * @param updateImmediately whether to not wait for server to reply before updating
      *                          the value in local settings dict (set false to wait)
      */
-    public void setAppearanceValue(final String key, final Object value, final boolean updateImmediately) {
+    public ListenableFuture<Boolean> setAppearanceValue(final String key, final Object value, final boolean updateImmediately) {
         final Object oldValue = loginData.appearance.get(key);
         if (updateImmediately) {
             loginData.appearance.put(key, value);
@@ -1004,16 +1020,18 @@ public class WalletClient {
         try {
             new MappingJsonFactory().getCodec().writeValue(os, newAppearance);
         } catch (final IOException e) {
-            return;
+            return Futures.immediateFailedFuture(new GAException(e.getMessage()));
         }
         final String newJSON = os.toString();
 
+        final SettableFuture<Boolean> ret = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/login/set_appearance", Map.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object o) {
                 if (!updateImmediately) {
                     loginData.appearance.put(key, value);
                 }
+                ret.set(true);
             }
 
             @Override
@@ -1023,8 +1041,11 @@ public class WalletClient {
                     // restore old value
                     loginData.appearance.put(key, oldValue);
                 }
+                ret.setException(new GAException(s2));
             }
         }, newJSON);
+
+        return ret;
     }
 
     public ListenableFuture<Object> requestTwoFacCode(final String method, final String action) {

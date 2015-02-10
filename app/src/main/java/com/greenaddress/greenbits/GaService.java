@@ -137,6 +137,7 @@ public class GaService extends Service {
     private Map<Sha256Hash, List<Long>> unspentOutputsOutpoints;
     private Map<Long, DeterministicKey> gaDeterministicKeys;
     private String receivingId;
+    private String country;
     private byte[] gaitPath;
 
     private FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
@@ -146,6 +147,7 @@ public class GaService extends Service {
             fiatExchange = result.exchange;
             subaccounts = result.subaccounts;
             receivingId = result.receiving_id;
+            country = result.country;
             gaitPath = Hex.decode(result.gait_path);
 
             // do not get latest address - always get a new one in ReceiveFragment
@@ -1132,8 +1134,8 @@ public class GaService extends Service {
      * @param updateImmediately whether to not wait for server to reply before updating
      *                          the value in local settings dict (set false to wait)
      */
-    public void setAppearanceValue(final String key, final Object value, final boolean updateImmediately) {
-        client.setAppearanceValue(key, value, updateImmediately);
+    public ListenableFuture<Boolean> setAppearanceValue(final String key, final Object value, final boolean updateImmediately) {
+        return client.setAppearanceValue(key, value, updateImmediately);
     }
 
 
@@ -1163,6 +1165,10 @@ public class GaService extends Service {
 
     public String getReceivingId() {
         return receivingId;
+    }
+
+    public String getCountry() {
+        return country;
     }
 
     public int getSpvBlocksLeft() {
@@ -1316,5 +1322,9 @@ public class GaService extends Service {
             }
         }
         return enabledTwoFac;
+    }
+
+    public ListenableFuture<String> fundReceivingId(String receivingId) {
+        return client.fundReceivingId(receivingId);
     }
 }

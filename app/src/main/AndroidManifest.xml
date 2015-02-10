@@ -2,7 +2,7 @@
 <!-- F-DROID HACK (for some reason checkupdates expects package name to match appid)
     package="com.greenaddress.greenbits_android_wallet" --> 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.greenaddress.greenbits.ui">
+    package="com.greenaddress.greenbits.ui" >
 
     <supports-screens
         android:anyDensity="true"
@@ -133,6 +133,10 @@
         <activity
             android:name=".TwoFactorActivity"
             android:label="@string/twoFacSetupHeader" >
+        </activity>
+        <activity
+            android:name=".BitBoatActivity"
+            android:label="@string/title_activity_bit_boat" >
         </activity>
     </application>
 

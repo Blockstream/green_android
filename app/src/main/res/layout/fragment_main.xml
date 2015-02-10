@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:gravity="right"
             android:paddingRight="@dimen/activity_horizontal_margin">
+
             <TextView
                 android:id="@+id/mainBitcoinScaleText"
                 android:layout_width="wrap_content"
@@ -53,6 +54,21 @@
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingRight="@dimen/activity_horizontal_margin">
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="35sp"
+                android:text="@string/buyBTC"
+                android:id="@+id/buyBtcButton"
+                style="@style/myButton"
+                android:textColor="@color/white"
+                android:layout_weight="0"
+                android:layout_gravity="top" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
             <com.greenaddress.greenbits.ui.FontAwesomeTextView
 
                 android:layout_width="wrap_content"
@@ -60,7 +76,9 @@
                 android:textColor="@color/secondaryTextColor"
                 android:textSize="24sp"
 
-                android:id="@+id/mainLocalBalanceIcon" />
+                android:id="@+id/mainLocalBalanceIcon"
+                android:layout_weight="0"
+                android:layout_gravity="top" />
 
             <TextView
                 android:id="@+id/mainLocalBalanceText"
@@ -71,7 +89,8 @@
 
                 android:textSize="24sp"
 
-                />
+                android:layout_weight="0"
+                android:layout_gravity="top" />
         </LinearLayout>
 
     </LinearLayout>

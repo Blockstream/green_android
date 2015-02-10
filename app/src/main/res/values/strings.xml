@@ -181,5 +181,16 @@
     <string name="phoneNumber">phone number</string>
     <string name="newAddress">New Address</string>
     <string name="txReceivedOn">Received on</string>
+    <string name="title_activity_bit_boat">Buy BTC with BitBoat</string>
+    <string name="buyBTC">Buy BTC</string>
+    <string name="buyBtcPendingOrders">Pending orders</string>
+    <string name="methodOfPayment">Method of payment</string>
+    <string name="minutesLeft">%s minutes left</string>
+    <string name="txStatusSubmitted">Submitted</string>
+    <string name="txStatusPending">Pending</string>
+    <string name="txStatusAccepted">Accepted</string>
+    <string name="txStatusQueued">Queued</string>
+    <string name="txStatusUnknown">Unknown Status</string>
+    <string name="onlyBtcForMethodOfPayment">Only %s is available for this method of payment.</string>
 
 </resources>

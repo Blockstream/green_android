@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,11 +25,13 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
@@ -395,6 +398,17 @@ public class MainFragment extends GAFragment implements Observer {
                 },
                 rootView.findViewById(R.id.mainNoTwoFacFooter)
         );
+
+        final String country = ((GreenAddressApplication) getActivity().getApplication()).gaService.getCountry();
+        if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null || !country.equals("IT")) {
+            rootView.findViewById(R.id.buyBtcButton).setVisibility(View.GONE);
+        }
+        rootView.findViewById(R.id.buyBtcButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), BitBoatActivity.class));
+            }
+        });
 
         return rootView;
     }
