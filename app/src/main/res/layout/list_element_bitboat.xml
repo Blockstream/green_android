@@ -118,7 +118,7 @@
         android:layout_toLeftOf="@id/listRightElement"
         android:gravity="center_vertical"
         android:id="@+id/listCentralElement"
-        android:layout_toStartOf="@id/list_item_layout">
+        android:layout_toStartOf="@id/listInOutRelative">
 
         <TextView
             android:id="@+id/listNumberText"
