@@ -103,6 +103,10 @@ public class BitBoatActivity extends ActionBarActivity {
             finish();
             return;
         }
+        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
+            finish();
+            return;
+        }
         handler = new Handler();
         setContentView(R.layout.activity_bit_boat);
 
