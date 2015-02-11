@@ -38,13 +38,15 @@
                 android:textColor="@color/textColor"
                 android:textSize="45sp" />
 
-            <TextView
-                android:id="@+id/mainBalanceQuestionMark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <Button
+                style="@style/myButton"
+                android:layout_width="25sp"
+                android:layout_height="30sp"
                 android:text="\?"
-                android:textColor="@color/accent"
-                android:textSize="30sp" />
+                android:id="@+id/mainBalanceQuestionMark"
+                android:textColor="@color/white"
+                android:padding="0dp" />
+
         </LinearLayout>
 
         <LinearLayout
