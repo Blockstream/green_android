@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -127,15 +128,18 @@
 
         </LinearLayout>
 
-        <Button
-            style="@style/myButton"
+        <com.dd.CircularProgressButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/buyBTC"
             android:id="@+id/buyBtcButton"
-            android:textColor="@color/white"
+            android:layout_gravity="right"
             android:layout_weight="0"
-            android:layout_gravity="right" />
+            style="@style/myButton"
+            app:cpb_textIdle="@string/buyBTC"
+            app:cpb_colorIndicator="@color/accent"
+            app:cpb_selectorIdle="@drawable/buttonprogressselector"
+            android:elevation="8dp"
+            android:textColor="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"

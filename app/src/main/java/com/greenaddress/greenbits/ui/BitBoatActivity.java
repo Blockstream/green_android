@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.dd.CircularProgressButton;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -46,7 +46,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.utils.ExchangeRate;
 import org.bitcoinj.utils.Fiat;
 import org.bitcoinj.utils.MonetaryFormat;
@@ -59,13 +58,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
-
-import de.schildbach.wallet.ui.ScanActivity;
 
 public class BitBoatActivity extends ActionBarActivity {
 
@@ -79,11 +78,31 @@ public class BitBoatActivity extends ActionBarActivity {
     private EditText amountEdit;
     private EditText amountFiatEdit;
     private MonetaryFormat bitcoinFormat;
-    private boolean updatingPending;
+    private boolean updatingPending, inProgress;
+    // storing pendingFutures keys in savedInstanceState doesn't work well, because
+    // http callback, which contains the id required to add to the map, can fire after
+    // the device has been rotated, and in such case the button won't get reenabled:
+    private static Set<String> pendingFuturesSet = new HashSet<>();
+    // in case http returns only after rotating finishes, it needs to be called from
+    // the previous instance:
+    private static Runnable currentInstanceReinitCallbacks;
+    private Map<String, SettableFuture<Boolean>> pendingFutures = new HashMap<>();
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("inProgress", inProgress);
+        outState.putBoolean("pausing", pausing);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (((GreenAddressApplication) getApplication()).gaService == null) {
+            finish();
+            return;
+        }
         handler = new Handler();
         setContentView(R.layout.activity_bit_boat);
 
@@ -219,12 +238,55 @@ public class BitBoatActivity extends ActionBarActivity {
             }
         });
 
-        final Button buyBtcButton = (Button) findViewById(R.id.buyBtcButton);
+        final CircularProgressButton buyBtcButton = (CircularProgressButton) findViewById(R.id.buyBtcButton);
+
+        final FutureCallback<Boolean> reEnableButtonCallback = new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(@Nullable Boolean result) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        buyBtcButton.setProgress(0);
+                        inProgress = false;
+                        amountEdit.setEnabled(true);
+                        amountFiatEdit.setEnabled(true);
+                        amountEdit.setText("");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        };
+
+        // restore button re-enabling callbacks
+        if (savedInstanceState != null) {
+            inProgress = savedInstanceState.getBoolean("inProgress");
+            pausing = savedInstanceState.getBoolean("pausing");
+            if (inProgress) {
+                amountEdit.setEnabled(false);
+                amountFiatEdit.setEnabled(false);
+            }
+            currentInstanceReinitCallbacks = new Runnable() {
+                @Override
+                public void run() {
+                    for (String key : pendingFuturesSet) {
+                        // reenable the button only after status is available
+                        SettableFuture<Boolean> future = SettableFuture.create();
+                        Futures.addCallback(future, reEnableButtonCallback);
+                        pendingFutures.put(key, future);
+                    }
+                }
+            };
+            currentInstanceReinitCallbacks.run();
+        }
 
         buyBtcButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (inProgress) return;
                 Coin available = payMethod == BitBoatTransaction.PAYMETHOD_POSTEPAY ? ppAvailable :
                                  payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? sfAvailable :
                                  payMethod == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? mcAvailable :
@@ -300,7 +362,7 @@ public class BitBoatActivity extends ActionBarActivity {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 super.onPositive(dialog);
-                                List<ListenableFuture<String>> addresses = new ArrayList<ListenableFuture<String>>();
+                                List<ListenableFuture<String>> addresses = new ArrayList<>();
                                 addresses.add(Futures.transform(((GreenAddressApplication) getApplication()).gaService.getNewAddress(0), new Function<QrBitmap, String>() {
                                     @Nullable
                                     @Override
@@ -337,7 +399,9 @@ public class BitBoatActivity extends ActionBarActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    buyBtcButton.setEnabled(false);
+                                    buyBtcButton.setIndeterminateProgressMode(true);
+                                    buyBtcButton.setProgress(50);
+                                    inProgress = true;
                                     amountEdit.setEnabled(false);
                                     amountFiatEdit.setEnabled(false);
                                 }
@@ -348,16 +412,6 @@ public class BitBoatActivity extends ActionBarActivity {
                     Futures.addCallback(confirmedHTTP, new FutureCallback<String>() {
                         @Override
                         public void onSuccess(@Nullable String result) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    buyBtcButton.setEnabled(true);
-                                    amountEdit.setEnabled(true);
-                                    amountFiatEdit.setEnabled(true);
-                                    amountEdit.setText("");
-                                }
-                            });
-
                             Map<String, Object> json = null;
                             try {
                                 json = new MappingJsonFactory().getCodec().readValue(
@@ -367,6 +421,14 @@ public class BitBoatActivity extends ActionBarActivity {
                             }
                             String id = (String) json.get("id");
                             ArrayList<String> pending = (ArrayList) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("pending_bitboat_ids");
+                            // reenable the button only after status is available
+                            SettableFuture<Boolean> future = SettableFuture.create();
+                            Futures.addCallback(future, reEnableButtonCallback);
+                            pendingFuturesSet.add(id);
+                            pendingFutures.put(id, future);
+                            if (currentInstanceReinitCallbacks != null) {
+                                currentInstanceReinitCallbacks.run();
+                            }
                             if (pending == null) pending = new ArrayList<>();
                             pending.add(id);
                             Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.setAppearanceValue("pending_bitboat_ids", pending, false), new FutureCallback<Boolean>() {
@@ -389,7 +451,8 @@ public class BitBoatActivity extends ActionBarActivity {
                                 @Override
                                 public void run() {
                                     Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                                    buyBtcButton.setEnabled(true);
+                                    buyBtcButton.setProgress(0);
+                                    inProgress = false;
                                     amountEdit.setEnabled(true);
                                     amountFiatEdit.setEnabled(true);
                                 }
@@ -441,6 +504,12 @@ public class BitBoatActivity extends ActionBarActivity {
                         newPending.add(pending.get(i));
                         anyToCheckAgain = true;
                         isRelevant = true;
+                    }
+                    SettableFuture<Boolean> future = pendingFutures.get(pending.get(i));
+                    if (future != null) {
+                        future.set(true);
+                        pendingFutures.remove(pending.get(i));
+                        pendingFuturesSet.remove(pending.get(i));
                     }
                     if (isRelevant && map.get("status").equals("accepted")) {
                         Map<?, ?> vendor = (Map<?, ?>) map.get("vendor");

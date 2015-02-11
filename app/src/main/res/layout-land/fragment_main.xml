@@ -20,7 +20,9 @@
             android:text="@string/buyBTC"
             android:id="@+id/buyBtcButton"
             android:textColor="@color/white"
-            android:layout_weight="0" />
+            android:layout_weight="0"
+            android:nestedScrollingEnabled="true"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin" />
 
         <Space
             android:layout_width="wrap_content"
