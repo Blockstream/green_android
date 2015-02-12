@@ -42,6 +42,7 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
             holder.textWho = (TextView) returnedView.findViewById(R.id.listWhoText);
             holder.textCF = (TextView) returnedView.findViewById(R.id.listCFText);
             holder.bitcoinScale = (TextView) returnedView.findViewById(R.id.listBitcoinScaleText);
+            holder.bitcoinIcon = (TextView) returnedView.findViewById(R.id.listBitcoinIcon);
             returnedView.setTag(holder);
         } else {
             returnedView = convertView;
@@ -51,6 +52,11 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
         holder.textFirstBits.setText(current.firstbits);
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+        if (btcUnit == null || btcUnit.equals("bits")) {
+            holder.bitcoinIcon.setText("bits ");
+        } else {
+            holder.bitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
+        }
         holder.textValueBtc.setText(bitcoinFormat.noCode().format(current.valueBtc));
         if (current.valueFiat == null) {
             holder.textValueFiat.setText("");
@@ -81,5 +87,6 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
         protected TextView textWho;
         protected TextView textCF;
         protected TextView bitcoinScale;
+        protected TextView bitcoinIcon;
     }
 }
