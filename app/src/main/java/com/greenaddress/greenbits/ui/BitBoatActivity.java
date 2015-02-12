@@ -474,10 +474,18 @@ public class BitBoatActivity extends ActionBarActivity {
             return;
         }
         updatingPending = true;
-        final ArrayList<String> pending = (ArrayList) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("pending_bitboat_ids");
+        final ArrayList<Object> pending = (ArrayList) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("pending_bitboat_ids");
+        final ArrayList<String> pendingIds = new ArrayList<>();
         final ArrayList<ListenableFuture<String>> results = new ArrayList<>();
         if (pending == null) return;
-        for (final String id : pending) {
+        for (final Object idOrMap : pending) {
+            final String id;
+            if (idOrMap instanceof String) {
+                id = (String) idOrMap;
+            } else {
+                id = ((Map<String, String>) idOrMap).get("id");
+            }
+            pendingIds.add(id);
             results.add(Futures.transform(execHTTP(new HttpGet("https://www.bitboat.net/__validate/" + id)), new AsyncFunction<String, String>() {
                 @Override
                 public ListenableFuture<String> apply(String input) throws Exception {
@@ -488,7 +496,7 @@ public class BitBoatActivity extends ActionBarActivity {
         Futures.addCallback(Futures.allAsList(results), new FutureCallback<List<String>>() {
             @Override
             public void onSuccess(@Nullable List<String> results) {
-                final ArrayList<String> newPending = new ArrayList<>();
+                final ArrayList<Object> newPending = new ArrayList<>();
                 final LinkedList<BitBoatTransaction> currentList = new LinkedList<>();
                 int i = 0;
                 boolean anyToCheckAgain = false;
@@ -503,30 +511,30 @@ public class BitBoatActivity extends ActionBarActivity {
                     Map<?, ?> map = (Map<?, ?>) json.get(0);
                     Date date = new Date(((Number) map.get("timestamp")).longValue());
                     long age = new Date().getTime() - date.getTime();
-                    boolean isRelevant = false;
-                    if (age < 1000 * 60 * 60 * 24) {
-                        newPending.add(pending.get(i));
-                        anyToCheckAgain = true;
-                        isRelevant = true;
-                    }
-                    SettableFuture<Boolean> future = pendingFutures.get(pending.get(i));
+                    boolean isRelevant = age < 1000 * 60 * 60 * 24;
+                    SettableFuture<Boolean> future = pendingFutures.get(pendingIds.get(i));
+                    Object pendingObj = pending.get(i); // String changes to Map when EUR value is available
                     if (future != null) {
                         future.set(true);
-                        pendingFutures.remove(pending.get(i));
-                        pendingFuturesSet.remove(pending.get(i));
+                        pendingFutures.remove(pendingIds.get(i));
+                        pendingFuturesSet.remove(pendingIds.get(i));
                     }
                     if (isRelevant && map.get("status").equals("accepted")) {
                         Map<?, ?> vendor = (Map<?, ?>) map.get("vendor");
                         Map<?, ?> vendor_v = (Map<?, ?>) vendor.get("v");
                         Map<?, ?> vendor_v_value = (Map<?, ?>) vendor_v.get("value");
+                        // change String to Map with the EUR value:
+                        pendingObj = new HashMap<String, String>();
+                        ((HashMap<String, String>) pendingObj).put("id", pendingIds.get(i));
+                        ((HashMap<String, String>) pendingObj).put("eur_value", vendor.get("eur").toString());
                         currentList.add(0, new BitBoatTransaction(
                                 date,
                                 map.get("fb").toString(),
                                 map.get("ttype").equals("sf") ?
                                         BitBoatTransaction.PAYMETHOD_SUPERFLASH :
-                                map.get("ttype").equals("pp") ?
-                                        BitBoatTransaction.PAYMETHOD_POSTEPAY :
-                                        BitBoatTransaction.PAYMETHOD_MANDATCOMPTE,
+                                        map.get("ttype").equals("pp") ?
+                                                BitBoatTransaction.PAYMETHOD_POSTEPAY :
+                                                BitBoatTransaction.PAYMETHOD_MANDATCOMPTE,
                                 Coin.parseCoin(vendor.get("amount").toString()),
                                 Fiat.parseFiat("EUR", vendor.get("eur").toString()),
                                 vendor_v_value.get("pp").toString(),
@@ -535,6 +543,10 @@ public class BitBoatActivity extends ActionBarActivity {
                         ));
                     } else if (isRelevant) {
                         final String status;
+                        Fiat fiatValue = null;
+                        if (!(pending.get(i) instanceof String)) { // it's a map with eur value
+                            fiatValue = Fiat.parseFiat("EUR", ((Map<String, String>) pending.get(i)).get("eur_value"));
+                        }
                         if (map.get("status").equals("submitted")) {
                             status = getResources().getString(R.string.txStatusSubmitted);
                         } else if (map.get("status").equals("pending")) {
@@ -559,9 +571,13 @@ public class BitBoatActivity extends ActionBarActivity {
                                 map.get("fb") != null ? map.get("fb").toString() : "",
                                 -1,
                                 Coin.parseCoin(map.get("amount").toString()),
-                                null,
+                                fiatValue,
                                 "", "", status
                         ));
+                    }
+                    if (isRelevant) {
+                        newPending.add(pendingObj);
+                        anyToCheckAgain = true;
                     }
                     i += 1;
                 }
