@@ -1,191 +1,185 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="action_settings">Configurazione</string>
-    <string name="title_activity_mnemonic">Accedi</string>
-    <string name="title_activity_send">Invia</string>
-    <string name="title_activity_receive">Ricevi</string>
-
-    <string name="sendToText">A</string>
-    <string name="sendAmountText">Ammontare</string>
-    <string name="sendSendButton">INVIA</string>
-    <string name="title_activity_pin">Pin</string>
-    <string name="pinSaveText">Salva</string>
-    <string name="pinLoginText">Accedi</string>
-    <string name="sendAvailableText">Disponibile</string>
-    <string name="title_activity_qr_scanner">QR Scanner</string>
-    <string name="title_activity_sign_up">Registrati</string>
-    <string name="signupContinueButtonText">CONTINUA</string>
-    <string name="signupCheckBoxText">Ho custodito la passphrase e ho letto il <a href="https://greenaddress.it/it/tos/">ToS</a></string>
-    <string name="firstSignUpText">REGISTRATI</string>
-    <string name="firstLogInText">ACCEDI</string>
-    <string name="bitcoinScaleUnitText">Unit</string>
-    <string name="bitcoinScaleMilliText">Milli</string>
-    <string name="bitcoinScaleMicroText">Micro</string>
-    <string name="bitcoinScaleBitsText">Bits</string>
-    <string name="receive_title">RICEVI</string>
-    <string name="main_title">BILANCIO</string>
-    <string name="send_title">INVIA</string>
-    <string name="action_search">Cerca</string>
-    <string name="pinTitleText">PIN</string>
-    <string name="network_unavailable">Disconnesso</string>
-    <string name="newTxTitle">Nuova transazione</string>
-    <string name="sweepAddressTitle">Preleva tutto da qrcode</string>
-    <string name="twoFactorChoicesTitle">Scegli l\'autenticazione a due fattori</string>
-    <string name="choose">SCEGLI</string>
-    <string name="cancel">CANCELLA</string>
-    <string name="attemptsLeft">%s tentativi rimasti</string>
-
-
-    <string-array name="twoFactorChoices">
-        <item>Email</item>
-        <item>SMS</item>
-        <item>Chiamata</item>
-        <item>Google Auth</item>
-    </string-array>
-
-    <string name="setup">CONFIGURAZIONE 2FA</string>
-    <string name="send">INVIA</string>
-    <string name="sweep">PRELEVA</string>
-    <string name="sweep_bip38_passphrase_prompt">Per piacere inserisci la password BIP38:</string>
-    <string name="invalid_passphrase">Password incorretta</string>
-    <string name="invalid_key">Chiave invalida</string>
-    <string name="title_mnemonic">Mnemonica</string>
-    <string name="warning">Attenzione!</string>
-    <string name="save_password_now">Devi salvarti la passphrase, adesso.</string>
-    <string name="greenaddress_headline">il più semplice, sicuro e veloce wallet bitcoin</string>
-    <string name="pinSkipText">SALTA</string>
-    <string name="sendOptionalMemo">Memo opzionale</string>
-    <string name="madeBy">da GreenAddress</string>
-    <string name="welcomeGreenBits">Benvenuti a GreenBits</string>
-    <string name="attemptsFinished">PIN non valido, non sono rimasti tentativi. Per piacere accedi con la passphrase.</string>
-    <string name="attemptsLeftLong">PIN non valido, hai %s tentativi rimanenti</string>
-    <string name="warnOnPaste">Agire con cautela, altre applicazioni posso leggere o cambiare la clipboard</string>
-    <string name="toastOnCopyAddress">Indirizzo copiato.</string>
-    <string name="receiveAddressSubTitle">Indirizzo</string>
-    <string name="sendPayTo">Paga a</string>
-    <string name="action_sweep">Sweep</string>
-    <string name="action_exit">Esci</string>
-    <string name="txTypeIn" >Deposito</string>
-    <string name="txTypeOut" >Prelievo</string>
-    <string name="txTypeRedeposit" >Giroconto</string>
-    <string name="mnemonicHint">Inserisci la tua passphrase GreenAddress o fai lo scan del qrcode</string>
-    <string name="title_activity_settings">Configurazione</string>
-
-    <string name="ago"> fa</string>
-    <string-array name="timesStrings" >
-        <item>anno</item>
-        <item>mese</item>
-        <item>giorno</item>
-        <item>ora</item>
-        <item>minuto</item>
-        <item>secondo</item>
-    </string-array>
-    <string-array name="timesStringPlurals" >
-        <item>anni</item>
-        <item>mesi</item>
-        <item>giorni</item>
-        <item>ore</item>
-        <item>minuti</item>
-        <item>secondi</item>
-    </string-array>
-    <string name="bitcoinScaleSatoshiText">Satoshi</string>
-    <string name="pref_header_notifications">GreenBits</string>
-    <string name="txSubTitle">Dettagli transazione</string>
-    <string name="txHashText">Hash</string>
-    <string name="txRecipientText">Destinatario</string>
-    <string name="txMemoText">Memo</string>
-
-    <string name="txDateText">Data</string>
-    <string name="txAmountText">Importo</string>
-    <string name="newTxAmount">Importo: </string>
-    <string name="newTxRecipient">Destinatario: </string>
-    <string name="newTxFee">Commissione: </string>
-    <string name="network_unavailable_text">Rete non disponibile</string>
-    <string name="invalidAmountAndAddress">Indirizzo ed importo non validi</string>
-    <string name="invalidAddress">Indirizzo non valido</string>
-    <string name="invalidAmount">Importo non valido</string>
-    <string name="noBalanceFirstLine">Iniziare con i <a href="https://bitcoin.org/it/getting-started">Bitcoin</a></string>
-    <string name="noBalanceSecondLine">Dove <a href="http://howtobuybitcoins.info/">comprare</a></string>
-    <string name="noBalanceThirdLine">Leggi le nostre <a href="https://greenaddress.it/it/faq">FAQ</a></string>
-    <string name="trezor_headline">Per piacere segui le istruzioni sul Trezor</string>
-    <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Trezor per la posizione dei tasti:</string>
-    <string name="trezorProvidePassphrase">Per piacere inserisci la passphrase del tuo Trezor</string>
-    <string name="main_account">Principale</string>
-    <string name="footerAccount">Account: </string>
-    <string name="btchipProvidePIN">Digita il tuo PIN per BTChip:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Rilevato TREZOR firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.3.0 da http://mytrezor.com/ dal tuo PC.</string>
-    <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
-    <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
-    <string name="instantConfirmation">Conferma istantanea</string>
-    <string name="pref_header_more">Configurazione aggiuntiva</string>
-    <string name="trezor_login_failed">TREZOR accesso fallito</string>
-    <string name="trezor_login_failed_details">Probabilmente significa che devi usare l\'app su desktop per configurare TREZOR con GreenAddress.</string>
-    <string name="more_settings">Vedi altra app per più opzioni di configurazione</string>
-    <string name="more_settings_detail">Our previous app allows changing other settings like subaccounts, watch only login, and more.</string>
-    <string name="improve_security_ledger">Migliora la tua sicurezza con Ledger</string>
-    <string name="improve_security_ledger_detail">Ledger Wallet: Sicurezza da Smartcard per i tuoi Bitcoins.</string>
-    <string name="mnemonic_passphrase">Passphrase mnemonica</string>
-    <string name="mnemonic_passphrase_not_available">Passphrase non disponibile</string>
-    <string name="autologout_time">Logout automatico</string>
-    <string name="autologout_time_default"> minuti</string>
-    <string name="touch_to_display">Tocca per mostrare</string>
-    <string name="txUnconfirmedTx">Transazione non confermata. Per piacere aspetta per conferme per fidarti di questa transazione.</string>
-    <string name="txUnverifiedTx">Transazione non verificata. Per piacere aspetta la sicronizzazione per fidarti di questa transazione. Blocchi rimanenti:</string>
-    <string name="unconfirmedBalanceTitle">Bilancio non confermato</string>
-    <string name="unconfirmedBalanceText">Il tuo bilancio non è confermato. Significa che forse hai delle transazione appena ricevute o che comunque la verifica SPV non è finita. Blocchi rimanenti per la verifica SPV:</string>
-    <string name="spvNoWiFiText">You have over 1000 missing block headers to sync via SPV and WiFi connection is not available. What do you want to do?</string>
-    <string name="spvNoWiFiSyncAnyway">SYNC ANYWAY</string>
-    <string name="spvNoWifiWaitForWiFi">WAIT FOR WI-FI</string>
-    <string name="spvNoWiFiTitle">SPV synchronization</string>
-    <string name="unconfirmedBalanceSpvNotAvailable">not available (not synchronizing because no Wi-Fi is available)</string>
-    <string name="unconfirmedBalanceDoSyncWithoutWiFi">Do you want to synchronize without WiFi connection? It may incur additional costs from your cellular operator.</string>
-    <string name="NO">NO</string>
-    <string name="YES">SI</string>
-    <string name="enableSPV">Abilita SPV</string>
-    <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connection or low end phones.</string>
-    <string name="changingRequiresRestartTitle">Restart required</string>
-    <string name="changingRequiresRestartText">Changing this value requires restarting the app to take full effect. Please restart GreenBits. </string>
-    <string name="noTwoFactorWarning">You have no two factor authentication set up! Please go to settings to set it up!</string>
-    <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
-    <string name="scan_camera_problem_dialog_title">Camera problem</string>
-    <string name="providePassphrase">Please provide your passphrase:</string>
-    <string name="pref_header_twofactor">Two factor authentication</string>
-    <string name="twoFacPhoneCall">Phone call</string>
-    <string name="twoFacGauth">Google Authenticator</string>
-    <string name="twoFacSMS">SMS</string>
-    <string name="twoFacEmail">E-mail</string>
-    <string name="twoFacSetupHeader">%s 2FA setup</string>
-    <string name="progress">Progresso:</string>
-    <string name="twoFacStep1Description">First, you need to provide an authentication code from some of your already set up two factor authentication methods. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
-    <string name="twoFacStep1SelectExisting">Select existing 2FA method to authenticate setting up a new one:</string>
-    <string name="twoFacProvideDetails">Please provide your %s code.</string>
-    <string name="twoFacEmailChangeNotice">Providing an email enables notifications and transactions recovery</string>
-    <string name="twoFacEmailConfirmNotice">You will need to confirm your email in the next step, otherwise you won\'t receive any notifications.</string>
-    <string name="twoFacProvideConfirmationCodeDescription">You need to provide the confirmation code to make sure you have access to the new two factor authentication method. Only after you providing the code, the method will be enabled.</string>
-    <string name="continueText">Continua</string>
-    <string name="twoFacProvideAuthCodeDescription">You need to provide existing two factor authentication code. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
-    <string name="twoFacProvideGauthDetailsDescription">You need to provide one code from your new Google Authenticator. You can obtain it by scanning the QR code below in the Google Authenticator app.</string>
-    <string name="twoFacProvideGauthDetails">Per piacere fornisci il codice Google Authenticator.</string>
-    <string name="twoFacProvideConfirmationCode">Per piacere fornisci il codice %s.</string>
-    <string name="recoveryAndNotifications">Notifiche e backup</string>
-    <string name="emailAddress">indirizzo email</string>
-    <string name="phoneNumber">numero telefonico</string>
-    <string name="newAddress">Nuovo indirizzo</string>
-    <string name="txReceivedOn">Ricevuto su</string>
-    <string name="title_activity_bit_boat">Compra BTC con BitBoat</string>
-    <string name="buyBTC">Compra BTC</string>
-    <string name="buyBtcPendingOrders">Ordini in corso</string>
-    <string name="methodOfPayment">Metodo di pagamento</string>
-    <string name="minutesLeft">%s minuti rimanenti</string>
-    <string name="txStatusSubmitted">Inviato</string>
-    <string name="txStatusPending">In corso</string>
-    <string name="txStatusAccepted">Accettato</string>
-    <string name="txStatusQueued">In coda</string>
-    <string name="txStatusUnknown">Stato sconosciuto</string>
-    <string name="onlyBtcForMethodOfPayment">Sono disponibili solo %s per questo metodo di spesa.</string>
-    <string name="txStatusRejected">Rifiutato</string>
-    <string name="txStatusExpired">Scaduto</string>
-    <string name="txStatusCompleted">Completato</string>
-    <string name="txStatusLoading">Caricando</string>
-
+  <string name="action_settings">Configurazione</string>
+  <string name="title_activity_mnemonic">Accedi</string>
+  <string name="title_activity_send">Invia</string>
+  <string name="title_activity_receive">Ricevi</string>
+  <string name="sendToText">A</string>
+  <string name="sendAmountText">Ammontare</string>
+  <string name="sendSendButton">INVIA</string>
+  <string name="title_activity_pin">Pin</string>
+  <string name="pinSaveText">Salva</string>
+  <string name="pinLoginText">Accedi</string>
+  <string name="sendAvailableText">Disponibile</string>
+  <string name="title_activity_qr_scanner">QR Scanner</string>
+  <string name="title_activity_sign_up">Registrati</string>
+  <string name="signupContinueButtonText">CONTINUA</string>
+  <string name="signupCheckBoxText">Ho custodito la passphrase e ho letto il &lt;a href="https://greenaddress.it/it/tos/"&gt;ToS&lt;/a&gt;</string>
+  <string name="firstSignUpText">REGISTRATI</string>
+  <string name="firstLogInText">ACCEDI</string>
+  <string name="bitcoinScaleUnitText">Unit</string>
+  <string name="bitcoinScaleMilliText">Milli</string>
+  <string name="bitcoinScaleMicroText">Micro</string>
+  <string name="bitcoinScaleBitsText">Bits</string>
+  <string name="bitcoinScaleSatoshiText">Satoshi</string>
+  <string name="receive_title">RICEVI</string>
+  <string name="main_title">BILANCIO</string>
+  <string name="send_title">INVIA</string>
+  <string name="action_search">Cerca</string>
+  <string name="pinTitleText">PIN</string>
+  <string name="network_unavailable">Disconnesso</string>
+  <string name="newTxTitle">Nuova transazione</string>
+  <string name="sweepAddressTitle">Preleva tutto da qrcode</string>
+  <string name="twoFactorChoicesTitle">Scegli l\'autenticazione a due fattori</string>
+  <string name="choose">SCEGLI</string>
+  <string name="cancel">CANCELLA</string>
+  <string name="attemptsLeft">%s tentativi rimasti</string>
+  <string-array name="twoFactorChoices">
+    <item>Email</item>
+    <item>SMS</item>
+    <item>Chiamata</item>
+    <item>Google Auth</item>
+  </string-array>
+  <string-array name="timesStrings">
+    <item>anno</item>
+    <item>mese</item>
+    <item>giorno</item>
+    <item>ora</item>
+    <item>minuto</item>
+    <item>secondo</item>
+  </string-array>
+  <string-array name="timesStringPlurals">
+    <item>anni</item>
+    <item>mesi</item>
+    <item>giorni</item>
+    <item>ore</item>
+    <item>minuti</item>
+    <item>secondi</item>
+  </string-array>
+  <string name="setup">CONFIGURAZIONE 2FA</string>
+  <string name="send">INVIA</string>
+  <string name="sweep">PRELEVA</string>
+  <string name="sweep_bip38_passphrase_prompt">Per piacere inserisci la password BIP38:</string>
+  <string name="invalid_passphrase">Password incorretta</string>
+  <string name="invalid_key">Chiave invalida</string>
+  <string name="title_mnemonic">Mnemonica</string>
+  <string name="warning">Attenzione!</string>
+  <string name="save_password_now">Devi salvarti la passphrase, adesso.</string>
+  <string name="greenaddress_headline">il più semplice, sicuro e veloce wallet bitcoin</string>
+  <string name="pinSkipText">SALTA</string>
+  <string name="sendOptionalMemo">Memo opzionale</string>
+  <string name="madeBy">da GreenAddress</string>
+  <string name="welcomeGreenBits">Benvenuti a GreenBits</string>
+  <string name="attemptsFinished">PIN non valido, non sono rimasti tentativi. Per piacere accedi con la passphrase.</string>
+  <string name="attemptsLeftLong">PIN non valido, hai %s tentativi rimanenti</string>
+  <string name="warnOnPaste">Agire con cautela, altre applicazioni posso leggere o cambiare la clipboard</string>
+  <string name="toastOnCopyAddress">Indirizzo copiato.</string>
+  <string name="receiveAddressSubTitle">Indirizzo</string>
+  <string name="sendPayTo">Paga a</string>
+  <string name="action_sweep">Sweep</string>
+  <string name="action_exit">Esci</string>
+  <string name="txTypeIn">Deposito</string>
+  <string name="txTypeOut">Prelievo</string>
+  <string name="txTypeRedeposit">Giroconto</string>
+  <string name="mnemonicHint">Inserisci la tua passphrase GreenAddress o fai lo scan del qrcode</string>
+  <string name="title_activity_settings">Configurazione</string>
+  <string name="ago"> fa</string>
+  <string name="txSubTitle">Dettagli transazione</string>
+  <string name="txHashText">Hash</string>
+  <string name="txRecipientText">Destinatario</string>
+  <string name="txMemoText">Memo</string>
+  <!--Example settings for Notifications-->
+  <string name="pref_header_notifications">GreenBits</string>
+  <string name="txDateText">Data</string>
+  <string name="txAmountText">Importo</string>
+  <string name="newTxAmount">Importo: </string>
+  <string name="newTxRecipient">Destinatario: </string>
+  <string name="newTxFee">Commissione: </string>
+  <string name="network_unavailable_text">Rete non disponibile</string>
+  <string name="invalidAmountAndAddress">Indirizzo ed importo non validi</string>
+  <string name="invalidAddress">Indirizzo non valido</string>
+  <string name="invalidAmount">Importo non valido</string>
+  <string name="noBalanceFirstLine">Iniziare con i &lt;a href="https://bitcoin.org/it/getting-started"&gt;Bitcoin&lt;/a&gt;</string>
+  <string name="noBalanceSecondLine">Dove &lt;a href="http://howtobuybitcoins.info/"&gt;comprare&lt;/a&gt;</string>
+  <string name="noBalanceThirdLine">Leggi le nostre &lt;a href="https://greenaddress.it/it/faq"&gt;FAQ&lt;/a&gt;</string>
+  <string name="trezor_headline">Per piacere segui le istruzioni sul Trezor</string>
+  <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Trezor per la posizione dei tasti:</string>
+  <string name="trezorProvidePassphrase">Per piacere inserisci la passphrase del tuo Trezor</string>
+  <string name="main_account">Principale</string>
+  <string name="footerAccount">Account: </string>
+  <string name="btchipProvidePIN">Digita il tuo PIN per BTChip:</string>
+  <string name="firstLoginRequestedInstructionsOldTrezor">Rilevato TREZOR firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.3.0 da http://mytrezor.com/ dal tuo PC.</string>
+  <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
+  <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
+  <string name="instantConfirmation">Conferma istantanea</string>
+  <string name="pref_header_more">Configurazione aggiuntiva</string>
+  <string name="trezor_login_failed">TREZOR accesso fallito</string>
+  <string name="trezor_login_failed_details">Probabilmente significa che devi usare l\'app su desktop per configurare TREZOR con GreenAddress.</string>
+  <string name="more_settings">Vedi altra app per più opzioni di configurazione</string>
+  <string name="more_settings_detail">La nostra precedente app permette di cambiare altre impostazioni come sotto-account, accesso watch only, e altro.</string>
+  <string name="improve_security_ledger">Migliora la tua sicurezza con Ledger</string>
+  <string name="improve_security_ledger_detail">Ledger Wallet: Sicurezza da Smartcard per i tuoi Bitcoins.</string>
+  <string name="mnemonic_passphrase">Passphrase mnemonica</string>
+  <string name="mnemonic_passphrase_not_available">Passphrase non disponibile</string>
+  <string name="autologout_time">Logout automatico</string>
+  <string name="autologout_time_default"> minuti</string>
+  <string name="touch_to_display">Tocca per mostrare</string>
+  <string name="txUnconfirmedTx">Transazione non confermata. Per piacere aspetta per conferme per fidarti di questa transazione.</string>
+  <string name="txUnverifiedTx">Transazione non verificata. Per piacere aspetta la sicronizzazione per fidarti di questa transazione. Blocchi rimanenti:</string>
+  <string name="unconfirmedBalanceTitle">Bilancio non confermato</string>
+  <string name="unconfirmedBalanceText">Il tuo bilancio non è confermato. Significa che forse hai delle transazione appena ricevute o che comunque la verifica SPV non è finita. Blocchi rimanenti per la verifica SPV:</string>
+  <string name="spvNoWiFiText">Ti mancano oltre 1000 header di blocchi da sincronizzare via SPV e non è disponibile la connessione WiFi. Cosa vuoi fare?</string>
+  <string name="spvNoWiFiSyncAnyway">SINCRONIZZA COMUNQUE</string>
+  <string name="spvNoWifiWaitForWiFi">IN ATTESA DI WI-FI</string>
+  <string name="spvNoWiFiTitle">Sincronizzazione SPV</string>
+  <string name="unconfirmedBalanceSpvNotAvailable">non disponibile (nessuna sincronizzazione per mancanza di Wi-Fi)</string>
+  <string name="unconfirmedBalanceDoSyncWithoutWiFi">Vuoi sincronizzare senza connessione WiFi? Potrebbe comportare costi aggiuntivi da parte del tuo operatore cellulare.</string>
+  <string name="NO">NO</string>
+  <string name="YES">SI</string>
+  <string name="enableSPV">Abilita SPV</string>
+  <string name="enableSPVSummary">Simple Payment Verification (Verifica Semplice di Pagamento) permette di fidarsi del saldo e delle proprie transazioni grazie alla sincronizzazione con il network Bitcoin. Richiede banda ed elaborazione, quindi si consiglia di spegnerlo se non si ha una buona connessione o si faccia uso di telefoni di fascia bassa.</string>
+  <string name="changingRequiresRestartTitle">Richiesto riavvio</string>
+  <string name="changingRequiresRestartText">Cambiare questo valore richiedere il riavvio dell\'app per ottenere pieno effetto. Riavviare GreenBits.</string>
+  <string name="noTwoFactorWarning">Non hai impostato nessuna autenticazione a due fattori! Per favore, vai nelle impostazioni a configurarlo!</string>
+  <string name="scan_camera_problem_dialog_message">La fotocamera ha un problema. Probabilmente c\'è bisogno di riavviare il dispositivo.</string>
+  <string name="scan_camera_problem_dialog_title">Problema fotocamera</string>
+  <string name="providePassphrase">Please provide your passphrase:</string>
+  <string name="pref_header_twofactor">Autenticazione a due fattori</string>
+  <string name="twoFacPhoneCall">Chiamata telefonica</string>
+  <string name="twoFacSMS">SMS</string>
+  <string name="twoFacGauth">Google Authenticator</string>
+  <string name="twoFacEmail">E-mail</string>
+  <string name="twoFacSetupHeader">%s configurazione 2FA</string>
+  <string name="progress">Progresso:</string>
+  <string name="twoFacStep1Description">Per prima cosa, devi fornire un codice di autenticazione da uno dei tuoi già impostati metodi di autenticazione a due fattori. Questo per evitare che utenti malintenzionati possano modificare le impostazioni 2FA senza il tuo consenso.</string>
+  <string name="twoFacStep1SelectExisting">Seleziona un metodo 2FA pre-impostato per autenticare l\'impostazione di uno nuovo.</string>
+  <string name="twoFacProvideGauthDetailsDescription">C\'è bisogno che fornisci un codice dal tuo nuovo Google Authenticator. Puoi ottenerlo scansionando il codice QR qui sotto con l\'app Google Authenticator.</string>
+  <string name="twoFacProvideGauthDetails">Per piacere fornisci il codice Google Authenticator.</string>
+  <string name="twoFacProvideDetails">Prego, inserisci il tuo codice %s.</string>
+  <string name="twoFacEmailChangeNotice">Fornire un email consente alle notifiche e recupero delle transazioni.</string>
+  <string name="twoFacEmailConfirmNotice">Dovrai confermare l\'email nel prossimo passaggio, altrimenti non riceverai nessuna notifica.</string>
+  <string name="twoFacProvideConfirmationCodeDescription">Devi fornire il codice di conferma per essere sicuri che tu abbia accesso al nuovo metodo di autenticazione a due fattori. Solo dopo che hai fornito il codice, il metodo verrà abilitato.</string>
+  <string name="twoFacProvideConfirmationCode">Per piacere fornisci il codice %s.</string>
+  <string name="continueText">Continua</string>
+  <string name="twoFacProvideAuthCodeDescription">È necessario fornire un codice di autenticazione a due fattori esistente. Questo per evitare che utenti malintenzionati possano modificare le impostazioni 2FA senza il tuo consenso.</string>
+  <string name="recoveryAndNotifications">Notifiche e backup</string>
+  <string name="emailAddress">indirizzo email</string>
+  <string name="phoneNumber">numero telefonico</string>
+  <string name="newAddress">Nuovo indirizzo</string>
+  <string name="txReceivedOn">Ricevuto su</string>
+  <string name="title_activity_bit_boat">Compra BTC con BitBoat</string>
+  <string name="buyBTC">Compra BTC</string>
+  <string name="buyBtcPendingOrders">Ordini in corso</string>
+  <string name="methodOfPayment">Metodo di pagamento</string>
+  <string name="minutesLeft">%s minuti rimanenti</string>
+  <string name="txStatusSubmitted">Inviato</string>
+  <string name="txStatusPending">In corso</string>
+  <string name="txStatusAccepted">Accettato</string>
+  <string name="txStatusQueued">In coda</string>
+  <string name="txStatusUnknown">Stato sconosciuto</string>
+  <string name="onlyBtcForMethodOfPayment">Sono disponibili solo %s per questo metodo di spesa.</string>
+  <string name="txStatusRejected">Rifiutato</string>
+  <string name="txStatusExpired">Scaduto</string>
+  <string name="txStatusCompleted">Completato</string>
+  <string name="txStatusLoading">Caricando</string>
 </resources>
