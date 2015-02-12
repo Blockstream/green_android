@@ -1,3 +1,5 @@
+Build status: [![Build Status](https://travis-ci.org/greenaddress/GreenBits.png?branch=master)](https://travis-ci.org/greenaddress/GreenBits) 
+
 ## How to build
 
 Simply run `./gradlew build`
