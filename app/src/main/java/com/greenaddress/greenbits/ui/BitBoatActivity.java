@@ -366,6 +366,11 @@ public class BitBoatActivity extends ActionBarActivity {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 super.onPositive(dialog);
+                                buyBtcButton.setIndeterminateProgressMode(true);
+                                buyBtcButton.setProgress(50);
+                                inProgress = true;
+                                amountEdit.setEnabled(false);
+                                amountFiatEdit.setEnabled(false);
                                 List<ListenableFuture<String>> addresses = new ArrayList<>();
                                 addresses.add(Futures.transform(((GreenAddressApplication) getApplication()).gaService.getNewAddress(0), new Function<QrBitmap, String>() {
                                     @Nullable
@@ -392,6 +397,10 @@ public class BitBoatActivity extends ActionBarActivity {
                                             public void onFailure(Throwable t) {
                                                 t.printStackTrace();
                                                 Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                                buyBtcButton.setProgress(0);
+                                                inProgress = false;
+                                                amountEdit.setEnabled(true);
+                                                amountFiatEdit.setEnabled(true);
                                             }
                                         });
                             }
@@ -400,16 +409,6 @@ public class BitBoatActivity extends ActionBarActivity {
                     ListenableFuture<String> confirmedHTTP = Futures.transform(dialogFuture, new AsyncFunction<Boolean, String>() {
                         @Override
                         public ListenableFuture<String> apply(Boolean input) throws Exception {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    buyBtcButton.setIndeterminateProgressMode(true);
-                                    buyBtcButton.setProgress(50);
-                                    inProgress = true;
-                                    amountEdit.setEnabled(false);
-                                    amountFiatEdit.setEnabled(false);
-                                }
-                            });
                             return execHTTP(post);
                         }
                     });
