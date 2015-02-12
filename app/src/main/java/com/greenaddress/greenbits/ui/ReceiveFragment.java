@@ -54,23 +54,24 @@ public class ReceiveFragment extends GAFragment {
         super.setUserVisibleHint(isVisibleToUser);
         final View rootView = getView();
 
-        // get a new address every time the tab is displayed
-        if (isVisibleToUser && !pausing) {
-            // get a new address:
-            final ListenableFuture<QrBitmap> ft = ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewAddress(curSubaccount);
-            Futures.addCallback(ft, onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
-            startNewAddressAnimation(rootView);
+        if (!pausing && rootView != null) {
+            // get a new address every time the tab is displayed
+            if (isVisibleToUser) {
+                // get a new address:
+                final ListenableFuture<QrBitmap> ft = ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewAddress(curSubaccount);
+                Futures.addCallback(ft, onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+                startNewAddressAnimation(rootView);
+            } else { // !isVisibleToUser
+                // hide to avoid showing old address when swiping
+                final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
+                final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
+
+                receiveAddress.setText("");
+                imageView.setImageBitmap(null);
+            }
         }
         if (isVisibleToUser) {
             pausing = false;
-        }
-        if (!isVisibleToUser && !pausing && rootView != null) {
-            // hide to avoid showing old address when swiping
-            final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
-            final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
-
-            receiveAddress.setText("");
-            imageView.setImageBitmap(null);
         }
     }
 
