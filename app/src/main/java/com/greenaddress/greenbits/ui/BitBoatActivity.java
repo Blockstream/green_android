@@ -473,6 +473,7 @@ public class BitBoatActivity extends ActionBarActivity {
         if (((GreenAddressApplication) getApplication()).getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
             return;
         }
+        updatingPending = true;
         final ArrayList<String> pending = (ArrayList) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("pending_bitboat_ids");
         final ArrayList<ListenableFuture<String>> results = new ArrayList<>();
         if (pending == null) return;
@@ -588,7 +589,7 @@ public class BitBoatActivity extends ActionBarActivity {
 
                 ((GreenAddressApplication) getApplication()).gaService.setAppearanceValue("pending_bitboat_ids", newPending, false);
 
-                if (anyToCheckAgain) {
+                if (anyToCheckAgain && !pausing) {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -613,7 +614,9 @@ public class BitBoatActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        pausing = true;
         handler.removeCallbacksAndMessages(null);
+        updatingPending = false;
     }
 
     private ListenableFuture<String> execHTTP(HttpUriRequest request) {
@@ -725,12 +728,22 @@ public class BitBoatActivity extends ActionBarActivity {
     public void onPause() {
         super.onPause();
         pausing = true;
+        handler.removeCallbacksAndMessages(null);
+        updatingPending = false;
     }
 
     @Override
     public void onStart() {
         super.onStart();
         pausing = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!updatingPending) {
+            updatePendingOrders();
+        }
     }
 
     @Override
