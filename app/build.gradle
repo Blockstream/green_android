@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 21
         versionCode 43
-        versionName "1.43"
+        versionName "1." + defaultConfig.getProperty("versionCode")
     }
     buildTypes {
         release {
