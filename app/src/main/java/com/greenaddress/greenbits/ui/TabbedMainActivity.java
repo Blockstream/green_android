@@ -1,10 +1,12 @@
 package com.greenaddress.greenbits.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -106,6 +108,8 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         launch(isBitcoinURL);
     }
 
+
+    @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
     private void launch(boolean isBitcoinURL) {
         setContentView(R.layout.activity_tabbed_main);
 
@@ -145,6 +149,11 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         }
         if (isBitcoinURL) {
             if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+                if (Build.VERSION.SDK_INT < 16) {
+                    // NdefRecord#toUri not available in API < 16
+                    mViewPager.setCurrentItem(1);
+                    return;
+                }
                 final Parcelable[] rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
                 for (Parcelable ndefMsg_ : rawMessages) {
                     final NdefMessage ndefMsg = (NdefMessage) ndefMsg_;

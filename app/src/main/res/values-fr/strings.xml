@@ -33,7 +33,7 @@
     <string name="twoFactorChoicesTitle">Choisir méthode d\'authentification à 2 facteurs</string>
     <string name="choose">CHOISIR</string>
     <string name="cancel">ANNULER</string>
-    <string name="attemptsLeft">% d\'essais restant</string>
+    <string name="attemptsLeft">%s d\'essais restant</string>
 
 
     <string-array name="twoFactorChoices">

@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.method.LinkMovementMethod;
@@ -243,13 +245,17 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK).build();
 
-        signupNfcIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                mWriteMode = true;
-                nfcDialog.show();
-            }
-        });
+        if (Build.VERSION.SDK_INT < 16) {
+            signupNfcIcon.setVisibility(View.GONE);
+        } else {
+            signupNfcIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    mWriteMode = true;
+                    nfcDialog.show();
+                }
+            });
+        }
 
         nfcDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -280,6 +286,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
+    @SuppressLint("NewApi") // signupNfcIcon is hidden for API < 16
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
         if (mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {

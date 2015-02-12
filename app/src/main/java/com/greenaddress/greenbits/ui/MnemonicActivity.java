@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -271,6 +272,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         SecretKeySpec keyspec = new SecretKeySpec(key, "AES");
 
         DRMWorkaround.maybeDisableExportControls();
+        @SuppressLint("GetInstance") // ECB for 256 bits is enough, and is the same that BIP38 uses
         Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
         cipher.init(Cipher.DECRYPT_MODE, keyspec);
