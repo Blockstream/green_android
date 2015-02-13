@@ -46,31 +46,48 @@
             android:layout_height="fill_parent"
             android:padding="20sp">
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
+            <ScrollView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:layout_marginRight="10dp">
+                android:id="@+id/scrollView3"
+                android:layout_weight="3">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/twoFacProvideGauthDetailsDescription"
-                    android:id="@+id/description"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10sp"
-                    android:layout_marginBottom="10sp"
-                    android:layout_weight="1" />
+                    android:layout_weight="3"
+                    android:layout_marginRight="10dp">
 
-                <ImageView
-                    android:layout_width="110dp"
-                    android:layout_height="110dp"
-                    android:id="@+id/imageView"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="2"
-                    android:adjustViewBounds="false" />
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/twoFacProvideGauthDetailsDescription"
+                        android:id="@+id/description"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="10sp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+                        android:id="@+id/imageView"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="2"
+                        android:adjustViewBounds="false" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/twoFacGauthTextCode"
+                        android:id="@+id/textCode"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10sp"
+                        android:layout_marginBottom="10sp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </ScrollView>
 
             <LinearLayout
                 android:orientation="vertical"
@@ -85,7 +102,7 @@
                     android:text="@string/twoFacProvideGauthDetails"
                     android:id="@+id/prompt"
                     android:layout_gravity="left"
-                    android:layout_marginTop="15sp"
+                    android:layout_marginTop="0dp"
                     android:layout_marginBottom="10sp"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                     android:layout_weight="1" />
@@ -93,7 +110,7 @@
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
+                    android:inputType="number"
                     android:ems="10"
                     android:id="@+id/code" />
             </LinearLayout>

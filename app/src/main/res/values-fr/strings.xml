@@ -189,5 +189,6 @@
     <string name="txStatusExpired">Expirée</string>
     <string name="txStatusCompleted">Terminée</string>
     <string name="txStatusLoading">Envoyée</string>
+    <string name="twoFacGauthTextCode">Or you can use the following code: %s. Remember to back it up!</string>
 
 </resources>

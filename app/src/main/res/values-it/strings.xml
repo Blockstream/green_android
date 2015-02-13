@@ -182,4 +182,5 @@
   <string name="txStatusExpired">Scaduto</string>
   <string name="txStatusCompleted">Completato</string>
   <string name="txStatusLoading">Caricando</string>
+    <string name="twoFacGauthTextCode">Or you can use the following code: %s. Remember to back it up!</string>
 </resources>

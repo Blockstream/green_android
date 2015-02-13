@@ -236,6 +236,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         setContentView(view);
 
         final ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        final TextView textCode = (TextView) findViewById(R.id.textCode);
         final Button continueButton = (Button) findViewById(R.id.continueButton);
         final EditText code = (EditText) findViewById(R.id.code);
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -251,6 +252,9 @@ public class TwoFactorActivity extends ActionBarActivity {
         } catch (WriterException e) {
             e.printStackTrace();
         }
+        textCode.setText(new Formatter().format(
+                getResources().getString(R.string.twoFacGauthTextCode),
+                gauth_url.split("=")[1]).toString());
 
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override

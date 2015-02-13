@@ -57,14 +57,22 @@
                     android:text="@string/twoFacProvideGauthDetailsDescription"
                     android:id="@+id/description"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10sp"
                     android:layout_marginBottom="10sp" />
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="150dp"
                     android:id="@+id/imageView"
                     android:layout_gravity="center_horizontal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/twoFacGauthTextCode"
+                    android:id="@+id/textCode"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -79,9 +87,9 @@
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
                     android:ems="10"
-                    android:id="@+id/details" />
+                    android:id="@+id/code"
+                    android:inputType="number" />
 
                 <LinearLayout
                     android:orientation="vertical"
