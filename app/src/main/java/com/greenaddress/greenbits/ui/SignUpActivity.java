@@ -40,6 +40,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.QrBitmap;
 
@@ -151,6 +152,8 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             }
         });
 
+        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
@@ -158,12 +161,12 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                     if (((GreenAddressApplication) getApplication()).gaService.onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
-                        onSignUp = Futures.transform(((GreenAddressApplication) getApplication()).gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                        onSignUp = Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                                return ((GreenAddressApplication) getApplication()).gaService.signup(mnemonicText.getText().toString());
+                                return gaService.signup(mnemonicText.getText().toString());
                             }
-                        }, ((GreenAddressApplication) getApplication()).gaService.es);
+                        }, gaService.es);
                     } else {
                         if (isChecked) {
                             SignUpActivity.this.runOnUiThread(new Runnable() {
@@ -199,7 +202,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
                             final Intent pinSaveActivity = new Intent(SignUpActivity.this, PinSaveActivity.class);
 
-                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", mnemonicText.getText().toString());
+                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
                             ((GreenAddressApplication) getApplication()).gaService.resetSignUp();
                             onSignUp = null;
                             finish();

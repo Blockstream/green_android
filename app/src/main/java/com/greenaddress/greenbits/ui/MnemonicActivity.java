@@ -239,7 +239,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             public void onSuccess(@Nullable final LoginData result) {
                 if (getCallingActivity() == null) {
                     final Intent pinSaveActivity = new Intent(MnemonicActivity.this, PinSaveActivity.class);
-                    pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", edit.getText().toString());
+                    pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
                     startActivity(pinSaveActivity);
                 } else {
                     setResult(RESULT_OK);
