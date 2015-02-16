@@ -182,7 +182,7 @@ public class MainFragment extends GAFragment implements Observer {
             btcBalanceVerified = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(Coin.valueOf(0)).toString();
         }
         final String fiatBalance =
-                MonetaryFormat.FIAT.minDecimals(2).noCode().format(
+                MonetaryFormat.FIAT.minDecimals(2).noCode().withLocale(Locale.getDefault()).format(
                         ((GreenAddressApplication) activity.getApplication()).gaService.getBalanceFiat(curSubaccount))
                         .toString();
         final String fiatCurrency = ((GreenAddressApplication) activity.getApplication()).gaService.getFiatCurrency();
@@ -403,6 +403,9 @@ public class MainFragment extends GAFragment implements Observer {
         if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
             !(country.equals("IT") || country.equals("FR"))) {
             rootView.findViewById(R.id.buyBtcButton).setVisibility(View.GONE);
+        } else {
+            rootView.findViewById(R.id.mainSecondParagraphText).setVisibility(View.GONE);
+
         }
         rootView.findViewById(R.id.buyBtcButton).setOnClickListener(new View.OnClickListener() {
             @Override

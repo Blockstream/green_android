@@ -57,20 +57,6 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="35sp"
-                android:text="@string/buyBTC"
-                android:id="@+id/buyBtcButton"
-                style="@style/myButton"
-                android:textColor="@color/white"
-                android:layout_weight="0"
-                android:layout_gravity="top" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
 
             <com.greenaddress.greenbits.ui.FontAwesomeTextView
 
@@ -170,7 +156,7 @@
             android:id="@+id/mainTransactionList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-        android:visibility="gone"
+            android:visibility="gone"
 
             />
 
@@ -182,6 +168,22 @@
             android:orientation="vertical"
             android:visibility="gone"
             >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/buyBTC"
+                    android:id="@+id/buyBtcButton"
+                    style="@style/myButton"
+                    android:textColor="@color/white"
+                    />
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/mainFirstParagraphText"
@@ -209,6 +211,8 @@
                 android:padding="16dp"
                 android:text="@string/noBalanceThirdLine"
                 android:textSize="20sp" />
+
+
 
         </LinearLayout>
     </LinearLayout>
