@@ -6,10 +6,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -97,7 +95,9 @@ public class ReceiveFragment extends GAFragment {
         final View rootView = inflater.inflate(R.layout.fragment_receive, container, false);
         final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
+        final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
         copyIcon.setVisibility(View.GONE);
+        copyText.setVisibility(View.GONE);
 
         final TextView newAddressIcon = (TextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
@@ -133,6 +133,7 @@ public class ReceiveFragment extends GAFragment {
                         public void run() {
 
                             copyIcon.setVisibility(View.VISIBLE);
+                            copyText.setVisibility(View.VISIBLE);
                             stopNewAddressAnimation(rootView);
                             BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
                             bd.setFilterBitmap(false);
@@ -155,6 +156,7 @@ public class ReceiveFragment extends GAFragment {
                             Toast.makeText(activity, "Can't get a new address", Toast.LENGTH_LONG).show();
                             stopNewAddressAnimation(rootView);
                             copyIcon.setVisibility(View.VISIBLE);
+                            copyText.setVisibility(View.VISIBLE);
                         }
                     });
                 }
@@ -211,12 +213,11 @@ public class ReceiveFragment extends GAFragment {
     private void stopNewAddressAnimation(final View rootView) {
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         newAddressIcon.clearAnimation();
-        newAddressIcon.setText(getResources().getString(R.string.newAddress));
-        newAddressIcon.setDefaultTypeface();
-        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-
+        newAddressIcon.setText(Html.fromHtml("&#xf067;"));
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
+        final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
         copyIcon.setVisibility(View.VISIBLE);
+        copyText.setVisibility(View.VISIBLE);
     }
 
     private void startNewAddressAnimation(final View rootView) {
@@ -231,8 +232,10 @@ public class ReceiveFragment extends GAFragment {
 
         final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
+        final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
         copyIcon.setVisibility(View.GONE);
+        copyText.setVisibility(View.GONE);
         receiveAddress.setText("");
         imageView.setImageBitmap(null);
     }

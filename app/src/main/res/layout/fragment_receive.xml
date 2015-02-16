@@ -53,30 +53,53 @@
                 android:layout_alignParentRight="true"
                 android:gravity="right">
 
-                <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                    android:id="@+id/receiveCopyIcon"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="&#xf0c5;"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/accent"
-                    android:textSize="34sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                        android:id="@+id/receiveCopyIcon"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="&#xf0c5;"
+                        android:textColor="@color/accent"
+                        android:textSize="34sp" />
+                    <TextView
+                        android:id="@+id/receiveCopyText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/accent"
+                        android:text="@string/copyAddress"/>
+                </LinearLayout>
 
-                <com.greenaddress.greenbits.ui.FontAwesomeTextView
-
-                    android:id="@+id/receiveNewAddressIcon"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:text="@string/newAddress"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/accent"
-                    android:textSize="13sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                        android:id="@+id/receiveNewAddressIcon"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="&#xf067;"
+                        android:textColor="@color/accent"
+                        android:textSize="34sp" />
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/accent"
+                        android:text="@string/newAddress"/>
+                </LinearLayout>
 
             </LinearLayout>
+
 
         </LinearLayout>
     </LinearLayout>
