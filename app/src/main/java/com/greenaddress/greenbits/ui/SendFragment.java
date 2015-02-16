@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -743,7 +742,8 @@ public class SendFragment extends GAFragment {
         final TextView sendSubAccountBitcoinScale = (TextView) rootView.findViewById(R.id.sendSubAccountBitcoinScale);
         sendSubAccountBitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
         if (btcUnit == null || btcUnit.equals("bits")) {
-            sendSubAccountBalanceUnit.setText("bits ");
+            sendSubAccountBalanceUnit.setText("");
+            sendSubAccountBitcoinScale.setText("bits ");
         } else{
             sendSubAccountBalanceUnit.setText(Html.fromHtml("&#xf15a; "));
         }

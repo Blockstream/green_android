@@ -240,13 +240,21 @@
                     android:textSize="24sp" />
 
             </RelativeLayout>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="8dp" />
 
-            <CheckBox
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/instantConfirmation"
-                android:id="@+id/instantConfirmationCheckBox"
-                android:checked="false" />
+                android:gravity="center">
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/instantConfirmation"
+                    android:id="@+id/instantConfirmationCheckBox"
+                    android:checked="false" />
+            </LinearLayout>
 
             <View
                 android:layout_width="fill_parent"
