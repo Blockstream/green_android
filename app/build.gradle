@@ -38,6 +38,12 @@ android {
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
         }
+        testnet_lolli {
+            applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
+            versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
+
+            minSdkVersion 21
+        }
         regtest {
             applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
             versionName "" + defaultConfig.getProperty("versionName") + "_regtest"
