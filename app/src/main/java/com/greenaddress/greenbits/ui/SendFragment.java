@@ -456,7 +456,7 @@ public class SendFragment extends GAFragment {
         });
 
         curBalanceObserver = makeBalanceObserver();
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
         if (((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceCoin(curSubaccount) != null) {
             updateBalance(getActivity());
@@ -663,14 +663,14 @@ public class SendFragment extends GAFragment {
                     @Nullable
                     @Override
                     public Void apply(@Nullable Integer input) {
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
+                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input.intValue();
                         hideInstantIf2of3();
                         final SharedPreferences.Editor editor = getActivity().getSharedPreferences("send", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
                         curBalanceObserver = makeBalanceObserver();
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
                         Futures.addCallback(gaService.getSubaccountBalance(curSubaccount), new FutureCallback<Map<?, ?>>() {
                             @Override
                             public void onSuccess(@Nullable Map<?, ?> result) {

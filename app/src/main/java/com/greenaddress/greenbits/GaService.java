@@ -152,7 +152,7 @@ public class GaService extends Service {
 
             // do not get latest address - always get a new one in ReceiveFragment
             // getLatestOrNewAddress(getSharedPreferences("receive", MODE_PRIVATE).getInt("curSubaccount", 0));
-            balanceObservables.put(0L, new GaObservable());
+            balanceObservables.put(new Long(0), new GaObservable());
             updateBalance(0);
             for (Object subaccount : result.subaccounts) {
                 Map<?, ?> subaccountMap = (Map) subaccount;
@@ -948,7 +948,7 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<QrBitmap> getLatestOrNewAddress(long subaccount) {
-        ListenableFuture<QrBitmap> latestAddress = latestAddresses.get(subaccount);
+        ListenableFuture<QrBitmap> latestAddress = latestAddresses.get(new Long(subaccount));
         return (latestAddress == null) ? getNewAddress(subaccount) : latestAddress;
     }
 
@@ -982,7 +982,7 @@ public class GaService extends Service {
         };
         ListenableFuture<String> verifiedAddress = Futures.transform(client.getNewAddress(subaccount), verifyAddress, es);
         latestAddresses.put(subaccount, Futures.transform(verifiedAddress, addressToQr, es));
-        return latestAddresses.get(subaccount);
+        return latestAddresses.get(new Long(subaccount));
     }
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {
@@ -1095,15 +1095,15 @@ public class GaService extends Service {
     }
 
     public Coin getBalanceCoin(long subaccount) {
-        return balancesCoin.get(subaccount);
+        return balancesCoin.get(new Long(subaccount));
     }
 
     public Coin getVerifiedBalanceCoin(int subaccount) {
-        return verifiedBalancesCoin.get(subaccount);
+        return verifiedBalancesCoin.get(new Long(subaccount));
     }
 
     public Fiat getBalanceFiat(long subaccount) {
-        return balancesFiat.get(subaccount);
+        return balancesFiat.get(new Long(subaccount));
     }
 
     public float getFiatRate() {
