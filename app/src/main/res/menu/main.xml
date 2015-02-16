@@ -31,10 +31,19 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_bitboat"
+        android:orderInCategory="50"
+        android:title="@string/buyBTC"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_exit"
         android:orderInCategory="60"
         android:title="@string/action_exit"
         app:showAsAction="never" />
+
+
+
     <item
         android:id="@+id/action_share"
         android:icon="@drawable/ic_action_share"

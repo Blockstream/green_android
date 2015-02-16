@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.google.common.primitives.Bytes;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.Network;
@@ -38,6 +37,7 @@ import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.DumpedPrivateKey;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.BIP38PrivateKey;
@@ -46,7 +46,6 @@ import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.spongycastle.util.encoders.Hex;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -135,6 +134,9 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                 setIdVisible(position == 0, R.id.action_share);
             }
         });
+
+
+
 
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); ++i) {
@@ -393,6 +395,13 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         this.menu = menu;
+
+        final String country = ((GreenAddressApplication) getApplication()).gaService.getCountry();
+        if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
+                !(country.equals("IT") || country.equals("FR"))) {
+            setIdVisible(false, R.id.action_bitboat);
+        }
+
         return true;
     }
 
@@ -425,6 +434,8 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         } else if (id == R.id.network_unavailable) {
             Toast.makeText(TabbedMainActivity.this, ((GreenAddressApplication) getApplication()).getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
             return true;
+        } else if (id == R.id.action_bitboat) {
+            startActivity(new Intent(TabbedMainActivity.this, BitBoatActivity.class));
         } else if (id == R.id.action_exit) {
             //FIXME logout and exit logic
             ((GreenAddressApplication) getApplication()).gaService.disconnect(false);
