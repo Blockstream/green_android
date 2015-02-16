@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -711,7 +712,7 @@ public class BitBoatActivity extends ActionBarActivity {
                     public void run() {
                         try {
                             final Fiat fiatValue = Fiat.parseFiat("EUR", amountFiatEdit.getText().toString());
-                            amountEdit.setText(bitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
+                            amountEdit.setText(bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(rate.fiatToCoin(fiatValue)));
                         } catch (final ArithmeticException | IllegalArgumentException e) {
                             amountEdit.setText("");
                         }

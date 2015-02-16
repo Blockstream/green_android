@@ -39,6 +39,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -171,14 +172,14 @@ public class MainFragment extends GAFragment implements Observer {
         } else {
             balanceBitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
-        final String btcBalance = bitcoinFormat.noCode().format(
+        final String btcBalance = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(
                 ((GreenAddressApplication) activity.getApplication()).gaService.getBalanceCoin(curSubaccount)).toString();
         final String btcBalanceVerified;
         if (((GreenAddressApplication) activity.getApplication()).gaService.getVerifiedBalanceCoin(curSubaccount) != null) {
-            btcBalanceVerified = bitcoinFormat.noCode().format(
+            btcBalanceVerified = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(
                     ((GreenAddressApplication) activity.getApplication()).gaService.getVerifiedBalanceCoin(curSubaccount)).toString();
         } else {
-            btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
+            btcBalanceVerified = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(Coin.valueOf(0)).toString();
         }
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(

@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -22,6 +21,7 @@ import org.bitcoinj.utils.MonetaryFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -132,7 +132,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             } else {
                 bitcoinUnit.setText(Html.fromHtml("&#xf15a; "));
             }
-            final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
+            final String btcBalance = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(coin).toString();
             final DecimalFormat formatter = new DecimalFormat("#,###.########");
 
             try {
