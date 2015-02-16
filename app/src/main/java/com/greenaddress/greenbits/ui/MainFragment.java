@@ -7,10 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -168,7 +166,8 @@ public class MainFragment extends GAFragment implements Observer {
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.mainBitcoinScaleText);
         bitcoinScale.setText( Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit) ) );
         if (btcUnit == null || btcUnit.equals("bits")) {
-            balanceBitcoinIcon.setText("bits ");
+            balanceBitcoinIcon.setText("");
+            bitcoinScale.setText("bits ");
         } else {
             balanceBitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }

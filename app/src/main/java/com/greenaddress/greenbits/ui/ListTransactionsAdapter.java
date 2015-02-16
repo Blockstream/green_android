@@ -59,7 +59,8 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit) ));
         if (btcUnit == null || btcUnit.equals("bits")) {
-            holder.bitcoinIcon.setText("bits ");
+            holder.bitcoinIcon.setText("");
+            holder.bitcoinScale.setText("bits ");
         } else {
             holder.bitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
