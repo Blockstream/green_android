@@ -116,7 +116,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
         final List<Integer> scores = new ArrayList<>();
         for (final String w : words) {
-            scores.add(new Integer(Integer.MAX_VALUE));
+            scores.add(Integer.MAX_VALUE);
         }
 
         for (int i = 0; i < words.size(); ++i) {
