@@ -38,13 +38,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/textColor"
-                android:textSize="45sp" />
+                android:textSize="34sp" />
             <com.greenaddress.greenbits.ui.FontAwesomeTextView
                 android:id="@+id/mainBalanceBitcoinIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/textColor"
-                android:textSize="45sp" />
+                android:textSize="34sp" />
 
             <TextView
                 android:id="@+id/mainBalanceText"
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textColor="@color/textColor"
-                android:textSize="45sp" />
+                android:textSize="34sp" />
 
             <Button
                 style="@style/myButton"
