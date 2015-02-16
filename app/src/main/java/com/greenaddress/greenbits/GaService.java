@@ -437,6 +437,7 @@ public class GaService extends Service {
             deviceId = UUID.randomUUID().toString();
             final SharedPreferences.Editor editor = getSharedPreferences("service", MODE_PRIVATE).edit();
             editor.putString("device_id", deviceId);
+            editor.apply();
         }
 
         client = new WalletClient(new INotificationHandler() {
@@ -572,7 +573,7 @@ public class GaService extends Service {
                 SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_"+receivingId, MODE_PRIVATE);
                 SharedPreferences.Editor editor = verified_utxo.edit();
                 editor.putBoolean(tx.getHash().toString(), true);
-                editor.commit();
+                editor.apply();
                 addUtxoToValues(tx.getHash());
                 newTxVerifiedObservable.setChanged();
                 newTxVerifiedObservable.notifyObservers();
@@ -584,7 +585,7 @@ public class GaService extends Service {
                 SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_"+receivingId, MODE_PRIVATE);
                 SharedPreferences.Editor editor = verified_utxo.edit();
                 editor.putBoolean(txHash.toString(), true);
-                editor.commit();
+                editor.apply();
                 addUtxoToValues(txHash);
                 newTxVerifiedObservable.setChanged();
                 newTxVerifiedObservable.notifyObservers();
@@ -648,7 +649,7 @@ public class GaService extends Service {
                                     changedSubaccounts.add(subaccount);
                                     SharedPreferences.Editor e = getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).edit();
                                     e.putLong(txHashStr + ":" + outpoint, coinValue.longValue());
-                                    e.commit();
+                                    e.apply();
                                 } else {
                                     Log.e("SPV",
                                             new Formatter().format("txHash %s outpoint %s not spendable!",

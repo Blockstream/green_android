@@ -153,7 +153,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 SharedPreferences.Editor editor = spvPreferences.edit();
                 editor.putBoolean("enabled", (Boolean) newValue);
-                editor.commit();
+                editor.apply();
 
                 new MaterialDialog.Builder(SettingsActivity.this)
                         .title(getResources().getString(R.string.changingRequiresRestartTitle))
