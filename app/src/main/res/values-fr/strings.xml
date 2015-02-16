@@ -172,7 +172,7 @@
     <string name="recoveryAndNotifications">Recovery and Notifications</string>
     <string name="emailAddress">email address</string>
     <string name="phoneNumber">phone number</string>
-    <string name="newAddress">Nouvelle adresse</string>
+    <string name="newAddress">Nouvelle</string>
     <string name="txReceivedOn">Reçue le</string>
     <string name="title_activity_bit_boat">Achetez des bitcoins avec BitBoat</string>
     <string name="buyBTC">Achetez des bitcoins</string>
@@ -190,5 +190,6 @@
     <string name="txStatusCompleted">Terminée</string>
     <string name="txStatusLoading">Envoyée</string>
     <string name="twoFacGauthTextCode">Or you can use the following code: %s. Remember to back it up!</string>
+    <string name="copyAddress">Copy</string>
 
 </resources>
