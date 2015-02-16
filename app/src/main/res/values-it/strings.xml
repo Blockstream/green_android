@@ -156,7 +156,7 @@
   <string name="twoFacProvideGauthDetailsDescription">C\'è bisogno che fornisci un codice dal tuo nuovo Google Authenticator. Puoi ottenerlo scansionando il codice QR qui sotto con l\'app Google Authenticator.</string>
   <string name="twoFacProvideGauthDetails">Per piacere fornisci il codice Google Authenticator.</string>
   <string name="twoFacProvideDetails">Prego, inserisci il tuo codice %s.</string>
-  <string name="twoFacEmailChangeNotice">Fornire un email consente alle notifiche e recupero delle transazioni.</string>
+  <string name="twoFacEmailChangeNotice">Fornire un email abilita le notifiche e aumenta la sicurezza.</string>
   <string name="twoFacEmailConfirmNotice">Dovrai confermare l\'email nel prossimo passaggio, altrimenti non riceverai nessuna notifica.</string>
   <string name="twoFacProvideConfirmationCodeDescription">Devi fornire il codice di conferma per essere sicuri che tu abbia accesso al nuovo metodo di autenticazione a due fattori. Solo dopo che hai fornito il codice, il metodo verrà abilitato.</string>
   <string name="twoFacProvideConfirmationCode">Per piacere fornisci il codice %s.</string>

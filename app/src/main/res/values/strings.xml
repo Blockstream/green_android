@@ -154,7 +154,7 @@
     <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connections or low end phones.</string>
     <string name="changingRequiresRestartTitle">Restart required</string>
     <string name="changingRequiresRestartText">Changing this value requires restarting the app to take full effect. Please restart GreenBits. </string>
-    <string name="noTwoFactorWarning">You don\'t have two factor authentication! Please go to settings to set it up!</string>
+    <string name="noTwoFactorWarning">You don\'t have two factor authentication!\nPlease go to settings to set it up!</string>
     <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
     <string name="scan_camera_problem_dialog_title">Camera problem</string>
     <string name="providePassphrase">Please provide your passphrase:</string>
