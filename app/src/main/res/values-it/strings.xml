@@ -69,7 +69,7 @@
   <string name="pinSkipText">SALTA</string>
   <string name="sendOptionalMemo">Memo opzionale</string>
   <string name="madeBy">da GreenAddress</string>
-  <string name="welcomeGreenBits">Benvenuti a GreenBits</string>
+  <string name="welcomeGreenBits">Benvenuti in GreenBits</string>
   <string name="attemptsFinished">PIN non valido, non sono rimasti tentativi. Per piacere accedi con la passphrase.</string>
   <string name="attemptsLeftLong">PIN non valido, hai %s tentativi rimanenti</string>
   <string name="warnOnPaste">Agire con cautela, altre applicazioni posso leggere o cambiare la clipboard</string>
