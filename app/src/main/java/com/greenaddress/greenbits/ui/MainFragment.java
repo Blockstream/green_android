@@ -326,7 +326,7 @@ public class MainFragment extends GAFragment implements Observer {
 
         curBalanceObserver = makeBalanceObserver();
 
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
         if (((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceCoin(curSubaccount) != null) {
             updateBalance(getActivity());
@@ -382,10 +382,10 @@ public class MainFragment extends GAFragment implements Observer {
                     @Nullable
                     @Override
                     public Void apply(@Nullable Integer input) {
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
+                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input;
                         curBalanceObserver = makeBalanceObserver();
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
                         reloadTransactions(getActivity());
                         updateBalance(getActivity());
 
