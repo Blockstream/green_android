@@ -149,6 +149,8 @@
   <string name="twoFacSMS">SMS</string>
   <string name="twoFacGauth">Google Authenticator</string>
   <string name="twoFacEmail">E-mail</string>
+  <string name="hideTwoFacWarning">Nascondi avviso 2FA</string>
+
   <string name="twoFacSetupHeader">%s configurazione 2FA</string>
   <string name="progress">Progresso:</string>
   <string name="twoFacStep1Description">Per prima cosa, devi fornire un codice di autenticazione da uno dei tuoi già impostati metodi di autenticazione a due fattori. Questo per evitare che utenti malintenzionati possano modificare le impostazioni 2FA senza il tuo consenso.</string>

@@ -5,9 +5,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
 import android.view.MenuItem;
 import android.view.View;
@@ -137,7 +139,11 @@ public class GreenAddressApplication extends MultiDexApplication {
     }
 
     private void configureNoTwoFacFooter(View noTwoFacFooter, final Activity activity) {
-        if (((Boolean) gaService.getTwoFacConfig().get("any")).booleanValue()){
+
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
+
+        if (((Boolean) gaService.getTwoFacConfig().get("any")).booleanValue() || twoFacWarning){
             noTwoFacFooter.setVisibility(View.GONE);
         } else {
             noTwoFacFooter.setVisibility(View.VISIBLE);
