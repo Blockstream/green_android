@@ -17,7 +17,12 @@ abstract public class GAFragment extends Fragment {
             getActivity().finish();
             return;
         }
-        onGAResume();
+        try {
+            onGAResume();
+        } catch(final NullPointerException npe) {
+            getActivity().finish();
+            return;
+        }
     }
 
     @Override
@@ -26,7 +31,12 @@ abstract public class GAFragment extends Fragment {
             getActivity().finish();
             return null;
         }
-        return onGACreateView(inflater, container, savedInstanceState);
+        try {
+            return onGACreateView(inflater, container, savedInstanceState);
+        } catch(final NullPointerException npe) {
+            getActivity().finish();
+            return null;
+        }
     }
 
     abstract View onGACreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
