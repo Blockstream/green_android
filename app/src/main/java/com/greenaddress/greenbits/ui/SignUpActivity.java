@@ -86,10 +86,10 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
         mnemonicText = (TextView) findViewById(R.id.signupMnemonicText);
 
-        final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_qrcode_mnemonic, null, false);
+        final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
         final TextView qrCodeIcon = (TextView) findViewById(R.id.signupQrCodeIcon);
-        final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.signupMnemonicImageView);
+        final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
         final ListenableFuture<String> mnemonicPassphrase = ((GreenAddressApplication) getApplication()).gaService.getMnemonicPassphrase();
         Futures.addCallback(mnemonicPassphrase, new FutureCallback<String>() {
             @Override

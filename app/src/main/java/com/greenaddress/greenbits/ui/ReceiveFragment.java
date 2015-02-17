@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -9,10 +10,13 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -36,6 +40,7 @@ public class ReceiveFragment extends GAFragment {
     QrBitmap address = null;
     private int curSubaccount;
     private boolean pausing = false;
+    private Dialog qrDialog;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -120,7 +125,9 @@ public class ReceiveFragment extends GAFragment {
                     }
                 }
         );
+        final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
+        final ImageView qrcodeInDialog = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
         onAddress = new FutureCallback<QrBitmap>() {
             @Override
             public void onSuccess(@Nullable final QrBitmap result) {
@@ -140,6 +147,36 @@ public class ReceiveFragment extends GAFragment {
                             imageView.setImageDrawable(bd);
 
                             receiveAddress.setText(result.data.substring(0, 12) + "\n" + result.data.substring(12, 24) + "\n" + result.data.substring(24));
+
+
+                            imageView.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(final View view) {
+
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (qrDialog == null) {
+                                                final DisplayMetrics displaymetrics = new DisplayMetrics();
+                                                getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                                                final int height = displaymetrics.heightPixels;
+                                                final int width = displaymetrics.widthPixels;
+                                                Log.i("ReceiveFragment", height + "x" + width);
+                                                final int min = (int) (Math.min(height, width) * 0.8);
+                                                final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
+                                                qrcodeInDialog.setLayoutParams(layoutParams);
+
+                                                qrDialog = new Dialog(getActivity());
+                                                qrDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                                qrDialog.setContentView(inflatedLayout);
+                                            }
+                                            qrDialog.show();
+                                            BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                                            bd.setFilterBitmap(false);
+                                            qrcodeInDialog.setImageDrawable(bd);
+                                        }
+                                    });
+                                }
+                            });
                         }
                     });
                 }
@@ -206,6 +243,7 @@ public class ReceiveFragment extends GAFragment {
                 },
                 rootView.findViewById(R.id.receiveNoTwoFacFooter)
         );
+
 
         return rootView;
     }

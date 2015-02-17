@@ -6,7 +6,7 @@
 
     <ImageView
 
-        android:id="@+id/signupMnemonicImageView"
+        android:id="@+id/qrInDialogImageView"
         android:layout_width="360dp"
         android:layout_height="360dp"
         android:background="@color/white"
