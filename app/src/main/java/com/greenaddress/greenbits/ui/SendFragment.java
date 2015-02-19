@@ -758,6 +758,14 @@ public class SendFragment extends GAFragment {
         } catch (final ParseException e) {
             sendSubAccountBalance.setText(btcBalance);
         }
+
+        final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBitcoinScale.getText().length() + sendSubAccountBalanceUnit.getText().length();
+        final int size   =  Math.min(50 - nChars, 34) ;
+        sendSubAccountBalance.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+
+
     }
 
     private void changePricingSource(final int order, final String currency, final String exchange) {
