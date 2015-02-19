@@ -205,6 +205,12 @@ public class MainFragment extends GAFragment implements Observer {
             balanceText.setText(btcBalance);
         }
 
+        final int nChars = balanceText.getText().length() + balanceQuestionMark.getText().length() + bitcoinScale.getText().length() + balanceBitcoinIcon.getText().length();
+        final int size   =  Math.min(50 - nChars, 34) ;
+        balanceText.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        bitcoinScale.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        balanceBitcoinIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+
         try {
             balanceFiatText.setText(formatter.format(formatter.parse(fiatBalance)));
 
