@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +17,6 @@ import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.PinData;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.crypto.MnemonicCode;
 
@@ -43,7 +41,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         pinSaveButton.setIndeterminateProgressMode(true);
         pinSaveButton.setProgress(50);
         pinSkipButton.setVisibility(View.GONE);
-        Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.setPin(MnemonicCode.toSeed(mnemonic, ""), mnemonic_str,
+        Futures.addCallback(getGAService().setPin(MnemonicCode.toSeed(mnemonic, ""), mnemonic_str,
                         pinText.getText().toString(), "default"),
                 new FutureCallback<PinData>() {
                     @Override
@@ -69,19 +67,19 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                             }
                         });
                     }
-                }, ((GreenAddressApplication) getApplication()).gaService.es);
+                }, getGAService().es);
     }
     @Override
     public void onResume() {
         super.onResume();
 
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
     }
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

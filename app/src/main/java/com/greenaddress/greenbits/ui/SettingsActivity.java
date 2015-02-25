@@ -18,6 +18,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 import java.util.Formatter;
@@ -49,7 +50,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        if (((GreenAddressApplication) getApplication()).gaService == null) {
+        if (getGAService() == null) {
             finish();
             return;
         }
@@ -75,7 +76,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         getPreferenceScreen().addPreference(fakeHeaderMore);
         addPreferencesFromResource(R.xml.pref_more);
 
-        final String mnemonic = ((GreenAddressApplication) getApplication()).gaService.getMnemonics();
+        final String mnemonic = getGAService().getMnemonics();
         if (mnemonic != null) {
             getPreferenceManager().findPreference("mnemonic_passphrase").setSummary(getString(R.string.touch_to_display));
 
@@ -113,7 +114,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             }
         });
 
-        if (((GreenAddressApplication) getApplication()).gaService.isBTChip()) {
+        if (getGAService().isBTChip()) {
             getPreferenceScreen().removePreference(getPreferenceManager().findPreference("ledger_wallet"));
         }
 
@@ -121,7 +122,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
         int timeout = 5;
         try {
-            timeout = (int) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("altimeout");
+            timeout = (int) getGAService().getAppearanceValue("altimeout");
         } catch (final Exception e) {
             // not set
         }
@@ -133,7 +134,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
 
                 try {
-                    ((GreenAddressApplication) getApplication()).gaService.setAppearanceValue("altimeout", Integer.parseInt(newValue.toString()), true);
+                    getGAService().setAppearanceValue("altimeout", Integer.parseInt(newValue.toString()), true);
                     altime.setSummary(Integer.parseInt(newValue.toString()) + " minutes");
 
                     return true;
@@ -169,7 +170,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             }
         });
 
-        Map<?, ?> twoFacConfig = ((GreenAddressApplication) getApplication()).gaService.getTwoFacConfig();
+        Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
 
         final CheckBoxPreference emailTwoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFacEmail");
         emailTwoFacEnabled.setChecked(twoFacConfig.get("email").equals(true));
@@ -238,11 +239,11 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             startActivityForResult(intent, REQUEST_ENABLE_2FA);
         } else {
             String[] enabledTwoFacNames = new String[]{};
-            final List<String> enabledTwoFacNamesSystem = ((GreenAddressApplication) this.getApplication()).gaService.getEnabledTwoFacNames(true);
+            final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
             if (enabledTwoFacNamesSystem.size() > 1) {
                 new MaterialDialog.Builder(this)
                         .title(R.string.twoFactorChoicesTitle)
-                        .items(((GreenAddressApplication) this.getApplication()).gaService.getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
+                        .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
                         .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
                             @Override
                             public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -267,7 +268,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         if (!withMethod.equals("gauth")) {
             final Map<String, String> data = new HashMap<>();
             data.put("method", method.toLowerCase());
-            ((GreenAddressApplication) getApplication()).gaService.requestTwoFacCode(withMethod, "disable_2fa", data);
+            getGAService().requestTwoFacCode(withMethod, "disable_2fa", data);
         }
         final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
         final EditText twoFacValue = (EditText) inflatedLayout.findViewById(R.id.btchipPINValue);
@@ -302,7 +303,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                         Map<String, String> twoFacData = new HashMap<>();
                         twoFacData.put("method", withMethod);
                         twoFacData.put("code", twoFacValue.getText().toString());
-                        Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
+                        Futures.addCallback(getGAService().disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                             @Override
                             public void onSuccess(@Nullable Boolean result) {
                                 final CheckBoxPreference twoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
@@ -342,17 +343,25 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     public void onResume() {
         super.onResume();
 
-        if (((GreenAddressApplication) getApplication()).gaService == null) {
+        if (getGAService() == null) {
             finish();
             return;
         }
 
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
+    }
+
+    protected GreenAddressApplication getGAApp() {
+        return (GreenAddressApplication) getApplication();
+    }
+
+    protected GaService getGAService() {
+        return getGAApp().gaService;
     }
 }

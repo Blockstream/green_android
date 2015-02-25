@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
@@ -31,7 +30,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
@@ -85,7 +83,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
         super.onCreate(savedInstanceState);
 
-        if (((GreenAddressApplication) this.getApplication()).gaService == null) {
+        if (getGAService() == null) {
             // don't crash after System.exit from SettingsActivity
             final Intent pinActivity = new Intent(this, PinActivity.class);
             startActivity(pinActivity);
@@ -96,7 +94,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction());
 
         if (isBitcoinURL) {
-            if (!(((GreenAddressApplication) getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN) || ((GreenAddressApplication) getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN))) {
+            if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN) || getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
                 // login required
                 final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
                 startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
@@ -177,16 +175,16 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     @Override
     public void onResume() {
         super.onResume();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
         testKickedOut();
 
-        setIdVisible(((GreenAddressApplication) getApplication()).getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN, R.id.action_share);
+        setIdVisible(getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN, R.id.action_share);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
     @Override
@@ -256,7 +254,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                         txNonBip38 = new Transaction(Network.NETWORK,
                                 Hex.decode((String) result.get("tx")));
                         final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(
-                                (String) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("unit"));
+                                (String) getGAService().getAppearanceValue("unit"));
                         Coin outputsValue = Coin.ZERO;
                         for (final TransactionOutput output : txNonBip38.getOutputs()) {
                             outputsValue = outputsValue.add(output.getValue());
@@ -292,7 +290,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
                                 private void doSweep() {
                                     final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
-                                    Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.verifySpendableBy(
+                                    Futures.addCallback(getGAService().verifySpendableBy(
                                             tx.getOutputs().get(0),
                                             Long.valueOf(0),
                                             ((Number) result.get("out_pointer")).longValue()
@@ -304,7 +302,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                                 for (int i = 0; i < tx.getInputs().size(); ++i) {
                                                     signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
                                                 }
-                                                Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.sendTransaction(signatures, null), new FutureCallback<String>() {
+                                                Futures.addCallback(getGAService().sendTransaction(signatures, null), new FutureCallback<String>() {
                                                     @Override
                                                     public void onSuccess(final @Nullable String result) {
 
@@ -336,7 +334,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                             long t0 = System.currentTimeMillis();
                                             key = keyBip38.decrypt(passwordEdit.getText().toString());
                                             Log.d("BIP38", "BIP38 time: " + (System.currentTimeMillis() - t0) + "ms");
-                                            Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.prepareSweepSocial(
+                                            Futures.addCallback(getGAService().prepareSweepSocial(
                                                     key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
                                                 @Override
                                                 public void onSuccess(@Nullable final Map<?, ?> result) {
@@ -375,7 +373,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                 }
             };
             if (keyBip38 == null) {
-                Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.prepareSweepSocial(
+                Futures.addCallback(getGAService().prepareSweepSocial(
                         keyNonBip38.getPubKey(), false), callback);
             } else {
                 callback.onSuccess(null);
@@ -396,7 +394,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         getMenuInflater().inflate(R.menu.main, menu);
         this.menu = menu;
 
-        final String country = ((GreenAddressApplication) getApplication()).gaService.getCountry();
+        final String country = getGAService().getCountry();
         if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
                 !(country.equals("IT") || country.equals("FR"))) {
             setIdVisible(false, R.id.action_bitboat);
@@ -432,13 +430,13 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
             return true;
         } else if (id == R.id.network_unavailable) {
-            Toast.makeText(TabbedMainActivity.this, ((GreenAddressApplication) getApplication()).getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(TabbedMainActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
             return true;
         } else if (id == R.id.action_bitboat) {
             startActivity(new Intent(TabbedMainActivity.this, BitBoatActivity.class));
         } else if (id == R.id.action_exit) {
             //FIXME logout and exit logic
-            ((GreenAddressApplication) getApplication()).gaService.disconnect(false);
+            getGAService().disconnect(false);
             finish();
             return true;
         } else if (id == R.id.action_share) {
@@ -461,7 +459,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     }
 
     private void testKickedOut() {
-        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getIsForcedLoggedOut() || ((GreenAddressApplication) getApplication()).getConnectionObservable().getIsForcedTimeout()) {
+        if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             final Intent firstScreenActivity = new Intent(TabbedMainActivity.this, FirstScreenActivity.class);
             startActivity(firstScreenActivity);
@@ -471,12 +469,12 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
     @Override
     public void update(final Observable observable, final Object data) {
-        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getIsForcedLoggedOut() || ((GreenAddressApplication) getApplication()).getConnectionObservable().getIsForcedTimeout()) {
+        if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             final Intent firstScreenActivity = new Intent(TabbedMainActivity.this, FirstScreenActivity.class);
             startActivity(firstScreenActivity);
         }
-        final ConnectivityObservable.State currentState = ((GreenAddressApplication) getApplication()).getConnectionObservable().getState();
+        final ConnectivityObservable.State currentState = getGAApp().getConnectionObservable().getState();
         setIdVisible(currentState != ConnectivityObservable.State.LOGGEDIN, R.id.network_unavailable);
     }
 

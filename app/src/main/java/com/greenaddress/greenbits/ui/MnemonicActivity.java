@@ -8,7 +8,6 @@ import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -40,7 +39,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.lambdaworks.crypto.SCrypt;
 
 import org.bitcoinj.core.Sha256Hash;
@@ -176,7 +174,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
 
     private void login() {
-        Futures.addCallback(((GreenAddressApplication) getApplication()).onServiceConnected, new FutureCallback<Void>() {
+        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void result) {
                 loginAfterServiceConnected();
@@ -191,8 +189,8 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     }
 
     private void loginAfterServiceConnected() {
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
-        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getState() != ConnectivityObservable.State.CONNECTED) {
+        final GaService gaService = getGAService();
+        if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.CONNECTED) {
             Toast.makeText(MnemonicActivity.this, "Not connected", Toast.LENGTH_LONG).show();
             return;
         }
@@ -367,7 +365,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     final String mnemonics = TextUtils.join(" ",
                             new MnemonicCode(closable, null)
                                     .toMnemonic(array));
-                    final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+                    final GaService gaService = getGAService();
                     edit.setText(mnemonics);
 
                     if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
@@ -406,7 +404,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     public void onSuccess(@Nullable String passphrase) {
                         try {
                             byte[] decrypted = decryptMnemonic(array, passphrase);
-                            final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+                            final GaService gaService = getGAService();
                             final String mnemonics = Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted));
                             edit.setText(mnemonics);
                             if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
@@ -440,9 +438,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onResume() {
         super.onResume();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
 
-        ConnectivityObservable.State state = ((GreenAddressApplication) getApplication()).getConnectionObservable().getState();
+        ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);
@@ -456,7 +454,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
 

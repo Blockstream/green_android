@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.greenaddress.greenbits.ConnectivityObservable;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -76,9 +74,9 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
 
-        final ConnectivityObservable.State state = ((GreenAddressApplication) getApplication()).getConnectionObservable().getState();
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (state.equals(ConnectivityObservable.State.LOGGEDIN) || state.equals(ConnectivityObservable.State.LOGGINGIN)) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(FirstScreenActivity.this, TabbedMainActivity.class);
@@ -96,7 +94,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
     @Override

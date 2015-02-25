@@ -51,7 +51,7 @@ public class RequestLoginActivity extends Activity implements Observer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_login_requested);
 
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
 
         Tag tag = (Tag) getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
@@ -164,10 +164,10 @@ public class RequestLoginActivity extends Activity implements Observer {
                     instructions.setText(getResources().getString(R.string.firstLoginRequestedInstructionsOldTrezor));
                     return;
                 }
-                Futures.addCallback(((GreenAddressApplication) getApplication()).onServiceConnected, new FutureCallback<Void>() {
+                Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(@Nullable Void result) {
-                        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+                        final GaService gaService = getGAService();
 
                         Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
                             @Override
@@ -318,10 +318,10 @@ public class RequestLoginActivity extends Activity implements Observer {
             transport = new BTChipTransportAndroidNFC(isoDep);
             transport.setDebug(true);
         }
-        Futures.addCallback(((GreenAddressApplication) getApplication()).onServiceConnected, new FutureCallback<Void>() {
+        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void result) {
-                final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+                final GaService gaService = getGAService();
 
                 Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override
@@ -389,17 +389,25 @@ public class RequestLoginActivity extends Activity implements Observer {
     public void onResume() {
         super.onResume();
 
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
     @Override
     public void update(Observable observable, Object data) {
 
+    }
+
+    protected GreenAddressApplication getGAApp() {
+        return (GreenAddressApplication) getApplication();
+    }
+
+    protected GaService getGAService() {
+        return getGAApp().gaService;
     }
 }

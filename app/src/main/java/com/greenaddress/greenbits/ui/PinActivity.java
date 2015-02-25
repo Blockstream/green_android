@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +24,6 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.PinData;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -38,7 +36,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     private Menu menu;
 
     private void login(final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, final TextView pinError) {
-        Futures.addCallback(((GreenAddressApplication) getApplication()).onServiceConnected, new FutureCallback<Void>() {
+        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void result) {
                 loginAfterServiceConnected(pinLoginButton, ident, pinText, pinError);
@@ -53,12 +51,12 @@ public class PinActivity extends ActionBarActivity implements Observer {
     }
 
     private void loginAfterServiceConnected(final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, final TextView pinError) {
-        if (!((GreenAddressApplication) getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.CONNECTED)) {
+        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.CONNECTED)) {
             Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
             return;
         }
 
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        final GaService gaService = getGAService();
 
         final PinData pinData = new PinData(ident,
                 getSharedPreferences("pin", MODE_PRIVATE).getString("encrypted", null));
@@ -178,9 +176,9 @@ public class PinActivity extends ActionBarActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
 
-        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN) || ((GreenAddressApplication) getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
+        if (getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN) || getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
             startActivity(mainActivity);
@@ -193,7 +191,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
 
@@ -225,7 +223,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.network_unavailable) {
-            Toast.makeText(PinActivity.this, ((GreenAddressApplication) getApplication()).getConnectionObservable().getState().toString() , Toast.LENGTH_LONG).show();
+            Toast.makeText(PinActivity.this, getGAApp().getConnectionObservable().getState().toString() , Toast.LENGTH_LONG).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -234,7 +232,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     @Override
     public void update(final Observable observable, final Object data) {
         // connectivity changed
-        final ConnectivityObservable.State currentState = ((GreenAddressApplication) getApplication()).getConnectionObservable().getState();
+        final ConnectivityObservable.State currentState = getGAApp().getConnectionObservable().getState();
         if (menu != null) {
             setPlugVisible(currentState != ConnectivityObservable.State.CONNECTED && currentState != ConnectivityObservable.State.LOGGEDIN && currentState != ConnectivityObservable.State.LOGGINGIN);
         }

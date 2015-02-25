@@ -15,7 +15,6 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -41,7 +40,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.QrBitmap;
 
 import org.bitcoinj.crypto.MnemonicException;
@@ -90,7 +88,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
         final TextView qrCodeIcon = (TextView) findViewById(R.id.signupQrCodeIcon);
         final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
-        final ListenableFuture<String> mnemonicPassphrase = ((GreenAddressApplication) getApplication()).gaService.getMnemonicPassphrase();
+        final ListenableFuture<String> mnemonicPassphrase = getGAService().getMnemonicPassphrase();
         Futures.addCallback(mnemonicPassphrase, new FutureCallback<String>() {
             @Override
             public void onSuccess(@Nullable final String result) {
@@ -106,14 +104,14 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             public void onFailure(final Throwable t) {
 
             }
-        }, ((GreenAddressApplication) getApplication()).gaService.es);
+        }, getGAService().es);
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
                 final Animation iconPressed = AnimationUtils.loadAnimation(SignUpActivity.this, R.anim.rotation);
                 qrCodeIcon.startAnimation(iconPressed);
 
-                final ListenableFuture<QrBitmap> mnemonicQrcode = ((GreenAddressApplication) getApplication()).gaService.getQrCodeForMnemonicPassphrase();
+                final ListenableFuture<QrBitmap> mnemonicQrcode = getGAService().getQrCodeForMnemonicPassphrase();
                 Futures.addCallback(mnemonicQrcode, new FutureCallback<QrBitmap>() {
 
                     @Override
@@ -148,17 +146,17 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                     public void onFailure(final Throwable t) {
 
                     }
-                }, ((GreenAddressApplication) getApplication()).gaService.es);
+                }, getGAService().es);
             }
         });
 
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        final GaService gaService = getGAService();
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                 if (onSignUp == null) {
-                    if (((GreenAddressApplication) getApplication()).gaService.onConnected != null) {
+                    if (getGAService().onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
                         onSignUp = Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
@@ -203,7 +201,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                             final Intent pinSaveActivity = new Intent(SignUpActivity.this, PinSaveActivity.class);
 
                             pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
-                            ((GreenAddressApplication) getApplication()).gaService.resetSignUp();
+                            getGAService().resetSignUp();
                             onSignUp = null;
                             finish();
                             startActivity(pinSaveActivity);
@@ -219,7 +217,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                                 }
                             });
                         }
-                    }, ((GreenAddressApplication) getApplication()).gaService.es);
+                    }, getGAService().es);
                 } else {
                     if (!checkBox.isChecked()) {
                         SignUpActivity.this.runOnUiThread(new Runnable() {
@@ -275,7 +273,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)}, null);
         }
         signupNfcIcon.setVisibility(mNfcAdapter != null && mNfcAdapter.isEnabled() ? View.VISIBLE : View.GONE);
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
     }
 
     @Override
@@ -284,7 +282,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
 
     }
 
@@ -297,7 +295,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             final Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             NdefRecord record = null;
             try {
-                record = NdefRecord.createMime("x-gait/mnc", ((GreenAddressApplication) getApplication()).gaService.getEntropyFromMnemonics(mnemonicText.getText().toString()));
+                record = NdefRecord.createMime("x-gait/mnc", getGAService().getEntropyFromMnemonics(mnemonicText.getText().toString()));
             } catch (final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e ) {
             }
 
@@ -356,9 +354,9 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     @Override
     public void onBackPressed() {
         if (onSignUp != null) {
-            ((GreenAddressApplication) getApplication()).gaService.resetSignUp();
+            getGAService().resetSignUp();
             onSignUp = null;
-            ((GreenAddressApplication) getApplication()).gaService.disconnect(true);
+            getGAService().disconnect(true);
         }
         super.onBackPressed();
     }
