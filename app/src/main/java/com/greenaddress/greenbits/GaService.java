@@ -1252,12 +1252,12 @@ public class GaService extends Service {
                     outValue = outValue.add(out.getValue());
                 }
                 final Coin fee = inValue.subtract(outValue);
-                if (fee.compareTo(Coin.valueOf(10000)) == -1) {
-                    throw new IllegalArgumentException("Verification: Fee is too small (expected at least 10000 satoshi).");
+                if (fee.compareTo(Coin.valueOf(1000)) == -1) {
+                    throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi).");
                 }
-                int kB = (transaction.decoded.getMessageSize() + 999) / 1000;
-                if (fee.compareTo(Coin.valueOf(kB * 20000)) == 1) {
-                    throw new IllegalArgumentException("Verification: Fee is too large (expected at most 20000 satoshi per kB).");
+                int kBfee = (int)(500000.0 * ((double)transaction.decoded.getMessageSize()) / 1000.0);
+                if (fee.compareTo(Coin.valueOf(kBfee)) == 1) {
+                    throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB).");
                 }
                 return fee;
             }
