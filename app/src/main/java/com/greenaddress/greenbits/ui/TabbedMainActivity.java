@@ -402,6 +402,10 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             setIdVisible(false, R.id.action_bitboat);
         }
 
+        if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET)) {
+            setIdVisible(false, R.id.action_sweep);
+        }
+
         return true;
     }
 
