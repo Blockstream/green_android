@@ -26,7 +26,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
@@ -150,9 +149,8 @@ public class MainFragment extends GAFragment implements Observer {
                 type = Transaction.TYPE_REDEPOSIT;
             }
         }
-        boolean spvVerified = getActivity().getSharedPreferences("verified_utxo_"
-                +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
-                Context.MODE_PRIVATE).getBoolean(txhash, false);
+        boolean spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
+                +getGAService().getReceivingId(), Context.MODE_PRIVATE).getBoolean(txhash, false);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return new Transaction(type, amount, counterparty,
@@ -161,7 +159,7 @@ public class MainFragment extends GAFragment implements Observer {
     }
 
     private void updateBalance(final Activity activity) {
-        final String btcUnit = (String) ((GreenAddressApplication) activity.getApplication()).gaService.getAppearanceValue("unit");
+        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.mainBitcoinScaleText);
@@ -173,24 +171,24 @@ public class MainFragment extends GAFragment implements Observer {
             balanceBitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
         final String btcBalance = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(
-                ((GreenAddressApplication) activity.getApplication()).gaService.getBalanceCoin(curSubaccount)).toString();
+                getGAService().getBalanceCoin(curSubaccount)).toString();
         final String btcBalanceVerified;
-        if (((GreenAddressApplication) activity.getApplication()).gaService.getVerifiedBalanceCoin(curSubaccount) != null) {
+        if (getGAService().getVerifiedBalanceCoin(curSubaccount) != null) {
             btcBalanceVerified = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(
-                    ((GreenAddressApplication) activity.getApplication()).gaService.getVerifiedBalanceCoin(curSubaccount)).toString();
+                    getGAService().getVerifiedBalanceCoin(curSubaccount)).toString();
         } else {
             btcBalanceVerified = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(Coin.valueOf(0)).toString();
         }
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().withLocale(Locale.getDefault()).format(
-                        ((GreenAddressApplication) activity.getApplication()).gaService.getBalanceFiat(curSubaccount))
+                        getGAService().getBalanceFiat(curSubaccount))
                         .toString();
-        final String fiatCurrency = ((GreenAddressApplication) activity.getApplication()).gaService.getFiatCurrency();
+        final String fiatCurrency = getGAService().getFiatCurrency();
         final String converted = CurrencyMapper.map(fiatCurrency);
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
-        if (!getActivity().getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)
+        if (!getGAApp().getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)
                 || btcBalance.equals(btcBalanceVerified)) {
             balanceQuestionMark.setVisibility(View.GONE);
         } else {
@@ -233,7 +231,7 @@ public class MainFragment extends GAFragment implements Observer {
     public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        curSubaccount = getActivity().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+        curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
         final TextView firstP = (TextView) rootView.findViewById(R.id.mainFirstParagraphText);
         final TextView secondP = (TextView) rootView.findViewById(R.id.mainSecondParagraphText);
@@ -268,7 +266,7 @@ public class MainFragment extends GAFragment implements Observer {
                                  getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
                 } else {
                     // no observer means we're synchronizing
-                    blocksLeft = String.valueOf(((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft());
+                    blocksLeft = String.valueOf(getGAService().getSpvBlocksLeft());
                 }
                 MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                         .title(getResources().getString(R.string.unconfirmedBalanceTitle))
@@ -297,10 +295,10 @@ public class MainFragment extends GAFragment implements Observer {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         spvStatusDialog = null;
-                        ((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable().deleteObserver(wiFiObserver);
+                        getGAApp().getConnectionObservable().deleteObserver(wiFiObserver);
                         wiFiObserver = null;
                         wiFiObserverRequired = false;
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.startSpvSync();
+                        getGAService().startSpvSync();
                     }
                 });
                 spvStatusDialog = builder.build();
@@ -313,7 +311,7 @@ public class MainFragment extends GAFragment implements Observer {
                             if (spvStatusDialog != null) {
                                 try {
                                     spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
-                                            String.valueOf(((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft()));
+                                            String.valueOf(getGAService().getSpvBlocksLeft()));
                                     handler.postDelayed(this, 2000);
                                 } catch (IllegalStateException e) {
                                     e.printStackTrace();
@@ -332,9 +330,9 @@ public class MainFragment extends GAFragment implements Observer {
 
         curBalanceObserver = makeBalanceObserver();
 
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
-        if (((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceCoin(curSubaccount) != null) {
+        if (getGAService().getBalanceCoin(curSubaccount) != null) {
             updateBalance(getActivity());
         }
 
@@ -378,7 +376,7 @@ public class MainFragment extends GAFragment implements Observer {
 //        });
         reloadTransactions(getActivity());
 
-        ((GreenAddressApplication) getActivity().getApplication()).configureSubaccountsFooter(
+        getGAApp().configureSubaccountsFooter(
                 curSubaccount,
                 getActivity(),
                 (TextView) rootView.findViewById(R.id.sendAccountName),
@@ -388,14 +386,14 @@ public class MainFragment extends GAFragment implements Observer {
                     @Nullable
                     @Override
                     public Void apply(@Nullable Integer input) {
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input;
                         curBalanceObserver = makeBalanceObserver();
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
                         reloadTransactions(getActivity());
                         updateBalance(getActivity());
 
-                        final SharedPreferences.Editor editor = getActivity().getSharedPreferences("main", Context.MODE_PRIVATE).edit();
+                        final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
 
@@ -405,7 +403,7 @@ public class MainFragment extends GAFragment implements Observer {
                 rootView.findViewById(R.id.mainNoTwoFacFooter)
         );
 
-        final String country = ((GreenAddressApplication) getActivity().getApplication()).gaService.getCountry();
+        final String country = getGAService().getCountry();
         if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
             !(country.equals("IT") || country.equals("FR"))) {
             rootView.findViewById(R.id.buyBtcButton).setVisibility(View.GONE);
@@ -444,9 +442,9 @@ public class MainFragment extends GAFragment implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().deleteObserver(this);
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
-        final ConnectivityObservable connObservable = ((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable();
+        getGAService().getNewTransactionsObservable().deleteObserver(this);
+        getGAService().getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
+        final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
         if (wiFiObserver != null) {
             connObservable.deleteObserver(wiFiObserver);
             wiFiObserver = null;
@@ -455,8 +453,8 @@ public class MainFragment extends GAFragment implements Observer {
 
     @Override
     public void onGAResume() {
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTransactionsObservable().addObserver(this);
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
+        getGAService().getNewTransactionsObservable().addObserver(this);
+        getGAService().getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
         if (wiFiObserverRequired) makeWiFiObserver();
     }
 
@@ -472,8 +470,8 @@ public class MainFragment extends GAFragment implements Observer {
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
                         for (Transaction tx : currentList) {
-                            tx.spvVerified = getActivity().getSharedPreferences("verified_utxo_"
-                                            +(((GreenAddressApplication) getActivity().getApplication()).gaService.getReceivingId()),
+                            tx.spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
+                                            +(getGAService().getReceivingId()),
                                     Context.MODE_PRIVATE).getBoolean(tx.txhash, false);
                         }
                         final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
@@ -495,14 +493,14 @@ public class MainFragment extends GAFragment implements Observer {
     private void reloadTransactions(final Activity activity, boolean newAdapter) {
         final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
-        final String btcUnit = (String) ((GreenAddressApplication) activity.getApplication()).gaService.getAppearanceValue("unit");
+        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
 
         if (currentList == null || newAdapter) {
             currentList = new ArrayList<>();
             listView.setAdapter(new ListTransactionsAdapter(activity, R.layout.list_element_transaction, currentList, btcUnit));
         }
 
-        final ListenableFuture<Map<?, ?>> txFuture = ((GreenAddressApplication) activity.getApplication()).gaService.getMyTransactions(curSubaccount);
+        final ListenableFuture<Map<?, ?>> txFuture = getGAService().getMyTransactions(curSubaccount);
 
         Futures.addCallback(txFuture, new FutureCallback<Map<?, ?>>() {
             @Override
@@ -517,8 +515,8 @@ public class MainFragment extends GAFragment implements Observer {
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
 
-                        final GaService gaService = ((GreenAddressApplication) activity.getApplication()).gaService;
-                        final ConnectivityObservable connObservable = ((GreenAddressApplication) activity.getApplication()).getConnectionObservable();
+                        final GaService gaService = getGAService();
+                        final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
                         if (!gaService.getIsSpvSyncing()) {
                             if (curBlock - gaService.getSpvHeight() > 1000) {
                                 if (connObservable.isWiFiUp()) {
@@ -586,7 +584,7 @@ public class MainFragment extends GAFragment implements Observer {
                 t.printStackTrace();
 
                 }
-            }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+            }, getGAService().es);
     }
 
     private void askUserForSpvNoWiFi() {
@@ -610,7 +608,7 @@ public class MainFragment extends GAFragment implements Observer {
 
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.startSpvSync();
+                        getGAService().startSpvSync();
                     }
                 })
                 .build().show();
@@ -619,8 +617,8 @@ public class MainFragment extends GAFragment implements Observer {
     private void makeWiFiObserver() {
         if (wiFiObserver != null) return;
         final Activity activity = getActivity();
-        final GaService gaService = ((GreenAddressApplication) activity.getApplication()).gaService;
-        final ConnectivityObservable connObservable = ((GreenAddressApplication) activity.getApplication()).getConnectionObservable();
+        final GaService gaService = getGAService();
+        final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
         if (connObservable.isWiFiUp()) {
             gaService.startSpvSync();
             wiFiObserverRequired = false;

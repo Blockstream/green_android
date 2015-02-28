@@ -29,7 +29,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenbits.ConnectivityObservable;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.QrBitmap;
 
 import javax.annotation.Nullable;
@@ -61,8 +60,8 @@ public class ReceiveFragment extends GAFragment {
             // get a new address every time the tab is displayed
             if (isVisibleToUser) {
                 // get a new address:
-                final ListenableFuture<QrBitmap> ft = ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewAddress(curSubaccount);
-                Futures.addCallback(ft, onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+                final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+                Futures.addCallback(ft, onAddress, getGAService().es);
                 startNewAddressAnimation(rootView);
             } else { // !isVisibleToUser
                 // hide to avoid showing old address when swiping
@@ -95,7 +94,7 @@ public class ReceiveFragment extends GAFragment {
             address = savedInstanceState.getParcelable("address");
         }
 
-        curSubaccount = getActivity().getSharedPreferences("receive", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+        curSubaccount = getGAApp().getSharedPreferences("receive", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
         final View rootView = inflater.inflate(R.layout.fragment_receive, container, false);
         final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
@@ -208,19 +207,19 @@ public class ReceiveFragment extends GAFragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        if (!((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
+                        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
                             Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
                             return;
                         }
                         startNewAddressAnimation(rootView);
 
-                        final ListenableFuture<QrBitmap> ft = ((GreenAddressApplication) getActivity().getApplication()).gaService.getNewAddress(curSubaccount);
-                        Futures.addCallback(ft, onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+                        final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+                        Futures.addCallback(ft, onAddress, getGAService().es);
                     }
                 }
         );
 
-        ((GreenAddressApplication) getActivity().getApplication()).configureSubaccountsFooter(
+        getGAApp().configureSubaccountsFooter(
                 curSubaccount,
                 getActivity(),
                 (TextView) rootView.findViewById(R.id.sendAccountName),
@@ -231,13 +230,13 @@ public class ReceiveFragment extends GAFragment {
                     @Override
                     public Void apply(@Nullable Integer input) {
                         curSubaccount = input;
-                        final SharedPreferences.Editor editor = getActivity().getSharedPreferences("receive", Context.MODE_PRIVATE).edit();
+                        final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("receive", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
                         startNewAddressAnimation(rootView);
                         Futures.addCallback(
-                                ((GreenAddressApplication) getActivity().getApplication()).gaService.getLatestOrNewAddress(curSubaccount),
-                                onAddress, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+                                getGAService().getLatestOrNewAddress(curSubaccount),
+                                onAddress, getGAService().es);
                         return null;
                     }
                 },
@@ -274,6 +273,7 @@ public class ReceiveFragment extends GAFragment {
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
         copyIcon.setVisibility(View.GONE);
         copyText.setVisibility(View.GONE);
+        receiveAddress.setText("");
         receiveAddress.setText("");
         imageView.setImageBitmap(null);
     }

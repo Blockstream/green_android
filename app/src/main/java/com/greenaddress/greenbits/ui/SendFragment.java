@@ -42,7 +42,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
@@ -138,7 +137,7 @@ public class SendFragment extends GAFragment {
             twoFacData = new HashMap<>();
             twoFacData.put("method", method);
             if (!method.equals("gauth")) {
-                ((GreenAddressApplication) getActivity().getApplication()).gaService.requestTwoFacCode(method, "send_tx");
+                getGAService().requestTwoFacCode(method, "send_tx");
             }
         }
 
@@ -158,7 +157,7 @@ public class SendFragment extends GAFragment {
                         if (twoFacData != null) {
                             twoFacData.put("code", newTx2FACodeText.getText().toString());
                         }
-                        final ListenableFuture<String> sendFuture = ((GreenAddressApplication) getActivity().getApplication()).gaService.signAndSendTransaction(prepared, twoFacData);
+                        final ListenableFuture<String> sendFuture = getGAService().signAndSendTransaction(prepared, twoFacData);
                         Futures.addCallback(sendFuture, new FutureCallback<String>() {
                             @Override
                             public void onSuccess(@Nullable final String result) {
@@ -189,7 +188,7 @@ public class SendFragment extends GAFragment {
                                     }
                                 });
                             }
-                        }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+                        }, getGAService().es);
                     }
 
                     @Override
@@ -206,10 +205,10 @@ public class SendFragment extends GAFragment {
     public void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
         Log.i("SendActivity.show2FAChoices", "params " + fee + " " + amount + " " + recipient);
         String[] enabledTwoFacNames = new String[]{};
-        final List<String> enabledTwoFacNamesSystem = ((GreenAddressApplication) getActivity().getApplication()).gaService.getEnabledTwoFacNames(true);
+        final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
         mTwoFactor = new MaterialDialog.Builder(getActivity())
                 .title(R.string.twoFactorChoicesTitle)
-                .items(((GreenAddressApplication) getActivity().getApplication()).gaService.getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
+                .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -233,7 +232,7 @@ public class SendFragment extends GAFragment {
             recipientEdit.setEnabled(false);
             sendButton.setEnabled(false);
             noteIcon.setVisibility(View.GONE);
-            Futures.addCallback(((GreenAddressApplication) getActivity().getApplication()).gaService.processBip70URL(URI.getPaymentRequestUrl()),
+            Futures.addCallback(getGAService().processBip70URL(URI.getPaymentRequestUrl()),
                     new FutureCallback<Map<?, ?>>() {
                         @Override
                         public void onSuccess(@Nullable final Map<?, ?> result) {
@@ -298,7 +297,7 @@ public class SendFragment extends GAFragment {
 
         rootView = inflater.inflate(R.layout.fragment_send, container, false);
 
-        curSubaccount = getActivity().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+        curSubaccount = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
         sendButton = (Button) rootView.findViewById(R.id.sendSendButton);
         noteText = (EditText) rootView.findViewById(R.id.sendToNoteText);
@@ -310,7 +309,7 @@ public class SendFragment extends GAFragment {
         recipientEdit = (EditText) rootView.findViewById(R.id.sendToEditText);
         scanIcon = (TextView) rootView.findViewById(R.id.sendScanIcon);
 
-        final String btcUnit = (String) ((GreenAddressApplication) getActivity().getApplication()).gaService.getAppearanceValue("unit");
+        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = (TextView) rootView.findViewById(R.id.sendBitcoinUnitText);
         bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -339,7 +338,7 @@ public class SendFragment extends GAFragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                if (!((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
+                if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
                     Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -358,7 +357,7 @@ public class SendFragment extends GAFragment {
                     return;
                 }
 
-                final GaService gaService = ((GreenAddressApplication) getActivity().getApplication()).gaService;
+                final GaService gaService = getGAService();
                 final boolean validAddress = gaService.isValidAddress(recipient);
 
                 final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0);
@@ -392,12 +391,12 @@ public class SendFragment extends GAFragment {
                         message = getActivity().getString(R.string.invalidAmount);
                     }
                     if (message == null) {
-                        prepared = ((GreenAddressApplication) getActivity().getApplication()).gaService.prepareTx(amount, recipient, privData);
+                        prepared = getGAService().prepareTx(amount, recipient, privData);
                     } else {
                         prepared = null;
                     }
                 } else {
-                    prepared = ((GreenAddressApplication) getActivity().getApplication()).gaService.preparePayreq(amount, payreqData, privData);
+                    prepared = getGAService().preparePayreq(amount, payreqData, privData);
                 }
 
                 if (prepared != null) {
@@ -407,11 +406,11 @@ public class SendFragment extends GAFragment {
                                 @Override
                                 public void onSuccess(@Nullable final PreparedTransaction result) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    Futures.addCallback(((GreenAddressApplication) getActivity().getApplication()).gaService.validateTxAndCalculateFee(result, recipient, amount),
+                                    Futures.addCallback(getGAService().validateTxAndCalculateFee(result, recipient, amount),
                                             new FutureCallback<Coin>() {
                                                 @Override
                                                 public void onSuccess(@Nullable final Coin fee) {
-                                                    final Map<?, ?> twoFacConfig = ((GreenAddressApplication) getActivity().getApplication()).gaService.getTwoFacConfig();
+                                                    final Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
                                                     // can be non-UI because validation talks to USB if hw wallet is used
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         @Override
@@ -419,7 +418,7 @@ public class SendFragment extends GAFragment {
                                                             sendButton.setEnabled(true);
                                                             if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
                                                                 final List<String> enabledTwoFac =
-                                                                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getEnabledTwoFacNames(true);
+                                                                        getGAService().getEnabledTwoFacNames(true);
                                                                 if (enabledTwoFac.size() > 1) {
                                                                     show2FAChoices(fee, amount, recipient, result);
                                                                 } else {
@@ -456,9 +455,9 @@ public class SendFragment extends GAFragment {
         });
 
         curBalanceObserver = makeBalanceObserver();
-        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
-        if (((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceCoin(curSubaccount) != null) {
+        if (getGAService().getBalanceCoin(curSubaccount) != null) {
             updateBalance(getActivity());
         }
 
@@ -478,7 +477,7 @@ public class SendFragment extends GAFragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        if (!((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
+                        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
                             Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
                             return;
                         }
@@ -489,7 +488,7 @@ public class SendFragment extends GAFragment {
                                     @Override
                                     public boolean onMenuItemClick(final MenuItem item) {
                                         MonetaryFormat newFormat = bitcoinFormat;
-                                        final GaService gaService = ((GreenAddressApplication) getActivity().getApplication()).gaService;
+                                        final GaService gaService = getGAService();
                                         switch (item.getItemId()) {
                                             case R.id.bitcoinScaleUnit:
                                                 gaService.setAppearanceValue("unit", "BTC", true);
@@ -546,13 +545,13 @@ public class SendFragment extends GAFragment {
         fiatGroup = (LinearLayout) rootView.findViewById(R.id.sendFiatGroup);
 
         changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon),
-                ((GreenAddressApplication) getActivity().getApplication()).gaService.getFiatCurrency());
+                getGAService().getFiatCurrency());
 
         fiatPopup = new PopupMenu(getActivity(), fiatGroup);
         final ArrayList<List<String>> currencyExchangePairs = new ArrayList<>();
 
         Futures.addCallback(
-                ((GreenAddressApplication) getActivity().getApplication()).gaService.getCurrencyExchangePairs(),
+                getGAService().getCurrencyExchangePairs(),
                 new FutureCallback<List<List<String>>>() {
                     @Override
                     public void onSuccess(@Nullable final List<List<String>> result) {
@@ -561,8 +560,8 @@ public class SendFragment extends GAFragment {
                             int order = 0;
                             for (final List<String> currency_exchange : result) {
                                 currencyExchangePairs.add(currency_exchange);
-                                final boolean current = currency_exchange.get(0).equals(((GreenAddressApplication) activity.getApplication()).gaService.getFiatCurrency())
-                                        && currency_exchange.get(1).equals(((GreenAddressApplication) activity.getApplication()).gaService.getFiatExchange());
+                                final boolean current = currency_exchange.get(0).equals(getGAService().getFiatCurrency())
+                                        && currency_exchange.get(1).equals(getGAService().getFiatExchange());
                                 final int group = current ? selected_group : Menu.NONE;
                                 fiatPopup.getMenu().add(group, order, order, formatFiatListItem(currency_exchange.get(0), currency_exchange.get(1)));
                                 order += 1;
@@ -575,13 +574,13 @@ public class SendFragment extends GAFragment {
                     public void onFailure(final Throwable t) {
                         t.printStackTrace();
                     }
-                }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+                }, getGAService().es);
 
         fiatGroup.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        if (!((GreenAddressApplication) getActivity().getApplication()).getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
+                        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
                             Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
                             return;
                         }
@@ -651,9 +650,9 @@ public class SendFragment extends GAFragment {
             }
         });
 
-        final GaService gaService = ((GreenAddressApplication) getActivity().getApplication()).gaService;
+        final GaService gaService = getGAService();
         hideInstantIf2of3();
-        ((GreenAddressApplication) getActivity().getApplication()).configureSubaccountsFooter(
+        getGAApp().configureSubaccountsFooter(
                 curSubaccount,
                 getActivity(),
                 (TextView) rootView.findViewById(R.id.sendAccountName),
@@ -663,14 +662,14 @@ public class SendFragment extends GAFragment {
                     @Nullable
                     @Override
                     public Void apply(@Nullable Integer input) {
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input.intValue();
                         hideInstantIf2of3();
-                        final SharedPreferences.Editor editor = getActivity().getSharedPreferences("send", Context.MODE_PRIVATE).edit();
+                        final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
                         curBalanceObserver = makeBalanceObserver();
-                        ((GreenAddressApplication) getActivity().getApplication()).gaService.getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
                         Futures.addCallback(gaService.getSubaccountBalance(curSubaccount), new FutureCallback<Map<?, ?>>() {
                             @Override
                             public void onSuccess(@Nullable Map<?, ?> result) {
@@ -708,7 +707,7 @@ public class SendFragment extends GAFragment {
     }
 
     private void hideInstantIf2of3() {
-        final GaService gaService = ((GreenAddressApplication) getActivity().getApplication()).gaService;
+        final GaService gaService = getGAService();
         instantConfirmationCheckbox.setVisibility(View.VISIBLE);
         for (Object subaccount_ : gaService.getSubaccounts()) {
             Map<String, ?> subaccountMap = (Map) subaccount_;
@@ -737,7 +736,7 @@ public class SendFragment extends GAFragment {
     }
 
     private void updateBalance(final Activity activity) {
-        final String btcUnit = (String) ((GreenAddressApplication) activity.getApplication()).gaService.getAppearanceValue("unit");
+        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
         final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
         final TextView sendSubAccountBalanceUnit = (TextView) rootView.findViewById(R.id.sendSubAccountBalanceUnit);
         final TextView sendSubAccountBitcoinScale = (TextView) rootView.findViewById(R.id.sendSubAccountBitcoinScale);
@@ -750,7 +749,7 @@ public class SendFragment extends GAFragment {
         }
         MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final String btcBalance = format.noCode().withLocale(Locale.getDefault()).format(
-                ((GreenAddressApplication) activity.getApplication()).gaService.getBalanceCoin(curSubaccount)).toString();
+                getGAService().getBalanceCoin(curSubaccount)).toString();
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
 
         try {
@@ -772,13 +771,13 @@ public class SendFragment extends GAFragment {
         fiatGroup.setEnabled(false);
         final Animation rotateAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
         fiatGroup.startAnimation(rotateAnim);
-        final ListenableFuture<Map<?, ?>> balanceFuture = Futures.transform(((GreenAddressApplication) getActivity().getApplication()).gaService.setPricingSource(currency, exchange),
+        final ListenableFuture<Map<?, ?>> balanceFuture = Futures.transform(getGAService().setPricingSource(currency, exchange),
                 new AsyncFunction<Boolean, Map<?, ?>>() {
                     @Override
                     public ListenableFuture<Map<?, ?>> apply(final Boolean input) throws Exception {
-                        return ((GreenAddressApplication) getActivity().getApplication()).gaService.updateBalance(curSubaccount);
+                        return getGAService().updateBalance(curSubaccount);
                     }
-                }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+                }, getGAService().es);
         final ListenableFuture future = Futures.transform(balanceFuture, new Function<Map<?, ?>, Object>() {
             @Nullable
             @Override
@@ -796,7 +795,7 @@ public class SendFragment extends GAFragment {
                 });
                 return null;
             }
-        }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+        }, getGAService().es);
         Futures.addCallback(future, new FutureCallback() {
             @Override
             public void onSuccess(@Nullable final Object result) {
@@ -827,7 +826,7 @@ public class SendFragment extends GAFragment {
                     });
                 }
             }
-        }, ((GreenAddressApplication) getActivity().getApplication()).gaService.es);
+        }, getGAService().es);
     }
 
     private Spanned formatFiatListItem(final String currency, final String exchange) {
@@ -862,7 +861,7 @@ public class SendFragment extends GAFragment {
     }
 
     private void convertBtcToFiat() {
-        convertBtcToFiat(((GreenAddressApplication) getActivity().getApplication()).gaService.getFiatRate());
+        convertBtcToFiat(getGAService().getFiatRate());
     }
 
     private void convertBtcToFiat(final float exchangeRate) {
@@ -891,7 +890,7 @@ public class SendFragment extends GAFragment {
             return;
         }
         converting = true;
-        final float exchangeRate = ((GreenAddressApplication) getActivity().getApplication()).gaService.getFiatRate();
+        final float exchangeRate = getGAService().getFiatRate();
         final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
                 .toBigInteger().longValue());
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);

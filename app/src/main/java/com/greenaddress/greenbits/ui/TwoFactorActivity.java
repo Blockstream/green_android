@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.zxing.WriterException;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.QrBitmap;
 
 import java.util.Formatter;
@@ -36,7 +34,7 @@ public class TwoFactorActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        final GaService gaService = getGAService();
         if (gaService == null) {
             finish();
             return;
@@ -129,7 +127,7 @@ public class TwoFactorActivity extends ActionBarActivity {
     }
 
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        final GaService gaService = getGAService();
         setContentView(R.layout.activity_two_factor_3_provide_details);
         final Button continueButton = (Button) findViewById(R.id.continueButton);
         TextView prompt = (TextView) findViewById(R.id.prompt);
@@ -192,7 +190,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        final GaService gaService = getGAService();
 
 
         final Button continueButton = (Button) findViewById(R.id.continueButton);
@@ -242,7 +240,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        final GaService gaService = getGAService();
 
         String gauth_url = (String) gaService.getTwoFacConfig().get("gauth_url");
         try {
@@ -293,7 +291,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         final EditText code = (EditText) findViewById(R.id.code);
         final TextView prompt = (TextView) findViewById(R.id.prompt);
         prompt.setText(new Formatter().format(prompt.getText().toString(), twoFacTypeName).toString());
-        final GaService gaService = ((GreenAddressApplication) getApplication()).gaService;
+        final GaService gaService = getGAService();
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);

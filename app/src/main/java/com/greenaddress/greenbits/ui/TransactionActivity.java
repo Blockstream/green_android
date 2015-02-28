@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.greenaddress.greenapi.Network;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
@@ -31,7 +29,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (((GreenAddressApplication) getApplication()).gaService == null) {
+        if (getGAService() == null) {
             finish();
             return;
         }
@@ -118,12 +116,12 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                         rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
                     } else {
                         unconfirmedText.setText(getResources().getString(R.string.txUnverifiedTx) + " " +
-                                ((GreenAddressApplication) getActivity().getApplication()).gaService.getSpvBlocksLeft());
+                                getGAService().getSpvBlocksLeft());
                     }
                 }
             }
 
-            final String btcUnit = (String) ((GreenAddressApplication) getActivity().getApplication()).gaService.getAppearanceValue("unit");
+            final String btcUnit = (String) getGAService().getAppearanceValue("unit");
             final Coin coin = Coin.valueOf(t.amount);
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
             bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
@@ -170,16 +168,16 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        if (((GreenAddressApplication) getApplication()).gaService == null) {
+        if (getGAService() == null) {
             finish();
             return;
         }
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().addObserver(this);
+        getGAApp().getConnectionObservable().addObserver(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((GreenAddressApplication) getApplication()).getConnectionObservable().deleteObserver(this);
+        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 }

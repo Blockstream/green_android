@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -30,7 +29,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenbits.ConnectivityObservable;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.QrBitmap;
 
 import org.apache.http.HttpResponse;
@@ -100,11 +98,11 @@ public class BitBoatActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (((GreenAddressApplication) getApplication()).gaService == null) {
+        if (getGAService() == null) {
             finish();
             return;
         }
-        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
+        if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
             finish();
             return;
         }
@@ -114,8 +112,8 @@ public class BitBoatActivity extends ActionBarActivity {
         amountEdit = (EditText) findViewById(R.id.amountEditText);
         amountFiatEdit = (EditText) findViewById(R.id.amountFiatEditText);
 
-        final String btcUnit = (String) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("unit");
-        final String country = ((GreenAddressApplication) getApplication()).gaService.getCountry();
+        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+        final String country = getGAService().getCountry();
         final TextView bitcoinScale = (TextView) findViewById(R.id.bitcoinScaleText);
         final TextView bitcoinUnitText = (TextView) findViewById(R.id.bitcoinUnitText);
         bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -373,14 +371,14 @@ public class BitBoatActivity extends ActionBarActivity {
                                 amountEdit.setEnabled(false);
                                 amountFiatEdit.setEnabled(false);
                                 List<ListenableFuture<String>> addresses = new ArrayList<>();
-                                addresses.add(Futures.transform(((GreenAddressApplication) getApplication()).gaService.getNewAddress(0), new Function<QrBitmap, String>() {
+                                addresses.add(Futures.transform(getGAService().getNewAddress(0), new Function<QrBitmap, String>() {
                                     @Nullable
                                     @Override
                                     public String apply(@Nullable QrBitmap input) {
                                         return input.data;
                                     }
                                 }));
-                                addresses.add(((GreenAddressApplication) getApplication()).gaService.fundReceivingId("GA2nxNXvFENfGM9K27KckeGqNB2JTi"));
+                                addresses.add(getGAService().fundReceivingId("GA2nxNXvFENfGM9K27KckeGqNB2JTi"));
                                 Futures.addCallback(Futures.allAsList(addresses), new FutureCallback<List<String>>() {
                                             @Override
                                             public void onSuccess(@Nullable List<String> result) {
@@ -424,7 +422,7 @@ public class BitBoatActivity extends ActionBarActivity {
                                 throw new RuntimeException(e);
                             }
                             String id = (String) json.get("id");
-                            ArrayList<String> pending = (ArrayList) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("pending_bitboat_ids");
+                            ArrayList<String> pending = (ArrayList) getGAService().getAppearanceValue("pending_bitboat_ids");
                             // reenable the button only after status is available
                             SettableFuture<Boolean> future = SettableFuture.create();
                             Futures.addCallback(future, reEnableButtonCallback);
@@ -435,7 +433,7 @@ public class BitBoatActivity extends ActionBarActivity {
                             }
                             if (pending == null) pending = new ArrayList<>();
                             pending.add(id);
-                            Futures.addCallback(((GreenAddressApplication) getApplication()).gaService.setAppearanceValue("pending_bitboat_ids", pending, false), new FutureCallback<Boolean>() {
+                            Futures.addCallback(getGAService().setAppearanceValue("pending_bitboat_ids", pending, false), new FutureCallback<Boolean>() {
                                 @Override
                                 public void onSuccess(@Nullable Boolean result) {
                                     updatePendingOrders();
@@ -471,11 +469,11 @@ public class BitBoatActivity extends ActionBarActivity {
     }
 
     private void updatePendingOrders() {
-        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
+        if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
             return;
         }
         updatingPending = true;
-        final ArrayList<Object> pending = (ArrayList) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("pending_bitboat_ids");
+        final ArrayList<Object> pending = (ArrayList) getGAService().getAppearanceValue("pending_bitboat_ids");
         final ArrayList<String> pendingIds = new ArrayList<>();
         final ArrayList<ListenableFuture<String>> results = new ArrayList<>();
         if (pending == null) return;
@@ -586,12 +584,12 @@ public class BitBoatActivity extends ActionBarActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (((GreenAddressApplication) getApplication()).getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
+                        if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN) {
                             return;
                         }
 
                         final ListView listView = (ListView) findViewById(R.id.listView);
-                        final String btcUnit = (String) ((GreenAddressApplication) getApplication()).gaService.getAppearanceValue("unit");
+                        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
                         if (listView.getAdapter() != null) {
                             ((ListBitBoatTxsAdapter) listView.getAdapter()).clear();
                             for (BitBoatTransaction tx : currentList) {
@@ -604,7 +602,7 @@ public class BitBoatActivity extends ActionBarActivity {
                     }
                 });
 
-                ((GreenAddressApplication) getApplication()).gaService.setAppearanceValue("pending_bitboat_ids", newPending, false);
+                getGAService().setAppearanceValue("pending_bitboat_ids", newPending, false);
 
                 if (anyToCheckAgain && !pausing) {
                     handler.postDelayed(new Runnable() {
