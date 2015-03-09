@@ -37,7 +37,8 @@ public class BTChipTransportAndroid {
 		HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
 		for (UsbDevice device : deviceList.values()) {
 			if ((device.getVendorId() == VID) && 
-			   ((device.getProductId() == PID_WINUSB) || (device.getProductId() == PID_HID))) {
+			   ((device.getProductId() == PID_WINUSB) || (device.getProductId() == PID_HID) ||
+			    (device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON))) {
 				return device;
 			}
 		}
@@ -50,6 +51,7 @@ public class BTChipTransportAndroid {
 		UsbInterface dongleInterface = device.getInterface(0);
         UsbEndpoint in = null;
         UsbEndpoint out = null;
+	boolean ledger; 
         for (int i=0; i<dongleInterface.getEndpointCount(); i++) {
             UsbEndpoint tmpEndpoint = dongleInterface.getEndpoint(i);
             if (tmpEndpoint.getDirection() == UsbConstants.USB_DIR_IN) {
@@ -61,11 +63,12 @@ public class BTChipTransportAndroid {
         }
         UsbDeviceConnection connection = manager.openDevice(device);
         connection.claimInterface(dongleInterface, true);
+	ledger = ((device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON));
         if (device.getProductId() == PID_WINUSB) {
         	return new BTChipTransportAndroidWinUSB(connection, dongleInterface, in, out, TIMEOUT);
         }
-        else {
-        	return new BTChipTransportAndroidHID(connection, dongleInterface, in, out, TIMEOUT);
+	else {
+        	return new BTChipTransportAndroidHID(connection, dongleInterface, in, out, TIMEOUT, ledger);
         }
 	}
 	
@@ -74,5 +77,7 @@ public class BTChipTransportAndroid {
 	private static final int VID = 0x2581;
 	private static final int PID_WINUSB = 0x1b7c;
 	private static final int PID_HID = 0x2b7c;
+	private static final int PID_HID_LEDGER = 0x3b7c;
+	private static final int PID_HID_LEDGER_PROTON = 0x4b7c;
 	private static final int TIMEOUT = 20000;	
 }

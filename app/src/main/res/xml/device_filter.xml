@@ -9,4 +9,8 @@
     <usb-device vendor-id="9601" product-id="11132"/>
     <!-- VID 0x2581 PID 0x1b7c - BTChip WinUSB -->
     <usb-device vendor-id="9601" product-id="7036"/>
+    <!-- VID 0x2581 PID 0x3b7c - Ledger HID -->
+    <usb-device vendor-id="9601" product-id="15228"/>
+    <!-- VID 0x2581 PID 0x4b7c - Ledger Proton HID -->
+    <usb-device vendor-id="9601" product-id="19324"/>
 </resources>
