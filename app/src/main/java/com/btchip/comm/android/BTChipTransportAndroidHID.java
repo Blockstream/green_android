@@ -44,12 +44,16 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 	private boolean debug;
 	private boolean ledger;
 	
-	public BTChipTransportAndroidHID(UsbDeviceConnection connection, UsbInterface dongleInterface, UsbEndpoint in, UsbEndpoint out, int timeout) {
+	public BTChipTransportAndroidHID(UsbDeviceConnection connection, UsbInterface dongleInterface, UsbEndpoint in, UsbEndpoint out, int timeout, boolean ledger) {
 		this.connection = connection;
 		this.dongleInterface = dongleInterface;
 		this.in = in;
 		this.out = out;
-		ledger = (in.getEndpointNumber() != out.getEndpointNumber());
+		this.ledger = ledger;
+		// Compatibility with old prototypes, to be removed
+		if (!this.ledger) {
+			this.ledger = (in.getEndpointNumber() != out.getEndpointNumber());
+		}
 		this.timeout = timeout;
 		transferBuffer = new byte[HID_BUFFER_SIZE];
 	}
