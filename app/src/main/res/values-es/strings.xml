@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="action_settings">Configuración</string>
+    <string name="title_activity_mnemonic">Ingresar</string>
+    <string name="title_activity_send">Enviar</string>
+    <string name="title_activity_receive">Recibir</string>
+    <string name="sendToText">Destinatario</string>
+    <string name="sendAmountText">Monto</string>
+    <string name="sendSendButton">Enviar</string>
+    <string name="title_activity_pin">Pin</string>
+    <string name="pinSaveText">Guardar</string>
+    <string name="pinLoginText">Ingresar</string>
+    <string name="sendAvailableText">Disponible</string>
+    <string name="title_activity_qr_scanner">Escaner de QR</string>
+    <string name="title_activity_sign_up">Inscribirse</string>
+    <string name="signupContinueButtonText">CONTINUAR</string>
+    <string name="signupCheckBoxText">He asegurado la frase clave y he leído los<a href="https://greenaddress.it/es/tos/">Términos y Condiciones de servicio</a></string>
+    <string name="firstSignUpText">INSCRIBIRSE</string>
+    <string name="firstLogInText">INGRESAR</string>
+    <string name="bitcoinScaleUnitText">Unidad</string>
+    <string name="bitcoinScaleMilliText">Mili</string>
+    <string name="bitcoinScaleMicroText">Micro</string>
+    <string name="bitcoinScaleBitsText">Bits</string>
+    <string name="bitcoinScaleSatoshiText">Satoshi</string>
+    <string name="receive_title">RECIBIR</string>
+    <string name="main_title">TODO</string>
+    <string name="send_title">ENVIAR</string>
+    <string name="action_search">Buscar</string>
+    <string name="pinTitleText">PIN</string>
+    <string name="network_unavailable">Desconectado</string>
+    <string name="newTxTitle">Nueva transacción</string>
+    <string name="sweepAddressTitle">Barrer fondos</string>
+    <string name="twoFactorChoicesTitle">Selecione método de autenticación de 2 factores</string>
+    <string name="choose">SELECCIONAR</string>
+    <string name="cancel">CANCELAR</string>
+    <string name="attemptsLeft">%s intentos restantes</string>
+
+    <string-array name="twoFactorChoices">
+        <item>Email</item>
+        <item>SMS</item>
+        <item>Teléfono</item>
+        <item>Autenticación de Google</item>
+    </string-array>
+
+    <string-array name="timesStrings">
+        <item>año</item>
+        <item>mes</item>
+        <item>día</item>
+        <item>hora</item>
+        <item>minuto</item>
+        <item>segundo</item>
+    </string-array>
+    <string-array name="timesStringPlurals">
+        <item>años</item>
+        <item>meses</item>
+        <item>días</item>
+        <item>horas</item>
+        <item>minutos</item>
+        <item>segundos</item>
+    </string-array>
+
+    <string name="setup">DISPONER Aut.2Factores</string>
+    <string name="send">ENVIAR</string>
+    <string name="sweep">BARRER</string>
+    <string name="sweep_bip38_passphrase_prompt">Por favor, provea la contraseña BIP38:</string>
+    <string name="invalid_passphrase">Frase clave inválida</string>
+    <string name="invalid_key">Clave inválida</string>
+    <string name="title_mnemonic">Mnemotécnico</string>
+    <string name="warning">¡Advertencia!</string>
+    <string name="save_password_now">Usted DEBE guardar esta frase clave AHORA</string>
+    <string name="greenaddress_headline">La billetera de Bitcoin mas fácil, segura y rápida</string>
+    <string name="pinSkipText">SALTEAR</string>
+    <string name="sendOptionalMemo">Memo opcional</string>
+    <string name="madeBy">creado por GreenAddress</string>
+    <string name="welcomeGreenBits">Bienvenido a GreenBits</string>
+    <string name="attemptsFinished">PIN inválido, usted no dispone de mas intentos. Por favor, ingrese usando su frase clave.</string>
+    <string name="attemptsLeftLong">PIN inválido, usted dispone de %s intentos restantes</string>
+    <string name="warnOnPaste">Sea cuidadoso, algunas aplicaciones podrían leer o alterar su portapapeles</string>
+    <string name="toastOnCopyAddress">Dirección copiada al portapepeles.</string>
+    <string name="receiveAddressSubTitle">Dirección</string>
+    <string name="sendPayTo">Pagar a</string>
+    <string name="action_sweep">Barrer</string>
+    <string name="action_exit">Salir</string>
+    <string name="txTypeIn">Depositar</string>
+    <string name="txTypeOut">Retirar</string>
+    <string name="txTypeRedeposit">Redepositar</string>
+    <string name="mnemonicHint">Ingrese su frase clave de GreenAddress o escanee un código qr</string>
+    <string name="title_activity_settings">Configuración</string>
+    <string name="ago">hace</string>
+    <string name="txSubTitle">Detalles de tansacción</string>
+    <string name="txHashText">Hash</string>
+    <string name="txRecipientText">Receptor</string>
+    <string name="txMemoText">Memo</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">GreenBits</string>
+    <string name="txDateText">Fecha</string>
+    <string name="txAmountText">Monto</string>
+    <string name="newTxAmount">Monto: </string>
+    <string name="newTxRecipient">Receptor:</string>
+    <string name="newTxFee">Impuesto:</string>
+    <string name="network_unavailable_text">Red no disponible</string>
+    <string name="invalidAmountAndAddress">Dirección o montos inválidos</string>
+    <string name="invalidAddress">Dirección inválida</string>
+    <string name="invalidAmount">Monto inválido</string>
+    <string name="noBalanceFirstLine">Comience <a href="https://bitcoin.org/es/getting-started">a usar</a> Bitcoin</string>
+    <string name="noBalanceSecondLine">Dónde <a href="http://howtobuybitcoins.info/">comprar</a> Bitcoin</string>
+    <string name="noBalanceThirdLine">Lea nuestras <a href="https://greenaddress.it/es/faq">Preguntas Frecuentes</a></string>
+    <string name="trezor_headline">Por favor, siga las instrucciones en su Trezor</string>
+    <string name="trezorProvidePin">Por favor, ingrese el PIN de Trezor. Busque en el dispositivo la posición de los números:</string>
+    <string name="trezorProvidePassphrase">Por favor, ingrese la frase clave de su Trezor.</string>
+    <string name="main_account">Principal</string>
+    <string name="footerAccount">Cuenta: </string>
+    <string name="btchipProvidePIN">Por favor, ingrese el PIN de su BTChip:</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">Firmware de TREZOR desactualizado. Por favor, actualice hasta al menos la versión 1.3.0 en http://mytrezor.com/ desde su computadora.</string>
+    <string name="btchipInvalidPIN">PIN inválido. Intentos restantes: %d. Por favor, reconecte su BTChip antes de intentar nuevamente.</string>
+    <string name="btchipNotSetup">BTChip no se encuentra configurado. Por favor, configúrelo usando el cliente de escritorio para poder utilizarlo.</string>
+    <string name="instantConfirmation">Confirmación instantánea</string>
+    <string name="pref_header_more">Mas configuraciones</string>
+    <string name="trezor_login_failed">Ingreso a TREZOR fracasado</string>
+    <string name="trezor_login_failed_details">Esto significa probablemente que usted necesita emparejar su dispositivo TREZOR con GreenAddress usando la aplicación de escritorio.</string>
+    <string name="more_settings">Vea la aplicación GreenAddress para mas configuraciones</string>
+    <string name="more_settings_detail">La aplicación anterior permite cambiar la configuración de por ejemplo sub-cuentas, ingreso de solo lectura y mas.</string>
+    <string name="improve_security_ledger">Aumente su seguridad con Ledger</string>
+    <string name="improve_security_ledger_detail">Cartera Ledger: La seguridad de una Tarjeta Inteligente para sus Bitcoins.</string>
+    <string name="mnemonic_passphrase">Frase clave mnemotécnica</string>
+    <string name="mnemonic_passphrase_not_available">Frase clave no disponible</string>
+    <string name="autologout_time">Tiempo de ingreso automático agotado</string>
+    <string name="autologout_time_default"> minutos</string>
+    <string name="touch_to_display">Presione para mostrar</string>
+    <string name="txUnconfirmedTx">Transacción no confirmada. Por favor espere la confirmación del bloque para que la transacción sea confiable.</string>
+    <string name="txUnverifiedTx">Transacción no verificada. Por favor espere la sincronización para que la transacción sea confiable. Bloques restantes:</string>
+    <string name="unconfirmedBalanceTitle">Balance sin confirmar</string>
+    <string name="unconfirmedBalanceText">Su balance no está confirmado. Significa que hay transacciones sin confirmar o que la verificación de SPV no ha concluido. Bloques restantes para la verificación de SPV:</string>
+    <string name="spvNoWiFiText">A usted le restan mas de 1000 bloques cabeceras para sincronizar a través de SPV y la conección de WiFi no se encuentra disponible. ¿Qué desea hacer?</string>
+    <string name="spvNoWiFiSyncAnyway">SINCRONIZAR DE TODAS FORMAS</string>
+    <string name="spvNoWifiWaitForWiFi">ESPERAR WI-FI</string>
+    <string name="spvNoWiFiTitle">sincronización de SPV</string>
+    <string name="unconfirmedBalanceSpvNotAvailable">no disponible (no hay sincronización a causa de que el Wi-Fi no se encuentra disponible)</string>
+    <string name="unconfirmedBalanceDoSyncWithoutWiFi">¿Desea sincronizar sin una conección WiFi? Su operador telefónico podría realizarle cargos extra.</string>
+    <string name="NO">NO</string>
+    <string name="YES">SI</string>
+    <string name="enableSPV">Habilitar SPV</string>
+    <string name="enableSPVSummary">Verificación de Pago Simple (SPV) permite verificar sus transacciones y balance gracias a la sincronización con la red de Bitcoin. Esto agrega requisitos de ancho de banda y capacidad de proceso, entonces usted no debería utilizarlo si su conección es lenta o telefónica.</string>
+    <string name="changingRequiresRestartTitle">Se requiere reinicio</string>
+    <string name="changingRequiresRestartText">La modificación de este valor requiere reiniciar la aplicación para ser efectiva. Por favor, reinicie GreenBits. </string>
+    <string name="noTwoFactorWarning">¡Usted no tiene autenticación de factor doble!\n¡Por favor disponga una en Configuración!</string>
+    <string name="scan_camera_problem_dialog_message">La cámara tiene un problema. Probablemente necesite reiniciar el dispositivo.</string>
+    <string name="scan_camera_problem_dialog_title">Problema en la cámara</string>
+    <string name="providePassphrase">Por favor, ingrese su frase clave:</string>
+    <string name="pref_header_twofactor">Autenticación de factor doble</string>
+    <string name="twoFacPhoneCall">Llamada telefónica</string>
+    <string name="twoFacSMS">SMS</string>
+    <string name="twoFacGauth">Autenticador de Google</string>
+    <string name="twoFacEmail">E-mail</string>
+    <string name="hideTwoFacWarning">Ocultar la advertencia de factor doble</string>
+
+    <string name="twoFacSetupHeader">%s Configuración de aut. de factor doble</string>
+    <string name="progress">Progreso:</string>
+    <string name="twoFacStep1Description">Primero, usted debe proveer un código de autenticación desde alguno de los métodos de factor doble ya configurados. Esto previene que usuarios maliciosos alteren su autenticación de factor doble sin su consentimiento.</string>
+    <string name="twoFacStep1SelectExisting">Seleccione un método de autenticación de factor doble para completar la nueva configuración:</string>
+    <string name="twoFacProvideGauthDetailsDescription">Usted debe entregar un nuevo código de Autenticador de Google. Puede ser obtenido escaneando el código QR a continuación de la aplicación de Autenticador de Google.</string>
+    <string name="twoFacProvideGauthDetails">Por favor, ingrese su código de Autenticador de Google.</string>
+    <string name="twoFacProvideDetails">Por favor, ingrese su %s.</string>
+    <string name="twoFacEmailChangeNotice">Designar un email permite recibir notificaciones e informacion de transacciones </string>
+    <string name="twoFacEmailConfirmNotice">Usted deberá confirmar su email en el siguiente paso, de otra forma usted no recibirá las notificaciones.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">Usted debe proveer el código de confirmación para asegurarse de que se tiene acceso al nuevo método autenticador. Luego de ingresar el código, el método será activado.</string>
+    <string name="twoFacProvideConfirmationCode">Por favor, ingrese su código %s .</string>
+    <string name="continueText">Continuar</string>
+    <string name="twoFacProvideAuthCodeDescription">Usted debe proveer un código existente de factor de autenticación doble. Esto previene que usuarios maliciosos alteren su autenticación de factor doble sin su consentimiento.</string>
+    <string name="recoveryAndNotifications">Recuperación y Notificaciones</string>
+    <string name="emailAddress">dirección de email</string>
+    <string name="phoneNumber">número telefónico</string>
+    <string name="newAddress">Nuevo</string>
+    <string name="copyAddress">Copiar</string>
+    <string name="txReceivedOn">Recibido en</string>
+    <string name="title_activity_bit_boat">Comprar BTC con BitBoat</string>
+    <string name="buyBTC">Comprar BTC</string>
+    <string name="buyBtcPendingOrders">Órdenes pendientes</string>
+    <string name="methodOfPayment">Método de pago</string>
+    <string name="minutesLeft">%s minutos restantes</string>
+    <string name="txStatusSubmitted">Enviado</string>
+    <string name="txStatusPending">Pendiente</string>
+    <string name="txStatusAccepted">Aceptado</string>
+    <string name="txStatusQueued">En espera</string>
+    <string name="txStatusUnknown">Estado desconocido</string>
+    <string name="onlyBtcForMethodOfPayment">Solo %s se encuentra disponible para su método de pago.</string>
+    <string name="txStatusRejected">Rechazado</string>
+    <string name="txStatusExpired">Expirado</string>
+    <string name="txStatusCompleted">Completado</string>
+    <string name="txStatusLoading">Cargando</string>
+    <string name="twoFacGauthTextCode">O usted puede usar el siguiente código: %s. ¡Recuerde hacer una copia de seguridad!</string>
+
+</resources>
