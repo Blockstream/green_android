@@ -132,8 +132,8 @@ public class BitBoatActivity extends ActionBarActivity {
             superflash.put("id", BitBoatTransaction.PAYMETHOD_SUPERFLASH);
             postepay.put("name", "Postepay");
             postepay.put("id", BitBoatTransaction.PAYMETHOD_POSTEPAY);
-            paymentMethods.add(superflash);
             paymentMethods.add(postepay);
+            paymentMethods.add(superflash);
         } else { // FR
             Map<String, Object> mandatcompte = new HashMap<>();
             mandatcompte.put("name", "Mandat Compte");
