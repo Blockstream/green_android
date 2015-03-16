@@ -866,20 +866,32 @@ public class WalletClient {
     }
 
     public ListenableFuture<PreparedTransaction> preparePayreq(Coin amount, Map<?,?> data, final Map<String, Object> privateData) {
+
         final SettableFuture<PreparedTransaction> asyncWamp = SettableFuture.create();
+
+
+        final Map dataClone = new HashMap<Object, Object>();
+
+        for (final Object tempKey : data.keySet()) {
+            dataClone.put(tempKey, data.get(tempKey));
+        }
+        final Object key = "subaccount";
+
+        if (privateData.containsKey(key)) {
+            dataClone.put(key, privateData.get(key));
+        }
+
         mConnection.call("http://greenaddressit.com/vault/prepare_payreq", Map.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object prepared) {
-                // FIXME: server doesn't accept private_data (can't send payreq from subaccount)
-                asyncWamp.set(createTx((Map) prepared, null));
+                asyncWamp.set(createTx((Map) prepared, privateData));
             }
 
             @Override
             public void onError(final String errorUri, final String errorDesc) {
                 asyncWamp.setException(new GAException(errorDesc));
             }
-        // FIXME: server doesn't accept private_data (can't send payreq from subaccount)
-        }, amount.longValue(), data);
+        }, amount.longValue(), dataClone);
         return asyncWamp;
     }
 
