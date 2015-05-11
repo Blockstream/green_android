@@ -4,21 +4,24 @@ android {
         exclude 'META-INF/ASL2.0'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
+        exclude 'jackson-core-asl-1.8.6.jar:META-INF/ASL2.0'
+        exclude 'jackson-core-asl-1.8.6.jar:META-INF/LICENSE'
+        exclude 'jackson-core-asl-1.8.6.jar:META-INF/NOTICE'
         exclude 'lib/x86_64/darwin/libscrypt.dylib'
         exclude 'lib/x86_64/freebsd/libscrypt.so'
         exclude 'lib/x86_64/linux/libscrypt.so'
     }
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 14
-        targetSdkVersion 21
-        versionCode 46
+        targetSdkVersion 22
+        versionCode 47
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
-        versionName "1.46"
+        versionName "1.47"
     }
     buildTypes {
         release {
@@ -42,7 +45,7 @@ android {
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
 
-            minSdkVersion 21
+            minSdkVersion 22
         }
         regtest {
             applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
@@ -53,13 +56,18 @@ android {
         javaMaxHeapSize "2g"
     }
 }
+configurations {
+    compile.exclude group: "org.json", module: "json"
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'org.bitcoinj:bitcoinj-core:0.12.2'
+    compile 'org.bitcoinj:bitcoinj-core:0.12.3'
     compile 'com.fasterxml.jackson:jackson-datatype-json-org:1.8.0'
     compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
-    compile 'com.android.support:support-v4:21.0.3'
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.google.zxing:core:3.1.0'
     compile 'com.afollestad:material-dialogs:0.6.0'
     compile 'com.google.protobuf:protobuf-java:2.6.0'
