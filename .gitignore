@@ -5,3 +5,6 @@
 .DS_Store
 /build
 *.swp
+app/*.apk
+app/manifest-merger-*-report.txt
+.*.swo
