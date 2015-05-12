@@ -292,7 +292,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.passphraseValue);
                 MaterialDialog dialog = new MaterialDialog.Builder(MnemonicActivity.this)
                         .title("Encryption passphrase")
-                        .customView(inflatedLayout)
+                        .customView(inflatedLayout, true)
                         .positiveText("OK")
                         .negativeText("CANCEL")
                         .positiveColorRes(R.color.accent)
@@ -300,7 +300,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         .titleColorRes(R.color.white)
                         .contentColorRes(android.R.color.white)
                         .theme(Theme.DARK)
-                        .callback(new MaterialDialog.SimpleCallback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog materialDialog) {
                                 passphraseFuture.set(passphraseValue.getText().toString());

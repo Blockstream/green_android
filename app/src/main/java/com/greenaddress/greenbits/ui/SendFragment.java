@@ -143,7 +143,7 @@ public class SendFragment extends GAFragment {
 
         mSummary = new MaterialDialog.Builder(getActivity())
                 .title(R.string.newTxTitle)
-                .customView(inflatedLayout)
+                .customView(inflatedLayout, true)
                 .positiveText(R.string.send)
                 .negativeText(R.string.cancel)
                 .positiveColorRes(R.color.accent)
@@ -151,7 +151,7 @@ public class SendFragment extends GAFragment {
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK)
-                .callback(new MaterialDialog.Callback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(final MaterialDialog dialog) {
                         if (twoFacData != null) {
@@ -193,7 +193,7 @@ public class SendFragment extends GAFragment {
 
                     @Override
                     public void onNegative(final MaterialDialog dialog) {
-                        Log.i("SendActivity.showTransactionSummary", "SHOWN ON CLOSE!");
+                        Log.i("showTransactionSummary", "SHOWN ON CLOSE!");
 
                     }
                 })
@@ -203,16 +203,17 @@ public class SendFragment extends GAFragment {
     }
 
     public void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
-        Log.i("SendActivity.show2FAChoices", "params " + fee + " " + amount + " " + recipient);
+        Log.i("show2FAChoices", "params " + fee + " " + amount + " " + recipient);
         String[] enabledTwoFacNames = new String[]{};
         final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
         mTwoFactor = new MaterialDialog.Builder(getActivity())
                 .title(R.string.twoFactorChoicesTitle)
                 .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
-                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
-                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                         showTransactionSummary(enabledTwoFacNamesSystem.get(which), fee, amount, recipient, prepared);
+                        return true;
                     }
                 })
                 .positiveText(R.string.choose)

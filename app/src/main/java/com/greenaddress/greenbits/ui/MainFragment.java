@@ -286,7 +286,7 @@ public class MainFragment extends GAFragment implements Observer {
                         spvStatusDialog = null;
                     }
                 });
-                builder.callback(new MaterialDialog.Callback() {
+                builder.callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onNegative(MaterialDialog materialDialog) {
                         spvStatusDialog = null;
@@ -530,7 +530,7 @@ public class MainFragment extends GAFragment implements Observer {
                             }
                         }
 
-                        if(resultList!=null && resultList.size()>0) {
+                        if(resultList != null && resultList.size() > 0) {
                             listView.setVisibility(View.VISIBLE);
                             mainEmptyTransText.setVisibility(View.GONE);
                         } else {
@@ -600,7 +600,7 @@ public class MainFragment extends GAFragment implements Observer {
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK)
-                .callback(new MaterialDialog.Callback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onNegative(MaterialDialog materialDialog) {
                         makeWiFiObserver();

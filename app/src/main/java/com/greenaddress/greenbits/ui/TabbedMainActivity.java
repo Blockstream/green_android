@@ -275,7 +275,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
                     new MaterialDialog.Builder(TabbedMainActivity.this)
                             .title(R.string.sweepAddressTitle)
-                            .customView(inflatedLayout)
+                            .customView(inflatedLayout, true)
                             .positiveText(R.string.sweep)
                             .negativeText(R.string.cancel)
                             .positiveColorRes(R.color.accent)
@@ -283,7 +283,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                             .titleColorRes(R.color.white)
                             .contentColorRes(android.R.color.white)
                             .theme(Theme.DARK)
-                            .callback(new MaterialDialog.Callback() {
+                            .callback(new MaterialDialog.ButtonCallback() {
 
                                 Transaction tx;
                                 ECKey key;

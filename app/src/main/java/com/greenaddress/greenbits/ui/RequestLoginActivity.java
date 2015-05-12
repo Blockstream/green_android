@@ -95,7 +95,7 @@ public class RequestLoginActivity extends Activity implements Observer {
                                 }
                                 new MaterialDialog.Builder(RequestLoginActivity.this)
                                         .title("TREZOR PIN")
-                                        .customView(inflatedLayout)
+                                        .customView(inflatedLayout, true)
                                         .positiveText("OK")
                                         .negativeText("CANCEL")
                                         .positiveColorRes(R.color.accent)
@@ -103,7 +103,7 @@ public class RequestLoginActivity extends Activity implements Observer {
                                         .titleColorRes(R.color.white)
                                         .contentColorRes(android.R.color.white)
                                         .theme(Theme.DARK)
-                                        .callback(new MaterialDialog.SimpleCallback() {
+                                        .callback(new MaterialDialog.ButtonCallback() {
                                             @Override
                                             public void onPositive(MaterialDialog materialDialog) {
                                                 ret.set(pinValue.getText().toString());
@@ -130,7 +130,7 @@ public class RequestLoginActivity extends Activity implements Observer {
                                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.trezorPassphraseValue);
                                 new MaterialDialog.Builder(RequestLoginActivity.this)
                                         .title("TREZOR passphrase")
-                                        .customView(inflatedLayout)
+                                        .customView(inflatedLayout, true)
                                         .positiveText("OK")
                                         .negativeText("CANCEL")
                                         .positiveColorRes(R.color.accent)
@@ -138,7 +138,7 @@ public class RequestLoginActivity extends Activity implements Observer {
                                         .titleColorRes(R.color.white)
                                         .contentColorRes(android.R.color.white)
                                         .theme(Theme.DARK)
-                                        .callback(new MaterialDialog.SimpleCallback() {
+                                        .callback(new MaterialDialog.ButtonCallback() {
                                             @Override
                                             public void onPositive(MaterialDialog materialDialog) {
                                                 ret.set(passphraseValue.getText().toString());
@@ -260,13 +260,13 @@ public class RequestLoginActivity extends Activity implements Observer {
 
                 MaterialDialog.Builder builder = new MaterialDialog.Builder(RequestLoginActivity.this)
                         .title("BTChip PIN")
-                        .customView(inflatedLayout)
+                        .customView(inflatedLayout, true)
                         .positiveColorRes(R.color.accent)
                         .negativeColorRes(R.color.accent)
                         .titleColorRes(R.color.white)
                         .contentColorRes(android.R.color.white)
                         .theme(Theme.DARK)
-                        .callback(new MaterialDialog.SimpleCallback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog materialDialog) {
                                 final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);

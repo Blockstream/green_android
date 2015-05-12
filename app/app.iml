@@ -113,9 +113,9 @@
     <orderEntry type="library" exported="" name="multidex-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="bitcoinj-core-0.12.3" level="project" />
     <orderEntry type="library" exported="" name="jackson-datatype-json-org-1.8.0" level="project" />
-    <orderEntry type="library" exported="" name="material-dialogs-0.6.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.1.1" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-asl-1.8.6" level="project" />
+    <orderEntry type="library" exported="" name="material-dialogs-0.7.3.4" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.1.1" level="project" />
     <orderEntry type="library" exported="" name="guava-16.0.1" level="project" />
     <orderEntry type="library" exported="" name="orchid-1.0" level="project" />
@@ -126,6 +126,7 @@
     <orderEntry type="library" exported="" name="jsr305-2.0.1" level="project" />
     <orderEntry type="library" exported="" name="scrypt-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="core-1.51.0.0" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-v7-22.1.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.1.1" level="project" />
   </component>
 </module>

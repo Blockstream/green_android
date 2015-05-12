@@ -277,13 +277,13 @@ public class GaService extends Service {
                     peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
                 }
 
-                for (Long subaccount : changedSubaccounts) {
+                for (final Long subaccount : changedSubaccounts) {
                     fireBalanceChanged(subaccount);
                 }
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -305,15 +305,15 @@ public class GaService extends Service {
             }
 
             @Override
-            public BloomFilter getBloomFilter(int size, double falsePositiveRate, long nTweak) {
+            public BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
                 final byte[][] hashes = new byte[unspentOutputsOutpoints.size()][];
 
                 int i = 0;
-                for (Sha256Hash hash : unspentOutputsOutpoints.keySet()) {
+                for (final Sha256Hash hash : unspentOutputsOutpoints.keySet()) {
                     hashes[i++] = Utils.reverseBytes(hash.getBytes());
                 }
 
-                BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
+                final BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
                 for (i = 0; i < hashes.length; ++i) {
                     res.insert(hashes[i]);
                 }

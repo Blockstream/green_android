@@ -241,7 +241,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
         nfcDialog = new MaterialDialog.Builder(SignUpActivity.this)
                 .title("Hold your NFC tag close to the device")
-                .customView(nfcLayout)
+                .customView(nfcLayout, true)
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK).build();

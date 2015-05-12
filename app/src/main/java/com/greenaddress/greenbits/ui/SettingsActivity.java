@@ -244,10 +244,11 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 new MaterialDialog.Builder(this)
                         .title(R.string.twoFactorChoicesTitle)
                         .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
-                        .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                        .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
-                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                                 disable2FA(method, enabledTwoFacNamesSystem.get(which));
+                                return true;
                             }
                         })
                         .positiveText(R.string.choose)
@@ -289,7 +290,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 withMethodName).toString());
         new MaterialDialog.Builder(this)
                 .title("2FA")
-                .customView(inflatedLayout)
+                .customView(inflatedLayout, true)
                 .positiveColorRes(R.color.accent)
                 .negativeColorRes(R.color.accent)
                 .titleColorRes(R.color.white)
@@ -297,7 +298,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 .theme(Theme.DARK)
                 .positiveText("OK")
                 .negativeText(R.string.cancel)
-                .callback(new MaterialDialog.SimpleCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
                         Map<String, String> twoFacData = new HashMap<>();
