@@ -6,3 +6,6 @@ android:
         - android-22
         - extra-android-support
         - extra-android-m2repository
+
+jdk:
+    - oraclejdk7
