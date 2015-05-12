@@ -4,8 +4,14 @@ android:
     components:
         - build-tools-22.0.1
         - android-22
+        - platform-tools-22
         - extra-android-support
         - extra-android-m2repository
+        - extra-google-m2repository
+    licenses:
+        - '.+'
 
 jdk:
     - oraclejdk7
+
+script: "./gradlew clean connectedAndroidTestTestnetDebug"
