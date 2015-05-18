@@ -589,6 +589,12 @@ public class MainFragment extends GAFragment implements Observer {
 
     private void askUserForSpvNoWiFi() {
         if (spvWiFiDialogShown) return;
+        if (!getActivity().getSharedPreferences(
+                "SPV",
+                getActivity().MODE_PRIVATE
+        ).getBoolean("enabled", true)) {
+            return;
+        }
         spvWiFiDialogShown = true;
         new MaterialDialog.Builder(getActivity())
                 .title(getResources().getString(R.string.spvNoWiFiTitle))
