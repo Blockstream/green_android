@@ -130,7 +130,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             } else {
                 bitcoinUnit.setText(Html.fromHtml("&#xf15a; "));
             }
-            final String btcBalance = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(coin).toString();
+            final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
             final DecimalFormat formatter = new DecimalFormat("#,###.########");
 
             try {

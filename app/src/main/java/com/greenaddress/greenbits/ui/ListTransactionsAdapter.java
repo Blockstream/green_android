@@ -66,7 +66,7 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             holder.bitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
 
-        final String btcBalance = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(coin).toString();
+        final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
             holder.textValue.setText(formatter.format(formatter.parse(btcBalance)));

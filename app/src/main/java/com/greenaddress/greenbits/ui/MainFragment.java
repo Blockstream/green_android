@@ -170,17 +170,17 @@ public class MainFragment extends GAFragment implements Observer {
         } else {
             balanceBitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
-        final String btcBalance = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(
+        final String btcBalance = bitcoinFormat.noCode().format(
                 getGAService().getBalanceCoin(curSubaccount)).toString();
         final String btcBalanceVerified;
         if (getGAService().getVerifiedBalanceCoin(curSubaccount) != null) {
-            btcBalanceVerified = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(
+            btcBalanceVerified = bitcoinFormat.noCode().format(
                     getGAService().getVerifiedBalanceCoin(curSubaccount)).toString();
         } else {
-            btcBalanceVerified = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(Coin.valueOf(0)).toString();
+            btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
         }
         final String fiatBalance =
-                MonetaryFormat.FIAT.minDecimals(2).noCode().withLocale(Locale.getDefault()).format(
+                MonetaryFormat.FIAT.minDecimals(2).noCode().format(
                         getGAService().getBalanceFiat(curSubaccount))
                         .toString();
         final String fiatCurrency = getGAService().getFiatCurrency();

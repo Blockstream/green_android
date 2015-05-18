@@ -877,7 +877,7 @@ public class WalletClient {
         }
         final Object key = "subaccount";
 
-        if (privateData.containsKey(key)) {
+        if (privateData != null && privateData.containsKey(key)) {
             dataClone.put(key, privateData.get(key));
         }
 

@@ -710,7 +710,7 @@ public class BitBoatActivity extends ActionBarActivity {
                     public void run() {
                         try {
                             final Fiat fiatValue = Fiat.parseFiat("EUR", amountFiatEdit.getText().toString());
-                            amountEdit.setText(bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(rate.fiatToCoin(fiatValue)));
+                            amountEdit.setText(bitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
                         } catch (final ArithmeticException | IllegalArgumentException e) {
                             amountEdit.setText("");
                         }

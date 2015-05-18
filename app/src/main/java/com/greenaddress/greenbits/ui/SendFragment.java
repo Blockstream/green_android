@@ -117,8 +117,8 @@ public class SendFragment extends GAFragment {
             amountUnit.setText(Html.fromHtml("&#xf15a; "));
             feeUnit.setText(Html.fromHtml("&#xf15a; "));
         }
-        amountText.setText(bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(amount));
-        feeText.setText(bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(fee));
+        amountText.setText(bitcoinFormat.noCode().format(amount));
+        feeText.setText(bitcoinFormat.noCode().format(fee));
 
         if (payreqData == null) {
             recipientText.setText(recipient.substring(0, 12) + "\n" + recipient.substring(12, 24) + "\n" + recipient.substring(24));
@@ -253,7 +253,7 @@ public class SendFragment extends GAFragment {
                             }
                             final CharSequence amountStr;
                             if (amount > 0) {
-                                amountStr = bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(Coin.valueOf(amount));
+                                amountStr = bitcoinFormat.noCode().format(Coin.valueOf(amount));
                             } else {
                                 amountStr = "";
                             }
@@ -281,7 +281,7 @@ public class SendFragment extends GAFragment {
         } else {
             recipientEdit.setText(URI.getAddress().toString());
             if (URI.getAmount() != null) {
-                amountEdit.setText(bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(URI.getAmount()));
+                amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
                 convertBtcToFiat();
                 amountEdit.setEnabled(false);
                 amountFiatEdit.setEnabled(false);
@@ -678,7 +678,7 @@ public class SendFragment extends GAFragment {
                                 final String btcUnit = (String) gaService.getAppearanceValue("unit");
                                 final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
                                 MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-                                final String btcBalance = format.noCode().withLocale(Locale.getDefault()).format(coin).toString();
+                                final String btcBalance = format.noCode().format(coin).toString();
                                 final DecimalFormat formatter = new DecimalFormat("#,###.########");
                                 try {
                                     sendSubAccountBalance.setText(formatter.format(formatter.parse(btcBalance)));
@@ -749,7 +749,7 @@ public class SendFragment extends GAFragment {
             sendSubAccountBalanceUnit.setText(Html.fromHtml("&#xf15a; "));
         }
         MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        final String btcBalance = format.noCode().withLocale(Locale.getDefault()).format(
+        final String btcBalance = format.noCode().format(
                 getGAService().getBalanceCoin(curSubaccount)).toString();
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
 

@@ -59,7 +59,7 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
         } else {
             holder.bitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
-        holder.textValueBtc.setText(bitcoinFormat.noCode().withLocale(Locale.getDefault()).format(current.valueBtc));
+        holder.textValueBtc.setText(bitcoinFormat.noCode().format(current.valueBtc));
         if (current.valueFiat == null) {
             holder.textValueFiat.setText("");
         } else {
