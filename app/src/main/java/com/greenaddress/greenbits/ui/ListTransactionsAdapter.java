@@ -16,7 +16,6 @@ import org.bitcoinj.utils.MonetaryFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Locale;
 
 public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
     private String btcUnit;

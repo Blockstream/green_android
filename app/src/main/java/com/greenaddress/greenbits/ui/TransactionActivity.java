@@ -19,7 +19,6 @@ import org.bitcoinj.utils.MonetaryFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 

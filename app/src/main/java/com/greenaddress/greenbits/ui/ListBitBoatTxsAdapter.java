@@ -13,7 +13,6 @@ import org.bitcoinj.utils.MonetaryFormat;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Locale;
 
 public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
 
