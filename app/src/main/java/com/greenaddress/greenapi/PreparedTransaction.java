@@ -27,10 +27,10 @@ public class PreparedTransaction {
         }
         this.prev_outputs = outputs;
         this.change_pointer = values.get("change_pointer").toString();
-        this.requires_2factor = (Boolean)values.get("requires_2factor");
+        this.requires_2factor = (Boolean) values.get("requires_2factor");
         this.tx = values.get("tx").toString();
         this.decoded = new Transaction(Network.NETWORK, Hex.decode(this.tx));
-        Map<String, String> prevoutRawTxStrings = (Map)values.get("prevout_rawtxs");
+        Map<String, String> prevoutRawTxStrings = (Map) values.get("prevout_rawtxs");
         prevoutRawTxs = new HashMap<>();
         for (String k : prevoutRawTxStrings.keySet()) {
             prevoutRawTxs.put(k, new Transaction(Network.NETWORK,

@@ -68,10 +68,10 @@ public class ListBitBoatTxsAdapter extends ArrayAdapter<BitBoatTransaction> {
         holder.textTimeLeft.setText(new Formatter().format(getContext().getResources().getString(R.string.minutesLeft), left).toString());
         holder.textNumber.setText(
                 (current.method == BitBoatTransaction.PAYMETHOD_POSTEPAY ? "Postepay" :
-                 current.method == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? "Superflash" :
-                 current.method == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? "Mandat Compte" :
-                 "") + " " +
-                current.number);
+                        current.method == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? "Superflash" :
+                                current.method == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? "Mandat Compte" :
+                                        "") + " " +
+                        current.number);
         holder.textWho.setText(current.key);
         holder.textCF.setText(current.cf);
 

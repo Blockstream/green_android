@@ -15,9 +15,19 @@ import java.util.concurrent.Callable;
 
 
 public class QrBitmap implements Callable<QrBitmap>, Parcelable {
+    public static final Parcelable.Creator<QrBitmap> CREATOR
+            = new Parcelable.Creator<QrBitmap>() {
+        public QrBitmap createFromParcel(Parcel in) {
+            return new QrBitmap(in);
+        }
+
+        public QrBitmap[] newArray(int size) {
+            return new QrBitmap[size];
+        }
+    };
     public final String data;
-    public Bitmap qrcode;
     private final int background_color;
+    public Bitmap qrcode;
 
     public QrBitmap(Parcel in) {
         data = in.readString();
@@ -61,15 +71,4 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
     public int describeContents() {
         return 0;
     }
-
-    public static final Parcelable.Creator<QrBitmap> CREATOR
-            = new Parcelable.Creator<QrBitmap>() {
-        public QrBitmap createFromParcel(Parcel in) {
-            return new QrBitmap(in);
-        }
-
-        public QrBitmap[] newArray(int size) {
-            return new QrBitmap[size];
-        }
-    };
 }

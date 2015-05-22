@@ -56,7 +56,7 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         final long val = current.amount;
         final Coin coin = Coin.valueOf(val);
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit) ));
+        holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
         if (btcUnit == null || btcUnit.equals("bits")) {
             holder.bitcoinIcon.setText("");
             holder.bitcoinScale.setText("bits ");
@@ -84,28 +84,27 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         String message;
         if (current.type == Transaction.TYPE_OUT && current.counterparty != null && current.counterparty.length() > 0) {
             message = current.counterparty;
-        }
-        else {
+        } else {
             message = getTypeString(current.type);
         }
         holder.textWho.setText(message + (current.memo != null ? " *" : ""));
 
-        holder.mainLayout.setBackgroundColor( val > 0 ?
+        holder.mainLayout.setBackgroundColor(val > 0 ?
                         getContext().getResources().getColor(R.color.superLightGreen) :
                         getContext().getResources().getColor(R.color.superLightPink)
 
         );
 
-        if(current.hasEnoughConfirmations()) {
-            holder.inOutIcon.setText( val > 0 ?
+        if (current.hasEnoughConfirmations()) {
+            holder.inOutIcon.setText(val > 0 ?
                             Html.fromHtml("&#xf090;") :
                             Html.fromHtml("&#xf08b;")
             );
             holder.listNumberConfirmation.setVisibility(View.GONE);
         } else {
-            holder.inOutIcon.setText( Html.fromHtml("&#xf017;") );
+            holder.inOutIcon.setText(Html.fromHtml("&#xf017;"));
             holder.listNumberConfirmation.setVisibility(View.VISIBLE);
-            holder.listNumberConfirmation.setText( String.valueOf(current.getConfirmations()) );
+            holder.listNumberConfirmation.setText(String.valueOf(current.getConfirmations()));
 
         }
 
@@ -134,6 +133,7 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
     }
 
     private static class Holder {
+        public TextView listNumberConfirmation;
         protected Transaction current;
         protected TextView textValue;
         protected TextView textWhen;
@@ -142,8 +142,6 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         protected TextView inOutIcon;
         protected TextView bitcoinScale;
         protected TextView textValueQuestionMark;
-
         protected RelativeLayout mainLayout;
-        public TextView listNumberConfirmation;
     }
 }

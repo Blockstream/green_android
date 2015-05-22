@@ -55,7 +55,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
         if (id == R.id.action_settings) {
             return true;
-        } else if(id == R.id.action_share) {
+        } else if (id == R.id.action_share) {
             final Transaction t = (Transaction) getIntent().getSerializableExtra("TRANSACTION");
             final Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
@@ -73,6 +73,22 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getGAService() == null) {
+            finish();
+            return;
+        }
+        getGAApp().getConnectionObservable().addObserver(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getGAApp().getConnectionObservable().deleteObserver(this);
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -80,7 +96,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
         @Override
         public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
-                                 final Bundle savedInstanceState) {
+                                   final Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_transaction, container, false);
 
             final TextView hashText = (TextView) rootView.findViewById(R.id.txHashText);
@@ -139,21 +155,21 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             }
 
             dateText.setText(SimpleDateFormat.getInstance().format(t.date));
-            if(t.memo!=null && t.memo.length()>0) {
+            if (t.memo != null && t.memo.length() > 0) {
                 memoText.setText(t.memo);
             } else {
                 memoText.setVisibility(View.GONE);
                 memoTitle.setVisibility(View.GONE);
             }
 
-            if(t.counterparty!=null && t.counterparty.length()>0) {
+            if (t.counterparty != null && t.counterparty.length() > 0) {
                 recipientText.setText(t.counterparty);
             } else {
                 recipientText.setVisibility(View.GONE);
                 recipientTitle.setVisibility(View.GONE);
             }
 
-            if(t.receivedOn!=null && t.receivedOn.length()>0) {
+            if (t.receivedOn != null && t.receivedOn.length() > 0) {
                 receivedOnText.setText(t.receivedOn);
             } else {
                 receivedOnText.setVisibility(View.GONE);
@@ -162,21 +178,5 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
             return rootView;
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getGAService() == null) {
-            finish();
-            return;
-        }
-        getGAApp().getConnectionObservable().addObserver(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 }

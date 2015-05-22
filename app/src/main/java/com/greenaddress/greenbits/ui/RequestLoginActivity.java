@@ -46,6 +46,8 @@ import javax.annotation.Nullable;
 
 public class RequestLoginActivity extends Activity implements Observer {
 
+    Dialog btchipDialog = null;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +59,7 @@ public class RequestLoginActivity extends Activity implements Observer {
 
         if (((tag != null) && (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction()))) ||
                 (getIntent().getAction() != null &&
-                 getIntent().getAction().equals("android.hardware.usb.action.USB_DEVICE_ATTACHED"))) {
+                        getIntent().getAction().equals("android.hardware.usb.action.USB_DEVICE_ATTACHED"))) {
             final Trezor t;
             if (tag != null) {
                 t = null;
@@ -159,8 +161,8 @@ public class RequestLoginActivity extends Activity implements Observer {
             if (t != null) {
                 final List<Integer> version = t.getFirmwareVersion();
                 if (version.get(0) < 1 ||
-                    (version.get(0) == 1) && (version.get(1) < 3)) {
-                    final TextView instructions = (TextView)findViewById(R.id.firstLoginRequestedInstructionsText);
+                        (version.get(0) == 1) && (version.get(1) < 3)) {
+                    final TextView instructions = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
                     instructions.setText(getResources().getString(R.string.firstLoginRequestedInstructionsOldTrezor));
                     return;
                 }
@@ -239,7 +241,7 @@ public class RequestLoginActivity extends Activity implements Observer {
     private void showPinDialog(final IsoDep device) {
         showPinDialog(null, device, -1);
     }
-    Dialog btchipDialog = null;
+
     private void showPinDialog(final UsbDevice device, final IsoDep isoDep, final int remainingAttempts) {
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
@@ -371,6 +373,7 @@ public class RequestLoginActivity extends Activity implements Observer {
             }
         });
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -378,6 +381,7 @@ public class RequestLoginActivity extends Activity implements Observer {
             btchipDialog.dismiss();
         }
     }
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

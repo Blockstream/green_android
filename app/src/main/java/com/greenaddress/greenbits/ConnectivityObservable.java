@@ -16,38 +16,25 @@ import java.util.concurrent.TimeUnit;
 
 public class ConnectivityObservable extends Observable {
 
-    private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
-    private ScheduledFuture<Object> disconnectTimeout;
     static int RECONNECT_TIMEOUT = 6000;
     static int RECONNECT_TIMEOUT_MAX = 50000;
-
+    private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
+    private ScheduledFuture<Object> disconnectTimeout;
     private GaService service;
+    private State state = State.OFFLINE;
+    private boolean forcedLoggedout = false;
+    private boolean forcedTimeoutout = false;
+    private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
+        public void onReceive(final Context context, final Intent intent) {
+            checkNetwork();
+        }
+    };
 
     public void setService(final GaService service) {
         this.service = service;
         checkNetwork();
         service.getApplicationContext().registerReceiver(this.mNetBroadReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-    }
-
-    public enum State {
-        OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
-    }
-
-    private State state = State.OFFLINE;
-    private boolean forcedLoggedout = false;
-    private boolean forcedTimeoutout = false;
-
-
-    public void setState(final State state) {
-        this.state = state;
-        if (state == State.LOGGEDIN) {
-            this.forcedLoggedout = false;
-            this.disconnectTimeout = null;
-            this.forcedTimeoutout = false;
-        }
-        setChanged();
-        notifyObservers(state);
     }
 
     public void setForcedLoggedOut() {
@@ -58,6 +45,17 @@ public class ConnectivityObservable extends Observable {
 
     public State getState() {
         return state;
+    }
+
+    public void setState(final State state) {
+        this.state = state;
+        if (state == State.LOGGEDIN) {
+            this.forcedLoggedout = false;
+            this.disconnectTimeout = null;
+            this.forcedTimeoutout = false;
+        }
+        setChanged();
+        notifyObservers(state);
     }
 
     public boolean getIsForcedLoggedOut() {
@@ -152,12 +150,6 @@ public class ConnectivityObservable extends Observable {
         }
     }
 
-    private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
-        public void onReceive(final Context context, final Intent intent) {
-            checkNetwork();
-        }
-    };
-
     public boolean isNetworkUp() {
         final ConnectivityManager connectivityManager
                 = (ConnectivityManager) service.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -172,5 +164,9 @@ public class ConnectivityObservable extends Observable {
         final NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public enum State {
+        OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
     }
 }

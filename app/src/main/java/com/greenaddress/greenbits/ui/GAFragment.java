@@ -30,7 +30,7 @@ abstract public class GAFragment extends Fragment {
         }
         try {
             onGAResume();
-        } catch(final NullPointerException npe) {
+        } catch (final NullPointerException npe) {
             getActivity().finish();
             return;
         }
@@ -44,14 +44,18 @@ abstract public class GAFragment extends Fragment {
         }
         try {
             return onGACreateView(inflater, container, savedInstanceState);
-        } catch(final NullPointerException npe) {
+        } catch (final NullPointerException npe) {
             getActivity().finish();
             return null;
         }
     }
 
     abstract View onGACreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
-    void onGAResume() { };
+
+    void onGAResume() {
+    }
+
+    ;
 
     protected GreenAddressApplication getGAApp() {
         return gaApp;

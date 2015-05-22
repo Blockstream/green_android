@@ -271,7 +271,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     public void onResume() {
         super.onResume();
         if (mNfcAdapter != null) {
-            mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)}, null);
+            mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)}, null);
         }
         signupNfcIcon.setVisibility(mNfcAdapter != null && mNfcAdapter.isEnabled() ? View.VISIBLE : View.GONE);
         getGAApp().getConnectionObservable().addObserver(this);
@@ -297,7 +297,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             NdefRecord record = null;
             try {
                 record = NdefRecord.createMime("x-gait/mnc", getGAService().getEntropyFromMnemonics(mnemonicText.getText().toString()));
-            } catch (final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e ) {
+            } catch (final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e) {
             }
 
             if (record == null) {

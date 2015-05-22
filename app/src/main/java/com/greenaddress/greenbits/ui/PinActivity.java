@@ -204,7 +204,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     }
 
     public void setPlugVisible(final boolean visible) {
-        if(menu!=null) {
+        if (menu != null) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -223,7 +223,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.network_unavailable) {
-            Toast.makeText(PinActivity.this, getGAApp().getConnectionObservable().getState().toString() , Toast.LENGTH_LONG).show();
+            Toast.makeText(PinActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
             return true;
         }
         return super.onOptionsItemSelected(item);

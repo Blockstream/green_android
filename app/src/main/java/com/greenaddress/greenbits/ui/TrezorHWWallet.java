@@ -81,8 +81,8 @@ public class TrezorHWWallet implements ISigningWallet {
             public DeterministicKey call() throws Exception {
                 final Integer[] intArray = new Integer[addrn.size()];
                 final String[] xpub = trezor.MessageGetPublicKey(addrn.toArray(intArray)).split("%", -1);
-                final String pkHex = xpub[xpub.length-2];
-                final String chainCodeHex = xpub[xpub.length-4];
+                final String pkHex = xpub[xpub.length - 2];
+                final String chainCodeHex = xpub[xpub.length - 4];
                 ECKey pubKey = ECKey.fromPublicOnly(Hex.decode(pkHex));
                 return new DeterministicKey(
                         new ImmutableList.Builder<ChildNumber>().build(),

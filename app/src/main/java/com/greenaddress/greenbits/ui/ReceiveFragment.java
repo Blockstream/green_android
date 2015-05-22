@@ -89,7 +89,7 @@ public class ReceiveFragment extends GAFragment {
 
     @Override
     public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+                               final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             pausing = savedInstanceState.getBoolean("pausing");
             address = savedInstanceState.getParcelable("address");

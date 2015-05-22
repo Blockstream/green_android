@@ -93,7 +93,7 @@ public class SendFragment extends GAFragment {
     private boolean pausing;
 
     public void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
-        Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient +")");
+        Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
         final TextView amountText = (TextView) inflatedLayout.findViewById(R.id.newTxAmountText);
@@ -291,7 +291,7 @@ public class SendFragment extends GAFragment {
 
     @Override
     public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+                               final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             pausing = savedInstanceState.getBoolean("pausing");
         }
@@ -385,9 +385,9 @@ public class SendFragment extends GAFragment {
                 ListenableFuture<PreparedTransaction> prepared;
                 if (payreqData == null) {
                     if (!validAddress && !validAmount) {
-                        message = getActivity().getString(R.string.invalidAmountAndAddress) ;
+                        message = getActivity().getString(R.string.invalidAmountAndAddress);
                     } else if (!validAddress) {
-                        message = getActivity().getString(R.string.invalidAddress) ;
+                        message = getActivity().getString(R.string.invalidAddress);
                     } else if (!validAmount) {
                         message = getActivity().getString(R.string.invalidAmount);
                     }
@@ -745,7 +745,7 @@ public class SendFragment extends GAFragment {
         if (btcUnit == null || btcUnit.equals("bits")) {
             sendSubAccountBalanceUnit.setText("");
             sendSubAccountBitcoinScale.setText("bits ");
-        } else{
+        } else {
             sendSubAccountBalanceUnit.setText(Html.fromHtml("&#xf15a; "));
         }
         MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -760,7 +760,7 @@ public class SendFragment extends GAFragment {
         }
 
         final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBitcoinScale.getText().length() + sendSubAccountBalanceUnit.getText().length();
-        final int size   =  Math.min(50 - nChars, 34) ;
+        final int size = Math.min(50 - nChars, 34);
         sendSubAccountBalance.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);

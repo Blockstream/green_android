@@ -66,17 +66,6 @@ import javax.annotation.Nullable;
 
 public class BitBoatActivity extends ActionBarActivity {
 
-    int payMethod;
-    boolean converting, pausing;
-    Handler handler;
-    final SettableFuture<ExchangeRate> sfPrice = SettableFuture.create();
-    final SettableFuture<ExchangeRate> ppPrice = SettableFuture.create();
-    final SettableFuture<ExchangeRate> mcPrice = SettableFuture.create();
-    private Coin sfAvailable, ppAvailable, mcAvailable;
-    private EditText amountEdit;
-    private EditText amountFiatEdit;
-    private MonetaryFormat bitcoinFormat;
-    private boolean updatingPending, inProgress;
     // storing pendingFutures keys in savedInstanceState doesn't work well, because
     // http callback, which contains the id required to add to the map, can fire after
     // the device has been rotated, and in such case the button won't get reenabled:
@@ -84,6 +73,17 @@ public class BitBoatActivity extends ActionBarActivity {
     // in case http returns only after rotating finishes, it needs to be called from
     // the previous instance:
     private static Runnable currentInstanceReinitCallbacks;
+    final SettableFuture<ExchangeRate> sfPrice = SettableFuture.create();
+    final SettableFuture<ExchangeRate> ppPrice = SettableFuture.create();
+    final SettableFuture<ExchangeRate> mcPrice = SettableFuture.create();
+    int payMethod;
+    boolean converting, pausing;
+    Handler handler;
+    private Coin sfAvailable, ppAvailable, mcAvailable;
+    private EditText amountEdit;
+    private EditText amountFiatEdit;
+    private MonetaryFormat bitcoinFormat;
+    private boolean updatingPending, inProgress;
     private Map<String, SettableFuture<Boolean>> pendingFutures = new HashMap<>();
 
     @Override
@@ -174,7 +174,7 @@ public class BitBoatActivity extends ActionBarActivity {
                 Log.d("BitBoat", result);
                 Map<String, Object> json = null;
                 try {
-                     json = new MappingJsonFactory().getCodec().readValue(
+                    json = new MappingJsonFactory().getCodec().readValue(
                             result, Map.class);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -290,9 +290,9 @@ public class BitBoatActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (inProgress) return;
                 Coin available = payMethod == BitBoatTransaction.PAYMETHOD_POSTEPAY ? ppAvailable :
-                                 payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? sfAvailable :
-                                 payMethod == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? mcAvailable :
-                                 Coin.valueOf(0);
+                        payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? sfAvailable :
+                                payMethod == BitBoatTransaction.PAYMETHOD_MANDATCOMPTE ? mcAvailable :
+                                        Coin.valueOf(0);
                 Coin amount = null;
                 try {
                     amount = bitcoinFormat.parse(amountEdit.getText().toString());
@@ -315,8 +315,8 @@ public class BitBoatActivity extends ActionBarActivity {
                 nameValuePairs.add(new BasicNameValuePair("ctype", "btc"));
                 nameValuePairs.add(new BasicNameValuePair("ttype",
                         payMethod == BitBoatTransaction.PAYMETHOD_SUPERFLASH ? "sf" :
-                        payMethod == BitBoatTransaction.PAYMETHOD_POSTEPAY ? "pp" :
-                        "mc"));
+                                payMethod == BitBoatTransaction.PAYMETHOD_POSTEPAY ? "pp" :
+                                        "mc"));
                 nameValuePairs.add(new BasicNameValuePair("email", "info@greenaddress.it"));
                 nameValuePairs.add(new BasicNameValuePair("amount", bitcoinFormat.parse(amountEdit.getText().toString()).toPlainString()));
                 nameValuePairs.add(new BasicNameValuePair("eur", amountFiatEdit.getText().toString()));
@@ -328,7 +328,7 @@ public class BitBoatActivity extends ActionBarActivity {
                 if (country.equals("IT")) {
                     title = "Per favore, accetti le condizioni d'uso per procedere all'acquisto";
                     contents = Html.fromHtml(
-                                    "                        <p>Bitboat (questo sito) è una piattaforma per l'acquisto di Bitcoin o altra valuta digitale, con pagamenti corrisposti mediante circuiti Intesa Superflash o Poste Italiane Postepay.</p>\n" +
+                            "                        <p>Bitboat (questo sito) è una piattaforma per l'acquisto di Bitcoin o altra valuta digitale, con pagamenti corrisposti mediante circuiti Intesa Superflash o Poste Italiane Postepay.</p>\n" +
                                     "                        <p>Accettando queste condizioni <strong>l'acquirente (Lei, fruitore del sito) conferma</strong> che:</p>\n" +
                                     "                        <p>1) In caso di pagamento mediante \"ricarica online\", dichiara di essere il titolare del conto o carta da cui verrà effettuato il pagamento.</p>\n" +
                                     "                        <p>2) L'indirizzo Bitcoin (o altra valuta digitale) di destinazione è un facente parte di un suo <a target=\"_blank\" href=\"https://bitcoin.org/it/scegli-il-tuo-portafoglio\">wallet</a>, anche noto come \"portafogli digitale\", e non un servizio terzo. L'acquirente non utilizzerà Bitboat per inviare Bitcoin a servizi terzi.</p>\n" +
@@ -342,7 +342,7 @@ public class BitBoatActivity extends ActionBarActivity {
                 } else {  // FR
                     title = "Conditions d'utilisation";
                     contents = Html.fromHtml(
-                                    "                        <p>Bitboat (ce site) est une plateforme d'échange de monnaie numérique (Bitcoin), le réglement s'effectue par mandat compte, un service de la banque postale.</p>\n" +
+                            "                        <p>Bitboat (ce site) est une plateforme d'échange de monnaie numérique (Bitcoin), le réglement s'effectue par mandat compte, un service de la banque postale.</p>\n" +
                                     "                        <p></p>\n" +
                                     "                        <p>1) Vous avez pris connaissance et acceptez les points évoqués dans notre FAQ (https://www.bitboat.net/fr/help)</p>\n" +
                                     "                        <p>2) Vous achetez des bitcoins à des fins licites.</p>\n" +
@@ -379,89 +379,89 @@ public class BitBoatActivity extends ActionBarActivity {
                                 }));
                                 addresses.add(getGAService().fundReceivingId("GA2nxNXvFENfGM9K27KckeGqNB2JTi"));
                                 Futures.addCallback(Futures.allAsList(addresses), new FutureCallback<List<String>>() {
-                                            @Override
-                                            public void onSuccess(@Nullable List<String> result) {
-                                                nameValuePairs.add(new BasicNameValuePair("dest", result.get(0)));
-                                                nameValuePairs.add(new BasicNameValuePair("ref", result.get(1)));
-                                                try {
-                                                    post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                                                } catch (UnsupportedEncodingException e) {
-                                                    throw new RuntimeException(e);
-                                                }
-                                                dialogFuture.set(true);
-                                            }
+                                    @Override
+                                    public void onSuccess(@Nullable List<String> result) {
+                                        nameValuePairs.add(new BasicNameValuePair("dest", result.get(0)));
+                                        nameValuePairs.add(new BasicNameValuePair("ref", result.get(1)));
+                                        try {
+                                            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                                        } catch (UnsupportedEncodingException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        dialogFuture.set(true);
+                                    }
 
-                                            @Override
-                                            public void onFailure(Throwable t) {
-                                                t.printStackTrace();
-                                                Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                                                buyBtcButton.setProgress(0);
-                                                inProgress = false;
-                                                amountEdit.setEnabled(true);
-                                                amountFiatEdit.setEnabled(true);
-                                            }
-                                        });
+                                    @Override
+                                    public void onFailure(Throwable t) {
+                                        t.printStackTrace();
+                                        Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                        buyBtcButton.setProgress(0);
+                                        inProgress = false;
+                                        amountEdit.setEnabled(true);
+                                        amountFiatEdit.setEnabled(true);
+                                    }
+                                });
                             }
                         })
                         .build().show();
-                    ListenableFuture<String> confirmedHTTP = Futures.transform(dialogFuture, new AsyncFunction<Boolean, String>() {
-                        @Override
-                        public ListenableFuture<String> apply(Boolean input) throws Exception {
-                            return execHTTP(post);
+                ListenableFuture<String> confirmedHTTP = Futures.transform(dialogFuture, new AsyncFunction<Boolean, String>() {
+                    @Override
+                    public ListenableFuture<String> apply(Boolean input) throws Exception {
+                        return execHTTP(post);
+                    }
+                });
+                Futures.addCallback(confirmedHTTP, new FutureCallback<String>() {
+                    @Override
+                    public void onSuccess(@Nullable String result) {
+                        Map<String, Object> json = null;
+                        try {
+                            json = new MappingJsonFactory().getCodec().readValue(
+                                    result, Map.class);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
-                    });
-                    Futures.addCallback(confirmedHTTP, new FutureCallback<String>() {
-                        @Override
-                        public void onSuccess(@Nullable String result) {
-                            Map<String, Object> json = null;
-                            try {
-                                json = new MappingJsonFactory().getCodec().readValue(
-                                        result, Map.class);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
+                        String id = (String) json.get("id");
+                        ArrayList<String> pending = (ArrayList) getGAService().getAppearanceValue("pending_bitboat_ids");
+                        // reenable the button only after status is available
+                        SettableFuture<Boolean> future = SettableFuture.create();
+                        Futures.addCallback(future, reEnableButtonCallback);
+                        pendingFuturesSet.add(id);
+                        pendingFutures.put(id, future);
+                        if (currentInstanceReinitCallbacks != null) {
+                            currentInstanceReinitCallbacks.run();
+                        }
+                        if (pending == null) pending = new ArrayList<>();
+                        pending.add(id);
+                        Futures.addCallback(getGAService().setAppearanceValue("pending_bitboat_ids", pending, false), new FutureCallback<Boolean>() {
+                            @Override
+                            public void onSuccess(@Nullable Boolean result) {
+                                updatePendingOrders();
                             }
-                            String id = (String) json.get("id");
-                            ArrayList<String> pending = (ArrayList) getGAService().getAppearanceValue("pending_bitboat_ids");
-                            // reenable the button only after status is available
-                            SettableFuture<Boolean> future = SettableFuture.create();
-                            Futures.addCallback(future, reEnableButtonCallback);
-                            pendingFuturesSet.add(id);
-                            pendingFutures.put(id, future);
-                            if (currentInstanceReinitCallbacks != null) {
-                                currentInstanceReinitCallbacks.run();
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                t.printStackTrace();
                             }
-                            if (pending == null) pending = new ArrayList<>();
-                            pending.add(id);
-                            Futures.addCallback(getGAService().setAppearanceValue("pending_bitboat_ids", pending, false), new FutureCallback<Boolean>() {
-                                @Override
-                                public void onSuccess(@Nullable Boolean result) {
-                                    updatePendingOrders();
-                                }
+                        });
+                    }
 
-                                @Override
-                                public void onFailure(Throwable t) {
-                                    t.printStackTrace();
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(final Throwable t) {
-                            t.printStackTrace();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                                    buyBtcButton.setProgress(0);
-                                    inProgress = false;
-                                    amountEdit.setEnabled(true);
-                                    amountFiatEdit.setEnabled(true);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        t.printStackTrace();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                buyBtcButton.setProgress(0);
+                                inProgress = false;
+                                amountEdit.setEnabled(true);
+                                amountFiatEdit.setEnabled(true);
+                            }
+                        });
+                    }
+                });
+            }
+        });
         if (!updatingPending) {
             updatePendingOrders();
         }
@@ -719,7 +719,8 @@ public class BitBoatActivity extends ActionBarActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {;
+            public void onFailure(Throwable t) {
+                ;
                 converting = false;
                 t.printStackTrace();
             }

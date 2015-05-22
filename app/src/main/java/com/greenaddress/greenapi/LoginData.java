@@ -17,15 +17,15 @@ public class LoginData {
     public final Map<String, String> last_login;
     public final ArrayList expired_deposits;
     public final ArrayList subaccounts;
-    public String gait_path;  // can change on first login (registration)
     public final String receiving_id;
     public final String country;
+    public String gait_path;  // can change on first login (registration)
 
     public LoginData(final Map<?, ?> map) throws IOException {
         this.exchange = (String) map.get("exchange");
         this.currency = (String) map.get("currency");
         this.appearance = new MappingJsonFactory().getCodec().readValue(
-                (String) map.get("appearance"), Map.class);;
+                (String) map.get("appearance"), Map.class);
         this.nlocktime_blocks = map.get("nlocktime_blocks").toString();
         this.limits = (Map<String, String>) map.get("limits");
         this.privacy = (Map<String, String>) map.get("privacy");

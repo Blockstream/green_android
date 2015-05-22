@@ -102,10 +102,13 @@ public class BTChipHWWallet implements ISigningWallet {
                     }
                     byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);
                     long index = tx.decoded.getInputs().get(i).getOutpoint().getIndex();
-                    input[input.length - 4] = (byte)(index % 256); index /= 256;
-                    input[input.length - 3] = (byte)(index % 256); index /= 256;
-                    input[input.length - 2] = (byte)(index % 256); index /= 256;
-                    input[input.length - 1] = (byte)(index % 256);
+                    input[input.length - 4] = (byte) (index % 256);
+                    index /= 256;
+                    input[input.length - 3] = (byte) (index % 256);
+                    index /= 256;
+                    input[input.length - 2] = (byte) (index % 256);
+                    index /= 256;
+                    input[input.length - 1] = (byte) (index % 256);
                     inputs[i] = dongle.createInput(input, false);
                 }
                 for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
@@ -117,14 +120,13 @@ public class BTChipHWWallet implements ISigningWallet {
                     dongle.finalizeInputFull(stream.toByteArray());
                     sigs.add(ECKey.ECDSASignature.decodeFromDER(
                             dongle.untrustedHashSign(outToPath(tx.prev_outputs.get(i)),
-                                "0", tx.decoded.getLockTime(), (byte)1 /* = SIGHASH_ALL */)));
+                                    "0", tx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */)));
                 }
 
                 return sigs;
             }
         });
     }
-
 
 
     @Override
@@ -156,7 +158,7 @@ public class BTChipHWWallet implements ISigningWallet {
             @Override
             public ECKey.ECDSASignature call() throws Exception {
                 dongle.signMessagePrepare(getPath(), message.getBytes());
-                BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[] { 0 });
+                BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
                 return ECKey.ECDSASignature.decodeFromDER(sig.getSignature());
             }
         });

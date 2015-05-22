@@ -68,6 +68,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 public class MnemonicActivity extends ActionBarActivity implements Observer {
 
     private static final String TAG = "MnemonicActivity";
+
     private static int countSubStr(final String sub, final String s) {
         int c = 0;
         for (int l = s.indexOf(sub); l != -1;
@@ -271,7 +272,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
         DRMWorkaround.maybeDisableExportControls();
         @SuppressLint("GetInstance") // ECB for 256 bits is enough, and is the same that BIP38 uses
-        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+                Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
         cipher.init(Cipher.DECRYPT_MODE, keyspec);
         byte[] decrypted = cipher.doFinal(encrypted, 0, 32);
@@ -279,7 +280,8 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             decrypted[i] ^= derived[i];
 
         byte[] hash = Sha256Hash.createDouble(decrypted).getBytes();
-        if (!Arrays.equals(Arrays.copyOf(hash, 4), salt)) throw new RuntimeException("Invalid checksum");
+        if (!Arrays.equals(Arrays.copyOf(hash, 4), salt))
+            throw new RuntimeException("Invalid checksum");
         return decrypted;
     }
 

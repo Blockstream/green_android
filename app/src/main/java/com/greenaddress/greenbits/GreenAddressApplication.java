@@ -30,15 +30,9 @@ import java.util.Observer;
 public class GreenAddressApplication extends MultiDexApplication {
 
     public GaService gaService;
-    private boolean mBound = false;
     public SettableFuture<Void> onServiceConnected = SettableFuture.create();
-
+    private boolean mBound = false;
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
-
-    public ConnectivityObservable getConnectionObservable() {
-        return connectionObservable;
-    }
-
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -58,6 +52,10 @@ public class GreenAddressApplication extends MultiDexApplication {
             onServiceConnected.setException(new GAException(arg0.toString()));
         }
     };
+
+    public ConnectivityObservable getConnectionObservable() {
+        return connectionObservable;
+    }
 
     @Override
     public void onCreate() {
@@ -142,7 +140,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
 
-        if (((Boolean) gaService.getTwoFacConfig().get("any")).booleanValue() || twoFacWarning){
+        if (((Boolean) gaService.getTwoFacConfig().get("any")).booleanValue() || twoFacWarning) {
             noTwoFacFooter.setVisibility(View.GONE);
         } else {
             noTwoFacFooter.setVisibility(View.VISIBLE);

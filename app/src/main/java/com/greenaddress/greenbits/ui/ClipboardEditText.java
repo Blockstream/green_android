@@ -28,7 +28,7 @@ public class ClipboardEditText extends EditText {
     @Override
     public boolean onTextContextMenuItem(final int id) {
         final boolean result = super.onTextContextMenuItem(id);
-        switch (id){
+        switch (id) {
             case android.R.id.cut:
                 break;
             case android.R.id.paste:

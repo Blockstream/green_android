@@ -69,6 +69,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                     }
                 }, getGAService().es);
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -81,6 +82,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         super.onPause();
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

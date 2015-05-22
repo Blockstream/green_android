@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.text.Html;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -132,8 +131,6 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                 setIdVisible(position == 0, R.id.action_share);
             }
         });
-
-
 
 
         // For each of the sections in the app, add a tab to the action bar.
@@ -405,7 +402,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         return true;
     }
 
-    public void setIdVisible(final boolean visible,final int id) {
+    public void setIdVisible(final boolean visible, final int id) {
         if (menu != null) {
             runOnUiThread(new Runnable() {
                 @Override

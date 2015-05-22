@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class CurrencyMapper {
     private static final Map<String, String> map = new HashMap<>();
+
     static {
         map.put("USD", "&#xf155;");
         map.put("AUD", "&#xf155;");
@@ -24,13 +25,14 @@ public class CurrencyMapper {
     public static String map(final String currency) {
         return map.get(currency);
     }
+
     public static String mapBtcUnitToPrefix(final String btcUnit) {
         if (btcUnit != null) {
             if (btcUnit.equals("BTC")) {
                 return "";
             } else if (btcUnit.equals("mBTC")) {
                 return "m";
-            } else if (btcUnit.equals(Html.fromHtml("&micro;").toString()+"BTC")) { // bits or uBTC or default
+            } else if (btcUnit.equals(Html.fromHtml("&micro;").toString() + "BTC")) { // bits or uBTC or default
                 return "&micro;";
             } else {
                 return ""; // bits
@@ -39,13 +41,14 @@ public class CurrencyMapper {
             return ""; // bits
         }
     }
+
     public static MonetaryFormat mapBtcUnitToFormat(final String btcUnit) {
         if (btcUnit != null) {
             if (btcUnit.equals("BTC")) {
                 return MonetaryFormat.BTC;
             } else if (btcUnit.equals("mBTC")) {
                 return MonetaryFormat.MBTC;
-            } else if (btcUnit.equals(Html.fromHtml("&micro;").toString()+"BTC")) {
+            } else if (btcUnit.equals(Html.fromHtml("&micro;").toString() + "BTC")) {
                 return MonetaryFormat.UBTC;
             } else {
                 return MonetaryFormat.UBTC.code(6, "bits");

@@ -48,6 +48,9 @@ import javax.annotation.Nullable;
 
 public class MainFragment extends GAFragment implements Observer {
     public static final int P2SH_FORTIFIED_OUT = 10;
+    Observer wiFiObserver = null;
+    boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
+    MaterialDialog spvStatusDialog = null;
     private Float maxSize = null;
     private Float currentSize = null;
     private Float minSize = null;
@@ -58,21 +61,17 @@ public class MainFragment extends GAFragment implements Observer {
     private int curSubaccount;
     private Observer txVerifiedObservable;
     private View.OnClickListener unconfirmedClickListener;
-    Observer wiFiObserver = null;
-    boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
-    MaterialDialog spvStatusDialog = null;
-
 
     private Transaction processGATransaction(final Map<String, Object> txJSON, final int curBlock) throws ParseException {
 
         final List eps = (List) txJSON.get("eps");
-        final String txhash  = (String) txJSON.get("txhash");
+        final String txhash = (String) txJSON.get("txhash");
 
-        final String memo = txJSON.containsKey("memo")?
-            (String) txJSON.get("memo"): null;
+        final String memo = txJSON.containsKey("memo") ?
+                (String) txJSON.get("memo") : null;
 
-        final Integer blockHeight = txJSON.containsKey("block_height") && txJSON.get("block_height") != null?
-                (int) txJSON.get("block_height"): null;
+        final Integer blockHeight = txJSON.containsKey("block_height") && txJSON.get("block_height") != null ?
+                (int) txJSON.get("block_height") : null;
 
         String counterparty = null;
         long amount = 0;
@@ -149,7 +148,7 @@ public class MainFragment extends GAFragment implements Observer {
             }
         }
         boolean spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
-                +getGAService().getReceivingId(), Context.MODE_PRIVATE).getBoolean(txhash, false);
+                + getGAService().getReceivingId(), Context.MODE_PRIVATE).getBoolean(txhash, false);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return new Transaction(type, amount, counterparty,
@@ -162,7 +161,7 @@ public class MainFragment extends GAFragment implements Observer {
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.mainBitcoinScaleText);
-        bitcoinScale.setText( Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit) ) );
+        bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
         if (btcUnit == null || btcUnit.equals("bits")) {
             balanceBitcoinIcon.setText("");
             bitcoinScale.setText("bits ");
@@ -203,7 +202,7 @@ public class MainFragment extends GAFragment implements Observer {
         }
 
         final int nChars = balanceText.getText().length() + balanceQuestionMark.getText().length() + bitcoinScale.getText().length() + balanceBitcoinIcon.getText().length();
-        final int size   =  Math.min(50 - nChars, 34) ;
+        final int size = Math.min(50 - nChars, 34);
         balanceText.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         bitcoinScale.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         balanceBitcoinIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
@@ -228,7 +227,7 @@ public class MainFragment extends GAFragment implements Observer {
 
     @Override
     public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+                               final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
@@ -246,7 +245,6 @@ public class MainFragment extends GAFragment implements Observer {
         minSize = currentSize / 2.0f; */
 
 
-
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
         unconfirmedClickListener = new View.OnClickListener() {
@@ -262,7 +260,7 @@ public class MainFragment extends GAFragment implements Observer {
                 final String blocksLeft;
                 if (wiFiObserver != null) {
                     blocksLeft = getResources().getString(R.string.unconfirmedBalanceSpvNotAvailable) + "\n\n" +
-                                 getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
+                            getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
                 } else {
                     // no observer means we're synchronizing
                     blocksLeft = String.valueOf(getGAService().getSpvBlocksLeft());
@@ -277,7 +275,7 @@ public class MainFragment extends GAFragment implements Observer {
                         .theme(Theme.DARK);
                 if (wiFiObserver != null) {
                     builder.negativeText(R.string.NO)
-                           .positiveText(R.string.YES);
+                            .positiveText(R.string.YES);
                 }
                 builder.cancelListener(new DialogInterface.OnCancelListener() {
                     @Override
@@ -404,7 +402,7 @@ public class MainFragment extends GAFragment implements Observer {
 
         final String country = getGAService().getCountry();
         if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
-            !(country.equals("IT") || country.equals("FR"))) {
+                !(country.equals("IT") || country.equals("FR"))) {
             rootView.findViewById(R.id.buyBtcButton).setVisibility(View.GONE);
         } else {
             rootView.findViewById(R.id.mainSecondParagraphText).setVisibility(View.GONE);
@@ -470,7 +468,7 @@ public class MainFragment extends GAFragment implements Observer {
                         //  notifyDataSetChanged() when its content changes."
                         for (Transaction tx : currentList) {
                             tx.spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
-                                            +(getGAService().getReceivingId()),
+                                            + (getGAService().getReceivingId()),
                                     Context.MODE_PRIVATE).getBoolean(tx.txhash, false);
                         }
                         final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
@@ -486,7 +484,6 @@ public class MainFragment extends GAFragment implements Observer {
     private void reloadTransactions(final Activity activity) {
         reloadTransactions(activity, false);
     }
-
 
 
     private void reloadTransactions(final Activity activity, boolean newAdapter) {
@@ -529,7 +526,7 @@ public class MainFragment extends GAFragment implements Observer {
                             }
                         }
 
-                        if(resultList != null && resultList.size() > 0) {
+                        if (resultList != null && resultList.size() > 0) {
                             listView.setVisibility(View.VISIBLE);
                             mainEmptyTransText.setVisibility(View.GONE);
                         } else {
@@ -582,8 +579,8 @@ public class MainFragment extends GAFragment implements Observer {
                 });
                 t.printStackTrace();
 
-                }
-            }, getGAService().es);
+            }
+        }, getGAService().es);
     }
 
     private void askUserForSpvNoWiFi() {

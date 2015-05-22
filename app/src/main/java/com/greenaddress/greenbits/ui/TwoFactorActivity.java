@@ -160,7 +160,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showProvideConfirmationCode(stepNum+1, numSteps);
+                                showProvideConfirmationCode(stepNum + 1, numSteps);
                             }
                         });
                     }
@@ -208,9 +208,9 @@ public class TwoFactorActivity extends ActionBarActivity {
                             @Override
                             public void run() {
                                 if (newMethod.equals("gauth")) {
-                                    showGauthDetails(stepNum+1, numSteps, (String) proxyCode);
+                                    showGauthDetails(stepNum + 1, numSteps, (String) proxyCode);
                                 } else {
-                                    showProvideDetails(stepNum+1, numSteps, (String) proxyCode);
+                                    showProvideDetails(stepNum + 1, numSteps, (String) proxyCode);
                                 }
                             }
                         });

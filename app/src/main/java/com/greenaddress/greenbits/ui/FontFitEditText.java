@@ -8,6 +8,9 @@ import android.widget.EditText;
 
 public class FontFitEditText extends EditText {
 
+    //Attributes
+    private Paint mTestPaint;
+
     public FontFitEditText(Context context) {
         super(context);
         initialise();
@@ -27,8 +30,7 @@ public class FontFitEditText extends EditText {
     /* Re size the font so the specified text fits in the text box
      * assuming the text box is the specified width.
      */
-    private void refitText(String text, int textWidth) 
-    { 
+    private void refitText(String text, int textWidth) {
         if (textWidth <= 0)
             return;
         int targetWidth = textWidth - this.getPaddingLeft() - this.getPaddingRight();
@@ -38,10 +40,10 @@ public class FontFitEditText extends EditText {
 
         mTestPaint.set(this.getPaint());
 
-        while((hi - lo) > threshold) {
-            float size = (hi+lo)/2;
+        while ((hi - lo) > threshold) {
+            float size = (hi + lo) / 2;
             mTestPaint.setTextSize(size);
-            if(mTestPaint.measureText(text) >= targetWidth) 
+            if (mTestPaint.measureText(text) >= targetWidth)
                 hi = size; // too big
             else
                 lo = size; // too small
@@ -51,8 +53,7 @@ public class FontFitEditText extends EditText {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-    {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int height = getMeasuredHeight();
@@ -66,12 +67,9 @@ public class FontFitEditText extends EditText {
     }
 
     @Override
-    protected void onSizeChanged (int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         if (w != oldw) {
             refitText(this.getText().toString(), w);
         }
     }
-
-    //Attributes
-    private Paint mTestPaint;
 }
