@@ -47,7 +47,7 @@ import javax.annotation.Nullable;
 
 
 public class MainFragment extends GAFragment implements Observer {
-    public final static int P2SH_FORTIFIED_OUT = 10;
+    public static final int P2SH_FORTIFIED_OUT = 10;
     private Float maxSize = null;
     private Float currentSize = null;
     private Float minSize = null;

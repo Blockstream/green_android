@@ -100,6 +100,7 @@ import javax.annotation.Nullable;
 public class GaService extends Service {
 
     public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
+    private static final String TAG = "GaService";
     private Handler uiHandler;
 
     private final IBinder mBinder = new GaBinder(this);
@@ -374,7 +375,7 @@ public class GaService extends Service {
 
 
     void reconnect() {
-        Log.i("GaService", "Submitting reconnect after " + reconnectTimeout);
+        Log.i(TAG, "Submitting reconnect after " + reconnectTimeout);
         onConnected = client.connect();
         connectionObservable.setState(ConnectivityObservable.State.CONNECTING);
 
@@ -383,7 +384,7 @@ public class GaService extends Service {
             public void onSuccess(@Nullable final Void result) {
                 connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
 
-                Log.i("GaService", "Success CONNECTED callback");
+                Log.i(TAG, "Success CONNECTED callback");
                 if (!connectionObservable.getIsForcedLoggedOut() && !connectionObservable.getIsForcedTimeout() && client.canLogin()) {
                     login();
                 }
@@ -391,7 +392,7 @@ public class GaService extends Service {
 
             @Override
             public void onFailure(final Throwable t) {
-                Log.i("GaService", "Failure throwable callback " + t.toString());
+                Log.i(TAG, "Failure throwable callback " + t.toString());
                 connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
 
                 if (reconnectTimeout < connectionObservable.RECONNECT_TIMEOUT_MAX) {
@@ -442,7 +443,7 @@ public class GaService extends Service {
         client = new WalletClient(new INotificationHandler() {
             @Override
             public void onNewBlock(final long count) {
-                Log.i("GaService", "onNewBlock");
+                Log.i(TAG, "onNewBlock");
                 if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
                     addToBloomFilter((int) count, null, -1, -1, -1);
                 }
@@ -452,7 +453,7 @@ public class GaService extends Service {
 
             @Override
             public void onNewTransaction(final long wallet_id, final long[] subaccounts, final long value, final String txhash) {
-                Log.i("GaService", "onNewTransactions");
+                Log.i(TAG, "onNewTransactions");
                 updateUnspentOutputs();
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
@@ -507,7 +508,7 @@ public class GaService extends Service {
                     connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
 
                     // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
-                    Log.i("GaService", "onConnectionClosed code=" + String.valueOf(code));
+                    Log.i(TAG, "onConnectionClosed code=" + String.valueOf(code));
                     // FIXME: some callback to UI so you see what's happening.
                     // 1000 NORMAL_CLOSE
                     // 1006 SERVER_RESTART
@@ -650,7 +651,7 @@ public class GaService extends Service {
                                     e.putLong(txHashStr + ":" + outpoint, coinValue.longValue());
                                     e.apply();
                                 } else {
-                                    Log.e("SPV",
+                                    Log.e(TAG,
                                             new Formatter().format("txHash %s outpoint %s not spendable!",
                                                     txHash.toString(), outpoint.toString()).toString());
                                 }
@@ -659,7 +660,7 @@ public class GaService extends Service {
                         }));
                     }
                 } else {
-                    Log.e("SPV",
+                    Log.e(TAG,
                             new Formatter().format("txHash mismatch: expected %s != %s received",
                                     txHash.toString(), result.getHash().toString()).toString());
                 }

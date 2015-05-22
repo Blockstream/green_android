@@ -67,6 +67,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class MnemonicActivity extends ActionBarActivity implements Observer {
 
+    private static final String TAG = "MnemonicActivity";
     private static int countSubStr(final String sub, final String s) {
         int c = 0;
         for (int l = s.indexOf(sub); l != -1;
@@ -319,7 +320,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("MnemonicActivity", getIntent().getType() + "" + getIntent());
+        Log.i(TAG, getIntent().getType() + "" + getIntent());
         setContentView(R.layout.activity_mnemonic);
         final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
         okButton.setOnClickListener(new View.OnClickListener() {
@@ -460,7 +461,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i("MnemonicActivity", "" + data);
+        Log.i(TAG, "" + data);
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
         if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
             edit.setText(data.getStringExtra("com.greenaddress.greenbits.QrText"));

@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class BitBoatTransaction implements Serializable {
-    final static int PAYMETHOD_SUPERFLASH = 0, PAYMETHOD_POSTEPAY = 1, PAYMETHOD_MANDATCOMPTE = 2;
+    static final int PAYMETHOD_SUPERFLASH = 0, PAYMETHOD_POSTEPAY = 1, PAYMETHOD_MANDATCOMPTE = 2;
 
     public final Date date;
     public final String firstbits;

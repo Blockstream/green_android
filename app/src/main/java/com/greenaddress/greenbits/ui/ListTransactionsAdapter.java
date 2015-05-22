@@ -31,7 +31,6 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         final Transaction current = getItem(position);
         Holder holder;
 
-        //Log.i("hi", "getView " + position + " " + convertView);
         View returnedView;
         if (convertView == null) {
             final LayoutInflater inflater = LayoutInflater.from(getContext());

@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 
 
 public class ReceiveFragment extends GAFragment {
+    private static final String TAG = "ReceiveFragment";
     FutureCallback<QrBitmap> onAddress = null;
     QrBitmap address = null;
     private int curSubaccount;
@@ -159,7 +160,7 @@ public class ReceiveFragment extends GAFragment {
                                                 getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                                                 final int height = displaymetrics.heightPixels;
                                                 final int width = displaymetrics.widthPixels;
-                                                Log.i("ReceiveFragment", height + "x" + width);
+                                                Log.i(TAG, height + "x" + width);
                                                 final int min = (int) (Math.min(height, width) * 0.8);
                                                 final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
                                                 qrcodeInDialog.setLayoutParams(layoutParams);

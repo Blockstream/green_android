@@ -69,7 +69,7 @@ import de.tavendo.autobahn.secure.WebSocketMessage;
 
 public class WalletClient {
 
-    public final static String TAG = "WalletClient";
+    private static final String TAG = "WalletClient";
 
     public final INotificationHandler m_notificationHandler;
     private final ListeningExecutorService es;
@@ -344,7 +344,7 @@ public class WalletClient {
                 mConnection.subscribe("http://greenaddressit.com/block_count", Map.class, new Wamp.EventHandler() {
                     @Override
                     public void onEvent(String topicUri, Object event) {
-                        Log.i("BLOCKS", "BLOCKS IS " + event.toString());
+                        Log.i(TAG, "BLOCKS IS " + event.toString());
                         m_notificationHandler.onNewBlock(Long.parseLong(((Map) event).get("count").toString()));
                     }
                 });

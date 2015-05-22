@@ -58,7 +58,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends ActionBarActivity implements ActionBar.TabListener, Observer {
-    public final static int
+    public static final int
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2;
@@ -331,9 +331,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                 public void onPositive(final MaterialDialog dialog) {
                                     if (keyBip38 != null) {
                                         try {
-                                            long t0 = System.currentTimeMillis();
                                             key = keyBip38.decrypt(passwordEdit.getText().toString());
-                                            Log.d("BIP38", "BIP38 time: " + (System.currentTimeMillis() - t0) + "ms");
                                             Futures.addCallback(getGAService().prepareSweepSocial(
                                                     key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
                                                 @Override

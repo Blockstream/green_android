@@ -66,6 +66,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class SendFragment extends GAFragment {
 
+    private static final String TAG = "SendFragment";
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private EditText amountEdit;
@@ -92,7 +93,7 @@ public class SendFragment extends GAFragment {
     private boolean pausing;
 
     public void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
-        Log.i("SendActivity", "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient +")");
+        Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient +")");
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
         final TextView amountText = (TextView) inflatedLayout.findViewById(R.id.newTxAmountText);
@@ -192,7 +193,7 @@ public class SendFragment extends GAFragment {
 
                     @Override
                     public void onNegative(final MaterialDialog dialog) {
-                        Log.i("showTransactionSummary", "SHOWN ON CLOSE!");
+                        Log.i(TAG, "SHOWN ON CLOSE!");
 
                     }
                 })
@@ -202,7 +203,7 @@ public class SendFragment extends GAFragment {
     }
 
     public void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
-        Log.i("show2FAChoices", "params " + fee + " " + amount + " " + recipient);
+        Log.i(TAG, "params " + fee + " " + amount + " " + recipient);
         String[] enabledTwoFacNames = new String[]{};
         final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
         mTwoFactor = new MaterialDialog.Builder(getActivity())

@@ -52,6 +52,7 @@ import javax.annotation.Nullable;
 
 
 public class SignUpActivity extends ActionBarActivity implements Observer {
+    private static final String TAG = "SignUpActivity";
     boolean mWriteMode = false;
     private Dialog mnemonicDialog;
     private Dialog nfcDialog;
@@ -125,7 +126,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                                     getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                                     final int height = displaymetrics.heightPixels;
                                     final int width = displaymetrics.widthPixels;
-                                    Log.i("SignUpActivity", height + "x" + width);
+                                    Log.i(TAG, height + "x" + width);
                                     final int min = (int) (Math.min(height, width) * 0.8);
                                     final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
                                     qrcodeMnemonic.setLayoutParams(layoutParams);

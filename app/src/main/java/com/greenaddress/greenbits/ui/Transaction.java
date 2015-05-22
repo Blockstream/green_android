@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Transaction implements Serializable {
-    public final static int TYPE_OUT = 0;
-    public final static int TYPE_IN = 1;
-    public final static int TYPE_REDEPOSIT = 2;
+    public static final int TYPE_OUT = 0;
+    public static final int TYPE_IN = 1;
+    public static final int TYPE_REDEPOSIT = 2;
 
     public final int type;
     public final int curBlock;

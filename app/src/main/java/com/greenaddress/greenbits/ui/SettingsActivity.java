@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
  */
 public class SettingsActivity extends PreferenceActivity implements Observer {
 
-    public final static int REQUEST_ENABLE_2FA = 0;
+    public static final int REQUEST_ENABLE_2FA = 0;
     private String twoFacMethod;
 
     @Override
