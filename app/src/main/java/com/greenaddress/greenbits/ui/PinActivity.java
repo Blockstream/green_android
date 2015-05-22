@@ -19,11 +19,11 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.greenaddress.greenbits.ConnectivityObservable;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.PinData;
+import com.greenaddress.greenbits.ConnectivityObservable;
+import com.greenaddress.greenbits.GaService;
 
 import java.util.Observable;
 import java.util.Observer;

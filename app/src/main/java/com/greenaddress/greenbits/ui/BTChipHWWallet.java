@@ -16,7 +16,12 @@ import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 
-import org.bitcoinj.core.*;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.UnsafeByteArrayOutputStream;
+import org.bitcoinj.core.VarInt;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.spongycastle.util.encoders.Hex;
