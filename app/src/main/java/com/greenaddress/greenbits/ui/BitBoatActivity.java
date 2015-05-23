@@ -325,6 +325,7 @@ public class BitBoatActivity extends ActionBarActivity {
 
                 final SettableFuture<Boolean> dialogFuture = SettableFuture.create();
                 final CharSequence title, contents, positive, negative;
+                // FIXME: Move all terms of conditions to external resources
                 if (country.equals("IT")) {
                     title = "Per favore, accetti le condizioni d'uso per procedere all'acquisto";
                     contents = Html.fromHtml(
@@ -406,7 +407,8 @@ public class BitBoatActivity extends ActionBarActivity {
                         .build().show();
                 ListenableFuture<String> confirmedHTTP = Futures.transform(dialogFuture, new AsyncFunction<Boolean, String>() {
                     @Override
-                    public ListenableFuture<String> apply(Boolean input) throws Exception {
+                    public ListenableFuture<String> apply(final Boolean input)
+                            throws Exception {
                         return execHTTP(post);
                     }
                 });
@@ -420,10 +422,12 @@ public class BitBoatActivity extends ActionBarActivity {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                        String id = (String) json.get("id");
-                        ArrayList<String> pending = (ArrayList) getGAService().getAppearanceValue("pending_bitboat_ids");
+                        final String id = (String) json.get("id");
+                        ArrayList<String> pending = (ArrayList)
+                                getGAService().getAppearanceValue("pending_bitboat_ids");
                         // reenable the button only after status is available
-                        SettableFuture<Boolean> future = SettableFuture.create();
+                        final SettableFuture<Boolean> future = SettableFuture
+                                .create();
                         Futures.addCallback(future, reEnableButtonCallback);
                         pendingFuturesSet.add(id);
                         pendingFutures.put(id, future);
@@ -486,19 +490,20 @@ public class BitBoatActivity extends ActionBarActivity {
             pendingIds.add(id);
             results.add(Futures.transform(execHTTP(new HttpGet("https://www.bitboat.net/__validate/" + id)), new AsyncFunction<String, String>() {
                 @Override
-                public ListenableFuture<String> apply(String input) throws Exception {
+                public ListenableFuture<String> apply(final String input)
+                        throws Exception {
                     return execHTTP(new HttpGet("https://www.bitboat.net/__order_summary?uuid=" + id));
                 }
             }));
         }
         Futures.addCallback(Futures.allAsList(results), new FutureCallback<List<String>>() {
             @Override
-            public void onSuccess(@Nullable List<String> results) {
+            public void onSuccess(final @Nullable List<String> results) {
                 final ArrayList<Object> newPending = new ArrayList<>();
                 final LinkedList<BitBoatTransaction> currentList = new LinkedList<>();
                 int i = 0;
                 boolean anyToCheckAgain = false;
-                for (String res : results) {
+                for (final String res : results) {
                     Log.d("BitBoat", res);
                     ArrayList<Object> json = null;
                     try {
@@ -506,12 +511,15 @@ public class BitBoatActivity extends ActionBarActivity {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Map<?, ?> map = (Map<?, ?>) json.get(0);
-                    Date date = new Date(((Number) map.get("timestamp")).longValue());
-                    long age = new Date().getTime() - date.getTime();
-                    boolean isRelevant = age < 1000 * 60 * 60 * 24;
-                    SettableFuture<Boolean> future = pendingFutures.get(pendingIds.get(i));
-                    Object pendingObj = pending.get(i); // String changes to Map when EUR value is available
+                    final Map<?, ?> map = (Map<?, ?>) json.get(0);
+                    final Date date = new Date(((Number) map.get("timestamp"))
+                            .longValue());
+                    final long age = new Date().getTime() - date.getTime();
+                    final boolean isRelevant = age < 1000 * 60 * 60 * 24;
+                    final SettableFuture<Boolean> future = pendingFutures.get
+                            (pendingIds.get(i));
+                    Object pendingObj = pending.get(i); // String
+                    // changes to Map when EUR value is available
                     if (future != null) {
                         future.set(true);
                         pendingFutures.remove(pendingIds.get(i));
@@ -591,7 +599,7 @@ public class BitBoatActivity extends ActionBarActivity {
                         final String btcUnit = (String) getGAService().getAppearanceValue("unit");
                         if (listView.getAdapter() != null) {
                             ((ListBitBoatTxsAdapter) listView.getAdapter()).clear();
-                            for (BitBoatTransaction tx : currentList) {
+                            for (final BitBoatTransaction tx : currentList) {
                                 ((ListBitBoatTxsAdapter) listView.getAdapter()).add(tx);
                             }
                             ((ListBitBoatTxsAdapter) listView.getAdapter()).notifyDataSetChanged();
@@ -618,7 +626,7 @@ public class BitBoatActivity extends ActionBarActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 Toast.makeText(BitBoatActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                 t.printStackTrace();
             }
@@ -637,7 +645,7 @@ public class BitBoatActivity extends ActionBarActivity {
         final SettableFuture<String> req = SettableFuture.create();
         (new AsyncTask<HttpUriRequest, String, String>() {
             @Override
-            protected String doInBackground(HttpUriRequest... request) {
+            protected String doInBackground(final HttpUriRequest... request) {
                 HttpClient client = new DefaultHttpClient();
                 String responseStr = null;
                 HttpResponse response;
