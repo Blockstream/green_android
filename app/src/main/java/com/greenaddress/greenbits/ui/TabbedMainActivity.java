@@ -82,13 +82,6 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
         super.onCreate(savedInstanceState);
 
-        if (getGAService() == null) {
-            // don't crash after System.exit from SettingsActivity
-            final Intent pinActivity = new Intent(this, PinActivity.class);
-            startActivity(pinActivity);
-            return;
-        }
-
         boolean isBitcoinURL = getIntent().hasCategory(Intent.CATEGORY_BROWSABLE) ||
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction());
 
