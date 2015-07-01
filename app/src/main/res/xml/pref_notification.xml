@@ -15,4 +15,7 @@
         android:title="@string/enableSPV"
         android:summary="@string/enableSPVSummary" />
 
+    <EditTextPreference android:key="trusted_peer"
+        android:title="@string/trustedspv"
+        />
 </PreferenceScreen>

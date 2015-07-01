@@ -191,5 +191,10 @@
     <string name="txStatusCompleted">Completado</string>
     <string name="txStatusLoading">Cargando</string>
     <string name="twoFacGauthTextCode">O usted puede usar el siguiente código: %s. ¡Recuerde hacer una copia de seguridad!</string>
+    <string name="trustedspv">Only connect to a trusted peer for SPV</string>
+    <string name="changingRequiresRestartWarnOnionTitle">Warning: Non-.onion address detected! (Restart required)</string>
+    <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
+    <string name="enterValidAddressTitle">Not a valid address!</string>
+    <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion prefered)</string>
 
 </resources>

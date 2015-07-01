@@ -148,6 +148,8 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
         final CheckBoxPreference spvEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("spvEnabled");
         final SharedPreferences spvPreferences = getSharedPreferences("SPV", MODE_PRIVATE);
+        final EditTextPreference trusted_peer = (EditTextPreference) getPreferenceManager().findPreference("trusted_peer");
+        trusted_peer.setEnabled(spvPreferences.getBoolean("enabled", true));
         spvEnabled.setChecked(spvPreferences.getBoolean("enabled", true));
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
@@ -155,6 +157,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 SharedPreferences.Editor editor = spvPreferences.edit();
                 editor.putBoolean("enabled", (Boolean) newValue);
                 editor.apply();
+                trusted_peer.setEnabled((Boolean) newValue);
 
                 new MaterialDialog.Builder(SettingsActivity.this)
                         .title(getResources().getString(R.string.changingRequiresRestartTitle))
@@ -167,6 +170,69 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                         .positiveText("OK")
                         .build().show();
                 return true;
+            }
+        });
+
+        final SharedPreferences trustedPreferences = getSharedPreferences("TRUSTED", MODE_PRIVATE);
+        trusted_peer.setText(trustedPreferences.getString("address", ""));
+        trusted_peer.setSummary(trustedPreferences.getString("address", ""));
+        trusted_peer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+
+                try {
+                    String newString = newValue.toString().replaceAll("\\s","");
+                    if (!newString.equals("") && newString.indexOf('.') == -1){
+                        new MaterialDialog.Builder(SettingsActivity.this)
+                                .title(getResources().getString(R.string.enterValidAddressTitle))
+                                .content(getResources().getString(R.string.enterValidAddressText))
+                                .positiveColorRes(R.color.accent)
+                                .negativeColorRes(R.color.white)
+                                .titleColorRes(R.color.white)
+                                .contentColorRes(android.R.color.white)
+                                .theme(Theme.DARK)
+                                .positiveText("OK")
+                                .build().show();
+                        return true;
+                    }
+                    SharedPreferences.Editor editor = trustedPreferences.edit();
+                    editor.putString("address", newString);
+                    editor.apply();
+
+                    getGAService().setAppearanceValue("trusted_peer_addr", newString, true);
+                    trusted_peer.setSummary(newString);
+
+                    if (newString.equals("") || newString.substring(newString.indexOf('.')).equals(".onion")){
+                        new MaterialDialog.Builder(SettingsActivity.this)
+                                .title(getResources().getString(R.string.changingRequiresRestartTitle))
+                                .content(getResources().getString(R.string.changingRequiresRestartText))
+                                .positiveColorRes(R.color.accent)
+                                .negativeColorRes(R.color.white)
+                                .titleColorRes(R.color.white)
+                                .contentColorRes(android.R.color.white)
+                                .theme(Theme.DARK)
+                                .positiveText("OK")
+                                .build().show();
+                    }
+                    else{
+                        new MaterialDialog.Builder(SettingsActivity.this)
+                                .title(getResources().getString(R.string.changingRequiresRestartWarnOnionTitle))
+                                .content(getResources().getString(R.string.changingRequiresRestartWarnOnionText))
+                                .positiveColorRes(R.color.accent)
+                                .negativeColorRes(R.color.white)
+                                .titleColorRes(R.color.white)
+                                .contentColorRes(android.R.color.white)
+                                .theme(Theme.DARK)
+                                .positiveText("OK")
+                                .build().show();
+                    }
+
+
+                    return true;
+                } catch (final Exception e) {
+                    // not set
+                }
+                return false;
             }
         });
 

@@ -62,7 +62,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2;
-
+    public static TabbedMainActivity instance = null;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -168,7 +168,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         super.onResume();
         getGAApp().getConnectionObservable().addObserver(this);
         testKickedOut();
-
+        instance = this;
         setIdVisible(getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN, R.id.action_share);
     }
 
@@ -431,6 +431,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             //FIXME logout and exit logic
             getGAService().disconnect(false);
             finish();
+            System.exit(0); //UGLY hack until we fix service model.
             return true;
         } else if (id == R.id.action_share) {
             final TextView receiveAddress = (TextView) findViewById(R.id.receiveAddressText);
@@ -465,6 +466,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     public void onBackPressed() {
         if (exit) {
             finish(); // finish activity
+            System.exit(0); //Hack until we fix service model.
         } else {
             Toast.makeText(this, "Press Back again to Exit.",
                     Toast.LENGTH_SHORT).show();

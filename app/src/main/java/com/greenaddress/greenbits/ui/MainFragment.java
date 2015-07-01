@@ -263,7 +263,12 @@ public class MainFragment extends GAFragment implements Observer {
                             getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
                 } else {
                     // no observer means we're synchronizing
-                    blocksLeft = String.valueOf(getGAService().getSpvBlocksLeft());
+                    String numblocksLeft = String.valueOf(getGAService().getSpvBlocksLeft());
+                    if (numblocksLeft.equals(String.valueOf(Integer.MAX_VALUE))){
+                        blocksLeft = "Not yet connected to SPV!";
+                    }else{
+                        blocksLeft = numblocksLeft;
+                    }
                 }
                 MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                         .title(getResources().getString(R.string.unconfirmedBalanceTitle))
