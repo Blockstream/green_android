@@ -36,8 +36,10 @@ import org.bitcoinj.core.BlockChain;
 import org.bitcoinj.core.BlockChainListener;
 import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.DownloadListener;
+//import org.bitcoinj.core.DownloadListener;
+import org.bitcoinj.core.DownloadProgressTracker;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.FilteredBlock;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
 import org.bitcoinj.core.PeerAddress;
@@ -220,10 +222,10 @@ public class GaService extends Service {
             startSpvAfterInit = true;
             return;
         }
-        Futures.addCallback(peerGroup.start(), new FutureCallback<Object>() {
+        Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() { //.13 added their own void .start() function, needs Listenable Future
             @Override
             public void onSuccess(@Nullable Object result) {
-                peerGroup.startBlockChainDownload(new DownloadListener() {
+                peerGroup.startBlockChainDownload(new DownloadProgressTracker() {
                     @Override
                     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
                         isSpvSyncing = true;
@@ -231,9 +233,10 @@ public class GaService extends Service {
                     }
 
                     @Override
-                    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
+                    public void onBlocksDownloaded(Peer peer, Block block, @Nullable FilteredBlock filteredBlock, int blocksLeft) {
                         spvBlocksLeft = blocksLeft;
                     }
+
                 });
             }
 
@@ -342,9 +345,11 @@ public class GaService extends Service {
                 return false;
             }
 
-            @Override
-            public Lock getLock() {
-                return new ReentrantLock();
+            public void beginBloomFilterCalculation(){
+                //TODO: Implement beginBloomFilterCalculation.
+            }
+            public void endBloomFilterCalculation(){
+                //TODO: Implement endBloomFilterCalculation.
             }
         };
         return pfProvider;
