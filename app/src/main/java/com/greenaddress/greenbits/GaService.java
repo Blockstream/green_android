@@ -36,7 +36,6 @@ import org.bitcoinj.core.BlockChain;
 import org.bitcoinj.core.BlockChainListener;
 import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.Coin;
-//import org.bitcoinj.core.DownloadListener;
 import org.bitcoinj.core.DownloadProgressTracker;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.FilteredBlock;
@@ -222,7 +221,7 @@ public class GaService extends Service {
             startSpvAfterInit = true;
             return;
         }
-        Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() { //.13 added their own void .start() function, needs Listenable Future
+        Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
             public void onSuccess(@Nullable Object result) {
                 peerGroup.startBlockChainDownload(new DownloadProgressTracker() {
@@ -346,10 +345,10 @@ public class GaService extends Service {
             }
 
             public void beginBloomFilterCalculation(){
-                //TODO: Implement beginBloomFilterCalculation.
+                //TODO: ??
             }
             public void endBloomFilterCalculation(){
-                //TODO: Implement endBloomFilterCalculation.
+                //TODO: ??
             }
         };
         return pfProvider;
