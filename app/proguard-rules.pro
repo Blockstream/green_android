@@ -29,6 +29,8 @@
 -dontwarn org.slf4j.**
 -dontwarn sun.nio.**
 -dontwarn sun.misc.**
+-dontwarn okio.**
+-dontwarn org.bitcoinj.store.**
 
 -keepnames class ** { *; }
 -keepattributes SourceFile,LineNumberTable
