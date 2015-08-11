@@ -111,8 +111,9 @@ public class GaService extends Service {
     private int refcount = 0;
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
     private ListenableFuture<String> latestMnemonics;
+    private final Object startSPVLock = new Object();
 
-    private boolean reconnect = true, isSpvSyncing = false, startSpvAfterInit = false;
+    private boolean reconnect = true, isSpvSyncing = false, startSpvAfterInit = false, syncStarted = false;
 
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
@@ -216,6 +217,12 @@ public class GaService extends Service {
     }
 
     public void startSpvSync() {
+        synchronized (startSPVLock) {
+            if (syncStarted)
+                return;
+            else
+                syncStarted = true;
+        }
         if (isSpvSyncing) return;
         if (peerGroup == null) {  // disconnected while WiFi got up
             startSpvAfterInit = true;
