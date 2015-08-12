@@ -822,8 +822,21 @@ public class GaService extends Service {
         return signupFuture;
     }
 
+    public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode) {
+        latestAddresses = new HashMap<>();
+        final ListenableFuture<LoginData> signupFuture = client.loginRegister(signingWallet, masterPublicKey, masterChaincode, pathPublicKey, pathChaincode, deviceId);
+        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+
+        Futures.addCallback(signupFuture, handleLoginData, es);
+        return signupFuture;
+    }    
+
     public String getMnemonics() {
         return client.getMnemonics();
+    }
+
+    public WalletClient getClient() {
+        return client;
     }
 
     public ListenableFuture<LoginData> pinLogin(final PinData pinData, final String pin) {

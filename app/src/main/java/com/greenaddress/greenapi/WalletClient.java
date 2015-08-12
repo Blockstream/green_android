@@ -97,6 +97,16 @@ public class WalletClient {
         hmac.doFinal(step2, 0);
         return step2;
     }
+    
+    private static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {    	
+        HMac hmac = new HMac(new SHA512Digest());
+        hmac.init(new KeyParameter("GreenAddress.it HD wallet path".getBytes()));
+        hmac.update(chainCode, 0, chainCode.length);
+        hmac.update(publicKey, 0, publicKey.length);
+        byte[] step2 = new byte[64];
+        hmac.doFinal(step2, 0);
+        return step2;    	
+    }
 
     public String getMnemonics() {
         return mnemonics;
@@ -149,7 +159,6 @@ public class WalletClient {
         final DeterministicKey deterministicKey = HDKeyDerivation.createMasterPrivateKey(mySeed);
         final String hexMasterPublicKey = Hex.toHexString(deterministicKey.getPubKey());
         final String hexChainCode = Hex.toHexString(deterministicKey.getChainCode());
-
         mConnection.call("http://greenaddressit.com/login/register", Boolean.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object result) {
@@ -182,6 +191,43 @@ public class WalletClient {
                 asyncWamp, registrationToLogin, es), loginToSetPathPostLogin, es);
     }
 
+    
+    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode, final String device_id) {
+
+        final SettableFuture<ISigningWallet> asyncWamp = SettableFuture.create();
+        final String hexMasterPublicKey = Hex.toHexString(masterPublicKey);
+        final String hexChainCode = Hex.toHexString(masterChaincode);
+
+        mConnection.call("http://greenaddressit.com/login/register", Boolean.class, new Wamp.CallHandler() {
+            @Override
+            public void onResult(final Object result) {
+                asyncWamp.set(signingWallet);
+            }
+
+            @Override
+            public void onError(final String errorUri, final String errorDesc) {
+                asyncWamp.setException(new GAException(errorDesc));
+            }
+        }, hexMasterPublicKey, hexChainCode);
+
+
+        final AsyncFunction<ISigningWallet, LoginData> registrationToLogin = new AsyncFunction<ISigningWallet, LoginData>() {
+            @Override
+            public ListenableFuture<LoginData> apply(final ISigningWallet input) throws Exception {
+                return login(input, device_id);
+            }
+        };
+
+        final AsyncFunction<LoginData, LoginData> loginToSetPathPostLogin = new AsyncFunction<LoginData, LoginData>() {
+            @Override
+            public ListenableFuture<LoginData> apply(final LoginData input) throws Exception {                
+                return setupPathBTChip(extendedKeyToPath(pathPublicKey, pathChaincode), input);
+            }
+        };
+
+        return Futures.transform(Futures.transform(
+                asyncWamp, registrationToLogin, es), loginToSetPathPostLogin, es);
+    }    
 
     private ListenableFuture<LoginData> setupPath(final String mnemonics, final LoginData loginData) {
         final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
@@ -202,6 +248,25 @@ public class WalletClient {
         return asyncWamp;
     }
 
+    private ListenableFuture<LoginData> setupPathBTChip(final byte[] path, final LoginData loginData) {
+        final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
+        final String pathHex = Hex.toHexString(path);
+        mConnection.call("http://greenaddressit.com/login/set_gait_path", Void.class, new Wamp.CallHandler() {
+
+            @Override
+            public void onResult(final Object result) {
+                loginData.gait_path = pathHex;
+                asyncWamp.set(loginData);
+            }
+
+            @Override
+            public void onError(final String errorUri, final String errorDesc) {
+                asyncWamp.setException(new GAException(errorDesc));
+            }
+        }, pathHex);
+        return asyncWamp;
+    }    
+    
     public ListenableFuture<Map<?, ?>> getBalance(long subaccount) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/txs/get_balance", Map.class, new Wamp.CallHandler() {

@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.DisplayMetrics;
@@ -33,14 +34,18 @@ import com.greenaddress.greenbits.QrBitmap;
 
 import javax.annotation.Nullable;
 
+import nordpol.android.OnDiscoveredTagListener;
+import nordpol.android.TagDispatcher;
 
-public class ReceiveFragment extends GAFragment {
+
+public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListener {
     private static final String TAG = "ReceiveFragment";
     FutureCallback<QrBitmap> onAddress = null;
     QrBitmap address = null;
     private int curSubaccount;
     private boolean pausing = false;
     private Dialog qrDialog;
+    private TagDispatcher tagDispatcher;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -85,6 +90,8 @@ public class ReceiveFragment extends GAFragment {
         if (getUserVisibleHint()) {
             pausing = true;
         }
+        
+        tagDispatcher.disableExclusiveNfc();
     }
 
     @Override
@@ -94,6 +101,9 @@ public class ReceiveFragment extends GAFragment {
             pausing = savedInstanceState.getBoolean("pausing");
             address = savedInstanceState.getParcelable("address");
         }
+        
+        tagDispatcher = TagDispatcher.get(getActivity(), this);
+        tagDispatcher.enableExclusiveNfc();
 
         curSubaccount = getGAApp().getSharedPreferences("receive", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
@@ -278,4 +288,11 @@ public class ReceiveFragment extends GAFragment {
         receiveAddress.setText("");
         imageView.setImageBitmap(null);
     }
+    
+    @Override
+    public void tagDiscovered(Tag t) {    	
+    	Log.d("NFC", "Tag discovered " + t);
+    }
+    
+    
 }
