@@ -140,7 +140,7 @@ public class GaService extends Service {
     private String receivingId;
     private String country;
     private byte[] gaitPath;
-    private int spvBlocksLeft;
+    private int spvBlocksLeft = Integer.MAX_VALUE;
     private Map<?, ?> twoFacConfig;
     private GaObservable twoFacConfigObservable = new GaObservable();
     private String deviceId;

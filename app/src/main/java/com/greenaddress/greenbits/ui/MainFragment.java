@@ -307,8 +307,14 @@ public class MainFragment extends GAFragment implements Observer {
                         public void run() {
                             if (spvStatusDialog != null) {
                                 try {
-                                    spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
-                                            String.valueOf(getGAService().getSpvBlocksLeft()));
+                                    if(getGAService().getSpvBlocksLeft() != Integer.MAX_VALUE) {
+                                        spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
+                                                getGAService().getSpvBlocksLeft());
+                                    }
+                                    else{
+                                        spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
+                                                "Not yet connected to SPV!");
+                                    }
                                     handler.postDelayed(this, 2000);
                                 } catch (IllegalStateException e) {
                                     e.printStackTrace();
