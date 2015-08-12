@@ -8,6 +8,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -457,6 +458,26 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             startActivity(firstScreenActivity);
             finish();
         }
+    }
+
+    private Boolean exit = false;
+    @Override
+    public void onBackPressed() {
+        if (exit) {
+            finish(); // finish activity
+        } else {
+            Toast.makeText(this, "Press Back again to Exit.",
+                    Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exit = false;
+                }
+            }, 3 * 1000);
+
+        }
+
     }
 
     @Override
