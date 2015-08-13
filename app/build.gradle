@@ -37,11 +37,11 @@ android {
     productFlavors {
         production {
         }
-        testnet {
+        btctestnet {
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
         }
-        testnet_lolli {
+        btctestnet_lolli {
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
 
