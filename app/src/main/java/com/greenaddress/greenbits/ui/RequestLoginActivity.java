@@ -18,12 +18,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import nordpol.android.AndroidCard;
+import nordpol.android.OnDiscoveredTagListener;
+import nordpol.android.TagDispatcher;
+
+import com.btchip.BTChipDongle.BTChipPublicKey;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.btchip.comm.android.BTChipTransportAndroidNFC;
+import com.btchip.utils.KeyUtils;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -44,18 +51,29 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
 
-public class RequestLoginActivity extends Activity implements Observer {
+public class RequestLoginActivity extends Activity implements Observer, OnDiscoveredTagListener {
+	
+	private static final String TAG = "GANFC";
+	
+	private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
     Dialog btchipDialog = null;
+    BTChipHWWallet hwWallet = null;
+    TagDispatcher tagDispatcher;
+    Tag tag;
+    SettableFuture<BTChipTransport> transportFuture;
+    MaterialDialog nfcWaitDialog;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_login_requested);
+        
+        tag = (Tag) getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        
+        tagDispatcher = TagDispatcher.get(this, this);
 
-        getGAApp().getConnectionObservable().addObserver(this);
-
-        Tag tag = (Tag) getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        getGAApp().getConnectionObservable().addObserver(this);        
 
         if (((tag != null) && (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction()))) ||
                 (getIntent().getAction() != null &&
@@ -214,7 +232,7 @@ public class RequestLoginActivity extends Activity implements Observer {
                 edit.setVisibility(View.GONE);
                 // not TREZOR, so must be BTChip
                 if (tag != null) {
-                    showPinDialog(IsoDep.get(tag));
+                    showPinDialog();
                 } else {
                     UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null) {
@@ -235,14 +253,14 @@ public class RequestLoginActivity extends Activity implements Observer {
     }
 
     private void showPinDialog(final UsbDevice device) {
-        showPinDialog(device, null, -1);
+        showPinDialog(device, -1);
     }
 
-    private void showPinDialog(final IsoDep device) {
-        showPinDialog(null, device, -1);
+    private void showPinDialog() {
+        showPinDialog(null, -1);
     }
 
-    private void showPinDialog(final UsbDevice device, final IsoDep isoDep, final int remainingAttempts) {
+    private void showPinDialog(final UsbDevice device, final int remainingAttempts) {
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
             @Override
@@ -312,40 +330,61 @@ public class RequestLoginActivity extends Activity implements Observer {
                 btchipDialog.show();
             }
         });
-        final BTChipTransport transport;
-        if (device != null) {
-            UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-            transport = BTChipTransportAndroid.open(manager, device);
-        } else {
-            transport = new BTChipTransportAndroidNFC(isoDep);
-            transport.setDebug(true);
-        }
         Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void result) {
                 final GaService gaService = getGAService();
-
                 Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(String pin) throws Exception {
-                                SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
-                                final BTChipHWWallet hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
-                                return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
+                            	final String pinFinal = pin;
+                            	transportFuture = SettableFuture.create();
+                            	if (device != null) {
+                                    UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                                    transportFuture.set(BTChipTransportAndroid.open(manager, device));                            		
+                            	}
+                            	else {
+                            		// If the tag was already tapped, work with it
+                            		BTChipTransport transport = getTransport(tag);
+                            		if (transport != null) {
+                                        transportFuture.set(transport);                            			
+                            		}
+                            		else {
+                            			// Prompt the user to tap
+                            			nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
+                            			.title("BTChip")
+                            			.content("Please tap card")
+                            			.build();
+                            			nfcWaitDialog.show();
+                            		}
+                            	}
+                            	return Futures.transform(transportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
                                     @Nullable
                                     @Override
-                                    public ListenableFuture<LoginData> apply(@Nullable Integer input) {
-                                        if (input.intValue() == -1) {
-                                            // -1 means success
-                                            return gaService.login(hwWallet);
-                                        } else {
-                                            showPinDialog(device, isoDep, input.intValue());
-                                            return Futures.immediateFuture(null);
-                                        }
+                                    public ListenableFuture<LoginData> apply(@Nullable BTChipTransport transport) {                                    	
+                                        SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
+                                        hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pinFinal, remainingAttemptsFuture);                                        
+                                        return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
+                                            @Nullable
+                                            @Override
+                                            public ListenableFuture<LoginData> apply(@Nullable Integer input) {
+                                                if (input.intValue() == -1) {
+                                                    // -1 means success
+                                                    return gaService.login(hwWallet);
+                                                } else {
+                                                    showPinDialog(device, input.intValue());
+                                                    return Futures.immediateFuture(null);
+                                                }
+                                            }
+                                        });
+                                    	
+                                    	
                                     }
-                                });
+                            		
+                            	});
                             }
                         });
                     }
@@ -362,7 +401,36 @@ public class RequestLoginActivity extends Activity implements Observer {
                     @Override
                     public void onFailure(final Throwable t) {
                         t.printStackTrace();
-                        RequestLoginActivity.this.finish();
+                        if (t instanceof LoginFailed) {
+                        	// Attempt auto register     
+                        	try {
+                        		BTChipPublicKey masterPublicKey = hwWallet.getDongle().getWalletPublicKey("");
+                        		BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");                			
+                        		Futures.addCallback(gaService.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
+                					new FutureCallback<LoginData>() {
+                				
+                        			@Override
+                        			public void onSuccess(@Nullable final LoginData result) {  
+                        				final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
+                        				startActivity(main);
+                        				RequestLoginActivity.this.finish();                                	
+                        			}
+                                
+                        			@Override
+                        			public void onFailure(final Throwable t) {
+                        				t.printStackTrace();
+                        				RequestLoginActivity.this.finish();
+                        			}                				                				
+                        		});
+                        	}
+                        	catch(Exception e) {
+                        		e.printStackTrace();
+                        		RequestLoginActivity.this.finish();
+                        	}
+                        }
+                        else {
+                        	RequestLoginActivity.this.finish();
+                        }
                     }
                 });
             }
@@ -394,12 +462,14 @@ public class RequestLoginActivity extends Activity implements Observer {
         super.onResume();
 
         getGAApp().getConnectionObservable().addObserver(this);
+        tagDispatcher.enableExclusiveNfc();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         getGAApp().getConnectionObservable().deleteObserver(this);
+        tagDispatcher.disableExclusiveNfc();
     }
 
     @Override
@@ -413,5 +483,53 @@ public class RequestLoginActivity extends Activity implements Observer {
 
     protected GaService getGAService() {
         return getGAApp().gaService;
+    }
+    
+    private BTChipTransport getTransport(Tag t) {
+    	BTChipTransport transport = null;
+		if (t != null) {
+			AndroidCard card = null;
+			Log.d(TAG, "Start checking NFC transport");
+			try {
+				card = AndroidCard.get(t);
+				transport = new BTChipTransportAndroidNFC(card);
+                transport.setDebug(true);                            		                				
+				transport.exchange(DUMMY_COMMAND).get();
+				Log.d(TAG, "NFC transport checked");
+			}
+        	catch(Exception e) {
+        		Log.d(TAG, "Tag was lost", e);
+        		if (card != null) {
+        			try {
+        				transport.close();
+        			}
+        			catch(Exception e1) {        				
+        			}
+        			transport = null;
+        		}
+        	}                            	
+		}
+		return transport;    	
+    }
+    
+    @Override
+    public void tagDiscovered(Tag t) {    	
+    	Log.d(TAG, "tagDiscovered " + t);
+    	this.tag = t;
+    	if (transportFuture != null) {
+    		BTChipTransport transport = getTransport(t);
+    		if (transport != null) {
+    			if (transportFuture.set(transport)) {
+    				if (nfcWaitDialog != null) {
+    					RequestLoginActivity.this.runOnUiThread(new Runnable() {
+    						@Override
+    						public void run() {
+    							nfcWaitDialog.hide();    							
+    						}
+    					});    					
+    				}
+    			}
+    		}
+    	}
     }
 }

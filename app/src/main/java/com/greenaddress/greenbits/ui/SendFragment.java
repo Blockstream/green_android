@@ -162,7 +162,10 @@ public class SendFragment extends GAFragment {
                             @Override
                             public void onSuccess(@Nullable final String result) {
                                 if (fromIntentURI) {
-                                    getActivity().finish();
+                                    // FIXME If coming back from the Trusted UI, there can be a race condition
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
                                     return;
                                 }
                                 getActivity().runOnUiThread(new Runnable() {
