@@ -14,4 +14,4 @@ android:
 jdk:
     - oraclejdk7
 
-script: "./gradlew clean connectedAndroidTestTestnetDebug"
+script: "./gradlew clean connectedBtctestnetDebugAndroidTest"
