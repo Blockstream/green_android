@@ -16,7 +16,7 @@ Simply run `./gradlew build`
 
 This would build both MAINNET and TESTNET builds
 
-For TESTNET only run `./gradlew assembleTestnetDebug`
+For TESTNET only run `./gradlew assembleBtctestnetDebug`
 
 ### Acknowledgements
 
