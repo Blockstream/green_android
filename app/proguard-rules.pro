@@ -31,6 +31,10 @@
 -dontwarn sun.misc.**
 -dontwarn okio.**
 -dontwarn org.bitcoinj.store.**
+-dontwarn com.mysql.**
+-dontwarn org.h2.**
+-dontwarn org.postgresql.**
+
 
 -keepnames class ** { *; }
 -keepattributes SourceFile,LineNumberTable
