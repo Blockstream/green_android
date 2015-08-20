@@ -12,7 +12,7 @@ android {
         exclude 'lib/x86_64/linux/libscrypt.so'
     }
     compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    buildToolsVersion '23.0.0'
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
@@ -45,7 +45,7 @@ android {
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
 
-            minSdkVersion 22
+            minSdkVersion 23
         }
         regtest {
             applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
@@ -66,12 +66,12 @@ dependencies {
     compile 'org.bitcoinj:bitcoinj-core:0.13.2'
     compile 'com.fasterxml.jackson:jackson-datatype-json-org:1.8.0'
     compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
-    compile 'com.android.support:support-v4:22.1.1'
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:support-v4:23.0.0'
+    compile 'com.android.support:appcompat-v7:22.1.2'
     compile 'com.google.zxing:core:3.2.0'
-    compile 'com.afollestad:material-dialogs:0.7.4.2'
+    compile 'com.afollestad:material-dialogs:0.7.8.1'
     compile 'com.google.protobuf:protobuf-java:2.6.1'
-    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.android.support:multidex:1.0.1'
 }
 repositories {
     maven { url 'https://dl.bintray.com/drummer-aidan/maven' }
