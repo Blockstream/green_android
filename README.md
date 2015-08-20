@@ -4,9 +4,9 @@ Build status: [![Build Status](https://travis-ci.org/greenaddress/GreenBits.png?
 
 You need to have correctly installed the following
 
-- "Android SDK Platform-tools" version 23 recommended
+- "Android SDK Platform-tools" version 22 recommended
 - "Android SDK Tools" version 24.3.3 recommended
-- "Android SDK Build-tools" version 23.0.0 recommended
+- "Android SDK Build-tools" version 22.0.1 recommended
 - "Android Support Library" version 22.1.2 recommended
 - "Android Support Repository" version 17 recommended
 
