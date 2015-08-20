@@ -186,9 +186,9 @@
   <string name="txStatusLoading">Caricando</string>
     <string name="twoFacGauthTextCode">Or you can use the following code: %s. Remember to back it up!</string>
     <string name="copyAddress">Copia</string>
-  <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-  <string name="changingRequiresRestartWarnOnionTitle">Warning: Non-.onion address detected! (Restart required)</string>
-  <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
-  <string name="enterValidAddressTitle">Not a valid address!</string>
-  <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion prefered)</string>
+  <string name="trustedspv">Collegati solo ad un nodo fidato per SPV</string>
+  <string name="changingRequiresRestartWarnOnionTitle">Attenzione: Indirizzo non onion rilevato! (Restart richiesto)</string>
+  <string name="changingRequiresRestartWarnOnionText">La connessione via Tor (.onion) ai nodi permette migliore privacy e sicurezza. Se decidi di continuare, per piacere fai un restart dell\'app.</string>
+  <string name="enterValidAddressTitle">Indirizzo invalido</string>
+  <string name="enterValidAddressText">Per piacere inserisci un indirizzo valido .onion on un indirizzo IP (.onion preferibilmente)</string>
 </resources>
