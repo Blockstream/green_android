@@ -124,6 +124,7 @@ public class ConnectivityObservable extends Observable {
                     service.disconnect(false);
                     setChanged();
                     notifyObservers();
+                    System.exit(0);
                     return null;
                 }
             }, timeout, TimeUnit.MINUTES);
