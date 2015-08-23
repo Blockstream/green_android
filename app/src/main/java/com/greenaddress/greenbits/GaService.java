@@ -613,18 +613,37 @@ public class GaService extends Service {
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
-                peerGroup.setMaxConnections(1);
             } else {
+                final Node n = new Node(trusted_addr);
                 try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(trusted_addr), Network.NETWORK.getPort()));
+                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
+
             }
+            peerGroup.setMaxConnections(1);
+
         } catch (BlockStoreException e) {
             e.printStackTrace();
         }
 
+    }
+
+    class Node {
+        final String addr;
+        final int port;
+
+        Node(final String trusted_addr) {
+            final int index_port = trusted_addr.indexOf(":");
+            if (index_port != -1) {
+                addr = trusted_addr.substring(0, index_port);
+                port = Integer.parseInt(trusted_addr.substring(index_port + 1));
+            } else {
+                addr = trusted_addr;
+                port = Network.NETWORK.getPort();
+            }
+        }
     }
 
     private void setUpSPVOnion() {
@@ -646,12 +665,16 @@ public class GaService extends Service {
                 e.printStackTrace();
             }
             try {
-                PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), Network.NETWORK.getPort()) {
+                final Node n = new Node(trusted_addr);
+
+                PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
                     public InetSocketAddress toSocketAddress() {
-                        return InetSocketAddress.createUnresolved(trusted_addr, Network.NETWORK.getPort());
+                        return InetSocketAddress.createUnresolved(n.addr, n.port);
                     }
                 };
                 peerGroup.addAddress(OnionAddr);
+                peerGroup.setMaxConnections(1);
+
 
             }catch (Exception e){
                 e.printStackTrace();
