@@ -177,12 +177,25 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         trusted_peer.setText(trustedPreferences.getString("address", ""));
         trusted_peer.setSummary(trustedPreferences.getString("address", ""));
         trusted_peer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            boolean addrCorrect(final String addr) {
+
+                try {
+                    final int idx = addr.indexOf(":");
+                    if (idx != -1) {
+                        Integer.parseInt(addr.substring(idx + 1));
+                    }
+                } catch (final NumberFormatException e) {
+                    return false;
+                }
+                return addr.equals("") || addr.indexOf('.') != -1;
+            }
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
 
                 try {
-                    String newString = newValue.toString().replaceAll("\\s","");
-                    if (!newString.equals("") && newString.indexOf('.') == -1){
+                    final String newString = newValue.toString().trim().replaceAll("\\s","");
+
+                    if (!addrCorrect(newString)) {
                         new MaterialDialog.Builder(SettingsActivity.this)
                                 .title(getResources().getString(R.string.enterValidAddressTitle))
                                 .content(getResources().getString(R.string.enterValidAddressText))
