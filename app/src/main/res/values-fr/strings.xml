@@ -191,12 +191,11 @@
     <string name="txStatusExpired">Expirée</string>
     <string name="txStatusCompleted">Terminée</string>
     <string name="txStatusLoading">Envoyée</string>
-    <string name="twoFacGauthTextCode">Or you can use the following code: %s. Remember to back it up!</string>
-    <string name="copyAddress">Copy</string>
-    <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-    <string name="changingRequiresRestartWarnOnionTitle">Warning: Non-.onion address detected! (Restart required)</string>
-    <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
-    <string name="enterValidAddressTitle">Not a valid address!</string>
-    <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
-
+    <string name="twoFacGauthTextCode">Vous pouvez également utiliser le code suivant: %s. N\'oubliez pas de le sauvegarder !</string>
+    <string name="copyAddress">Copier</string>
+    <string name="trustedspv">Se connecter uniquement à un service SPV de confiance</string>
+    <string name="changingRequiresRestartWarnOnionTitle">Attention: addresses non-.onion détectées! (Redémarrage nécessaire)</string>
+    <string name="changingRequiresRestartWarnOnionText">La connexion aux noeuds à travers Tor (.onion) vous permet de bénéficier d\'une confidentialité et sécurité maximales. Si vous souhaitez continuer, merci de redémarrer l\'application pour prendre en compte toutes les modifications.</string>
+    <string name="enterValidAddressTitle">L\'adresse n\'est pas valide !</string>
+    <string name="enterValidAddressText">Merci d\'entrer une adresse .onion ou IP valide (.onion préféré)</string>
 </resources>
