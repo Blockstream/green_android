@@ -187,7 +187,8 @@ public class GaService extends Service {
             if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
                 String trusted_addr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
                 if (!trusted_addr.equals("") && trusted_addr.indexOf('.') != -1){
-                    if (trusted_addr.substring(trusted_addr.indexOf('.')).equals(".onion")) {
+                    final String trusted_lower = trusted_addr.toLowerCase();
+                    if (trusted_lower.endsWith(".onion") || trusted_lower.indexOf(".onion:" ) != -1) {
                         setUpSPVOnion();
                     }
                     else{
@@ -667,7 +668,7 @@ public class GaService extends Service {
             try {
                 final Node n = new Node(trusted_addr);
 
-                PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
+                final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
                     public InetSocketAddress toSocketAddress() {
                         return InetSocketAddress.createUnresolved(n.addr, n.port);
                     }
