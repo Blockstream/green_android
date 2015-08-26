@@ -186,7 +186,7 @@ public class GaService extends Service {
             isSpvSyncing = false;
             if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
                 String trusted_addr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
-                if (!trusted_addr.equals("") && trusted_addr.indexOf('.') != -1){
+                if (!trusted_addr.isEmpty() && trusted_addr.indexOf('.') != -1){
                     final String trusted_lower = trusted_addr.toLowerCase();
                     if (trusted_lower.endsWith(".onion") || trusted_lower.indexOf(".onion:" ) != -1) {
                         setUpSPVOnion();
@@ -235,7 +235,7 @@ public class GaService extends Service {
 
     private void toastTrustedSPV(final String announcement){
         final String trusted_peer = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
-        if(TabbedMainActivity.instance != null && !trusted_peer.equals("")){
+        if(TabbedMainActivity.instance != null && !trusted_peer.isEmpty()){
             TabbedMainActivity.instance.runOnUiThread(new Runnable()
             {
                 @Override
@@ -581,7 +581,7 @@ public class GaService extends Service {
 
             if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
                 try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
+                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.2.47"), 19000));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
@@ -610,7 +610,7 @@ public class GaService extends Service {
 
             if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
                 try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
+                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.2.47"), 19000));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }

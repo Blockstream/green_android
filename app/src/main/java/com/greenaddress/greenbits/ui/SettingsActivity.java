@@ -187,7 +187,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 } catch (final NumberFormatException e) {
                     return false;
                 }
-                return addr.equals("") || addr.indexOf('.') != -1;
+                return addr.isEmpty() || addr.indexOf('.') != -1;
             }
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
@@ -215,7 +215,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                     getGAService().setAppearanceValue("trusted_peer_addr", newString, true);
                     trusted_peer.setSummary(newString);
                     final String newLower = newString.toLowerCase();
-                    if (newString.equals("") || newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1) {
+                    if (newString.isEmpty() || newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1) {
                         new MaterialDialog.Builder(SettingsActivity.this)
                                 .title(getResources().getString(R.string.changingRequiresRestartTitle))
                                 .content(getResources().getString(R.string.changingRequiresRestartText))

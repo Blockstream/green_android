@@ -265,7 +265,7 @@ public class SendFragment extends GAFragment {
                                 public void run() {
                                     recipientEdit.setText(name);
                                     sendButton.setEnabled(true);
-                                    if (!amountStr.equals("")) {
+                                    if (!amountStr.isEmpty()) {
                                         amountEdit.setText(amountStr);
                                         convertBtcToFiat();
                                         amountEdit.setEnabled(false);
