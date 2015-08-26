@@ -201,8 +201,8 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
                     getGAService().setAppearanceValue("trusted_peer_addr", newString, true);
                     trusted_peer.setSummary(newString);
-
-                    if (newString.equals("") || newString.substring(newString.indexOf('.')).equals(".onion")){
+                    final String newLower = newString.toLowerCase();
+                    if (newString.equals("") || newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1) {
                         new MaterialDialog.Builder(SettingsActivity.this)
                                 .title(getResources().getString(R.string.changingRequiresRestartTitle))
                                 .content(getResources().getString(R.string.changingRequiresRestartText))
