@@ -15,7 +15,9 @@
     <string name="title_activity_qr_scanner">סורק ברקוד</string>
     <string name="title_activity_sign_up">הירשם</string>
     <string name="signupContinueButtonText">המשך</string>
-    <string name="signupCheckBoxText">מסכים <a href="https://greenaddress.it/en/tos/">לתנאי השימוש</a> ושמרתי את הסיסמא</string>
+    <string name="signupCheckBoxText">מסכים לתנאי השימוש ושמרתי את הסיסמא</string>
+    <string name="termsofservice"><a href="https://greenaddress.it/he/tos/">לתנאי השימוש</a></string>
+
     <string name="firstSignUpText">הירשם</string>
     <string name="firstLogInText">כניסה</string>
     <string name="bitcoinScaleUnitText">ביטקוין</string>

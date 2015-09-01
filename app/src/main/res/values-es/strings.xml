@@ -15,7 +15,8 @@
     <string name="title_activity_qr_scanner">Escaner de QR</string>
     <string name="title_activity_sign_up">Inscribirse</string>
     <string name="signupContinueButtonText">CONTINUAR</string>
-    <string name="signupCheckBoxText">He asegurado la frase clave y he leído los<a href="https://greenaddress.it/es/tos/">Términos y Condiciones de servicio</a></string>
+    <string name="signupCheckBoxText">He asegurado la frase clave y he leído los Términos y Condiciones de servicio</string>
+    <string name="termsofservice"><a href="https://greenaddress.it/es/tos/">Términos y Condiciones de servicio</a></string>
     <string name="firstSignUpText">INSCRIBIRSE</string>
     <string name="firstLogInText">INGRESAR</string>
     <string name="bitcoinScaleUnitText">Unidad</string>

@@ -87,7 +87,16 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/textColor"
+                    android:text="@string/termsofservice"
+                    android:id="@+id/textTosLink" />
 
                 <CheckBox
                     android:id="@+id/signupAcceptCheckBox"
@@ -96,6 +105,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/signupCheckBoxText" />
+
+
             </LinearLayout>
 
             <RelativeLayout

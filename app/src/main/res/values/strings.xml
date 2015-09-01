@@ -18,7 +18,9 @@
     <string name="title_activity_qr_scanner">QR Scanner</string>
     <string name="title_activity_sign_up">Sign up</string>
     <string name="signupContinueButtonText">CONTINUE</string>
-    <string name="signupCheckBoxText">I secured the passphrase and I have read the <a href="https://greenaddress.it/en/tos/">ToS</a></string>
+    <string name="signupCheckBoxText">I secured the passphrase and I have read the ToS</string>
+    <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">Terms of Service</a></string>
+
     <string name="firstSignUpText">SIGN UP</string>
     <string name="firstLogInText">LOG IN</string>
     <string name="bitcoinScaleUnitText">Unit</string>
