@@ -207,5 +207,7 @@
     <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
     <string name="enterValidAddressTitle">Not a valid address!</string>
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
+    <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
+    <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
 
 </resources>

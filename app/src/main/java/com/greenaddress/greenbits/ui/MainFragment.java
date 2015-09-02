@@ -524,6 +524,7 @@ public class MainFragment extends GAFragment implements Observer {
 
                         final GaService gaService = getGAService();
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
+                        gaService.setUpSPV();
                         if (!gaService.getIsSpvSyncing()) {
                             if (curBlock - gaService.getSpvHeight() > 1000) {
                                 if (connObservable.isWiFiUp()) {

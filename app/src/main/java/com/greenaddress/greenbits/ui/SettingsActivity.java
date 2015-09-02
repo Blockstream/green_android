@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -189,6 +190,25 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 }
                 return addr.isEmpty() || addr.indexOf('.') != -1;
             }
+
+            class SPVAsync extends AsyncTask<Object, Object, Object>{
+
+                @Override
+                protected Object doInBackground(Object[] params) {
+                    boolean alreadySyncing = false;
+                    if (getGAService().getIsSpvSyncing()) {
+                        alreadySyncing = true;
+                        getGAService().stopSPVSync();
+                    }
+                    getGAService().tearDownSPV();
+                    System.gc(); //May help save slightly lower heap size devices.
+                    getGAService().setUpSPV();
+                    if(alreadySyncing){
+                        getGAService().startSpvSync();
+                    }
+                    return null;
+                }
+            }
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
 
@@ -208,38 +228,47 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                                 .build().show();
                         return true;
                     }
-                    SharedPreferences.Editor editor = trustedPreferences.edit();
-                    editor.putString("address", newString);
-                    editor.apply();
 
-                    getGAService().setAppearanceValue("trusted_peer_addr", newString, true);
-                    trusted_peer.setSummary(newString);
                     final String newLower = newString.toLowerCase();
                     if (newString.isEmpty() || newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1) {
-                        new MaterialDialog.Builder(SettingsActivity.this)
-                                .title(getResources().getString(R.string.changingRequiresRestartTitle))
-                                .content(getResources().getString(R.string.changingRequiresRestartText))
-                                .positiveColorRes(R.color.accent)
-                                .negativeColorRes(R.color.white)
-                                .titleColorRes(R.color.white)
-                                .contentColorRes(android.R.color.white)
-                                .theme(Theme.DARK)
-                                .positiveText("OK")
-                                .build().show();
+                        SharedPreferences.Editor editor = trustedPreferences.edit();
+                        editor.putString("address", newString);
+                        editor.apply();
+
+                        getGAService().setAppearanceValue("trusted_peer_addr", newString, true);
+                        trusted_peer.setSummary(newString);
+                        new SPVAsync().execute();
                     }
                     else{
                         new MaterialDialog.Builder(SettingsActivity.this)
-                                .title(getResources().getString(R.string.changingRequiresRestartWarnOnionTitle))
-                                .content(getResources().getString(R.string.changingRequiresRestartWarnOnionText))
+                                .title(getResources().getString(R.string.changingWarnOnionTitle))
+                                .content(getResources().getString(R.string.changingWarnOnionText))
+                                .positiveText("OK")
+                                .negativeText("Cancel")
                                 .positiveColorRes(R.color.accent)
                                 .negativeColorRes(R.color.white)
                                 .titleColorRes(R.color.white)
                                 .contentColorRes(android.R.color.white)
                                 .theme(Theme.DARK)
-                                .positiveText("OK")
+                                .callback(new MaterialDialog.ButtonCallback() {
+                                    @Override
+                                    public void onNegative(MaterialDialog materialDialog) {
+
+                                    }
+
+                                    @Override
+                                    public void onPositive(MaterialDialog materialDialog) {
+                                        new SPVAsync().execute();
+                                        SharedPreferences.Editor editor = trustedPreferences.edit();
+                                        editor.putString("address", newString);
+                                        editor.apply();
+
+                                        getGAService().setAppearanceValue("trusted_peer_addr", newString, true);
+                                        trusted_peer.setSummary(newString);
+                                    }
+                                })
                                 .build().show();
                     }
-
 
                     return true;
                 } catch (final Exception e) {
