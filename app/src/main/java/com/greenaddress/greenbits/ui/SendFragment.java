@@ -284,10 +284,26 @@ public class SendFragment extends GAFragment {
         } else {
             recipientEdit.setText(URI.getAddress().toString());
             if (URI.getAmount() != null) {
-                amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
-                convertBtcToFiat();
-                amountEdit.setEnabled(false);
-                amountFiatEdit.setEnabled(false);
+                final ListenableFuture<Map<?, ?>> future = getGAService().getClient().getBalance(curSubaccount);
+                Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
+                    @Override
+                    public void onSuccess(@Nullable final Map<?, ?> result) {
+                        getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Float fiatRate = Float.valueOf((String) result.get("fiat_exchange")).floatValue();
+                                    amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
+                                    convertBtcToFiat(fiatRate);
+                                    amountEdit.setEnabled(false);
+                                    amountFiatEdit.setEnabled(false);
+                                }
+                            });
+                        }
+                    @Override
+                    public void onFailure(final Throwable t) {
+
+                    }
+                }, getGAService().es);
             }
         }
     }

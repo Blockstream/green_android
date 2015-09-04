@@ -84,7 +84,9 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         super.onCreate(savedInstanceState);
 
         boolean isBitcoinURL = getIntent().hasCategory(Intent.CATEGORY_BROWSABLE) ||
-                NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction());
+                NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()) ||
+                (getIntent().getData() != null && getIntent().getData().getScheme() != null
+                        && getIntent().getData().getScheme().equals("bitcoin"));
 
         if (isBitcoinURL) {
             if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN) || getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
