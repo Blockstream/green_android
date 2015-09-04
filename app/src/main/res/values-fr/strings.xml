@@ -199,4 +199,7 @@
     <string name="changingRequiresRestartWarnOnionText">La connexion aux noeuds à travers Tor (.onion) vous permet de bénéficier d\'une confidentialité et sécurité maximales. Si vous souhaitez continuer, merci de redémarrer l\'application pour prendre en compte toutes les modifications.</string>
     <string name="enterValidAddressTitle">L\'adresse n\'est pas valide !</string>
     <string name="enterValidAddressText">Merci d\'entrer une adresse .onion ou IP valide (.onion préféré)</string>
+    <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
+    <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
+
 </resources>
