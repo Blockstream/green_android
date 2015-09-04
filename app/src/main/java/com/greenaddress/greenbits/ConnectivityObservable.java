@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.greenaddress.greenbits.ui.TabbedMainActivity;
+
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Callable;
@@ -124,7 +126,6 @@ public class ConnectivityObservable extends Observable {
                     service.disconnect(false);
                     setChanged();
                     notifyObservers();
-                    System.exit(0);
                     return null;
                 }
             }, timeout, TimeUnit.MINUTES);

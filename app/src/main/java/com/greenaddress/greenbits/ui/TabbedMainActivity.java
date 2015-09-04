@@ -466,7 +466,6 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     public void onBackPressed() {
         if (exit) {
             finish(); // finish activity
-            System.exit(0); //Hack until we fix service model.
         } else {
             Toast.makeText(this, "Press Back again to Exit.",
                     Toast.LENGTH_SHORT).show();
