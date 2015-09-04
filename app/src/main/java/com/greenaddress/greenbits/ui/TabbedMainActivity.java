@@ -386,11 +386,14 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         this.menu = menu;
 
         final String country = getGAService().getCountry();
-        if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
-                !(country.equals("IT") || country.equals("FR"))) {
-            setIdVisible(false, R.id.action_bitboat);
-        }
 
+        // disable bitboat until http fixes + support for atm
+        //if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
+        //        !(country.equals("IT") || country.equals("FR"))) {
+            setIdVisible(false, R.id.action_bitboat);
+        //}
+
+        // FIXME: allow testnet and regtest sweep
         if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET)) {
             setIdVisible(false, R.id.action_sweep);
         }

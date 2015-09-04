@@ -135,10 +135,12 @@
             android:name=".TwoFactorActivity"
             android:label="@string/twoFacSetupHeader" >
         </activity>
+        <!--
         <activity
             android:name=".BitBoatActivity"
             android:label="@string/title_activity_bit_boat" >
         </activity>
+        -->
     </application>
 
 </manifest>

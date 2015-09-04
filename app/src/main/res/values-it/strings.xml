@@ -193,7 +193,7 @@
   <string name="changingRequiresRestartWarnOnionText">La connessione via Tor (.onion) ai nodi permette migliore privacy e sicurezza. Se decidi di continuare, per piacere fai un restart dell\'app.</string>
   <string name="enterValidAddressTitle">Indirizzo invalido</string>
   <string name="enterValidAddressText">Per piacere inserisci un indirizzo valido .onion on un indirizzo IP (.onion preferibilmente)</string>
-  <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
-  <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
+  <string name="changingWarnOnionTitle">Attenzione: Indirizzo non-.onion rilevato!</string>
+  <string name="changingWarnOnionText">La connessione via nodi Tor (.onion) permette migliore privacy e sicurezza. Se scegli di continuare premi "OK".</string>
 
 </resources>
