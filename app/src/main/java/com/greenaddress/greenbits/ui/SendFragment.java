@@ -288,8 +288,7 @@ public class SendFragment extends GAFragment {
                 Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
                     @Override
                     public void onSuccess(@Nullable final Map<?, ?> result) {
-                        if (TabbedMainActivity.instance != null) {
-                            TabbedMainActivity.instance.runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     Float fiatRate = Float.valueOf((String) result.get("fiat_exchange")).floatValue();
@@ -300,8 +299,6 @@ public class SendFragment extends GAFragment {
                                 }
                             });
                         }
-                    }
-
                     @Override
                     public void onFailure(final Throwable t) {
 
