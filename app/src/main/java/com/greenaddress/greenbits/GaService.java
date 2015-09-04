@@ -473,6 +473,12 @@ public class GaService extends Service {
         super.onCreate();
         uiHandler = new Handler();
 
+        try {
+            MnemonicCode.INSTANCE = new MnemonicCode(getAssets().open("bip39-wordlist.txt"), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         this.background_color = 0; // transparent
         connectionObservable = ((GreenAddressApplication) getApplication()).getConnectionObservable();
 
