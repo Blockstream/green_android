@@ -11,12 +11,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
@@ -39,11 +33,15 @@ import org.spongycastle.crypto.macs.HMac;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.encoders.Hex;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -134,10 +132,25 @@ public class WalletClient {
     }
 
     private String getToken() throws URISyntaxException, IOException {
-        final HttpClient client = new DefaultHttpClient();
-        final HttpResponse response = client.execute(new HttpGet(new URI(Network.GAIT_TOKEN_URL)));
-        final HttpEntity entity = response.getEntity();
-        return EntityUtils.toString(entity, "UTF-8");
+        final URL uri = new URL(Network.GAIT_TOKEN_URL);
+        BufferedReader br = null;
+        final URLConnection connection = uri.openConnection();
+        try {
+            br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            final StringBuilder sb = new StringBuilder();
+            String inputLine;
+
+            while ((inputLine = br.readLine()) != null) {
+                sb.append(inputLine);
+            }
+
+            return sb.toString();
+        } finally
+        {
+            if (br != null) {
+                try {br.close();} catch(final IOException e) {}
+            }
+        }
     }
 
     private String authSignature(final AuthReq request) throws SignatureException {
