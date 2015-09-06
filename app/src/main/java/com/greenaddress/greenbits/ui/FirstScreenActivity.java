@@ -90,6 +90,10 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         
         // Check if a TEE is supported
         final GaService gaService = getGAService();        
+        if (gaService == null) {
+            finish();
+            return;
+        }
         gaService.es.submit(new Callable<Object>() {
             @Override
             public Object call() {
