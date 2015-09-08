@@ -108,19 +108,19 @@
     <string name="noBalanceFirstLine">Comience <a href="https://bitcoin.org/es/getting-started">a usar</a> Bitcoin</string>
     <string name="noBalanceSecondLine">Dónde <a href="http://howtobuybitcoins.info/">comprar</a> Bitcoin</string>
     <string name="noBalanceThirdLine">Lea nuestras <a href="https://greenaddress.it/es/faq">Preguntas Frecuentes</a></string>
-    <string name="trezor_headline">Por favor, siga las instrucciones en su Trezor</string>
-    <string name="trezorProvidePin">Por favor, ingrese el PIN de Trezor. Busque en el dispositivo la posición de los números:</string>
-    <string name="trezorProvidePassphrase">Por favor, ingrese la frase clave de su Trezor.</string>
+    <string name="trezor_headline">Por favor, siga las instrucciones en su Hardware Wallet</string>
+    <string name="trezorProvidePin">Por favor, ingrese el PIN de Hardware Wallet. Busque en el dispositivo la posición de los números:</string>
+    <string name="trezorProvidePassphrase">Por favor, ingrese la frase clave de su Hardware Wallet.</string>
     <string name="main_account">Principal</string>
     <string name="footerAccount">Cuenta: </string>
     <string name="btchipProvidePIN">Por favor, ingrese el PIN de su BTChip:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Firmware de TREZOR desactualizado. Por favor, actualice hasta al menos la versión 1.3.0 en http://mytrezor.com/ desde su computadora.</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">Firmware de Hardware Wallet desactualizado. Por favor, actualice hasta al menos la versión 1.3.0 en http://mytrezor.com/ desde su computadora.</string>
     <string name="btchipInvalidPIN">PIN inválido. Intentos restantes: %d. Por favor, reconecte su BTChip antes de intentar nuevamente.</string>
     <string name="btchipNotSetup">BTChip no se encuentra configurado. Por favor, configúrelo usando el cliente de escritorio para poder utilizarlo.</string>
     <string name="instantConfirmation">Confirmación instantánea</string>
     <string name="pref_header_more">Mas configuraciones</string>
-    <string name="trezor_login_failed">Ingreso a TREZOR fracasado</string>
-    <string name="trezor_login_failed_details">Esto significa probablemente que usted necesita emparejar su dispositivo TREZOR con GreenAddress usando la aplicación de escritorio.</string>
+    <string name="trezor_login_failed">Ingreso a Hardware Wallet fracasado</string>
+    <string name="trezor_login_failed_details">Esto significa probablemente que usted necesita emparejar su dispositivo Hardware Wallet con GreenAddress usando la aplicación de escritorio.</string>
     <string name="more_settings">Vea la aplicación GreenAddress para mas configuraciones</string>
     <string name="more_settings_detail">La aplicación anterior permite cambiar la configuración de por ejemplo sub-cuentas, ingreso de solo lectura y mas.</string>
     <string name="improve_security_ledger">Aumente su seguridad con Ledger</string>

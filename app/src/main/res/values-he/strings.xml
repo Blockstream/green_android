@@ -121,8 +121,8 @@
     <string name="btchipNotSetup">התקן לא מוכן. אנא הגדירו אותו באמצעות תוכנת המחשב בכדי להשתמש בו.</string>
     <string name="instantConfirmation">אישור מיידי</string>
     <string name="pref_header_more">הגדרות נוספות</string>
-    <string name="trezor_login_failed">TREZOR login failed</string>
-    <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
+    <string name="trezor_login_failed">Hardware Wallet login failed</string>
+    <string name="trezor_login_failed_details">It probably means you need to pair your Hardware Wallet device with GreenAddress using the desktop app.</string>
     <string name="more_settings">See GreenAddress app for more settings</string>
     <string name="more_settings_detail">Our previous app allows changing other settings like subaccounts, watch only login, and more.</string>
     <string name="improve_security_ledger">Improve your security with Ledger</string>

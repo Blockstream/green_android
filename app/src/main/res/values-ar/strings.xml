@@ -103,19 +103,19 @@
   <string name="noBalanceFirstLine">إبدء <a href="https://bitcoin.org/ar/getting-started">مع</a> بيتكوين</string>
   <string name="noBalanceSecondLine">أين <a href="http://howtobuybitcoins.info/">يمكن</a> شرائهم</string>
   <string name="noBalanceThirdLine">اقرأ <a href="https://greenaddress.it/faq">FAQ</a></string>
-  <string name="trezor_headline">يرجى اتباع التعليمات التي تظهر على Trezor الخاص بك</string>
-  <string name="trezorProvidePin">يرجى تقديم Trezor PIN الخاص بك. انظر إلى الجهاز لمعرفة رقم الموقع :</string>
-  <string name="trezorProvidePassphrase">يرجى تقديم عبارة المرور Trezor  الخاصة بك.</string>
+  <string name="trezor_headline">يرجى اتباع التعليمات التي تظهر على Hardware Wallet الخاص بك</string>
+  <string name="trezorProvidePin">يرجى تقديم Hardware Wallet PIN الخاص بك. انظر إلى الجهاز لمعرفة رقم الموقع :</string>
+  <string name="trezorProvidePassphrase">يرجى تقديم عبارة المرور Hardware Wallet  الخاصة بك.</string>
   <string name="main_account">الصفحة الرئيسية</string>
   <string name="footerAccount">الحساب:</string>
   <string name="btchipProvidePIN">يرجى تقديم BTChip PIN الخاص بك:</string>
-  <string name="firstLoginRequestedInstructionsOldTrezor">نظام تشغيل TREZOR قديم . الرجاء الترقية إلى 1.3.0 على الأقل في http://mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
+  <string name="firstLoginRequestedInstructionsOldTrezor">نظام تشغيل Hardware Wallet قديم . الرجاء الترقية إلى 1.3.0 على الأقل في http://mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
   <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>
   <string name="btchipNotSetup">لم يتم تعيين BTChip . يرجى إعداده باستخدام عميل سطح المكتب ليكون قادرا على استخدامها.</string>
   <string name="instantConfirmation">تأكيد فوري</string>
   <string name="pref_header_more">المزيد من الإعدادات</string>
-  <string name="trezor_login_failed">فشل تسجيل دخول TREZOR</string>
-  <string name="trezor_login_failed_details">هذا يعني ربما تحتاج إلى إقران جهاز TREZOR الخاص بك مع GreenAddress باستخدام تطبيق سطح المكتب.</string>
+  <string name="trezor_login_failed">فشل تسجيل دخول Hardware Wallet</string>
+  <string name="trezor_login_failed_details">هذا يعني ربما تحتاج إلى إقران جهاز Hardware Wallet الخاص بك مع GreenAddress باستخدام تطبيق سطح المكتب.</string>
   <string name="more_settings">انظر إلى تطبيق GreenAddress لمزيد من الإعدادات</string>
   <string name="more_settings_detail">التطبيق السابق لدينا  يسمح بتغيير إعدادات أخرى مثل حسابات فرعية، ومشاهدة تسجيل الدخول فقط، وأكثر من ذلك.</string>
   <string name="improve_security_ledger">حسين الأمن الخاص بك مع ليدجر</string>

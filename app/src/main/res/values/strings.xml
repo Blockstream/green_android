@@ -118,19 +118,19 @@
     <string name="noBalanceFirstLine">Getting <a href="https://bitcoin.org/en/getting-started">started</a> with Bitcoin</string>
     <string name="noBalanceSecondLine">Where to <a href="http://howtobuybitcoins.info/">buy</a> them</string>
     <string name="noBalanceThirdLine">Read our <a href="https://greenaddress.it/faq">FAQ</a></string>
-    <string name="trezor_headline">Please follow the instructions on your Trezor</string>
-    <string name="trezorProvidePin">Please provide your Trezor PIN. Look at the device for number positions:</string>
-    <string name="trezorProvidePassphrase">Please provide your Trezor passphrase.</string>
+    <string name="trezor_headline">Please follow the instructions on your Hardware Wallet</string>
+    <string name="trezorProvidePin">Please provide your Hardware Wallet PIN. Look at the device for number positions:</string>
+    <string name="trezorProvidePassphrase">Please provide your Hardware Wallet passphrase.</string>
     <string name="main_account">Main</string>
     <string name="footerAccount">Account: </string>
     <string name="btchipProvidePIN">Please provide your BTChip PIN:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Outdated TREZOR firmware. Please upgrade to at least 1.3.0 at http://mytrezor.com/ from your computer.</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">Outdated Hardware Wallet firmware. Please upgrade to at least 1.3.0 at http://mytrezor.com/ from your computer.</string>
     <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %d. Please reconnect your BTChip before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
     <string name="instantConfirmation">Instant Confirmation</string>
     <string name="pref_header_more">More settings</string>
-    <string name="trezor_login_failed">TREZOR login failed</string>
-    <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
+    <string name="trezor_login_failed">Hardware Wallet login failed</string>
+    <string name="trezor_login_failed_details">It probably means you need to pair your Hardware Wallet device with GreenAddress using the desktop app.</string>
     <string name="more_settings">See GreenAddress app for more settings</string>
     <string name="more_settings_detail">Our previous app allows changing other settings like subaccounts, watch only login, and more.</string>
     <string name="improve_security_ledger">Improve your security with Ledger</string>

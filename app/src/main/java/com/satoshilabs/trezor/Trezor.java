@@ -65,12 +65,12 @@ public class Trezor {
 
 		while (deviceIterator.hasNext()) {
 			UsbDevice device = deviceIterator.next();
-			// check if the device is TREZOR
-			if ((device.getVendorId() != 0x534c || device.getProductId() != 0x0001) &&
+			// check if the device is TREZOR (or AvalonWallet or BWALLET) or KeepKey
+			if (((device.getVendorId() != 0x534c && device.getVendorId() != 0x2B24) || device.getProductId() != 0x0001) &&
                 (device.getVendorId() != 0x10c4 || device.getProductId() != 0xea80)) {
 				continue;
 			}
-			Log.i("Trezor.getDevice()", "TREZOR device found");
+			Log.i("Trezor.getDevice()", "Hardware Wallet device found");
 			if (device.getInterfaceCount() < 1) {
 				Log.e("Trezor.getDevice()", "Wrong interface count");
 				continue;
@@ -123,15 +123,18 @@ public class Trezor {
 		}
 		return null;
 	}
-
+        private int vendorId;
 //	private UsbDevice device;
 	private UsbDeviceConnection conn;
 	private String serial;
 	private UsbEndpoint epr, epw;
 	private TrezorGUICallback guicall;
-
+        public int getVendorId() {
+                return vendorId;
+        }
 	public Trezor(TrezorGUICallback guicall, UsbDevice device, UsbDeviceConnection conn, UsbInterface iface, UsbEndpoint epr, UsbEndpoint epw) {
 		this.guicall = guicall;
+                this.vendorId = device.getVendorId();
 //		this.device = device;
 		this.conn = conn;
 		this.epr = epr;

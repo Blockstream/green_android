@@ -114,7 +114,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                     });
                                 }
                                 new MaterialDialog.Builder(RequestLoginActivity.this)
-                                        .title("TREZOR PIN")
+                                        .title("Hardware Wallet PIN")
                                         .customView(inflatedLayout, true)
                                         .positiveText("OK")
                                         .negativeText("CANCEL")
@@ -149,7 +149,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
                                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.trezorPassphraseValue);
                                 new MaterialDialog.Builder(RequestLoginActivity.this)
-                                        .title("TREZOR passphrase")
+                                        .title("Hardware Wallet passphrase")
                                         .customView(inflatedLayout, true)
                                         .positiveText("OK")
                                         .negativeText("CANCEL")
@@ -178,8 +178,13 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
             }
             if (t != null) {
                 final List<Integer> version = t.getFirmwareVersion();
-                if (version.get(0) < 1 ||
-                        (version.get(0) == 1) && (version.get(1) < 3)) {
+                if (t.getVendorId() == 21324 && (version.get(0) < 1 ||
+                        (version.get(0) == 1) && (version.get(1) < 3))) {
+                    final TextView instructions = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
+                    instructions.setText(getResources().getString(R.string.firstLoginRequestedInstructionsOldTrezor));
+                    return;
+                }
+                if (t.getVendorId() == 11044 && (version.get(0) < 1)) {
                     final TextView instructions = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
                     instructions.setText(getResources().getString(R.string.firstLoginRequestedInstructionsOldTrezor));
                     return;
@@ -205,7 +210,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                             @Override
                             public void onFailure(final Throwable t) {
                                 if (t instanceof LoginFailed) {
-                                    // login failed - most likely TREZOR not paired
+                                    // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -230,7 +235,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
             } else {
                 final TextView edit = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
                 edit.setVisibility(View.GONE);
-                // not TREZOR, so must be BTChip
+                // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
                 if (tag != null) {
                     showPinDialog();
                 } else {

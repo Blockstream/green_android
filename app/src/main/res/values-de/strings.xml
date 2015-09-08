@@ -103,19 +103,19 @@
   <string name="noBalanceFirstLine"><a href="https://bitcoin.org/de/erste-schritte">Erste Schritte</a> mit Bitcoin</string>
   <string name="noBalanceSecondLine">Bitcoin <a href="http://howtobuybitcoins.info/">Börse finden</a></string>
   <string name="noBalanceThirdLine">Unsere <a href="https://greenaddress.it/faq">FAQ</a> lesen</string>
-  <string name="trezor_headline">Bitte den Anweisungen von ihrem Trezor folgen</string>
-  <string name="trezorProvidePin">Bitte geben sie ihren Trezor PIN ein. Schauen sie auf dem Gerät nach den Nummernstellen:</string>
-  <string name="trezorProvidePassphrase">Bitte geben sie ihren Trezor Kennwortsatz an.</string>
+  <string name="trezor_headline">Bitte den Anweisungen von ihrem Hardware Wallet folgen</string>
+  <string name="trezorProvidePin">Bitte geben sie ihren Hardware Wallet PIN ein. Schauen sie auf dem Gerät nach den Nummernstellen:</string>
+  <string name="trezorProvidePassphrase">Bitte geben sie ihren Hardware Wallet Kennwortsatz an.</string>
   <string name="main_account">Hauptkonto</string>
   <string name="footerAccount">Konto:</string>
   <string name="btchipProvidePIN">Bitte BTChip PIN eingeben:</string>
-  <string name="firstLoginRequestedInstructionsOldTrezor">Ihre TREZOR firmware ist veraltet. Bitte aktualisieren sie, von ihrem Computer aus, auf Version 1.3.0 oder neuer über http://mytrezor.com/ .</string>
+  <string name="firstLoginRequestedInstructionsOldTrezor">Ihre Hardware Wallet firmware ist veraltet. Bitte aktualisieren sie, von ihrem Computer aus, auf Version 1.3.0 oder neuer über http://mytrezor.com/ .</string>
   <string name="btchipInvalidPIN">Ungültige PIN. Verbleibende Versuche: %d. Bitte Verbinden sie ihren BTChip erneut und versuchen es nochmals.</string>
   <string name="btchipNotSetup">BTChip ist nicht eingerichtet. Bitte nehmen sie alle Einstellungen am Desktop-Client vor um ihren BTChip benutzen zu können.</string>
   <string name="instantConfirmation">Sofortige Bestätigung</string>
   <string name="pref_header_more">Weitere Einstellungen</string>
-  <string name="trezor_login_failed">TREZOR Login fehlgeschlagen</string>
-  <string name="trezor_login_failed_details">Dies bedeutet wahrscheinlich dass sie ihren TREZOR und GreenAddress über die Desktop-App koppeln müssen.</string>
+  <string name="trezor_login_failed">Hardware Wallet Login fehlgeschlagen</string>
+  <string name="trezor_login_failed_details">Dies bedeutet wahrscheinlich dass sie ihren Hardware Wallet und GreenAddress über die Desktop-App koppeln müssen.</string>
   <string name="more_settings">Siehe GreenAddress-App für weitere Einstellungen</string>
   <string name="more_settings_detail">Unsere vorhergehende App erlaubt es andere Einstellungen vorzunehmen. Zum Beispiel Unterkonten und Nur-Lesen-Login unter anderem.</string>
   <string name="improve_security_ledger">Verbessern sie ihre Sicherheit mit Ledger</string>

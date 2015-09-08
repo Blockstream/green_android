@@ -108,19 +108,19 @@
     <string name="noBalanceFirstLine"><a href="https://bitcoin.org/fr/getting-started">Débuter</a> avec Bitcoin</string>
     <string name="noBalanceSecondLine">Où <a href="http://howtobuybitcoins.info/">acheter</a> des bitcoins</string>
     <string name="noBalanceThirdLine">Lire notre<a href="https://greenaddress.it/faq">FAQ</a></string>
-    <string name="trezor_headline">Merci de suivre les instructions sur votre Trezor</string>
-    <string name="trezorProvidePin">Entrer votre code PIN, regarder votre Trezor pour avoir les positions des numéros:</string>
-    <string name="trezorProvidePassphrase">Merci d\'insérer votre phrase de restauration Trezor</string>
+    <string name="trezor_headline">Merci de suivre les instructions sur votre Hardware Wallet</string>
+    <string name="trezorProvidePin">Entrer votre code PIN, regarder votre Hardware Wallet pour avoir les positions des numéros:</string>
+    <string name="trezorProvidePassphrase">Merci d\'insérer votre phrase de restauration Hardware Wallet</string>
     <string name="main_account">Principal</string>
     <string name="footerAccount">Compte: </string>
     <string name="btchipProvidePIN">Merci de saisir votre PIN:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Firmware Trezor périmé. Merci de le mettre à jour sur http://mytrezor.com/.</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">Firmware Hardware Wallet périmé. Merci de le mettre à jour sur http://mytrezor.com/.</string>
     <string name="btchipInvalidPIN">PIN incorrect. Tentatives restantes: %d. Merci de débrancher votre wallet avant de recommencer.</string>
     <string name="btchipNotSetup">Votre BTChip n\'est pas initialisé. Merci de l\'initialiser depuis votre ordinateur.</string>
     <string name="instantConfirmation">Confirmation instantanée</string>
     <string name="pref_header_more">Réglages supplémentaires</string>
-    <string name="trezor_login_failed">TREZOR login failed</string>
-    <string name="trezor_login_failed_details">It probably means you need to pair your TREZOR device with GreenAddress using the desktop app.</string>
+    <string name="trezor_login_failed">Hardware Wallet login failed</string>
+    <string name="trezor_login_failed_details">It probably means you need to pair your Hardware Wallet device with GreenAddress using the desktop app.</string>
 
     <string name="more_settings">Reportez vous à l\'application GreenAddress pour plus de réglages</string>
     <string name="more_settings_detail">Our previous app allows changing other settings like subaccounts, watch only login, and more.</string>
