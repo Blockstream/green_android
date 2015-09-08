@@ -36,8 +36,12 @@
         android:title="@string/action_logout"
         app:showAsAction="never" />
 
-
-
+    <item
+        android:id="@+id/action_network"
+        android:orderInCategory="50"
+        android:title="@string/action_network"
+        app:showAsAction="never" />
+    
     <item
         android:id="@+id/action_share"
         android:icon="@drawable/ic_action_share"

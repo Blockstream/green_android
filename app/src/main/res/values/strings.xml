@@ -42,6 +42,8 @@
     <string name="cancel">CANCEL</string>
     <string name="attemptsLeft">%s attempts left</string>
 
+    <string name="action_network">Network monitor</string>
+
     <string-array name="twoFactorChoices">
         <item>Email</item>
         <item>SMS</item>
@@ -103,6 +105,7 @@
     <string name="txHashText">Hash</string>
     <string name="txRecipientText">Recipient</string>
     <string name="txMemoText">Memo</string>
+    <string name="title_network_monitor">Network monitor</string>
 
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">GreenBits</string>
@@ -194,5 +197,7 @@
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
     <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
+    <string name="network_monitor_peer_list_title">Peers</string>
+    <string name="network_monitor_block_list_title">Blocks</string>
 
 </resources>

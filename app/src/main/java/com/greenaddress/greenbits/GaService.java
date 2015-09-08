@@ -111,11 +111,9 @@ public class GaService extends Service {
     final private GaObservable newTxVerifiedObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
     private Handler uiHandler;
-    private int refcount = 0;
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
     private ListenableFuture<String> latestMnemonics;
     private final Object startSPVLock = new Object();
-    private TorClient tClient;
 
     private boolean reconnect = true, isSpvSyncing = false, startSpvAfterInit = false, syncStarted = false;
 
@@ -134,7 +132,9 @@ public class GaService extends Service {
     private BlockChain blockChain;
     private BlockChainListener blockChainListener;
     private PeerGroup peerGroup;
+
     private PeerFilterProvider pfProvider;
+
 
     private Map<TransactionOutPoint, Long> unspentOutpointsSubaccounts;
     private Map<TransactionOutPoint, Long> unspentOutpointsPointers;
@@ -557,6 +557,9 @@ public class GaService extends Service {
                 port = Network.NETWORK.getPort();
             }
         }
+        public String toString(){
+            return String.format("%s:%d", addr, port);
+        }
     }
 
     private enum SPVMode{
@@ -644,13 +647,23 @@ public class GaService extends Service {
         } catch (BlockStoreException e) {
             e.printStackTrace();
         }
+
     }
 
     public synchronized void stopSPVSync(){
-        peerGroup.stopAsync();
-        peerGroup.awaitTerminated();
+
+        Intent i = new Intent("PEERGROUP_UPDATED");
+        i.putExtra("peergroup", "stopSPVSync");
+        sendBroadcast(i);
+
+        if (peerGroup != null && peerGroup.isRunning()) {
+            peerGroup.stopAsync();
+            peerGroup.awaitTerminated();
+
+        }
         isSpvSyncing = false;
         syncStarted = false;
+
     }
 
     public synchronized void tearDownSPV(){
@@ -1468,5 +1481,9 @@ public class GaService extends Service {
         public void setChanged() {
             super.setChanged();
         }
+    }
+
+    public PeerGroup getPeerGroup(){
+        return this.peerGroup;
     }
 }

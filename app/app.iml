@@ -120,8 +120,8 @@
     <orderEntry type="library" exported="" name="jackson-datatype-json-org-1.8.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-asl-1.8.6" level="project" />
     <orderEntry type="library" exported="" name="leveldbjni-all-1.8" level="project" />
-    <orderEntry type="library" exported="" name="jackson-mapper-asl-1.8.6" level="project" />
     <orderEntry type="library" exported="" name="protobuf-java-2.6.1" level="project" />
+    <orderEntry type="library" exported="" name="jackson-mapper-asl-1.8.6" level="project" />
     <orderEntry type="library" exported="" name="scrypt-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="postgresql-9.1-901.jdbc4" level="project" />
