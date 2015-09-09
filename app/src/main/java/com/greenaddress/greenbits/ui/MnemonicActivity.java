@@ -191,6 +191,12 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
     private void loginAfterServiceConnected() {
         final GaService gaService = getGAService();
+        
+        if (getGAApp().getConnectionObservable().getState() == ConnectivityObservable.State.LOGGEDIN) {
+            Toast.makeText(MnemonicActivity.this, "You must first logout before signing in.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.CONNECTED) {
             Toast.makeText(MnemonicActivity.this, "Not connected", Toast.LENGTH_LONG).show();
             return;
