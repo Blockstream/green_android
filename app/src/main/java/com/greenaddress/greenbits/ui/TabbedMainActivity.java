@@ -433,10 +433,8 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         } else if (id == R.id.action_bitboat) {
             startActivity(new Intent(TabbedMainActivity.this, BitBoatActivity.class));
         } else if (id == R.id.action_exit) {
-            //FIXME logout and exit logic
             getGAService().disconnect(false);
             finish();
-            System.exit(0); //UGLY hack until we fix service model.
             return true;
         } else if (id == R.id.action_share) {
             final TextView receiveAddress = (TextView) findViewById(R.id.receiveAddressText);
