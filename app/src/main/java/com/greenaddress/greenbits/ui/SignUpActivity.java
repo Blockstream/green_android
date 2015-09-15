@@ -68,6 +68,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         final CircularProgressButton signupContinueButton = (CircularProgressButton) findViewById(R.id.signupContinueButton);
+        final TextView tos = (TextView) findViewById(R.id.textTosLink);
         final CheckBox checkBox = (CheckBox) findViewById(R.id.signupAcceptCheckBox);
         final View nfcLayout = getLayoutInflater().inflate(R.layout.dialog_nfc_write, null, false);
         nfcTagsWritten = (TextView) nfcLayout.findViewById(R.id.nfcTagsWrittenText);
@@ -81,7 +82,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             checkBox.setChecked(true);
         }
 
-        checkBox.setMovementMethod(LinkMovementMethod.getInstance());
+        tos.setMovementMethod(LinkMovementMethod.getInstance());
 
         mnemonicText = (TextView) findViewById(R.id.signupMnemonicText);
 
