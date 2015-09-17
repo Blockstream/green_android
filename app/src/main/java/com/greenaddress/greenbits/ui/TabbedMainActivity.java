@@ -385,14 +385,6 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         getMenuInflater().inflate(R.menu.main, menu);
         this.menu = menu;
 
-        final String country = getGAService().getCountry();
-
-        // disable bitboat until http fixes + support for atm
-        //if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
-        //        !(country.equals("IT") || country.equals("FR"))) {
-            setIdVisible(false, R.id.action_bitboat);
-        //}
-
         // FIXME: allow testnet and regtest sweep
         if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET)) {
             setIdVisible(false, R.id.action_sweep);
@@ -430,8 +422,6 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         } else if (id == R.id.network_unavailable) {
             Toast.makeText(TabbedMainActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
             return true;
-        } else if (id == R.id.action_bitboat) {
-            startActivity(new Intent(TabbedMainActivity.this, BitBoatActivity.class));
         } else if (id == R.id.action_exit) {
             getGAService().disconnect(false);
             finish();

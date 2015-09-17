@@ -592,7 +592,7 @@ public class GaService extends Service {
 
             if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
                 try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.2.47"), 19000));
+                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }

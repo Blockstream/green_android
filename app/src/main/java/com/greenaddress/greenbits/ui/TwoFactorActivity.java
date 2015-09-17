@@ -1,5 +1,8 @@
 package com.greenaddress.greenbits.ui;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -250,9 +253,24 @@ public class TwoFactorActivity extends ActionBarActivity {
         } catch (WriterException e) {
             e.printStackTrace();
         }
+        final String gauthCode = gauth_url.split("=")[1];
         textCode.setText(new Formatter().format(
                 getResources().getString(R.string.twoFacGauthTextCode),
-                gauth_url.split("=")[1]).toString());
+                gauthCode).toString());
+
+        textCode.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View view) {
+                        final ClipboardManager clipboard = (ClipboardManager)
+                                getSystemService(Context.CLIPBOARD_SERVICE);
+                        final ClipData clip = ClipData.newPlainText("data", gauthCode);
+                        clipboard.setPrimaryClip(clip);
+
+                        Toast.makeText(TwoFactorActivity.this, getString(R.string.warnOnPaste), Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
 
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override

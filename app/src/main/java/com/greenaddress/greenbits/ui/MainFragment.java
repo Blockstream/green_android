@@ -51,10 +51,6 @@ public class MainFragment extends GAFragment implements Observer {
     Observer wiFiObserver = null;
     boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
     MaterialDialog spvStatusDialog = null;
-    private Float maxSize = null;
-    private Float currentSize = null;
-    private Float minSize = null;
-    private Float initialY = null;
     private View rootView;
     private List<Transaction> currentList;
     private Observer curBalanceObserver;
@@ -156,7 +152,7 @@ public class MainFragment extends GAFragment implements Observer {
                 receivedOn);
     }
 
-    private void updateBalance(final Activity activity) {
+    private void updateBalance() {
         final String btcUnit = (String) getGAService().getAppearanceValue("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
@@ -341,47 +337,9 @@ public class MainFragment extends GAFragment implements Observer {
         getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
         if (getGAService().getBalanceCoin(curSubaccount) != null) {
-            updateBalance(getActivity());
+            updateBalance();
         }
 
-        final LinearLayout balanceLayout = (LinearLayout) rootView.findViewById(R.id.mainBalanceLayout);
-//        listView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                // Log.i("onTouch", " event=" + event );
-//                switch (event.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        Log.i("onTouch", "Down");
-//                        initialY = event.getY();
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        Log.i("onTouch", "Up");
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//                        float deltaY = event.getY() - initialY;
-//
-//                        if (Math.abs(deltaY) > 40) {
-//                            initialY = event.getY();
-//                            if (deltaY > 0)
-//                                currentSize = Math.min(currentSize + 1.0f, maxSize);
-//                            else
-//                                currentSize = Math.max(currentSize - 1.0f, minSize);
-//                            Log.i("onTouch", "current=" + currentSize + " minSize=" + minSize + " maxSize=" + maxSize);
-//                            balanceText.setTextSize(currentSize);
-//                            balanceBitcoinIcon.setTextSize(currentSize);
-//                        }
-//
-//
-//                        // LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) balanceLayout.getLayoutParams();
-//                        // LinearLayout.LayoutParams newLayoutParams = new LinearLayout.LayoutParams(layoutParams.width,layoutParams.height-2);
-//                        // balanceLayout.setLayoutParams(newLayoutParams);
-//                        // balanceText.setTextSize(size);
-//                        // size=size*1.1f;
-//
-//                }
-//                return false;
-//            }
-//        });
         reloadTransactions(getActivity());
 
         getGAApp().configureSubaccountsFooter(
@@ -399,7 +357,7 @@ public class MainFragment extends GAFragment implements Observer {
                         curBalanceObserver = makeBalanceObserver();
                         getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
                         reloadTransactions(getActivity());
-                        updateBalance(getActivity());
+                        updateBalance();
 
                         final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
@@ -410,21 +368,6 @@ public class MainFragment extends GAFragment implements Observer {
                 },
                 rootView.findViewById(R.id.mainNoTwoFacFooter)
         );
-
-        final String country = getGAService().getCountry();
-        if (!Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) || country == null ||
-                !(country.equals("IT") || country.equals("FR"))) {
-            rootView.findViewById(R.id.buyBtcButton).setVisibility(View.GONE);
-        } else {
-            rootView.findViewById(R.id.mainSecondParagraphText).setVisibility(View.GONE);
-
-        }
-        rootView.findViewById(R.id.buyBtcButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), BitBoatActivity.class));
-            }
-        });
 
         return rootView;
     }
@@ -438,7 +381,7 @@ public class MainFragment extends GAFragment implements Observer {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateBalance(activity);
+                            updateBalance();
                             reloadTransactions(activity, true);  // newAdapter for unit change
                         }
                     });
