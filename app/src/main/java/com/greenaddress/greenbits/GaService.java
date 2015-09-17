@@ -1150,18 +1150,22 @@ public class GaService extends Service {
         return currencyExchangePairs;
     }
 
+    public MnemonicCode getMnemonicCode() throws IOException, MnemonicException.MnemonicLengthException {
+        final InputStream closable = getApplicationContext().getAssets().open("bip39-wordlist.txt");
+        try {
+            return new MnemonicCode(closable, null);
+        } finally {
+            closable.close();
+        }
+    }
+
     public ListenableFuture<String> getMnemonicPassphrase() {
         if (latestMnemonics == null) {
             latestMnemonics = es.submit(new Callable<String>() {
                 public String call() throws IOException, MnemonicException.MnemonicLengthException {
-                    final InputStream closable = getApplicationContext().getAssets().open("bip39-wordlist.txt");
-                    try {
                         return TextUtils.join(" ",
-                                new MnemonicCode(closable, null)
+                                getMnemonicCode()
                                         .toMnemonic(getRandomSeed()));
-                    } finally {
-                        closable.close();
-                    }
                 }
             });
             getQrCodeForMnemonicPassphrase();

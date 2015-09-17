@@ -222,10 +222,10 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         @Override
                         public ListenableFuture<LoginData> apply(@Nullable String passphrase) {
                             try {
-                                byte[] entropy = new MnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
+                                byte[] entropy = gaService.getMnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
                                 String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
                                 byte[] decrypted = decryptMnemonic(entropy, normalizedPassphrase);
-                                return gaService.login(Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted)));
+                                return gaService.login(Joiner.on(" ").join(gaService.getMnemonicCode().toMnemonic(decrypted)));
                             } catch (IOException | GeneralSecurityException | MnemonicException e) {
                                 throw new RuntimeException(e);
                             }
