@@ -1,3 +1,6 @@
 [submodule "scrypt"]
 	path = app/scrypt
 	url = https://github.com/wg/scrypt.git
+[submodule "material-dialogs"]
+	path = app/material-dialogs
+	url = https://github.com/greenaddress/material-dialogs

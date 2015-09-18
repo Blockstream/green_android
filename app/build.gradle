@@ -22,10 +22,10 @@ android {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 53
+        versionCode 54
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
-        versionName "1.53"
+        versionName "1.54"
     }
     buildTypes {
         release {
@@ -73,11 +73,10 @@ dependencies {
     compile 'com.android.support:support-v4:23.0.1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.google.zxing:core:3.2.0'
-    compile 'com.afollestad:material-dialogs:0.7.9.1'
+    compile project (':app:material-dialogs:library')
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'com.android.support:multidex:1.0.1'
 }
 repositories {
-    maven { url 'https://dl.bintray.com/drummer-aidan/maven' }
     jcenter()
 }
