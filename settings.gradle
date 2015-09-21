@@ -1,1 +1,1 @@
-include ':app', ':app:material-dialogs:library'
+include ':app', ':app:material-dialogs:library',':bitcoinj:core'

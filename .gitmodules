@@ -4,3 +4,7 @@
 [submodule "material-dialogs"]
 	path = app/material-dialogs
 	url = https://github.com/greenaddress/material-dialogs
+[submodule "bitcoinj"]
+	path = bitcoinj
+	url = https://github.com/greenaddress/bitcoinj.git
+	branch = release0.13.2_core_seed_gradle
