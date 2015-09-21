@@ -10,6 +10,13 @@ You need to have correctly installed the following
 - "Android Support Library" version 22.1.2 recommended
 - "Android Support Repository" version 17 recommended
 
+## Clone the repo and init submodules
+
+`git clone https://github.com/greenaddress/GreenBits.git`
+`cd GreenBits`
+
+`git submodule update --init --recursive`
+
 ## How to build
 
 Simply run `./gradlew build`
