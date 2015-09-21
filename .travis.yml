@@ -16,3 +16,5 @@ jdk:
     - oraclejdk7
 
 script: "./gradlew clean connectedBtctestnetDebugAndroidTest"
+
+before_install: "git submodule update --init --recursive"
