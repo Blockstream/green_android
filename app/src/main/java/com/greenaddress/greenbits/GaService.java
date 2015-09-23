@@ -1352,13 +1352,13 @@ public class GaService extends Service {
                 } else {
                     throw new IllegalArgumentException("Verification: Change output missing.");
                 }
-                if (input.get(0).booleanValue() && input.get(1).booleanValue()) {
+                if (input != null & input.get(0).booleanValue() && input.get(1).booleanValue()) {
                     // Shouldn't happen really. In theory user can send money to a new change address
                     // of themselves which they've generated manually, but it's unlikely, so for
                     // simplicity we don't handle it.
                     throw new IllegalArgumentException("Verification: Cannot send to a change address.");
                 }
-                final TransactionOutput output = transaction.decoded.getOutputs().get(1 - changeIdx);
+                final TransactionOutput output = transaction.decoded.getOutputs().get(1 - Math.abs(changeIdx));
                 if (recipient != null) {
                     Address gotAddress = output.getScriptPubKey().getToAddress(Network.NETWORK);
                     if (!gotAddress.equals(recipient)) {
