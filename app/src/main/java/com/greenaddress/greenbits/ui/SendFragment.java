@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -177,6 +178,8 @@ public class SendFragment extends GAFragment {
                                         noteIcon.setText(Html.fromHtml("&#xf040"));
                                         noteText.setText("");
                                         noteText.setVisibility(View.INVISIBLE);
+                                        ViewPager mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+                                        mViewPager.setCurrentItem(1);
                                     }
                                 });
                             }
