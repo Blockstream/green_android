@@ -467,20 +467,21 @@ public class MainFragment extends GAFragment implements Observer {
 
                         final GaService gaService = getGAService();
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-                        gaService.setUpSPV();
-                        if (!gaService.getIsSpvSyncing()) {
-                            if (curBlock - gaService.getSpvHeight() > 1000) {
-                                if (connObservable.isWiFiUp()) {
-                                    gaService.startSpvSync();
+                        if (gaService.getSharedPreferences("SPV", getGAApp().getApplicationContext().MODE_PRIVATE).getBoolean("enabled", true)) {
+                            gaService.setUpSPV();
+                            if (!gaService.getIsSpvSyncing()) {
+                                if (curBlock - gaService.getSpvHeight() > 1000) {
+                                    if (connObservable.isWiFiUp()) {
+                                        gaService.startSpvSync();
+                                    } else {
+                                        // no wifi - do we want to sync?
+                                        askUserForSpvNoWiFi();
+                                    }
                                 } else {
-                                    // no wifi - do we want to sync?
-                                    askUserForSpvNoWiFi();
+                                    gaService.startSpvSync();
                                 }
-                            } else {
-                                gaService.startSpvSync();
                             }
                         }
-
                         if (resultList != null && resultList.size() > 0) {
                             listView.setVisibility(View.VISIBLE);
                             mainEmptyTransText.setVisibility(View.GONE);
