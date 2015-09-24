@@ -46,12 +46,6 @@ android {
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
         }
-        btctestnet_lolli {
-            applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
-            versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
-
-            minSdkVersion 23
-        }
         regtest {
             applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
             versionName "" + defaultConfig.getProperty("versionName") + "_regtest"
