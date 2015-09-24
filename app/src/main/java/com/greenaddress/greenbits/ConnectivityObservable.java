@@ -53,6 +53,7 @@ public class ConnectivityObservable extends Observable {
         this.state = state;
         if (state == State.LOGGEDIN) {
             this.forcedLoggedout = false;
+            this.stopTimer();
             this.disconnectTimeout = null;
             this.forcedTimeoutout = false;
         }
