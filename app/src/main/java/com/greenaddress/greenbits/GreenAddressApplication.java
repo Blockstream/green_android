@@ -60,7 +60,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        com.subgraph.orchid.crypto.PRNGFixes.apply();
+        PRNGFixes.apply();
         final Intent intent = new Intent(this, GaService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
