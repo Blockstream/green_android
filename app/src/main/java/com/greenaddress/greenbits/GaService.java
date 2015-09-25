@@ -221,6 +221,17 @@ public class GaService extends Service {
         return isSpvSyncing;
     }
 
+    public boolean getIsSpvSyncStarted(){
+        return syncStarted;
+    }
+
+    public boolean isPeerGroupRunning(){
+        if(peerGroup != null && peerGroup.isRunning()){
+            return true;
+        }
+        return false;
+    }
+
     private void toastTrustedSPV(final String announcement){
         final String trusted_peer = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
         if(TabbedMainActivity.instance != null && !trusted_peer.isEmpty()){
