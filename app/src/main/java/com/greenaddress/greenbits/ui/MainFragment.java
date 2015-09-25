@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 public class MainFragment extends GAFragment implements Observer {
     public static final int P2SH_FORTIFIED_OUT = 10;
     Observer wiFiObserver = null;
-    boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
+    boolean wiFiObserverRequired = false;
     MaterialDialog spvStatusDialog = null;
     private View rootView;
     private List<Transaction> currentList;
@@ -457,6 +457,7 @@ public class MainFragment extends GAFragment implements Observer {
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 final List resultList = (List) result.get("list");
                 final int curBlock = ((Number) result.get("cur_block")).intValue();
+                getGAService().setCurBlock(curBlock);
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -540,14 +541,14 @@ public class MainFragment extends GAFragment implements Observer {
     }
 
     private void askUserForSpvNoWiFi() {
-        if (spvWiFiDialogShown) return;
+        if (getGAService().getSpvWiFiDialogShown()) return;
         if (!getActivity().getSharedPreferences(
                 "SPV",
                 getActivity().MODE_PRIVATE
         ).getBoolean("enabled", true)) {
             return;
         }
-        spvWiFiDialogShown = true;
+        getGAService().setSpvWiFiDialogShown(true);
         new MaterialDialog.Builder(getActivity())
                 .title(getResources().getString(R.string.spvNoWiFiTitle))
                 .content(getResources().getString(R.string.spvNoWiFiText))
@@ -561,6 +562,7 @@ public class MainFragment extends GAFragment implements Observer {
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onNegative(MaterialDialog materialDialog) {
+                        getGAService().setSpvWiFiDialogShown(false);
                         makeWiFiObserver();
                     }
 

@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
@@ -46,6 +48,9 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
     public static final int REQUEST_ENABLE_2FA = 0;
     private String twoFacMethod;
+
+    Observer wiFiObserver = null;
+    boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -155,21 +160,54 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                SharedPreferences.Editor editor = spvPreferences.edit();
-                editor.putBoolean("enabled", (Boolean) newValue);
-                editor.apply();
-                trusted_peer.setEnabled((Boolean) newValue);
 
-                new MaterialDialog.Builder(SettingsActivity.this)
-                        .title(getResources().getString(R.string.changingRequiresRestartTitle))
-                        .content(getResources().getString(R.string.changingRequiresRestartText))
-                        .positiveColorRes(R.color.accent)
-                        .negativeColorRes(R.color.white)
-                        .titleColorRes(R.color.white)
-                        .contentColorRes(android.R.color.white)
-                        .theme(Theme.DARK)
-                        .positiveText("OK")
-                        .build().show();
+                class SPVButtonPrefAsync extends AsyncTask<Object, Object, Object>{
+
+                    @Override
+                    protected Object doInBackground(Object[] params) {
+                        final Boolean nowEnabled = (Boolean) newValue;
+
+                        if(nowEnabled){
+                            getGAService().setUpSPV();
+                            if(getGAService().getCurBlock() - getGAService().getSpvHeight() > 1000) {
+                                if (getGAApp().getConnectionObservable().isWiFiUp()) {
+                                    getGAService().startSpvSync();
+                                } else {
+                                    // no wifi - do we want to sync?
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            askUserForSpvNoWiFi();
+                                        }
+                                    });
+                                }
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getGAService().startSpvSync();
+                                    }
+                                });
+
+                            }
+
+                        }else{
+                            if(getGAService().isPeerGroupRunning()) {
+                                getGAService().stopSPVSync();
+                            }
+                            getGAService().tearDownSPV();
+                        }
+                        return null;
+                    }
+                }
+
+                final Boolean nowEnabled = (Boolean) newValue;
+                SharedPreferences.Editor editor = spvPreferences.edit();
+                editor.putBoolean("enabled", nowEnabled);
+                editor.apply();
+                trusted_peer.setEnabled(nowEnabled);
+
+                new SPVButtonPrefAsync().execute();
                 return true;
             }
         });
@@ -481,5 +519,56 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
     protected GaService getGAService() {
         return getGAApp().gaService;
+    }
+
+    private void askUserForSpvNoWiFi() {
+        getGAService().setSpvWiFiDialogShown(true);
+        new MaterialDialog.Builder(SettingsActivity.this)
+                .title(getResources().getString(R.string.spvNoWiFiTitle))
+                .content(getResources().getString(R.string.spvNoWiFiText))
+                .positiveText(R.string.spvNoWiFiSyncAnyway)
+                .negativeText(R.string.spvNoWifiWaitForWiFi)
+                .positiveColorRes(R.color.accent)
+                .negativeColorRes(R.color.white)
+                .titleColorRes(R.color.white)
+                .contentColorRes(android.R.color.white)
+                .theme(Theme.DARK)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onNegative(MaterialDialog materialDialog) {
+                        getGAService().setSpvWiFiDialogShown(false);
+                        makeWiFiObserver();
+                    }
+
+                    @Override
+                    public void onPositive(MaterialDialog materialDialog) {
+                        getGAService().startSpvSync();
+                    }
+                })
+                .build().show();
+    }
+
+    private void makeWiFiObserver() {
+        if (wiFiObserver != null) return;
+        final GaService gaService = getGAService();
+        final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
+        if (connObservable.isWiFiUp()) {
+            gaService.startSpvSync();
+            wiFiObserverRequired = false;
+            return;
+        }
+        wiFiObserver = new Observer() {
+            @Override
+            public void update(Observable observable, Object data) {
+                if (connObservable.isWiFiUp()) {
+                    gaService.startSpvSync();
+                    wiFiObserverRequired = false;
+                    connObservable.deleteObserver(wiFiObserver);
+                    wiFiObserver = null;
+                }
+            }
+        };
+        connObservable.addObserver(wiFiObserver);
+        wiFiObserverRequired = true;
     }
 }
