@@ -196,7 +196,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 @Override
                 protected Object doInBackground(Object[] params) {
                     boolean alreadySyncing = false;
-                    if (getGAService().getIsSpvSyncing()) {
+                    if (getGAService().isPeerGroupRunning()) {
                         alreadySyncing = true;
                         getGAService().stopSPVSync();
                     }

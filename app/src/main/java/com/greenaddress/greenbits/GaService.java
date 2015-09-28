@@ -220,6 +220,13 @@ public class GaService extends Service {
     public boolean getIsSpvSyncing() {
         return isSpvSyncing;
     }
+    
+    public boolean isPeerGroupRunning(){
+        if(peerGroup != null && peerGroup.isRunning()){
+            return true;
+        }
+        return false;
+    }
 
     private void toastTrustedSPV(final String announcement){
         final String trusted_peer = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
