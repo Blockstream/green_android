@@ -220,11 +220,7 @@ public class GaService extends Service {
     public boolean getIsSpvSyncing() {
         return isSpvSyncing;
     }
-
-    public boolean getIsSpvSyncStarted(){
-        return syncStarted;
-    }
-
+    
     public boolean isPeerGroupRunning(){
         if(peerGroup != null && peerGroup.isRunning()){
             return true;
