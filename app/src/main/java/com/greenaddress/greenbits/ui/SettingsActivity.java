@@ -451,7 +451,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-
+        testKickedOut();
         if (getGAService() == null) {
             finish();
             return;
@@ -464,6 +464,15 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     public void onPause() {
         super.onPause();
         getGAApp().getConnectionObservable().deleteObserver(this);
+    }
+
+    private void testKickedOut() {
+        if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
+            // FIXME: Should pass flag to activity so it shows it was forced logged out
+            final Intent firstScreenActivity = new Intent(SettingsActivity.this, FirstScreenActivity.class);
+            startActivity(firstScreenActivity);
+            finish();
+        }
     }
 
     protected GreenAddressApplication getGAApp() {
