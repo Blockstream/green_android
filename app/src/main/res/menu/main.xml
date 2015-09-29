@@ -31,9 +31,9 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_exit"
+        android:id="@+id/action_logout"
         android:orderInCategory="60"
-        android:title="@string/action_exit"
+        android:title="@string/action_logout"
         app:showAsAction="never" />
 
 

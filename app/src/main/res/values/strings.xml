@@ -92,7 +92,7 @@
     <string name="receiveAddressSubTitle">Address</string>
     <string name="sendPayTo">Pay to</string>
     <string name="action_sweep">Sweep</string>
-    <string name="action_exit">Exit</string>
+    <string name="action_logout">Log out</string>
     <string name="txTypeIn">Deposit</string>
     <string name="txTypeOut">Withdraw</string>
     <string name="txTypeRedeposit">Redeposit</string>

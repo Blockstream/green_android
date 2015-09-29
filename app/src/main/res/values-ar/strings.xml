@@ -78,7 +78,7 @@
   <string name="receiveAddressSubTitle">عنوان</string>
   <string name="sendPayTo">دفع إلى</string>
   <string name="action_sweep">الاجتياح</string>
-  <string name="action_exit">خروج</string>
+  <string name="action_logout">Log out</string>
   <string name="txTypeIn">الإيداع</string>
   <string name="txTypeOut">سحب</string>
   <string name="txTypeRedeposit">إعادة الإيداع</string>
