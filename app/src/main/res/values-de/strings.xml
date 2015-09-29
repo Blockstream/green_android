@@ -78,7 +78,7 @@
   <string name="receiveAddressSubTitle">Adresse</string>
   <string name="sendPayTo">Empfänger-Adresse</string>
   <string name="action_sweep">Übertragen</string>
-  <string name="action_exit">Beenden</string>
+  <string name="action_logout">Log out</string>
   <string name="txTypeIn">Eingang</string>
   <string name="txTypeOut">Ausgang</string>
   <string name="txTypeRedeposit">Rückzahlung</string>

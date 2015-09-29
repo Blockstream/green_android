@@ -422,7 +422,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         } else if (id == R.id.network_unavailable) {
             Toast.makeText(TabbedMainActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
             return true;
-        } else if (id == R.id.action_exit) {
+        } else if (id == R.id.action_logout) {
             getGAService().disconnect(false);
             finish();
             return true;
