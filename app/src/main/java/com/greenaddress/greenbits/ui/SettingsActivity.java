@@ -167,9 +167,9 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                     protected Object doInBackground(Object[] params) {
                         final Boolean nowEnabled = (Boolean) newValue;
 
-                        if(nowEnabled){
+                        if (nowEnabled) {
                             getGAService().setUpSPV();
-                            if(getGAService().getCurBlock() - getGAService().getSpvHeight() > 1000) {
+                            if (getGAService().getCurBlock() - getGAService().getSpvHeight() > 1000) {
                                 if (getGAApp().getConnectionObservable().isWiFiUp()) {
                                     getGAService().startSpvSync();
                                 } else {
@@ -181,7 +181,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                                         }
                                     });
                                 }
-                            }else{
+                            } else {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -191,8 +191,8 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
                             }
 
-                        }else{
-                            if(getGAService().isPeerGroupRunning()) {
+                        } else {
+                            if (getGAService().isPeerGroupRunning()) {
                                 getGAService().stopSPVSync();
                             }
                             getGAService().tearDownSPV();
@@ -241,7 +241,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                     getGAService().tearDownSPV();
                     System.gc(); //May help save slightly lower heap size devices.
                     getGAService().setUpSPV();
-                    if(alreadySyncing){
+                    if (alreadySyncing) {
                         getGAService().startSpvSync();
                     }
                     return null;
@@ -277,7 +277,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                         trusted_peer.setSummary(newString);
                         new SPVAsync().execute();
                     }
-                    else{
+                    else {
                         new MaterialDialog.Builder(SettingsActivity.this)
                                 .title(getResources().getString(R.string.changingWarnOnionTitle))
                                 .content(getResources().getString(R.string.changingWarnOnionText))
