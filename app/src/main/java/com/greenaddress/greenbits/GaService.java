@@ -114,6 +114,8 @@ public class GaService extends Service {
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
     private ListenableFuture<String> latestMnemonics;
     private final Object startSPVLock = new Object();
+    private int curBlock = 0;
+    private boolean spvWiFiDialogShown = false;
 
     private boolean reconnect = true, isSpvSyncing = false, startSpvAfterInit = false, syncStarted = false;
 
@@ -467,7 +469,7 @@ public class GaService extends Service {
     public void onCreate() {
         super.onCreate();
         uiHandler = new Handler();
-        
+
         try {
             MnemonicCode.INSTANCE = new MnemonicCode(getAssets().open("bip39-wordlist.txt"), null);
         } catch (IOException e) {
@@ -1485,5 +1487,21 @@ public class GaService extends Service {
 
     public PeerGroup getPeerGroup(){
         return this.peerGroup;
+    }
+    
+    public int getCurBlock(){
+        return curBlock;
+    }
+
+    public void setCurBlock(int newBlock){
+        curBlock = newBlock;
+    }
+
+    public boolean getSpvWiFiDialogShown(){
+        return spvWiFiDialogShown;
+    }
+
+    public void setSpvWiFiDialogShown(boolean shown){
+        spvWiFiDialogShown = shown;
     }
 }
