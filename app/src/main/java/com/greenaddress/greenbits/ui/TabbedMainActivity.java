@@ -442,6 +442,10 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
             return true;
         }
+        else if (id == R.id.action_network){
+            final Intent networkActivity = new Intent(TabbedMainActivity.this, NetworkMonitorActivity.class);
+            startActivity(networkActivity);
+        }
         return super.onOptionsItemSelected(item);
     }
 

@@ -180,5 +180,7 @@
   <string name="enterValidAddressText">Per piacere inserisci un indirizzo valido .onion on un indirizzo IP (.onion preferibilmente)</string>
   <string name="changingWarnOnionTitle">Attenzione: Indirizzo non-.onion rilevato!</string>
   <string name="changingWarnOnionText">La connessione via nodi Tor (.onion) permette migliore privacy e sicurezza. Se scegli di continuare premi "OK".</string>
+  <string name="title_network_monitor">Network monitor</string>
+  <string name="action_network">Network monitor</string>
 
 </resources>

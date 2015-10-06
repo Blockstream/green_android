@@ -467,7 +467,7 @@ public class MainFragment extends GAFragment implements Observer {
 
                         final GaService gaService = getGAService();
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-                        if (gaService.getSharedPreferences("SPV", getGAApp().getApplicationContext().MODE_PRIVATE).getBoolean("enabled", true)) {
+                        if (gaService.getSharedPreferences("SPV", getActivity().MODE_PRIVATE).getBoolean("enabled", true)) {
                             gaService.setUpSPV();
                             if (!gaService.getIsSpvSyncing()) {
                                 if (curBlock - gaService.getSpvHeight() > 1000) {

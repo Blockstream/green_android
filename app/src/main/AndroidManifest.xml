@@ -106,6 +106,9 @@
             android:label="@string/title_activity_qr_scanner"
             android:screenOrientation="landscape" />
         <activity
+            android:name=".NetworkMonitorActivity"
+            android:label="@string/title_network_monitor" />
+        <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity

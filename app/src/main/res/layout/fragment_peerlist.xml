@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="@android:color/black"
+        android:id="@+id/peerlistview"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="10.0sp"></ListView>
+    <TextView
+        android:id="@+id/empty_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No Peers Connected"
+        android:gravity="center"
+        android:textSize="@dimen/font_size_large"/>
+    <TextView
+        android:id="@+id/bloominfo"
+        android:layout_width="wrap_content"
+        android:layout_height="8dp"
+        android:layout_weight=".1"
+        android:gravity="center"/>
+
+
+
+
+</LinearLayout>

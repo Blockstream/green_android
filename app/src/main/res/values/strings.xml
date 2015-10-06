@@ -42,6 +42,8 @@
     <string name="cancel">CANCEL</string>
     <string name="attemptsLeft">%s attempts left</string>
 
+
+
     <string-array name="twoFactorChoices">
         <item>Email</item>
         <item>SMS</item>
@@ -103,6 +105,8 @@
     <string name="txHashText">Hash</string>
     <string name="txRecipientText">Recipient</string>
     <string name="txMemoText">Memo</string>
+    <string name="title_network_monitor">Network monitor</string>
+    <string name="action_network">Network monitor</string>
 
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">GreenBits</string>
