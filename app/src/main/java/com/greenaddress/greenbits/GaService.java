@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits;
 
+import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.subgraph.orchid.TorClient;
 
@@ -110,6 +111,7 @@ public class GaService extends Service {
     final private GaObservable newTransactionsObservable = new GaObservable();
     final private GaObservable newTxVerifiedObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
+    public SettableFuture<Void> triggerOnFullyConnected =  SettableFuture.create();
     private Handler uiHandler;
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
     private ListenableFuture<String> latestMnemonics;
@@ -425,8 +427,8 @@ public class GaService extends Service {
             @Override
             public void onSuccess(@Nullable final Void result) {
                 connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
-
                 Log.i(TAG, "Success CONNECTED callback");
+                triggerOnFullyConnected.set(null);
                 if (!connectionObservable.getIsForcedLoggedOut() && !connectionObservable.getIsForcedTimeout() && client.canLogin()) {
                     login();
                 }
@@ -985,6 +987,7 @@ public class GaService extends Service {
         }
         latestAddresses = new HashMap<>();
         client.disconnect();
+        triggerOnFullyConnected =  SettableFuture.create();
         connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
     }
 
