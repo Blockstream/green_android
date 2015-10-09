@@ -57,10 +57,12 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
 
         unregisterReceiver(uiUpdated);
         PeerGroup peerGroup = getGAService().getPeerGroup();
-        if (peerGroup != null) {
+        if (peerGroup != null && peerListener != null) {
             peerGroup.removeEventListener(peerListener);
         }
-        peerList.clear();
+        if (peerList != null) {
+            peerList.clear();
+        }
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
