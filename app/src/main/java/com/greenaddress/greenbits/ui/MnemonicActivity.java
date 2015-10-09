@@ -210,7 +210,15 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         }
 
         okButton.setIndeterminateProgressMode(true);
-        okButton.setProgress(50);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //This larger function is somehow being called in another
+                //non-main thread when cold-start NFC mnemonics login is
+                // prompted, causing this to fail.
+                okButton.setProgress(50);
+            }
+        });
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
@@ -337,6 +345,18 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 MnemonicActivity.this.login();
             }
         });
+
+
+        final TextView scanIcon = (TextView) findViewById(R.id.mnemonicScanIcon);
+        scanIcon.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(final View view) {
+                                            final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
+                                            startActivityForResult(scanner, 0);
+                                        }
+                                    }
+        );
+
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
 
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -350,19 +370,16 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             }
         });
 
-        final TextView scanIcon = (TextView) findViewById(R.id.mnemonicScanIcon);
-        scanIcon.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(final View view) {
-                                            final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
-                                            startActivityForResult(scanner, 0);
-                                        }
-                                    }
-        );
+        NFCIntentMnemonicLogin();
+
+    }
+
+    private void NFCIntentMnemonicLogin() {
+        final EditText edit = (EditText) findViewById(R.id.mnemonicText);
 
         final Intent intent = getIntent();
         if (intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-
+            edit.setTextColor(Color.WHITE);
             if (intent.getType().equals("x-gait/mnc")) {
                 // not encrypted nfc
                 InputStream closable = null;
@@ -376,9 +393,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     final GaService gaService = getGAService();
                     edit.setText(mnemonics);
 
-                    if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
-
-                        Futures.addCallback(gaService.onConnected, new FutureCallback<Void>() {
+                    if (gaService != null && gaService.onConnected != null && gaService.triggerOnFullyConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
+                        //Auxillary Future to make sure we are connected.
+                        Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
                             @Override
                             public void onSuccess(@Nullable final Void result) {
                                 login();
