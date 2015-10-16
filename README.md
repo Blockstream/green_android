@@ -13,6 +13,7 @@ You need to have correctly installed the following
 ## Clone the repo and init submodules
 
 `git clone https://github.com/greenaddress/GreenBits.git`
+
 `cd GreenBits`
 
 `git submodule update --init --recursive`
