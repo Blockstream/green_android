@@ -516,9 +516,6 @@ public class GaService extends Service {
             public void onConnectionClosed(final int code) {
                 gaDeterministicKeys = null;
 
-                stopSPVSync();
-                tearDownSPV();
-
                 if (code == 4000) {
                     connectionObservable.setForcedLoggedOut();
                 }
@@ -982,6 +979,8 @@ public class GaService extends Service {
 
     public void disconnect(final boolean reconnect) {
         this.reconnect = reconnect;
+        stopSPVSync();
+        tearDownSPV();
         for (Long key : balanceObservables.keySet()) {
             balanceObservables.get(key).deleteObservers();
         }
