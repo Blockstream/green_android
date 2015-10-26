@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -269,6 +270,25 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
                     final String newLower = newString.toLowerCase();
                     if (newString.isEmpty() || newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1) {
+
+                        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                        if (currentapiVersion >= 23 &&
+                                (newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1)) {
+                            // Certain ciphers have been deprecated in API 23+, breaking Orchid
+                            // and HS connectivity.
+                            new MaterialDialog.Builder(SettingsActivity.this)
+                                    .title(getResources().getString(R.string.enterValidAddressTitleTorDisabled))
+                                    .content(getResources().getString(R.string.enterValidAddressTextTorDisabled))
+                                    .positiveColorRes(R.color.accent)
+                                    .negativeColorRes(R.color.white)
+                                    .titleColorRes(R.color.white)
+                                    .contentColorRes(android.R.color.white)
+                                    .theme(Theme.DARK)
+                                    .positiveText("OK")
+                                    .build().show();
+                            return true;
+                        }
+
                         SharedPreferences.Editor editor = trustedPreferences.edit();
                         editor.putString("address", newString);
                         editor.apply();

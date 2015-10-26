@@ -198,5 +198,7 @@
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
     <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
+    <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
+    <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
 
 </resources>
