@@ -182,5 +182,7 @@
   <string name="changingWarnOnionText">La connessione via nodi Tor (.onion) permette migliore privacy e sicurezza. Se scegli di continuare premi "OK".</string>
   <string name="title_network_monitor">Network monitor</string>
   <string name="action_network">Network monitor</string>
+  <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
+  <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
 
 </resources>
