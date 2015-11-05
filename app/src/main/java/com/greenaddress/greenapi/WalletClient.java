@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenbits.ui.BuildConfig;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
@@ -68,6 +69,9 @@ import de.tavendo.autobahn.secure.WebSocketMessage;
 public class WalletClient {
 
     private static final String TAG = "WalletClient";
+    private static final String USER_AGENT = String.format("%s (%s;%s;%s;%s)",
+            BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME,
+            BuildConfig.FLAVOR, BuildConfig.BUILD_TYPE, android.os.Build.VERSION.SDK_INT);
 
     public final INotificationHandler m_notificationHandler;
     private final ListeningExecutorService es;
@@ -182,7 +186,7 @@ public class WalletClient {
             public void onError(final String errorUri, final String errorDesc) {
                 asyncWamp.setException(new GAException(errorDesc));
             }
-        }, hexMasterPublicKey, hexChainCode);
+        }, hexMasterPublicKey, hexChainCode, USER_AGENT);
 
 
         final AsyncFunction<DeterministicKey, LoginData> registrationToLogin = new AsyncFunction<DeterministicKey, LoginData>() {
@@ -221,7 +225,7 @@ public class WalletClient {
             public void onError(final String errorUri, final String errorDesc) {
                 asyncWamp.setException(new GAException(errorDesc));
             }
-        }, hexMasterPublicKey, hexChainCode);
+        }, hexMasterPublicKey, hexChainCode, String.format("%s HW", USER_AGENT));
 
 
         final AsyncFunction<ISigningWallet, LoginData> registrationToLogin = new AsyncFunction<ISigningWallet, LoginData>() {
@@ -655,7 +659,7 @@ public class WalletClient {
                         Log.i(TAG, "RESULT LOGIN " + errorDesc);
                         asyncWamp.setException(new GAException(errorDesc));
                     }
-                }, result, true, path_hex, device_id);
+                }, result, true, path_hex, device_id, USER_AGENT);
             }
 
             @Override
