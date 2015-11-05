@@ -72,6 +72,7 @@
                     <ImageView
                         android:layout_width="110dp"
                         android:layout_height="110dp"
+                        android:contentDescription="Google Authenticator QrCode"
                         android:id="@+id/imageView"
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="2"

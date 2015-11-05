@@ -16,6 +16,7 @@
             android:id="@+id/receiveQrImageView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:contentDescription="Bitcoin address QrCode"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="30dp"

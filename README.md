@@ -6,7 +6,7 @@ You need to have correctly installed the following
 
 - "Android SDK Platform-tools" version 23 recommended
 - "Android SDK Tools" version 24.3.3 recommended
-- "Android SDK Build-tools" version 23.0.1 (23.0.0 needed for material-dialog) recommended
+- "Android SDK Build-tools" version 23.1.0 (23.0.0 needed for material-dialog) recommended
 - "Android Support Library" version 22.1.2 recommended
 - "Android Support Repository" version 17 recommended
 

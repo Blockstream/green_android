@@ -18,6 +18,7 @@
         android:layout_centerVertical="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:contentDescription="GreenAddress Logo"
         android:src="@drawable/logo_big" />
 
     <LinearLayout

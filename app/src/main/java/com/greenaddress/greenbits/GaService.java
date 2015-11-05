@@ -577,9 +577,9 @@ public class GaService extends Service {
         System.setProperty("user.home", getApplicationContext().getFilesDir().toString());
         String trusted_addr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
         SPVMode mode;
-        if (!trusted_addr.isEmpty() && trusted_addr.indexOf('.') != -1){
+        if (!trusted_addr.isEmpty() && trusted_addr.contains(".")){
             final String trusted_lower = trusted_addr.toLowerCase();
-            if (trusted_lower.endsWith(".onion") || trusted_lower.indexOf(".onion:" ) != -1) {
+            if (trusted_lower.endsWith(".onion") || trusted_lower.contains(".onion:")) {
                 mode = SPVMode.ONION;
             }
             else{

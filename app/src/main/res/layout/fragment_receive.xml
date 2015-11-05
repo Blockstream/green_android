@@ -115,6 +115,7 @@
             android:id="@+id/receiveQrImageView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:contentDescription="Bitcoin address QrCode"
             android:layout_gravity="center" />
 
     </RelativeLayout>

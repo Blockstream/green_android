@@ -227,7 +227,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 } catch (final NumberFormatException e) {
                     return false;
                 }
-                return addr.isEmpty() || addr.indexOf('.') != -1;
+                return addr.isEmpty() || addr.contains(".");
             }
 
             class SPVAsync extends AsyncTask<Object, Object, Object>{
@@ -269,11 +269,11 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                     }
 
                     final String newLower = newString.toLowerCase();
-                    if (newString.isEmpty() || newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1) {
+                    if (newString.isEmpty() || newLower.endsWith(".onion") || newLower.contains(".onion:" )) {
 
                         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
                         if (currentapiVersion >= 23 &&
-                                (newLower.endsWith(".onion") || newLower.indexOf(".onion:" ) != -1)) {
+                                (newLower.endsWith(".onion") || newLower.contains(".onion:"))) {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
                             // and HS connectivity.
                             new MaterialDialog.Builder(SettingsActivity.this)
@@ -462,8 +462,8 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK)
-                .positiveText("OK")
-                .negativeText(R.string.cancel)
+                .positiveText(android.R.string.ok)
+                .negativeText(android.R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog materialDialog) {
