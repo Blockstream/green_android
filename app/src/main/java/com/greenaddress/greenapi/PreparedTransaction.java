@@ -26,7 +26,11 @@ public class PreparedTransaction {
             outputs.add(new Output((Map<?, ?>) obj));
         }
         this.prev_outputs = outputs;
-        this.change_pointer = values.get("change_pointer").toString();
+        if (values.get("change_pointer") != null) {
+            this.change_pointer = values.get("change_pointer").toString();
+        } else {
+            this.change_pointer = null;
+        }
         this.requires_2factor = (Boolean) values.get("requires_2factor");
         this.tx = values.get("tx").toString();
         this.decoded = new Transaction(Network.NETWORK, Hex.decode(this.tx));

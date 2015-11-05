@@ -1091,6 +1091,13 @@ public class GaService extends Service {
         return client.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
     }
 
+    public ListenableFuture<PreparedTransaction> prepareSweepAll(long subaccount, final String recipient, final Map<String, Object> privData) {
+        return client.prepareTx(
+                getBalanceCoin(subaccount).longValue(),
+                recipient, "receiver", privData
+        );
+    }
+
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction prepared, final Object twoFacData) {
         return Futures.transform(client.signTransaction(prepared, false), new AsyncFunction<List<String>, String>() {
             @Override
@@ -1337,7 +1344,7 @@ public class GaService extends Service {
         }
     }
 
-    public ListenableFuture<Coin> validateTxAndCalculateFee(final PreparedTransaction transaction, final String recipientStr, final Coin amount) {
+    public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(final PreparedTransaction transaction, final String recipientStr, final Coin amount) {
         Address recipientNonFinal = null;
         try {
             recipientNonFinal = new Address(Network.NETWORK, recipientStr);
@@ -1376,7 +1383,7 @@ public class GaService extends Service {
                 } else {
                     throw new IllegalArgumentException("Verification: Change output missing.");
                 }
-                if (input != null & input.get(0).booleanValue() && input.get(1).booleanValue()) {
+                if (input != null && input.get(0).booleanValue() && input.get(1).booleanValue()) {
                     // Shouldn't happen really. In theory user can send money to a new change address
                     // of themselves which they've generated manually, but it's unlikely, so for
                     // simplicity we don't handle it.
@@ -1389,7 +1396,7 @@ public class GaService extends Service {
                         throw new IllegalArgumentException("Verification: Invalid recipient address.");
                     }
                 }
-                if (!output.getValue().equals(amount)) {
+                if (amount != null && !output.getValue().equals(amount)) {
                     throw new IllegalArgumentException("Verification: Invalid output amount.");
                 }
 
@@ -1417,7 +1424,11 @@ public class GaService extends Service {
                 if (fee.compareTo(Coin.valueOf(kBfee)) == 1) {
                     throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB).");
                 }
-                return fee;
+                if (amount == null) {
+                    return output.getValue();
+                } else {
+                    return fee;
+                }
             }
         });
     }

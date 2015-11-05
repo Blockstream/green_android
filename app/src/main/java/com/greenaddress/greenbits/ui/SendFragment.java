@@ -27,9 +27,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,6 +79,7 @@ public class SendFragment extends GAFragment {
     private CheckBox instantConfirmationCheckbox;
     private TextView noteIcon;
     private Button sendButton;
+    private Switch maxButton;
     private TextView scanIcon;
     private Map<?, ?> payreqData = null;
     private boolean fromIntentURI = false;
@@ -175,6 +178,8 @@ public class SendFragment extends GAFragment {
                                         // FIXME: Add notification with "Transaction sent"?
                                         amountEdit.setText("");
                                         recipientEdit.setText("");
+                                        maxButton.setChecked(false);
+
                                         noteIcon.setText(Html.fromHtml("&#xf040"));
                                         noteText.setText("");
                                         noteText.setVisibility(View.INVISIBLE);
@@ -323,6 +328,7 @@ public class SendFragment extends GAFragment {
         curSubaccount = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
         sendButton = (Button) rootView.findViewById(R.id.sendSendButton);
+        maxButton = (Switch) rootView.findViewById(R.id.sendMaxButton);
         noteText = (EditText) rootView.findViewById(R.id.sendToNoteText);
         noteIcon = (TextView) rootView.findViewById(R.id.sendToNoteIcon);
         instantConfirmationCheckbox = (CheckBox) rootView.findViewById(R.id.instantConfirmationCheckBox);
@@ -414,7 +420,20 @@ public class SendFragment extends GAFragment {
                         message = getActivity().getString(R.string.invalidAmount);
                     }
                     if (message == null) {
-                        prepared = getGAService().prepareTx(amount, recipient, privData);
+                        if (maxButton.isChecked()) {
+                            // prepareSweepAll again in case some fee estimation
+                            // has changed while user was considering the amount,
+                            // and to make sure the same algorithm of fee calcualation
+                            // is used - 'recipient' fee as opossed to 'sender' fee.
+                            // This means the real amount can be different from
+                            // the one shown in the edit box, but this way is
+                            // safer. If we attempted to send the calculated amount
+                            // instead with 'sender' fee algorithm, the transaction
+                            // could fail due to differences in calculations.
+                            prepared = getGAService().prepareSweepAll(curSubaccount, recipient, privData);
+                        } else {
+                            prepared = getGAService().prepareTx(amount, recipient, privData);
+                        }
                     } else {
                         prepared = null;
                     }
@@ -429,7 +448,8 @@ public class SendFragment extends GAFragment {
                                 @Override
                                 public void onSuccess(@Nullable final PreparedTransaction result) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    Futures.addCallback(getGAService().validateTxAndCalculateFee(result, recipient, amount),
+                                    Futures.addCallback(getGAService().validateTxAndCalculateFeeOrAmount(
+                                                    result, recipient, maxButton.isChecked() ? null : amount),
                                             new FutureCallback<Coin>() {
                                                 @Override
                                                 public void onSuccess(@Nullable final Coin fee) {
@@ -439,16 +459,25 @@ public class SendFragment extends GAFragment {
                                                         @Override
                                                         public void run() {
                                                             sendButton.setEnabled(true);
+                                                            final Coin dialogAmount, dialogFee;
+                                                            if (maxButton.isChecked()) {
+                                                                // 'fee' in reality is the sent amount in case passed amount=null
+                                                                dialogAmount = fee;
+                                                                dialogFee = getGAService().getBalanceCoin(curSubaccount).subtract(fee);
+                                                            } else {
+                                                                dialogAmount = amount;
+                                                                dialogFee = fee;
+                                                            }
                                                             if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
                                                                 final List<String> enabledTwoFac =
                                                                         getGAService().getEnabledTwoFacNames(true);
                                                                 if (enabledTwoFac.size() > 1) {
-                                                                    show2FAChoices(fee, amount, recipient, result);
+                                                                    show2FAChoices(dialogFee, dialogAmount, recipient, result);
                                                                 } else {
-                                                                    showTransactionSummary(enabledTwoFac.get(0), fee, amount, recipient, result);
+                                                                    showTransactionSummary(enabledTwoFac.get(0), dialogFee, dialogAmount, recipient, result);
                                                                 }
                                                             } else {
-                                                                showTransactionSummary(null, fee, amount, recipient, result);
+                                                                showTransactionSummary(null, dialogFee, dialogAmount, recipient, result);
                                                             }
                                                         }
                                                     });
@@ -473,6 +502,75 @@ public class SendFragment extends GAFragment {
 
                 if (message != null) {
                     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        maxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            private void onIsChecked() {
+                if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
+                    Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+                    maxButton.setChecked(false);
+                    return;
+                }
+                final String recipient = recipientEdit.getText().toString();
+                if (recipient.isEmpty()) {
+                    Toast.makeText(getActivity(), "You need to provide a recipient", Toast.LENGTH_LONG).show();
+                    maxButton.setChecked(false);
+                    return;
+                }
+                final GaService gaService = getGAService();
+                final boolean validAddress = gaService.isValidAddress(recipient);
+                String message = null;
+                if (!validAddress) {
+                    message = getActivity().getString(R.string.invalidAddress);
+                }
+                if (message != null) {
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                    maxButton.setChecked(false);
+                } else {
+                    amountEdit.setEnabled(false);
+                    amountFiatEdit.setEnabled(false);
+                    ListenableFuture<PreparedTransaction> prepared =
+                            gaService.prepareSweepAll(curSubaccount, recipient, new HashMap<String, Object>());
+                    Futures.addCallback(prepared,
+                            new FutureCallback<PreparedTransaction>() {
+                                @Override
+                                public void onSuccess(@Nullable final PreparedTransaction result) {
+                                    Futures.addCallback(getGAService().validateTxAndCalculateFeeOrAmount(result, recipient, null),
+                                            new FutureCallback<Coin>() {
+                                                @Override
+                                                public void onSuccess(@Nullable final Coin amount) {
+                                                    amountEdit.setText(bitcoinFormat.noCode().format(amount));
+                                                }
+
+                                                @Override
+                                                public void onFailure(Throwable t) {
+                                                    sendButton.setEnabled(true);
+                                                    t.printStackTrace();
+                                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onFailure(final Throwable t) {
+                                    sendButton.setEnabled(true);
+                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCheckedChanged(CompoundButton v, boolean isChecked) {
+                if (isChecked) {
+                    onIsChecked();
+                } else {
+                    amountEdit.setText("");
+                    amountEdit.setEnabled(true);
+                    amountFiatEdit.setEnabled(true);
                 }
             }
         });

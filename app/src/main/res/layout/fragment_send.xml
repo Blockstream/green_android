@@ -113,55 +113,67 @@
                 android:textSize="24sp" />
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
 
-                <RelativeLayout
-                    android:layout_width="fill_parent"
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:layout_weight="1">
-
-                    <LinearLayout
-                        android:id="@+id/sendBitcoinGroup"
+                    <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp">
+                        android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/sendBitcoinScaleText"
+                        <LinearLayout
+                            android:id="@+id/sendBitcoinGroup"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/accent" />
+                            android:padding="16dp">
 
-                        <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                            android:id="@+id/sendBitcoinUnitText"
+                            <TextView
+                                android:id="@+id/sendBitcoinScaleText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/accent" />
+
+                            <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                                android:id="@+id/sendBitcoinUnitText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:gravity="center"
+                                android:text="&#xf15a;"
+                                android:textColor="@color/accent"
+                                android:textSize="24sp" />
+
+                        </LinearLayout>
+
+                        <com.greenaddress.greenbits.ui.FontFitEditText
+
+                            android:id="@+id/sendAmountEditText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:gravity="center"
-                            android:text="&#xf15a;"
-                            android:textColor="@color/accent"
+                            android:layout_gravity="center_horizontal|center_vertical"
+                            android:layout_toRightOf="@id/sendBitcoinGroup"
+                            android:textColor="@color/textColor"
+                            android:gravity="end|center_vertical"
+                            android:hint="0.00"
+                            android:inputType="numberDecimal"
                             android:textSize="24sp" />
 
-                    </LinearLayout>
-
-                    <com.greenaddress.greenbits.ui.FontFitEditText
-
-                        android:id="@+id/sendAmountEditText"
-                        android:layout_width="match_parent"
+                    </RelativeLayout>
+                    <Switch
+                        android:id="@+id/sendMaxButton"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal|center_vertical"
-                        android:layout_toRightOf="@id/sendBitcoinGroup"
-                        android:textColor="@color/textColor"
-                        android:gravity="end|center_vertical"
-                        android:hint="0.00"
-                        android:inputType="numberDecimal"
-                        android:textSize="24sp" />
-
-
-                </RelativeLayout>
+                        android:textOff="MAX"
+                        android:textOn="MAX"
+                        android:layout_gravity="right"/>
+                </LinearLayout>
 
                 <View
                     android:layout_width="16dp"
