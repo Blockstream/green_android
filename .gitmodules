@@ -7,4 +7,4 @@
 [submodule "bitcoinj"]
 	path = bitcoinj
 	url = https://github.com/greenaddress/bitcoinj.git
-	branch = release0.13.2_core_seed_gradle
+	branch = release-0.13
