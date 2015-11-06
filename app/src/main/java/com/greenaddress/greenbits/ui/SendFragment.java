@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
@@ -332,6 +333,11 @@ public class SendFragment extends GAFragment {
         noteText = (EditText) rootView.findViewById(R.id.sendToNoteText);
         noteIcon = (TextView) rootView.findViewById(R.id.sendToNoteIcon);
         instantConfirmationCheckbox = (CheckBox) rootView.findViewById(R.id.instantConfirmationCheckBox);
+
+        if (Build.VERSION.SDK_INT < (new Build.VERSION_CODES()).LOLLIPOP) {
+            // pre-Material Design the label was already a part of the switch
+            rootView.findViewById(R.id.sendMaxLabel).setVisibility(View.GONE);
+        }
 
         amountEdit = (EditText) rootView.findViewById(R.id.sendAmountEditText);
         amountFiatEdit = (EditText) rootView.findViewById(R.id.sendAmountFiatEditText);

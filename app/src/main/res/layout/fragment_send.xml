@@ -166,13 +166,26 @@
                             android:textSize="24sp" />
 
                     </RelativeLayout>
-                    <Switch
-                        android:id="@+id/sendMaxButton"
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textOff="MAX"
-                        android:textOn="MAX"
-                        android:layout_gravity="right"/>
+                        android:orientation="horizontal"
+                        android:layout_gravity="right">
+                        <TextView
+                            android:id="@+id/sendMaxLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="MAX"
+                            />
+                        <Switch
+                            android:id="@+id/sendMaxButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textOff="MAX"
+                            android:textOn="MAX"
+                            />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <View
