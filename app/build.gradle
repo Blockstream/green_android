@@ -17,7 +17,7 @@ android {
         exclude 'META-INF/services/java.sql.Driver'
     }
     compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
