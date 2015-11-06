@@ -69,6 +69,7 @@ dependencies {
     compile project (':app:material-dialogs:library'), project (':bitcoinj'), project (':bitcoinj:core')
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
 }
 repositories {
     jcenter()
