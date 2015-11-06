@@ -7,7 +7,7 @@
 
     <string name="sendToText">A</string>
     <string name="sendAmountText">Montant</string>
-    <string name="sendSendButton">Envoyer</string>
+    <string name="sendSendButton">Valider &amp; Envoyer</string>
     <string name="title_activity_pin">Pin</string>
     <string name="pinSaveText">Sauvergarder</string>
     <string name="pinLoginText">Se connecter</string>

@@ -6,7 +6,7 @@
   <string name="title_activity_receive">Ricevi</string>
   <string name="sendToText">A</string>
   <string name="sendAmountText">Ammontare</string>
-  <string name="sendSendButton">INVIA</string>
+  <string name="sendSendButton">VERIFICA &amp; INVIA</string>
   <string name="title_activity_pin">Pin</string>
   <string name="pinSaveText">Salva</string>
   <string name="pinLoginText">Accedi</string>

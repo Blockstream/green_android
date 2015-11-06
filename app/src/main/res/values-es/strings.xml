@@ -7,7 +7,7 @@
     <string name="title_activity_receive">Recibir</string>
     <string name="sendToText">Destinatario</string>
     <string name="sendAmountText">Monto</string>
-    <string name="sendSendButton">Enviar</string>
+    <string name="sendSendButton">Verificar &amp; Enviar</string>
     <string name="title_activity_pin">Pin</string>
     <string name="pinSaveText">Guardar</string>
     <string name="pinLoginText">Ingresar</string>

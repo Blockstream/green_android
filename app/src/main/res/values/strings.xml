@@ -9,7 +9,7 @@
     <string name="title_activity_receive">Receive</string>
     <string name="sendToText">To</string>
     <string name="sendAmountText">Amount</string>
-    <string name="sendSendButton">Send</string>
+    <string name="sendSendButton">Review &amp; Send</string>
     <string name="title_activity_pin">Pin</string>
     <string name="pinSaveText">Save</string>
     <string name="pinLoginText">Login</string>
