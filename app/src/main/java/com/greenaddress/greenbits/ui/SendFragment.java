@@ -395,7 +395,9 @@ public class SendFragment extends GAFragment {
                 final GaService gaService = getGAService();
                 final boolean validAddress = gaService.isValidAddress(recipient);
 
-                final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0);
+                final boolean validAmount =
+                        !(amount.compareTo(Coin.ZERO) <= 0) ||
+                        maxButton.isChecked();
                 String message = null;
 
                 Map<String, Object> privData = null;
@@ -514,65 +516,12 @@ public class SendFragment extends GAFragment {
 
         maxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-            private void onIsChecked() {
-                if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                    Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
-                    maxButton.setChecked(false);
-                    return;
-                }
-                final String recipient = recipientEdit.getText().toString();
-                if (recipient.isEmpty()) {
-                    Toast.makeText(getActivity(), "You need to provide a recipient", Toast.LENGTH_LONG).show();
-                    maxButton.setChecked(false);
-                    return;
-                }
-                final GaService gaService = getGAService();
-                final boolean validAddress = gaService.isValidAddress(recipient);
-                String message = null;
-                if (!validAddress) {
-                    message = getActivity().getString(R.string.invalidAddress);
-                }
-                if (message != null) {
-                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-                    maxButton.setChecked(false);
-                } else {
-                    amountEdit.setEnabled(false);
-                    amountFiatEdit.setEnabled(false);
-                    ListenableFuture<PreparedTransaction> prepared =
-                            gaService.prepareSweepAll(curSubaccount, recipient, new HashMap<String, Object>());
-                    Futures.addCallback(prepared,
-                            new FutureCallback<PreparedTransaction>() {
-                                @Override
-                                public void onSuccess(@Nullable final PreparedTransaction result) {
-                                    Futures.addCallback(getGAService().validateTxAndCalculateFeeOrAmount(result, recipient, null),
-                                            new FutureCallback<Coin>() {
-                                                @Override
-                                                public void onSuccess(@Nullable final Coin amount) {
-                                                    amountEdit.setText(bitcoinFormat.noCode().format(amount));
-                                                }
-
-                                                @Override
-                                                public void onFailure(Throwable t) {
-                                                    sendButton.setEnabled(true);
-                                                    t.printStackTrace();
-                                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-                                }
-
-                                @Override
-                                public void onFailure(final Throwable t) {
-                                    sendButton.setEnabled(true);
-                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            });
-                }
-            }
-
             @Override
             public void onCheckedChanged(CompoundButton v, boolean isChecked) {
                 if (isChecked) {
-                    onIsChecked();
+                    amountEdit.setEnabled(false);
+                    amountFiatEdit.setEnabled(false);
+                    amountEdit.setText("MAX");
                 } else {
                     amountEdit.setText("");
                     amountEdit.setEnabled(true);
@@ -1007,7 +956,11 @@ public class SendFragment extends GAFragment {
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             amountFiatEdit.setText(fiatValue.toPlainString());
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            amountFiatEdit.setText("");
+            if (amountEdit.getText().toString().equals("MAX")) {
+                amountFiatEdit.setText("MAX");
+            } else {
+                amountFiatEdit.setText("");
+            }
         }
         converting = false;
     }
