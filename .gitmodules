@@ -4,6 +4,7 @@
 [submodule "material-dialogs"]
 	path = app/material-dialogs
 	url = https://github.com/greenaddress/material-dialogs
+	branch = v0.8.5.0_ga
 [submodule "bitcoinj"]
 	path = bitcoinj
 	url = https://github.com/greenaddress/bitcoinj.git

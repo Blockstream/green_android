@@ -6,8 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/bitcoinj/bitcoinj.iml" filepath="$PROJECT_DIR$/bitcoinj/bitcoinj.iml" />
       <module fileurl="file://$PROJECT_DIR$/bitcoinj/core/core.iml" filepath="$PROJECT_DIR$/bitcoinj/core/core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/material-dialogs/library/library.iml" filepath="$PROJECT_DIR$/app/material-dialogs/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/material-dialogs/material-dialogs.iml" filepath="$PROJECT_DIR$/app/material-dialogs/material-dialogs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/material-dialogs/core/material-dialogs-core.iml" filepath="$PROJECT_DIR$/app/material-dialogs/core/material-dialogs-core.iml" />
     </modules>
   </component>
 </project>
