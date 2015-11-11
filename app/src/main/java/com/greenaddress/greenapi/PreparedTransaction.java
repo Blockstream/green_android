@@ -27,12 +27,12 @@ public class PreparedTransaction {
     public final String twoOfThreeBackupChaincode;
     public final String twoOfThreeBackupPubkey;
 
-    public static class PTData {
+    public static class PreparedData {
 
-        public PTData(final Map<?, ?> values,
-                      final Map<String, ?> privateData,
-                      final ArrayList subaccounts,
-                      final OkHttpClient client)
+        public PreparedData(final Map<?, ?> values,
+                            final Map<String, ?> privateData,
+                            final ArrayList subaccounts,
+                            final OkHttpClient client)
 
         {
             this.values = values;
@@ -48,7 +48,7 @@ public class PreparedTransaction {
 
     }
 
-    public PreparedTransaction(final PTData pte) {
+    public PreparedTransaction(final PreparedData pte) {
 
         String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
         if (pte.privateData != null && pte.privateData.get("subaccount") != null && !pte.privateData.get("subaccount").equals(0)) {

@@ -882,11 +882,11 @@ public class WalletClient {
     }
 
     public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {
-        final SettableFuture<PreparedTransaction.PTData> asyncWamp = SettableFuture.create();
+        final SettableFuture<PreparedTransaction.PreparedData> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/vault/prepare_tx", Map.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object prepared) {
-                asyncWamp.set(new PreparedTransaction.PTData((Map)prepared, privateData, loginData.subaccounts, httpClient));
+                asyncWamp.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, loginData.subaccounts, httpClient));
             }
 
             @Override
@@ -898,10 +898,10 @@ public class WalletClient {
         return processPreparedTx(asyncWamp);
     }
 
-    private ListenableFuture<PreparedTransaction> processPreparedTx(final ListenableFuture<PreparedTransaction.PTData> pt) {
-        return Futures.transform(pt, new Function<PreparedTransaction.PTData, PreparedTransaction>() {
+    private ListenableFuture<PreparedTransaction> processPreparedTx(final ListenableFuture<PreparedTransaction.PreparedData> pt) {
+        return Futures.transform(pt, new Function<PreparedTransaction.PreparedData, PreparedTransaction>() {
             @Override
-            public PreparedTransaction apply(final PreparedTransaction.PTData input) {
+            public PreparedTransaction apply(final PreparedTransaction.PreparedData input) {
                 return new PreparedTransaction(input);
             }
         }, es);
@@ -925,7 +925,7 @@ public class WalletClient {
 
     public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, Map<?, ?> data, final Map<String, Object> privateData) {
 
-        final SettableFuture<PreparedTransaction.PTData> asyncWamp = SettableFuture.create();
+        final SettableFuture<PreparedTransaction.PreparedData> asyncWamp = SettableFuture.create();
 
 
         final Map dataClone = new HashMap<>();
@@ -942,7 +942,7 @@ public class WalletClient {
         mConnection.call("http://greenaddressit.com/vault/prepare_payreq", Map.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object prepared) {
-                asyncWamp.set(new PreparedTransaction.PTData((Map) prepared, privateData, loginData.subaccounts, httpClient));
+                asyncWamp.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, loginData.subaccounts, httpClient));
             }
 
             @Override
