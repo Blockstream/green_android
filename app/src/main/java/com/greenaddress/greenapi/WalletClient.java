@@ -39,7 +39,6 @@ import org.spongycastle.util.encoders.Hex;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -132,13 +131,13 @@ public class WalletClient {
         return hdWallet != null;
     }
 
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient httpClient = new OkHttpClient();
 
     private String getToken() throws IOException {
         final Request request = new Request.Builder()
                 .url(Network.GAIT_TOKEN_URL)
                 .build();
-        return client.newCall(request).execute().body().string();
+        return httpClient.newCall(request).execute().body().string();
     }
 
     private String authSignature(final AuthReq request) throws SignatureException {
@@ -536,7 +535,7 @@ public class WalletClient {
             }
             bytes = bytes_pad;
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             int b1 = bytes[i * 2];
             if (b1 < 0) {
                 b1 = 256 + b1;
@@ -882,29 +881,12 @@ public class WalletClient {
         }, es);
     }
 
-    private PreparedTransaction createTx(Map<?, ?> prepared, Map<String, ?> privateData) {
-        String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
-        if (privateData != null && privateData.get("subaccount") != null && !privateData.get("subaccount").equals(0)) {
-            for (Object subaccount : loginData.subaccounts) {
-                Map<String, ?> subaccountMap = (Map) subaccount;
-                if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(privateData.get("subaccount"))) {
-                    twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
-                    twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
-                }
-            }
-        }
-        return new PreparedTransaction(prepared,
-                (privateData == null || privateData.get("subaccount") == null) ?
-                        0 : (Integer) privateData.get("subaccount"),
-                twoOfThreeBackupChaincode, twoOfThreeBackupPubkey);
-    }
-
     public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {
-        final SettableFuture<PreparedTransaction> asyncWamp = SettableFuture.create();
+        final SettableFuture<PreparedTransaction.PTData> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/vault/prepare_tx", Map.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object prepared) {
-                asyncWamp.set(createTx((Map) prepared, privateData));
+                asyncWamp.set(new PreparedTransaction.PTData((Map)prepared, privateData, loginData.subaccounts, httpClient));
             }
 
             @Override
@@ -912,10 +894,20 @@ public class WalletClient {
                 asyncWamp.setException(new GAException(errDesc));
             }
         }, satoshis, destAddress, feesMode, privateData);
-        return asyncWamp;
+
+        return processPreparedTx(asyncWamp);
     }
 
-    public ListenableFuture<Map<?, ?>> processBip70URL(String url) {
+    private ListenableFuture<PreparedTransaction> processPreparedTx(final ListenableFuture<PreparedTransaction.PTData> pt) {
+        return Futures.transform(pt, new Function<PreparedTransaction.PTData, PreparedTransaction>() {
+            @Override
+            public PreparedTransaction apply(final PreparedTransaction.PTData input) {
+                return new PreparedTransaction(input);
+            }
+        }, es);
+    }
+
+    public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/vault/process_bip0070_url", Map.class, new Wamp.CallHandler() {
             @Override
@@ -931,12 +923,12 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<PreparedTransaction> preparePayreq(Coin amount, Map<?, ?> data, final Map<String, Object> privateData) {
+    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, Map<?, ?> data, final Map<String, Object> privateData) {
 
-        final SettableFuture<PreparedTransaction> asyncWamp = SettableFuture.create();
+        final SettableFuture<PreparedTransaction.PTData> asyncWamp = SettableFuture.create();
 
 
-        final Map dataClone = new HashMap<Object, Object>();
+        final Map dataClone = new HashMap<>();
 
         for (final Object tempKey : data.keySet()) {
             dataClone.put(tempKey, data.get(tempKey));
@@ -950,7 +942,7 @@ public class WalletClient {
         mConnection.call("http://greenaddressit.com/vault/prepare_payreq", Map.class, new Wamp.CallHandler() {
             @Override
             public void onResult(final Object prepared) {
-                asyncWamp.set(createTx((Map) prepared, privateData));
+                asyncWamp.set(new PreparedTransaction.PTData((Map) prepared, privateData, loginData.subaccounts, httpClient));
             }
 
             @Override
@@ -958,10 +950,11 @@ public class WalletClient {
                 asyncWamp.setException(new GAException(errorDesc));
             }
         }, amount.longValue(), dataClone);
-        return asyncWamp;
+
+        return processPreparedTx(asyncWamp);
     }
 
-    public ListenableFuture<Map<?, ?>> prepareSweepSocial(byte[] pubKey, boolean useElectrum) {
+    public ListenableFuture<Map<?, ?>> prepareSweepSocial(final byte[] pubKey, final boolean useElectrum) {
         final Integer[] pubKeyObjs = new Integer[pubKey.length];
         for (int i = 0; i < pubKey.length; ++i) {
             pubKeyObjs[i] = pubKey[i] & 0xff;
@@ -986,12 +979,12 @@ public class WalletClient {
         final SettableFuture<String> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/vault/send_tx", String.class, new Wamp.CallHandler() {
             @Override
-            public void onResult(Object o) {
+            public void onResult(final Object o) {
                 asyncWamp.set(o.toString());
             }
 
             @Override
-            public void onError(String s, String s2) {
+            public void onError(final String s, final String s2) {
                 asyncWamp.setException(new GAException(s2));
             }
         }, signatures, TfaData);
@@ -1009,7 +1002,7 @@ public class WalletClient {
         if (hdWallet.canSignHashes()) {
             ListenableFuture<ECKey.ECDSASignature> lastSignature = Futures.immediateFuture(null);
 
-            for (int i = 0; i < txInputs.size(); i++) {
+            for (int i = 0; i < txInputs.size(); ++i) {
                 final int ii = i;
                 lastSignature = Futures.transform(lastSignature, new AsyncFunction<ECKey.ECDSASignature, ECKey.ECDSASignature>() {
                     @Override
@@ -1029,7 +1022,7 @@ public class WalletClient {
                         final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.getPointer(), privateDerivation));
 
                         final Script script = new Script(Hex.decode(prevOut.getScript()));
-                        Sha256Hash hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
+                        final Sha256Hash hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
                         return pointerKey.signHash(hash);
                     }
                 });
@@ -1045,12 +1038,12 @@ public class WalletClient {
             }
             Futures.addCallback(lastSignature, new FutureCallback<ECKey.ECDSASignature>() {
                 @Override
-                public void onSuccess(@Nullable ECKey.ECDSASignature result) {
+                public void onSuccess(final @Nullable ECKey.ECDSASignature result) {
                     asyncWamp.set(signatures);
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(final Throwable t) {
                     asyncWamp.setException(t);
                 }
             });
@@ -1059,9 +1052,9 @@ public class WalletClient {
                     Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) ? "Bitcoin" : "Testnet",
                     Hex.decode(loginData.gait_path)), new FutureCallback<List<ECKey.ECDSASignature>>() {
                 @Override
-                public void onSuccess(@Nullable List<ECKey.ECDSASignature> signatures) {
-                    List<String> result = new LinkedList<>();
-                    for (ECKey.ECDSASignature sig : signatures) {
+                public void onSuccess(final @Nullable List<ECKey.ECDSASignature> signatures) {
+                    final List<String> result = new LinkedList<>();
+                    for (final ECKey.ECDSASignature sig : signatures) {
                         final TransactionSignature txSignature = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
                         result.add(Hex.toHexString(txSignature.encodeToBitcoin()));
                     }
@@ -1069,7 +1062,7 @@ public class WalletClient {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(final Throwable t) {
                     asyncWamp.setException(t);
                 }
             });
@@ -1167,7 +1160,7 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<Transaction> getRawUnspentOutput(Sha256Hash txHash) {
+    public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
         final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/txs/get_raw_unspent_output", String.class, new Wamp.CallHandler() {
             @Override
@@ -1183,7 +1176,7 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<Boolean> initEnableTwoFac(String type, String details, Map<?, ?> twoFacData) {
+    public ListenableFuture<Boolean> initEnableTwoFac(final String type, final String details, final Map<?, ?> twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/twofactor/init_enable_" + type, Boolean.class, new Wamp.CallHandler() {
             @Override
@@ -1200,7 +1193,7 @@ public class WalletClient {
     }
 
 
-    public ListenableFuture<Boolean> enableTwoFac(String type, String code) {
+    public ListenableFuture<Boolean> enableTwoFac(final String type, final String code) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new Wamp.CallHandler() {
             @Override
@@ -1216,7 +1209,7 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<Boolean> enableTwoFac(String type, String code, Object twoFacData) {
+    public ListenableFuture<Boolean> enableTwoFac(final String type, final String code, final Object twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new Wamp.CallHandler() {
             @Override
@@ -1232,7 +1225,7 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<Boolean> disableTwoFac(String type, Map<String, String> twoFacData) {
+    public ListenableFuture<Boolean> disableTwoFac(final String type, final Map<String, String> twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/twofactor/disable_" + type, Boolean.class, new Wamp.CallHandler() {
             @Override

@@ -400,23 +400,23 @@ public class SendFragment extends GAFragment {
                         maxButton.isChecked();
                 String message = null;
 
-                Map<String, Object> privData = null;
+                final Map<String, Object> privData = new HashMap<>();
 
 
                 if (!noteText.getText().toString().isEmpty()) {
-                    privData = new HashMap<>();
                     privData.put("memo", noteText.getText().toString());
                 }
 
                 if (curSubaccount != 0) {
-                    if (privData == null) privData = new HashMap<>();
                     privData.put("subaccount", curSubaccount);
                 }
 
                 if (instantConfirmationCheckbox.isChecked()) {
-                    if (privData == null) privData = new HashMap<>();
                     privData.put("instant", true);
                 }
+
+                // tell the server to return prevouts as http links instead of via websocket to improve speed (and avoid ws timeouts)
+                privData.put("prevouts_mode", "http");
 
                 ListenableFuture<PreparedTransaction> prepared;
                 if (payreqData == null) {
@@ -492,18 +492,32 @@ public class SendFragment extends GAFragment {
                                                 }
 
                                                 @Override
-                                                public void onFailure(Throwable t) {
-                                                    sendButton.setEnabled(true);
-                                                    t.printStackTrace();
-                                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                                public void onFailure(final Throwable t) {
+                                                    final Activity activity = getActivity();
+                                                    if (activity != null) {
+                                                        activity.runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                sendButton.setEnabled(true);
+                                                                t.printStackTrace();
+                                                                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();                                                            }
+                                                        });
+                                                    }
                                                 }
                                             });
                                 }
 
                                 @Override
                                 public void onFailure(final Throwable t) {
-                                    sendButton.setEnabled(true);
-                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                    final Activity activity = getActivity();
+                                    if (activity != null) {
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                sendButton.setEnabled(true);
+                                                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();                                           }
+                                        });
+                                    }
                                 }
                             });
                 }
