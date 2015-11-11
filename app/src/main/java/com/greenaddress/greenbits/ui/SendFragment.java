@@ -548,7 +548,7 @@ public class SendFragment extends GAFragment {
         getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
 
         if (getGAService().getBalanceCoin(curSubaccount) != null) {
-            updateBalance(getActivity());
+            updateBalance();
         }
 
         final Animation iconPressed = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.icon_pressed);
@@ -611,7 +611,7 @@ public class SendFragment extends GAFragment {
                                             gaService.fireBalanceChanged(((Number) subaccountMap.get("pointer")).longValue());
                                         }
 
-                                        updateBalance(getActivity());
+                                        updateBalance();
                                         try {
                                             Coin oldValue = bitcoinFormat.parse(amountEdit.getText().toString());
                                             bitcoinFormat = newFormat;
@@ -817,7 +817,7 @@ public class SendFragment extends GAFragment {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateBalance(activity);
+                            updateBalance();
                         }
                     });
                 }
@@ -825,7 +825,7 @@ public class SendFragment extends GAFragment {
         };
     }
 
-    private void updateBalance(final Activity activity) {
+    private void updateBalance() {
         final String btcUnit = (String) getGAService().getAppearanceValue("unit");
         final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
         final TextView sendSubAccountBalanceUnit = (TextView) rootView.findViewById(R.id.sendSubAccountBalanceUnit);
@@ -853,8 +853,6 @@ public class SendFragment extends GAFragment {
         sendSubAccountBalance.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-
-
     }
 
     private void changePricingSource(final int order, final String currency, final String exchange) {
