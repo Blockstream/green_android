@@ -122,7 +122,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final Transaction t = (Transaction) getActivity().getIntent().getSerializableExtra("TRANSACTION");
             hashText.setText(Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.txhash + "\">" + t.txhash + "</a>"));
 
-            if (t.type == Transaction.TYPE_OUT || t.isSpent) {
+            if (t.type.equals(Transaction.TYPE.OUT) || t.isSpent) {
                 rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
             } else {
                 // unspent output

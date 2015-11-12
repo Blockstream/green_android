@@ -419,10 +419,10 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
 
             //New Marshmallow permissions paradigm
-            String[] perms = {"android.permission.CAMERA"};
+            final String[] perms = {"android.permission.CAMERA"};
             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
                     checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
-                int permsRequestCode = 200;
+                final int permsRequestCode = 200;
                 requestPermissions(perms, permsRequestCode);
             }
             else {
@@ -540,13 +540,10 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
     @Override
 
-    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
-        boolean cameraPermissionGranted;
-        switch(permsRequestCode){
-
-            case 200:
-
-                cameraPermissionGranted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
+    public void onRequestPermissionsResult(final int permsRequestCode, final String[] permissions, final int[] grantResults){
+        switch (permsRequestCode){
+            case 200: {
+                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
                 if (cameraPermissionGranted) {
                     final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
@@ -556,10 +553,9 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                    Toast.makeText(getApplicationContext(), "Please enable camera permissions to use sweep functionality.", Toast.LENGTH_SHORT).show();
                 }
                 break;
-
-            case 100:
-
-                cameraPermissionGranted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
+            }
+            case 100: {
+                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
                 if (cameraPermissionGranted) {
                     final Intent qrcodeScanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
@@ -569,6 +565,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                     Toast.makeText(getApplicationContext(), "Please enable camera permissions to use scan functionality.", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            }
         }
 
     }

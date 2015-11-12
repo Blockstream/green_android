@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Transaction implements Serializable {
-    public static final int TYPE_OUT = 0;
-    public static final int TYPE_IN = 1;
-    public static final int TYPE_REDEPOSIT = 2;
 
-    public final int type;
+    public enum TYPE {
+        OUT,
+        IN,
+        REDEPOSIT;
+    }
+
+    public final TYPE type;
     public final int curBlock;
     public final Integer blockHeight;
     public final long amount;
@@ -20,7 +23,7 @@ public class Transaction implements Serializable {
     public boolean spvVerified;
     public boolean isSpent;
 
-    public Transaction(final int type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn) {
+    public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn) {
         this.type = type;
         this.amount = amount;
         this.counterparty = counterparty;
@@ -35,11 +38,7 @@ public class Transaction implements Serializable {
     }
 
     public String toString() {
-        final String tp = type == TYPE_OUT ? "OUT" :
-                type == TYPE_IN ? "IN" :
-                        "REDEPOSIT";
-
-        return date.toString() + " " + tp + " " + String.valueOf(amount) + " " + counterparty;
+        return String.format("%s %s %s", date.toString(), type.name(), amount, counterparty);
     }
 
     public int getConfirmations() {
@@ -52,5 +51,4 @@ public class Transaction implements Serializable {
     public boolean hasEnoughConfirmations() {
         return getConfirmations() >= 6;
     }
-
 }

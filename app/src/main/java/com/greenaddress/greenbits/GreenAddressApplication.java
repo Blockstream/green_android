@@ -79,7 +79,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         final Handler handler = new Handler();
         gaService.getTwoFacConfigObservable().addObserver(new Observer() {
             @Override
-            public void update(Observable observable, Object data) {
+            public void update(final Observable observable, final Object data) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -95,7 +95,7 @@ public class GreenAddressApplication extends MultiDexApplication {
             accountName.setText(getResources().getText(R.string.main_account));
             final ArrayList subaccounts = gaService.getSubaccounts();
             for (Object subaccount : subaccounts) {
-                Map<String, ?> subaccountMap = (Map) subaccount;
+                final Map<String, ?> subaccountMap = (Map) subaccount;
                 final String name = (String) subaccountMap.get("name");
                 if (subaccountMap.get("pointer").equals(curSubaccount)) {
                     accountName.setText(name);
@@ -104,12 +104,12 @@ public class GreenAddressApplication extends MultiDexApplication {
             footer.setVisibility(View.VISIBLE);
             clickableArea.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(final View view) {
                     final PopupMenu popup = new PopupMenu(activity, view);
                     int i = 0;
                     popup.getMenu().add(0, i, i, getResources().getText(R.string.main_account));
                     final ArrayList subaccounts = gaService.getSubaccounts();
-                    for (Object subaccount : subaccounts) {
+                    for (final Object subaccount : subaccounts) {
                         i += 1;
                         Map<String, ?> subaccountMap = (Map) subaccount;
                         final String name = (String) subaccountMap.get("name");
@@ -117,7 +117,7 @@ public class GreenAddressApplication extends MultiDexApplication {
                     }
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
-                        public boolean onMenuItemClick(MenuItem item) {
+                        public boolean onMenuItemClick(final MenuItem item) {
                             accountName.setText(item.getTitle());
                             int curSubaccount;
                             if (item.getItemId() == 0) {
@@ -135,7 +135,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
     }
 
-    private void configureNoTwoFacFooter(View noTwoFacFooter, final Activity activity) {
+    private void configureNoTwoFacFooter(final View noTwoFacFooter, final Activity activity) {
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);

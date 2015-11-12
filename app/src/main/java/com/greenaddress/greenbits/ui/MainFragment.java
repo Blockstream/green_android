@@ -68,7 +68,7 @@ public class MainFragment extends GAFragment implements Observer {
 
         String counterparty = null;
         long amount = 0;
-        int type;
+        Transaction.TYPE type;
         boolean isSpent = true;
         String receivedOn = null;
         for (int i = 0; i < eps.size(); ++i) {
@@ -110,7 +110,7 @@ public class MainFragment extends GAFragment implements Observer {
             }
         }
         if (amount >= 0) {
-            type = Transaction.TYPE_IN;
+            type = Transaction.TYPE.IN;
             for (int i = 0; i < eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
                 if (!((Boolean) ep.get("is_credit")).booleanValue() && ep.get("social_source") != null) {
@@ -129,7 +129,7 @@ public class MainFragment extends GAFragment implements Observer {
                 }
             }
             if (recip_eps.size() > 0) {
-                type = Transaction.TYPE_OUT;
+                type = Transaction.TYPE.OUT;
                 if (counterparty == null) {
                     counterparty = (String) recip_eps.get(0).get("ad");
                 }
@@ -137,7 +137,7 @@ public class MainFragment extends GAFragment implements Observer {
                     counterparty += ", ...";
                 }
             } else {
-                type = Transaction.TYPE_REDEPOSIT;
+                type = Transaction.TYPE.REDEPOSIT;
             }
         }
         boolean spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
@@ -233,11 +233,6 @@ public class MainFragment extends GAFragment implements Observer {
         thirdP.setMovementMethod(LinkMovementMethod.getInstance());
 
 
-        /* currentSize = balanceText.getTextSize();
-        maxSize = currentSize;
-        minSize = currentSize / 2.0f; */
-
-
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
         unconfirmedClickListener = new View.OnClickListener() {
@@ -263,7 +258,7 @@ public class MainFragment extends GAFragment implements Observer {
                         blocksLeft = numblocksLeft;
                     }
                 }
-                MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
+                final MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                         .title(getResources().getString(R.string.unconfirmedBalanceTitle))
                         .content(getResources().getString(R.string.unconfirmedBalanceText) + " " + blocksLeft)
                         .positiveColorRes(R.color.accent)

@@ -554,10 +554,10 @@ public class SendFragment extends GAFragment {
                                         @Override
                                         public void onClick(final View view) {
                                             //New Marshmallow permissions paradigm
-                                            String[] perms = {"android.permission.CAMERA"};
+                                            final String[] perms = {"android.permission.CAMERA"};
                                             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
                                                     getActivity().checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
-                                                int permsRequestCode = 100;
+                                                final int permsRequestCode = 100;
                                                 getActivity().requestPermissions(perms, permsRequestCode);
                                             } else {
 
@@ -942,7 +942,7 @@ public class SendFragment extends GAFragment {
 
     private void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
 
-        String converted = CurrencyMapper.map(currency);
+        final String converted = CurrencyMapper.map(currency);
         if (converted != null) {
             fiatIcon.setText(Html.fromHtml(converted + " "));
             fiatIcon.setAwesomeTypeface();
@@ -1015,7 +1015,7 @@ public class SendFragment extends GAFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("pausing", pausing);
     }

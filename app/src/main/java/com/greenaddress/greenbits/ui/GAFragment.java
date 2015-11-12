@@ -15,7 +15,7 @@ abstract public class GAFragment extends Fragment {
     private GreenAddressApplication gaApp;
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(final Activity activity) {
         super.onAttach(activity);
 
         gaApp = (GreenAddressApplication) activity.getApplication();
@@ -37,7 +37,7 @@ abstract public class GAFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
         if (getGAService() == null) {
             getActivity().finish();
             return null;
@@ -50,7 +50,7 @@ abstract public class GAFragment extends Fragment {
         }
     }
 
-    abstract View onGACreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+    abstract View onGACreateView(final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState);
 
     void onGAResume() {
     }

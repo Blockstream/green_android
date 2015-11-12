@@ -73,7 +73,7 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         }
 
         if (!getContext().getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true) ||
-                current.spvVerified || current.isSpent || current.type == Transaction.TYPE_OUT) {
+                current.spvVerified || current.isSpent || current.type.equals(Transaction.TYPE.OUT)) {
             holder.textValueQuestionMark.setVisibility(View.GONE);
         } else {
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);
@@ -82,7 +82,7 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         holder.textWhen.setText(TimeAgo.fromNow(current.date.getTime(), getContext()));
 
         String message;
-        if (current.type == Transaction.TYPE_OUT && current.counterparty != null && current.counterparty.length() > 0) {
+        if (current.type.equals(Transaction.TYPE.OUT) && current.counterparty != null && current.counterparty.length() > 0) {
             message = current.counterparty;
         } else {
             message = getTypeString(current.type);
@@ -121,15 +121,17 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         return returnedView;
     }
 
-    private String getTypeString(final int type) {
-        if (type == Transaction.TYPE_IN)
-            return getContext().getString(R.string.txTypeIn);
-        else if (type == Transaction.TYPE_OUT)
-            return getContext().getString(R.string.txTypeOut);
-        else if (type == Transaction.TYPE_REDEPOSIT)
-            return getContext().getString(R.string.txTypeRedeposit);
-        else
-            return "No type";
+    private String getTypeString(final Transaction.TYPE type) {
+        switch (type) {
+            case IN:
+                return getContext().getString(R.string.txTypeIn);
+            case OUT:
+                return getContext().getString(R.string.txTypeOut);
+            case REDEPOSIT:
+                return getContext().getString(R.string.txTypeRedeposit);
+            default:
+                return "No type";
+        }
     }
 
     private static class Holder {
