@@ -1087,11 +1087,22 @@ public class GaService extends Service {
         return client.setPin(seed, mnemonic, pin, device_name);
     }
 
+    private void addRequestForRawTxsIfNecessary(final Map<String, Object> privateData) {
+        // skip fetching raw if not needed
+        if (!getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true) ||  spvBlocksLeft > 0 || client.getHdWallet().requiresPrevoutRawTxs()) {
+            privateData.put("prevouts_mode", "http");
+        } else {
+            privateData.put("prevouts_mode", "skip");
+        }
+    }
+
     public ListenableFuture<PreparedTransaction> prepareTx(final Coin coinValue, final String recipient, final Map<String, Object> privateData) {
+        addRequestForRawTxsIfNecessary(privateData);
         return client.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
     }
 
     public ListenableFuture<PreparedTransaction> prepareSweepAll(long subaccount, final String recipient, final Map<String, Object> privData) {
+        addRequestForRawTxsIfNecessary(privData);
         return client.prepareTx(
                 getBalanceCoin(subaccount).longValue(),
                 recipient, "receiver", privData
@@ -1372,7 +1383,7 @@ public class GaService extends Service {
         return Futures.transform(changeFuture, new Function<List<Boolean>, Coin>() {
             @Nullable
             @Override
-            public Coin apply(@Nullable List<Boolean> input) {
+            public Coin apply(final @Nullable List<Boolean> input) {
                 int changeIdx;
                 if (input == null) {
                     changeIdx = -1;
@@ -1391,7 +1402,7 @@ public class GaService extends Service {
                 }
                 final TransactionOutput output = transaction.decoded.getOutputs().get(1 - Math.abs(changeIdx));
                 if (recipient != null) {
-                    Address gotAddress = output.getScriptPubKey().getToAddress(Network.NETWORK);
+                    final Address gotAddress = output.getScriptPubKey().getToAddress(Network.NETWORK);
                     if (!gotAddress.equals(recipient)) {
                         throw new IllegalArgumentException("Verification: Invalid recipient address.");
                     }
@@ -1402,9 +1413,9 @@ public class GaService extends Service {
 
                 // 3. Verify fee value:
                 Coin inValue = Coin.ZERO, outValue = Coin.ZERO;
-                for (TransactionInput in : transaction.decoded.getInputs()) {
+                for (final TransactionInput in : transaction.decoded.getInputs()) {
                     if (countedUtxoValues.get(in.getOutpoint()) == null) {
-                        Transaction prevTx = transaction.prevoutRawTxs.get(in.getOutpoint().getHash().toString());
+                        final Transaction prevTx = transaction.prevoutRawTxs.get(in.getOutpoint().getHash().toString());
                         if (!prevTx.getHash().equals(in.getOutpoint().getHash())) {
                             throw new IllegalArgumentException("Verification: Prev tx hash invalid");
                         }
@@ -1413,14 +1424,14 @@ public class GaService extends Service {
                         inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
                     }
                 }
-                for (TransactionOutput out : transaction.decoded.getOutputs()) {
+                for (final TransactionOutput out : transaction.decoded.getOutputs()) {
                     outValue = outValue.add(out.getValue());
                 }
                 final Coin fee = inValue.subtract(outValue);
                 if (fee.compareTo(Coin.valueOf(1000)) == -1) {
                     throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi).");
                 }
-                int kBfee = (int) (500000.0 * ((double) transaction.decoded.getMessageSize()) / 1000.0);
+                final int kBfee = (int) (500000.0 * ((double) transaction.decoded.getMessageSize()) / 1000.0);
                 if (fee.compareTo(Coin.valueOf(kBfee)) == 1) {
                     throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB).");
                 }

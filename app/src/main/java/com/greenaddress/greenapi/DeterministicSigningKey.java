@@ -52,4 +52,9 @@ public class DeterministicSigningKey implements ISigningWallet {
     public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(PreparedTransaction tx, String coinName, byte[] gait_path) {
         return null;
     }
+
+    @Override
+    public boolean requiresPrevoutRawTxs() {
+        return false;
+    }
 }

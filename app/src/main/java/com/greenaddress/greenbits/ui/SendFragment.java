@@ -415,9 +415,6 @@ public class SendFragment extends GAFragment {
                     privData.put("instant", true);
                 }
 
-                // tell the server to return prevouts as http links instead of via websocket to improve speed (and avoid ws timeouts)
-                privData.put("prevouts_mode", "http");
-
                 ListenableFuture<PreparedTransaction> prepared;
                 if (payreqData == null) {
                     if (!validAddress && !validAmount) {

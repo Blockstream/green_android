@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi;
 
+import android.webkit.URLUtil;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
@@ -83,6 +85,16 @@ public class PreparedTransaction {
         this.requires_2factor = (Boolean) pte.values.get("requires_2factor");
         this.tx = pte.values.get("tx").toString();
         this.decoded = new Transaction(Network.NETWORK, Hex.decode(this.tx));
+
+        // return early if no rawtxs url is given, assumes user asked for 'skip'
+        try {
+            if (!URLUtil.isValidUrl((String) pte.values.get("prevout_rawtxs"))) {
+                return;
+            }
+        } catch (final Exception e) {
+            return;
+        }
+
 
         final Request request = new Request.Builder()
                 .url((String)pte.values.get("prevout_rawtxs"))

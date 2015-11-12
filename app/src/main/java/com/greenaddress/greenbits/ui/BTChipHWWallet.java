@@ -151,6 +151,11 @@ public class BTChipHWWallet implements ISigningWallet {
         });
     }
 
+    @Override
+    public boolean requiresPrevoutRawTxs() {
+        return true;
+    }
+
 
     @Override
     public ListenableFuture<DeterministicKey> getPubKey() {

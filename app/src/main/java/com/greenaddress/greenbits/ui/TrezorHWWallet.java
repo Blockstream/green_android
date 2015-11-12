@@ -103,4 +103,9 @@ public class TrezorHWWallet implements ISigningWallet {
             }
         });
     }
+
+    @Override
+    public boolean requiresPrevoutRawTxs() {
+        return true;
+    }
 }
