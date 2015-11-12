@@ -2,10 +2,12 @@ package com.greenaddress.greenbits.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Spannable;
@@ -351,8 +353,16 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         scanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(final View view) {
-                                            final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
-                                            startActivityForResult(scanner, 0);
+                                            //New Marshmallow permissions paradigm
+                                            String[] perms = {"android.permission.CAMERA"};
+                                            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
+                                                    checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
+                                                int permsRequestCode = 150;
+                                                requestPermissions(perms, permsRequestCode);
+                                            } else {
+                                                final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
+                                                startActivityForResult(scanner, 0);
+                                            }
                                         }
                                     }
         );
@@ -516,5 +526,21 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @Override
     public void update(final Observable observable, final Object data) {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults) {
+        boolean cameraPermissionGranted;
+        switch (permsRequestCode) {
+
+            case 150:
+
+                cameraPermissionGranted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
+
+                if (cameraPermissionGranted) {
+                    final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
+                    startActivityForResult(scanner, 0);
+                }
+        }
     }
 }
