@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -552,9 +553,18 @@ public class SendFragment extends GAFragment {
         scanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(final View view) {
-                                            scanIcon.startAnimation(iconPressed);
-                                            final Intent qrcodeScanner = new Intent(getActivity(), ScanActivity.class);
-                                            getActivity().startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
+                                            //New Marshmallow permissions paradigm
+                                            String[] perms = {"android.permission.CAMERA"};
+                                            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
+                                                    getActivity().checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
+                                                int permsRequestCode = 100;
+                                                getActivity().requestPermissions(perms, permsRequestCode);
+                                            } else {
+
+                                                scanIcon.startAnimation(iconPressed);
+                                                final Intent qrcodeScanner = new Intent(getActivity(), ScanActivity.class);
+                                                getActivity().startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
+                                            }
                                         }
                                     }
         );

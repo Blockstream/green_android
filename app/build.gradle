@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 56
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
