@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipDongle.BTChipPublicKey;
 import com.btchip.comm.BTChipTransportFactory;
@@ -27,7 +26,6 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.LoginData;

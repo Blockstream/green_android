@@ -8,7 +8,6 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -69,7 +68,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_login_requested);
         
-        tag = (Tag) getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
         
         tagDispatcher = TagDispatcher.get(this, this);
 

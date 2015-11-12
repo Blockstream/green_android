@@ -226,10 +226,7 @@ public class GaService extends Service {
     }
     
     public boolean isPeerGroupRunning(){
-        if(peerGroup != null && peerGroup.isRunning()){
-            return true;
-        }
-        return false;
+        return peerGroup != null && peerGroup.isRunning();
     }
 
     private void toastTrustedSPV(final String announcement){
@@ -439,12 +436,12 @@ public class GaService extends Service {
                 Log.i(TAG, "Failure throwable callback " + t.toString());
                 connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
 
-                if (reconnectTimeout < connectionObservable.RECONNECT_TIMEOUT_MAX) {
+                if (reconnectTimeout < ConnectivityObservable.RECONNECT_TIMEOUT_MAX) {
                     reconnectTimeout *= 1.2;
                 }
 
                 if (reconnectTimeout == 0) {
-                    reconnectTimeout = connectionObservable.RECONNECT_TIMEOUT;
+                    reconnectTimeout = ConnectivityObservable.RECONNECT_TIMEOUT;
                 }
 
                 // FIXME: handle delayed login

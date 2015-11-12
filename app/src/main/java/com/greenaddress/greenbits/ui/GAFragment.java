@@ -55,8 +55,6 @@ abstract public class GAFragment extends Fragment {
     void onGAResume() {
     }
 
-    ;
-
     protected GreenAddressApplication getGAApp() {
         return gaApp;
     }
