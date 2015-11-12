@@ -541,6 +541,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
                     startActivityForResult(scanner, 0);
                 }
+                else {
+                    Toast.makeText(getApplicationContext(), "Please enable camera permissions to use scan functionality.", Toast.LENGTH_SHORT).show();
+                }
         }
     }
 }

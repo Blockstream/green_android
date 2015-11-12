@@ -553,7 +553,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                     startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
                 }
                 else {
-                   Toast.makeText(getApplicationContext(), "Please enable camera permissions to use sweep functionality.", Toast.LENGTH_SHORT);
+                   Toast.makeText(getApplicationContext(), "Please enable camera permissions to use sweep functionality.", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -566,7 +566,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                     startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), "Please enable camera permissions to use scan functionality.", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "Please enable camera permissions to use scan functionality.", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
