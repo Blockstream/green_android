@@ -9,6 +9,7 @@ import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,14 +18,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import nordpol.android.AndroidCard;
-import nordpol.android.OnDiscoveredTagListener;
-import nordpol.android.TagDispatcher;
-
 import com.btchip.BTChipDongle.BTChipPublicKey;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
@@ -49,6 +45,10 @@ import java.util.Observer;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
+
+import nordpol.android.AndroidCard;
+import nordpol.android.OnDiscoveredTagListener;
+import nordpol.android.TagDispatcher;
 
 public class RequestLoginActivity extends Activity implements Observer, OnDiscoveredTagListener {
 	

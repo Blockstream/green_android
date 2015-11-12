@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.ArrayAdapter;
@@ -13,16 +14,21 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
+import org.bitcoinj.core.Block;
+import org.bitcoinj.core.FilteredBlock;
+import org.bitcoinj.core.GetDataMessage;
+import org.bitcoinj.core.Message;
+import org.bitcoinj.core.Peer;
+import org.bitcoinj.core.PeerAddress;
+import org.bitcoinj.core.PeerEventListener;
+import org.bitcoinj.core.PeerGroup;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-
-import android.content.IntentFilter;
-
-import org.bitcoinj.core.*;
 
 import javax.annotation.Nullable;
 

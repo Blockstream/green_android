@@ -1,9 +1,5 @@
 package com.greenaddress.greenbits;
 
-import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.greenbits.ui.TabbedMainActivity;
-import com.subgraph.orchid.TorClient;
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +19,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.INotificationHandler;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.LoginData;
@@ -32,6 +29,8 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.ui.BTChipHWWallet;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.TabbedMainActivity;
+import com.subgraph.orchid.TorClient;
 
 import org.bitcoinj.core.AbstractBlockChain;
 import org.bitcoinj.core.Address;
