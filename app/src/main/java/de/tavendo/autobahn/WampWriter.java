@@ -29,6 +29,9 @@ import org.codehaus.jackson.map.MappingJsonFactory;
 
 import android.os.Handler;
 import android.util.Log;
+
+import com.greenaddress.greenbits.ui.BuildConfig;
+
 import de.tavendo.autobahn.secure.WebSocketException;
 import de.tavendo.autobahn.secure.WebSocketOptions;
 import de.tavendo.autobahn.secure.WebSocketWriter;
@@ -41,7 +44,6 @@ import de.tavendo.autobahn.secure.WebSocketWriter;
  */
 public class WampWriter extends WebSocketWriter {
 
-   private static final boolean DEBUG = true;
    private static final String TAG = WampWriter.class.getName();
 
    /**
@@ -61,7 +63,7 @@ public class WampWriter extends WebSocketWriter {
       mJsonFactory = new MappingJsonFactory();
       mPayload = new NoCopyByteArrayOutputStream();
 
-      if (DEBUG) Log.d(TAG, "created");
+      if (BuildConfig.DEBUG) Log.d(TAG, "created");
    }
 
    /**
