@@ -487,7 +487,7 @@ public class GaService extends Service {
             public void onNewBlock(final int count) {
                 Log.i(TAG, "onNewBlock");
                 if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
-                    addToBloomFilter((int) count, null, -1, -1, -1);
+                    addToBloomFilter(count, null, -1, -1, -1);
                 }
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();

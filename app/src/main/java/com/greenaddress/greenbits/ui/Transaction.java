@@ -8,7 +8,7 @@ public class Transaction implements Serializable {
     public enum TYPE {
         OUT,
         IN,
-        REDEPOSIT;
+        REDEPOSIT
     }
 
     public final TYPE type;
