@@ -14,7 +14,28 @@ android {
         exclude 'org/bitcoinj/crypto/cacerts'
         exclude 'org.bitcoin.production.checkpoints'
         exclude 'org.bitcoin.test.checkpoints'
+        exclude 'org/codehaus/jackson/impl/VERSION.txt'
+        exclude 'org/codehaus/jackson/map/VERSION.txt'
+        exclude 'org/fusesource/leveldbjni/version.txt'
+        exclude 'org/h2/util/data.zip'
+        exclude 'META-INF/native/linux32/libleveldbjni.so'
+        exclude 'META-INF/native/linux64/libleveldbjni.so'
+        exclude 'META-INF/native/osx/libleveldbjni.jnilib'
+        exclude 'META-INF/native/windows32/leveldbjni.dll'
+        exclude 'META-INF/native/windows64/leveldbjni.dll'
         exclude 'META-INF/services/java.sql.Driver'
+        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixPatterns.gwt.xml'
+        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixType.gwt.xml'
+        exclude 'com/mysql/jdbc/Charsets.properties'
+        exclude 'com/mysql/jdbc/LocalizedErrorMessages.properties'
+        exclude 'com/mysql/jdbc/TimeZoneMapping.properties'
+        exclude 'com/mysql/jdbc/configs/3-0-Compat.properties'
+        exclude 'com/mysql/jdbc/configs/5-0-Compat.properties'
+        exclude 'com/mysql/jdbc/configs/clusterBase.properties'
+        exclude 'com/mysql/jdbc/configs/coldFusion.properties'
+        exclude 'com/mysql/jdbc/configs/fullDebug.properties'
+        exclude 'com/mysql/jdbc/configs/maxPerformance.properties'
+        exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
     }
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
@@ -55,10 +76,10 @@ android {
         javaMaxHeapSize "2g"
     }
 }
+
 configurations {
     compile.exclude group: "org.json", module: "json"
 }
-
 
 dependencies {
     compile 'com.fasterxml.jackson:jackson-datatype-json-org:1.8.0'
@@ -71,6 +92,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
 }
+
 repositories {
     jcenter()
 }
