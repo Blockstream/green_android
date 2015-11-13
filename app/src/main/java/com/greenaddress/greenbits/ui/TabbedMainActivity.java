@@ -285,8 +285,8 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                     final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
                                     Futures.addCallback(getGAService().verifySpendableBy(
                                             tx.getOutputs().get(0),
-                                            Long.valueOf(0),
-                                            ((Number) result.get("out_pointer")).longValue()
+                                            Integer.valueOf(0),
+                                            ((Number) result.get("out_pointer")).intValue()
                                     ), new FutureCallback<Boolean>() {
                                         @Override
                                         public void onSuccess(@Nullable Boolean result) {
@@ -313,7 +313,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                         }
 
                                         @Override
-                                        public void onFailure(Throwable t) {
+                                        public void onFailure(final Throwable t) {
                                             t.printStackTrace();
                                             Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                         }

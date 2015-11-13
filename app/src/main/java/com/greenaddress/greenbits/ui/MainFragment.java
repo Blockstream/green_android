@@ -140,9 +140,9 @@ public class MainFragment extends GAFragment implements Observer {
                 type = Transaction.TYPE.REDEPOSIT;
             }
         }
-        boolean spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
+        final boolean spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
                 + getGAService().getReceivingId(), Context.MODE_PRIVATE).getBoolean(txhash, false);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return new Transaction(type, amount, counterparty,
                 df.parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
@@ -326,7 +326,7 @@ public class MainFragment extends GAFragment implements Observer {
 
         curBalanceObserver = makeBalanceObserver();
 
-        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
 
         if (getGAService().getBalanceCoin(curSubaccount) != null) {
             updateBalance();
@@ -344,10 +344,10 @@ public class MainFragment extends GAFragment implements Observer {
                     @Nullable
                     @Override
                     public Void apply(@Nullable Integer input) {
-                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input;
                         curBalanceObserver = makeBalanceObserver();
-                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
                         reloadTransactions(getActivity());
                         updateBalance();
 

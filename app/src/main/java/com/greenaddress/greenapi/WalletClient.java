@@ -267,7 +267,7 @@ public class WalletClient {
         return asyncWamp;
     }    
     
-    public ListenableFuture<Map<?, ?>> getBalance(long subaccount) {
+    public ListenableFuture<Map<?, ?>> getBalance(final int subaccount) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/txs/get_balance", Map.class, new Wamp.CallHandler() {
             @Override
@@ -284,7 +284,7 @@ public class WalletClient {
     }
 
 
-    public ListenableFuture<Map<?, ?>> getSubaccountBalance(int pointer) {
+    public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int pointer) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/txs/get_balance", Map.class, new Wamp.CallHandler() {
             @Override
@@ -332,16 +332,16 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<Boolean> setPricingSource(String currency, String exchange) {
+    public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/login/set_pricing_source", Boolean.class, new Wamp.CallHandler() {
             @Override
-            public void onResult(Object o) {
+            public void onResult(final Object o) {
                 asyncWamp.set((Boolean) o);
             }
 
             @Override
-            public void onError(String errorUri, String errorDesc) {
+            public void onError(final String errorUri, final String errorDesc) {
                 asyncWamp.setException(new GAException(errorDesc));
             }
         }, currency, exchange);
@@ -411,27 +411,27 @@ public class WalletClient {
 
                 mConnection.subscribe("http://greenaddressit.com/block_count", Map.class, new Wamp.EventHandler() {
                     @Override
-                    public void onEvent(String topicUri, Object event) {
+                    public void onEvent(final String topicUri, final Object event) {
                         Log.i(TAG, "BLOCKS IS " + event.toString());
-                        m_notificationHandler.onNewBlock(Long.parseLong(((Map) event).get("count").toString()));
+                        m_notificationHandler.onNewBlock(Integer.parseInt(((Map) event).get("count").toString()));
                     }
                 });
 
 
                 mConnection.subscribe("http://greenaddressit.com/tx_notify", Map.class, new Wamp.EventHandler() {
                     @Override
-                    public void onEvent(String topicUri, Object event) {
+                    public void onEvent(final String topicUri, final Object event) {
                         final Map<?, ?> res = (Map) event;
                         final String txhash = (String) res.get("txhash"),
                                 value = (String) res.get("value"),
                                 wallet_id = (String) res.get("wallet_id");
                         final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
-                        final long[] subaccounts_long = new long[subaccounts.size()];
+                        final int[] subaccounts_int = new int[subaccounts.size()];
                         for (int i = 0; i < subaccounts.size(); ++i) {
-                            subaccounts_long[i] = ((Number) subaccounts.get(i)).longValue();
+                            subaccounts_int[i] = ((Number) subaccounts.get(i)).intValue();
                         }
-                        m_notificationHandler.onNewTransaction(Long.valueOf(wallet_id),
-                                subaccounts_long, Long.valueOf(value), txhash);
+                        m_notificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
+                                subaccounts_int, Long.valueOf(value), txhash);
                     }
                 });
             }
@@ -479,14 +479,14 @@ public class WalletClient {
             }
 
             @Override
-            public void onCloseMessage(WebSocketMessage.Close close) {
+            public void onCloseMessage(final WebSocketMessage.Close close) {
                 Log.i(TAG, "onCloseMessage code=" + close.getCode() + "; reason=" + close.getReason());
                 c = close;
             }
         };
         try {
             mConnection.connect(wsuri, handler, options);
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             // FIXME: it shouldn't be caught here, it's a workaround for the following exception
             //        which should be fixed in Autobahn-SW:
             // java.lang.NullPointerException
@@ -773,7 +773,7 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<Map> getNewAddress(long subaccount) {
+    public ListenableFuture<Map> getNewAddress(final int subaccount) {
         final SettableFuture<Map> asyncWamp = SettableFuture.create();
         mConnection.call("http://greenaddressit.com/vault/fund", Map.class, new Wamp.CallHandler() {
             @Override
@@ -786,22 +786,6 @@ public class WalletClient {
                 asyncWamp.setException(new GAException(errDesc));
             }
         }, subaccount, true);
-        return asyncWamp;
-    }
-
-    public ListenableFuture<String> fundReceivingId(String receivingId) {
-        final SettableFuture<String> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/vault/fund_receiving_id", String.class, new Wamp.CallHandler() {
-            @Override
-            public void onResult(final Object address) {
-                asyncWamp.set((String) address);
-            }
-
-            @Override
-            public void onError(final String errUri, final String errDesc) {
-                asyncWamp.setException(new GAException(errDesc));
-            }
-        }, receivingId);
         return asyncWamp;
     }
 

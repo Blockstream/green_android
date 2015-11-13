@@ -102,18 +102,18 @@ public class BTChipHWWallet implements ISigningWallet {
         return es.submit(new Callable<List<ECKey.ECDSASignature>>() {
             @Override
             public List<ECKey.ECDSASignature> call() throws Exception {
-                List<ECKey.ECDSASignature> sigs = new LinkedList<>();
+                final List<ECKey.ECDSASignature> sigs = new LinkedList<>();
 
-                BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[tx.decoded.getInputs().size()];
+                final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[tx.decoded.getInputs().size()];
                 if (!dongle.hasScreenSupport()) {                
                     for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                        byte[] inputHash = tx.decoded.getInputs().get(i).getOutpoint().getHash().getBytes();
+                        final byte[] inputHash = tx.decoded.getInputs().get(i).getOutpoint().getHash().getBytes();
                         for (int j = 0; j < inputHash.length / 2; ++j) {
                             byte temp = inputHash[j];
                             inputHash[j] = inputHash[inputHash.length - j - 1];
                             inputHash[inputHash.length - j - 1] = temp;
                         }
-                        byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);
+                        final byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);
                         long index = tx.decoded.getInputs().get(i).getOutpoint().getIndex();
                         input[input.length - 4] = (byte) (index % 256);
                         index /= 256;
@@ -127,16 +127,16 @@ public class BTChipHWWallet implements ISigningWallet {
                 }
                 else {
                  for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                   TransactionOutPoint outpoint = tx.decoded.getInputs().get(i).getOutpoint();
-                   long index = outpoint.getIndex();
-                   ByteArrayInputStream in = new ByteArrayInputStream(tx.prevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
-                   BitcoinTransaction encodedTx = new BitcoinTransaction(in);
+                   final TransactionOutPoint outpoint = tx.decoded.getInputs().get(i).getOutpoint();
+                   final long index = outpoint.getIndex();
+                   final ByteArrayInputStream in = new ByteArrayInputStream(tx.prevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
+                   final BitcoinTransaction encodedTx = new BitcoinTransaction(in);
                    inputs[i] = dongle.getTrustedInput(encodedTx, index);
                  }                    
                 }
                 for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
                     dongle.startUntrustedTransction(i == 0, i, inputs, Hex.decode(tx.prev_outputs.get(i).getScript()));
-                    ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(tx.decoded.getMessageSize() < 32 ? 32 : tx.decoded.getMessageSize() + 32);
+                    final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(tx.decoded.getMessageSize() < 32 ? 32 : tx.decoded.getMessageSize() + 32);
                     stream.write(new VarInt(tx.decoded.getOutputs().size()).encode());
                     for (TransactionOutput out : tx.decoded.getOutputs())
                         out.bitcoinSerialize(stream);
@@ -171,9 +171,9 @@ public class BTChipHWWallet implements ISigningWallet {
         if (cachedPubkey != null) {
                 return cachedPubkey;
         }
-        BTChipDongle.BTChipPublicKey pubKey = dongle.getWalletPublicKey(getPath());
-        ECKey uncompressed = ECKey.fromPublicOnly(pubKey.getPublicKey());
-        DeterministicKey retVal = new DeterministicKey(
+        final BTChipDongle.BTChipPublicKey pubKey = dongle.getWalletPublicKey(getPath());
+        final ECKey uncompressed = ECKey.fromPublicOnly(pubKey.getPublicKey());
+        final DeterministicKey retVal = new DeterministicKey(
                 new ImmutableList.Builder<ChildNumber>().build(),
                 pubKey.getChainCode(),
                 uncompressed.getPubKeyPoint(),
@@ -194,14 +194,14 @@ public class BTChipHWWallet implements ISigningWallet {
             @Override
             public ECKey.ECDSASignature call() throws Exception {
                 dongle.signMessagePrepare(getPath(), message.getBytes());
-                BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
+                final BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
                 return ECKey.ECDSASignature.decodeFromDER(sig.getSignature());
             }
         });
     }
 
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(Sha256Hash hash) {
+    public ListenableFuture<ECKey.ECDSASignature> signHash(final Sha256Hash hash) {
         return null;
     }
 
@@ -210,15 +210,15 @@ public class BTChipHWWallet implements ISigningWallet {
         return Futures.transform(getPubKey(), new Function<ECKey, byte[]>() {
             @Nullable
             @Override
-            public byte[] apply(@Nullable ECKey input) {
+            public byte[] apply(final @Nullable ECKey input) {
                 return input.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).getHash160();
             }
         });
     }
 
     private String getPath() {
-        List<String> pathStr = new LinkedList<>();
-        for (Integer i : addrn) {
+        final List<String> pathStr = new LinkedList<>();
+        for (final Integer i : addrn) {
             String s = String.valueOf(i.intValue() & ~0x80000000);
             if ((i.intValue() & 0x80000000) != 0) {
                 s = s + "'";
@@ -229,8 +229,8 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
     @Override
-    public ISigningWallet deriveChildKey(ChildNumber childNumber) {
-        LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
+    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
+        final LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
         addrn_child.add(childNumber.getI());
         return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
     }
@@ -246,7 +246,7 @@ public class BTChipHWWallet implements ISigningWallet {
                 Log.d(TAG, "Connection ok");
                 return true;
         }
-        catch(Exception e) {
+        catch(final Exception e) {
                 Log.d(TAG, "Connection not connected");
                 try {
                         dongle.getTransport().close();
@@ -258,7 +258,7 @@ public class BTChipHWWallet implements ISigningWallet {
         }
     }
 
-    public void setTransport(BTChipTransport transport) {
+    public void setTransport(final BTChipTransport transport) {
         dongle.setTransport(transport);
         try {
                 dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());

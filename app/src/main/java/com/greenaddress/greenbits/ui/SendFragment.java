@@ -543,7 +543,7 @@ public class SendFragment extends GAFragment {
         });
 
         curBalanceObserver = makeBalanceObserver();
-        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
 
         if (getGAService().getBalanceCoin(curSubaccount) != null) {
             updateBalance();
@@ -613,17 +613,17 @@ public class SendFragment extends GAFragment {
                                         }
                                         // update the values in main fragment
                                         gaService.fireBalanceChanged(0);
-                                        for (Object subaccount : gaService.getSubaccounts()) {
-                                            Map<String, ?> subaccountMap = (Map) subaccount;
-                                            gaService.fireBalanceChanged(((Number) subaccountMap.get("pointer")).longValue());
+                                        for (final Object subaccount : gaService.getSubaccounts()) {
+                                            final Map<String, ?> subaccountMap = (Map) subaccount;
+                                            gaService.fireBalanceChanged(((Number) subaccountMap.get("pointer")).intValue());
                                         }
 
                                         updateBalance();
                                         try {
-                                            Coin oldValue = bitcoinFormat.parse(amountEdit.getText().toString());
+                                            final Coin oldValue = bitcoinFormat.parse(amountEdit.getText().toString());
                                             bitcoinFormat = newFormat;
                                             amountEdit.setText(newFormat.noCode().format(oldValue));
-                                        } catch (IllegalArgumentException e) {
+                                        } catch (final IllegalArgumentException e) {
                                             bitcoinFormat = newFormat;
                                             amountEdit.setText("");
                                         }
@@ -759,21 +759,21 @@ public class SendFragment extends GAFragment {
                     @Nullable
                     @Override
                     public Void apply(@Nullable Integer input) {
-                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).deleteObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input.intValue();
                         hideInstantIf2of3();
                         final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
                         curBalanceObserver = makeBalanceObserver();
-                        getGAService().getBalanceObservables().get(new Long(curSubaccount)).addObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
                         Futures.addCallback(gaService.getSubaccountBalance(curSubaccount), new FutureCallback<Map<?, ?>>() {
                             @Override
-                            public void onSuccess(@Nullable Map<?, ?> result) {
-                                Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")).longValue());
+                            public void onSuccess(final @Nullable Map<?, ?> result) {
+                                final Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")).longValue());
                                 final String btcUnit = (String) gaService.getAppearanceValue("unit");
                                 final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
-                                MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+                                final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                                 final String btcBalance = format.noCode().format(coin).toString();
                                 final DecimalFormat formatter = new DecimalFormat("#,###.########");
                                 try {
@@ -784,7 +784,7 @@ public class SendFragment extends GAFragment {
                             }
 
                             @Override
-                            public void onFailure(Throwable t) {
+                            public void onFailure(final Throwable t) {
 
                             }
                         });
@@ -798,7 +798,7 @@ public class SendFragment extends GAFragment {
     }
 
     @Override
-    public void onViewStateRestored(@android.support.annotation.Nullable Bundle savedInstanceState) {
+    public void onViewStateRestored(final @android.support.annotation.Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         pausing = false;
     }
@@ -844,7 +844,7 @@ public class SendFragment extends GAFragment {
         } else {
             sendSubAccountBalanceUnit.setText(Html.fromHtml("&#xf15a; "));
         }
-        MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+        final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final String btcBalance = format.noCode().format(
                 getGAService().getBalanceCoin(curSubaccount)).toString();
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
@@ -896,7 +896,6 @@ public class SendFragment extends GAFragment {
             public void onSuccess(@Nullable final Object result) {
                 final Activity activity = getActivity();
                 if (activity != null) {
-
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
