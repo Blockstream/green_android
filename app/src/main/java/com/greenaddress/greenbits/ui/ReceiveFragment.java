@@ -48,7 +48,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
     private TagDispatcher tagDispatcher;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("pausing", pausing);
@@ -66,14 +66,16 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
             // get a new address every time the tab is displayed
             if (isVisibleToUser) {
                 // get a new address:
-                final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
-                Futures.addCallback(ft, onAddress, getGAService().es);
-                startNewAddressAnimation(rootView);
+                if (address == null) {
+                    final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+                    Futures.addCallback(ft, onAddress, getGAService().es);
+                    startNewAddressAnimation(rootView);
+                }
             } else { // !isVisibleToUser
                 // hide to avoid showing old address when swiping
                 final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
                 final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
-
+                address = null;
                 receiveAddress.setText("");
                 imageView.setImageBitmap(null);
             }
@@ -84,8 +86,17 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
     }
 
     @Override
+    void onGAResume() {
+        Log.i(TAG, "onGaResume");
+        if (onAddress != null && address == null) {
+            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+            Futures.addCallback(ft, onAddress, getGAService().es);
+        }
+    }
+
+    @Override
     public void onPause() {
-        super.onDestroyView();
+        super.onPause();
 
         if (getUserVisibleHint()) {
             pausing = true;
@@ -152,7 +163,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                             copyIcon.setVisibility(View.VISIBLE);
                             copyText.setVisibility(View.VISIBLE);
                             stopNewAddressAnimation(rootView);
-                            BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
                             bd.setFilterBitmap(false);
                             imageView.setImageDrawable(bd);
 
@@ -180,7 +191,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                                                 qrDialog.setContentView(inflatedLayout);
                                             }
                                             qrDialog.show();
-                                            BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
                                             bd.setFilterBitmap(false);
                                             qrcodeInDialog.setImageDrawable(bd);
                                         }
@@ -239,14 +250,14 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                 new Function<Integer, Void>() {
                     @Nullable
                     @Override
-                    public Void apply(@Nullable Integer input) {
+                    public Void apply(final @Nullable Integer input) {
                         curSubaccount = input;
                         final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("receive", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
                         startNewAddressAnimation(rootView);
                         Futures.addCallback(
-                                getGAService().getLatestOrNewAddress(curSubaccount),
+                                getGAService().getNewAddress(curSubaccount),
                                 onAddress, getGAService().es);
                         return null;
                     }
@@ -285,12 +296,11 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
         copyIcon.setVisibility(View.GONE);
         copyText.setVisibility(View.GONE);
         receiveAddress.setText("");
-        receiveAddress.setText("");
         imageView.setImageBitmap(null);
     }
     
     @Override
-    public void tagDiscovered(Tag t) {    	
+    public void tagDiscovered(final Tag t) {
     	Log.d("NFC", "Tag discovered " + t);
     }
     

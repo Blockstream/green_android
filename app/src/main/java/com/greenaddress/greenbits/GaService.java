@@ -122,7 +122,6 @@ public class GaService extends Service {
 
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
-    private Map<Integer, ListenableFuture<QrBitmap>> latestAddresses;
 
     private Map<Integer, Coin> balancesCoin = new HashMap<>();
     private Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
@@ -916,7 +915,6 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
-        latestAddresses = new HashMap<>();
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
         final ListenableFuture<LoginData> future = client.login(signingWallet, deviceId);
@@ -925,7 +923,6 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> login(final String mnemonics) {
-        latestAddresses = new HashMap<>();
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
         final ListenableFuture<LoginData> future = client.login(mnemonics, deviceId);
@@ -934,7 +931,6 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> signup(final String mnemonics) {
-        latestAddresses = new HashMap<>();
         final ListenableFuture<LoginData> signupFuture = client.loginRegister(mnemonics, deviceId);
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
@@ -943,7 +939,6 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode) {
-        latestAddresses = new HashMap<>();
         final ListenableFuture<LoginData> signupFuture = client.loginRegister(signingWallet, masterPublicKey, masterChaincode, pathPublicKey, pathChaincode, deviceId);
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
@@ -960,7 +955,6 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> pinLogin(final PinData pinData, final String pin) {
-        latestAddresses = new HashMap<>();
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
         final ListenableFuture<LoginData> login = client.pinLogin(pinData, pin, deviceId);
@@ -975,7 +969,6 @@ public class GaService extends Service {
         for (final Integer key : balanceObservables.keySet()) {
             balanceObservables.get(key).deleteObservers();
         }
-        latestAddresses = new HashMap<>();
         client.disconnect();
         triggerOnFullyConnected =  SettableFuture.create();
         connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
@@ -1119,11 +1112,6 @@ public class GaService extends Service {
         return client.sendTransaction(signaturesStrings, twoFacData);
     }
 
-    public ListenableFuture<QrBitmap> getLatestOrNewAddress(final int subaccount) {
-        final ListenableFuture<QrBitmap> latestAddress = latestAddresses.get(new Integer(subaccount));
-        return (latestAddress == null) ? getNewAddress(subaccount) : latestAddress;
-    }
-
     public ListenableFuture<QrBitmap> getNewAddress(final int subaccount) {
         final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
             @Override
@@ -1152,8 +1140,7 @@ public class GaService extends Service {
             }
         };
         final ListenableFuture<String> verifiedAddress = Futures.transform(client.getNewAddress(subaccount), verifyAddress, es);
-        latestAddresses.put(subaccount, Futures.transform(verifiedAddress, addressToQr, es));
-        return latestAddresses.get(new Integer(subaccount));
+        return Futures.transform(verifiedAddress, addressToQr, es);
     }
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {

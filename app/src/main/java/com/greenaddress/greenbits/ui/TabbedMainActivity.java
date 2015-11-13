@@ -205,7 +205,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                 if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
                     scanned = "bitcoin:" + scanned;
                 }
-                Intent browsable = new Intent(this, TabbedMainActivity.class);
+                final Intent browsable = new Intent(this, TabbedMainActivity.class);
                 browsable.setData(Uri.parse(scanned));
                 browsable.addCategory(Intent.CATEGORY_BROWSABLE);
                 startActivity(browsable);
@@ -289,7 +289,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                             ((Number) result.get("out_pointer")).intValue()
                                     ), new FutureCallback<Boolean>() {
                                         @Override
-                                        public void onSuccess(@Nullable Boolean result) {
+                                        public void onSuccess(final @Nullable Boolean result) {
                                             if (result.booleanValue()) {
                                                 final List<TransactionSignature> signatures = new ArrayList<>();
                                                 for (int i = 0; i < tx.getInputs().size(); ++i) {
