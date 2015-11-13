@@ -1082,7 +1082,7 @@ public class GaService extends Service {
         final int subaccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
         final Coin verifiedBalance = getVerifiedBalanceCoin(subaccount);
-        if (!getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true) ||  verifiedBalance == null || !getVerifiedBalanceCoin(subaccount).equals(getBalanceCoin(subaccount)) || client.getHdWallet().requiresPrevoutRawTxs()) {
+        if (!getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true) ||  verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) || client.getHdWallet().requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
             privateData.put("prevouts_mode", "skip");

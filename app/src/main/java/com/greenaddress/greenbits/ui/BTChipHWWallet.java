@@ -72,7 +72,7 @@ public class BTChipHWWallet implements ISigningWallet {
                 try {
                     dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
                     remainingAttemptsFuture.set(new Integer(-1));  // -1 means success
-                } catch (BTChipException e) {
+                } catch (final BTChipException e) {
                     if (e.toString().indexOf("63c") != -1) {
                         remainingAttemptsFuture.set(
                                 Integer.valueOf(String.valueOf(e.toString().charAt(e.toString().indexOf("63c") + 3))));
@@ -89,7 +89,7 @@ public class BTChipHWWallet implements ISigningWallet {
         });
     }
 
-    private String outToPath(Output out) {
+    private String outToPath(final Output out) {
         if (out.getSubaccount() != null && out.getSubaccount().intValue() != 0) {
             return "3'/" + out.getSubaccount() + "'/1/" + out.getPointer();
         } else {
@@ -98,7 +98,7 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, String coinName, byte[] gait_path) {
+    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final String coinName, final byte[] gait_path) {
         return es.submit(new Callable<List<ECKey.ECDSASignature>>() {
             @Override
             public List<ECKey.ECDSASignature> call() throws Exception {
@@ -138,7 +138,7 @@ public class BTChipHWWallet implements ISigningWallet {
                     dongle.startUntrustedTransction(i == 0, i, inputs, Hex.decode(tx.prev_outputs.get(i).getScript()));
                     final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(tx.decoded.getMessageSize() < 32 ? 32 : tx.decoded.getMessageSize() + 32);
                     stream.write(new VarInt(tx.decoded.getOutputs().size()).encode());
-                    for (TransactionOutput out : tx.decoded.getOutputs())
+                    for (final TransactionOutput out : tx.decoded.getOutputs())
                         out.bitcoinSerialize(stream);
                     dongle.finalizeInputFull(stream.toByteArray());
                     sigs.add(ECKey.ECDSASignature.decodeFromDER(
