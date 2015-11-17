@@ -660,7 +660,7 @@ public class SendFragment extends GAFragment {
                                 final boolean current = currency_exchange.get(0).equals(getGAService().getFiatCurrency())
                                         && currency_exchange.get(1).equals(getGAService().getFiatExchange());
                                 final int group = current ? selected_group : Menu.NONE;
-                                fiatPopup.getMenu().add(group, order, order, formatFiatListItem(currency_exchange.get(0), currency_exchange.get(1)));
+                                fiatPopup.getMenu().add(group, order, order, formatFiatListItem(activity, currency_exchange.get(0), currency_exchange.get(1)));
                                 order += 1;
                             }
                             fiatPopup.getMenu().setGroupEnabled(selected_group, false);
@@ -884,7 +884,7 @@ public class SendFragment extends GAFragment {
                         changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon), currency);
                         fiatPopup.getMenu().setGroupEnabled(selected_group++, true);
                         fiatPopup.getMenu().removeItem(order);
-                        fiatPopup.getMenu().add(selected_group, order, order, formatFiatListItem(currency, exchange));
+                        fiatPopup.getMenu().add(selected_group, order, order, formatFiatListItem(getActivity(), currency, exchange));
                         fiatPopup.getMenu().setGroupEnabled(selected_group, false);
                     }
                 });
@@ -923,7 +923,7 @@ public class SendFragment extends GAFragment {
         }, getGAService().es);
     }
 
-    private Spanned formatFiatListItem(final String currency, final String exchange) {
+    private Spanned formatFiatListItem(final Activity activity, final String currency, final String exchange) {
         final String converted = CurrencyMapper.map(currency);
         final Spanned other = new SpannedString(currency + " (" + exchange + ")");
         if (converted != null) {
@@ -931,7 +931,7 @@ public class SendFragment extends GAFragment {
 
             final SpannableStringBuilder sb = new SpannableStringBuilder(TextUtils.concat(unit, other));
 
-            sb.setSpan(new CustomTypefaceSpan("", Typeface.createFromAsset(getActivity().getAssets(), "fonts/fontawesome-webfont.ttf")), 0, unit.length(),
+            sb.setSpan(new CustomTypefaceSpan("", Typeface.createFromAsset(activity.getAssets(), "fonts/fontawesome-webfont.ttf")), 0, unit.length(),
                     Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
 
             return sb;

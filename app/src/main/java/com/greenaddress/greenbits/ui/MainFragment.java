@@ -534,6 +534,10 @@ public class MainFragment extends GAFragment implements Observer {
 
     private void askUserForSpvNoWiFi() {
         if (getGAService().getSpvWiFiDialogShown()) return;
+        final Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
         if (!getActivity().getSharedPreferences(
                 "SPV",
                 getActivity().MODE_PRIVATE
@@ -553,13 +557,13 @@ public class MainFragment extends GAFragment implements Observer {
                 .theme(Theme.DARK)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
-                    public void onNegative(MaterialDialog materialDialog) {
+                    public void onNegative(final MaterialDialog materialDialog) {
                         getGAService().setSpvWiFiDialogShown(false);
                         makeWiFiObserver();
                     }
 
                     @Override
-                    public void onPositive(MaterialDialog materialDialog) {
+                    public void onPositive(final MaterialDialog materialDialog) {
                         getGAService().startSpvSync();
                     }
                 })
@@ -568,7 +572,6 @@ public class MainFragment extends GAFragment implements Observer {
 
     private void makeWiFiObserver() {
         if (wiFiObserver != null) return;
-        final Activity activity = getActivity();
         final GaService gaService = getGAService();
         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
         if (connObservable.isWiFiUp()) {
@@ -578,7 +581,7 @@ public class MainFragment extends GAFragment implements Observer {
         }
         wiFiObserver = new Observer() {
             @Override
-            public void update(Observable observable, Object data) {
+            public void update(final Observable observable, final Object data) {
                 if (connObservable.isWiFiUp()) {
                     gaService.startSpvSync();
                     wiFiObserverRequired = false;
