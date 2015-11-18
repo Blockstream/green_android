@@ -933,7 +933,7 @@ public class WalletClient {
             public void onError(final String errorUri, final String errorDesc) {
                 asyncWamp.setException(new GAException(errorDesc));
             }
-        }, amount.longValue(), dataClone);
+        }, amount.longValue(), dataClone, privateData);
 
         return processPreparedTx(asyncWamp);
     }
