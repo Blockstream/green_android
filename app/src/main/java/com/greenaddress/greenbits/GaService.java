@@ -1310,6 +1310,7 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final Map<String, Object> privateData) {
+        addRequestForRawTxsIfNecessary(privateData);
         return client.preparePayreq(amount, data, privateData);
     }
 
