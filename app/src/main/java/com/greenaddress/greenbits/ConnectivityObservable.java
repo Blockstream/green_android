@@ -24,7 +24,7 @@ public class ConnectivityObservable extends Observable {
     private State state = State.OFFLINE;
     private boolean forcedLoggedout = false;
     private boolean forcedTimeoutout = false;
-    private static final String TAG = "ConnectivityObservable";
+    private static final String TAG = ConnectivityObservable.class.getSimpleName();
     private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
         public void onReceive(final Context context, final Intent intent) {
             checkNetwork();

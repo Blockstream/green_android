@@ -48,7 +48,7 @@ public class BTChipHWWallet implements ISigningWallet {
     private DeterministicKey cachedPubkey;
     private List<Integer> addrn = new LinkedList<>();
 
-    private static final String TAG = "BTChipHWWallet";
+    private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
     private BTChipHWWallet(BTChipDongle dongle, RequestLoginActivity loginActivity, String pin, List<Integer> addrn) {
         this.dongle = dongle;

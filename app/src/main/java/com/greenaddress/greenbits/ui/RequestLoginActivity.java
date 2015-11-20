@@ -51,10 +51,9 @@ import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
 public class RequestLoginActivity extends Activity implements Observer, OnDiscoveredTagListener {
-	
-	private static final String TAG = "GANFC";
-	
-	private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
+
+    private static final String TAG = RequestLoginActivity.class.getSimpleName();
+    private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
     Dialog btchipDialog = null;
     BTChipHWWallet hwWallet = null;
@@ -67,9 +66,9 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_login_requested);
-        
+
         tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        
+
         tagDispatcher = TagDispatcher.get(this, this);
 
         getGAApp().getConnectionObservable().addObserver(this);        
@@ -384,11 +383,8 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                                 }
                                             }
                                         });
-                                    	
-                                    	
                                     }
-                            		
-                            	});
+                                });
                             }
                         });
                     }

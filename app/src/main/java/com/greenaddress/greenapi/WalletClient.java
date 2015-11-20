@@ -64,7 +64,7 @@ import de.tavendo.autobahn.secure.WebSocketMessage;
 
 public class WalletClient {
 
-    private static final String TAG = "WalletClient";
+    private static final String TAG = WalletClient.class.getSimpleName();
     private static final String USER_AGENT = String.format("%s (%s;%s;%s;%s)",
             BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME,
             BuildConfig.FLAVOR, BuildConfig.BUILD_TYPE, android.os.Build.VERSION.SDK_INT);

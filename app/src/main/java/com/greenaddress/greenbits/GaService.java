@@ -103,7 +103,7 @@ import javax.annotation.Nullable;
 
 public class GaService extends Service {
 
-    private static final String TAG = "GaService";
+    private static final String TAG = GaService.class.getSimpleName();
     public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
     private final IBinder mBinder = new GaBinder(this);
     final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();

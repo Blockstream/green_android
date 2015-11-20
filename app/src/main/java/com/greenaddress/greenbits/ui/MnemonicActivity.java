@@ -69,7 +69,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class MnemonicActivity extends ActionBarActivity implements Observer {
 
-    private static final String TAG = "MnemonicActivity";
+    private static final String TAG = MnemonicActivity.class.getSimpleName();
 
     private static int countSubStr(final String sub, final String s) {
         int c = 0;

@@ -71,7 +71,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class SendFragment extends GAFragment {
 
-    private static final String TAG = "SendFragment";
+    private static final String TAG = SendFragment.class.getSimpleName();
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private EditText amountEdit;

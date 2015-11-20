@@ -52,7 +52,7 @@ import javax.annotation.Nullable;
 
 
 public class SignUpActivity extends ActionBarActivity implements Observer {
-    private static final String TAG = "SignUpActivity";
+    private static final String TAG = SignUpActivity.class.getSimpleName();
     boolean mWriteMode = false;
     private Dialog mnemonicDialog;
     private Dialog nfcDialog;
