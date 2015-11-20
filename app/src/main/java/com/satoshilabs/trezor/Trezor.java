@@ -1,27 +1,5 @@
 package com.satoshilabs.trezor;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.Message;
-import com.greenaddress.greenapi.Network;
-import com.greenaddress.greenapi.PreparedTransaction;
-import com.satoshilabs.trezor.protobuf.TrezorMessage;
-import com.satoshilabs.trezor.protobuf.TrezorMessage.*;
-import com.satoshilabs.trezor.protobuf.TrezorMessage.Address;
-import com.satoshilabs.trezor.protobuf.TrezorType;
-
 import android.content.Context;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
@@ -32,12 +10,53 @@ import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbRequest;
 import android.util.Log;
 
-import org.bitcoinj.core.*;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
+import com.greenaddress.greenapi.Network;
+import com.greenaddress.greenapi.PreparedTransaction;
+import com.satoshilabs.trezor.protobuf.TrezorMessage;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.Address;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.ButtonRequest;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.Entropy;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.EntropyRequest;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.Failure;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.Features;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.MessageSignature;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.MessageType;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.PassphraseRequest;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.PinMatrixRequest;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.PublicKey;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.SignTx;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.Success;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.TxRequest;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.TxSize;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.WordRequest;
+import com.satoshilabs.trezor.protobuf.TrezorType;
+
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionInput;
+import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.WrongNetworkException;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.script.Script;
 import org.spongycastle.util.encoders.Hex;
+
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /* Stub for empty TrezorGUICallback */
 class _TrezorGUICallback implements TrezorGUICallback {
@@ -52,7 +71,7 @@ public class Trezor {
     private TrezorType.HDNodeType curGaNode, curWalletNode, curRecoveryNode;
     private int curSubaccount;
     ArrayList<String> curSignatures = new ArrayList<>();
-
+	private static final String TAG = Trezor.class.getSimpleName();
 
     public static Trezor getDevice(Context context) {
 		return getDevice(context,new _TrezorGUICallback());
@@ -70,9 +89,9 @@ public class Trezor {
                 (device.getVendorId() != 0x10c4 || device.getProductId() != 0xea80)) {
 				continue;
 			}
-			Log.i("Trezor.getDevice()", "Hardware Wallet device found");
+			Log.i(TAG, "Hardware Wallet device found");
 			if (device.getInterfaceCount() < 1) {
-				Log.e("Trezor.getDevice()", "Wrong interface count");
+				Log.e(TAG, "Wrong interface count");
 				continue;
 			}
 			// use first interface
@@ -89,33 +108,33 @@ public class Trezor {
 					epw = ep;
 					continue;
 				}
-                Log.e("Trezor.getDevice()", String.format("ep %d", ep.getAddress()));
+                Log.e(TAG, String.format("ep %d", ep.getAddress()));
 			}
 			if (epr == null) {
-				Log.e("Trezor.getDevice()", "Could not find read endpoint");
+				Log.e(TAG, "Could not find read endpoint");
 				continue;
 			}
 			if (epw == null) {
-				Log.e("Trezor.getDevice()", "Could not find write endpoint");
+				Log.e(TAG, "Could not find write endpoint");
 				continue;
 			}
 			if (epr.getMaxPacketSize() != 64) {
-				Log.e("Trezor.getDevice()", "Wrong packet size for read endpoint");
+				Log.e(TAG, "Wrong packet size for read endpoint");
 				continue;
 			}
 			if (epw.getMaxPacketSize() != 64) {
-				Log.e("Trezor.getDevice()", "Wrong packet size for write endpoint");
+				Log.e(TAG, "Wrong packet size for write endpoint");
 				continue;
 			}
 			// try to open the device
 			UsbDeviceConnection conn = manager.openDevice(device);
 			if (conn == null) {
-				Log.e("Trezor.getDevice()", "Could not open connection");
+				Log.e(TAG, "Could not open connection");
 				continue;
 			}
 			boolean claimed = conn.claimInterface(iface,  true);
 			if (!claimed) {
-				Log.e("Trezor.getDevice()", "Could not claim interface");
+				Log.e(TAG, "Could not claim interface");
 				continue;
 			}
 			// all OK - return the class
@@ -151,7 +170,7 @@ public class Trezor {
 		int msg_size = msg.getSerializedSize();
 		String msg_name = msg.getClass().getSimpleName();
 		int msg_id = MessageType.valueOf("MessageType_" + msg_name).getNumber();
-		Log.i("Trezor.messageWrite()", String.format("Got message: %s (%d bytes)", msg_name, msg_size));
+		Log.i(TAG, String.format("Got message: %s (%d bytes)", msg_name, msg_size));
 		ByteBuffer data = ByteBuffer.allocate(32768);
 		data.put((byte)'#');
 		data.put((byte)'#');
@@ -168,7 +187,7 @@ public class Trezor {
 		UsbRequest request = new UsbRequest();
 		request.initialize(conn, epw);
 		int chunks = data.position() / 63;
-		Log.i("Trezor.messageWrite()", String.format("Writing %d chunks", chunks));
+		Log.i(TAG, String.format("Writing %d chunks", chunks));
 		data.rewind();
 		for (int i = 0; i < chunks; i++) {
 			byte[] buffer = new byte[64];
@@ -178,7 +197,7 @@ public class Trezor {
 			for (int j = 0; j < 64; j++) {
 				s += String.format(" %02x", buffer[j]);
 			}
-			Log.i("Trezor.messageWrite()", s);
+			Log.i(TAG, s);
 			request.queue(ByteBuffer.wrap(buffer), 64);
 			conn.requestWait();
 		}
@@ -186,12 +205,12 @@ public class Trezor {
 
 	private Message parseMessageFromBytes(MessageType type, byte[] data) {
 		Message msg = null;
-		Log.i("Trezor.parseMessageFromBytes()", String.format("Parsing %s (%d bytes):", type, data.length));
+		Log.i(TAG, String.format("Parsing %s (%d bytes):", type, data.length));
 		String s = "data:";
 		for (int i = 0; i < data.length; i++) {
 			s += String.format(" %02x", data[i]);
 		}
-		Log.i("Trezor.parseMessageFromBytes()", s);
+		Log.i(TAG, s);
 		try {
 			if (type.getNumber() == MessageType.MessageType_Success_VALUE) msg = Success.parseFrom(data);
 			if (type.getNumber() == MessageType.MessageType_Failure_VALUE) msg = Failure.parseFrom(data);
@@ -208,7 +227,7 @@ public class Trezor {
 			if (type.getNumber() == MessageType.MessageType_TxSize_VALUE) msg = TxSize.parseFrom(data);
 			if (type.getNumber() == MessageType.MessageType_WordRequest_VALUE) msg = WordRequest.parseFrom(data);
 		} catch (InvalidProtocolBufferException e) {
-			Log.e("Trezor.parseMessageFromBytes()", e.toString());
+			Log.e(TAG, e.toString());
 			return null;
 		}
 		return msg;
@@ -229,13 +248,13 @@ public class Trezor {
 			byte[] b = new byte[64];
             buffer.rewind();
             buffer.get(b);
-			Log.i("Trezor.messageRead()", String.format("Read chunk: %d bytes", b.length));
+			Log.i(TAG, String.format("Read chunk: %d bytes", b.length));
 			if (b.length < 9) continue;
             String s = "read:";
             for (int j = 0; j < b.length; j++) {
                 s += String.format(" %02x", b[j]);
             }
-            Log.i("Trezor.messageRead()", s);
+            Log.i(TAG, s);
             int rem = cur63.remaining(), len = b[0]&0xFF;
             cur63.put(b, 1, Math.min(len, rem));
             if (cur63.position() >= 63) {
@@ -243,7 +262,7 @@ public class Trezor {
                 if (b2[0] != (byte) '#' || b2[1] != (byte) '#') continue;
                 type = MessageType.valueOf((b2[2] << 8) + b2[3]);
                 msg_size = ((b2[4] & 0xFF) << 24) + ((b2[5] & 0xFF) << 16) + ((b2[6] & 0xFF) << 8) + (b2[7] & 0xFF);
-                Log.i("Trezor.messageRead()", String.format("msg_size: %d bytes", msg_size));
+                Log.i(TAG, String.format("msg_size: %d bytes", msg_size));
                 data.put(b2, 8, cur63.position() - 8);
                 if (rem < len) data.put(b, rem + 1, len - rem);
                 break;
@@ -253,13 +272,13 @@ public class Trezor {
 			request.queue(buffer, 64);
 			conn.requestWait();
 			byte[] b = buffer.array();
-			Log.i("Trezor.messageRead()", String.format("Read chunk (cont): %d bytes", b.length, msg_size));
+			Log.i(TAG, String.format("Read chunk (cont): %d bytes", b.length, msg_size));
 
             String s = "read(cont):";
             for (int j = 0; j < b.length; j++) {
                 s += String.format(" %02x", b[j]);
             }
-            Log.i("Trezor.messageRead()", s);
+            Log.i(TAG, s);
 			data.put(b, 1, b[0] & 0xFF);
 		}
 		return parseMessageFromBytes(type, Arrays.copyOfRange(data.array(), 0, msg_size));
