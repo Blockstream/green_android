@@ -354,15 +354,18 @@ public class Trezor {
                         build();
                 }
             } else if (r.getRequestType().equals(TrezorType.RequestType.TXMETA)) {
-                TrezorType.TransactionType.Builder b = TrezorType.TransactionType.newBuilder().
-                    setVersion((int) curTx.decoded.getVersion()).
-                    setLockTime((int) curTx.decoded.getLockTime());
+                TrezorType.TransactionType.Builder b = TrezorType.TransactionType.newBuilder();
                 if (r.getDetails().hasTxHash()) {
-                    b.setInputsCnt(curTx.prevoutRawTxs.get(Hex.toHexString(r.getDetails().getTxHash().toByteArray())).getInputs().size());
-                    b.setOutputsCnt(curTx.prevoutRawTxs.get(Hex.toHexString(r.getDetails().getTxHash().toByteArray())).getOutputs().size());
+                    final Transaction tx = curTx.prevoutRawTxs.get(Hex.toHexString(r.getDetails().getTxHash().toByteArray()));
+                    b.setInputsCnt(tx.getInputs().size());
+                    b.setOutputsCnt(tx.getOutputs().size());
+					b.setVersion((int) tx.getVersion())
+							.setLockTime((int) tx.getLockTime());
                 } else {
                     b.setInputsCnt(curTx.decoded.getInputs().size());
                     b.setOutputsCnt(curTx.decoded.getOutputs().size());
+					b.setVersion((int) curTx.decoded.getVersion())
+							.setLockTime((int) curTx.decoded.getLockTime());
                 }
                 ackTx = b.build();
             } else {
@@ -582,49 +585,58 @@ public class Trezor {
             setPublicKey(ByteString.copyFrom(gaWallet.getPubKey())).
             setChainCode(ByteString.copyFrom(gaWallet.getChainCode())).
             build();
-        DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(Integer.valueOf(tx.change_pointer).intValue()));
-        keys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
+		final Script changeScript;
+		if (tx.change_pointer != null) {
+			DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(Integer.valueOf(tx.change_pointer).intValue()));
+			keys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
 
-        final Integer[] intArray;
-        if (tx.subaccount_pointer != 0) {
-            intArray = new Integer[]{3 + 0x80000000, tx.subaccount_pointer + 0x80000000, 1, Integer.valueOf(tx.change_pointer)};
-        } else {
-            intArray = new Integer[]{1, Integer.valueOf(tx.change_pointer)};
-        }
-        final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
-        final String pkHex = xpub[xpub.length-2];
-        keys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
+			final Integer[] intArray;
+			if (tx.subaccount_pointer != 0) {
+				intArray = new Integer[]{3 + 0x80000000, tx.subaccount_pointer + 0x80000000, 1, Integer.valueOf(tx.change_pointer)};
+			} else {
+				intArray = new Integer[]{1, Integer.valueOf(tx.change_pointer)};
+			}
+			final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
+			final String pkHex = xpub[xpub.length - 2];
+			keys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
 
-        if (tx.twoOfThreeBackupChaincode != null) {
-            DeterministicKey backupWallet = new DeterministicKey(
-                    new ImmutableList.Builder<ChildNumber>().build(),
-                    Hex.decode(tx.twoOfThreeBackupChaincode),
-                    ECKey.fromPublicOnly(Hex.decode(tx.twoOfThreeBackupPubkey)).getPubKeyPoint(),
-                    null, null);
-            backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(1, false));
+			if (tx.twoOfThreeBackupChaincode != null) {
+				DeterministicKey backupWallet = new DeterministicKey(
+						new ImmutableList.Builder<ChildNumber>().build(),
+						Hex.decode(tx.twoOfThreeBackupChaincode),
+						ECKey.fromPublicOnly(Hex.decode(tx.twoOfThreeBackupPubkey)).getPubKeyPoint(),
+						null, null);
+				backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(1, false));
 
-            curRecoveryNode = TrezorType.HDNodeType.newBuilder().
-                    setDepth(1).
-                    setFingerprint(0).
-                    setChildNum(1).
-                    setPublicKey(ByteString.copyFrom(backupWallet.getPubKey())).
-                    setChainCode(ByteString.copyFrom(backupWallet.getChainCode())).
-                    build();
+				curRecoveryNode = TrezorType.HDNodeType.newBuilder().
+						setDepth(1).
+						setFingerprint(0).
+						setChildNum(1).
+						setPublicKey(ByteString.copyFrom(backupWallet.getPubKey())).
+						setChainCode(ByteString.copyFrom(backupWallet.getChainCode())).
+						build();
 
-            backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(Integer.valueOf(tx.change_pointer)));
-            keys.add(ECKey.fromPublicOnly(backupWallet.getPubKeyPoint()));
-        } else {
-            curRecoveryNode = null;
-        }
+				backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(Integer.valueOf(tx.change_pointer)));
+				keys.add(ECKey.fromPublicOnly(backupWallet.getPubKeyPoint()));
+			} else {
+				curRecoveryNode = null;
+			}
 
-        final Script changeScript = new Script(Script.createMultiSigOutputScript(2, keys));
-        try {
-            curChangeAddr = new org.bitcoinj.core.Address(Network.NETWORK,
-                    Network.NETWORK.getP2SHHeader(),
-                    Utils.sha256hash160(changeScript.getProgram()));
-        } catch (WrongNetworkException e) {
-            curChangeAddr = null;
-        }
+			changeScript = new Script(Script.createMultiSigOutputScript(2, keys));
+		} else {
+			changeScript = null;
+		}
+		if (changeScript != null) {
+			try {
+				curChangeAddr = new org.bitcoinj.core.Address(Network.NETWORK,
+						Network.NETWORK.getP2SHHeader(),
+						Utils.sha256hash160(changeScript.getProgram()));
+			} catch (WrongNetworkException e) {
+				curChangeAddr = null;
+			}
+		} else {
+			curChangeAddr = null;
+		}
 
 
         final Integer[] intArray2;
