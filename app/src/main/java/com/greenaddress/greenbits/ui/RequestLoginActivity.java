@@ -82,7 +82,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
             } else {
                 t = Trezor.getDevice(this, new TrezorGUICallback() {
                     @Override
-                    public String PinMatrixRequest() {
+                    public String pinMatrixRequest() {
                         final SettableFuture<String> ret = SettableFuture.create();
                         RequestLoginActivity.this.runOnUiThread(new Runnable() {
                             @Override
@@ -139,7 +139,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                     }
 
                     @Override
-                    public String PassphraseRequest() {
+                    public String passphraseRequest() {
                         final SettableFuture<String> ret = SettableFuture.create();
                         RequestLoginActivity.this.runOnUiThread(new Runnable() {
                             @Override

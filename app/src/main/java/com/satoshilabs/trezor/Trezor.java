@@ -60,8 +60,8 @@ import java.util.List;
 
 /* Stub for empty TrezorGUICallback */
 class _TrezorGUICallback implements TrezorGUICallback {
-	public String PinMatrixRequest() { return ""; }
-	public String PassphraseRequest() { return ""; }
+	public String pinMatrixRequest() { return ""; }
+	public String passphraseRequest() { return ""; }
 }
 
 public class Trezor {
@@ -314,16 +314,16 @@ public class Trezor {
 		/* User can catch ButtonRequest to Cancel by not calling _get */
 		case "ButtonRequest":
 			return _get(this.send(TrezorMessage.ButtonAck.newBuilder().build()));
-		case "PinMatrixRequest":
+		case "pinMatrixRequest":
 			return _get(this.send(
 				TrezorMessage.PinMatrixAck.newBuilder().
-				setPin(this.guicall.PinMatrixRequest()).
+				setPin(this.guicall.pinMatrixRequest()).
 				build()));
-		case "PassphraseRequest":
+		case "passphraseRequest":
 			return _get(this.send(
 				TrezorMessage.PassphraseAck.newBuilder().
 				/* TODO: UTF8 VS Unicode... Fight! */
-				setPassphrase(this.guicall.PassphraseRequest()).
+				setPassphrase(this.guicall.passphraseRequest()).
 				build()));
 		case "PublicKey": {
 			TrezorMessage.PublicKey r = (TrezorMessage.PublicKey)resp;
