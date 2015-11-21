@@ -96,8 +96,8 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
         getPreferenceManager().findPreference("go_to_app_for_more_settings").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("it.greenaddress.cordova");
+            public boolean onPreferenceClick(final Preference preference) {
+                final Intent launchIntent = getPackageManager().getLaunchIntentForPackage("it.greenaddress.cordova");
                 if (launchIntent == null) {
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=it.greenaddress.cordova")));
@@ -113,7 +113,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
         getPreferenceManager().findPreference("ledger_wallet").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
-            public boolean onPreferenceClick(Preference preference) {
+            public boolean onPreferenceClick(final Preference preference) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.ledgerwallet.com/r/bead")));
                 return false;
             }
@@ -269,7 +269,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                     final String newLower = newString.toLowerCase();
                     if (newString.isEmpty() || newLower.endsWith(".onion") || newLower.contains(".onion:" )) {
 
-                        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                        final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
                         if (currentapiVersion >= 23 &&
                                 (newLower.endsWith(".onion") || newLower.contains(".onion:"))) {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
@@ -287,7 +287,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                             return true;
                         }
 
-                        SharedPreferences.Editor editor = trustedPreferences.edit();
+                        final SharedPreferences.Editor editor = trustedPreferences.edit();
                         editor.putString("address", newString);
                         editor.apply();
 
@@ -308,14 +308,14 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                                 .theme(Theme.DARK)
                                 .callback(new MaterialDialog.ButtonCallback() {
                                     @Override
-                                    public void onNegative(MaterialDialog materialDialog) {
+                                    public void onNegative(final MaterialDialog materialDialog) {
 
                                     }
 
                                     @Override
-                                    public void onPositive(MaterialDialog materialDialog) {
+                                    public void onPositive(final MaterialDialog materialDialog) {
                                         new SPVAsync().execute();
-                                        SharedPreferences.Editor editor = trustedPreferences.edit();
+                                        final SharedPreferences.Editor editor = trustedPreferences.edit();
                                         editor.putString("address", newString);
                                         editor.apply();
 
@@ -334,13 +334,13 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             }
         });
 
-        Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
+        final Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
 
         final CheckBoxPreference emailTwoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFacEmail");
         emailTwoFacEnabled.setChecked(twoFacConfig.get("email").equals(true));
         emailTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 change2FA("Email", (Boolean) newValue);
                 return false;
             }
@@ -350,7 +350,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         gauthTwoFacEnabled.setChecked(twoFacConfig.get("gauth").equals(true));
         gauthTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 change2FA("Gauth", (Boolean) newValue);
                 return false;
             }
@@ -360,7 +360,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         smsTwoFacEnabled.setChecked(twoFacConfig.get("sms").equals(true));
         smsTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 change2FA("SMS", (Boolean) newValue);
                 return false;
             }
@@ -369,7 +369,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         final CheckBoxPreference twoFacWarning = (CheckBoxPreference) getPreferenceManager().findPreference("twoFacWarning");
         twoFacWarning.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 new MaterialDialog.Builder(SettingsActivity.this)
                         .title(getResources().getString(R.string.changingRequiresRestartTitle))
                         .content(getResources().getString(R.string.changingRequiresRestartText))
@@ -388,7 +388,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         phoneTwoFacEnabled.setChecked(twoFacConfig.get("phone").equals(true));
         phoneTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 change2FA("Phone", (Boolean) newValue);
                 return false;
             }
@@ -402,7 +402,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             twoFacMethod = method;
             startActivityForResult(intent, REQUEST_ENABLE_2FA);
         } else {
-            String[] enabledTwoFacNames = new String[]{};
+            final String[] enabledTwoFacNames = new String[]{};
             final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
             if (enabledTwoFacNamesSystem.size() > 1) {
                 new MaterialDialog.Builder(this)
@@ -464,19 +464,19 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 .negativeText(android.R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog materialDialog) {
-                        Map<String, String> twoFacData = new HashMap<>();
+                    public void onPositive(final MaterialDialog materialDialog) {
+                        final Map<String, String> twoFacData = new HashMap<>();
                         twoFacData.put("method", withMethod);
                         twoFacData.put("code", twoFacValue.getText().toString());
                         Futures.addCallback(getGAService().disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                             @Override
-                            public void onSuccess(@Nullable Boolean result) {
+                            public void onSuccess(final @Nullable Boolean result) {
                                 final CheckBoxPreference twoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
                                 twoFacEnabled.setChecked(false);
                             }
 
                             @Override
-                            public void onFailure(Throwable t) {
+                            public void onFailure(final Throwable t) {
                                 t.printStackTrace();
                                 Toast.makeText(SettingsActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                             }
@@ -491,7 +491,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             final CheckBoxPreference twoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + twoFacMethod);
@@ -500,7 +500,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     }
 
     @Override
-    public void update(Observable observable, Object data) {
+    public void update(final Observable observable, final Object data) {
 
     }
 
@@ -553,13 +553,13 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 .theme(Theme.DARK)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
-                    public void onNegative(MaterialDialog materialDialog) {
+                    public void onNegative(final MaterialDialog materialDialog) {
                         getGAService().setSpvWiFiDialogShown(false);
                         makeWiFiObserver();
                     }
 
                     @Override
-                    public void onPositive(MaterialDialog materialDialog) {
+                    public void onPositive(final MaterialDialog materialDialog) {
                         getGAService().startSpvSync();
                     }
                 })
@@ -577,7 +577,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         }
         wiFiObserver = new Observer() {
             @Override
-            public void update(Observable observable, Object data) {
+            public void update(final Observable observable, final Object data) {
                 if (connObservable.isWiFiUp()) {
                     gaService.startSpvSync();
                     wiFiObserverRequired = false;
