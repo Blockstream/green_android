@@ -1,14 +1,25 @@
 package com.greenaddress.greenbits.ui;
 
+import android.annotation.TargetApi;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
+import android.security.keystore.KeyProperties;
+import android.security.keystore.UserNotAuthenticatedException;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,29 +31,57 @@ import com.greenaddress.greenapi.PinData;
 
 import org.bitcoinj.crypto.MnemonicCode;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.annotation.Nullable;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 
 public class PinSaveActivity extends ActionBarActivity implements Observer {
+    private static final String TAG = PinSaveActivity.class.getSimpleName();
 
-    private void setPin(final CircularProgressButton pinSaveButton, final EditText pinText) {
-        if (pinText.getText().toString().length() < 4) {
+    private static final String KEYSTORE_KEY = "NativeAndroidAuth";
+    private KeyguardManager keyguardManager;
+
+    private static final int SECONDS_AUTH_VALID = 10;
+    private static final int ACTIVITY_REQUEST_CODE = 1;
+
+
+    private void setPin(final String pinText) {
+        if (pinText.length() < 4) {
             Toast.makeText(PinSaveActivity.this, "PIN has to be between 4 and 15 digits", Toast.LENGTH_SHORT).show();
             return;
         }
         final String mnemonic_str = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
         final List<String> mnemonic = java.util.Arrays.asList(mnemonic_str.split(" "));
         final Button pinSkipButton = (Button) findViewById(R.id.pinSkipButton);
+        final CircularProgressButton pinSaveButton = (CircularProgressButton) findViewById(R.id.pinSaveButton);
 
         pinSaveButton.setIndeterminateProgressMode(true);
         pinSaveButton.setProgress(50);
         pinSkipButton.setVisibility(View.GONE);
+
         Futures.addCallback(getGAService().setPin(MnemonicCode.toSeed(mnemonic, ""), mnemonic_str,
-                        pinText.getText().toString(), "default"),
+                        pinText, "default"),
                 new FutureCallback<PinData>() {
                     @Override
                     public void onSuccess(@Nullable final PinData result) {
@@ -63,7 +102,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                             public void run() {
                                 pinSaveButton.setProgress(0);
                                 pinSkipButton.setVisibility(View.VISIBLE);
-
                             }
                         });
                     }
@@ -73,7 +111,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-
         getGAApp().getConnectionObservable().addObserver(this);
     }
 
@@ -83,11 +120,125 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    private void createKey(final boolean deleteImmediately) {
+        KeyStore keyStore = null;
+        try {
+            keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            final KeyGenerator keyGenerator = KeyGenerator.getInstance(
+                    KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+
+                keyGenerator.init(new KeyGenParameterSpec.Builder(KEYSTORE_KEY,
+                        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                        .setUserAuthenticationRequired(true)
+                        .setUserAuthenticationValidityDurationSeconds(SECONDS_AUTH_VALID)
+                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                        .build());
+            keyGenerator.generateKey();
+
+
+        } catch (final NoSuchAlgorithmException | NoSuchProviderException
+                | InvalidAlgorithmParameterException | KeyStoreException
+                | CertificateException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (deleteImmediately && keyStore != null) {
+                try {
+                    keyStore.deleteEntry(KEYSTORE_KEY);
+                } catch (final KeyStoreException e) {
+                }
+            }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void tryEncrypt() {
+
+        createKey(false);
+        final byte[] fakePin = new byte[32];
+        new SecureRandom().nextBytes(fakePin);
+        try {
+            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            final SecretKey secretKey = (SecretKey) keyStore.getKey(KEYSTORE_KEY, null);
+            final Cipher cipher = Cipher.getInstance(
+                    KeyProperties.KEY_ALGORITHM_AES + "/" + KeyProperties.BLOCK_MODE_CBC + "/"
+                            + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+            final byte[] encryptedPIN = cipher.doFinal(fakePin);
+            final SharedPreferences.Editor editor = getSharedPreferences("pin", MODE_PRIVATE).edit();
+            final byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
+
+            editor.putString("native", Base64.encodeToString(encryptedPIN, Base64.NO_WRAP));
+            editor.putString("nativeiv", Base64.encodeToString(iv, Base64.NO_WRAP));
+
+            editor.apply();
+            setPin(Base64.encodeToString(fakePin, Base64.NO_WRAP).substring(0, 15));
+        } catch (final UserNotAuthenticatedException e) {
+            showAuthenticationScreen();
+        } catch (final KeyPermanentlyInvalidatedException e) {
+            Toast.makeText(this, "Problem with key "
+                            + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        } catch (final InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException | KeyStoreException |
+                CertificateException | UnrecoverableKeyException | IOException
+                | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void showAuthenticationScreen() {
+        final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);
+        if (intent != null) {
+            startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        if (requestCode == ACTIVITY_REQUEST_CODE) {
+            // Challenge completed, proceed with using cipher
+            if (resultCode == RESULT_OK) {
+                tryEncrypt();
+            } else {
+                // The user canceled or didn’t complete the lock screen
+                // operation. Go to error/cancellation flow.
+            }
+        }
+    }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pin_save);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+
+            try {
+                createKey(true);
+
+                final CheckBox pinSaveText = (CheckBox) findViewById(R.id.useNativeAuthentication);
+                pinSaveText.setVisibility(View.VISIBLE);
+
+                pinSaveText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
+                        if (isChecked) {
+                            tryEncrypt();
+                        }
+                    }
+                });
+
+            } catch (final RuntimeException e) {
+                // lock not set, simply don't show native options
+            }
+        }
         final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
 
         final CircularProgressButton pinSaveButton = (CircularProgressButton) findViewById(R.id.pinSaveButton);
@@ -103,7 +254,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                             if (event == null || !event.isShiftPressed()) {
                                 // the user is done typing.
-                                setPin(pinSaveButton, pinSaveText);
+                                setPin(pinSaveText.getText().toString());
                                 return true; // consume.
                             }
                         }
@@ -115,7 +266,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         pinSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                setPin(pinSaveButton, pinSaveText);
+                setPin(pinSaveText.getText().toString());
             }
         });
 
@@ -143,7 +294,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        final int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
         }
@@ -151,7 +302,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void update(Observable observable, Object data) {
+    public void update(final Observable observable, final Object data) {
 
     }
 }

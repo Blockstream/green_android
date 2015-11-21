@@ -184,5 +184,6 @@
   <string name="action_network">Network monitor</string>
   <string name="enterValidAddressTitleTorDisabled">Tor non è attivabile!</string>
   <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) e superiore non supporta la libreria Tor usata (Orchid).</string>
+  <string name="useNativeAuthentication">Riusa l\'autenticazione Android</string>
 
 </resources>

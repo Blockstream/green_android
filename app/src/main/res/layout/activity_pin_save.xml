@@ -37,6 +37,17 @@
 
         android:textSize="34sp" />
 
+    <CheckBox
+        android:id="@+id/useNativeAuthentication"
+        android:layout_width="wrap_content"
+        android:textColor="@color/textColor"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:text="@string/useNativeAuthentication" />
+
+
+
     <View
         android:layout_width="fill_parent"
         android:layout_height="20dp" />

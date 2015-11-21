@@ -190,5 +190,6 @@
     <string name="action_network">Network monitor</string>
     <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
     <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
+    <string name="useNativeAuthentication">Use Android\'s authentication</string>
 
 </resources>

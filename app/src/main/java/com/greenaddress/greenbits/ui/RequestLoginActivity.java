@@ -132,7 +132,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         });
                         try {
                             return ret.get();
-                        } catch (InterruptedException | ExecutionException e) {
+                        } catch (final InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                             return "";
                         }
@@ -335,7 +335,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         });
         Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(@Nullable Void result) {
+            public void onSuccess(final @Nullable Void result) {
                 final GaService gaService = getGAService();
                 Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override

@@ -59,7 +59,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         final View rootView = getView();
 
@@ -212,7 +212,6 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(activity, "Can't get a new address", Toast.LENGTH_LONG).show();
                             stopNewAddressAnimation(rootView);
                             copyIcon.setVisibility(View.VISIBLE);
                             copyText.setVisibility(View.VISIBLE);
