@@ -73,10 +73,10 @@ public class BTChipHWWallet implements ISigningWallet {
                     dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
                     remainingAttemptsFuture.set(new Integer(-1));  // -1 means success
                 } catch (final BTChipException e) {
-                    if (e.toString().indexOf("63c") != -1) {
+                    if (e.toString().contains("63c")) {
                         remainingAttemptsFuture.set(
                                 Integer.valueOf(String.valueOf(e.toString().charAt(e.toString().indexOf("63c") + 3))));
-                    } else if (e.toString().indexOf("6985") != -1) {
+                    } else if (e.toString().contains("6985")) {
                         // dongle is not set up
                         remainingAttemptsFuture.set(0);
                     } else {

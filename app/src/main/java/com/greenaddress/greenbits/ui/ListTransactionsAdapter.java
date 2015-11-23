@@ -17,7 +17,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
 
-public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
+class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
     private final String btcUnit;
 
     public ListTransactionsAdapter(final Context context, final int resource, final List<Transaction> objects, final String btcUnit) {
@@ -136,14 +136,14 @@ public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
 
     private static class Holder {
         public TextView listNumberConfirmation;
-        protected Transaction current;
-        protected TextView textValue;
-        protected TextView textWhen;
-        protected TextView bitcoinIcon;
-        protected TextView textWho;
-        protected TextView inOutIcon;
-        protected TextView bitcoinScale;
-        protected TextView textValueQuestionMark;
-        protected RelativeLayout mainLayout;
+        Transaction current;
+        TextView textValue;
+        TextView textWhen;
+        TextView bitcoinIcon;
+        TextView textWho;
+        TextView inOutIcon;
+        TextView bitcoinScale;
+        TextView textValueQuestionMark;
+        RelativeLayout mainLayout;
     }
 }

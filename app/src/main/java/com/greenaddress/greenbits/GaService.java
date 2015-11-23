@@ -556,7 +556,7 @@ public class GaService extends Service {
         }
     }
 
-    private enum SPVMode{
+    private enum SPVMode {
         ONION, TRUSTED, NORMAL
     }
 
@@ -627,7 +627,7 @@ public class GaService extends Service {
                     e.printStackTrace();
                 }
             }
-            else if (mode == SPVMode.TRUSTED) {
+            else {
                 peerGroup.setMaxConnections(1);
                 final Node n = new Node(trusted_addr);
                 try {

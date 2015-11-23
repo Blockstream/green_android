@@ -295,14 +295,14 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
         if (mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 
             final Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            NdefRecord record = null;
+            final NdefRecord[] record = new NdefRecord[1];
             try {
-                record = NdefRecord.createMime("x-gait/mnc", getGAService().getEntropyFromMnemonics(mnemonicText.getText().toString()));
+                record[0] = NdefRecord.createMime("x-gait/mnc", getGAService().getEntropyFromMnemonics(mnemonicText.getText().toString()));
             } catch (final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e) {
                 return;
             }
 
-            final NdefMessage message = new NdefMessage(new NdefRecord[]{record});
+            final NdefMessage message = new NdefMessage(record);
             final int size = message.toByteArray().length;
             try {
                 final Ndef ndef = Ndef.get(detectedTag);

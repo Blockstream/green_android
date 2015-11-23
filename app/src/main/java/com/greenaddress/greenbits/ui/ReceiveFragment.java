@@ -173,7 +173,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                             bd.setFilterBitmap(false);
                             imageView.setImageDrawable(bd);
 
-                            receiveAddress.setText(result.data.substring(0, 12) + "\n" + result.data.substring(12, 24) + "\n" + result.data.substring(24));
+                            receiveAddress.setText(String.format("%s\n%s\n%s", result.data.substring(0, 12), result.data.substring(12, 24), result.data.substring(24)));
 
 
                             imageView.setOnClickListener(new View.OnClickListener() {

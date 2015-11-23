@@ -250,7 +250,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                     }
 
 
-                    addressText.setText(address.substring(0, 12) + "\n" + address.substring(12, 24) + "\n" + address.substring(24));
+                    addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
                     new MaterialDialog.Builder(TabbedMainActivity.this)
                             .title(R.string.sweepAddressTitle)

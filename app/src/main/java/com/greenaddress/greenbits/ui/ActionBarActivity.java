@@ -6,11 +6,11 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 public abstract class ActionBarActivity extends AppCompatActivity {
-    protected GreenAddressApplication getGAApp() {
+    GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
 
-    protected GaService getGAService() {
+    GaService getGAService() {
         return getGAApp().gaService;
     }
 }

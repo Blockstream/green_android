@@ -21,7 +21,7 @@ public class Output {
         return subaccount;
     }
 
-    public void setSubaccount(Integer subaccount) {
+    private void setSubaccount(Integer subaccount) {
         this.subaccount = subaccount;
     }
 
@@ -29,7 +29,7 @@ public class Output {
         return pointer;
     }
 
-    public void setPointer(Integer pointer) {
+    private void setPointer(final Integer pointer) {
         this.pointer = pointer;
     }
 
@@ -37,7 +37,7 @@ public class Output {
         return branch;
     }
 
-    public void setBranch(Integer branch) {
+    private void setBranch(Integer branch) {
         this.branch = branch;
     }
 
@@ -45,7 +45,7 @@ public class Output {
         return value;
     }
 
-    public void setValue(String value) {
+    private void setValue(String value) {
         this.value = value;
     }
 
@@ -53,7 +53,7 @@ public class Output {
         return script;
     }
 
-    public void setScript(String script) {
+    private void setScript(String script) {
         this.script = script;
     }
 }

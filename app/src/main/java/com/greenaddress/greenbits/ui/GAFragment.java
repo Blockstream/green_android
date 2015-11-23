@@ -54,11 +54,11 @@ abstract class GAFragment extends Fragment {
     void onGAResume() {
     }
 
-    protected GreenAddressApplication getGAApp() {
+    GreenAddressApplication getGAApp() {
         return gaApp;
     }
 
-    protected GaService getGAService() {
+    GaService getGAService() {
         if (gaApp != null) {
             return gaApp.gaService;
         }
