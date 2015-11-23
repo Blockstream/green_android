@@ -161,6 +161,11 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                         @Override
                         public void run() {
 
+                            final Activity activity = getActivity();
+                            if (activity == null) {
+                                return;
+                            }
+
                             copyIcon.setVisibility(View.VISIBLE);
                             copyText.setVisibility(View.VISIBLE);
                             stopNewAddressAnimation(rootView);

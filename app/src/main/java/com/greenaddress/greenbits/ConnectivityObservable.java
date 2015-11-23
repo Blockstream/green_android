@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.Build;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -24,7 +26,6 @@ public class ConnectivityObservable extends Observable {
     private State state = State.OFFLINE;
     private boolean forcedLoggedout = false;
     private boolean forcedTimeoutout = false;
-    private static final String TAG = ConnectivityObservable.class.getSimpleName();
     private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
         public void onReceive(final Context context, final Intent intent) {
             checkNetwork();
@@ -161,9 +162,19 @@ public class ConnectivityObservable extends Observable {
     public boolean isWiFiUp() {
         final ConnectivityManager connectivityManager
                 = (ConnectivityManager) service.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            for (final Network n : connectivityManager.getAllNetworks()) {
+                final NetworkInfo ni = connectivityManager.getNetworkInfo(n);
+                if (ni.getSubtype() == ConnectivityManager.TYPE_WIFI && ni.isConnectedOrConnecting()) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            final NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+        }
     }
 
     public enum State {

@@ -117,7 +117,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
         final List<Integer> scores = new ArrayList<>();
         for (final String w : words) {
-            scores.add(new Integer(Integer.MAX_VALUE));
+            scores.add(Integer.MAX_VALUE);
         }
 
         for (int i = 0; i < words.size(); ++i) {
@@ -179,12 +179,12 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     private void login() {
         Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(@Nullable Void result) {
+            public void onSuccess(final @Nullable Void result) {
                 loginAfterServiceConnected();
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
                 Toast.makeText(MnemonicActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
             }
@@ -230,7 +230,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
                         @Nullable
                         @Override
-                        public ListenableFuture<LoginData> apply(@Nullable String passphrase) {
+                        public ListenableFuture<LoginData> apply(final @Nullable String passphrase) {
                             try {
                                 byte[] entropy = gaService.getMnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
                                 String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
@@ -279,23 +279,23 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         }, gaService.es);
     }
 
-    private byte[] decryptMnemonic(byte[] entropy, String normalizedPassphrase) throws GeneralSecurityException {
-        byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
-        byte[] encrypted = Arrays.copyOf(entropy, 32);
-        byte[] derived = SCrypt.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, 64);
-        byte[] key = Arrays.copyOfRange(derived, 32, 64);
-        SecretKeySpec keyspec = new SecretKeySpec(key, "AES");
+    private byte[] decryptMnemonic(final byte[] entropy, final String normalizedPassphrase) throws GeneralSecurityException {
+        final byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
+        final byte[] encrypted = Arrays.copyOf(entropy, 32);
+        final byte[] derived = SCrypt.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, 64);
+        final byte[] key = Arrays.copyOfRange(derived, 32, 64);
+        final SecretKeySpec keyspec = new SecretKeySpec(key, "AES");
 
         DRMWorkaround.maybeDisableExportControls();
         @SuppressLint("GetInstance") // ECB for 256 bits is enough, and is the same that BIP38 uses
-                Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        final Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
         cipher.init(Cipher.DECRYPT_MODE, keyspec);
-        byte[] decrypted = cipher.doFinal(encrypted, 0, 32);
-        for (int i = 0; i < 32; i++)
+        final byte[] decrypted = cipher.doFinal(encrypted, 0, 32);
+        for (int i = 0; i < 32; ++i)
             decrypted[i] ^= derived[i];
 
-        byte[] hash = Sha256Hash.createDouble(decrypted).getBytes();
+        final byte[] hash = Sha256Hash.createDouble(decrypted).getBytes();
         if (!Arrays.equals(Arrays.copyOf(hash, 4), salt))
             throw new RuntimeException("Invalid checksum");
         return decrypted;
@@ -436,9 +436,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 final byte[] array = ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload();
                 Futures.addCallback(askForPassphrase(), new FutureCallback<String>() {
                     @Override
-                    public void onSuccess(@Nullable String passphrase) {
+                    public void onSuccess(final @Nullable String passphrase) {
                         try {
-                            byte[] decrypted = decryptMnemonic(array, passphrase);
+                            final byte[] decrypted = decryptMnemonic(array, passphrase);
                             final GaService gaService = getGAService();
                             final String mnemonics = Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted));
                             edit.setText(mnemonics);
@@ -455,13 +455,13 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                                     }
                                 });
                             }
-                        } catch (GeneralSecurityException | IOException | MnemonicException e) {
+                        } catch (final GeneralSecurityException | IOException | MnemonicException e) {
                             e.printStackTrace();
                         }
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(final Throwable t) {
 
                     }
                 });
@@ -475,7 +475,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         super.onResume();
         getGAApp().getConnectionObservable().addObserver(this);
 
-        ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);

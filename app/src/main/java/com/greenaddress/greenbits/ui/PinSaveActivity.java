@@ -57,10 +57,8 @@ import javax.crypto.spec.IvParameterSpec;
 
 
 public class PinSaveActivity extends ActionBarActivity implements Observer {
-    private static final String TAG = PinSaveActivity.class.getSimpleName();
 
     private static final String KEYSTORE_KEY = "NativeAndroidAuth";
-    private KeyguardManager keyguardManager;
 
     private static final int SECONDS_AUTH_VALID = 10;
     private static final int ACTIVITY_REQUEST_CODE = 1;
@@ -193,6 +191,8 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
 
     @TargetApi(Build.VERSION_CODES.M)
     private void showAuthenticationScreen() {
+        final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+
         final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);
         if (intent != null) {
             startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
@@ -218,7 +218,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         setContentView(R.layout.activity_pin_save);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
             try {
                 createKey(true);

@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
@@ -237,7 +238,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                 if (tag != null) {
                     showPinDialog();
                 } else {
-                    UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    final UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null) {
                         showPinDialog(device);
                     }
@@ -255,33 +256,18 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         }
     }
 
-    private void showPinDialog(final UsbDevice device) {
-        showPinDialog(device, -1);
-    }
-
     private void showPinDialog() {
-        showPinDialog(null, -1);
+        showPinDialog(null);
     }
 
-    private void showPinDialog(final UsbDevice device, final int remainingAttempts) {
+    private void showPinDialog(final UsbDevice device) {
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
                 final EditText pinValue = (EditText) inflatedLayout.findViewById(R.id.btchipPINValue);
-                if (remainingAttempts != -1) {
-                    TextView invalidPIN = (TextView) inflatedLayout.findViewById(R.id.btchipPinPrompt);
-                    if (remainingAttempts > 0) {
-                        invalidPIN.setText(new Formatter().format(
-                                getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString());
-                    } else {
-                        invalidPIN.setText(getResources().getString(R.string.btchipNotSetup));
-                    }
-                    pinValue.setVisibility(View.GONE);
-                }
-
-                MaterialDialog.Builder builder = new MaterialDialog.Builder(RequestLoginActivity.this)
+                final MaterialDialog.Builder builder = new MaterialDialog.Builder(RequestLoginActivity.this)
                         .title("BTChip PIN")
                         .customView(inflatedLayout, true)
                         .positiveColorRes(R.color.accent)
@@ -289,22 +275,24 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         .titleColorRes(R.color.white)
                         .contentColorRes(android.R.color.white)
                         .theme(Theme.DARK)
+                        .positiveText("OK")
+                        .negativeText("CANCEL")
                         .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(final MaterialDialog materialDialog) {
+                        final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
+                        prog.setVisibility(View.VISIBLE);
+                        pinFuture.set(pinValue.getText().toString());
+                            }
                             @Override
-                            public void onPositive(MaterialDialog materialDialog) {
-                                final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
-                                prog.setVisibility(View.VISIBLE);
-                                pinFuture.set(pinValue.getText().toString());
+                            public void onNegative(final MaterialDialog materialDialog) {
+                                Toast.makeText(RequestLoginActivity.this, "No PIN provided, exiting.", Toast.LENGTH_LONG).show();
+                                RequestLoginActivity.this.finish();
                             }
                         });
-                if (remainingAttempts == -1) {
-                    builder = builder
-                            .positiveText("OK")
-                            .negativeText("CANCEL");
-                }
-                if (btchipDialog == null) {
-                    btchipDialog = builder.build();
-                }
+
+                btchipDialog = builder.build();
+
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
                 pinValue.requestFocus();
                 btchipDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
@@ -342,43 +330,56 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                     public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
                             @Override
-                            public ListenableFuture<LoginData> apply(String pin) throws Exception {
-                            	final String pinFinal = pin;
-                            	transportFuture = SettableFuture.create();
-                            	if (device != null) {
-                                    UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-                                    transportFuture.set(BTChipTransportAndroid.open(manager, device));                            		
-                            	}
-                            	else {
-                            		// If the tag was already tapped, work with it
-                            		BTChipTransport transport = getTransport(tag);
-                            		if (transport != null) {
-                                        transportFuture.set(transport);                            			
-                            		}
-                            		else {
-                            			// Prompt the user to tap
-                            			nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
-                            			.title("BTChip")
-                            			.content("Please tap card")
-                            			.build();
-                            			nfcWaitDialog.show();
-                            		}
-                            	}
-                            	return Futures.transform(transportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
+                            public ListenableFuture<LoginData> apply(final String pin) throws Exception {
+                                final String pinFinal = pin;
+                                transportFuture = SettableFuture.create();
+                                if (device != null) {
+                                    final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                                    transportFuture.set(BTChipTransportAndroid.open(manager, device));
+                                } else {
+                                    // If the tag was already tapped, work with it
+                                    final BTChipTransport transport = getTransport(tag);
+                                    if (transport != null) {
+                                        transportFuture.set(transport);
+                                    } else {
+                                        // Prompt the user to tap
+                                        nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
+                                                .title("BTChip")
+                                                .content("Please tap card")
+                                                .build();
+                                        nfcWaitDialog.show();
+                                    }
+                                }
+                                return Futures.transform(transportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
                                     @Nullable
                                     @Override
-                                    public ListenableFuture<LoginData> apply(@Nullable BTChipTransport transport) {                                    	
-                                        SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
-                                        hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pinFinal, remainingAttemptsFuture);                                        
+                                    public ListenableFuture<LoginData> apply(final @Nullable BTChipTransport transport) {
+                                        final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
+                                        hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pinFinal, remainingAttemptsFuture);
                                         return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
                                             @Nullable
                                             @Override
-                                            public ListenableFuture<LoginData> apply(@Nullable Integer input) {
-                                                if (input.intValue() == -1) {
+                                            public ListenableFuture<LoginData> apply(final @Nullable Integer input) {
+                                                final int remainingAttempts = input.intValue();
+
+                                                if (remainingAttempts == -1) {
                                                     // -1 means success
                                                     return gaService.login(hwWallet);
                                                 } else {
-                                                    showPinDialog(device, input.intValue());
+                                                    RequestLoginActivity.this.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            if (remainingAttempts > 0) {
+                                                                Toast.makeText(RequestLoginActivity.this, new Formatter().format(
+                                                                        getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString(), Toast.LENGTH_LONG).show();
+
+                                                            } else {
+                                                                Toast.makeText(RequestLoginActivity.this, getResources().getString(R.string.btchipNotSetup).toString(), Toast.LENGTH_LONG).show();
+                                                            }
+
+                                                            RequestLoginActivity.this.finish();
+                                                        }
+                                                    });
                                                     return Futures.immediateFuture(null);
                                                 }
                                             }
@@ -402,41 +403,39 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                     public void onFailure(final Throwable t) {
                         t.printStackTrace();
                         if (t instanceof LoginFailed) {
-                        	// Attempt auto register     
-                        	try {
-                        		BTChipPublicKey masterPublicKey = hwWallet.getDongle().getWalletPublicKey("");
-                        		BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");                			
-                        		Futures.addCallback(gaService.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
-                					new FutureCallback<LoginData>() {
-                				
-                        			@Override
-                        			public void onSuccess(@Nullable final LoginData result) {  
-                        				final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
-                        				startActivity(main);
-                        				RequestLoginActivity.this.finish();                                	
-                        			}
-                                
-                        			@Override
-                        			public void onFailure(final Throwable t) {
-                        				t.printStackTrace();
-                        				RequestLoginActivity.this.finish();
-                        			}                				                				
-                        		});
-                        	}
-                        	catch(Exception e) {
-                        		e.printStackTrace();
-                        		RequestLoginActivity.this.finish();
-                        	}
-                        }
-                        else {
-                        	RequestLoginActivity.this.finish();
+                            // Attempt auto register
+                            try {
+                                final BTChipPublicKey masterPublicKey = hwWallet.getDongle().getWalletPublicKey("");
+                                final BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");
+                                Futures.addCallback(gaService.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
+                                        new FutureCallback<LoginData>() {
+
+                                            @Override
+                                            public void onSuccess(@Nullable final LoginData result) {
+                                                final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
+                                                startActivity(main);
+                                                RequestLoginActivity.this.finish();
+                                            }
+
+                                            @Override
+                                            public void onFailure(final Throwable t) {
+                                                t.printStackTrace();
+                                                RequestLoginActivity.this.finish();
+                                            }
+                                        });
+                            } catch (final Exception e) {
+                                e.printStackTrace();
+                                RequestLoginActivity.this.finish();
+                            }
+                        } else {
+                            RequestLoginActivity.this.finish();
                         }
                     }
                 });
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -473,7 +472,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
     }
 
     @Override
-    public void update(Observable observable, Object data) {
+    public void update(final Observable observable, final Object data) {
 
     }
 
@@ -485,7 +484,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         return getGAApp().gaService;
     }
     
-    private BTChipTransport getTransport(Tag t) {
+    private BTChipTransport getTransport(final Tag t) {
     	BTChipTransport transport = null;
 		if (t != null) {
 			AndroidCard card = null;

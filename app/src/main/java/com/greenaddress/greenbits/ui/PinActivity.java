@@ -15,7 +15,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -57,7 +56,6 @@ public class PinActivity extends ActionBarActivity implements Observer {
 
     private Menu menu;
     private static final String KEYSTORE_KEY = "NativeAndroidAuth";
-    private KeyguardManager keyguardManager;
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
 
@@ -83,7 +81,8 @@ public class PinActivity extends ActionBarActivity implements Observer {
     }
 
     private void loginAfterServiceConnected(final CircularProgressButton pinLoginButton, final String ident, final String pinText, final TextView pinError) {
-        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.CONNECTED)) {
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
             final String androidLogin = getSharedPreferences("pin", MODE_PRIVATE).getString("native", null);
             if (androidLogin == null) {
                 Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
@@ -120,6 +119,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
                 if (getCallingActivity() == null) {
                     final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
                     startActivity(mainActivity);
+                    finish();
                 } else {
                     setResult(RESULT_OK);
                     finish();
@@ -174,10 +174,6 @@ public class PinActivity extends ActionBarActivity implements Observer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pin);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        }
-
         final EditText pinText = (EditText) findViewById(R.id.pinText);
         final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
         final TextView pinError = (TextView) findViewById(R.id.pinErrorText);
@@ -212,7 +208,6 @@ public class PinActivity extends ActionBarActivity implements Observer {
                     @Override
                     public void onClick(final View view) {
                         login(pinLoginButton, ident, pinText.getText().toString(), pinError);
-
                     }
                 });
             }
@@ -247,17 +242,28 @@ public class PinActivity extends ActionBarActivity implements Observer {
             final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
             final TextView pinError = (TextView) findViewById(R.id.pinErrorText);
 
-            login(pinLoginButton, ident, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15), pinError);
+            final GaService gaService = getGAApp().gaService;
+            if (gaService != null && gaService.onConnected != null && gaService.triggerOnFullyConnected != null) {
+                //Auxillary Future to make sure we are connected.
+                Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(@Nullable final Void result) {
+                        login(pinLoginButton, ident, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15), pinError);
+                    }
 
-        } catch (final UserNotAuthenticatedException e) {
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        finish();
+                    }
+                });
+            } else {
+                finish();
+            }
+        } catch (final KeyStoreException | InvalidKeyException e) {
             showAuthenticationScreen();
-        } catch (final KeyPermanentlyInvalidatedException e) {
-            Toast.makeText(this, "Problem with key "
-                            + e.getMessage(),
-                    Toast.LENGTH_LONG).show();
-        } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException | KeyStoreException |
+        } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException  |
                 CertificateException | UnrecoverableKeyException | IOException
-                | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
+                | NoSuchPaddingException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
@@ -271,12 +277,15 @@ public class PinActivity extends ActionBarActivity implements Observer {
             } else {
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go to error/cancellation flow.
+                Toast.makeText(PinActivity.this, "Authentication not provided, closing.", Toast.LENGTH_LONG).show();
+                finish();
             }
         }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private void showAuthenticationScreen() {
+        final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);
         if (intent != null) {
             startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
@@ -320,7 +329,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
                 public void run() {
                     final MenuItem item = menu.findItem(R.id.network_unavailable);
                     item.setVisible(visible);
-                    final Animation rotateAnim = AnimationUtils.loadAnimation(PinActivity.this, R.anim.rotation);
+                    AnimationUtils.loadAnimation(PinActivity.this, R.anim.rotation);
                 }
             });
         }
