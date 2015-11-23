@@ -52,12 +52,12 @@ android {
     buildTypes {
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            multiDexEnabled = true
-            minifyEnabled = true
-            shrinkResources = true
+            multiDexEnabled true
+            minifyEnabled true
+            shrinkResources true
         }
         debug {
-            multiDexEnabled = true
+            multiDexEnabled true
         }
     }
     productFlavors {
