@@ -656,7 +656,7 @@ public class WalletClient {
     private ListenableFuture<String> getChallenge(final ISigningWallet deterministicKey) {
         return Futures.transform(deterministicKey.getIdentifier(), new AsyncFunction<byte[], String>() {
             @Override
-            public ListenableFuture<String> apply(byte[] addr) throws Exception {
+            public ListenableFuture<String> apply(final byte[] addr) throws Exception {
                 final SettableFuture<String> asyncWamp = SettableFuture.create();
                 final Address address = new Address(Network.NETWORK, addr);
 
@@ -680,7 +680,7 @@ public class WalletClient {
     private ListenableFuture<String> getTrezorChallenge(final ISigningWallet deterministicKey) {
         return Futures.transform(deterministicKey.getIdentifier(), new AsyncFunction<byte[], String>() {
             @Override
-            public ListenableFuture<String> apply(byte[] addr) throws Exception {
+            public ListenableFuture<String> apply(final byte[] addr) throws Exception {
                 final SettableFuture<String> asyncWamp = SettableFuture.create();
                 final Address address = new Address(Network.NETWORK, addr);
 

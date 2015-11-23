@@ -7,12 +7,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.greenapi.ISigningWallet;
+import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.satoshilabs.trezor.Trezor;
 import com.subgraph.orchid.encoders.Hex;
 
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
@@ -30,13 +30,13 @@ public class TrezorHWWallet implements ISigningWallet {
     private final Trezor trezor;
     private List<Integer> addrn = new LinkedList<>();
 
-    public TrezorHWWallet(Trezor t) {
+    public TrezorHWWallet(final Trezor t) {
         trezor = t;
     }
 
     @Override
-    public ISigningWallet deriveChildKey(ChildNumber childNumber) {
-        TrezorHWWallet child = new TrezorHWWallet(trezor);
+    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
+        final TrezorHWWallet child = new TrezorHWWallet(trezor);
         child.addrn = new LinkedList<>(addrn);
         child.addrn.add(childNumber.getI());
         return child;
@@ -47,8 +47,8 @@ public class TrezorHWWallet implements ISigningWallet {
         return Futures.transform(getPubKey(), new Function<ECKey, byte[]>() {
             @Nullable
             @Override
-            public byte[] apply(@Nullable ECKey input) {
-                return input.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).getHash160();
+            public byte[] apply(final @Nullable ECKey input) {
+                return input.toAddress(Network.NETWORK).getHash160();
             }
         });
     }
@@ -59,7 +59,7 @@ public class TrezorHWWallet implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(Sha256Hash hash) {
+    public ListenableFuture<ECKey.ECDSASignature> signHash(final Sha256Hash hash) {
         return Futures.immediateFuture(null);
     }
 
@@ -83,7 +83,7 @@ public class TrezorHWWallet implements ISigningWallet {
                 final String[] xpub = trezor.MessageGetPublicKey(addrn.toArray(intArray)).split("%", -1);
                 final String pkHex = xpub[xpub.length - 2];
                 final String chainCodeHex = xpub[xpub.length - 4];
-                ECKey pubKey = ECKey.fromPublicOnly(Hex.decode(pkHex));
+                final ECKey pubKey = ECKey.fromPublicOnly(Hex.decode(pkHex));
                 return new DeterministicKey(
                         new ImmutableList.Builder<ChildNumber>().build(),
                         Hex.decode(chainCodeHex),

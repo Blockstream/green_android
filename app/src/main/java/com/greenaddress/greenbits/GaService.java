@@ -826,13 +826,13 @@ public class GaService extends Service {
 
         final List<ECKey> pubkeys = new ArrayList<>();
         final DeterministicKey gaWallet = getGaDeterministicKey(subaccount);
-        final ECKey gaKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(pointer.intValue()));
+        final ECKey gaKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(pointer));
         pubkeys.add(gaKey);
 
         ISigningWallet userWallet = client.getHdWallet();
-        if (subaccount.intValue() != 0) {
+        if (subaccount != 0) {
             userWallet = userWallet.deriveChildKey(new ChildNumber(3, true));
-            userWallet = userWallet.deriveChildKey(new ChildNumber(subaccount.intValue(), true));
+            userWallet = userWallet.deriveChildKey(new ChildNumber(subaccount, true));
         }
 
         return Futures.transform(userWallet.getPubKey(), new Function<DeterministicKey, Boolean>() {
@@ -840,13 +840,13 @@ public class GaService extends Service {
             @Override
             public Boolean apply(final @Nullable DeterministicKey master) {
                 final @Nullable DeterministicKey derivedRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
-                final @Nullable DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer.intValue()));
+                final @Nullable DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer));
                 pubkeys.add(derivedPointer);
 
                 String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
                 for (final Object subaccount_ : subaccounts) {
                     final Map<String, ?> subaccountMap = (Map) subaccount_;
-                    if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount.intValue())) {
+                    if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount)) {
                         twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
                         twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
                     }
@@ -859,7 +859,7 @@ public class GaService extends Service {
                             ECKey.fromPublicOnly(Hex.decode(twoOfThreeBackupPubkey)).getPubKeyPoint(),
                             null, null);
                     final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(backupWalletMaster, new ChildNumber(1));
-                    final DeterministicKey derivedBackupPointer = HDKeyDerivation.deriveChildKey(derivedBackupRoot, new ChildNumber(pointer.intValue()));
+                    final DeterministicKey derivedBackupPointer = HDKeyDerivation.deriveChildKey(derivedBackupRoot, new ChildNumber(pointer));
                     pubkeys.add(derivedBackupPointer);
                 }
 

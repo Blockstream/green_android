@@ -142,19 +142,17 @@ public class Trezor {
 		}
 		return null;
 	}
-        private int vendorId;
-//	private UsbDevice device;
+	private int vendorId;
 	private UsbDeviceConnection conn;
 	private String serial;
 	private UsbEndpoint epr, epw;
 	private TrezorGUICallback guicall;
-        public int getVendorId() {
+	public int getVendorId() {
                 return vendorId;
         }
 	public Trezor(TrezorGUICallback guicall, UsbDevice device, UsbDeviceConnection conn, UsbInterface iface, UsbEndpoint epr, UsbEndpoint epw) {
 		this.guicall = guicall;
-                this.vendorId = device.getVendorId();
-//		this.device = device;
+		this.vendorId = device.getVendorId();
 		this.conn = conn;
 		this.epr = epr;
 		this.epw = epw;
@@ -314,12 +312,12 @@ public class Trezor {
 		/* User can catch ButtonRequest to Cancel by not calling _get */
 		case "ButtonRequest":
 			return _get(this.send(TrezorMessage.ButtonAck.newBuilder().build()));
-		case "pinMatrixRequest":
+		case "PinMatrixRequest":
 			return _get(this.send(
 				TrezorMessage.PinMatrixAck.newBuilder().
 				setPin(this.guicall.pinMatrixRequest()).
 				build()));
-		case "passphraseRequest":
+		case "PassphraseRequest":
 			return _get(this.send(
 				TrezorMessage.PassphraseAck.newBuilder().
 				/* TODO: UTF8 VS Unicode... Fight! */
