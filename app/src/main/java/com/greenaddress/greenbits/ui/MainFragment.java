@@ -27,6 +27,7 @@ import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Monetary;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
@@ -150,7 +151,15 @@ public class MainFragment extends GAFragment implements Observer {
     }
 
     private void updateBalance() {
-        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+        final GaService gaService = getGAService();
+        if (gaService == null) {
+            return;
+        }
+        final Monetary monetary = gaService.getBalanceCoin(curSubaccount);
+        if (monetary == null) {
+            return;
+        }
+        final String btcUnit = (String) gaService.getAppearanceValue("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.mainBitcoinScaleText);
@@ -161,20 +170,21 @@ public class MainFragment extends GAFragment implements Observer {
         } else {
             balanceBitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
+
         final String btcBalance = bitcoinFormat.noCode().format(
-                getGAService().getBalanceCoin(curSubaccount)).toString();
+                monetary).toString();
         final String btcBalanceVerified;
-        if (getGAService().getVerifiedBalanceCoin(curSubaccount) != null) {
+        if (gaService.getVerifiedBalanceCoin(curSubaccount) != null) {
             btcBalanceVerified = bitcoinFormat.noCode().format(
-                    getGAService().getVerifiedBalanceCoin(curSubaccount)).toString();
+                    gaService.getVerifiedBalanceCoin(curSubaccount)).toString();
         } else {
             btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
         }
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
-                        getGAService().getBalanceFiat(curSubaccount))
+                        gaService.getBalanceFiat(curSubaccount))
                         .toString();
-        final String fiatCurrency = getGAService().getFiatCurrency();
+        final String fiatCurrency = gaService.getFiatCurrency();
         final String converted = CurrencyMapper.map(fiatCurrency);
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
@@ -237,7 +247,7 @@ public class MainFragment extends GAFragment implements Observer {
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
         final View.OnClickListener unconfirmedClickListener = new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 if (spvStatusDialog != null) {
                     return;
                 }
@@ -251,7 +261,7 @@ public class MainFragment extends GAFragment implements Observer {
                             getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
                 } else {
                     // no observer means we're synchronizing
-                    String numblocksLeft = String.valueOf(getGAService().getSpvBlocksLeft());
+                    final String numblocksLeft = String.valueOf(getGAService().getSpvBlocksLeft());
                     if (numblocksLeft.equals(String.valueOf(Integer.MAX_VALUE))){
                         blocksLeft = "Not yet connected to SPV!";
                     }else{
@@ -278,12 +288,12 @@ public class MainFragment extends GAFragment implements Observer {
                 });
                 builder.callback(new MaterialDialog.ButtonCallback() {
                     @Override
-                    public void onNegative(MaterialDialog materialDialog) {
+                    public void onNegative(final MaterialDialog materialDialog) {
                         spvStatusDialog = null;
                     }
 
                     @Override
-                    public void onPositive(MaterialDialog materialDialog) {
+                    public void onPositive(final MaterialDialog materialDialog) {
                         spvStatusDialog = null;
                         getGAApp().getConnectionObservable().deleteObserver(wiFiObserver);
                         wiFiObserver = null;
@@ -300,16 +310,16 @@ public class MainFragment extends GAFragment implements Observer {
                         public void run() {
                             if (spvStatusDialog != null) {
                                 try {
-                                    if(getGAService().getSpvBlocksLeft() != Integer.MAX_VALUE) {
+                                    if (getGAService().getSpvBlocksLeft() != Integer.MAX_VALUE) {
                                         spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
                                                 getGAService().getSpvBlocksLeft());
                                     }
-                                    else{
+                                    else {
                                         spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
                                                 "Not yet connected to SPV!");
                                     }
                                     handler.postDelayed(this, 2000);
-                                } catch (IllegalStateException e) {
+                                } catch (final IllegalStateException e) {
                                     e.printStackTrace();
                                     // can happen if the activity is terminated
                                     // ("Fragment MainFragment not attached to Activity")
@@ -343,7 +353,7 @@ public class MainFragment extends GAFragment implements Observer {
                 new Function<Integer, Void>() {
                     @Nullable
                     @Override
-                    public Void apply(@Nullable Integer input) {
+                    public Void apply(final @Nullable Integer input) {
                         getGAService().getBalanceObservables().get(new Integer(curSubaccount)).deleteObserver(curBalanceObserver);
                         curSubaccount = input;
                         curBalanceObserver = makeBalanceObserver();
@@ -404,7 +414,7 @@ public class MainFragment extends GAFragment implements Observer {
     private Observer makeTxVerifiedObservable() {
         txVerifiedObservable = new Observer() {
             @Override
-            public void update(Observable observable, Object data) {
+            public void update(final Observable observable, final Object data) {
                 if (currentList == null) return;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -412,7 +422,7 @@ public class MainFragment extends GAFragment implements Observer {
                         // "Make sure the content of your adapter is not modified from a background
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
-                        for (Transaction tx : currentList) {
+                        for (final Transaction tx : currentList) {
                             tx.spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
                                             + (getGAService().getReceivingId()),
                                     Context.MODE_PRIVATE).getBoolean(tx.txhash, false);

@@ -880,12 +880,15 @@ public class SendFragment extends GAFragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        convertBtcToFiat(Float.valueOf((String) result.get("fiat_exchange")));
-                        changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon), currency);
-                        fiatPopup.getMenu().setGroupEnabled(selected_group++, true);
-                        fiatPopup.getMenu().removeItem(order);
-                        fiatPopup.getMenu().add(selected_group, order, order, formatFiatListItem(getActivity(), currency, exchange));
-                        fiatPopup.getMenu().setGroupEnabled(selected_group, false);
+                        final Activity activity = getActivity();
+                        if (activity != null) {
+                            convertBtcToFiat(Float.valueOf((String) result.get("fiat_exchange")));
+                            changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon), currency);
+                            fiatPopup.getMenu().setGroupEnabled(selected_group++, true);
+                            fiatPopup.getMenu().removeItem(order);
+                            fiatPopup.getMenu().add(selected_group, order, order, formatFiatListItem(activity, currency, exchange));
+                            fiatPopup.getMenu().setGroupEnabled(selected_group, false);
+                        }
                     }
                 });
                 return null;

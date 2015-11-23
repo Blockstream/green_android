@@ -127,7 +127,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance(
                     KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
 
-                keyGenerator.init(new KeyGenParameterSpec.Builder(KEYSTORE_KEY,
+            keyGenerator.init(new KeyGenParameterSpec.Builder(KEYSTORE_KEY,
                         KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                         .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                         .setUserAuthenticationRequired(true)
