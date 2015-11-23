@@ -15,6 +15,6 @@ android:
 jdk:
     - oraclejdk7
 
-script: "./gradlew clean connectedBtctestnetDebugAndroidTest"
+script: "./gradlew clean assemble -x lint"
 
 before_install: "git submodule update --init --recursive"
