@@ -93,7 +93,6 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         gaService.es.submit(new Callable<Object>() {
             @Override
             public Object call() {
-            	//transportFactory = new LedgerTransportTEEProxyFactory(FirstScreenActivity.this);
             	transportFactory = new LedgerTransportTEEProxyFactory(getApplicationContext());
             	final LedgerTransportTEEProxy teeTransport = (LedgerTransportTEEProxy)transportFactory.getTransport();
             	byte[] nvm = teeTransport.loadNVM(NVM_PATH);
@@ -104,14 +103,14 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             	boolean initialized = false;
 				// Check if the TEE can be connected
 				final LinkedBlockingQueue<Boolean> waitConnected = new LinkedBlockingQueue<>(1);
-				boolean result = transportFactory.connect(FirstScreenActivity.this, new BTChipTransportFactoryCallback() {
+				final boolean result = transportFactory.connect(FirstScreenActivity.this, new BTChipTransportFactoryCallback() {
 
 					@Override
-					public void onConnected(boolean success) {
+					public void onConnected(final boolean success) {
 						try {
 							waitConnected.put(success);
 						}
-						catch(InterruptedException e) {							
+						catch(final InterruptedException e) {
 						}						
 					}
 					
@@ -120,7 +119,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
 					try {
 						initialized = waitConnected.poll(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
 					}
-					catch(InterruptedException e) {						
+					catch(final InterruptedException e) {
 					}
 					if (initialized) {
 						initialized = teeTransport.init();
@@ -134,10 +133,10 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             		boolean teeReady = false;
             		if (nvm != null) {
             			try {
-            				int attempts = dongle.getVerifyPinRemainingAttempts();
+            				final int attempts = dongle.getVerifyPinRemainingAttempts();
             				teeReady = (attempts != 0);
             			}
-            			catch(Exception e) {            				
+            			catch(final Exception e) {
             			}
             		}
             		Log.d(TAG, "TEE ready " + teeReady);
@@ -157,15 +156,15 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
 		                        .negativeText("CANCEL")
 		                        .callback(new MaterialDialog.ButtonCallback() {
 		                        	@Override
-		                        	public void onPositive(MaterialDialog materialDialog) {
+		                        	public void onPositive(final MaterialDialog materialDialog) {
 		                        		proceedTEE(teeTransport, dongle, true);
 		                        	}
 		                        	
-		                        	public void onNegative(MaterialDialog materialDialog) {
+		                        	public void onNegative(final MaterialDialog materialDialog) {
 		                        		try {
 		                        			teeTransport.close();
 		                        		}
-		                        		catch(Exception e) {		                        			
+		                        		catch(final Exception e) {
 		                        		}
 		                        	}
 		                        })                        
@@ -204,12 +203,12 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             			// Save the encrypted image
             			transport.writeNVM(NVM_PATH, transport.requestNVM().get());
             		}
-            		catch(Exception e) {
+            		catch(final Exception e) {
             			Log.d(TAG, "Setup exception", e);
             			try {
             				transport.close();
             			}
-            			catch(Exception e1) {            				
+            			catch(final Exception e1) {
             			}
             			FirstScreenActivity.this.runOnUiThread(new Runnable() {
 							@Override
@@ -244,17 +243,17 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             		Log.d(TAG, "write NVM after verify pin");
             		transport.writeNVM(NVM_PATH, transport.requestNVM().get());  
             	}
-            	catch(Exception e) {
+            	catch(final Exception e) {
             		Log.d(TAG, "PIN exception", e);
             		try {
             			transport.writeNVM(NVM_PATH, transport.requestNVM().get());
             		}
-            		catch(Exception e1) {            			
+            		catch(final Exception e1) {
             		}        			
             		try {
             			transport.close();
             		}
-            		catch(Exception e1) {            			
+            		catch(final Exception e1) {
             		}
         			FirstScreenActivity.this.runOnUiThread(new Runnable() {
 						@Override
@@ -284,7 +283,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             	final BTChipPublicKey loginPublicKeyFixed = loginPublicKey;
                 Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
                     @Override
-                    public void onSuccess(@Nullable Void result) {
+                    public void onSuccess(final @Nullable Void result) {
                         final GaService gaService = getGAService();
 
                         Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
@@ -312,18 +311,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
                             public void onFailure(final Throwable t) {
                             	Log.d(TAG, "login failed", t);
                                 if (t instanceof LoginFailed) {
-                                    // login failed - most likely not paired
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                        	/*
-                                            new MaterialDialog.Builder(RequestLoginActivity.this)
-                                                    .title(getResources().getString(R.string.trezor_login_failed))
-                                                    .content(getResources().getString(R.string.trezor_login_failed_details))
-                                                    .build().show();
-                                            */
-                                        }
-                                    });
+
                                 } else {
                                     FirstScreenActivity.this.finish();
                                 }
@@ -332,7 +320,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(final Throwable t) {
                     	Log.d(TAG, "login crashed", t);
                         t.printStackTrace();
                     }
@@ -391,7 +379,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void update(Observable observable, Object data) {
+    public void update(final Observable observable, final Object data) {
 
     }
 }

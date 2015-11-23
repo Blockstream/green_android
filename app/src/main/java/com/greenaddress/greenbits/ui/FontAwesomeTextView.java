@@ -36,7 +36,7 @@ public class FontAwesomeTextView extends TextView {
             init();
     }
 
-    protected void init() {
+    private void init() {
         defaultTypeface = getTypeface();
         setAwesomeTypeface();
     }

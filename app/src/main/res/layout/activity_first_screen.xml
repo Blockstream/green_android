@@ -44,7 +44,7 @@
 
     <View
         android:layout_width="fill_parent"
-        android:layout_height="50dp"></View>
+        android:layout_height="50dp"/>
 
     <TextView
         android:layout_width="fill_parent"
@@ -56,7 +56,7 @@
 
     <View
         android:layout_width="fill_parent"
-        android:layout_height="10dp"></View>
+        android:layout_height="10dp"/>
 
     <TextView
         android:layout_width="fill_parent"
@@ -67,7 +67,7 @@
 
     <View
         android:layout_width="fill_parent"
-        android:layout_height="20dp"></View>
+        android:layout_height="20dp"/>
 
 
     <LinearLayout

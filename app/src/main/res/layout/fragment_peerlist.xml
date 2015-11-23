@@ -10,7 +10,7 @@
         android:textColor="@android:color/black"
         android:id="@+id/peerlistview"
         android:divider="@android:color/darker_gray"
-        android:dividerHeight="10.0sp"></ListView>
+        android:dividerHeight="10.0sp"/>
     <TextView
         android:id="@+id/empty_list_view"
         android:layout_width="match_parent"

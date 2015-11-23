@@ -67,13 +67,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
             @Override
             public void onFailure(final Throwable t) {
                 t.printStackTrace();
-                final String androidLogin = getSharedPreferences("pin", MODE_PRIVATE).getString("native", null);
-                if (androidLogin == null) {
-                    Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(PinActivity.this, "Failed to connect, please reopen the app to authenticate", Toast.LENGTH_LONG).show();
-                    finish();
-                }
+                Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -81,14 +75,8 @@ public class PinActivity extends ActionBarActivity implements Observer {
     private void loginAfterServiceConnected(final CircularProgressButton pinLoginButton, final String ident, final String pinText, final TextView pinError) {
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
-            final String androidLogin = getSharedPreferences("pin", MODE_PRIVATE).getString("native", null);
-            if (androidLogin == null) {
-                Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
-                return;
-            } else {
-                Toast.makeText(PinActivity.this, "Failed to connect, please reopen the app to authenticate", Toast.LENGTH_LONG).show();
-                finish();
-            }
+            Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+            return;
         }
 
         final GaService gaService = getGAService();
@@ -170,45 +158,48 @@ public class PinActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pin);
-
-        final EditText pinText = (EditText) findViewById(R.id.pinText);
-        final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
-        final TextView pinError = (TextView) findViewById(R.id.pinErrorText);
 
         final String ident = getSharedPreferences("pin", MODE_PRIVATE).getString("ident", null);
         final String androidLogin = getSharedPreferences("pin", MODE_PRIVATE).getString("native", null);
 
-        pinText.setOnEditorActionListener(
-                new EditText.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                                actionId == EditorInfo.IME_ACTION_DONE ||
-                                event.getAction() == KeyEvent.ACTION_DOWN &&
-                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            if (event == null || !event.isShiftPressed()) {
-                                // the user is done typing.
-                                login(pinLoginButton, ident, pinText.getText().toString(), pinError);
-                                return true; // consume.
-                            }
-                        }
-                        return false; // pass on to other listeners.
-                    }
-                }
-        );
-        if (ident != null) {
-            if (androidLogin != null) {
-                tryDecrypt();
+        if (androidLogin == null && ident != null) {
+            setContentView(R.layout.activity_pin);
 
-            } else {
-                pinLoginButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        login(pinLoginButton, ident, pinText.getText().toString(), pinError);
+            final EditText pinText = (EditText) findViewById(R.id.pinText);
+            final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
+            final TextView pinError = (TextView) findViewById(R.id.pinErrorText);
+
+            pinText.setOnEditorActionListener(
+                    new EditText.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+                            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                                    actionId == EditorInfo.IME_ACTION_DONE ||
+                                    event.getAction() == KeyEvent.ACTION_DOWN &&
+                                            event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                                if (event == null || !event.isShiftPressed()) {
+                                    // the user is done typing.
+                                    if (!pinText.getText().toString().isEmpty()) {
+                                        login(pinLoginButton, ident, pinText.getText().toString(), pinError);
+                                        return true; // consume.
+                                    }
+                                    return false; // pass on to other listeners.
+                                }
+                            }
+                            return false; // pass on to other listeners.
+                        }
                     }
-                });
-            }
+            );
+
+            pinLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    login(pinLoginButton, ident, pinText.getText().toString(), pinError);
+                }
+            });
+
+        } else if (androidLogin != null && ident != null) {
+            tryDecrypt();
         } else {
             final Intent firstScreenActivity = new Intent(this, FirstScreenActivity.class);
             startActivity(firstScreenActivity);
@@ -237,17 +228,89 @@ public class PinActivity extends ActionBarActivity implements Observer {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(aesiv, Base64.NO_WRAP)));
             final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
 
-            final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
-            final TextView pinError = (TextView) findViewById(R.id.pinErrorText);
-
             final GaService gaService = getGAApp().gaService;
             if (gaService != null && gaService.onConnected != null && gaService.triggerOnFullyConnected != null) {
                 //Auxillary Future to make sure we are connected.
                 Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(@Nullable final Void result) {
-                        login(pinLoginButton, ident, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15), pinError);
-                    }
+
+                        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
+                            @Override
+                            public void onSuccess(final @Nullable Void result) {
+                                final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+                                if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
+                                    Toast.makeText(PinActivity.this, "Failed to connect, please reopen the app to authenticate", Toast.LENGTH_LONG).show();
+                                    finish();
+                                }
+
+                                final PinData pinData = new PinData(ident,
+                                        prefs.getString("encrypted", null));
+
+                                final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
+                                    @Override
+                                    public ListenableFuture<LoginData> apply(final Void input) {
+                                        return gaService.pinLogin(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
+                                    }
+                                };
+
+                                final ListenableFuture<LoginData> loginFuture = Futures.transform(gaService.onConnected, connectToLogin, gaService.es);
+
+                                Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
+                                    @Override
+                                    public void onSuccess(@Nullable final LoginData result) {
+                                        final SharedPreferences.Editor editor = prefs.edit();
+                                        editor.putInt("counter", 0);
+                                        editor.apply();
+                                        if (getCallingActivity() == null) {
+                                            final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
+                                            startActivity(mainActivity);
+                                            finish();
+                                        } else {
+                                            setResult(RESULT_OK);
+                                            finish();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(final Throwable t) {
+                                        String message = t.getMessage();
+                                        final int counter = prefs.getInt("counter", 0) + 1;
+                                        if (t instanceof GAException) {
+                                            final SharedPreferences.Editor editor = prefs.edit();
+                                            if (counter < 3) {
+                                                editor.putInt("counter", counter);
+                                                message = getString(R.string.attemptsLeftLong, 3 - counter);
+                                            } else {
+                                                message = getString(R.string.attemptsFinished);
+                                                editor.clear();
+                                            }
+
+                                            editor.apply();
+                                        }
+                                        final String tstMsg = message;
+
+                                        PinActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(PinActivity.this, tstMsg, Toast.LENGTH_LONG).show();
+                                                if (counter >= 3) {
+                                                    final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
+                                                    startActivity(firstScreenActivity);
+                                                    finish();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }, gaService.es);                            }
+
+                            @Override
+                            public void onFailure(final Throwable t) {
+                                t.printStackTrace();
+                                Toast.makeText(PinActivity.this, "Failed to connect, please reopen the app to authenticate", Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                        });                    }
 
                     @Override
                     public void onFailure(final Throwable t) {
@@ -301,7 +364,6 @@ public class PinActivity extends ActionBarActivity implements Observer {
             startActivity(mainActivity);
             finish();
         }
-
     }
 
     @Override

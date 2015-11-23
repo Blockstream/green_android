@@ -170,7 +170,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             final byte[] encryptedPIN = cipher.doFinal(fakePin);
             final SharedPreferences.Editor editor = getSharedPreferences("pin", MODE_PRIVATE).edit();
             final byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-
             editor.putString("native", Base64.encodeToString(encryptedPIN, Base64.NO_WRAP));
             editor.putString("nativeiv", Base64.encodeToString(iv, Base64.NO_WRAP));
 

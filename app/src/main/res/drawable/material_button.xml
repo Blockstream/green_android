@@ -3,22 +3,22 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <corners android:radius="2dp"></corners>
-            <solid android:color="@color/accentPressed"></solid>
+            <corners android:radius="2dp"/>
+            <solid android:color="@color/accentPressed"/>
         </shape>
     </item>
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
-            <corners android:radius="2dp"></corners>
-            <solid android:color="@color/accentLight"></solid>
+            <corners android:radius="2dp"/>
+            <solid android:color="@color/accentLight"/>
         </shape>
 
     </item>
 
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="2dp"></corners>
-            <solid android:color="@color/accent"></solid>
+            <corners android:radius="2dp"/>
+            <solid android:color="@color/accent"/>
         </shape>
     </item>
 </selector>

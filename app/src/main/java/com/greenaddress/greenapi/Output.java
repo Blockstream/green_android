@@ -41,10 +41,6 @@ public class Output {
         this.branch = branch;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     private void setValue(String value) {
         this.value = value;
     }

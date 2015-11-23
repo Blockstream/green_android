@@ -36,7 +36,6 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             final LayoutInflater inflater = LayoutInflater.from(getContext());
             returnedView = inflater.inflate(R.layout.list_element_transaction, parent, false);
             holder = new Holder();
-            holder.current = current;
             holder.textValue = (TextView) returnedView.findViewById(R.id.listValueText);
             holder.textValueQuestionMark = (TextView) returnedView.findViewById(R.id.listValueQuestionMark);
             holder.textWhen = (TextView) returnedView.findViewById(R.id.listWhenText);
@@ -136,7 +135,6 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
 
     private static class Holder {
         public TextView listNumberConfirmation;
-        Transaction current;
         TextView textValue;
         TextView textWhen;
         TextView bitcoinIcon;

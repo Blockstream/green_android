@@ -31,10 +31,6 @@
         android:name="android.hardware.nfc"
         android:required="false" />
 
-    <uses-permission
-        android:name="android.permission.USE_FINGERPRINT"
-        android:required="false"/>
-
     <application
         android:name="com.greenaddress.greenbits.GreenAddressApplication"
         android:allowBackup="false"
