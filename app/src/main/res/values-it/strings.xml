@@ -2,15 +2,11 @@
 <resources>
   <string name="action_settings">Configurazione</string>
   <string name="title_activity_mnemonic">Accedi</string>
-  <string name="title_activity_send">Invia</string>
-  <string name="title_activity_receive">Ricevi</string>
   <string name="sendToText">A</string>
   <string name="sendAmountText">Ammontare</string>
   <string name="sendSendButton">VERIFICA &amp; INVIA</string>
-  <string name="title_activity_pin">Pin</string>
   <string name="pinSaveText">Salva</string>
   <string name="pinLoginText">Accedi</string>
-  <string name="sendAvailableText">Disponibile</string>
   <string name="title_activity_qr_scanner">QR Scanner</string>
   <string name="title_activity_sign_up">Registrati</string>
   <string name="signupContinueButtonText">CONTINUA</string>
@@ -23,7 +19,6 @@
   <string name="bitcoinScaleMilliText">Milli</string>
   <string name="bitcoinScaleMicroText">Micro</string>
   <string name="bitcoinScaleBitsText">Bits</string>
-  <string name="bitcoinScaleSatoshiText">Satoshi</string>
   <string name="receive_title">RICEVI</string>
   <string name="main_title">BILANCIO</string>
   <string name="send_title">INVIA</string>
@@ -58,13 +53,11 @@
     <item>minuti</item>
     <item>secondi</item>
   </string-array>
-  <string name="setup">CONFIGURAZIONE 2FA</string>
   <string name="send">INVIA</string>
   <string name="sweep">PRELEVA</string>
   <string name="sweep_bip38_passphrase_prompt">Per piacere inserisci la password BIP38:</string>
   <string name="invalid_passphrase">Password incorretta</string>
   <string name="invalid_key">Chiave invalida</string>
-  <string name="title_mnemonic">Mnemonica</string>
   <string name="warning">Attenzione!</string>
   <string name="save_password_now">Devi salvarti la passphrase, adesso.</string>
   <string name="greenaddress_headline">il più semplice, sicuro e veloce wallet bitcoin</string>
@@ -97,7 +90,6 @@
   <string name="newTxAmount">Importo: </string>
   <string name="newTxRecipient">Destinatario: </string>
   <string name="newTxFee">Commissione: </string>
-  <string name="network_unavailable_text">Rete non disponibile</string>
   <string name="invalidAmountAndAddress">Indirizzo ed importo non validi</string>
   <string name="invalidAddress">Indirizzo non valido</string>
   <string name="invalidAmount">Importo non valido</string>
@@ -174,8 +166,6 @@
     <string name="twoFacGauthTextCode">Or you can use the following code (touch to copy): %s. Remember to back it up!</string>
     <string name="copyAddress">Copia</string>
   <string name="trustedspv">Collegati solo ad un nodo fidato per SPV</string>
-  <string name="changingRequiresRestartWarnOnionTitle">Attenzione: Indirizzo non onion rilevato! (Restart richiesto)</string>
-  <string name="changingRequiresRestartWarnOnionText">La connessione via Tor (.onion) ai nodi permette migliore privacy e sicurezza. Se decidi di continuare, per piacere fai un restart dell\'app.</string>
   <string name="enterValidAddressTitle">Indirizzo invalido</string>
   <string name="enterValidAddressText">Per piacere inserisci un indirizzo valido .onion on un indirizzo IP (.onion preferibilmente)</string>
   <string name="changingWarnOnionTitle">Attenzione: Indirizzo non-.onion rilevato!</string>

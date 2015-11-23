@@ -2,15 +2,11 @@
 <resources>
   <string name="action_settings">الإعدادات</string>
   <string name="title_activity_mnemonic">تسجيل الدخول</string>
-  <string name="title_activity_send">إرسال</string>
-  <string name="title_activity_receive">استقبال</string>
   <string name="sendToText">إلى</string>
   <string name="sendAmountText">مبلغ</string>
   <string name="sendSendButton">إرسال</string>
-  <string name="title_activity_pin">Pin</string>
   <string name="pinSaveText">حفظ</string>
   <string name="pinLoginText">تسجيل الدخول</string>
-  <string name="sendAvailableText">متوفر</string>
   <string name="title_activity_qr_scanner">ماسح كيو آر كود</string>
   <string name="title_activity_sign_up">سجل نفسك</string>
   <string name="signupContinueButtonText">تابع</string>
@@ -22,7 +18,6 @@
   <string name="bitcoinScaleMilliText">ميلي</string>
   <string name="bitcoinScaleMicroText">مايكرو</string>
   <string name="bitcoinScaleBitsText">بتات</string>
-  <string name="bitcoinScaleSatoshiText">ساتوشي</string>
   <string name="receive_title">إستلام</string>
   <string name="main_title">كل</string>
   <string name="send_title">ارسال</string>
@@ -57,13 +52,11 @@
     <item>دقيقة </item>
     <item>ثانية </item>
   </string-array>
-  <string name="setup">إعداد 2FA</string>
   <string name="send">ارسال</string>
   <string name="sweep">الاجتياح</string>
   <string name="sweep_bip38_passphrase_prompt">يرجى تقديم كلمة المرور BIP38:</string>
   <string name="invalid_passphrase">كلمة المرور خاطئة</string>
   <string name="invalid_key">المفتاح غير صالح</string>
-  <string name="title_mnemonic">متعلق بالذاكرة</string>
   <string name="warning">تحذير!</string>
   <string name="save_password_now">يجب حفظ عبارة المرور هذه  الآن</string>
   <string name="greenaddress_headline">أسهل، أكثر أمانا وأسرع محفظة بيتكوين</string>
@@ -96,7 +89,6 @@
   <string name="newTxAmount">مبلغ</string>
   <string name="newTxRecipient">المستلم:</string>
   <string name="newTxFee">الرسوم:</string>
-  <string name="network_unavailable_text">الشبكة غير متوفرة</string>
   <string name="invalidAmountAndAddress">مبلغ و عنوان غير صالحان </string>
   <string name="invalidAddress">عنوان غير صالح</string>
   <string name="invalidAmount">مبلغ غير صالح</string>
@@ -172,8 +164,6 @@
   <string name="txReceivedOn">الاستلام في</string>
   <string name="twoFacGauthTextCode">أو يمكنك استخدام التعليمات البرمجية التالية: %s.لحفظ نسخة احتياطية منه!</string>
   <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-  <string name="changingRequiresRestartWarnOnionTitle">Warning: Non-.onion address detected! (Restart required)</string>
-  <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
   <string name="enterValidAddressTitle">Not a valid address!</string>
   <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
   <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>

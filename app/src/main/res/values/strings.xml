@@ -5,15 +5,11 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_mnemonic">Log in</string>
     <string name="title_activity_main" translatable="false">GreenBits</string>
-    <string name="title_activity_send">Send</string>
-    <string name="title_activity_receive">Receive</string>
     <string name="sendToText">To</string>
     <string name="sendAmountText">Amount</string>
     <string name="sendSendButton">Review &amp; Send</string>
-    <string name="title_activity_pin">Pin</string>
     <string name="pinSaveText">Save</string>
     <string name="pinLoginText">Login</string>
-    <string name="sendAvailableText">Available</string>
     <string name="title_activity_first_screen" translatable="false">GreenBits</string>
     <string name="title_activity_qr_scanner">QR Scanner</string>
     <string name="title_activity_sign_up">Sign up</string>
@@ -27,8 +23,6 @@
     <string name="bitcoinScaleMilliText">Milli</string>
     <string name="bitcoinScaleMicroText">Micro</string>
     <string name="bitcoinScaleBitsText">Bits</string>
-    <string name="bitcoinScaleSatoshiText">Satoshi</string>
-    <string name="title_activity_tabbed_main" translatable="false">GreenBits</string>
     <string name="receive_title">RECEIVE</string>
     <string name="main_title">ALL</string>
     <string name="send_title">SEND</string>
@@ -73,13 +67,11 @@
         <item>seconds</item>
     </string-array>
 
-    <string name="setup">SETUP 2FA</string>
     <string name="send">SEND</string>
     <string name="sweep">SWEEP</string>
     <string name="sweep_bip38_passphrase_prompt">Please provide the BIP38 password:</string>
     <string name="invalid_passphrase">Invalid password</string>
     <string name="invalid_key">Invalid key</string>
-    <string name="title_mnemonic">Mnemonic</string>
     <string name="warning">Warning!</string>
     <string name="save_password_now">You MUST save this passphrase NOW</string>
     <string name="greenaddress_headline">the easier, safer and faster bitcoin wallet</string>
@@ -115,7 +107,6 @@
     <string name="newTxAmount">Amount: </string>
     <string name="newTxRecipient">Recipient:</string>
     <string name="newTxFee">Fee:</string>
-    <string name="network_unavailable_text">Network unavailable</string>
     <string name="invalidAmountAndAddress">Invalid amount and address</string>
     <string name="invalidAddress">Invalid address</string>
     <string name="invalidAmount">Invalid amount</string>
@@ -192,8 +183,6 @@
     <string name="txReceivedOn">Received on</string>
     <string name="twoFacGauthTextCode">Or you can use the following code (touch to copy) : %s. Remember to back it up!</string>
     <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-    <string name="changingRequiresRestartWarnOnionTitle">Warning: Non-.onion address detected! (Restart required)</string>
-    <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
     <string name="enterValidAddressTitle">Not a valid address!</string>
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>

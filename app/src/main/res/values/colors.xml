@@ -14,7 +14,6 @@
     <color name="whiteSecondary">#b3ffffff</color>
 
     <color name="hide">#00ffffff</color>
-    <color name="hide2">#00000000</color>
 
     <color name="superLightGreen">#0D4CAF50</color>
     <color name="superLightPink">#0DFF4081</color>
@@ -25,7 +24,5 @@
     <color name="scan_dot">#ff6600</color>
     <color name="scan_result_view">#b0000000</color>
     <color name="scan_result_dots">#c099cc00</color>
-
-    <color name="fg_less_significant">#ff666666</color>
 
 </resources>

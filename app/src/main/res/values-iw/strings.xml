@@ -3,15 +3,11 @@
 
     <string name="action_settings">הגדרות</string>
     <string name="title_activity_mnemonic">כניסה</string>
-    <string name="title_activity_send">שלח</string>
-    <string name="title_activity_receive">קבל</string>
     <string name="sendToText">אל</string>
     <string name="sendAmountText">סכום</string>
     <string name="sendSendButton">שלח</string>
-    <string name="title_activity_pin">קוד PIN</string>
     <string name="pinSaveText">שמור</string>
     <string name="pinLoginText">כניסה</string>
-    <string name="sendAvailableText">זמין</string>
     <string name="title_activity_qr_scanner">סורק ברקוד</string>
     <string name="title_activity_sign_up">הירשם</string>
     <string name="signupContinueButtonText">המשך</string>
@@ -24,7 +20,6 @@
     <string name="bitcoinScaleMilliText">מילי-ביטקוין</string>
     <string name="bitcoinScaleMicroText">מיקרו-ביטקוין</string>
     <string name="bitcoinScaleBitsText">ביטים</string>
-    <string name="bitcoinScaleSatoshiText">סטושי</string>
     <string name="receive_title">קבל</string>
     <string name="main_title">פעולות אחרונות</string>
     <string name="send_title">שלח</string>
@@ -62,13 +57,11 @@
         <item>שניות</item>
     </string-array>
 
-    <string name="setup">הסדר אימות כפול</string>
     <string name="send">שלח</string>
     <string name="sweep">SWEEP</string>
     <string name="sweep_bip38_passphrase_prompt">הזן סיסמאת BIP38:</string>
     <string name="invalid_passphrase">סיסמא שגויה</string>
     <string name="invalid_key">מפתח לא תקין</string>
-    <string name="title_mnemonic">Mnemonic</string>
     <string name="warning">אזהרה!</string>
     <string name="save_password_now">עליך לשמור את הסיסמא הזאת עכשיו!</string>
     <string name="greenaddress_headline">ארנק הביטקוין הקל המהיר והבטוח</string>
@@ -102,7 +95,6 @@
     <string name="newTxAmount">סכום: </string>
     <string name="newTxRecipient">נמען:</string>
     <string name="newTxFee">עמלה:</string>
-    <string name="network_unavailable_text">רשת לא זמינה</string>
     <string name="invalidAmountAndAddress">סכום וכתובת לא תקינים</string>
     <string name="invalidAddress">כתובת לא תקינה</string>
     <string name="invalidAmount">סכום לא תקין</string>
@@ -180,8 +172,6 @@
     <string name="twoFacGauthTextCode">Or you can use the following code (touch to copy): %s. Remember to back it up!</string>
     <string name="copyAddress">Copy</string>
     <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-    <string name="changingRequiresRestartWarnOnionTitle">Warning: Non-.onion address detected! (Restart required)</string>
-    <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
     <string name="enterValidAddressTitle">Not a valid address!</string>
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>

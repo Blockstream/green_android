@@ -3,15 +3,11 @@
 
     <string name="action_settings">Configuración</string>
     <string name="title_activity_mnemonic">Ingresar</string>
-    <string name="title_activity_send">Enviar</string>
-    <string name="title_activity_receive">Recibir</string>
     <string name="sendToText">Destinatario</string>
     <string name="sendAmountText">Monto</string>
     <string name="sendSendButton">Verificar &amp; Enviar</string>
-    <string name="title_activity_pin">Pin</string>
     <string name="pinSaveText">Guardar</string>
     <string name="pinLoginText">Ingresar</string>
-    <string name="sendAvailableText">Disponible</string>
     <string name="title_activity_qr_scanner">Escaner de QR</string>
     <string name="title_activity_sign_up">Inscribirse</string>
     <string name="signupContinueButtonText">CONTINUAR</string>
@@ -23,7 +19,6 @@
     <string name="bitcoinScaleMilliText">Mili</string>
     <string name="bitcoinScaleMicroText">Micro</string>
     <string name="bitcoinScaleBitsText">Bits</string>
-    <string name="bitcoinScaleSatoshiText">Satoshi</string>
     <string name="receive_title">RECIBIR</string>
     <string name="main_title">TODO</string>
     <string name="send_title">ENVIAR</string>
@@ -61,13 +56,11 @@
         <item>segundos</item>
     </string-array>
 
-    <string name="setup">DISPONER Aut.2Factores</string>
     <string name="send">ENVIAR</string>
     <string name="sweep">BARRER</string>
     <string name="sweep_bip38_passphrase_prompt">Por favor, provea la contraseña BIP38:</string>
     <string name="invalid_passphrase">Frase clave inválida</string>
     <string name="invalid_key">Clave inválida</string>
-    <string name="title_mnemonic">Mnemotécnico</string>
     <string name="warning">¡Advertencia!</string>
     <string name="save_password_now">Usted DEBE guardar esta frase clave AHORA</string>
     <string name="greenaddress_headline">La billetera de Bitcoin mas fácil, segura y rápida</string>
@@ -101,7 +94,6 @@
     <string name="newTxAmount">Monto: </string>
     <string name="newTxRecipient">Receptor:</string>
     <string name="newTxFee">Impuesto:</string>
-    <string name="network_unavailable_text">Red no disponible</string>
     <string name="invalidAmountAndAddress">Dirección o montos inválidos</string>
     <string name="invalidAddress">Dirección inválida</string>
     <string name="invalidAmount">Monto inválido</string>
@@ -178,8 +170,6 @@
     <string name="txReceivedOn">Recibido en</string>
     <string name="twoFacGauthTextCode">O usted puede usar el siguiente código: %s. ¡Recuerde hacer una copia de seguridad!</string>
     <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-    <string name="changingRequiresRestartWarnOnionTitle">Warning: Non-.onion address detected! (Restart required)</string>
-    <string name="changingRequiresRestartWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please restart the app to take full effect.</string>
     <string name="enterValidAddressTitle">Dirección no valida!</string>
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>

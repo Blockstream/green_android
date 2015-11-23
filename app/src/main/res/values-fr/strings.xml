@@ -2,16 +2,12 @@
 <resources>
     <string name="action_settings">Paramètres</string>
     <string name="title_activity_mnemonic">Se connecter</string>
-    <string name="title_activity_send">Envoyer</string>
-    <string name="title_activity_receive">Recevoir</string>
 
     <string name="sendToText">A</string>
     <string name="sendAmountText">Montant</string>
     <string name="sendSendButton">Valider &amp; Envoyer</string>
-    <string name="title_activity_pin">Pin</string>
     <string name="pinSaveText">Sauvergarder</string>
     <string name="pinLoginText">Se connecter</string>
-    <string name="sendAvailableText">Disponible</string>
     <string name="title_activity_qr_scanner">Scanner QR code</string>
     <string name="title_activity_sign_up">S\'inscrire</string>
     <string name="signupContinueButtonText">CONTINUER</string>
@@ -44,13 +40,11 @@
         <item>Google Auth</item>
     </string-array>
 
-    <string name="setup">CONFIGURER LE 2FA</string>
     <string name="send">ENVOYER</string>
     <string name="sweep">IMPORTER</string>
     <string name="sweep_bip38_passphrase_prompt">Merci d\'entrer le mot de passe BIP38:</string>
     <string name="invalid_passphrase">Mot de passe incorrect</string>
     <string name="invalid_key">Clef invalide</string>
-    <string name="title_mnemonic">Mnemonique</string>
     <string name="warning">Attention!</string>
     <string name="save_password_now">Vous DEVEZ noter la phrase de restauration MAINTENANT.</string>
     <string name="greenaddress_headline">le portefeuille bitcoin le plus simple, sécurisé et rapide</string>
@@ -89,7 +83,6 @@
         <item>minutes</item>
         <item>secondes</item>
     </string-array>
-    <string name="bitcoinScaleSatoshiText">Satoshi</string>
     <string name="pref_header_notifications">Restauration</string>
     <string name="txSubTitle">Détails transaction</string>
     <string name="txHashText">Hash</string>
@@ -101,7 +94,6 @@
     <string name="newTxAmount">Montant: </string>
     <string name="newTxRecipient">Destinataire: </string>
     <string name="newTxFee">Commission: </string>
-    <string name="network_unavailable_text">Réseau indisponible</string>
     <string name="invalidAmountAndAddress">Montant et adresse invalides</string>
     <string name="invalidAddress">Adresse invalide</string>
     <string name="invalidAmount">Montant invalide</string>
@@ -180,8 +172,6 @@
     <string name="twoFacGauthTextCode">Vous pouvez également utiliser le code suivant: %s. N\'oubliez pas de le sauvegarder !</string>
     <string name="copyAddress">Copier</string>
     <string name="trustedspv">Se connecter uniquement à un service SPV de confiance</string>
-    <string name="changingRequiresRestartWarnOnionTitle">Attention: addresses non-.onion détectées! (Redémarrage nécessaire)</string>
-    <string name="changingRequiresRestartWarnOnionText">La connexion aux noeuds à travers Tor (.onion) vous permet de bénéficier d\'une confidentialité et sécurité maximales. Si vous souhaitez continuer, merci de redémarrer l\'application pour prendre en compte toutes les modifications.</string>
     <string name="enterValidAddressTitle">L\'adresse n\'est pas valide !</string>
     <string name="enterValidAddressText">Merci d\'entrer une adresse .onion ou IP valide (.onion préféré)</string>
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
