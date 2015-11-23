@@ -1,7 +1,7 @@
 package com.greenaddress.greenapi;
 
 
-public class AuthReq {
+class AuthReq {
     public final String token;
     public final String challenge;
 

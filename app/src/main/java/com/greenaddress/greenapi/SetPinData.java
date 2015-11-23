@@ -1,6 +1,6 @@
 package com.greenaddress.greenapi;
 
-public class SetPinData {
+class SetPinData {
     public final byte[] json;
     public final String ident;
 

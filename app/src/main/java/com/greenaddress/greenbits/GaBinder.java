@@ -2,7 +2,7 @@ package com.greenaddress.greenbits;
 
 import android.os.Binder;
 
-public class GaBinder extends Binder {
+class GaBinder extends Binder {
 
     public final GaService gaService;
 

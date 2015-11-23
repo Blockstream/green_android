@@ -205,9 +205,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             // Challenge completed, proceed with using cipher
             if (resultCode == RESULT_OK) {
                 tryEncrypt();
-            } else {
-                // The user canceled or didn’t complete the lock screen
-                // operation. Go to error/cancellation flow.
             }
         }
     }
@@ -293,11 +290,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        final int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override

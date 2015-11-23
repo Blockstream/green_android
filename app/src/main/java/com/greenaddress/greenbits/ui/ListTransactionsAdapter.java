@@ -18,7 +18,7 @@ import java.text.ParseException;
 import java.util.List;
 
 public class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
-    private String btcUnit;
+    private final String btcUnit;
 
     public ListTransactionsAdapter(final Context context, final int resource, final List<Transaction> objects, final String btcUnit) {
         super(context, resource, objects);

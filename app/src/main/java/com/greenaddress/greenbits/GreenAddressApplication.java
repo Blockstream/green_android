@@ -30,10 +30,10 @@ import java.util.Observer;
 public class GreenAddressApplication extends MultiDexApplication {
 
     public GaService gaService;
-    public SettableFuture<Void> onServiceConnected = SettableFuture.create();
+    public final SettableFuture<Void> onServiceConnected = SettableFuture.create();
     private boolean mBound = false;
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(final ComponentName className,
@@ -140,7 +140,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
 
-        if (((Boolean) gaService.getTwoFacConfig().get("any")).booleanValue() || twoFacWarning) {
+        if (((Boolean) gaService.getTwoFacConfig().get("any")) || twoFacWarning) {
             noTwoFacFooter.setVisibility(View.GONE);
         } else {
             noTwoFacFooter.setVisibility(View.VISIBLE);

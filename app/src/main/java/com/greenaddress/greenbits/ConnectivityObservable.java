@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ConnectivityObservable extends Observable {
 
-    static int RECONNECT_TIMEOUT = 6000;
-    static int RECONNECT_TIMEOUT_MAX = 50000;
+    static final int RECONNECT_TIMEOUT = 6000;
+    static final int RECONNECT_TIMEOUT_MAX = 50000;
     private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
     private ScheduledFuture<Object> disconnectTimeout;
     private GaService service;

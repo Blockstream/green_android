@@ -36,7 +36,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
 {
 
     private ArrayList<PrettyPeer> peerList = new ArrayList<>();
-    public ArrayAdapter<PrettyPeer> peerListAdapter;
+    private ArrayAdapter<PrettyPeer> peerListAdapter;
     private String bloominfo = "";
     private PeerEventListener peerListener;
 
@@ -88,7 +88,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
             }
 
             peerListAdapter =
-                    new ArrayAdapter<PrettyPeer>(this, android.R.layout.simple_list_item_1, peerList);
+                    new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peerList);
             ListView view = (ListView) findViewById(R.id.peerlistview);
             view.setAdapter(peerListAdapter);
 
@@ -181,25 +181,25 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         }
     }
 
-    protected GreenAddressApplication getGAApp() {
+    private GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
 
-    protected GaService getGAService() {
+    private GaService getGAService() {
         return getGAApp().gaService;
     }
 
     @Override
-    public void update(Observable observable, Object data) {
+    public void update(final Observable observable, final Object data) {
 
     }
 
-    private BroadcastReceiver uiUpdated= new BroadcastReceiver() {
+    private final BroadcastReceiver uiUpdated = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
 
-            String peerGroupIntent = intent.getExtras().getString("peergroup");
-            if (peerGroupIntent.equals("stopSPVSync")) {
+            final String peerGroupIntent = intent.getExtras().getString("peergroup");
+            if (peerGroupIntent != null && peerGroupIntent.equals("stopSPVSync")) {
                 peerList.clear();
                 peerListAdapter.notifyDataSetChanged();
             }
@@ -207,8 +207,8 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
     };
 
     private class PrettyPeer{
-        Peer peer;
-        public PrettyPeer(Peer peer) {
+        final Peer peer;
+        public PrettyPeer(final Peer peer) {
             this.peer = peer;
         }
 

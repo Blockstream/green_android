@@ -69,7 +69,7 @@ public class WalletClient {
             BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME,
             BuildConfig.FLAVOR, BuildConfig.BUILD_TYPE, android.os.Build.VERSION.SDK_INT);
 
-    public final INotificationHandler m_notificationHandler;
+    private final INotificationHandler m_notificationHandler;
     private final ListeningExecutorService es;
     private WampConnection mConnection;
     private LoginData loginData;
@@ -524,7 +524,7 @@ public class WalletClient {
     }
 
     // derive private key for signing the challenge, using 8 bytes instead of 64
-    public ISigningWallet createSubpathForLogin(final ISigningWallet parentKey, final String path_hex) {
+    private ISigningWallet createSubpathForLogin(final ISigningWallet parentKey, final String path_hex) {
         ISigningWallet key = parentKey;
         final BigInteger path = new BigInteger(com.subgraph.orchid.encoders.Hex.decode(path_hex));
         byte[] bytes = path.toByteArray();
@@ -814,7 +814,7 @@ public class WalletClient {
 
             @Override
             public void onError(final String errUri, final String errDesc) {
-                asyncWamp.setException(new GAException(errDesc.toString()));
+                asyncWamp.setException(new GAException(errDesc));
             }
         }, pin, setPinData.ident);
         return asyncWamp;
@@ -994,7 +994,7 @@ public class WalletClient {
                         final Output prevOut = prevOuts.get(ii);
 
                         final ISigningWallet account;
-                        if (prevOut.getSubaccount() == null || prevOut.getSubaccount().intValue() == 0) {
+                        if (prevOut.getSubaccount() == null || prevOut.getSubaccount() == 0) {
                             account = hdWallet;
                         } else {
                             account = hdWallet

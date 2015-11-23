@@ -9,7 +9,7 @@ import org.spongycastle.crypto.params.ParametersWithIV;
 
 import java.security.SecureRandom;
 
-public class AES256 {
+class AES256 {
 
     public static byte[] encrypt(final byte[] data, final byte[] key) throws InvalidCipherTextException {
         final PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));

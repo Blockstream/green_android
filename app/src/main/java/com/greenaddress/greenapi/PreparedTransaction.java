@@ -22,7 +22,6 @@ public class PreparedTransaction {
     public final String change_pointer;
     public final int subaccount_pointer;
     public final Boolean requires_2factor;
-    public final String tx;
     public final List<Output> prev_outputs = new ArrayList<>();
     public final Transaction decoded;
     public final Map<String, Transaction> prevoutRawTxs = new HashMap<>();
@@ -83,8 +82,7 @@ public class PreparedTransaction {
         }
 
         this.requires_2factor = (Boolean) pte.values.get("requires_2factor");
-        this.tx = pte.values.get("tx").toString();
-        this.decoded = new Transaction(Network.NETWORK, Hex.decode(this.tx));
+        this.decoded = new Transaction(Network.NETWORK, Hex.decode(pte.values.get("tx").toString()));
 
         // return early if no rawtxs url is given, assumes user asked for 'skip'
         try {

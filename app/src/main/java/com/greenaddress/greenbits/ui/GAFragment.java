@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
-abstract public class GAFragment extends Fragment {
+abstract class GAFragment extends Fragment {
     private GreenAddressApplication gaApp;
 
     @Override
@@ -32,7 +32,6 @@ abstract public class GAFragment extends Fragment {
             onGAResume();
         } catch (final NullPointerException npe) {
             getActivity().finish();
-            return;
         }
     }
 

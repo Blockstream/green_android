@@ -98,7 +98,7 @@ public class SendFragment extends GAFragment {
     private Observer curBalanceObserver;
     private boolean pausing;
 
-    public void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
+    private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
@@ -215,7 +215,7 @@ public class SendFragment extends GAFragment {
         mSummary.show();
     }
 
-    public void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
+    private void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
         Log.i(TAG, "params " + fee + " " + amount + " " + recipient);
         String[] enabledTwoFacNames = new String[]{};
         final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
@@ -240,7 +240,7 @@ public class SendFragment extends GAFragment {
         mTwoFactor.show();
     }
 
-    public void processBitcoinURI(final BitcoinURI URI) {
+    private void processBitcoinURI(final BitcoinURI URI) {
         if (URI.getPaymentRequestUrl() != null) {
             rootView.findViewById(R.id.sendBip70ProgressBar).setVisibility(View.VISIBLE);
             recipientEdit.setEnabled(false);
@@ -301,7 +301,7 @@ public class SendFragment extends GAFragment {
                         getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Float fiatRate = Float.valueOf((String) result.get("fiat_exchange")).floatValue();
+                                    final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                                     amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
                                     convertBtcToFiat(fiatRate);
                                     amountEdit.setEnabled(false);
@@ -335,7 +335,7 @@ public class SendFragment extends GAFragment {
         noteIcon = (TextView) rootView.findViewById(R.id.sendToNoteIcon);
         instantConfirmationCheckbox = (CheckBox) rootView.findViewById(R.id.instantConfirmationCheckBox);
 
-        if (Build.VERSION.SDK_INT < (new Build.VERSION_CODES()).LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // pre-Material Design the label was already a part of the switch
             rootView.findViewById(R.id.sendMaxLabel).setVisibility(View.GONE);
         }
@@ -760,7 +760,7 @@ public class SendFragment extends GAFragment {
                     @Override
                     public Void apply(@Nullable Integer input) {
                         getGAService().getBalanceObservables().get(new Integer(curSubaccount)).deleteObserver(curBalanceObserver);
-                        curSubaccount = input.intValue();
+                        curSubaccount = input;
                         hideInstantIf2of3();
                         final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
@@ -770,7 +770,7 @@ public class SendFragment extends GAFragment {
                         Futures.addCallback(gaService.getSubaccountBalance(curSubaccount), new FutureCallback<Map<?, ?>>() {
                             @Override
                             public void onSuccess(final @Nullable Map<?, ?> result) {
-                                final Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")).longValue());
+                                final Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")));
                                 final String btcUnit = (String) gaService.getAppearanceValue("unit");
                                 final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
                                 final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -880,7 +880,7 @@ public class SendFragment extends GAFragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        convertBtcToFiat(Float.valueOf((String) result.get("fiat_exchange")).floatValue());
+                        convertBtcToFiat(Float.valueOf((String) result.get("fiat_exchange")));
                         changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon), currency);
                         fiatPopup.getMenu().setGroupEnabled(selected_group++, true);
                         fiatPopup.getMenu().removeItem(order);

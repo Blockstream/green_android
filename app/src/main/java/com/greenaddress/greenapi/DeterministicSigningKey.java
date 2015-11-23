@@ -12,7 +12,7 @@ import org.bitcoinj.crypto.HDKeyDerivation;
 import java.util.List;
 
 public class DeterministicSigningKey implements ISigningWallet {
-    private DeterministicKey hdWallet;
+    private final DeterministicKey hdWallet;
 
     public DeterministicSigningKey(DeterministicKey masterPrivateKey) {
         hdWallet = masterPrivateKey;

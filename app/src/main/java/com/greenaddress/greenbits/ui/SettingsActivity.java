@@ -45,11 +45,10 @@ import javax.annotation.Nullable;
  */
 public class SettingsActivity extends PreferenceActivity implements Observer {
 
-    public static final int REQUEST_ENABLE_2FA = 0;
+    private static final int REQUEST_ENABLE_2FA = 0;
     private String twoFacMethod;
 
-    Observer wiFiObserver = null;
-    boolean wiFiObserverRequired = false, spvWiFiDialogShown = false;
+    private Observer wiFiObserver = null;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -531,11 +530,11 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         }
     }
 
-    protected GreenAddressApplication getGAApp() {
+    private GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
 
-    protected GaService getGAService() {
+    private GaService getGAService() {
         return getGAApp().gaService;
     }
 
@@ -572,7 +571,6 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
         if (connObservable.isWiFiUp()) {
             gaService.startSpvSync();
-            wiFiObserverRequired = false;
             return;
         }
         wiFiObserver = new Observer() {
@@ -580,13 +578,11 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
             public void update(final Observable observable, final Object data) {
                 if (connObservable.isWiFiUp()) {
                     gaService.startSpvSync();
-                    wiFiObserverRequired = false;
                     connObservable.deleteObserver(wiFiObserver);
                     wiFiObserver = null;
                 }
             }
         };
         connObservable.addObserver(wiFiObserver);
-        wiFiObserverRequired = true;
     }
 }

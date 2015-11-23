@@ -41,8 +41,8 @@ import nordpol.android.TagDispatcher;
 public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
-    FutureCallback<QrBitmap> onAddress = null;
-    QrBitmap address = null;
+    private FutureCallback<QrBitmap> onAddress = null;
+    private QrBitmap address = null;
     private int curSubaccount;
     private boolean pausing = false;
     private Dialog qrDialog;

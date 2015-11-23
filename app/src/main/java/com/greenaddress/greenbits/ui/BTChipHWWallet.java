@@ -50,19 +50,19 @@ public class BTChipHWWallet implements ISigningWallet {
 
     private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
-    private BTChipHWWallet(BTChipDongle dongle, RequestLoginActivity loginActivity, String pin, List<Integer> addrn) {
+    private BTChipHWWallet(final BTChipDongle dongle, final RequestLoginActivity loginActivity, final String pin, final List<Integer> addrn) {
         this.dongle = dongle;
         this.loginActivity = loginActivity;
         this.pin = pin;
         this.addrn = addrn;
     }
 
-    public BTChipHWWallet(BTChipDongle dongle) {
+    public BTChipHWWallet(final BTChipDongle dongle) {
         this.dongle = dongle;
         this.pin = "0000";
     }    
 
-    public BTChipHWWallet(BTChipTransport transport, RequestLoginActivity loginActivity, String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
+    public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
         this.dongle = new BTChipDongle(transport);
         this.loginActivity = loginActivity;
         this.pin = pin;
@@ -109,7 +109,7 @@ public class BTChipHWWallet implements ISigningWallet {
                     for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
                         final byte[] inputHash = tx.decoded.getInputs().get(i).getOutpoint().getHash().getBytes();
                         for (int j = 0; j < inputHash.length / 2; ++j) {
-                            byte temp = inputHash[j];
+                            final byte temp = inputHash[j];
                             inputHash[j] = inputHash[inputHash.length - j - 1];
                             inputHash[inputHash.length - j - 1] = temp;
                         }
@@ -252,7 +252,7 @@ public class BTChipHWWallet implements ISigningWallet {
                         dongle.getTransport().close();
                         Log.d(TAG, "Connection closed");
                 }
-                catch(Exception e1) {
+                catch(final Exception e1) {
                 }
                 return false;
         }
@@ -263,7 +263,7 @@ public class BTChipHWWallet implements ISigningWallet {
         try {
                 dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
         }
-        catch(Exception e) {
+        catch(final Exception e) {
         }
     }    
 }

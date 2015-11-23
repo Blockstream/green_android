@@ -103,7 +103,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             	}
             	boolean initialized = false;
 				// Check if the TEE can be connected
-				final LinkedBlockingQueue<Boolean> waitConnected = new LinkedBlockingQueue<Boolean>(1);
+				final LinkedBlockingQueue<Boolean> waitConnected = new LinkedBlockingQueue<>(1);
 				boolean result = transportFactory.connect(FirstScreenActivity.this, new BTChipTransportFactoryCallback() {
 
 					@Override
@@ -358,11 +358,8 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        final int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+
+        return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -12,8 +12,8 @@ public class Transaction implements Serializable {
     }
 
     public final TYPE type;
-    public final int curBlock;
-    public final Integer blockHeight;
+    private final int curBlock;
+    private final Integer blockHeight;
     public final long amount;
     public final String counterparty;
     public final String receivedOn;

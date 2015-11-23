@@ -53,7 +53,7 @@ import javax.annotation.Nullable;
 
 public class SignUpActivity extends ActionBarActivity implements Observer {
     private static final String TAG = SignUpActivity.class.getSimpleName();
-    boolean mWriteMode = false;
+    private boolean mWriteMode = false;
     private Dialog mnemonicDialog;
     private Dialog nfcDialog;
     private NfcAdapter mNfcAdapter;
@@ -299,12 +299,8 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             try {
                 record = NdefRecord.createMime("x-gait/mnc", getGAService().getEntropyFromMnemonics(mnemonicText.getText().toString()));
             } catch (final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e) {
-            }
-
-            if (record == null) {
                 return;
             }
-
 
             final NdefMessage message = new NdefMessage(new NdefRecord[]{record});
             final int size = message.toByteArray().length;
@@ -334,7 +330,6 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                             nfcTagsWritten.setText("" + (Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
                         } catch (final IOException e) {
                         }
-                    } else {
                     }
                 }
             } catch (final Exception e) {
@@ -375,11 +370,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        final int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override

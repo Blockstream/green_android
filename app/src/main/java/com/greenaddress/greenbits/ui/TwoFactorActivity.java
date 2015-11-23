@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 
 public class TwoFactorActivity extends ActionBarActivity {
 
-    String twoFacType, twoFacTypeName;
+    private String twoFacType, twoFacTypeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

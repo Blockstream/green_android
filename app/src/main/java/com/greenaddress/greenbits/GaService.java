@@ -123,9 +123,9 @@ public class GaService extends Service {
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
 
-    private Map<Integer, Coin> balancesCoin = new HashMap<>();
+    private final Map<Integer, Coin> balancesCoin = new HashMap<>();
     private Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
-    private Map<Integer, Fiat> balancesFiat = new HashMap<>();
+    private final Map<Integer, Fiat> balancesFiat = new HashMap<>();
     private float fiatRate;
     private String fiatCurrency;
     private String fiatExchange;
@@ -147,7 +147,7 @@ public class GaService extends Service {
     private byte[] gaitPath;
     private int spvBlocksLeft = Integer.MAX_VALUE;
     private Map<?, ?> twoFacConfig;
-    private GaObservable twoFacConfigObservable = new GaObservable();
+    private final GaObservable twoFacConfigObservable = new GaObservable();
     private String deviceId;
     private int background_color;
     // fix me implement Preference change listener?
@@ -155,7 +155,7 @@ public class GaService extends Service {
     private int reconnectTimeout = 0;
     private WalletClient client;
     private ConnectivityObservable connectionObservable = null;
-    private FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
+    private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
         @Override
         public void onSuccess(@Nullable final LoginData result) {
             fiatCurrency = result.currency;
@@ -1171,7 +1171,7 @@ public class GaService extends Service {
         return currencyExchangePairs;
     }
 
-    public MnemonicCode getMnemonicCode() throws IOException, MnemonicException.MnemonicLengthException {
+    public MnemonicCode getMnemonicCode() throws IOException {
         final InputStream closable = getApplicationContext().getAssets().open("bip39-wordlist.txt");
         try {
             return new MnemonicCode(closable, null);
@@ -1225,11 +1225,6 @@ public class GaService extends Service {
     @Override
     public IBinder onBind(final Intent intent) {
         return mBinder;
-    }
-
-    @Override
-    public int onStartCommand(final Intent intent, final int flags, final int startId) {
-        return super.onStartCommand(intent, flags, startId);
     }
 
     public Map<Integer, Observable> getBalanceObservables() {

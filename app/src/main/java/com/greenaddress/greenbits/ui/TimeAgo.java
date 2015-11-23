@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class TimeAgo {
+class TimeAgo {
     private static final List<Long> times = Arrays.asList(
             TimeUnit.DAYS.toMillis(365),
             TimeUnit.DAYS.toMillis(30),
@@ -19,14 +19,14 @@ public class TimeAgo {
 
     private static String[] timesStringPlurals;
 
-    public static String[] getTimesString(final Context context) {
+    private static String[] getTimesString(final Context context) {
         if (timesString == null) {
             timesString = context.getResources().getStringArray(R.array.timesStrings);
         }
         return timesString;
     }
 
-    public static String[] getTimesStringPlurals(final Context context) {
+    private static String[] getTimesStringPlurals(final Context context) {
         if (timesStringPlurals == null) {
             timesStringPlurals = context.getResources().getStringArray(R.array.timesStringPlurals);
         }
@@ -36,9 +36,9 @@ public class TimeAgo {
     private static String toDuration(final long duration, Context context) {
 
 
-        final StringBuffer res = new StringBuffer();
+        final StringBuilder res = new StringBuilder();
         for (int i = 0; i < times.size(); ++i) {
-            final long current = times.get(i).longValue();
+            final long current = times.get(i);
             final long temp = duration / current;
             if (temp > 0) {
                 res.append(temp)

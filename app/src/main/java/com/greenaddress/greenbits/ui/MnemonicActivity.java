@@ -100,8 +100,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     }
 
     private String getClosestWord(final String word) throws IOException {
-        InputStream is = null;
-        is = getAssets().open("bip39-wordlist.txt");
+        final InputStream is = getAssets().open("bip39-wordlist.txt");
         final List<String> words = new ArrayList<>();
 
         String line;
@@ -232,11 +231,11 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         @Override
                         public ListenableFuture<LoginData> apply(final @Nullable String passphrase) {
                             try {
-                                byte[] entropy = gaService.getMnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
-                                String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
-                                byte[] decrypted = decryptMnemonic(entropy, normalizedPassphrase);
+                                final byte[] entropy = gaService.getMnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
+                                final String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
+                                final byte[] decrypted = decryptMnemonic(entropy, normalizedPassphrase);
                                 return gaService.login(Joiner.on(" ").join(gaService.getMnemonicCode().toMnemonic(decrypted)));
-                            } catch (IOException | GeneralSecurityException | MnemonicException e) {
+                            } catch (final IOException | GeneralSecurityException | MnemonicException e) {
                                 throw new RuntimeException(e);
                             }
                         }
@@ -481,9 +480,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             final Intent mainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);
             startActivity(mainActivity);
             finish();
-            return;
         }
-
     }
 
     @Override
@@ -516,11 +513,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override

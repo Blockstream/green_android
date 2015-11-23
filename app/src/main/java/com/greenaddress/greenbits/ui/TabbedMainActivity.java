@@ -63,19 +63,8 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2;
     public static TabbedMainActivity instance = null;
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
+
+    private ViewPager mViewPager;
     private Menu menu;
 
     @Override
@@ -108,14 +97,11 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        final SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setAdapter(pagerAdapter);
 
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -130,14 +116,14 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
 
         // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); ++i) {
+        for (int i = 0; i < pagerAdapter.getCount(); ++i) {
             // Create a tab with text corresponding to the page title defined by
             // the adapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
             actionBar.addTab(
                     actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+                            .setText(pagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
         if (isBitcoinURL) {
@@ -290,7 +276,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                     ), new FutureCallback<Boolean>() {
                                         @Override
                                         public void onSuccess(final @Nullable Boolean result) {
-                                            if (result.booleanValue()) {
+                                            if (result) {
                                                 final List<TransactionSignature> signatures = new ArrayList<>();
                                                 for (int i = 0; i < tx.getInputs().size(); ++i) {
                                                     signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
@@ -393,7 +379,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         return true;
     }
 
-    public void setIdVisible(final boolean visible, final int id) {
+    private void setIdVisible(final boolean visible, final int id) {
         if (menu != null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -440,7 +426,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             final TextView receiveAddress = (TextView) findViewById(R.id.receiveAddressText);
             if (receiveAddress != null) {
                 final String address = receiveAddress.getText().toString();
-                if (address != null && !address.isEmpty()) {
+                if (!address.isEmpty()) {
                     //SHARE intent
                     final Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);

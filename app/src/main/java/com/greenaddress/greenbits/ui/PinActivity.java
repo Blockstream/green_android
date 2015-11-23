@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
-import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -302,7 +300,6 @@ public class PinActivity extends ActionBarActivity implements Observer {
             final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
             startActivity(mainActivity);
             finish();
-            return;
         }
 
     }
@@ -322,7 +319,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
         return true;
     }
 
-    public void setPlugVisible(final boolean visible) {
+    private void setPlugVisible(final boolean visible) {
         if (menu != null) {
             runOnUiThread(new Runnable() {
                 @Override

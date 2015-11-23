@@ -56,12 +56,12 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
-    Dialog btchipDialog = null;
-    BTChipHWWallet hwWallet = null;
-    TagDispatcher tagDispatcher;
-    Tag tag;
-    SettableFuture<BTChipTransport> transportFuture;
-    MaterialDialog nfcWaitDialog;
+    private Dialog btchipDialog = null;
+    private BTChipHWWallet hwWallet = null;
+    private TagDispatcher tagDispatcher;
+    private Tag tag;
+    private SettableFuture<BTChipTransport> transportFuture;
+    private MaterialDialog nfcWaitDialog;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -331,7 +331,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(final String pin) throws Exception {
-                                final String pinFinal = pin;
+
                                 transportFuture = SettableFuture.create();
                                 if (device != null) {
                                     final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
@@ -355,12 +355,12 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                     @Override
                                     public ListenableFuture<LoginData> apply(final @Nullable BTChipTransport transport) {
                                         final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
-                                        hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pinFinal, remainingAttemptsFuture);
+                                        hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
                                         return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
                                             @Nullable
                                             @Override
                                             public ListenableFuture<LoginData> apply(final @Nullable Integer input) {
-                                                final int remainingAttempts = input.intValue();
+                                                final int remainingAttempts = input;
 
                                                 if (remainingAttempts == -1) {
                                                     // -1 means success
@@ -374,7 +374,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                                                         getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString(), Toast.LENGTH_LONG).show();
 
                                                             } else {
-                                                                Toast.makeText(RequestLoginActivity.this, getResources().getString(R.string.btchipNotSetup).toString(), Toast.LENGTH_LONG).show();
+                                                                Toast.makeText(RequestLoginActivity.this, getResources().getString(R.string.btchipNotSetup), Toast.LENGTH_LONG).show();
                                                             }
 
                                                             RequestLoginActivity.this.finish();
@@ -476,11 +476,11 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
 
     }
 
-    protected GreenAddressApplication getGAApp() {
+    private GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
 
-    protected GaService getGAService() {
+    private GaService getGAService() {
         return getGAApp().gaService;
     }
     
@@ -502,7 +502,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         			try {
         				transport.close();
         			}
-        			catch(Exception e1) {        				
+        			catch(final Exception e1) {
         			}
         			transport = null;
         		}

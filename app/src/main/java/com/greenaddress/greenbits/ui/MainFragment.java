@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -44,16 +45,15 @@ import javax.annotation.Nullable;
 
 
 public class MainFragment extends GAFragment implements Observer {
-    public static final int P2SH_FORTIFIED_OUT = 10;
-    Observer wiFiObserver = null;
-    boolean wiFiObserverRequired = false;
-    MaterialDialog spvStatusDialog = null;
+    private static final int P2SH_FORTIFIED_OUT = 10;
+    private Observer wiFiObserver = null;
+    private boolean wiFiObserverRequired = false;
+    private MaterialDialog spvStatusDialog = null;
     private View rootView;
     private List<Transaction> currentList;
     private Observer curBalanceObserver;
     private int curSubaccount;
     private Observer txVerifiedObservable;
-    private View.OnClickListener unconfirmedClickListener;
 
     private Transaction processGATransaction(final Map<String, Object> txJSON, final int curBlock) throws ParseException {
 
@@ -89,13 +89,13 @@ public class MainFragment extends GAFragment implements Observer {
                     counterparty = (String) ep.get("social_destination");
                 }
             }
-            if (((Boolean) ep.get("is_relevant")).booleanValue()) {
-                if (((Boolean) ep.get("is_credit")).booleanValue()) {
+            if (((Boolean) ep.get("is_relevant"))) {
+                if (((Boolean) ep.get("is_credit"))) {
                     final boolean external_social = ep.get("social_destination") != null &&
                             ((Number) ep.get("script_type")).intValue() != P2SH_FORTIFIED_OUT;
                     if (!external_social) {
-                        amount += Long.valueOf((String) ep.get("value")).longValue();
-                        if (!((Boolean) ep.get("is_spent")).booleanValue()) {
+                        amount += Long.valueOf((String) ep.get("value"));
+                        if (!((Boolean) ep.get("is_spent"))) {
                             isSpent = false;
                         }
                     }
@@ -113,7 +113,7 @@ public class MainFragment extends GAFragment implements Observer {
             type = Transaction.TYPE.IN;
             for (int i = 0; i < eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-                if (!((Boolean) ep.get("is_credit")).booleanValue() && ep.get("social_source") != null) {
+                if (!((Boolean) ep.get("is_credit")) && ep.get("social_source") != null) {
                     counterparty = (String) ep.get("social_source");
                 }
             }
@@ -122,8 +122,8 @@ public class MainFragment extends GAFragment implements Observer {
             final List<Map<String, Object>> recip_eps = new ArrayList<>();
             for (int i = 0; i < eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-                if (((Boolean) ep.get("is_credit")).booleanValue() &&
-                        (!((Boolean) ep.get("is_relevant")).booleanValue() ||
+                if (((Boolean) ep.get("is_credit")) &&
+                        (!((Boolean) ep.get("is_relevant")) ||
                                 ep.get("social_destination") != null)) {
                     recip_eps.add(ep);
                 }
@@ -235,7 +235,7 @@ public class MainFragment extends GAFragment implements Observer {
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
-        unconfirmedClickListener = new View.OnClickListener() {
+        final View.OnClickListener unconfirmedClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (spvStatusDialog != null) {
@@ -460,7 +460,7 @@ public class MainFragment extends GAFragment implements Observer {
 
                         final GaService gaService = getGAService();
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-                        if (gaService.getSharedPreferences("SPV", getActivity().MODE_PRIVATE).getBoolean("enabled", true)) {
+                        if (gaService.getSharedPreferences("SPV", FragmentActivity.MODE_PRIVATE).getBoolean("enabled", true)) {
                             gaService.setUpSPV();
                             if (!gaService.getIsSpvSyncing()) {
                                 if (curBlock - gaService.getSpvHeight() > 1000) {
@@ -496,19 +496,15 @@ public class MainFragment extends GAFragment implements Observer {
                             }
                         }
                         String newFirstTxHash = null;
-                        final boolean scrollToTop;
                         if (currentList.size() > 0) {
                             newFirstTxHash = currentList.get(0).txhash;
                         }
-                        if (oldFirstTxHash != null && newFirstTxHash != null) {
-                            // scroll to top when new tx comes in
-                            scrollToTop = !oldFirstTxHash.equals(newFirstTxHash);
-                        } else {
-                            scrollToTop = false;
-                        }
 
                         ((ListTransactionsAdapter) listView.getAdapter()).notifyDataSetChanged();
-                        if (scrollToTop) {
+
+                        // scroll to top when new tx comes in
+                        if (oldFirstTxHash != null && newFirstTxHash != null &&
+                                !oldFirstTxHash.equals(newFirstTxHash)) {
                             listView.smoothScrollToPosition(0);
                         }
 
@@ -540,7 +536,7 @@ public class MainFragment extends GAFragment implements Observer {
         }
         if (!getActivity().getSharedPreferences(
                 "SPV",
-                getActivity().MODE_PRIVATE
+                FragmentActivity.MODE_PRIVATE
         ).getBoolean("enabled", true)) {
             return;
         }
