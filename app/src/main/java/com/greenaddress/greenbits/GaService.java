@@ -353,17 +353,17 @@ public class GaService extends Service {
 
             @Override
             public BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
-                final byte[][] hashes = new byte[unspentOutputsOutpoints.size()][];
 
-                int i = 0;
                 final BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
-                for (final Sha256Hash hash : unspentOutputsOutpoints.keySet()) {
-                    res.insert(hashes[i++] = Utils.reverseBytes(hash.getBytes()));
+                final Set<Sha256Hash> set = unspentOutputsOutpoints.keySet();
+                for (final Sha256Hash hash : set) {
+                    res.insert(Utils.reverseBytes(hash.getBytes()));
                 }
 
                 // add fake entry to avoid downloading blocks when filter is empty
                 // (empty bloom filters are ignored by bitcoinj)
-                if (hashes.length > 0) {
+
+                if (set.isEmpty()) {
                     res.insert(new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
                 }
                 return res;
