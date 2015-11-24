@@ -123,7 +123,7 @@ public class GreenAddressApplication extends MultiDexApplication {
                             if (item.getItemId() == 0) {
                                 curSubaccount = 0;
                             } else {
-                                curSubaccount = ((Number) ((Map<String, ?>) subaccounts.get(item.getItemId() - 1)).get("pointer")).intValue();
+                                curSubaccount = ((Integer) ((Map<String, ?>) subaccounts.get(item.getItemId() - 1)).get("pointer"));
                             }
                             accountChangedCallback.apply(curSubaccount);
                             return false;

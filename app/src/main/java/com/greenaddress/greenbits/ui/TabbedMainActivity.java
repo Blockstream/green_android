@@ -272,7 +272,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                     Futures.addCallback(getGAService().verifySpendableBy(
                                             tx.getOutputs().get(0),
                                             Integer.valueOf(0),
-                                            ((Number) result.get("out_pointer")).intValue()
+                                            ((Integer) result.get("out_pointer"))
                                     ), new FutureCallback<Boolean>() {
                                         @Override
                                         public void onSuccess(final @Nullable Boolean result) {

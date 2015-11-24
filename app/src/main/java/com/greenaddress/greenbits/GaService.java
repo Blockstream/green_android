@@ -170,7 +170,7 @@ public class GaService extends Service {
             updateBalance(0);
             for (final Object subaccount : result.subaccounts) {
                 final Map<?, ?> subaccountMap = (Map) subaccount;
-                final int pointer = ((Number) subaccountMap.get("pointer")).intValue();
+                final int pointer = ((Integer) subaccountMap.get("pointer"));
                 balanceObservables.put(pointer, new GaObservable());
                 updateBalance(pointer);
             }
@@ -292,16 +292,16 @@ public class GaService extends Service {
                     final Map<?, ?> utxo = (Map) result.get(i);
                     final String txhash = (String) utxo.get("txhash");
                     final Integer blockHeight = (Integer) utxo.get("block_height");
-                    final Integer pt_idx = ((Number) utxo.get("pt_idx")).intValue();
+                    final Integer pt_idx = ((Integer) utxo.get("pt_idx"));
                     final Sha256Hash sha256hash = new Sha256Hash(Hex.decode(txhash));
                     if (!getSharedPreferences("verified_utxo_" + receivingId, MODE_PRIVATE).getBoolean(txhash, false)) {
                         recalculateBloom = true;
-                        addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Number) utxo.get("subaccount")).intValue(),
-                                ((Number) utxo.get("pointer")).intValue());
+                        addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Integer) utxo.get("subaccount")),
+                                ((Integer) utxo.get("pointer")));
                     } else {
                         // already verified
-                        addToUtxo(new Sha256Hash(txhash), pt_idx, ((Number) utxo.get("subaccount")).intValue(),
-                                ((Number) utxo.get("pointer")).intValue());
+                        addToUtxo(new Sha256Hash(txhash), pt_idx, ((Integer) utxo.get("subaccount")),
+                                ((Integer) utxo.get("pointer")));
                         addUtxoToValues(new Sha256Hash(txhash));
                     }
                     newUtxos.add(new TransactionOutPoint(Network.NETWORK, pt_idx, sha256hash));
@@ -356,18 +356,16 @@ public class GaService extends Service {
                 final byte[][] hashes = new byte[unspentOutputsOutpoints.size()][];
 
                 int i = 0;
-                for (final Sha256Hash hash : unspentOutputsOutpoints.keySet()) {
-                    hashes[i++] = Utils.reverseBytes(hash.getBytes());
-                }
-
                 final BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
-                for (i = 0; i < hashes.length; ++i) {
-                    res.insert(hashes[i]);
+                for (final Sha256Hash hash : unspentOutputsOutpoints.keySet()) {
+                    res.insert(hashes[i++] = Utils.reverseBytes(hash.getBytes()));
                 }
 
                 // add fake entry to avoid downloading blocks when filter is empty
                 // (empty bloom filters are ignored by bitcoinj)
-                res.insert(new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
+                if (hashes.length > 0) {
+                    res.insert(new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
+                }
                 return res;
             }
 
@@ -772,12 +770,12 @@ public class GaService extends Service {
                         final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
                         final Integer pointer = unspentOutpointsPointers.get(txOutpoint);
 
-                        futuresList.add(Futures.transform(verifySpendableBy(result.getOutput(outpoint.intValue()), subaccount, pointer), new Function<Boolean, Boolean>() {
+                        futuresList.add(Futures.transform(verifySpendableBy(result.getOutput(outpoint), subaccount, pointer), new Function<Boolean, Boolean>() {
                             @Nullable
                             @Override
                             public Boolean apply(final @Nullable Boolean input) {
-                                if (input.booleanValue()) {
-                                    final Coin coinValue = result.getOutput(outpoint.intValue()).getValue();
+                                if (input) {
+                                    final Coin coinValue = result.getOutput(outpoint).getValue();
                                     addUtxoToValues(txOutpoint, subaccount, coinValue);
                                     changedSubaccounts.add(subaccount);
                                     final SharedPreferences.Editor e = getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).edit();
@@ -882,7 +880,7 @@ public class GaService extends Service {
                 Hex.decode(Network.depositChainCode),
                 ECKey.fromPublicOnly(Hex.decode(Network.depositPubkey)).getPubKeyPoint(),
                 null, null);
-        if (subaccount.intValue() != 0) {
+        if (subaccount != 0) {
             gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(3));
         } else {
             gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(1));
@@ -900,8 +898,8 @@ public class GaService extends Service {
             childNum = b1 * 256 + b2;
             gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(childNum));
         }
-        if (subaccount.intValue() != 0) {
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(subaccount.intValue(), false));
+        if (subaccount != 0) {
+            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(subaccount, false));
         }
         gaDeterministicKeys.put(subaccount, gaWallet);
         return gaWallet;
@@ -1046,7 +1044,7 @@ public class GaService extends Service {
             final Wallet fakeWallet = new Wallet(Network.NETWORK) {
                 @Override
                 public int getLastBlockSeenHeight() {
-                    return blockHeight.intValue() - 1;
+                    return blockHeight - 1;
                 }
             };
             blockChain.addWallet(fakeWallet);
@@ -1116,7 +1114,7 @@ public class GaService extends Service {
         final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
             @Override
             public ListenableFuture<String> apply(final Map input) throws Exception {
-                final int pointer = ((Number) input.get("pointer")).intValue();
+                final int pointer = ((Integer) input.get("pointer"));
                 final byte[] scriptHash = Utils.sha256hash160(Hex.decode((String) input.get("script")));
                 return Futures.transform(verifyP2SHSpendableBy(
                         ScriptBuilder.createP2SHOutputScript(scriptHash),
@@ -1124,7 +1122,7 @@ public class GaService extends Service {
                     @Nullable
                     @Override
                     public String apply(final @Nullable Boolean input) {
-                        if (input.booleanValue()) {
+                        if (input) {
                             return Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
                         } else {
                             throw new IllegalArgumentException("Address validation failed");
@@ -1357,14 +1355,14 @@ public class GaService extends Service {
                 int changeIdx;
                 if (input == null) {
                     changeIdx = -1;
-                } else if (input.get(0).booleanValue()) {
+                } else if (input.get(0)) {
                     changeIdx = 0;
-                } else if (input.get(1).booleanValue()) {
+                } else if (input.get(1)) {
                     changeIdx = 1;
                 } else {
                     throw new IllegalArgumentException("Verification: Change output missing.");
                 }
-                if (input != null && input.get(0).booleanValue() && input.get(1).booleanValue()) {
+                if (input != null && input.get(0) && input.get(1)) {
                     // Shouldn't happen really. In theory user can send money to a new change address
                     // of themselves which they've generated manually, but it's unlikely, so for
                     // simplicity we don't handle it.
@@ -1457,7 +1455,7 @@ public class GaService extends Service {
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
         final ArrayList<String> enabledTwoFac = new ArrayList<>();
         for (int i = 0; i < allTwoFac.length; ++i) {
-            if (((Boolean) twoFacConfig.get(allTwoFacSystem[i])).booleanValue()) {
+            if (((Boolean) twoFacConfig.get(allTwoFacSystem[i]))) {
                 if (useSystemNames) {
                     enabledTwoFac.add(allTwoFacSystem[i]);
                 } else {

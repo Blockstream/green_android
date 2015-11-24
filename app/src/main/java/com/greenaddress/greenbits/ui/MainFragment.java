@@ -93,7 +93,7 @@ public class MainFragment extends GAFragment implements Observer {
             if (((Boolean) ep.get("is_relevant"))) {
                 if (((Boolean) ep.get("is_credit"))) {
                     final boolean external_social = ep.get("social_destination") != null &&
-                            ((Number) ep.get("script_type")).intValue() != P2SH_FORTIFIED_OUT;
+                            ((Integer) ep.get("script_type")) != P2SH_FORTIFIED_OUT;
                     if (!external_social) {
                         amount += Long.valueOf((String) ep.get("value"));
                         if (!((Boolean) ep.get("is_spent"))) {
@@ -458,7 +458,7 @@ public class MainFragment extends GAFragment implements Observer {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 final List resultList = (List) result.get("list");
-                final int curBlock = ((Number) result.get("cur_block")).intValue();
+                final int curBlock = ((Integer) result.get("cur_block"));
                 getGAService().setCurBlock(curBlock);
 
                 activity.runOnUiThread(new Runnable() {

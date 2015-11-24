@@ -410,11 +410,11 @@ public class Trezor {
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curGaNode).
                                     clearAddressN().
-                                    addAddressN(Integer.valueOf(curTx.change_pointer).intValue())).
+                                    addAddressN(Integer.valueOf(curTx.change_pointer))).
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curWalletNode).
                                     clearAddressN().
-                                    addAddressN(Integer.valueOf(curTx.change_pointer).intValue())).
+                                    addAddressN(Integer.valueOf(curTx.change_pointer))).
                             setM(2));
                 } else {
                     b.setMultisig(TrezorType.MultisigRedeemScriptType.newBuilder().
@@ -422,15 +422,15 @@ public class Trezor {
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curGaNode).
                                     clearAddressN().
-                                    addAddressN(Integer.valueOf(curTx.change_pointer).intValue())).
+                                    addAddressN(Integer.valueOf(curTx.change_pointer))).
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curWalletNode).
                                     clearAddressN().
-                                    addAddressN(Integer.valueOf(curTx.change_pointer).intValue())).
+                                    addAddressN(Integer.valueOf(curTx.change_pointer))).
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curRecoveryNode).
                                     clearAddressN().
-                                    addAddressN(Integer.valueOf(curTx.change_pointer).intValue())).
+                                    addAddressN(Integer.valueOf(curTx.change_pointer))).
                             setM(2));
                 }
             } else {
@@ -604,7 +604,7 @@ public class Trezor {
             build();
 		final Script changeScript;
 		if (tx.change_pointer != null) {
-			DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(Integer.valueOf(tx.change_pointer).intValue()));
+			DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(Integer.valueOf(tx.change_pointer)));
 			keys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
 
 			final Integer[] intArray;

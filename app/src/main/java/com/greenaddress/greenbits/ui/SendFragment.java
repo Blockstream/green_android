@@ -474,7 +474,7 @@ public class SendFragment extends GAFragment {
                                                                 dialogAmount = amount;
                                                                 dialogFee = fee;
                                                             }
-                                                            if (result.requires_2factor.booleanValue() && twoFacConfig != null && ((Boolean) twoFacConfig.get("any")).booleanValue()) {
+                                                            if (result.requires_2factor && twoFacConfig != null && ((Boolean) twoFacConfig.get("any"))) {
                                                                 final List<String> enabledTwoFac =
                                                                         getGAService().getEnabledTwoFacNames(true);
                                                                 if (enabledTwoFac.size() > 1) {
@@ -615,7 +615,7 @@ public class SendFragment extends GAFragment {
                                         gaService.fireBalanceChanged(0);
                                         for (final Object subaccount : gaService.getSubaccounts()) {
                                             final Map<String, ?> subaccountMap = (Map) subaccount;
-                                            gaService.fireBalanceChanged(((Number) subaccountMap.get("pointer")).intValue());
+                                            gaService.fireBalanceChanged(((Integer) subaccountMap.get("pointer")));
                                         }
 
                                         updateBalance();

@@ -90,7 +90,7 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
     private String outToPath(final Output out) {
-        if (out.getSubaccount() != null && out.getSubaccount().intValue() != 0) {
+        if (out.getSubaccount() != null && out.getSubaccount() != 0) {
             return "3'/" + out.getSubaccount() + "'/1/" + out.getPointer();
         } else {
             return "1/" + out.getPointer();
@@ -219,8 +219,8 @@ public class BTChipHWWallet implements ISigningWallet {
     private String getPath() {
         final List<String> pathStr = new LinkedList<>();
         for (final Integer i : addrn) {
-            String s = String.valueOf(i.intValue() & ~0x80000000);
-            if ((i.intValue() & 0x80000000) != 0) {
+            String s = String.valueOf(i & ~0x80000000);
+            if ((i & 0x80000000) != 0) {
                 s = s + "'";
             }
             pathStr.add(s);

@@ -428,7 +428,7 @@ public class WalletClient {
                         final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
                         final int[] subaccounts_int = new int[subaccounts.size()];
                         for (int i = 0; i < subaccounts.size(); ++i) {
-                            subaccounts_int[i] = ((Number) subaccounts.get(i)).intValue();
+                            subaccounts_int[i] = ((Integer) subaccounts.get(i));
                         }
                         m_notificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
                                 subaccounts_int, Long.valueOf(value), txhash);
