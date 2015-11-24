@@ -347,8 +347,8 @@ public class GaService extends Service {
 
             @Override
             public int getBloomFilterElementCount() {
-                // + 1 to avoid downloading full blocks (empty bloom filters are ignored by bitcoinj)
-                return unspentOutputsOutpoints.size() + 1;
+                // 1 to avoid downloading full blocks (empty bloom filters are ignored by bitcoinj)
+                return unspentOutputsOutpoints.isEmpty() ? 1: unspentOutpointsPointers.size();
             }
 
             @Override
