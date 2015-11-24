@@ -15,6 +15,6 @@ android:
 jdk:
     - oraclejdk7
 
-script: "./gradlew clean assemble -x lint"
+script: "./gradlew assembleDebug"
 
 before_install: "git submodule update --init --recursive"
