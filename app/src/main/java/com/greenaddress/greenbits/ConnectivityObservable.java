@@ -152,29 +152,17 @@ public class ConnectivityObservable extends Observable {
     }
 
     public boolean isNetworkUp() {
-        final ConnectivityManager connectivityManager
-                = (ConnectivityManager) service.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-
+        final NetworkInfo activeNetworkInfo = ((ConnectivityManager) service.getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
     public boolean isWiFiUp() {
-        final ConnectivityManager connectivityManager
-                = (ConnectivityManager) service.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            for (final Network n : connectivityManager.getAllNetworks()) {
-                final NetworkInfo ni = connectivityManager.getNetworkInfo(n);
-                if (ni.getSubtype() == ConnectivityManager.TYPE_WIFI && ni.isConnectedOrConnecting()) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            final NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-            return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-        }
+        final NetworkInfo activeNetwork = ((ConnectivityManager)service.getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting()
+                && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
     public enum State {

@@ -282,7 +282,7 @@ public class MainFragment extends GAFragment implements Observer {
                 }
                 builder.cancelListener(new DialogInterface.OnCancelListener() {
                     @Override
-                    public void onCancel(DialogInterface dialog) {
+                    public void onCancel(final DialogInterface dialog) {
                         spvStatusDialog = null;
                     }
                 });
@@ -336,7 +336,7 @@ public class MainFragment extends GAFragment implements Observer {
 
         curBalanceObserver = makeBalanceObserver();
 
-        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
+        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
 
         if (getGAService().getBalanceCoin(curSubaccount) != null) {
             updateBalance();
@@ -354,10 +354,10 @@ public class MainFragment extends GAFragment implements Observer {
                     @Nullable
                     @Override
                     public Void apply(final @Nullable Integer input) {
-                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).deleteObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
                         curSubaccount = input;
                         curBalanceObserver = makeBalanceObserver();
-                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
                         reloadTransactions(getActivity());
                         updateBalance();
 
@@ -408,7 +408,9 @@ public class MainFragment extends GAFragment implements Observer {
     public void onGAResume() {
         getGAService().getNewTransactionsObservable().addObserver(this);
         getGAService().getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
-        if (wiFiObserverRequired) makeWiFiObserver();
+        if (wiFiObserverRequired) {
+            makeWiFiObserver();
+        }
     }
 
     private Observer makeTxVerifiedObservable() {

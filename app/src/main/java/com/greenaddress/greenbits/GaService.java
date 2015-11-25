@@ -585,11 +585,21 @@ public class GaService extends Service {
             blockStore = new SPVBlockStore(Network.NETWORK, blockChainFile);
             final StoredBlock storedBlock = blockStore.getChainHead(); // detect corruptions as early as possible
             if (storedBlock.getHeight() == 0 && Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_MAINNET))) {
+                InputStream is = null;
                 try {
-                    CheckpointManager.checkpoint(Network.NETWORK, getAssets().open("bip39-wordlist.txt"), blockStore, EPOCH_START);
+                    is = getAssets().open("checkpoints");
+                    CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, EPOCH_START);
                 } catch (final IOException e) {
                     // couldn't load checkpoints, log & skip
                     e.printStackTrace();
+                } finally {
+                    try {
+                        if (is != null) {
+                            is.close();
+                        }
+                    } catch (final IOException e) {
+                        // do nothing
+                    }
                 }
             }
             blockChain = new BlockChain(Network.NETWORK, blockStore);
