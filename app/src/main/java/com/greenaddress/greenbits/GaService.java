@@ -584,7 +584,7 @@ public class GaService extends Service {
         try {
             blockStore = new SPVBlockStore(Network.NETWORK, blockChainFile);
             final StoredBlock storedBlock = blockStore.getChainHead(); // detect corruptions as early as possible
-            if (storedBlock.getHeight() == 0 && Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_MAINNET))) {
+            if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
                 InputStream is = null;
                 try {
                     is = getAssets().open("checkpoints");
