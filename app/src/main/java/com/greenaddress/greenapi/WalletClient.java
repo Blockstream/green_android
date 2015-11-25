@@ -617,7 +617,7 @@ public class WalletClient {
 
         Futures.addCallback(signature_arg, new FutureCallback<String[]>() {
             @Override
-            public void onSuccess(@Nullable String[] result) {
+            public void onSuccess(final @Nullable String[] result) {
                 mConnection.call("http://greenaddressit.com/login/authenticate", Object.class, new Wamp.CallHandler() {
                     @Override
                     public void onResult(final Object loginData) {

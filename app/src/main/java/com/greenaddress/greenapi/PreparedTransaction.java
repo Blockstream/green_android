@@ -19,8 +19,8 @@ import java.util.Map;
 
 public class PreparedTransaction {
 
-    public final String change_pointer;
-    public final int subaccount_pointer;
+    public final Integer change_pointer;
+    public final Integer subaccount_pointer;
     public final Boolean requires_2factor;
     public final List<Output> prev_outputs = new ArrayList<>();
     public final Transaction decoded;
@@ -64,7 +64,7 @@ public class PreparedTransaction {
         }
 
         this.subaccount_pointer = (pte.privateData == null || pte.privateData.get("subaccount") == null) ?
-               0 : (Integer) pte.privateData.get("subaccount");
+                0 : (Integer) pte.privateData.get("subaccount");
 
         this.twoOfThreeBackupChaincode = twoOfThreeBackupChaincode;
         this.twoOfThreeBackupPubkey = twoOfThreeBackupPubkey;
@@ -76,7 +76,7 @@ public class PreparedTransaction {
         }
 
         if (pte.values.get("change_pointer") != null) {
-            this.change_pointer = pte.values.get("change_pointer").toString();
+            this.change_pointer = Integer.parseInt(pte.values.get("change_pointer").toString());
         } else {
             this.change_pointer = null;
         }

@@ -39,6 +39,7 @@ import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
 import org.bitcoinj.core.BlockChainListener;
 import org.bitcoinj.core.BloomFilter;
+import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.DownloadProgressTracker;
 import org.bitcoinj.core.ECKey;
@@ -134,7 +135,7 @@ public class GaService extends Service {
     private BlockChain blockChain;
     private BlockChainListener blockChainListener;
     private PeerGroup peerGroup;
-
+    private final int EPOCH_START = 1393628400;
     private PeerFilterProvider pfProvider;
 
 
@@ -164,9 +165,7 @@ public class GaService extends Service {
             receivingId = result.receiving_id;
             gaitPath = Hex.decode(result.gait_path);
 
-            // do not get latest address - always get a new one in ReceiveFragment
-            // getLatestOrNewAddress(getSharedPreferences("receive", MODE_PRIVATE).getInt("curSubaccount", 0));
-            balanceObservables.put(new Integer(0), new GaObservable());
+            balanceObservables.put(0, new GaObservable());
             updateBalance(0);
             for (final Object subaccount : result.subaccounts) {
                 final Map<?, ?> subaccountMap = (Map) subaccount;
@@ -342,7 +341,7 @@ public class GaService extends Service {
         pfProvider = new PeerFilterProvider() {
             @Override
             public long getEarliestKeyCreationTime() {
-                return 1393628400;
+                return EPOCH_START;
             }
 
             @Override
@@ -566,7 +565,7 @@ public class GaService extends Service {
             return;
         }
         System.setProperty("user.home", getApplicationContext().getFilesDir().toString());
-        String trusted_addr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
+        final String trusted_addr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
         SPVMode mode;
         if (!trusted_addr.isEmpty() && trusted_addr.contains(".")){
             final String trusted_lower = trusted_addr.toLowerCase();
@@ -584,8 +583,15 @@ public class GaService extends Service {
 
         try {
             blockStore = new SPVBlockStore(Network.NETWORK, blockChainFile);
-            blockStore.getChainHead(); // detect corruptions as early as possible
-
+            final StoredBlock storedBlock = blockStore.getChainHead(); // detect corruptions as early as possible
+            if (storedBlock.getHeight() == 0 && Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_MAINNET))) {
+                try {
+                    CheckpointManager.checkpoint(Network.NETWORK, getAssets().open("bip39-wordlist.txt"), blockStore, EPOCH_START);
+                } catch (final IOException e) {
+                    // couldn't load checkpoints, log & skip
+                    e.printStackTrace();
+                }
+            }
             blockChain = new BlockChain(Network.NETWORK, blockStore);
             blockChain.addListener(makeBlockChainListener());
 
@@ -871,21 +877,9 @@ public class GaService extends Service {
         return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subaccount, pointer);
     }
 
-    private DeterministicKey getGaDeterministicKey(final Integer subaccount) {
-        if (gaDeterministicKeys.keySet().contains(subaccount)) {
-            return gaDeterministicKeys.get(subaccount);
-        }
-        DeterministicKey gaWallet = new DeterministicKey(
-                new ImmutableList.Builder<ChildNumber>().build(),
-                Hex.decode(Network.depositChainCode),
-                ECKey.fromPublicOnly(Hex.decode(Network.depositPubkey)).getPubKeyPoint(),
-                null, null);
-        if (subaccount != 0) {
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(3));
-        } else {
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(1));
-        }
+    private DeterministicKey getKeyPath(final DeterministicKey node) {
         int childNum;
+        DeterministicKey nodePath = node;
         for (int i = 0; i < 32; ++i) {
             int b1 = gaitPath[i * 2];
             if (b1 < 0) {
@@ -896,13 +890,25 @@ public class GaService extends Service {
                 b2 = 256 + b2;
             }
             childNum = b1 * 256 + b2;
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(childNum));
+            nodePath = HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(childNum));
         }
-        if (subaccount != 0) {
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(subaccount, false));
+        return nodePath;
+    }
+
+    private DeterministicKey getGaDeterministicKey(final Integer subaccount) {
+        if (gaDeterministicKeys.keySet().contains(subaccount)) {
+            return gaDeterministicKeys.get(subaccount);
         }
-        gaDeterministicKeys.put(subaccount, gaWallet);
-        return gaWallet;
+
+        final DeterministicKey nodePath = getKeyPath(HDKeyDerivation.deriveChildKey(new DeterministicKey(
+                new ImmutableList.Builder<ChildNumber>().build(),
+                Hex.decode(Network.depositChainCode),
+                ECKey.fromPublicOnly(Hex.decode(Network.depositPubkey)).getPubKeyPoint(),
+                null, null), new ChildNumber(subaccount != 0?3:1)));
+
+        final DeterministicKey key = subaccount == 0 ? nodePath : HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(subaccount, false));
+        gaDeterministicKeys.put(subaccount, key);
+        return key;
     }
 
     private ListenableFuture<LoginData> login() {
@@ -977,14 +983,14 @@ public class GaService extends Service {
         Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
-                balancesCoin.put(subaccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi")).longValue()));
-                fiatRate = Float.valueOf((String) result.get("fiat_exchange")).floatValue();
+                balancesCoin.put(subaccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
+                fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                 // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
                 // while the server can return more, hence toBigInteger instead here:
-                BigInteger fiatValue = new BigDecimal((String) result.get("fiat_value"))
+                final BigInteger tmpValue = new BigDecimal((String) result.get("fiat_value"))
                         .movePointRight(Fiat.SMALLEST_UNIT_EXPONENT).toBigInteger();
                 // also strip extra decimals (over 2 places) because that's what the old JS client does
-                fiatValue = fiatValue.subtract(fiatValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
+                final BigInteger fiatValue = tmpValue.subtract(tmpValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
                 balancesFiat.put(subaccount, Fiat.valueOf((String) result.get("fiat_currency"), fiatValue.longValue()));
 
                 fireBalanceChanged(subaccount);
@@ -1114,11 +1120,11 @@ public class GaService extends Service {
         final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
             @Override
             public ListenableFuture<String> apply(final Map input) throws Exception {
-                final int pointer = ((Integer) input.get("pointer"));
+                final Integer pointer = ((Integer) input.get("pointer"));
                 final byte[] scriptHash = Utils.sha256hash160(Hex.decode((String) input.get("script")));
                 return Futures.transform(verifyP2SHSpendableBy(
                         ScriptBuilder.createP2SHOutputScript(scriptHash),
-                        subaccount, Integer.valueOf(pointer)), new Function<Boolean, String>() {
+                        subaccount, pointer), new Function<Boolean, String>() {
                     @Nullable
                     @Override
                     public String apply(final @Nullable Boolean input) {
@@ -1242,15 +1248,15 @@ public class GaService extends Service {
     }
 
     public Coin getBalanceCoin(int subaccount) {
-        return balancesCoin.get(new Integer(subaccount));
+        return balancesCoin.get(subaccount);
     }
 
     public Coin getVerifiedBalanceCoin(final int subaccount) {
-        return verifiedBalancesCoin.get(new Integer(subaccount));
+        return verifiedBalancesCoin.get(subaccount);
     }
 
     public Fiat getBalanceFiat(final int subaccount) {
-        return balancesFiat.get(new Integer(subaccount));
+        return balancesFiat.get(subaccount);
     }
 
     public float getFiatRate() {
@@ -1339,9 +1345,9 @@ public class GaService extends Service {
             }
             final List<ListenableFuture<Boolean>> changeVerifications = new ArrayList<>();
             changeVerifications.add(
-                    verifySpendableBy(transaction.decoded.getOutputs().get(0), Integer.valueOf(transaction.subaccount_pointer), Integer.valueOf(transaction.change_pointer)));
+                    verifySpendableBy(transaction.decoded.getOutputs().get(0), transaction.subaccount_pointer, transaction.change_pointer));
             changeVerifications.add(
-                    verifySpendableBy(transaction.decoded.getOutputs().get(1), Integer.valueOf(transaction.subaccount_pointer), Integer.valueOf(transaction.change_pointer)));
+                    verifySpendableBy(transaction.decoded.getOutputs().get(1), transaction.subaccount_pointer, transaction.change_pointer));
             changeFuture = Futures.allAsList(changeVerifications);
         } else {
             changeFuture = Futures.immediateFuture(null);
@@ -1481,7 +1487,7 @@ public class GaService extends Service {
         return curBlock;
     }
 
-    public void setCurBlock(int newBlock){
+    public void setCurBlock(final int newBlock){
         curBlock = newBlock;
     }
 
@@ -1489,7 +1495,7 @@ public class GaService extends Service {
         return spvWiFiDialogShown;
     }
 
-    public void setSpvWiFiDialogShown(boolean shown){
+    public void setSpvWiFiDialogShown(final boolean shown){
         spvWiFiDialogShown = shown;
     }
 }
