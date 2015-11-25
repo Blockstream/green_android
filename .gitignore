@@ -15,3 +15,5 @@ gen/
 app/*.apk
 app/manifest-merger-*-report.txt
 .*.swo
+
+*.apk
