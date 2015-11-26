@@ -135,7 +135,6 @@ public class GaService extends Service {
     private BlockChain blockChain;
     private BlockChainListener blockChainListener;
     private PeerGroup peerGroup;
-    private final int EPOCH_START = 1393628400;
     private PeerFilterProvider pfProvider;
 
 
@@ -341,7 +340,7 @@ public class GaService extends Service {
         pfProvider = new PeerFilterProvider() {
             @Override
             public long getEarliestKeyCreationTime() {
-                return EPOCH_START;
+                return client.getLoginData().earliest_key_creation_time;
             }
 
             @Override
@@ -588,7 +587,7 @@ public class GaService extends Service {
                 InputStream is = null;
                 try {
                     is = getAssets().open("checkpoints");
-                    CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, EPOCH_START);
+                    CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, client.getLoginData().earliest_key_creation_time);
                 } catch (final IOException e) {
                     // couldn't load checkpoints, log & skip
                     e.printStackTrace();

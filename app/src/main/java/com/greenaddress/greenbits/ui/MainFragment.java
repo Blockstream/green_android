@@ -475,7 +475,8 @@ public class MainFragment extends GAFragment implements Observer {
                         if (gaService.getSharedPreferences("SPV", FragmentActivity.MODE_PRIVATE).getBoolean("enabled", true)) {
                             gaService.setUpSPV();
                             if (!gaService.getIsSpvSyncing()) {
-                                if (curBlock - gaService.getSpvHeight() > 1000) {
+                                // download up to 468kB (80bytes * 6000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
+                                if (curBlock - gaService.getSpvHeight() > 6000) {
                                     if (connObservable.isWiFiUp()) {
                                         gaService.startSpvSync();
                                     } else {

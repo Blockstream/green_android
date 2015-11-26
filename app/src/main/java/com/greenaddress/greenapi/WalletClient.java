@@ -86,6 +86,10 @@ public class WalletClient {
         return new ArrayList<>(Arrays.asList(words.split("\\s+")));
     }
 
+    public LoginData getLoginData() {
+        return loginData;
+    }
+
     private static byte[] mnemonicToPath(final String mnemonic) {
         byte[] step1 = PBKDF2SHA512.derive(mnemonic, "greenaddress_path", 2048, 64);
         HMac hmac = new HMac(new SHA512Digest());
