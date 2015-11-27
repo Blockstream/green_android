@@ -33,23 +33,16 @@ class TimeAgo {
         return timesStringPlurals;
     }
 
-    private static String toDuration(final long duration, Context context) {
-
-
-        final StringBuilder res = new StringBuilder();
+    private static String toDuration(final long duration, final Context context) {
         for (int i = 0; i < times.size(); ++i) {
-            final long current = times.get(i);
-            final long temp = duration / current;
+            final long temp = duration / times.get(i);
             if (temp > 0) {
-                res.append(temp)
-                        .append(" ")
-                        .append(temp > 1 ? getTimesStringPlurals(context)[i] : getTimesString(context)[i])
-                        .append(" ")
-                        .append(context.getString(R.string.ago));
-                break;
+                return String.format("%s %s %s", temp, temp > 1
+                        ? getTimesStringPlurals(context)[i] : getTimesString(context)[i],
+                        context.getString(R.string.ago));
             }
         }
-        return (res.length() == 0) ? "NOW" : res.toString();
+        return "NOW";
     }
 
     public static String fromNow(final long date, final Context context) {
