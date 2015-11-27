@@ -578,14 +578,14 @@ public class Trezor {
             build();
 		final Script changeScript;
 		if (tx.change_pointer != null) {
-			final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(curTx.change_pointer));
+			final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(tx.change_pointer));
 			keys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
 
 			final Integer[] intArray;
 			if (tx.subaccount_pointer != 0) {
-				intArray = new Integer[]{3 + 0x80000000, tx.subaccount_pointer + 0x80000000, 1, curTx.change_pointer};
+				intArray = new Integer[]{3 + 0x80000000, tx.subaccount_pointer + 0x80000000, 1, tx.change_pointer};
 			} else {
-				intArray = new Integer[]{1, curTx.change_pointer};
+				intArray = new Integer[]{1, tx.change_pointer};
 			}
 			final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
 			final String pkHex = xpub[xpub.length - 2];
@@ -607,7 +607,7 @@ public class Trezor {
 						setChainCode(ByteString.copyFrom(backupWallet.getChainCode())).
 						build();
 
-				backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(curTx.change_pointer));
+				backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(tx.change_pointer));
 				keys.add(ECKey.fromPublicOnly(backupWallet.getPubKeyPoint()));
 			} else {
 				curRecoveryNode = null;
