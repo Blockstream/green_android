@@ -86,7 +86,7 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         } else {
             message = getTypeString(current.type);
         }
-        holder.textWho.setText(message + (current.memo != null ? " *" : ""));
+        holder.textWho.setText(String.format("%s%s", message, current.memo != null ? " *" : ""));
 
         holder.mainLayout.setBackgroundColor(val > 0 ?
                         getContext().getResources().getColor(R.color.superLightGreen) :

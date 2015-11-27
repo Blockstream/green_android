@@ -33,19 +33,16 @@ class TimeAgo {
         return timesStringPlurals;
     }
 
-    private static String toDuration(final long duration, final Context context) {
+    public static String fromNow(final long date, final Context context) {
+        final long timeDiff = (new Date()).getTime() - date;
         for (int i = 0; i < times.size(); ++i) {
-            final long temp = duration / times.get(i);
-            if (temp > 0) {
-                return String.format("%s %s %s", temp, temp > 1
-                        ? getTimesStringPlurals(context)[i] : getTimesString(context)[i],
+            final long timeSince = timeDiff / times.get(i);
+            if (timeSince > 0) {
+                return String.format("%s %s %s", timeSince, timeSince > 1
+                                ? getTimesStringPlurals(context)[i] : getTimesString(context)[i],
                         context.getString(R.string.ago));
             }
         }
         return "NOW";
-    }
-
-    public static String fromNow(final long date, final Context context) {
-        return toDuration((new Date()).getTime() - date, context);
     }
 }

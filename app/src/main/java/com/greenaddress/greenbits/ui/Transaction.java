@@ -21,7 +21,7 @@ public class Transaction implements Serializable {
     public final Date date;
     public final String memo;
     public boolean spvVerified;
-    public boolean isSpent;
+    public final boolean isSpent;
 
     public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn) {
         this.type = type;

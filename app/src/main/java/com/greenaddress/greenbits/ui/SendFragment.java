@@ -545,7 +545,7 @@ public class SendFragment extends GAFragment {
         });
 
         curBalanceObserver = makeBalanceObserver();
-        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
+        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
 
         if (getGAService().getBalanceCoin(curSubaccount) != null) {
             updateBalance();
@@ -761,14 +761,14 @@ public class SendFragment extends GAFragment {
                     @Nullable
                     @Override
                     public Void apply(@Nullable Integer input) {
-                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).deleteObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
                         curSubaccount = input;
                         hideInstantIf2of3();
                         final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).edit();
                         editor.putInt("curSubaccount", curSubaccount);
                         editor.apply();
                         curBalanceObserver = makeBalanceObserver();
-                        getGAService().getBalanceObservables().get(new Integer(curSubaccount)).addObserver(curBalanceObserver);
+                        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
                         Futures.addCallback(gaService.getSubaccountBalance(curSubaccount), new FutureCallback<Map<?, ?>>() {
                             @Override
                             public void onSuccess(final @Nullable Map<?, ?> result) {

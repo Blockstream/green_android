@@ -272,7 +272,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                     final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
                                     Futures.addCallback(getGAService().verifySpendableBy(
                                             tx.getOutputs().get(0),
-                                            Integer.valueOf(0),
+                                                0,
                                             ((Integer) result.get("out_pointer"))
                                     ), new FutureCallback<Boolean>() {
                                         @Override

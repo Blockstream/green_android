@@ -662,8 +662,7 @@ public class GaService extends Service {
         sendBroadcast(i);
 
         if (peerGroup != null && peerGroup.isRunning()) {
-            peerGroup.stopAsync();
-            peerGroup.awaitTerminated();
+            peerGroup.stop();
 
         }
         isSpvSyncing = false;
