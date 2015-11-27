@@ -11,6 +11,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -32,8 +33,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.annotation.Nullable;
-
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -50,6 +49,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     private static final int REQUEST_ENABLE_2FA = 0;
     private String twoFacMethod;
 
+    @Nullable
     private Observer wiFiObserver = null;
 
     @Override
@@ -129,7 +129,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         int timeout = 5;
         try {
             timeout = (int) getGAService().getAppearanceValue("altimeout");
-        } catch (final Exception e) {
+        } catch (@NonNull final Exception e) {
             // not set
         }
         altime.setSummary(Integer.toString(timeout) + getString(R.string.autologout_time_default));
@@ -137,14 +137,14 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         altime.setText(Integer.toString(timeout));
         altime.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, @NonNull final Object newValue) {
 
                 try {
                     getGAService().setAppearanceValue("altimeout", Integer.parseInt(newValue.toString()), true);
                     altime.setSummary(Integer.parseInt(newValue.toString()) + " minutes");
 
                     return true;
-                } catch (final Exception e) {
+                } catch (@NonNull final Exception e) {
                     // not set
                 }
 
@@ -163,6 +163,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
                 class SPVButtonPrefAsync extends AsyncTask<Object, Object, Object>{
 
+                    @Nullable
                     @Override
                     protected Object doInBackground(Object[] params) {
                         final Boolean nowEnabled = (Boolean) newValue;
@@ -216,14 +217,14 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         trusted_peer.setText(trustedPreferences.getString("address", ""));
         trusted_peer.setSummary(trustedPreferences.getString("address", ""));
         trusted_peer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            boolean addrCorrect(final String addr) {
+            boolean addrCorrect(@NonNull final String addr) {
 
                 try {
                     final int idx = addr.indexOf(":");
                     if (idx != -1) {
                         Integer.parseInt(addr.substring(idx + 1));
                     }
-                } catch (final NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                     return false;
                 }
                 return addr.isEmpty() || addr.contains(".");
@@ -231,6 +232,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
 
             class SPVAsync extends AsyncTask<Object, Object, Object>{
 
+                @Nullable
                 @Override
                 protected Object doInBackground(Object[] params) {
                     boolean alreadySyncing = false;
@@ -248,7 +250,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 }
             }
             @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, @NonNull final Object newValue) {
 
                 try {
                     final String newString = newValue.toString().trim().replaceAll("\\s","");
@@ -323,7 +325,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                     }
 
                     return true;
-                } catch (final Exception e) {
+                } catch (@NonNull final Exception e) {
                     // not set
                 }
                 return false;
@@ -391,7 +393,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         });
     }
 
-    private void change2FA(final String method, final Boolean newValue) {
+    private void change2FA(@NonNull final String method, final Boolean newValue) {
         if (newValue) {
             final Intent intent = new Intent(this, TwoFactorActivity.class);
             intent.putExtra("method", method.toLowerCase());
@@ -425,7 +427,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         }
     }
 
-    private void disable2FA(final String method, final String withMethod) {
+    private void disable2FA(@NonNull final String method, @NonNull final String withMethod) {
         if (!withMethod.equals("gauth")) {
             final Map<String, String> data = new HashMap<>();
             data.put("method", method.toLowerCase());
@@ -472,7 +474,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                             }
 
                             @Override
-                            public void onFailure(final Throwable t) {
+                            public void onFailure(@NonNull final Throwable t) {
                                 t.printStackTrace();
                                 Toast.makeText(SettingsActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                             }
@@ -527,6 +529,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         }
     }
 
+    @NonNull
     private GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }

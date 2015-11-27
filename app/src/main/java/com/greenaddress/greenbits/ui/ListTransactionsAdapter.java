@@ -2,6 +2,8 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +22,14 @@ import java.util.List;
 class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
     private final String btcUnit;
 
-    public ListTransactionsAdapter(final Context context, final int resource, final List<Transaction> objects, final String btcUnit) {
+    public ListTransactionsAdapter(final Context context, final int resource, @NonNull final List<Transaction> objects, final String btcUnit) {
         super(context, resource, objects);
         this.btcUnit = btcUnit;
     }
 
+    @Nullable
     @Override
-    public View getView(final int position, final View convertView, final ViewGroup parent) {
+    public View getView(final int position, @Nullable final View convertView, final ViewGroup parent) {
 
         final Transaction current = getItem(position);
         Holder holder;
@@ -67,7 +70,7 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
             holder.textValue.setText(formatter.format(formatter.parse(btcBalance)));
-        } catch (final ParseException e) {
+        } catch (@NonNull final ParseException e) {
             holder.textValue.setText(btcBalance);
         }
 
@@ -120,7 +123,7 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         return returnedView;
     }
 
-    private String getTypeString(final Transaction.TYPE type) {
+    private String getTypeString(@NonNull final Transaction.TYPE type) {
         switch (type) {
             case IN:
                 return getContext().getString(R.string.txTypeIn);

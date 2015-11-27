@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -44,21 +45,23 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TimeZone;
 
-import javax.annotation.Nullable;
-
-
 public class MainFragment extends GAFragment implements Observer {
     private static final int P2SH_FORTIFIED_OUT = 10;
+    @Nullable
     private Observer wiFiObserver = null;
     private boolean wiFiObserverRequired = false;
+    @Nullable
     private MaterialDialog spvStatusDialog = null;
     private View rootView;
     private List<Transaction> currentList;
+    @Nullable
     private Observer curBalanceObserver;
     private int curSubaccount;
+    @Nullable
     private Observer txVerifiedObservable;
 
-    private Transaction processGATransaction(final Map<String, Object> txJSON, final int curBlock) throws ParseException {
+    @Nullable
+    private Transaction processGATransaction(@NonNull final Map<String, Object> txJSON, final int curBlock) throws ParseException {
 
         final List eps = (List) txJSON.get("eps");
         final String txhash = (String) txJSON.get("txhash");
@@ -81,7 +84,7 @@ public class MainFragment extends GAFragment implements Observer {
                 try {
                     social_destination = new MappingJsonFactory().getCodec().readValue(
                             (String) ep.get("social_destination"), Map.class);
-                } catch (final IOException e) {
+                } catch (@NonNull final IOException e) {
                     //e.printStackTrace();
                 }
 
@@ -202,7 +205,7 @@ public class MainFragment extends GAFragment implements Observer {
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
             balanceText.setText(formatter.format(formatter.parse(btcBalance)));
-        } catch (final ParseException e) {
+        } catch (@NonNull final ParseException e) {
             balanceText.setText(btcBalance);
         }
 
@@ -215,7 +218,7 @@ public class MainFragment extends GAFragment implements Observer {
         try {
             balanceFiatText.setText(formatter.format(formatter.parse(fiatBalance)));
 
-        } catch (final ParseException e) {
+        } catch (@NonNull final ParseException e) {
             balanceFiatText.setText(fiatBalance);
         }
 
@@ -231,7 +234,7 @@ public class MainFragment extends GAFragment implements Observer {
     }
 
     @Override
-    public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
+    public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                                final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
@@ -321,7 +324,7 @@ public class MainFragment extends GAFragment implements Observer {
                                                 "Not yet connected to SPV!");
                                     }
                                     handler.postDelayed(this, 2000);
-                                } catch (final IllegalStateException e) {
+                                } catch (@NonNull final IllegalStateException e) {
                                     e.printStackTrace();
                                     // can happen if the activity is terminated
                                     // ("Fragment MainFragment not attached to Activity")
@@ -376,6 +379,7 @@ public class MainFragment extends GAFragment implements Observer {
         return rootView;
     }
 
+    @Nullable
     private Observer makeBalanceObserver() {
         return new Observer() {
             @Override
@@ -415,6 +419,7 @@ public class MainFragment extends GAFragment implements Observer {
         }
     }
 
+    @Nullable
     private Observer makeTxVerifiedObservable() {
         txVerifiedObservable = new Observer() {
             @Override
@@ -441,12 +446,12 @@ public class MainFragment extends GAFragment implements Observer {
         return txVerifiedObservable;
     }
 
-    private void reloadTransactions(final Activity activity) {
+    private void reloadTransactions(@NonNull final Activity activity) {
         reloadTransactions(activity, false);
     }
 
 
-    private void reloadTransactions(final Activity activity, boolean newAdapter) {
+    private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
         final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
         final String btcUnit = (String) getGAService().getAppearanceValue("unit");
@@ -506,7 +511,7 @@ public class MainFragment extends GAFragment implements Observer {
                         for (int i = 0; i < resultList.size(); ++i) {
                             try {
                                 currentList.add(processGATransaction((Map<String, Object>) resultList.get(i), (Integer) result.get("cur_block")));
-                            } catch (final ParseException e) {
+                            } catch (@NonNull final ParseException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -529,7 +534,7 @@ public class MainFragment extends GAFragment implements Observer {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

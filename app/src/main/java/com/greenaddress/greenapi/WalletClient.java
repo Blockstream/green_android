@@ -998,18 +998,18 @@ public class WalletClient {
                         final Output prevOut = prevOuts.get(ii);
 
                         final ISigningWallet account;
-                        if (prevOut.getSubaccount() == null || prevOut.getSubaccount() == 0) {
+                        if (prevOut.subaccount == null || prevOut.subaccount == 0) {
                             account = hdWallet;
                         } else {
                             account = hdWallet
                                     .deriveChildKey(new ChildNumber(3, true))
-                                    .deriveChildKey(new ChildNumber(prevOut.getSubaccount(), true));
+                                    .deriveChildKey(new ChildNumber(prevOut.subaccount, true));
                         }
 
-                        final ISigningWallet branchKey = account.deriveChildKey(new ChildNumber(prevOut.getBranch(), privateDerivation));
-                        final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.getPointer(), privateDerivation));
+                        final ISigningWallet branchKey = account.deriveChildKey(new ChildNumber(prevOut.branch, privateDerivation));
+                        final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.pointer, privateDerivation));
 
-                        final Script script = new Script(Hex.decode(prevOut.getScript()));
+                        final Script script = new Script(Hex.decode(prevOut.script));
                         final Sha256Hash hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
                         return pointerKey.signHash(hash);
                     }

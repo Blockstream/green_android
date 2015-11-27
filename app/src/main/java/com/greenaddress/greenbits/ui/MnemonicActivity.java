@@ -73,7 +73,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
     private static final String TAG = MnemonicActivity.class.getSimpleName();
 
-    private static int countSubStr(final String sub, final String s) {
+    private static int countSubStr(@NonNull final String sub, @NonNull final String s) {
         int c = 0;
         for (int l = s.indexOf(sub); l != -1;
              l = s.indexOf(sub, l + sub.length())) {
@@ -82,7 +82,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         return c;
     }
 
-    private static int levenshteinDistance(final String inputA, final String inputB) {
+    private static int levenshteinDistance(@NonNull final String inputA, @NonNull final String inputB) {
         final String strA = inputA.toLowerCase();
         final String strB = inputB.toLowerCase();
         final int[] c = new int[strB.length() + 1];
@@ -101,7 +101,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         return c[strB.length()];
     }
 
-    private String getClosestWord(final String word) throws IOException {
+    private String getClosestWord(@NonNull final String word) throws IOException {
         final InputStream is = getAssets().open("bip39-wordlist.txt");
         final List<String> words = new ArrayList<>();
 
@@ -128,17 +128,17 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         return words.get(scores.indexOf(Collections.min(scores)));
     }
 
-    private boolean validateMnemonic(final String mnemonic) {
+    private boolean validateMnemonic(@NonNull final String mnemonic) {
         // FIXME: add support for BIP38'ed mnemonics
         // FIXME: add support for different bip39 word lists like Japanese, Spanish, etc
         InputStream closable = null;
         try {
             closable = getAssets().open("bip39-wordlist.txt");
             new MnemonicCode(closable, null).check(Arrays.asList(mnemonic.split(" ")));
-        } catch (final IOException e) {
+        } catch (@NonNull final IOException e) {
             Toast.makeText(MnemonicActivity.this, "Can't find resources file bip39-wordlist.txt, please contact support.", Toast.LENGTH_LONG).show();
             return false;
-        } catch (final MnemonicException.MnemonicWordException e) {
+        } catch (@NonNull final MnemonicException.MnemonicWordException e) {
             // show red only if there's a single match as we don't know the position of the failure
             if (countSubStr(e.badWord, mnemonic) == 1) {
                 final int start = mnemonic.indexOf(e.badWord);
@@ -153,7 +153,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             String closeworld = null;
             try {
                 closeworld = getClosestWord(e.badWord);
-            } catch (final IOException eGnore) {
+            } catch (@NonNull final IOException eGnore) {
                 // ignore
             }
             if (closeworld == null) {
@@ -162,14 +162,14 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 Toast.makeText(MnemonicActivity.this, "'" + e.badWord + "'" + " is not a valid word, did you mean '" + closeworld + "'?", Toast.LENGTH_LONG).show();
             }
             return false;
-        } catch (final MnemonicException e) {
+        } catch (@NonNull final MnemonicException e) {
             Toast.makeText(MnemonicActivity.this, "Invalid passphrase (has to be 24 or 27 words)", Toast.LENGTH_LONG).show();
             return false;
         } finally {
             if (closable != null) {
                 try {
                     closable.close();
-                } catch (final IOException e) {
+                } catch (@NonNull final IOException e) {
                 }
             }
         }
@@ -185,7 +185,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
                 Toast.makeText(MnemonicActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
             }
@@ -224,8 +224,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         });
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
+            @NonNull
             @Override
-            public ListenableFuture<LoginData> apply(final Void input) {
+            public ListenableFuture<LoginData> apply(@Nullable final Void input) {
                 if (edit.getText().toString().trim().split(" ").length == 27) {
                     // encrypted mnemonic
                     return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
@@ -237,7 +238,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                                 final String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
                                 final byte[] decrypted = decryptMnemonic(entropy, normalizedPassphrase);
                                 return gaService.login(Joiner.on(" ").join(gaService.getMnemonicCode().toMnemonic(decrypted)));
-                            } catch (final IOException | GeneralSecurityException | MnemonicException e) {
+                            } catch (@NonNull final IOException | GeneralSecurityException | MnemonicException e) {
                                 throw new RuntimeException(e);
                             }
                         }
@@ -264,7 +265,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 final boolean accountDoesntExist = t instanceof ClassCastException;
                 final String message = accountDoesntExist ? "Account doesn't exist" : "Login failed";
                 t.printStackTrace();
@@ -280,7 +281,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         }, gaService.es);
     }
 
-    private byte[] decryptMnemonic(final byte[] entropy, final String normalizedPassphrase) throws GeneralSecurityException {
+    private byte[] decryptMnemonic(@NonNull final byte[] entropy, @NonNull final String normalizedPassphrase) throws GeneralSecurityException {
         final byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
         final byte[] encrypted = Arrays.copyOf(entropy, 32);
         final byte[] derived = SCrypt.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, 64);
@@ -302,6 +303,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         return decrypted;
     }
 
+    @NonNull
     private ListenableFuture<String> askForPassphrase() {
         final SettableFuture<String> passphraseFuture = SettableFuture.create();
         runOnUiThread(new Runnable() {
@@ -412,14 +414,14 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                             }
 
                             @Override
-                            public void onFailure(final Throwable t) {
+                            public void onFailure(@NonNull final Throwable t) {
 
                             }
                         });
                     }
 
 
-                } catch (final IOException | MnemonicException e) {
+                } catch (@NonNull final IOException | MnemonicException e) {
                     e.printStackTrace();
                 } finally {
                     if (closable != null) {
@@ -450,18 +452,18 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                                     }
 
                                     @Override
-                                    public void onFailure(final Throwable t) {
+                                    public void onFailure(@NonNull final Throwable t) {
 
                                     }
                                 });
                             }
-                        } catch (final GeneralSecurityException | IOException | MnemonicException e) {
+                        } catch (@NonNull final GeneralSecurityException | IOException | MnemonicException e) {
                             e.printStackTrace();
                         }
                     }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
 
                     }
                 });
@@ -492,7 +494,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @android.support.annotation.Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "" + data);
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
@@ -510,7 +512,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -523,7 +525,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onRequestPermissionsResult(final int permsRequestCode, final String[] permissions, final int[] grantResults) {
+    public void onRequestPermissionsResult(final int permsRequestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         switch (permsRequestCode) {
 
             case 150:

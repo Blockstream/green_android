@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
@@ -67,8 +68,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.annotation.Nullable;
-
 import de.schildbach.wallet.ui.ScanActivity;
 
 public class SendFragment extends GAFragment {
@@ -85,6 +84,7 @@ public class SendFragment extends GAFragment {
     private Button sendButton;
     private Switch maxButton;
     private TextView scanIcon;
+    @Nullable
     private Map<?, ?> payreqData = null;
     private boolean fromIntentURI = false;
 
@@ -97,10 +97,11 @@ public class SendFragment extends GAFragment {
     // any better way to do it
     private View rootView;
     private int curSubaccount;
+    @Nullable
     private Observer curBalanceObserver;
     private boolean pausing;
 
-    private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
+    private void showTransactionSummary(@Nullable final String method, final Coin fee, final Coin amount, @NonNull final String recipient, @NonNull final PreparedTransaction prepared) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
@@ -194,7 +195,7 @@ public class SendFragment extends GAFragment {
                             }
 
                             @Override
-                            public void onFailure(final Throwable t) {
+                            public void onFailure(@NonNull final Throwable t) {
                                 t.printStackTrace();
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -217,7 +218,7 @@ public class SendFragment extends GAFragment {
         mSummary.show();
     }
 
-    private void show2FAChoices(final Coin fee, final Coin amount, final String recipient, final PreparedTransaction prepared) {
+    private void show2FAChoices(final Coin fee, final Coin amount, @NonNull final String recipient, @NonNull final PreparedTransaction prepared) {
         Log.i(TAG, "params " + fee + " " + amount + " " + recipient);
         String[] enabledTwoFacNames = new String[]{};
         final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
@@ -242,7 +243,7 @@ public class SendFragment extends GAFragment {
         mTwoFactor.show();
     }
 
-    private void processBitcoinURI(final BitcoinURI URI) {
+    private void processBitcoinURI(@NonNull final BitcoinURI URI) {
         if (URI.getPaymentRequestUrl() != null) {
             rootView.findViewById(R.id.sendBip70ProgressBar).setVisibility(View.VISIBLE);
             recipientEdit.setEnabled(false);
@@ -289,7 +290,7 @@ public class SendFragment extends GAFragment {
                         }
 
                         @Override
-                        public void onFailure(final Throwable t) {
+                        public void onFailure(@NonNull final Throwable t) {
                             Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
@@ -312,7 +313,7 @@ public class SendFragment extends GAFragment {
                             });
                         }
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
 
                     }
                 }, getGAService().es);
@@ -321,8 +322,8 @@ public class SendFragment extends GAFragment {
     }
 
     @Override
-    public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
-                               final Bundle savedInstanceState) {
+    public View onGACreateView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup container,
+                               @Nullable final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             pausing = savedInstanceState.getBoolean("pausing");
         }
@@ -385,7 +386,7 @@ public class SendFragment extends GAFragment {
                 Coin nonFinalAmount;
                 try {
                     nonFinalAmount = bitcoinFormat.parse(amountEdit.getText().toString());
-                } catch (final IllegalArgumentException e) {
+                } catch (@NonNull final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
                 amount = nonFinalAmount;
@@ -492,7 +493,7 @@ public class SendFragment extends GAFragment {
                                                 }
 
                                                 @Override
-                                                public void onFailure(final Throwable t) {
+                                                public void onFailure(@NonNull final Throwable t) {
                                                     final Activity activity = getActivity();
                                                     if (activity != null) {
                                                         activity.runOnUiThread(new Runnable() {
@@ -508,7 +509,7 @@ public class SendFragment extends GAFragment {
                                 }
 
                                 @Override
-                                public void onFailure(final Throwable t) {
+                                public void onFailure(@NonNull final Throwable t) {
                                     final Activity activity = getActivity();
                                     if (activity != null) {
                                         activity.runOnUiThread(new Runnable() {
@@ -585,7 +586,7 @@ public class SendFragment extends GAFragment {
                                 new PopupMenu.OnMenuItemClickListener() {
 
                                     @Override
-                                    public boolean onMenuItemClick(final MenuItem item) {
+                                    public boolean onMenuItemClick(@NonNull final MenuItem item) {
                                         MonetaryFormat newFormat = bitcoinFormat;
                                         final GaService gaService = getGAService();
                                         switch (item.getItemId()) {
@@ -625,7 +626,7 @@ public class SendFragment extends GAFragment {
                                             final Coin oldValue = bitcoinFormat.parse(amountEdit.getText().toString());
                                             bitcoinFormat = newFormat;
                                             amountEdit.setText(newFormat.noCode().format(oldValue));
-                                        } catch (final IllegalArgumentException e) {
+                                        } catch (@NonNull final IllegalArgumentException e) {
                                             bitcoinFormat = newFormat;
                                             amountEdit.setText("");
                                         }
@@ -670,7 +671,7 @@ public class SendFragment extends GAFragment {
                     }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
                         t.printStackTrace();
                     }
                 }, getGAService().es);
@@ -687,7 +688,7 @@ public class SendFragment extends GAFragment {
                                 new PopupMenu.OnMenuItemClickListener() {
 
                                     @Override
-                                    public boolean onMenuItemClick(final MenuItem item) {
+                                    public boolean onMenuItemClick(@NonNull final MenuItem item) {
 
                                         final List<String> currency_exchange = currencyExchangePairs.get(item.getItemId());
 
@@ -780,13 +781,13 @@ public class SendFragment extends GAFragment {
                                 final DecimalFormat formatter = new DecimalFormat("#,###.########");
                                 try {
                                     sendSubAccountBalance.setText(formatter.format(formatter.parse(btcBalance)));
-                                } catch (final ParseException e) {
+                                } catch (@NonNull final ParseException e) {
                                     sendSubAccountBalance.setText(btcBalance);
                                 }
                             }
 
                             @Override
-                            public void onFailure(final Throwable t) {
+                            public void onFailure(@NonNull final Throwable t) {
 
                             }
                         });
@@ -800,7 +801,7 @@ public class SendFragment extends GAFragment {
     }
 
     @Override
-    public void onViewStateRestored(final @android.support.annotation.Nullable Bundle savedInstanceState) {
+    public void onViewStateRestored(final @Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         pausing = false;
     }
@@ -817,6 +818,7 @@ public class SendFragment extends GAFragment {
         }
     }
 
+    @Nullable
     private Observer makeBalanceObserver() {
         return new Observer() {
             @Override
@@ -853,7 +855,7 @@ public class SendFragment extends GAFragment {
 
         try {
             sendSubAccountBalance.setText(formatter.format(formatter.parse(btcBalance)));
-        } catch (final ParseException e) {
+        } catch (@NonNull final ParseException e) {
             sendSubAccountBalance.setText(btcBalance);
         }
 
@@ -870,8 +872,9 @@ public class SendFragment extends GAFragment {
         fiatGroup.startAnimation(rotateAnim);
         final ListenableFuture<Map<?, ?>> balanceFuture = Futures.transform(getGAService().setPricingSource(currency, exchange),
                 new AsyncFunction<Boolean, Map<?, ?>>() {
+                    @NonNull
                     @Override
-                    public ListenableFuture<Map<?, ?>> apply(final Boolean input) throws Exception {
+                    public ListenableFuture<Map<?, ?>> apply(@NonNull final Boolean input) throws Exception {
                         return getGAService().updateBalance(curSubaccount);
                     }
                 }, getGAService().es);
@@ -913,7 +916,7 @@ public class SendFragment extends GAFragment {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 final Activity activity = getActivity();
                 if (activity != null) {
                     activity.runOnUiThread(new Runnable() {
@@ -928,7 +931,8 @@ public class SendFragment extends GAFragment {
         }, getGAService().es);
     }
 
-    private Spanned formatFiatListItem(final Activity activity, final String currency, final String exchange) {
+    @NonNull
+    private Spanned formatFiatListItem(@NonNull final Activity activity, final String currency, final String exchange) {
         final String converted = CurrencyMapper.map(currency);
         final Spanned other = new SpannedString(currency + " (" + exchange + ")");
         if (converted != null) {
@@ -944,7 +948,7 @@ public class SendFragment extends GAFragment {
         return other;
     }
 
-    private void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
+    private void changeFiatIcon(@NonNull final FontAwesomeTextView fiatIcon, final String currency) {
 
         final String converted = CurrencyMapper.map(currency);
         if (converted != null) {
@@ -978,7 +982,7 @@ public class SendFragment extends GAFragment {
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             amountFiatEdit.setText(fiatValue.toPlainString());
-        } catch (final ArithmeticException | IllegalArgumentException e) {
+        } catch (@NonNull final ArithmeticException | IllegalArgumentException e) {
             if (amountEdit.getText().toString().equals("MAX")) {
                 amountFiatEdit.setText("MAX");
             } else {
@@ -1000,7 +1004,7 @@ public class SendFragment extends GAFragment {
         try {
             final Fiat fiatValue = Fiat.parseFiat("???", amountFiatEdit.getText().toString());
             amountEdit.setText(bitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
-        } catch (final ArithmeticException | IllegalArgumentException e) {
+        } catch (@NonNull final ArithmeticException | IllegalArgumentException e) {
             amountEdit.setText("");
         }
         converting = false;
@@ -1019,7 +1023,7 @@ public class SendFragment extends GAFragment {
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("pausing", pausing);
     }

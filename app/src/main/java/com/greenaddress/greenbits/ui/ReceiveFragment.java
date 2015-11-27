@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -32,8 +34,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.QrBitmap;
 
-import javax.annotation.Nullable;
-
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
@@ -41,7 +41,9 @@ import nordpol.android.TagDispatcher;
 public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
+    @Nullable
     private FutureCallback<QrBitmap> onAddress = null;
+    @Nullable
     private QrBitmap address = null;
     private int curSubaccount;
     private boolean pausing = false;
@@ -49,7 +51,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
     private TagDispatcher tagDispatcher;
 
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("pausing", pausing);
@@ -107,8 +109,8 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
     }
 
     @Override
-    public View onGACreateView(final LayoutInflater inflater, final ViewGroup container,
-                               final Bundle savedInstanceState) {
+    public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+                               @Nullable final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             pausing = savedInstanceState.getBoolean("pausing");
             address = savedInstanceState.getParcelable("address");
@@ -210,7 +212,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
                 final Activity activity = getActivity();
                 if (activity != null) {
@@ -274,7 +276,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
         return rootView;
     }
 
-    private void stopNewAddressAnimation(final View rootView) {
+    private void stopNewAddressAnimation(@NonNull final View rootView) {
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         newAddressIcon.clearAnimation();
         newAddressIcon.setText(Html.fromHtml("&#xf067;"));
@@ -284,7 +286,7 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
         copyText.setVisibility(View.VISIBLE);
     }
 
-    private void startNewAddressAnimation(final View rootView) {
+    private void startNewAddressAnimation(@NonNull final View rootView) {
         if (getActivity() == null) return;
 
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);

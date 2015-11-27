@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.style.TypefaceSpan;
 
@@ -13,7 +14,7 @@ public class CustomTypefaceSpan extends TypefaceSpan {
         newType = type;
     }
 
-    private static void applyCustomTypeFace(final Paint paint, final Typeface tf) {
+    private static void applyCustomTypeFace(@NonNull final Paint paint, @NonNull final Typeface tf) {
         final Typeface old = paint.getTypeface();
         final int oldStyle = (old == null) ? 0 : old.getStyle();
 
@@ -31,12 +32,12 @@ public class CustomTypefaceSpan extends TypefaceSpan {
     }
 
     @Override
-    public void updateDrawState(final TextPaint ds) {
+    public void updateDrawState(@NonNull final TextPaint ds) {
         applyCustomTypeFace(ds, newType);
     }
 
     @Override
-    public void updateMeasureState(final TextPaint paint) {
+    public void updateMeasureState(@NonNull final TextPaint paint) {
         applyCustomTypeFace(paint, newType);
     }
 }

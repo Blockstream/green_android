@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Html;
 
 import org.bitcoinj.utils.MonetaryFormat;
@@ -7,7 +9,7 @@ import org.bitcoinj.utils.MonetaryFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CurrencyMapper {
+class CurrencyMapper {
     private static final Map<String, String> map = new HashMap<>();
 
     static {
@@ -26,7 +28,7 @@ public class CurrencyMapper {
         return map.get(currency);
     }
 
-    public static String mapBtcUnitToPrefix(final String btcUnit) {
+    public static String mapBtcUnitToPrefix(@Nullable final String btcUnit) {
         if (btcUnit != null) {
             if (btcUnit.equals("BTC")) {
                 return "";
@@ -42,7 +44,7 @@ public class CurrencyMapper {
         }
     }
 
-    public static MonetaryFormat mapBtcUnitToFormat(final String btcUnit) {
+    public static MonetaryFormat mapBtcUnitToFormat(@Nullable final String btcUnit) {
         if (btcUnit != null) {
             if (btcUnit.equals("BTC")) {
                 return MonetaryFormat.BTC;
@@ -59,7 +61,7 @@ public class CurrencyMapper {
 
     }
 
-    public static String mapBtcFormatToPrefix(final MonetaryFormat bitcoinFormat) {
+    public static String mapBtcFormatToPrefix(@NonNull final MonetaryFormat bitcoinFormat) {
         if (bitcoinFormat.code().equals(MonetaryFormat.CODE_BTC)) {
             return "";
         } else if (bitcoinFormat.code().equals(MonetaryFormat.CODE_MBTC)) {

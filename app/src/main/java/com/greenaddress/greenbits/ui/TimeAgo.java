@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -19,21 +20,21 @@ class TimeAgo {
 
     private static String[] timesStringPlurals;
 
-    private static String[] getTimesString(final Context context) {
+    private static String[] getTimesString(@NonNull final Context context) {
         if (timesString == null) {
             timesString = context.getResources().getStringArray(R.array.timesStrings);
         }
         return timesString;
     }
 
-    private static String[] getTimesStringPlurals(final Context context) {
+    private static String[] getTimesStringPlurals(@NonNull final Context context) {
         if (timesStringPlurals == null) {
             timesStringPlurals = context.getResources().getStringArray(R.array.timesStringPlurals);
         }
         return timesStringPlurals;
     }
 
-    public static String fromNow(final long date, final Context context) {
+    public static String fromNow(final long date, @NonNull final Context context) {
         final long timeDiff = (new Date()).getTime() - date;
         for (int i = 0; i < times.size(); ++i) {
             final long timeSince = timeDiff / times.get(i);

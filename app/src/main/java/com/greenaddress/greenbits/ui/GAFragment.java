@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,7 +16,7 @@ abstract class GAFragment extends Fragment {
     private GreenAddressApplication gaApp;
 
     @Override
-    public void onAttach(final Activity activity) {
+    public void onAttach(@NonNull final Activity activity) {
         super.onAttach(activity);
 
         gaApp = (GreenAddressApplication) activity.getApplication();
@@ -30,7 +31,7 @@ abstract class GAFragment extends Fragment {
         }
         try {
             onGAResume();
-        } catch (final NullPointerException npe) {
+        } catch (@NonNull final NullPointerException npe) {
             getActivity().finish();
         }
     }
@@ -43,7 +44,7 @@ abstract class GAFragment extends Fragment {
         }
         try {
             return onGACreateView(inflater, container, savedInstanceState);
-        } catch (final NullPointerException npe) {
+        } catch (@NonNull final NullPointerException npe) {
             getActivity().finish();
             return null;
         }
@@ -58,6 +59,7 @@ abstract class GAFragment extends Fragment {
         return gaApp;
     }
 
+    @Nullable
     GaService getGAService() {
         if (gaApp != null) {
             return gaApp.gaService;

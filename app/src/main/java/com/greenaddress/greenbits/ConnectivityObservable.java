@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -21,6 +23,7 @@ public class ConnectivityObservable extends Observable {
     private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
     private ScheduledFuture<Object> disconnectTimeout;
     private GaService service;
+    @NonNull
     private State state = State.OFFLINE;
     private boolean forcedLoggedout = false;
     private boolean forcedTimeoutout = false;
@@ -30,7 +33,7 @@ public class ConnectivityObservable extends Observable {
         }
     };
 
-    public void setService(final GaService service) {
+    public void setService(@NonNull final GaService service) {
         this.service = service;
         checkNetwork();
         service.getApplicationContext().registerReceiver(this.mNetBroadReceiver,
@@ -43,11 +46,12 @@ public class ConnectivityObservable extends Observable {
         notifyObservers(this.forcedLoggedout);
     }
 
+    @NonNull
     public State getState() {
         return state;
     }
 
-    public void setState(final State state) {
+    public void setState(@NonNull final State state) {
         this.state = state;
         if (state == State.LOGGEDIN) {
             this.forcedLoggedout = false;
@@ -66,7 +70,7 @@ public class ConnectivityObservable extends Observable {
     }
 
     @Override
-    public void addObserver(final Observer ob) {
+    public void addObserver(@NonNull final  Observer ob) {
         super.addObserver(ob);
         stopTimer();
         // connect as necessary
@@ -81,7 +85,7 @@ public class ConnectivityObservable extends Observable {
     }
 
     @Override
-    public synchronized void deleteObserver(final Observer ob) {
+    public synchronized void deleteObserver(final @NonNull Observer ob) {
         super.deleteObserver(ob);
         if (countObservers() == 0) {
             if (service != null) {
@@ -112,11 +116,12 @@ public class ConnectivityObservable extends Observable {
             int timeout = 5;
             try {
                 timeout = (int) service.getAppearanceValue("altimeout");
-            } catch (final Exception e) {
+            } catch (@NonNull final Exception e) {
                 // not logged in or not set
             }
 
             disconnectTimeout = ex.schedule(new Callable<Object>() {
+                @Nullable
                 @Override
                 public Object call() throws Exception {
                     forcedTimeoutout = true;

@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +34,9 @@ public class GreenAddressApplication extends MultiDexApplication {
     public GaService gaService;
     public final SettableFuture<Void> onServiceConnected = SettableFuture.create();
     private boolean mBound = false;
+    @NonNull
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
+    @Nullable
     private final ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -46,13 +50,14 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
 
         @Override
-        public void onServiceDisconnected(final ComponentName arg0) {
+        public void onServiceDisconnected(@NonNull final ComponentName arg0) {
             mBound = false;
             connectionObservable = null;
             onServiceConnected.setException(new GAException(arg0.toString()));
         }
     };
 
+    @NonNull
     public ConnectivityObservable getConnectionObservable() {
         return connectionObservable;
     }
@@ -75,7 +80,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
     }
 
-    public void configureSubaccountsFooter(final int curSubaccount, final Activity activity, final TextView accountName, final LinearLayout footer, final LinearLayout clickableArea, final Function<Integer, Void> accountChangedCallback, final View noTwoFacFooter) {
+    public void configureSubaccountsFooter(final int curSubaccount, @NonNull final Activity activity, @NonNull final TextView accountName, @NonNull final LinearLayout footer, @NonNull final LinearLayout clickableArea, @NonNull final Function<Integer, Void> accountChangedCallback, @NonNull final View noTwoFacFooter) {
         final Handler handler = new Handler();
         gaService.getTwoFacConfigObservable().addObserver(new Observer() {
             @Override
@@ -117,7 +122,7 @@ public class GreenAddressApplication extends MultiDexApplication {
                     }
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
-                        public boolean onMenuItemClick(final MenuItem item) {
+                        public boolean onMenuItemClick(@NonNull final MenuItem item) {
                             accountName.setText(item.getTitle());
                             int curSubaccount;
                             if (item.getItemId() == 0) {
@@ -135,7 +140,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
     }
 
-    private void configureNoTwoFacFooter(final View noTwoFacFooter, final Activity activity) {
+    private void configureNoTwoFacFooter(@NonNull final View noTwoFacFooter, @NonNull final Activity activity) {
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);

@@ -93,7 +93,8 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             return;
         }
         gaService.es.submit(new Callable<Object>() {
-            @Override
+            @Nullable
+			@Override
             public Object call() {
             	transportFactory = new LedgerTransportTEEProxyFactory(getApplicationContext());
             	final LedgerTransportTEEProxy teeTransport = (LedgerTransportTEEProxy)transportFactory.getTransport();
@@ -112,7 +113,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
 						try {
 							waitConnected.put(success);
 						}
-						catch(final InterruptedException e) {
+						catch(@NonNull final InterruptedException e) {
 						}						
 					}
 					
@@ -121,7 +122,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
 					try {
 						initialized = waitConnected.poll(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
 					}
-					catch(final InterruptedException e) {
+					catch(@NonNull final InterruptedException e) {
 					}
 					if (initialized) {
 						initialized = teeTransport.init();
@@ -138,7 +139,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             				final int attempts = dongle.getVerifyPinRemainingAttempts();
             				teeReady = (attempts != 0);
             			}
-            			catch(final Exception e) {
+            			catch(@NonNull final Exception e) {
             			}
             		}
             		Log.d(TAG, "TEE ready " + teeReady);
@@ -167,7 +168,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
 									public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
 										try {
 											teeTransport.close();
-										} catch (final Exception e) {
+										} catch (@NonNull final Exception e) {
 										}
 									}
 								})
@@ -185,10 +186,11 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         });        
     }      
     
-    private void proceedTEE(final LedgerTransportTEEProxy transport, final BTChipDongle dongle, final boolean setup) {
+    private void proceedTEE(@NonNull final LedgerTransportTEEProxy transport, @NonNull final BTChipDongle dongle, final boolean setup) {
         final GaService gaService = getGAService();        
     	gaService.es.submit(new Callable<Object>() {
-            @Override
+            @Nullable
+			@Override
             public Object call() {
             	tuiCall = true;
             	BTChipPublicKey masterPublicKey = null, loginPublicKey = null;
@@ -206,12 +208,12 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             			// Save the encrypted image
             			transport.writeNVM(NVM_PATH, transport.requestNVM().get());
             		}
-            		catch(final Exception e) {
+            		catch(@NonNull final Exception e) {
             			Log.d(TAG, "Setup exception", e);
             			try {
             				transport.close();
             			}
-            			catch(final Exception e1) {
+            			catch(@NonNull final Exception e1) {
             			}
             			FirstScreenActivity.this.runOnUiThread(new Runnable() {
 							@Override
@@ -246,17 +248,17 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             		Log.d(TAG, "write NVM after verify pin");
             		transport.writeNVM(NVM_PATH, transport.requestNVM().get());  
             	}
-            	catch(final Exception e) {
+            	catch(@NonNull final Exception e) {
             		Log.d(TAG, "PIN exception", e);
             		try {
             			transport.writeNVM(NVM_PATH, transport.requestNVM().get());
             		}
-            		catch(final Exception e1) {
+            		catch(@NonNull final Exception e1) {
             		}        			
             		try {
             			transport.close();
             		}
-            		catch(final Exception e1) {
+            		catch(@NonNull final Exception e1) {
             		}
         			FirstScreenActivity.this.runOnUiThread(new Runnable() {
 						@Override
@@ -290,8 +292,9 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
                         final GaService gaService = getGAService();
 
                         Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
-                            @Override
-                            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+                            @NonNull
+							@Override
+                            public ListenableFuture<LoginData> apply(@NonNull final Void input) throws Exception {
                             	if (!setup) {
                             		Log.d(TAG, "TEE login");
                             		return gaService.login(new BTChipHWWallet(dongle));
@@ -303,7 +306,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
                             }
                         }), new FutureCallback<LoginData>() {
                             @Override
-                            public void onSuccess(@Nullable final LoginData result) {
+                            public void onSuccess(@NonNull final LoginData result) {
                             	Log.d(TAG, "Success");
                                 final Intent main = new Intent(FirstScreenActivity.this, TabbedMainActivity.class);
                                 startActivity(main);
@@ -311,19 +314,17 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
                             }
 
                             @Override
-                            public void onFailure(final Throwable t) {
+                            public void onFailure(@NonNull final Throwable t) {
                             	Log.d(TAG, "login failed", t);
-                                if (t instanceof LoginFailed) {
-
-                                } else {
-                                    FirstScreenActivity.this.finish();
+                                if (!(t instanceof LoginFailed)) {
+									FirstScreenActivity.this.finish();
                                 }
                             }
                         });
                     }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
                     	Log.d(TAG, "login crashed", t);
                         t.printStackTrace();
                     }
@@ -345,7 +346,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

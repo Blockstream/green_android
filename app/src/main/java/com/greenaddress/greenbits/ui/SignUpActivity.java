@@ -15,6 +15,8 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -48,9 +50,6 @@ import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.annotation.Nullable;
-
-
 public class SignUpActivity extends ActionBarActivity implements Observer {
     private static final String TAG = SignUpActivity.class.getSimpleName();
     private boolean mWriteMode = false;
@@ -61,6 +60,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     private TextView nfcTagsWritten;
     private ImageView signupNfcIcon;
     private TextView mnemonicText;
+    @Nullable
     private ListenableFuture<LoginData> onSignUp;
 
     @Override
@@ -103,7 +103,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
 
             }
         }, getGAService().es);
@@ -145,7 +145,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                     }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
 
                     }
                 }, getGAService().es);
@@ -162,8 +162,9 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
                         onSignUp = Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                            @NonNull
                             @Override
-                            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+                            public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
                                 return gaService.signup(mnemonicText.getText().toString());
                             }
                         }, gaService.es);
@@ -210,7 +211,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                         }
 
                         @Override
-                        public void onFailure(final Throwable t) {
+                        public void onFailure(@NonNull final Throwable t) {
                             t.printStackTrace();
                             SignUpActivity.this.runOnUiThread(new Runnable() {
                                 @Override
@@ -290,7 +291,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
     @Override
     @SuppressLint("NewApi") // signupNfcIcon is hidden for API < 16
-    protected void onNewIntent(final Intent intent) {
+    protected void onNewIntent(@NonNull final Intent intent) {
         super.onNewIntent(intent);
         if (mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 
@@ -298,7 +299,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             final NdefRecord[] record = new NdefRecord[1];
             try {
                 record[0] = NdefRecord.createMime("x-gait/mnc", getGAService().getEntropyFromMnemonics(mnemonicText.getText().toString()));
-            } catch (final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e) {
+            } catch (@NonNull final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e) {
                 return;
             }
 
@@ -328,11 +329,11 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                             format.connect();
                             format.format(message);
                             nfcTagsWritten.setText("" + (Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
-                        } catch (final IOException e) {
+                        } catch (@NonNull final IOException e) {
                         }
                     }
                 }
-            } catch (final Exception e) {
+            } catch (@NonNull final Exception e) {
             }
         }
     }
@@ -366,7 +367,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

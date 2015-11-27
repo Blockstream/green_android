@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.btchip.BTChipDongle;
@@ -42,9 +43,10 @@ import javax.annotation.Nullable;
 
 public class BTChipHWWallet implements ISigningWallet {
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
-    private BTChipDongle dongle;
+    private final BTChipDongle dongle;
     private RequestLoginActivity loginActivity;
-    private String pin;
+    private final String pin;
+    @android.support.annotation.Nullable
     private DeterministicKey cachedPubkey;
     private List<Integer> addrn = new LinkedList<>();
 
@@ -62,17 +64,18 @@ public class BTChipHWWallet implements ISigningWallet {
         this.pin = "0000";
     }    
 
-    public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
+    public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, @NonNull final SettableFuture<Integer> remainingAttemptsFuture) {
         this.dongle = new BTChipDongle(transport);
         this.loginActivity = loginActivity;
         this.pin = pin;
         es.submit(new Callable<Object>() {
+            @android.support.annotation.Nullable
             @Override
             public Object call() {
                 try {
                     dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
-                    remainingAttemptsFuture.set(new Integer(-1));  // -1 means success
-                } catch (final BTChipException e) {
+                    remainingAttemptsFuture.set(-1);  // -1 means success
+                } catch (@NonNull final BTChipException e) {
                     if (e.toString().contains("63c")) {
                         remainingAttemptsFuture.set(
                                 Integer.valueOf(String.valueOf(e.toString().charAt(e.toString().indexOf("63c") + 3))));
@@ -89,17 +92,20 @@ public class BTChipHWWallet implements ISigningWallet {
         });
     }
 
-    private String outToPath(final Output out) {
-        if (out.getSubaccount() != null && out.getSubaccount() != 0) {
-            return "3'/" + out.getSubaccount() + "'/1/" + out.getPointer();
+    @NonNull
+    private String outToPath(@NonNull final Output out) {
+        if (out.subaccount != null && out.subaccount != 0) {
+            return "3'/" + out.subaccount + "'/1/" + out.pointer;
         } else {
-            return "1/" + out.getPointer();
+            return "1/" + out.pointer;
         }
     }
 
+    @NonNull
     @Override
-    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final String coinName, final byte[] gait_path) {
+    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(@NonNull final PreparedTransaction tx, final String coinName, final byte[] gait_path) {
         return es.submit(new Callable<List<ECKey.ECDSASignature>>() {
+            @NonNull
             @Override
             public List<ECKey.ECDSASignature> call() throws Exception {
                 final List<ECKey.ECDSASignature> sigs = new LinkedList<>();
@@ -135,7 +141,7 @@ public class BTChipHWWallet implements ISigningWallet {
                  }                    
                 }
                 for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                    dongle.startUntrustedTransction(i == 0, i, inputs, Hex.decode(tx.prev_outputs.get(i).getScript()));
+                    dongle.startUntrustedTransction(i == 0, i, inputs, Hex.decode(tx.prev_outputs.get(i).script));
                     final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(tx.decoded.getMessageSize() < 32 ? 32 : tx.decoded.getMessageSize() + 32);
                     stream.write(new VarInt(tx.decoded.getOutputs().size()).encode());
                     for (final TransactionOutput out : tx.decoded.getOutputs())
@@ -157,9 +163,11 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
 
+    @NonNull
     @Override
     public ListenableFuture<DeterministicKey> getPubKey() {
         return es.submit(new Callable<DeterministicKey>() {
+            @android.support.annotation.Nullable
             @Override
             public DeterministicKey call() throws Exception {
                 return internalGetPubKey();
@@ -167,6 +175,7 @@ public class BTChipHWWallet implements ISigningWallet {
         });
     }
 
+    @android.support.annotation.Nullable
     private DeterministicKey internalGetPubKey() throws BTChipException {
         if (cachedPubkey != null) {
                 return cachedPubkey;
@@ -188,8 +197,9 @@ public class BTChipHWWallet implements ISigningWallet {
         return false;
     }
 
+    @NonNull
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signMessage(final String message) {
+    public ListenableFuture<ECKey.ECDSASignature> signMessage(@NonNull final String message) {
         return es.submit(new Callable<ECKey.ECDSASignature>() {
             @Override
             public ECKey.ECDSASignature call() throws Exception {
@@ -200,11 +210,13 @@ public class BTChipHWWallet implements ISigningWallet {
         });
     }
 
+    @android.support.annotation.Nullable
     @Override
     public ListenableFuture<ECKey.ECDSASignature> signHash(final Sha256Hash hash) {
         return null;
     }
 
+    @NonNull
     @Override
     public ListenableFuture<byte[]> getIdentifier() {
         return Futures.transform(getPubKey(), new Function<ECKey, byte[]>() {
@@ -228,8 +240,9 @@ public class BTChipHWWallet implements ISigningWallet {
         return Joiner.on("/").join(pathStr);
     }
 
+    @NonNull
     @Override
-    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
+    public ISigningWallet deriveChildKey(@NonNull final ChildNumber childNumber) {
         final LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
         addrn_child.add(childNumber.getI());
         return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
@@ -246,13 +259,13 @@ public class BTChipHWWallet implements ISigningWallet {
                 Log.d(TAG, "Connection ok");
                 return true;
         }
-        catch(final Exception e) {
+        catch(@NonNull final Exception e) {
                 Log.d(TAG, "Connection not connected");
                 try {
                         dongle.getTransport().close();
                         Log.d(TAG, "Connection closed");
                 }
-                catch(final Exception e1) {
+                catch(@NonNull final Exception e1) {
                 }
                 return false;
         }
@@ -263,7 +276,7 @@ public class BTChipHWWallet implements ISigningWallet {
         try {
                 dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
         }
-        catch(final Exception e) {
+        catch(@NonNull final Exception e) {
         }
     }    
 }

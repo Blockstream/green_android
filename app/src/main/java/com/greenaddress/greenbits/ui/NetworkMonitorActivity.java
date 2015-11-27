@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,14 +32,14 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 public final class NetworkMonitorActivity extends FragmentActivity implements Observer
 {
 
+    @NonNull
     private ArrayList<PrettyPeer> peerList = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> peerListAdapter;
     private String bloominfo = "";
+    @Nullable
     private PeerEventListener peerListener;
 
     @Override
@@ -109,7 +111,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
                 }
 
                 @Override
-                public synchronized void onPeerConnected(final Peer peer, int peerCount) {
+                public synchronized void onPeerConnected(@NonNull final Peer peer, int peerCount) {
                     final PrettyPeer new_ppeer = new PrettyPeer(peer);
 
 
@@ -143,6 +145,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
                     });
                 }
 
+                @Nullable
                 @Override
                 public Message onPreMessageReceived(Peer peer, Message m) {
                     return null;
@@ -181,6 +184,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         }
     }
 
+    @NonNull
     private GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
@@ -190,13 +194,14 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
     }
 
     @Override
-    public void update(final Observable observable, final Object data) {
+    public void update(@NonNull final Observable observable, @NonNull final Object data) {
 
     }
 
+    @Nullable
     private final BroadcastReceiver uiUpdated = new BroadcastReceiver() {
         @Override
-        public void onReceive(final Context context, final Intent intent) {
+        public void onReceive(final Context context, @NonNull final Intent intent) {
 
             final String peerGroupIntent = intent.getExtras().getString("peergroup");
             if (peerGroupIntent != null && peerGroupIntent.equals("stopSPVSync")) {
@@ -212,6 +217,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
             this.peer = peer;
         }
 
+        @NonNull
         public String toString(){
             String ipAddr = peer.toString();
             if(ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")){
@@ -225,10 +231,11 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
     }
 
     class Node {
+        @NonNull
         final String addr;
         final int port;
 
-        Node(final String trusted_addr) {
+        Node(@NonNull final String trusted_addr) {
             final int index_port = trusted_addr.indexOf(":");
             if (index_port != -1) {
                 addr = trusted_addr.substring(0, index_port);

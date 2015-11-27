@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
+import android.support.annotation.NonNull;
+
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
@@ -28,20 +30,23 @@ public class TrezorHWWallet implements ISigningWallet {
 
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final Trezor trezor;
+    @NonNull
     private List<Integer> addrn = new LinkedList<>();
 
     public TrezorHWWallet(final Trezor t) {
         trezor = t;
     }
 
+    @NonNull
     @Override
-    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
+    public ISigningWallet deriveChildKey(@NonNull final ChildNumber childNumber) {
         final TrezorHWWallet child = new TrezorHWWallet(trezor);
         child.addrn = new LinkedList<>(addrn);
         child.addrn.add(childNumber.getI());
         return child;
     }
 
+    @NonNull
     @Override
     public ListenableFuture<byte[]> getIdentifier() {
         return Futures.transform(getPubKey(), new Function<ECKey, byte[]>() {
@@ -58,11 +63,13 @@ public class TrezorHWWallet implements ISigningWallet {
         return false;
     }
 
+    @NonNull
     @Override
     public ListenableFuture<ECKey.ECDSASignature> signHash(final Sha256Hash hash) {
         return Futures.immediateFuture(null);
     }
 
+    @NonNull
     @Override
     public ListenableFuture<ECKey.ECDSASignature> signMessage(final String message) {
         return es.submit(new Callable<ECKey.ECDSASignature>() {
@@ -74,9 +81,11 @@ public class TrezorHWWallet implements ISigningWallet {
         });
     }
 
+    @NonNull
     @Override
     public ListenableFuture<DeterministicKey> getPubKey() {
         return es.submit(new Callable<DeterministicKey>() {
+            @android.support.annotation.Nullable
             @Override
             public DeterministicKey call() throws Exception {
                 final Integer[] intArray = new Integer[addrn.size()];
@@ -94,6 +103,7 @@ public class TrezorHWWallet implements ISigningWallet {
         });
     }
 
+    @NonNull
     @Override
     public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final String coinName, final byte[] gait_path) {
         return es.submit(new Callable<List<ECKey.ECDSASignature>>() {

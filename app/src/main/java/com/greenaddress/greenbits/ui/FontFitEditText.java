@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.EditText;
@@ -62,7 +63,7 @@ public class FontFitEditText extends EditText {
     }
 
     @Override
-    protected void onTextChanged(final CharSequence text, final int start, final int before, final int after) {
+    protected void onTextChanged(@NonNull final CharSequence text, final int start, final int before, final int after) {
         refitText(text.toString(), this.getWidth());
     }
 

@@ -11,6 +11,7 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.UserNotAuthenticatedException;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -64,7 +65,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
 
-    private void setPin(final String pinText) {
+    private void setPin(@NonNull final String pinText) {
         if (pinText.length() < 4) {
             Toast.makeText(PinSaveActivity.this, "PIN has to be between 4 and 15 digits", Toast.LENGTH_SHORT).show();
             return;
@@ -94,7 +95,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                     }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
                         PinSaveActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -137,7 +138,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             keyGenerator.generateKey();
 
 
-        } catch (final NoSuchAlgorithmException | NoSuchProviderException
+        } catch (@NonNull final NoSuchAlgorithmException | NoSuchProviderException
                 | InvalidAlgorithmParameterException | KeyStoreException
                 | CertificateException | IOException e) {
             throw new RuntimeException(e);
@@ -145,7 +146,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             if (deleteImmediately && keyStore != null) {
                 try {
                     keyStore.deleteEntry(KEYSTORE_KEY);
-                } catch (final KeyStoreException e) {
+                } catch (@NonNull final KeyStoreException e) {
                 }
             }
         }
@@ -175,13 +176,13 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
 
             editor.apply();
             setPin(Base64.encodeToString(fakePin, Base64.NO_WRAP).substring(0, 15));
-        } catch (final UserNotAuthenticatedException e) {
+        } catch (@NonNull final UserNotAuthenticatedException e) {
             showAuthenticationScreen();
-        } catch (final KeyPermanentlyInvalidatedException e) {
+        } catch (@NonNull final KeyPermanentlyInvalidatedException e) {
             Toast.makeText(this, "Problem with key "
                             + e.getMessage(),
                     Toast.LENGTH_LONG).show();
-        } catch (final InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException | KeyStoreException |
+        } catch (@NonNull final InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException | KeyStoreException |
                 CertificateException | UnrecoverableKeyException | IOException
                 | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
@@ -230,7 +231,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                     }
                 });
 
-            } catch (final RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 // lock not set, simply don't show native options
             }
         }
@@ -242,7 +243,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         pinSaveText.setOnEditorActionListener(
                 new EditText.OnEditorActionListener() {
                     @Override
-                    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+                    public boolean onEditorAction(final TextView v, final int actionId, @NonNull final KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                 actionId == EditorInfo.IME_ACTION_DONE ||
                                 event.getAction() == KeyEvent.ACTION_DOWN &&
@@ -285,7 +286,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

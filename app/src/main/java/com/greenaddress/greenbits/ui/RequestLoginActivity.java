@@ -10,6 +10,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -47,8 +48,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ExecutionException;
 
-import javax.annotation.Nullable;
-
 import nordpol.android.AndroidCard;
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
@@ -58,7 +57,9 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
+    @Nullable
     private Dialog btchipDialog = null;
+    @Nullable
     private BTChipHWWallet hwWallet = null;
     private TagDispatcher tagDispatcher;
     private Tag tag;
@@ -135,7 +136,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         });
                         try {
                             return ret.get();
-                        } catch (final InterruptedException | ExecutionException e) {
+                        } catch (@NonNull final InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                             return "";
                         }
@@ -170,7 +171,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         });
                         try {
                             return ret.get();
-                        } catch (InterruptedException | ExecutionException e) {
+                        } catch (@NonNull InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                             return "";
                         }
@@ -196,8 +197,9 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         final GaService gaService = getGAService();
 
                         Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                            @NonNull
                             @Override
-                            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+                            public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
                                 return gaService.login(new TrezorHWWallet(t));
                             }
                         }), new FutureCallback<LoginData>() {
@@ -209,7 +211,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                             }
 
                             @Override
-                            public void onFailure(final Throwable t) {
+                            public void onFailure(@NonNull final Throwable t) {
                                 if (t instanceof LoginFailed) {
                                     // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
                                     runOnUiThread(new Runnable() {
@@ -229,7 +231,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(@NonNull Throwable t) {
                         t.printStackTrace();
                     }
                 });
@@ -262,7 +264,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         showPinDialog(null);
     }
 
-    private void showPinDialog(final UsbDevice device) {
+    private void showPinDialog(@Nullable final UsbDevice device) {
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
             @Override
@@ -303,7 +305,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                 pinValue.setOnEditorActionListener(
                         new EditText.OnEditorActionListener() {
                             @Override
-                            public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+                            public boolean onEditorAction(final TextView v, final int actionId, @NonNull final KeyEvent event) {
                                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                         actionId == EditorInfo.IME_ACTION_DONE ||
                                         event.getAction() == KeyEvent.ACTION_DOWN &&
@@ -329,11 +331,13 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
             public void onSuccess(final @Nullable Void result) {
                 final GaService gaService = getGAService();
                 Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                    @NonNull
                     @Override
-                    public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+                    public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
                         return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
+                            @NonNull
                             @Override
-                            public ListenableFuture<LoginData> apply(final String pin) throws Exception {
+                            public ListenableFuture<LoginData> apply(@NonNull final String pin) throws Exception {
 
                                 transportFuture = SettableFuture.create();
                                 if (device != null) {
@@ -403,7 +407,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                     }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
                         t.printStackTrace();
                         if (t instanceof LoginFailed) {
                             // Attempt auto register
@@ -421,12 +425,12 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                             }
 
                                             @Override
-                                            public void onFailure(final Throwable t) {
+                                            public void onFailure(@NonNull final Throwable t) {
                                                 t.printStackTrace();
                                                 RequestLoginActivity.this.finish();
                                             }
                                         });
-                            } catch (final Exception e) {
+                            } catch (@NonNull final Exception e) {
                                 e.printStackTrace();
                                 RequestLoginActivity.this.finish();
                             }
@@ -438,7 +442,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -479,6 +483,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
 
     }
 
+    @NonNull
     private GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
@@ -487,7 +492,8 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         return getGAApp().gaService;
     }
     
-    private BTChipTransport getTransport(final Tag t) {
+    @Nullable
+    private BTChipTransport getTransport(@Nullable final Tag t) {
     	BTChipTransport transport = null;
 		if (t != null) {
 			AndroidCard card = null;
@@ -505,7 +511,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
         			try {
         				transport.close();
         			}
-        			catch(final Exception e1) {
+        			catch(@NonNull final Exception e1) {
         			}
         			transport = null;
         		}

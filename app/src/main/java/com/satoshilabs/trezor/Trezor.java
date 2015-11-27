@@ -459,9 +459,9 @@ public class Trezor {
             in = curTx.decoded.getInput(requestIndex);
             final Integer[] addrN;
             if (curSubaccount != 0) {
-                addrN = new Integer[] { 3 + 0x80000000, curSubaccount + 0x80000000, 1, curTx.prev_outputs.get(requestIndex).getPointer() };
+                addrN = new Integer[] { 3 + 0x80000000, curSubaccount + 0x80000000, 1, curTx.prev_outputs.get(requestIndex).pointer };
             } else {
-                addrN = new Integer[] { 1, curTx.prev_outputs.get(requestIndex).getPointer() };
+                addrN = new Integer[] { 1, curTx.prev_outputs.get(requestIndex).pointer};
             }
             final TrezorType.MultisigRedeemScriptType multisig;
             if (curRecoveryNode == null) {
@@ -470,11 +470,11 @@ public class Trezor {
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curGaNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).getPointer())).
+                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curWalletNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).getPointer())).
+                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
                         setM(2).
                         build();
             } else {
@@ -483,15 +483,15 @@ public class Trezor {
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curGaNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).getPointer())).
+                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curWalletNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).getPointer())).
+                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
                         addPubkeys((TrezorType.HDNodePathType.newBuilder().
                                 setNode(curRecoveryNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).getPointer()))).
+                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer))).
                         setM(2).
                         build();
             }

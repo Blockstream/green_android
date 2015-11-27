@@ -5,6 +5,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -27,8 +29,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class TwoFactorActivity extends ActionBarActivity {
 
@@ -129,7 +129,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         }
     }
 
-    private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
+    private void showProvideDetails(final int stepNum, final int numSteps, @Nullable final String proxyCode) {
         final GaService gaService = getGAService();
         setContentView(R.layout.activity_two_factor_3_provide_details);
         final Button continueButton = (Button) findViewById(R.id.continueButton);
@@ -169,7 +169,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(@NonNull Throwable t) {
                         continueButton.setEnabled(true);
                         Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                         t.printStackTrace();
@@ -179,7 +179,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         });
     }
 
-    private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, final String newMethod) {
+    private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, @NonNull final String newMethod) {
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.activity_two_factor_2_4_provide_code, null, false);
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
@@ -220,7 +220,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(@NonNull Throwable t) {
                         continueButton.setEnabled(true);
                         Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                         t.printStackTrace();
@@ -230,7 +230,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         });
     }
 
-    private void showGauthDetails(final int stepNum, final int numSteps, final String proxyCode) {
+    private void showGauthDetails(final int stepNum, final int numSteps, @Nullable final String proxyCode) {
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.activity_two_factor_3_gauth_details, null, false);
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
@@ -289,7 +289,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(@NonNull Throwable t) {
                         continueButton.setEnabled(true);
                         Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                         t.printStackTrace();
@@ -327,7 +327,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(@NonNull Throwable t) {
                         continueButton.setEnabled(true);
                         Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                         t.printStackTrace();

@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -54,8 +55,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.annotation.Nullable;
-
 import de.schildbach.wallet.ui.ScanActivity;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
@@ -64,6 +63,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2;
+    @Nullable
     public static TabbedMainActivity instance = null;
 
     private ViewPager mViewPager;
@@ -80,7 +80,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                         && getIntent().getData().getScheme().equals("bitcoin"));
 
         if (isBitcoinURL) {
-            if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN) || getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
+            if (!ConnectivityObservable.State.LOGGEDIN.equals(getGAApp().getConnectionObservable().getState()) || getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
                 // login required
                 final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
                 startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
@@ -169,7 +169,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     }
 
     @Override
-    public void onTabSelected(final ActionBar.Tab tab, final FragmentTransaction fragmentTransaction) {
+    public void onTabSelected(@NonNull final ActionBar.Tab tab, final FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
@@ -184,7 +184,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_SEND_QR_SCAN) {
@@ -207,11 +207,11 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             try {
                 keyNonFinal = new DumpedPrivateKey(Network.NETWORK,
                         data.getStringExtra("com.greenaddress.greenbits.QrText")).getKey();
-            } catch (final AddressFormatException e) {
+            } catch (@NonNull final AddressFormatException e) {
                 try {
                     keyBip38NonFinal = new BIP38PrivateKey(Network.NETWORK,
                             data.getStringExtra("com.greenaddress.greenbits.QrText"));
-                } catch (final AddressFormatException e1) {
+                } catch (@NonNull final AddressFormatException e1) {
                     Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_key), Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -265,7 +265,9 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                             .contentColorRes(android.R.color.white)
                             .theme(Theme.DARK)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Nullable
                                 Transaction tx;
+                                @Nullable
                                 ECKey key;
 
                                 private void doSweep() {
@@ -289,7 +291,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                                     }
 
                                                     @Override
-                                                    public void onFailure(final Throwable t) {
+                                                    public void onFailure(@NonNull final Throwable t) {
                                                         t.printStackTrace();
                                                         Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                                     }
@@ -300,7 +302,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                         }
 
                                         @Override
-                                        public void onFailure(final Throwable t) {
+                                        public void onFailure(@NonNull final Throwable t) {
                                             t.printStackTrace();
                                             Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                         }
@@ -322,11 +324,11 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                                 }
 
                                                 @Override
-                                                public void onFailure(final Throwable t) {
+                                                public void onFailure(@NonNull final Throwable t) {
                                                     Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                                 }
                                             });
-                                        } catch (final BIP38PrivateKey.BadPassphraseException e) {
+                                        } catch (@NonNull final BIP38PrivateKey.BadPassphraseException e) {
                                             Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_passphrase), Toast.LENGTH_LONG).show();
                                         }
 
@@ -341,7 +343,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                 }
 
                 @Override
-                public void onFailure(final Throwable t) {
+                public void onFailure(@NonNull final Throwable t) {
                     Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                 }
             };
@@ -388,7 +390,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -481,6 +483,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             super(fm);
         }
 
+        @Nullable
         @Override
         public Fragment getItem(final int index) {
 
@@ -505,6 +508,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
             return 3;
         }
 
+        @Nullable
         @Override
         public CharSequence getPageTitle(final int position) {
             final Locale l = Locale.getDefault();
@@ -522,7 +526,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
     @Override
 
-    public void onRequestPermissionsResult(final int permsRequestCode, final String[] permissions, final int[] grantResults){
+    public void onRequestPermissionsResult(final int permsRequestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults){
         switch (permsRequestCode){
             case 200: {
                 final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;

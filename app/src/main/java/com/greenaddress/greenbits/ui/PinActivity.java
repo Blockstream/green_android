@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProperties;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -57,7 +58,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
 
-    private void login(final CircularProgressButton pinLoginButton, final String ident, final String pinText, final TextView pinError) {
+    private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final String pinText, @NonNull final TextView pinError) {
         Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final @Nullable Void result) {
@@ -65,14 +66,14 @@ public class PinActivity extends ActionBarActivity implements Observer {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
                 Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void loginAfterServiceConnected(final CircularProgressButton pinLoginButton, final String ident, final String pinText, final TextView pinError) {
+    private void loginAfterServiceConnected(@NonNull final CircularProgressButton pinLoginButton, final String ident, final String pinText, @NonNull final TextView pinError) {
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
             Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
@@ -88,8 +89,9 @@ public class PinActivity extends ActionBarActivity implements Observer {
         pinLoginButton.setProgress(50);
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
+            @NonNull
             @Override
-            public ListenableFuture<LoginData> apply(final Void input) {
+            public ListenableFuture<LoginData> apply(@Nullable final Void input) {
                 return gaService.pinLogin(pinData, pinText);
             }
         };
@@ -113,7 +115,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 String message = t.getMessage();
                 final SharedPreferences pref = getSharedPreferences("pin", MODE_PRIVATE);
                 final int counter = pref.getInt("counter", 0) + 1;
@@ -172,12 +174,12 @@ public class PinActivity extends ActionBarActivity implements Observer {
             pinText.setOnEditorActionListener(
                     new EditText.OnEditorActionListener() {
                         @Override
-                        public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+                        public boolean onEditorAction(final TextView v, final int actionId, @NonNull final KeyEvent event) {
                             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                     actionId == EditorInfo.IME_ACTION_DONE ||
                                     event.getAction() == KeyEvent.ACTION_DOWN &&
                                             event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                                if (event == null || !event.isShiftPressed()) {
+                                if (!event.isShiftPressed()) {
                                     // the user is done typing.
                                     if (!pinText.getText().toString().isEmpty()) {
                                         login(pinLoginButton, ident, pinText.getText().toString(), pinError);
@@ -229,7 +231,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
             final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
 
             final GaService gaService = getGAApp().gaService;
-            if (gaService != null && gaService.onConnected != null && gaService.triggerOnFullyConnected != null) {
+            if (gaService != null && gaService.onConnected != null) {
                 //Auxillary Future to make sure we are connected.
                 Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
                     @Override
@@ -248,8 +250,9 @@ public class PinActivity extends ActionBarActivity implements Observer {
                                         prefs.getString("encrypted", null));
 
                                 final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
+                                    @NonNull
                                     @Override
-                                    public ListenableFuture<LoginData> apply(final Void input) {
+                                    public ListenableFuture<LoginData> apply(@Nullable final Void input) {
                                         return gaService.pinLogin(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
                                     }
                                 };
@@ -273,7 +276,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
                                     }
 
                                     @Override
-                                    public void onFailure(final Throwable t) {
+                                    public void onFailure(@NonNull final Throwable t) {
                                         String message = t.getMessage();
                                         final int counter = prefs.getInt("counter", 0) + 1;
                                         if (t instanceof GAException) {
@@ -305,7 +308,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
                                 }, gaService.es);                            }
 
                             @Override
-                            public void onFailure(final Throwable t) {
+                            public void onFailure(@NonNull final Throwable t) {
                                 t.printStackTrace();
                                 Toast.makeText(PinActivity.this, "Failed to connect, please reopen the app to authenticate", Toast.LENGTH_LONG).show();
                                 finish();
@@ -313,16 +316,16 @@ public class PinActivity extends ActionBarActivity implements Observer {
                         });                    }
 
                     @Override
-                    public void onFailure(final Throwable t) {
+                    public void onFailure(@NonNull final Throwable t) {
                         finish();
                     }
                 });
             } else {
                 finish();
             }
-        } catch (final KeyStoreException | InvalidKeyException e) {
+        } catch (@NonNull final KeyStoreException | InvalidKeyException e) {
             showAuthenticationScreen();
-        } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException  |
+        } catch (@NonNull final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException  |
                 CertificateException | UnrecoverableKeyException | IOException
                 | NoSuchPaddingException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -395,7 +398,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
