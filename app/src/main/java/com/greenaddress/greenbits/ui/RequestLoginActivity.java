@@ -54,8 +54,8 @@ import nordpol.android.TagDispatcher;
 
 public class RequestLoginActivity extends Activity implements Observer, OnDiscoveredTagListener {
 
-    private static final String TAG = RequestLoginActivity.class.getSimpleName();
-    private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
+    @NonNull private static final String TAG = RequestLoginActivity.class.getSimpleName();
+    @NonNull private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
     @Nullable
     private Dialog btchipDialog = null;

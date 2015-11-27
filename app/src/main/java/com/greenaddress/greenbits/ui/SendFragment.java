@@ -72,7 +72,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class SendFragment extends GAFragment {
 
-    private static final String TAG = SendFragment.class.getSimpleName();
+    @NonNull private static final String TAG = SendFragment.class.getSimpleName();
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private EditText amountEdit;
@@ -322,7 +322,7 @@ public class SendFragment extends GAFragment {
     }
 
     @Override
-    public View onGACreateView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup container,
+    public View onGACreateView(@Nullable final LayoutInflater inflater, @Nullable final ViewGroup container,
                                @Nullable final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             pausing = savedInstanceState.getBoolean("pausing");

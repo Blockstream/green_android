@@ -577,7 +577,7 @@ public class WalletClient {
             signature_arg = Futures.transform(signature, new Function<ECKey.ECDSASignature, String[]>() {
                 @Nullable
                 @Override
-                public String[] apply(@Nullable ECKey.ECDSASignature signature) {
+                public String[] apply(final @Nullable ECKey.ECDSASignature signature) {
                     return new String[]{signature.r.toString(), signature.s.toString()};
                 }
             });
@@ -1037,7 +1037,6 @@ public class WalletClient {
             });
         } else {
             Futures.addCallback(hdWallet.signTransaction(tx,
-                    Network.NETWORK.getId().equals(NetworkParameters.ID_MAINNET) ? "Bitcoin" : "Testnet",
                     Hex.decode(loginData.gait_path)), new FutureCallback<List<ECKey.ECDSASignature>>() {
                 @Override
                 public void onSuccess(final @Nullable List<ECKey.ECDSASignature> signatures) {

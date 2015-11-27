@@ -103,12 +103,12 @@ import android.support.annotation.Nullable;
 
 public class GaService extends Service {
 
-    private static final String TAG = GaService.class.getSimpleName();
-    public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
-    private final IBinder mBinder = new GaBinder(this);
-    final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
-    final private GaObservable newTransactionsObservable = new GaObservable();
-    final private GaObservable newTxVerifiedObservable = new GaObservable();
+    @NonNull private static final String TAG = GaService.class.getSimpleName();
+    @NonNull public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
+    @NonNull private final IBinder mBinder = new GaBinder(this);
+    @NonNull final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
+    @NonNull final private GaObservable newTransactionsObservable = new GaObservable();
+    @NonNull final private GaObservable newTxVerifiedObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
     @NonNull
     public SettableFuture<Void> triggerOnFullyConnected =  SettableFuture.create();
@@ -117,7 +117,7 @@ public class GaService extends Service {
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
     @Nullable
     private ListenableFuture<String> latestMnemonics;
-    private final Object startSPVLock = new Object();
+    @NonNull private final Object startSPVLock = new Object();
     private int curBlock = 0;
     private boolean spvWiFiDialogShown = false;
 
@@ -126,10 +126,10 @@ public class GaService extends Service {
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
 
-    private final Map<Integer, Coin> balancesCoin = new HashMap<>();
+    @NonNull private final Map<Integer, Coin> balancesCoin = new HashMap<>();
     @NonNull
     private Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
-    private final Map<Integer, Fiat> balancesFiat = new HashMap<>();
+    @NonNull private final Map<Integer, Fiat> balancesFiat = new HashMap<>();
     private float fiatRate;
     private String fiatCurrency;
     private String fiatExchange;
@@ -157,7 +157,7 @@ public class GaService extends Service {
     private int spvBlocksLeft = Integer.MAX_VALUE;
     @Nullable
     private Map<?, ?> twoFacConfig;
-    private final GaObservable twoFacConfigObservable = new GaObservable();
+    @NonNull private final GaObservable twoFacConfigObservable = new GaObservable();
     @Nullable
     private String deviceId;
     private int background_color;
@@ -168,7 +168,7 @@ public class GaService extends Service {
     private WalletClient client;
     @Nullable
     private ConnectivityObservable connectionObservable = null;
-    private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
+    @NonNull private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
         @Override
         public void onSuccess(@NonNull final LoginData result) {
             fiatCurrency = result.currency;

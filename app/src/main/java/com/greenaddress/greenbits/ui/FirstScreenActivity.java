@@ -41,8 +41,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class FirstScreenActivity extends ActionBarActivity implements Observer {
-    private static final String NVM_PATH = "nvm.bin";
-    private static final String TAG = FirstScreenActivity.class.getSimpleName();
+	@NonNull private static final String NVM_PATH = "nvm.bin";
+	@NonNull private static final String TAG = FirstScreenActivity.class.getSimpleName();
     private static boolean tuiCall;
     private BTChipTransportFactory transportFactory;
     private static final int CONNECT_TIMEOUT = 2000;

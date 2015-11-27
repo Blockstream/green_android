@@ -54,7 +54,7 @@ import javax.crypto.spec.IvParameterSpec;
 public class PinActivity extends ActionBarActivity implements Observer {
 
     private Menu menu;
-    private static final String KEYSTORE_KEY = "NativeAndroidAuth";
+    @NonNull private static final String KEYSTORE_KEY = "NativeAndroidAuth";
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
 

@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 
 
 public class QrBitmap implements Callable<QrBitmap>, Parcelable {
+    @NonNull
     public static final Parcelable.Creator<QrBitmap> CREATOR
             = new Parcelable.Creator<QrBitmap>() {
         @NonNull

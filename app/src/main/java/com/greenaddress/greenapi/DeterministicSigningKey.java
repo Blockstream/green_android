@@ -49,7 +49,7 @@ public class DeterministicSigningKey implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final String coinName, final byte[] gait_path) {
+    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final byte[] gait_path) {
         return null;
     }
 

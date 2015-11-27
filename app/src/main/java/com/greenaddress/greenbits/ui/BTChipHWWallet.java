@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.ISigningWallet;
+import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 
@@ -50,7 +51,7 @@ public class BTChipHWWallet implements ISigningWallet {
     private DeterministicKey cachedPubkey;
     private List<Integer> addrn = new LinkedList<>();
 
-    private static final String TAG = BTChipHWWallet.class.getSimpleName();
+    @NonNull private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
     private BTChipHWWallet(final BTChipDongle dongle, final RequestLoginActivity loginActivity, final String pin, final List<Integer> addrn) {
         this.dongle = dongle;
@@ -103,7 +104,7 @@ public class BTChipHWWallet implements ISigningWallet {
 
     @NonNull
     @Override
-    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(@NonNull final PreparedTransaction tx, final String coinName, final byte[] gait_path) {
+    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(@NonNull final PreparedTransaction tx, final byte[] gait_path) {
         return es.submit(new Callable<List<ECKey.ECDSASignature>>() {
             @NonNull
             @Override
@@ -223,7 +224,7 @@ public class BTChipHWWallet implements ISigningWallet {
             @Nullable
             @Override
             public byte[] apply(final @Nullable ECKey input) {
-                return input.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).getHash160();
+                return input.toAddress(Network.NETWORK).getHash160();
             }
         });
     }

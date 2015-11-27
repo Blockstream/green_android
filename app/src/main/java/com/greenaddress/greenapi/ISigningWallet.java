@@ -22,7 +22,7 @@ public interface ISigningWallet {
 
     ListenableFuture<DeterministicKey> getPubKey();
 
-    ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(PreparedTransaction tx, String coinName, byte[] gait_path);
+    ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(PreparedTransaction tx, byte[] gait_path);
 
     boolean requiresPrevoutRawTxs();
 }

@@ -20,14 +20,14 @@ public class ConnectivityObservable extends Observable {
 
     static final int RECONNECT_TIMEOUT = 6000;
     static final int RECONNECT_TIMEOUT_MAX = 50000;
-    private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
+    @NonNull private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
     private ScheduledFuture<Object> disconnectTimeout;
     private GaService service;
     @NonNull
     private State state = State.OFFLINE;
     private boolean forcedLoggedout = false;
     private boolean forcedTimeoutout = false;
-    private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
+    @NonNull private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
         public void onReceive(final Context context, final Intent intent) {
             checkNetwork();
         }

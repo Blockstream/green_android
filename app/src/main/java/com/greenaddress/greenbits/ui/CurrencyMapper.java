@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class CurrencyMapper {
-    private static final Map<String, String> map = new HashMap<>();
+    @NonNull private static final Map<String, String> map = new HashMap<>();
 
     static {
         map.put("USD", "&#xf155;");

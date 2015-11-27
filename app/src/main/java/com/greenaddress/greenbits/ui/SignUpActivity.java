@@ -51,7 +51,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class SignUpActivity extends ActionBarActivity implements Observer {
-    private static final String TAG = SignUpActivity.class.getSimpleName();
+    @NonNull private static final String TAG = SignUpActivity.class.getSimpleName();
     private boolean mWriteMode = false;
     private Dialog mnemonicDialog;
     private Dialog nfcDialog;

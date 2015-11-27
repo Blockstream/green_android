@@ -18,6 +18,7 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.params.MainNetParams;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -105,11 +106,11 @@ public class TrezorHWWallet implements ISigningWallet {
 
     @NonNull
     @Override
-    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final String coinName, final byte[] gait_path) {
+    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final byte[] gait_path) {
         return es.submit(new Callable<List<ECKey.ECDSASignature>>() {
             @Override
             public List<ECKey.ECDSASignature> call() throws Exception {
-                return trezor.MessageSignTx(tx, coinName, gait_path);
+                return trezor.MessageSignTx(tx, Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET) ? "Bitcoin": "Testnet", gait_path);
             }
         });
     }

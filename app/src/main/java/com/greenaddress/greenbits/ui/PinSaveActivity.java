@@ -59,7 +59,7 @@ import javax.crypto.spec.IvParameterSpec;
 
 public class PinSaveActivity extends ActionBarActivity implements Observer {
 
-    private static final String KEYSTORE_KEY = "NativeAndroidAuth";
+    @NonNull private static final String KEYSTORE_KEY = "NativeAndroidAuth";
 
     private static final int SECONDS_AUTH_VALID = 10;
     private static final int ACTIVITY_REQUEST_CODE = 1;

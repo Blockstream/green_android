@@ -38,7 +38,7 @@ public class Transaction implements Serializable {
     }
 
     public String toString() {
-        return String.format("%s %s %s", date.toString(), type.name(), amount, counterparty);
+        return String.format("%s %s %s %s", date.toString(), type.name(), amount, counterparty);
     }
 
     public int getConfirmations() {
