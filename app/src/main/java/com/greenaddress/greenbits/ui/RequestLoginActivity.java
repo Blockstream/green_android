@@ -9,6 +9,7 @@ import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.btchip.BTChipDongle.BTChipPublicKey;
@@ -122,9 +124,9 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                         .titleColorRes(R.color.white)
                                         .contentColorRes(android.R.color.white)
                                         .theme(Theme.DARK)
-                                        .callback(new MaterialDialog.ButtonCallback() {
+                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                                             @Override
-                                            public void onPositive(MaterialDialog materialDialog) {
+                                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                                 ret.set(pinValue.getText().toString());
                                             }
                                         })
@@ -157,9 +159,9 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                         .titleColorRes(R.color.white)
                                         .contentColorRes(android.R.color.white)
                                         .theme(Theme.DARK)
-                                        .callback(new MaterialDialog.ButtonCallback() {
+                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                                             @Override
-                                            public void onPositive(MaterialDialog materialDialog) {
+                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                                 ret.set(passphraseValue.getText().toString());
                                             }
                                         })
@@ -277,18 +279,19 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         .theme(Theme.DARK)
                         .positiveText("OK")
                         .negativeText("CANCEL")
-                        .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(final MaterialDialog materialDialog) {
-                        final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
-                        prog.setVisibility(View.VISIBLE);
-                        pinFuture.set(pinValue.getText().toString());
-                            }
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onNegative(final MaterialDialog materialDialog) {
-                                Toast.makeText(RequestLoginActivity.this, "No PIN provided, exiting.", Toast.LENGTH_LONG).show();
-                                RequestLoginActivity.this.finish();
+                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
+                                prog.setVisibility(View.VISIBLE);
+                                pinFuture.set(pinValue.getText().toString());
                             }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                Toast.makeText(RequestLoginActivity.this, "No PIN provided, exiting.", Toast.LENGTH_LONG).show();
+                                RequestLoginActivity.this.finish();                            }
                         });
 
                 btchipDialog = builder.build();

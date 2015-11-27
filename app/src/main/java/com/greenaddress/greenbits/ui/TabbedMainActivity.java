@@ -10,6 +10,7 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,6 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
@@ -262,8 +264,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                             .titleColorRes(R.color.white)
                             .contentColorRes(android.R.color.white)
                             .theme(Theme.DARK)
-                            .callback(new MaterialDialog.ButtonCallback() {
-
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
                                 Transaction tx;
                                 ECKey key;
 
@@ -307,7 +308,7 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                 }
 
                                 @Override
-                                public void onPositive(final MaterialDialog dialog) {
+                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                     if (keyBip38 != null) {
                                         try {
                                             key = keyBip38.decrypt(passwordEdit.getText().toString());
@@ -334,11 +335,6 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                                         key = keyNonBip38;
                                         doSweep();
                                     }
-
-                                }
-
-                                @Override
-                                public void onNegative(final MaterialDialog dialog) {
                                 }
                             })
                             .build().show();

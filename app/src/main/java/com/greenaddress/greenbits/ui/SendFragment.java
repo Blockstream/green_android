@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
@@ -37,6 +38,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.base.Function;
@@ -157,9 +159,9 @@ public class SendFragment extends GAFragment {
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(final MaterialDialog dialog) {
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                         if (twoFacData != null) {
                             twoFacData.put("code", newTx2FACodeText.getText().toString());
                         }
@@ -203,11 +205,11 @@ public class SendFragment extends GAFragment {
                             }
                         }, getGAService().es);
                     }
-
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(final MaterialDialog dialog) {
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                         Log.i(TAG, "SHOWN ON CLOSE!");
-
                     }
                 })
                 .build();

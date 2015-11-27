@@ -291,16 +291,16 @@ public class GaService extends Service {
                     final String txhash = (String) utxo.get("txhash");
                     final Integer blockHeight = (Integer) utxo.get("block_height");
                     final Integer pt_idx = ((Integer) utxo.get("pt_idx"));
-                    final Sha256Hash sha256hash = new Sha256Hash(Hex.decode(txhash));
+                    final Sha256Hash sha256hash = Sha256Hash.wrap(Hex.decode(txhash));
                     if (!getSharedPreferences("verified_utxo_" + receivingId, MODE_PRIVATE).getBoolean(txhash, false)) {
                         recalculateBloom = true;
                         addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Integer) utxo.get("subaccount")),
                                 ((Integer) utxo.get("pointer")));
                     } else {
                         // already verified
-                        addToUtxo(new Sha256Hash(txhash), pt_idx, ((Integer) utxo.get("subaccount")),
+                        addToUtxo(Sha256Hash.wrap(txhash), pt_idx, ((Integer) utxo.get("subaccount")),
                                 ((Integer) utxo.get("pointer")));
-                        addUtxoToValues(new Sha256Hash(txhash));
+                        addUtxoToValues(Sha256Hash.wrap(txhash));
                     }
                     newUtxos.add(new TransactionOutPoint(Network.NETWORK, pt_idx, sha256hash));
                 }
@@ -1039,7 +1039,7 @@ public class GaService extends Service {
         return client.getMyTransactions(subaccount);
     }
 
-    private void addToBloomFilter(final Integer blockHeight, Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
+    private void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
         if (blockChain == null) return; // can happen before login (onNewBlock)
         if (txhash != null) {
             addToUtxo(txhash, pt_idx, subaccount, pointer);

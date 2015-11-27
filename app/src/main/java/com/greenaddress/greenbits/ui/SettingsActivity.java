@@ -10,11 +10,13 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
@@ -305,14 +307,9 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                                 .titleColorRes(R.color.white)
                                 .contentColorRes(android.R.color.white)
                                 .theme(Theme.DARK)
-                                .callback(new MaterialDialog.ButtonCallback() {
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
-                                    public void onNegative(final MaterialDialog materialDialog) {
-
-                                    }
-
-                                    @Override
-                                    public void onPositive(final MaterialDialog materialDialog) {
+                                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                         new SPVAsync().execute();
                                         final SharedPreferences.Editor editor = trustedPreferences.edit();
                                         editor.putString("address", newString);
@@ -461,9 +458,9 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 .theme(Theme.DARK)
                 .positiveText(android.R.string.ok)
                 .negativeText(android.R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(final MaterialDialog materialDialog) {
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                         final Map<String, String> twoFacData = new HashMap<>();
                         twoFacData.put("method", withMethod);
                         twoFacData.put("code", twoFacValue.getText().toString());
@@ -550,16 +547,17 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(final MaterialDialog materialDialog) {
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                        getGAService().startSpvSync();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                         getGAService().setSpvWiFiDialogShown(false);
                         makeWiFiObserver();
-                    }
-
-                    @Override
-                    public void onPositive(final MaterialDialog materialDialog) {
-                        getGAService().startSpvSync();
                     }
                 })
                 .build().show();

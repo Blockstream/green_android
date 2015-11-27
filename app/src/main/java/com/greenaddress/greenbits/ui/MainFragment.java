@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.base.Function;
@@ -286,19 +288,19 @@ public class MainFragment extends GAFragment implements Observer {
                         spvStatusDialog = null;
                     }
                 });
-                builder.callback(new MaterialDialog.ButtonCallback() {
+                builder.onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(final MaterialDialog materialDialog) {
-                        spvStatusDialog = null;
-                    }
-
-                    @Override
-                    public void onPositive(final MaterialDialog materialDialog) {
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                         spvStatusDialog = null;
                         getGAApp().getConnectionObservable().deleteObserver(wiFiObserver);
                         wiFiObserver = null;
                         wiFiObserverRequired = false;
                         getGAService().startSpvSync();
+                    }
+                }).onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                        spvStatusDialog = null;
                     }
                 });
                 spvStatusDialog = builder.build();
@@ -564,15 +566,16 @@ public class MainFragment extends GAFragment implements Observer {
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(final MaterialDialog materialDialog) {
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                         getGAService().setSpvWiFiDialogShown(false);
                         makeWiFiObserver();
                     }
-
+                })
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(final MaterialDialog materialDialog) {
+                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                         getGAService().startSpvSync();
                     }
                 })

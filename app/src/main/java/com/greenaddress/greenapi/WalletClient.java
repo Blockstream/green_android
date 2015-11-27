@@ -571,7 +571,7 @@ public class WalletClient {
             }
             //Log.d(TAG, "Our address: " + address + " server challenge: " + challengeString);
             path_hex = getRandomHexString(16);
-            challenge_sha = new Sha256Hash(challengeBytes);
+            challenge_sha = Sha256Hash.wrap(challengeBytes);
             childKey = createSubpathForLogin(deterministicKey, path_hex);
             signature = childKey.signHash(challenge_sha);
             signature_arg = Futures.transform(signature, new Function<ECKey.ECDSASignature, String[]>() {
@@ -589,7 +589,7 @@ public class WalletClient {
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] data = Utils.formatMessageForSigning(message);
 
-            challenge_sha = Sha256Hash.createDouble(data);
+            challenge_sha = Sha256Hash.twiceOf(data);
             signature = childKey.signMessage(message);
             signature_arg = Futures.transform(signature, new AsyncFunction<ECKey.ECDSASignature, String[]>() {
                 @Nullable

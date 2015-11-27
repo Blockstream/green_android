@@ -10,6 +10,7 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -27,6 +28,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.dd.CircularProgressButton;
@@ -294,7 +296,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         for (int i = 0; i < 32; ++i)
             decrypted[i] ^= derived[i];
 
-        final byte[] hash = Sha256Hash.createDouble(decrypted).getBytes();
+        final byte[] hash = Sha256Hash.twiceOf(decrypted).getBytes();
         if (!Arrays.equals(Arrays.copyOf(hash, 4), salt))
             throw new RuntimeException("Invalid checksum");
         return decrypted;
@@ -317,13 +319,12 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         .titleColorRes(R.color.white)
                         .contentColorRes(android.R.color.white)
                         .theme(Theme.DARK)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onPositive(MaterialDialog materialDialog) {
+                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                 passphraseFuture.set(passphraseValue.getText().toString());
                             }
-                        })
-                        .build();
+                        }).build();
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
                 passphraseValue.requestFocus();
                 dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);

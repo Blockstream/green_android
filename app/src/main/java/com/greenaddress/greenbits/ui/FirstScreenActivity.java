@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.btchip.BTChipDongle;
@@ -154,20 +156,21 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
 		                        .theme(Theme.DARK)
 		                        .positiveText("OK")
 		                        .negativeText("CANCEL")
-		                        .callback(new MaterialDialog.ButtonCallback() {
-		                        	@Override
-		                        	public void onPositive(final MaterialDialog materialDialog) {
-		                        		proceedTEE(teeTransport, dongle, true);
-		                        	}
-		                        	
-		                        	public void onNegative(final MaterialDialog materialDialog) {
-		                        		try {
-		                        			teeTransport.close();
-		                        		}
-		                        		catch(final Exception e) {
-		                        		}
-		                        	}
-		                        })                        
+								.onPositive(new MaterialDialog.SingleButtonCallback() {
+									@Override
+									public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+										proceedTEE(teeTransport, dongle, true);
+									}
+								})
+								.onNegative(new MaterialDialog.SingleButtonCallback() {
+									@Override
+									public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+										try {
+											teeTransport.close();
+										} catch (final Exception e) {
+										}
+									}
+								})
 		                        .build().show();            																			
 							}
             				
