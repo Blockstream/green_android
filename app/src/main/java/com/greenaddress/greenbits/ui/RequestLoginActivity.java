@@ -310,7 +310,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                                         actionId == EditorInfo.IME_ACTION_DONE ||
                                         event.getAction() == KeyEvent.ACTION_DOWN &&
                                                 event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                                    if (event == null || !event.isShiftPressed()) {
+                                    if (!event.isShiftPressed()) {
                                         // the user is done typing.
                                         final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
                                         prog.setVisibility(View.VISIBLE);

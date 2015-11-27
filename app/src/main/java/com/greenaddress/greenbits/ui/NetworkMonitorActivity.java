@@ -63,9 +63,9 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         if (peerGroup != null && peerListener != null) {
             peerGroup.removeEventListener(peerListener);
         }
-        if (peerList != null) {
-            peerList.clear();
-        }
+
+        peerList.clear();
+
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 

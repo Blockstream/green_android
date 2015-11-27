@@ -34,7 +34,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     public GaService gaService;
     @NonNull public final SettableFuture<Void> onServiceConnected = SettableFuture.create();
     private boolean mBound = false;
-    @NonNull
+    @Nullable
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
     @Nullable
     private final ServiceConnection mConnection = new ServiceConnection() {

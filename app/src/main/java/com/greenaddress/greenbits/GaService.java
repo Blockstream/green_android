@@ -170,7 +170,7 @@ public class GaService extends Service {
     private ConnectivityObservable connectionObservable = null;
     @NonNull private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
         @Override
-        public void onSuccess(@NonNull final LoginData result) {
+        public void onSuccess(@Nullable final LoginData result) {
             fiatCurrency = result.currency;
             fiatExchange = result.exchange;
             subaccounts = result.subaccounts;
@@ -871,7 +871,7 @@ public class GaService extends Service {
         return Futures.transform(userWallet.getPubKey(), new Function<DeterministicKey, Boolean>() {
             @NonNull
             @Override
-            public Boolean apply(final @NonNull DeterministicKey master) {
+            public Boolean apply(final @Nullable DeterministicKey master) {
                 final DeterministicKey derivedRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
                 final DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer));
                 pubkeys.add(derivedPointer);
@@ -990,7 +990,7 @@ public class GaService extends Service {
         return client.getMnemonics();
     }
 
-    @NonNull
+    @Nullable
     public WalletClient getClient() {
         return client;
     }
@@ -1202,7 +1202,7 @@ public class GaService extends Service {
         if (currencyExchangePairs == null) {
             currencyExchangePairs = Futures.transform(client.getAvailableCurrencies(), new Function<Map<?, ?>, List<List<String>>>() {
                 @Override
-                public List<List<String>> apply(@NonNull final Map<?, ?> result) {
+                public List<List<String>> apply(@Nullable final Map<?, ?> result) {
                     final Map<String, ArrayList<String>> per_exchange = (Map) result.get("per_exchange");
                     final List<List<String>> ret = new LinkedList<>();
                     for (final String exchange : per_exchange.keySet()) {
@@ -1267,7 +1267,7 @@ public class GaService extends Service {
         if (latestQrBitmapMnemonics == null) {
             Futures.addCallback(latestMnemonics, new FutureCallback<String>() {
                 @Override
-                public void onSuccess(@NonNull final String mnemonic) {
+                public void onSuccess(@Nullable final String mnemonic) {
                     latestQrBitmapMnemonics = es.submit(new QrBitmap(mnemonic, Color.WHITE));
                 }
 
@@ -1304,7 +1304,7 @@ public class GaService extends Service {
         return newTxVerifiedObservable;
     }
 
-    public Coin getBalanceCoin(int subaccount) {
+    public Coin getBalanceCoin(final int subaccount) {
         return balancesCoin.get(subaccount);
     }
 
@@ -1336,7 +1336,7 @@ public class GaService extends Service {
         return client.getAppearenceValue(key);
     }
 
-    @NonNull
+    @Nullable
     public Map<?, ?> getTwoFacConfig() {
         return twoFacConfig;
     }

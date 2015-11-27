@@ -306,7 +306,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
                             }
                         }), new FutureCallback<LoginData>() {
                             @Override
-                            public void onSuccess(@NonNull final LoginData result) {
+                            public void onSuccess(@Nullable final LoginData result) {
                             	Log.d(TAG, "Success");
                                 final Intent main = new Intent(FirstScreenActivity.this, TabbedMainActivity.class);
                                 startActivity(main);

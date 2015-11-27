@@ -405,7 +405,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     final GaService gaService = getGAService();
                     edit.setText(mnemonics);
 
-                    if (gaService != null && gaService.onConnected != null && gaService.triggerOnFullyConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
+                    if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
                         //Auxillary Future to make sure we are connected.
                         Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
                             @Override
