@@ -60,7 +60,7 @@ public class SPV {
 
     public void startIfEnabled() {
         isSpvSyncing = false;
-        if (gaService.getSharedPreferences("SPV", gaService.MODE_PRIVATE).getBoolean("enabled", true)) {
+        if (gaService.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)) {
             setUpSPV();
 
             if (startSpvAfterInit) {
@@ -87,7 +87,7 @@ public class SPV {
     public Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
 
     public void updateUnspentOutputs() {
-        if (!gaService.getSharedPreferences("SPV", gaService.MODE_PRIVATE).getBoolean("enabled", true)) {
+        if (!gaService.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)) {
             return;
         }
         Futures.addCallback(gaService.getClient().getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
@@ -102,7 +102,7 @@ public class SPV {
                     final Integer blockHeight = (Integer) utxo.get("block_height");
                     final Integer pt_idx = ((Integer) utxo.get("pt_idx"));
                     final Sha256Hash sha256hash = Sha256Hash.wrap(Hex.decode(txhash));
-                    if (!gaService.getSharedPreferences("verified_utxo_" + gaService.getReceivingId(), gaService.MODE_PRIVATE).getBoolean(txhash, false)) {
+                    if (!gaService.getSharedPreferences("verified_utxo_" + gaService.getReceivingId(), Context.MODE_PRIVATE).getBoolean(txhash, false)) {
                         recalculateBloom = true;
                         addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Integer) utxo.get("subaccount")),
                                 ((Integer) utxo.get("pointer")));
@@ -157,8 +157,8 @@ public class SPV {
         boolean missing = false;
         for (final Integer outpoint : unspentOutputsOutpoints.get(txHash)) {
             final String outPointStr = txHashStr + ":" + outpoint;
-            if (gaService.getSharedPreferences("verified_utxo_spendable_value_" + gaService.getReceivingId(), gaService.MODE_PRIVATE).getLong(outPointStr, -1) != -1) {
-                final long value = gaService.getSharedPreferences("verified_utxo_spendable_value_" + gaService.getReceivingId(), gaService.MODE_PRIVATE).getLong(outPointStr, -1);
+            if (gaService.getSharedPreferences("verified_utxo_spendable_value_" + gaService.getReceivingId(), Context.MODE_PRIVATE).getLong(outPointStr, -1) != -1) {
+                final long value = gaService.getSharedPreferences("verified_utxo_spendable_value_" + gaService.getReceivingId(), Context.MODE_PRIVATE).getLong(outPointStr, -1);
                 final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
                 final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
                 if (!countedUtxoValues.keySet().contains(txOutpoint))
@@ -193,7 +193,7 @@ public class SPV {
                                     final Coin coinValue = result.getOutput(outpoint).getValue();
                                     addUtxoToValues(txOutpoint, subaccount, coinValue);
                                     changedSubaccounts.add(subaccount);
-                                    final SharedPreferences.Editor e = gaService.getSharedPreferences("verified_utxo_spendable_value_" + gaService.getReceivingId(), gaService.MODE_PRIVATE).edit();
+                                    final SharedPreferences.Editor e = gaService.getSharedPreferences("verified_utxo_spendable_value_" + gaService.getReceivingId(), Context.MODE_PRIVATE).edit();
                                     e.putLong(txHashStr + ":" + outpoint, coinValue.longValue());
                                     e.apply();
                                 } else {
@@ -344,7 +344,7 @@ public class SPV {
     }
 
     public int getSpvBlocksLeft() {
-        if (gaService.getSharedPreferences("SPV", gaService.MODE_PRIVATE).getBoolean("enabled", true)) {
+        if (gaService.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)) {
             return spvBlocksLeft;
         } else {
             return 0;
@@ -368,7 +368,7 @@ public class SPV {
     }
 
     private void toastTrustedSPV(final String announcement){
-        final String trusted_peer = gaService.getSharedPreferences("TRUSTED", gaService.MODE_PRIVATE).getString("address", "");
+        final String trusted_peer = gaService.getSharedPreferences("TRUSTED", Context.MODE_PRIVATE).getString("address", "");
         if(TabbedMainActivity.instance != null && !trusted_peer.isEmpty()){
             TabbedMainActivity.instance.runOnUiThread(new Runnable()
             {
@@ -386,7 +386,7 @@ public class SPV {
         }
     }
     public int getSpvHeight() {
-        if (gaService.getSharedPreferences("SPV", gaService.MODE_PRIVATE).getBoolean("enabled", true) && blockChain != null) {
+        if (gaService.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true) && blockChain != null) {
             return blockChain.getBestChainHeight();
         } else {
             return 0;
@@ -448,7 +448,7 @@ public class SPV {
             return;
         }
         System.setProperty("user.home", gaService.getFilesDir().toString());
-        final String trusted_addr = gaService.getSharedPreferences("TRUSTED", gaService.MODE_PRIVATE).getString("address", "");
+        final String trusted_addr = gaService.getSharedPreferences("TRUSTED", Context.MODE_PRIVATE).getString("address", "");
         SPVMode mode;
         if (!trusted_addr.isEmpty() && trusted_addr.contains(".")){
             final String trusted_lower = trusted_addr.toLowerCase();
