@@ -1,18 +1,10 @@
 package com.greenaddress.greenbits.ui;
 
-import android.annotation.TargetApi;
-import android.app.KeyguardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyPermanentlyInvalidatedException;
-import android.security.keystore.KeyProperties;
-import android.security.keystore.UserNotAuthenticatedException;
 import android.support.annotation.NonNull;
-import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,41 +21,19 @@ import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.PinData;
+import com.greenaddress.greenbits.KeyStoreAES;
 
 import org.bitcoinj.crypto.MnemonicCode;
 
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.spec.InvalidParameterSpecException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.annotation.Nullable;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-
 
 public class PinSaveActivity extends ActionBarActivity implements Observer {
 
-    @NonNull private static final String KEYSTORE_KEY = "NativeAndroidAuth";
-
-    private static final int SECONDS_AUTH_VALID = 10;
     private static final int ACTIVITY_REQUEST_CODE = 1;
-
 
     private void setPin(@NonNull final String pinText) {
         if (pinText.length() < 4) {
@@ -119,92 +89,19 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    private void createKey(final boolean deleteImmediately) {
-        KeyStore keyStore = null;
-        try {
-            keyStore = KeyStore.getInstance("AndroidKeyStore");
-            keyStore.load(null);
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance(
-                    KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
-
-            keyGenerator.init(new KeyGenParameterSpec.Builder(KEYSTORE_KEY,
-                        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-                        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                        .setUserAuthenticationRequired(true)
-                        .setUserAuthenticationValidityDurationSeconds(SECONDS_AUTH_VALID)
-                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                        .build());
-            keyGenerator.generateKey();
-
-
-        } catch (@NonNull final NoSuchAlgorithmException | NoSuchProviderException
-                | InvalidAlgorithmParameterException | KeyStoreException
-                | CertificateException | IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (deleteImmediately && keyStore != null) {
-                try {
-                    keyStore.deleteEntry(KEYSTORE_KEY);
-                } catch (@NonNull final KeyStoreException e) {
-                }
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private void tryEncrypt() {
-
-        createKey(false);
-        final byte[] fakePin = new byte[32];
-        new SecureRandom().nextBytes(fakePin);
-        try {
-            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-            keyStore.load(null);
-            final SecretKey secretKey = (SecretKey) keyStore.getKey(KEYSTORE_KEY, null);
-            final Cipher cipher = Cipher.getInstance(
-                    KeyProperties.KEY_ALGORITHM_AES + "/" + KeyProperties.BLOCK_MODE_CBC + "/"
-                            + KeyProperties.ENCRYPTION_PADDING_PKCS7);
-
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
-            final byte[] encryptedPIN = cipher.doFinal(fakePin);
-            final SharedPreferences.Editor editor = getSharedPreferences("pin", MODE_PRIVATE).edit();
-            final byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-            editor.putString("native", Base64.encodeToString(encryptedPIN, Base64.NO_WRAP));
-            editor.putString("nativeiv", Base64.encodeToString(iv, Base64.NO_WRAP));
-
-            editor.apply();
-            setPin(Base64.encodeToString(fakePin, Base64.NO_WRAP).substring(0, 15));
-        } catch (@NonNull final UserNotAuthenticatedException e) {
-            showAuthenticationScreen();
-        } catch (@NonNull final KeyPermanentlyInvalidatedException e) {
-            Toast.makeText(this, "Problem with key "
-                            + e.getMessage(),
-                    Toast.LENGTH_LONG).show();
-        } catch (@NonNull final InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException | KeyStoreException |
-                CertificateException | UnrecoverableKeyException | IOException
-                | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private void showAuthenticationScreen() {
-        final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-
-        final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);
-        if (intent != null) {
-            startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
-        }
-    }
-
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == ACTIVITY_REQUEST_CODE) {
             // Challenge completed, proceed with using cipher
-            if (resultCode == RESULT_OK) {
-                tryEncrypt();
+            if (resultCode == RESULT_OK && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                try {
+                    setPin(KeyStoreAES.tryEncrypt(this));
+                } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
+                    KeyStoreAES.showAuthenticationScreen(this);
+                } catch (final KeyStoreAES.KeyInvalidated e) {
+                    Toast.makeText(this, "Problem with key "
+                            + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -217,7 +114,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             try {
-                createKey(true);
+                KeyStoreAES.createKey(true);
 
                 final CheckBox pinSaveText = (CheckBox) findViewById(R.id.useNativeAuthentication);
                 pinSaveText.setVisibility(View.VISIBLE);
@@ -226,7 +123,14 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                     @Override
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                         if (isChecked) {
-                            tryEncrypt();
+                            try {
+                                setPin(KeyStoreAES.tryEncrypt(PinSaveActivity.this));
+                            } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
+                                KeyStoreAES.showAuthenticationScreen(PinSaveActivity.this);
+                            } catch (final KeyStoreAES.KeyInvalidated e) {
+                                Toast.makeText(PinSaveActivity.this, "Problem with key "
+                                                + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                 });

@@ -53,7 +53,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
     private Observer wiFiObserver = null;
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
         if (getGAService() == null) {
@@ -65,19 +65,19 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         addPreferencesFromResource(R.xml.pref_general);
 
         // Add 'GreenBits' preferences, and a corresponding header.
-        PreferenceCategory fakeHeader = new PreferenceCategory(this);
+        final PreferenceCategory fakeHeader = new PreferenceCategory(this);
         fakeHeader.setTitle(R.string.pref_header_notifications);
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_notification);
 
         // Add 'two factor authentication' preferences.
-        PreferenceCategory fakeHeaderSecurity = new PreferenceCategory(this);
+        final PreferenceCategory fakeHeaderSecurity = new PreferenceCategory(this);
         fakeHeaderSecurity.setTitle(R.string.pref_header_twofactor);
         getPreferenceScreen().addPreference(fakeHeaderSecurity);
         addPreferencesFromResource(R.xml.pref_two_factor);
 
         // Add 'more settings' preferences
-        PreferenceCategory fakeHeaderMore = new PreferenceCategory(this);
+        final PreferenceCategory fakeHeaderMore = new PreferenceCategory(this);
         fakeHeaderMore.setTitle(R.string.pref_header_more);
         getPreferenceScreen().addPreference(fakeHeaderMore);
         addPreferencesFromResource(R.xml.pref_more);
@@ -203,7 +203,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 }
 
                 final Boolean nowEnabled = (Boolean) newValue;
-                SharedPreferences.Editor editor = spvPreferences.edit();
+                final SharedPreferences.Editor editor = spvPreferences.edit();
                 editor.putBoolean("enabled", nowEnabled);
                 editor.apply();
                 trusted_peer.setEnabled(nowEnabled);
