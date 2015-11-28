@@ -57,7 +57,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
     };
 
-    @NonNull
+    @Nullable
     public ConnectivityObservable getConnectionObservable() {
         return connectionObservable;
     }

@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits;
 
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import org.bitcoinj.core.AbstractBlockChain;
@@ -12,7 +11,7 @@ import org.bitcoinj.core.VerificationException;
 
 import java.util.List;
 
-public class BlockChainListener implements org.bitcoinj.core.BlockChainListener {
+class BlockChainListener implements org.bitcoinj.core.BlockChainListener {
     private final GaService gaService;
 
     public BlockChainListener(final GaService gaService) {

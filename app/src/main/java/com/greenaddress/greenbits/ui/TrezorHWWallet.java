@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
-public class TrezorHWWallet implements ISigningWallet {
+class TrezorHWWallet implements ISigningWallet {
 
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final Trezor trezor;

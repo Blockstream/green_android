@@ -8,7 +8,7 @@ import org.bitcoinj.core.Utils;
 
 import java.util.Set;
 
-public class PeerFilterProvider implements org.bitcoinj.core.PeerFilterProvider {
+class PeerFilterProvider implements org.bitcoinj.core.PeerFilterProvider {
     private final GaService gaService;
 
     public PeerFilterProvider(final GaService gaService) {

@@ -71,7 +71,7 @@ public class SPV {
         updateUnspentOutputs();
     }
 
-    void addUtxoToValues(final TransactionOutPoint txOutpoint, final int subaccount, final Coin addValue) {
+    private void addUtxoToValues(final TransactionOutPoint txOutpoint, final int subaccount, final Coin addValue) {
         if (countedUtxoValues.keySet().contains(txOutpoint)) return;
         countedUtxoValues.put(txOutpoint, addValue);
         if (verifiedBalancesCoin.get(subaccount) == null) {
@@ -264,7 +264,7 @@ public class SPV {
     public Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints;
     private Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts;
     private Map<TransactionOutPoint, Integer> unspentOutpointsPointers;
-    public void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
+    private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
         unspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subaccount);
         unspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
         if (unspentOutputsOutpoints.get(txhash) == null) {
@@ -354,13 +354,13 @@ public class SPV {
     @Nullable
     private BlockStore blockStore;
     @Nullable
-    public BlockChain blockChain;
+    private BlockChain blockChain;
     @Nullable
     private PeerGroup peerGroup;
     @Nullable
     private PeerFilterProvider pfProvider;
     @NonNull private final Object startSPVLock = new Object();
-    boolean isSpvSyncing = false, startSpvAfterInit = false, syncStarted = false;
+    private boolean isSpvSyncing = false, startSpvAfterInit = false, syncStarted = false;
 
     @Nullable
     public PeerGroup getPeerGroup(){
@@ -380,7 +380,7 @@ public class SPV {
             });
         }
     }
-    public void recalculate(final boolean recalculateBloom) {
+    private void recalculate(final boolean recalculateBloom) {
         if (recalculateBloom && peerGroup != null) {
             peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
         }
@@ -400,7 +400,7 @@ public class SPV {
     public boolean isPeerGroupRunning(){
         return peerGroup != null && peerGroup.isRunning();
     }
-    int spvBlocksLeft = Integer.MAX_VALUE;
+    private int spvBlocksLeft = Integer.MAX_VALUE;
 
     public synchronized void startSpvSync() {
         synchronized (startSPVLock) {
