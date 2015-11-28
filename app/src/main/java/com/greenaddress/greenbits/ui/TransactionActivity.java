@@ -132,9 +132,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                     if (t.spvVerified) {
                         rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
                     } else {
-                        if(getGAService().getSpvBlocksLeft() != Integer.MAX_VALUE) {
+                        if(getGAService().spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
                             unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),
-                                    getGAService().getSpvBlocksLeft()));
+                                    getGAService().spv.getSpvBlocksLeft()));
                         }
                         else{
                             unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),

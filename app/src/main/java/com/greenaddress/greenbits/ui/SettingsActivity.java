@@ -169,10 +169,10 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                         final Boolean nowEnabled = (Boolean) newValue;
 
                         if (nowEnabled) {
-                            getGAService().setUpSPV();
-                            if (getGAService().getCurBlock() - getGAService().getSpvHeight() > 1000) {
+                            getGAService().spv.setUpSPV();
+                            if (getGAService().getCurBlock() - getGAService().spv.getSpvHeight() > 1000) {
                                 if (getGAApp().getConnectionObservable().isWiFiUp()) {
-                                    getGAService().startSpvSync();
+                                    getGAService().spv.startSpvSync();
                                 } else {
                                     // no wifi - do we want to sync?
                                     runOnUiThread(new Runnable() {
@@ -186,17 +186,17 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        getGAService().startSpvSync();
+                                        getGAService().spv.startSpvSync();
                                     }
                                 });
 
                             }
 
                         } else {
-                            if (getGAService().isPeerGroupRunning()) {
-                                getGAService().stopSPVSync();
+                            if (getGAService().spv.isPeerGroupRunning()) {
+                                getGAService().spv.stopSPVSync();
                             }
-                            getGAService().tearDownSPV();
+                            getGAService().spv.tearDownSPV();
                         }
                         return null;
                     }
@@ -236,15 +236,15 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 @Override
                 protected Object doInBackground(Object[] params) {
                     boolean alreadySyncing = false;
-                    if (getGAService().isPeerGroupRunning()) {
+                    if (getGAService().spv.isPeerGroupRunning()) {
                         alreadySyncing = true;
-                        getGAService().stopSPVSync();
+                        getGAService().spv.stopSPVSync();
                     }
-                    getGAService().tearDownSPV();
+                    getGAService().spv.tearDownSPV();
                     System.gc(); //May help save slightly lower heap size devices.
-                    getGAService().setUpSPV();
+                    getGAService().spv.setUpSPV();
                     if (alreadySyncing) {
-                        getGAService().startSpvSync();
+                        getGAService().spv.startSpvSync();
                     }
                     return null;
                 }
@@ -553,7 +553,7 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        getGAService().startSpvSync();
+                        getGAService().spv.startSpvSync();
                     }
                 })
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -571,14 +571,14 @@ public class SettingsActivity extends PreferenceActivity implements Observer {
         final GaService gaService = getGAService();
         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
         if (connObservable.isWiFiUp()) {
-            gaService.startSpvSync();
+            gaService.spv.startSpvSync();
             return;
         }
         wiFiObserver = new Observer() {
             @Override
             public void update(final Observable observable, final Object data) {
                 if (connObservable.isWiFiUp()) {
-                    gaService.startSpvSync();
+                    gaService.spv.startSpvSync();
                     connObservable.deleteObserver(wiFiObserver);
                     wiFiObserver = null;
                 }

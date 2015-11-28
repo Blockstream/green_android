@@ -179,9 +179,9 @@ public class MainFragment extends GAFragment implements Observer {
         final String btcBalance = bitcoinFormat.noCode().format(
                 monetary).toString();
         final String btcBalanceVerified;
-        if (gaService.getVerifiedBalanceCoin(curSubaccount) != null) {
+        if (gaService.spv.verifiedBalancesCoin.get(curSubaccount) != null) {
             btcBalanceVerified = bitcoinFormat.noCode().format(
-                    gaService.getVerifiedBalanceCoin(curSubaccount)).toString();
+                    gaService.spv.verifiedBalancesCoin.get(curSubaccount)).toString();
         } else {
             btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
         }
@@ -266,7 +266,7 @@ public class MainFragment extends GAFragment implements Observer {
                             getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
                 } else {
                     // no observer means we're synchronizing
-                    final String numblocksLeft = String.valueOf(getGAService().getSpvBlocksLeft());
+                    final String numblocksLeft = String.valueOf(getGAService().spv.getSpvBlocksLeft());
                     if (numblocksLeft.equals(String.valueOf(Integer.MAX_VALUE))){
                         blocksLeft = "Not yet connected to SPV!";
                     }else{
@@ -298,7 +298,7 @@ public class MainFragment extends GAFragment implements Observer {
                         getGAApp().getConnectionObservable().deleteObserver(wiFiObserver);
                         wiFiObserver = null;
                         wiFiObserverRequired = false;
-                        getGAService().startSpvSync();
+                        getGAService().spv.startSpvSync();
                     }
                 }).onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -315,9 +315,9 @@ public class MainFragment extends GAFragment implements Observer {
                         public void run() {
                             if (spvStatusDialog != null) {
                                 try {
-                                    if (getGAService().getSpvBlocksLeft() != Integer.MAX_VALUE) {
+                                    if (getGAService().spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
                                         spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
-                                                getGAService().getSpvBlocksLeft());
+                                                getGAService().spv.getSpvBlocksLeft());
                                     }
                                     else {
                                         spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
@@ -480,18 +480,18 @@ public class MainFragment extends GAFragment implements Observer {
                         final GaService gaService = getGAService();
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
                         if (gaService.getSharedPreferences("SPV", FragmentActivity.MODE_PRIVATE).getBoolean("enabled", true)) {
-                            gaService.setUpSPV();
-                            if (!gaService.getIsSpvSyncing()) {
+                            gaService.spv.setUpSPV();
+                            if (!gaService.spv.getIsSpvSyncing()) {
                                 // download up to 468kB (80bytes * 6000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
-                                if (curBlock - gaService.getSpvHeight() > 6000) {
+                                if (curBlock - gaService.spv.getSpvHeight() > 6000) {
                                     if (connObservable.isWiFiUp()) {
-                                        gaService.startSpvSync();
+                                        gaService.spv.startSpvSync();
                                     } else {
                                         // no wifi - do we want to sync?
                                         askUserForSpvNoWiFi();
                                     }
                                 } else {
-                                    gaService.startSpvSync();
+                                    gaService.spv.startSpvSync();
                                 }
                             }
                         }
@@ -581,7 +581,7 @@ public class MainFragment extends GAFragment implements Observer {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        getGAService().startSpvSync();
+                        getGAService().spv.startSpvSync();
                     }
                 })
                 .build().show();
@@ -592,7 +592,7 @@ public class MainFragment extends GAFragment implements Observer {
         final GaService gaService = getGAService();
         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
         if (connObservable.isWiFiUp()) {
-            gaService.startSpvSync();
+            gaService.spv.startSpvSync();
             wiFiObserverRequired = false;
             return;
         }
@@ -600,7 +600,7 @@ public class MainFragment extends GAFragment implements Observer {
             @Override
             public void update(final Observable observable, final Object data) {
                 if (connObservable.isWiFiUp()) {
-                    gaService.startSpvSync();
+                    gaService.spv.startSpvSync();
                     wiFiObserverRequired = false;
                     connObservable.deleteObserver(wiFiObserver);
                     wiFiObserver = null;

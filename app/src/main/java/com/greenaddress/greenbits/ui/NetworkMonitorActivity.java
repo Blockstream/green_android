@@ -59,7 +59,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         super.onPause();
 
         unregisterReceiver(uiUpdated);
-        PeerGroup peerGroup = getGAService().getPeerGroup();
+        PeerGroup peerGroup = getGAService().spv.getPeerGroup();
         if (peerGroup != null && peerListener != null) {
             peerGroup.removeEventListener(peerListener);
         }
@@ -76,7 +76,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
         peerList = new ArrayList<>();
-        PeerGroup peerGroup = getGAService().getPeerGroup();
+        PeerGroup peerGroup = getGAService().spv.getPeerGroup();
         if (peerGroup != null && peerGroup.isRunning()) {
 
             for (Peer peer : peerGroup.getConnectedPeers()) {

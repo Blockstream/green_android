@@ -457,7 +457,7 @@ public class SendFragment extends GAFragment {
                                 @Override
                                 public void onSuccess(@Nullable final PreparedTransaction result) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    Futures.addCallback(getGAService().validateTxAndCalculateFeeOrAmount(
+                                    Futures.addCallback(getGAService().spv.validateTxAndCalculateFeeOrAmount(
                                                     result, recipient, maxButton.isChecked() ? null : amount),
                                             new FutureCallback<Coin>() {
                                                 @Override

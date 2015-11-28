@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class LoginData {
+    private final static int EPOCH_START = 1393628400;
+
     public final String exchange;
     public final String currency;
     public final Map<String, Object> appearance;
@@ -23,6 +25,11 @@ public class LoginData {
         this.subaccounts = (ArrayList) map.get("subaccounts");
         this.gait_path = (String) map.get("gait_path");
         this.receiving_id = (String) map.get("receiving_id");
-        this.earliest_key_creation_time = (Integer) map.get("earliest_key_creation_time");
+        if (map.containsKey("earliest_key_creation_time")) {
+            this.earliest_key_creation_time = (Integer) map.get("earliest_key_creation_time");
+        } else {
+            // server doesn't provide it yet, set it to EPOCH
+            this.earliest_key_creation_time = EPOCH_START;
+        }
     }
 }

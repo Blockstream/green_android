@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -11,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -31,72 +29,39 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.ui.BTChipHWWallet;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.TabbedMainActivity;
-import com.subgraph.orchid.TorClient;
 
-import org.bitcoinj.core.AbstractBlockChain;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
-import org.bitcoinj.core.Block;
-import org.bitcoinj.core.BlockChain;
-import org.bitcoinj.core.BlockChainListener;
-import org.bitcoinj.core.BloomFilter;
-import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.DownloadProgressTracker;
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.FilteredBlock;
-import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.core.Peer;
-import org.bitcoinj.core.PeerAddress;
-import org.bitcoinj.core.PeerFilterProvider;
-import org.bitcoinj.core.PeerGroup;
-import org.bitcoinj.core.ScriptException;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.core.StoredBlock;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionInput;
-import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
-import org.bitcoinj.core.VerificationException;
-import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.crypto.MnemonicException;
 import org.bitcoinj.crypto.TransactionSignature;
-import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
-import org.bitcoinj.store.BlockStore;
-import org.bitcoinj.store.BlockStoreException;
-import org.bitcoinj.store.SPVBlockStore;
 import org.bitcoinj.utils.Fiat;
 import org.spongycastle.util.encoders.Hex;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Formatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -117,49 +82,32 @@ public class GaService extends Service {
     private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
     @Nullable
     private ListenableFuture<String> latestMnemonics;
-    @NonNull private final Object startSPVLock = new Object();
     private int curBlock = 0;
-    private boolean spvWiFiDialogShown = false;
 
-    private boolean reconnect = true, isSpvSyncing = false, startSpvAfterInit = false, syncStarted = false;
-
+    private boolean reconnect = true;
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
 
     @NonNull private final Map<Integer, Coin> balancesCoin = new HashMap<>();
-    @NonNull
-    private Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
+
     @NonNull private final Map<Integer, Fiat> balancesFiat = new HashMap<>();
     private float fiatRate;
     private String fiatCurrency;
     private String fiatExchange;
     private ArrayList subaccounts;
-    @Nullable
-    private BlockStore blockStore;
-    @Nullable
-    private BlockChain blockChain;
-    @Nullable
-    private BlockChainListener blockChainListener;
-    @Nullable
-    private PeerGroup peerGroup;
-    @Nullable
-    private PeerFilterProvider pfProvider;
 
-
-    private Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts;
-    private Map<TransactionOutPoint, Integer> unspentOutpointsPointers;
-    private Map<TransactionOutPoint, Coin> countedUtxoValues;
-    private Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints;
     @Nullable
     private Map<Integer, DeterministicKey> gaDeterministicKeys;
     private String receivingId;
     private byte[] gaitPath;
-    private int spvBlocksLeft = Integer.MAX_VALUE;
     @Nullable
     private Map<?, ?> twoFacConfig;
     @NonNull private final GaObservable twoFacConfigObservable = new GaObservable();
     @Nullable
     private String deviceId;
+    @Nullable
+    public final SPV spv = new SPV(this);
+
     private int background_color;
     // fix me implement Preference change listener?
     // http://developer.android.com/guide/topics/ui/settings.html
@@ -187,22 +135,11 @@ public class GaService extends Service {
             }
             getAvailableTwoFacMethods();
 
-            unspentOutpointsSubaccounts = new HashMap<>();
-            unspentOutpointsPointers = new HashMap<>();
-            unspentOutputsOutpoints = new HashMap<>();
-            countedUtxoValues = new HashMap<>();
-            verifiedBalancesCoin = new HashMap<>();
-            gaDeterministicKeys = new HashMap<>();
-            isSpvSyncing = false;
-            if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
-                setUpSPV();
+            spv.resetUnspent();
 
-                if (startSpvAfterInit) {
-                    startSpvSync();
-                }
-            }
-            startSpvAfterInit = false;
-            updateUnspentOutputs();
+            gaDeterministicKeys = new HashMap<>();
+
+            spv.startIfEnabled();
             connectionObservable.setState(ConnectivityObservable.State.LOGGEDIN);
         }
 
@@ -221,182 +158,6 @@ public class GaService extends Service {
         return seed;
     }
 
-    public int getSpvHeight() {
-        if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true) && blockChain != null) {
-            return blockChain.getBestChainHeight();
-        } else {
-            return 0;
-        }
-    }
-
-    public boolean getIsSpvSyncing() {
-        return isSpvSyncing;
-    }
-    
-    public boolean isPeerGroupRunning(){
-        return peerGroup != null && peerGroup.isRunning();
-    }
-
-    private void toastTrustedSPV(final String announcement){
-        final String trusted_peer = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
-        if(TabbedMainActivity.instance != null && !trusted_peer.isEmpty()){
-            TabbedMainActivity.instance.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Toast.makeText(getApplicationContext(), announcement+trusted_peer, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-    public synchronized void startSpvSync() {
-        synchronized (startSPVLock) {
-            if (syncStarted)
-                return;
-            else
-                syncStarted = true;
-        }
-        if (isSpvSyncing) return;
-        if (peerGroup == null) {  // disconnected while WiFi got up
-            startSpvAfterInit = true;
-            return;
-        }
-        toastTrustedSPV("Attempting connection to trusted peer: ");
-        Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
-            @Override
-            public void onSuccess(final @Nullable Object result) {
-                peerGroup.startBlockChainDownload(new DownloadProgressTracker() {
-                    @Override
-                    public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
-                        isSpvSyncing = true;
-                        spvBlocksLeft = blocksLeft;
-                        toastTrustedSPV("Connected to trusted peer: ");
-                    }
-
-                    @Override
-                    public void onBlocksDownloaded(final Peer peer, final Block block, final @Nullable FilteredBlock filteredBlock, final int blocksLeft) {
-                        spvBlocksLeft = blocksLeft;
-                    }
-
-                });
-            }
-
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-                t.printStackTrace();
-            }
-        });
-    }
-
-    private void updateUnspentOutputs() {
-        if (!getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
-            return;
-        }
-        Futures.addCallback(client.getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
-            @Override
-            public void onSuccess(final @Nullable ArrayList result) {
-                final Set<TransactionOutPoint> newUtxos = new HashSet<>();
-                boolean recalculateBloom = false;
-
-                for (int i = 0; i < result.size(); ++i) {
-                    final Map<?, ?> utxo = (Map) result.get(i);
-                    final String txhash = (String) utxo.get("txhash");
-                    final Integer blockHeight = (Integer) utxo.get("block_height");
-                    final Integer pt_idx = ((Integer) utxo.get("pt_idx"));
-                    final Sha256Hash sha256hash = Sha256Hash.wrap(Hex.decode(txhash));
-                    if (!getSharedPreferences("verified_utxo_" + receivingId, MODE_PRIVATE).getBoolean(txhash, false)) {
-                        recalculateBloom = true;
-                        addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Integer) utxo.get("subaccount")),
-                                ((Integer) utxo.get("pointer")));
-                    } else {
-                        // already verified
-                        addToUtxo(Sha256Hash.wrap(txhash), pt_idx, ((Integer) utxo.get("subaccount")),
-                                ((Integer) utxo.get("pointer")));
-                        addUtxoToValues(Sha256Hash.wrap(txhash));
-                    }
-                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, pt_idx, sha256hash));
-                }
-
-                final List<Integer> changedSubaccounts = new ArrayList<>();
-                for (final TransactionOutPoint oldUtxo : new HashSet<>(countedUtxoValues.keySet())) {
-                    if (!newUtxos.contains(oldUtxo)) {
-                        recalculateBloom = true;
-                        final Integer subaccount = unspentOutpointsSubaccounts.get(oldUtxo);
-                        verifiedBalancesCoin.put(subaccount,
-                                verifiedBalancesCoin.get(subaccount).subtract(countedUtxoValues.get(oldUtxo)));
-                        changedSubaccounts.add(subaccount);
-                        countedUtxoValues.remove(oldUtxo);
-                        unspentOutpointsSubaccounts.remove(oldUtxo);
-                        unspentOutpointsPointers.remove(oldUtxo);
-                        unspentOutputsOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
-                    }
-                }
-
-                if (recalculateBloom && peerGroup != null) {
-                    peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
-                }
-
-                for (final Integer subaccount : changedSubaccounts) {
-                    fireBalanceChanged(subaccount);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-                t.printStackTrace();
-            }
-        });
-    }
-
-    @Nullable
-    private PeerFilterProvider makePeerFilterProvider() {
-        pfProvider = new PeerFilterProvider() {
-            @Override
-            public long getEarliestKeyCreationTime() {
-                return client.getLoginData().earliest_key_creation_time;
-            }
-
-            @Override
-            public int getBloomFilterElementCount() {
-                // 1 to avoid downloading full blocks (empty bloom filters are ignored by bitcoinj)
-                return unspentOutputsOutpoints.isEmpty() ? 1: unspentOutpointsPointers.size();
-            }
-
-            @NonNull
-            @Override
-            public BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
-
-                final BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
-                final Set<Sha256Hash> set = unspentOutputsOutpoints.keySet();
-                for (final Sha256Hash hash : set) {
-                    res.insert(Utils.reverseBytes(hash.getBytes()));
-                }
-
-                // add fake entry to avoid downloading blocks when filter is empty
-                // (empty bloom filters are ignored by bitcoinj)
-
-                if (set.isEmpty()) {
-                    res.insert(new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
-                }
-                return res;
-            }
-
-            @Override
-            public boolean isRequiringUpdateAllBloomFilter() {
-                return false;
-            }
-
-            public void beginBloomFilterCalculation(){
-                //TODO: ??
-            }
-            public void endBloomFilterCalculation(){
-                //TODO: ??
-            }
-        };
-        return pfProvider;
-    }
 
     @NonNull
     public Observable getTwoFacConfigObservable() {
@@ -500,7 +261,7 @@ public class GaService extends Service {
             public void onNewBlock(final int count) {
                 Log.i(TAG, "onNewBlock");
                 if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
-                    addToBloomFilter(count, null, -1, -1, -1);
+                    spv.addToBloomFilter(count, null, -1, -1, -1);
                 }
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
@@ -509,7 +270,7 @@ public class GaService extends Service {
             @Override
             public void onNewTransaction(final int wallet_id, @NonNull final int[] subaccounts, final long value, final String txhash) {
                 Log.i(TAG, "onNewTransactions");
-                updateUnspentOutputs();
+                spv.updateUnspentOutputs();
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
                 for (final int subaccount : subaccounts) {
@@ -548,307 +309,6 @@ public class GaService extends Service {
                 }
             }
         }, es);
-    }
-
-    class Node {
-        @NonNull
-        final String addr;
-        final int port;
-
-        Node(@NonNull final String trusted_addr) {
-            final int index_port = trusted_addr.indexOf(":");
-            if (index_port != -1) {
-                addr = trusted_addr.substring(0, index_port);
-                port = Integer.parseInt(trusted_addr.substring(index_port + 1));
-            } else {
-                addr = trusted_addr;
-                port = Network.NETWORK.getPort();
-            }
-        }
-        public String toString(){
-            return String.format("%s:%d", addr, port);
-        }
-    }
-
-    private enum SPVMode {
-        ONION, TRUSTED, NORMAL
-    }
-
-    public synchronized void setUpSPV(){
-        //teardownSPV must be called if SPV already exists
-        //and stopSPV if previous still running.
-        if (peerGroup != null) {
-            Log.d(TAG, "Must stop and tear down SPV before setting up again!");
-            return;
-        }
-        System.setProperty("user.home", getApplicationContext().getFilesDir().toString());
-        final String trusted_addr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "");
-        SPVMode mode;
-        if (!trusted_addr.isEmpty() && trusted_addr.contains(".")){
-            final String trusted_lower = trusted_addr.toLowerCase();
-            if (trusted_lower.endsWith(".onion") || trusted_lower.contains(".onion:")) {
-                mode = SPVMode.ONION;
-            }
-            else{
-                mode = SPVMode.TRUSTED;
-            }
-        }else{
-            mode = SPVMode.NORMAL;
-        }
-
-        final File blockChainFile = new File(getDir("blockstore_" + receivingId, Context.MODE_PRIVATE), "blockchain.spvchain");
-
-        try {
-            blockStore = new SPVBlockStore(Network.NETWORK, blockChainFile);
-            final StoredBlock storedBlock = blockStore.getChainHead(); // detect corruptions as early as possible
-            if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
-                InputStream is = null;
-                try {
-                    is = getAssets().open("checkpoints");
-                    CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, client.getLoginData().earliest_key_creation_time);
-                } catch (@NonNull final IOException e) {
-                    // couldn't load checkpoints, log & skip
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        if (is != null) {
-                            is.close();
-                        }
-                    } catch (@NonNull final IOException e) {
-                        // do nothing
-                    }
-                }
-            }
-            blockChain = new BlockChain(Network.NETWORK, blockStore);
-            blockChain.addListener(makeBlockChainListener());
-
-            peerGroup = new PeerGroup(Network.NETWORK, blockChain);
-            peerGroup.addPeerFilterProvider(makePeerFilterProvider());
-
-            if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
-                try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
-                peerGroup.setMaxConnections(1);
-            }
-            else if (mode == SPVMode.NORMAL) {
-                peerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
-            }
-            else if (mode == SPVMode.ONION) {
-                try {
-                    final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
-                    peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
-                    peerGroup.addPeerFilterProvider(makePeerFilterProvider());
-                } catch (@NonNull final Exception e){
-                    e.printStackTrace();
-                }
-                try {
-                    final Node n = new Node(trusted_addr);
-
-                    final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
-                        @NonNull
-                        public InetSocketAddress toSocketAddress() {
-                            return InetSocketAddress.createUnresolved(n.addr, n.port);
-                        }
-                    };
-                    peerGroup.addAddress(OnionAddr);
-                    peerGroup.setMaxConnections(1);
-                } catch (@NonNull final Exception e){
-                    e.printStackTrace();
-                }
-            }
-            else {
-                peerGroup.setMaxConnections(1);
-                final Node n = new Node(trusted_addr);
-                try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
-                } catch (@NonNull final UnknownHostException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        } catch (@NonNull final BlockStoreException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public synchronized void stopSPVSync(){
-
-        final Intent i = new Intent("PEERGROUP_UPDATED");
-        i.putExtra("peergroup", "stopSPVSync");
-        sendBroadcast(i);
-
-        if (peerGroup != null && peerGroup.isRunning()) {
-            peerGroup.stop();
-
-        }
-        isSpvSyncing = false;
-        syncStarted = false;
-    }
-
-    public synchronized void tearDownSPV(){
-        if (blockChain != null) {
-            if (blockChainListener != null) {
-                blockChain.removeListener(blockChainListener);
-                blockChainListener = null;
-            }
-        }
-        if (peerGroup != null) {
-            if (pfProvider != null) {
-                peerGroup.removePeerFilterProvider(pfProvider);
-                pfProvider = null;
-            }
-            peerGroup = null;
-        }
-        if (blockStore != null) {
-            try {
-                blockStore.close();
-                blockStore = null;
-            } catch (@NonNull final BlockStoreException x) {
-                throw new RuntimeException(x);
-            }
-        }
-    }
-
-    @Nullable
-    private BlockChainListener makeBlockChainListener() {
-        blockChainListener = new BlockChainListener() {
-            @Override
-            public void notifyNewBestBlock(final StoredBlock block) throws VerificationException {
-
-            }
-
-            @Override
-            public void reorganize(final StoredBlock splitPoint, final List<StoredBlock> oldBlocks, final List<StoredBlock> newBlocks) throws VerificationException {
-
-            }
-
-            @Override
-            public boolean isTransactionRelevant(@NonNull final Transaction tx) throws ScriptException {
-                return unspentOutputsOutpoints.keySet().contains(tx.getHash());
-            }
-
-            @Override
-            public void receiveFromBlock(@NonNull final Transaction tx, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
-                // FIXME: later spent outputs can be purged
-                final SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_" + receivingId, MODE_PRIVATE);
-                final SharedPreferences.Editor editor = verified_utxo.edit();
-                editor.putBoolean(tx.getHash().toString(), true);
-                editor.apply();
-                addUtxoToValues(tx.getHash());
-                newTxVerifiedObservable.setChanged();
-                newTxVerifiedObservable.notifyObservers();
-            }
-
-            @Override
-            public boolean notifyTransactionIsInBlock(@NonNull final Sha256Hash txHash, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
-                // FIXME: later spent outputs can be purged
-                final SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_" + receivingId, MODE_PRIVATE);
-                final SharedPreferences.Editor editor = verified_utxo.edit();
-                editor.putBoolean(txHash.toString(), true);
-                editor.apply();
-                addUtxoToValues(txHash);
-                newTxVerifiedObservable.setChanged();
-                newTxVerifiedObservable.notifyObservers();
-                return unspentOutputsOutpoints.keySet().contains(txHash);
-            }
-        };
-        return blockChainListener;
-    }
-
-    private void addUtxoToValues(final TransactionOutPoint txOutpoint, final int subaccount, final Coin addValue) {
-        if (countedUtxoValues.keySet().contains(txOutpoint)) return;
-        countedUtxoValues.put(txOutpoint, addValue);
-        if (verifiedBalancesCoin.get(subaccount) == null) {
-            verifiedBalancesCoin.put(subaccount, addValue);
-        } else {
-            verifiedBalancesCoin.put(subaccount,
-                    verifiedBalancesCoin.get(subaccount).add(addValue));
-        }
-
-    }
-
-    private void addUtxoToValues(@NonNull final Sha256Hash txHash) {
-        final String txHashStr = txHash.toString();
-        final List<Integer> changedSubaccounts = new ArrayList<>();
-        boolean missing = false;
-        for (final Integer outpoint : unspentOutputsOutpoints.get(txHash)) {
-            final String outPointStr = txHashStr + ":" + outpoint;
-            if (getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).getLong(outPointStr, -1) != -1) {
-                final long value = getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).getLong(outPointStr, -1);
-                final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
-                final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
-                if (!countedUtxoValues.keySet().contains(txOutpoint))
-                    changedSubaccounts.add(subaccount);
-                addUtxoToValues(txOutpoint, subaccount, Coin.valueOf(value));
-            } else {
-                missing = true;
-            }
-        }
-        for (final Integer subaccount : changedSubaccounts) {
-            fireBalanceChanged(subaccount);
-        }
-        if (!missing) return;
-        Futures.addCallback(client.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
-            @Override
-            public void onSuccess(@Nullable final Transaction result) {
-                final List<Integer> changedSubaccounts = new ArrayList<>();
-                final List<ListenableFuture<Boolean>> futuresList = new ArrayList<>();
-                if (result.getHash().equals(txHash)) {
-                    for (final Integer outpoint : unspentOutputsOutpoints.get(txHash)) {
-                        final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
-                        if (countedUtxoValues.keySet().contains(txOutpoint))
-                            continue;
-                        final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
-                        final Integer pointer = unspentOutpointsPointers.get(txOutpoint);
-
-                        futuresList.add(Futures.transform(verifySpendableBy(result.getOutput(outpoint), subaccount, pointer), new Function<Boolean, Boolean>() {
-                            @Nullable
-                            @Override
-                            public Boolean apply(final @Nullable Boolean input) {
-                                if (input) {
-                                    final Coin coinValue = result.getOutput(outpoint).getValue();
-                                    addUtxoToValues(txOutpoint, subaccount, coinValue);
-                                    changedSubaccounts.add(subaccount);
-                                    final SharedPreferences.Editor e = getSharedPreferences("verified_utxo_spendable_value_" + receivingId, MODE_PRIVATE).edit();
-                                    e.putLong(txHashStr + ":" + outpoint, coinValue.longValue());
-                                    e.apply();
-                                } else {
-                                    Log.e(TAG,
-                                            new Formatter().format("txHash %s outpoint %s not spendable!",
-                                                    txHash.toString(), outpoint.toString()).toString());
-                                }
-                                return input;
-                            }
-                        }));
-                    }
-                } else {
-                    Log.e(TAG,
-                            new Formatter().format("txHash mismatch: expected %s != %s received",
-                                    txHash.toString(), result.getHash().toString()).toString());
-                }
-                Futures.addCallback(Futures.allAsList(futuresList), new FutureCallback<List<Boolean>>() {
-                    @Override
-                    public void onSuccess(final @Nullable List<Boolean> result) {
-                        for (final Integer subaccount : changedSubaccounts) {
-                            fireBalanceChanged(subaccount);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-                t.printStackTrace();
-            }
-        });
     }
 
     @NonNull
@@ -1006,8 +466,8 @@ public class GaService extends Service {
 
     public void disconnect(final boolean reconnect) {
         this.reconnect = reconnect;
-        stopSPVSync();
-        tearDownSPV();
+        spv.stopSPVSync();
+        spv.tearDownSPV();
         for (final Integer key : balanceObservables.keySet()) {
             balanceObservables.get(key).deleteObservers();
         }
@@ -1072,47 +532,6 @@ public class GaService extends Service {
         return client.getMyTransactions(subaccount);
     }
 
-    private void addToBloomFilter(@Nullable final Integer blockHeight, @Nullable final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
-        if (blockChain == null) return; // can happen before login (onNewBlock)
-        if (txhash != null) {
-            addToUtxo(txhash, pt_idx, subaccount, pointer);
-        }
-        if (blockHeight != null && blockHeight <= blockChain.getBestChainHeight() &&
-                (txhash == null || !unspentOutputsOutpoints.keySet().contains(txhash))) {
-            // new tx or block notification with blockHeight <= current blockHeight means we might've [1]
-            // synced the height already while we haven't seen the tx, so we need to re-sync to be able
-            // to verify it.
-            // [1] - "might've" in case of txhash == null (block height notification),
-            //       because it depends on the order of notifications
-            //     - "must've" in case of txhash != null, because this means the tx arrived only after
-            //       requesting it manually and we already had higher blockHeight
-            //
-            // We do it using the special case in bitcoinj for VM crashed because of
-            // a transaction received.
-            final Wallet fakeWallet = new Wallet(Network.NETWORK) {
-                @Override
-                public int getLastBlockSeenHeight() {
-                    return blockHeight - 1;
-                }
-            };
-            blockChain.addWallet(fakeWallet);
-            blockChain.removeWallet(fakeWallet);  // can be removed, because the call above
-            // should rollback already
-        }
-    }
-
-    private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
-        unspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subaccount);
-        unspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
-        if (unspentOutputsOutpoints.get(txhash) == null) {
-            final ArrayList<Integer> newList = new ArrayList<>();
-            newList.add(pt_idx);
-            unspentOutputsOutpoints.put(txhash, newList);
-        } else {
-            unspentOutputsOutpoints.get(txhash).add(pt_idx);
-        }
-    }
-
     @NonNull
     public ListenableFuture<PinData> setPin(@NonNull final byte[] seed, final String mnemonic, final String pin, final String device_name) {
         return client.setPin(seed, mnemonic, pin, device_name);
@@ -1121,7 +540,7 @@ public class GaService extends Service {
     private void addRequestForRawTxsIfNecessary(@NonNull final Map<String, Object> privateData) {
         final int subaccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
-        final Coin verifiedBalance = getVerifiedBalanceCoin(subaccount);
+        final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subaccount);
         if (!getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true) ||  verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) || client.getHdWallet().requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
@@ -1304,12 +723,20 @@ public class GaService extends Service {
         return newTxVerifiedObservable;
     }
 
-    public Coin getBalanceCoin(final int subaccount) {
-        return balancesCoin.get(subaccount);
+
+    void notifyObservers(final Sha256Hash tx) {
+        // FIXME: later spent outputs can be purged
+        final SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_" + getReceivingId(), MODE_PRIVATE);
+        final SharedPreferences.Editor editor = verified_utxo.edit();
+        editor.putBoolean(tx.toString(), true);
+        editor.apply();
+        spv.addUtxoToValues(tx);
+        newTxVerifiedObservable.setChanged();
+        newTxVerifiedObservable.notifyObservers();
     }
 
-    public Coin getVerifiedBalanceCoin(final int subaccount) {
-        return verifiedBalancesCoin.get(subaccount);
+    public Coin getBalanceCoin(final int subaccount) {
+        return balancesCoin.get(subaccount);
     }
 
     public Fiat getBalanceFiat(final int subaccount) {
@@ -1385,104 +812,6 @@ public class GaService extends Service {
         return receivingId;
     }
 
-    public int getSpvBlocksLeft() {
-        if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
-            return spvBlocksLeft;
-        } else {
-            return 0;
-        }
-    }
-
-    @NonNull
-    public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(@NonNull final PreparedTransaction transaction, @NonNull final String recipientStr, @NonNull final Coin amount) {
-        Address recipientNonFinal = null;
-        try {
-            recipientNonFinal = new Address(Network.NETWORK, recipientStr);
-        } catch (@NonNull final AddressFormatException e) {
-        }
-        final Address recipient = recipientNonFinal;
-
-        // 1. Find the change output:
-        ListenableFuture<List<Boolean>> changeFuture;
-        if (transaction.decoded.getOutputs().size() > 1) {
-            if (transaction.decoded.getOutputs().size() != 2) {
-                throw new IllegalArgumentException("Verification: Wrong number of transaction outputs.");
-            }
-            final List<ListenableFuture<Boolean>> changeVerifications = new ArrayList<>();
-            changeVerifications.add(
-                    verifySpendableBy(transaction.decoded.getOutputs().get(0), transaction.subaccount_pointer, transaction.change_pointer));
-            changeVerifications.add(
-                    verifySpendableBy(transaction.decoded.getOutputs().get(1), transaction.subaccount_pointer, transaction.change_pointer));
-            changeFuture = Futures.allAsList(changeVerifications);
-        } else {
-            changeFuture = Futures.immediateFuture(null);
-        }
-
-        // 2. Verify the main output value and address, if available:
-        return Futures.transform(changeFuture, new Function<List<Boolean>, Coin>() {
-            @Nullable
-            @Override
-            public Coin apply(final @Nullable List<Boolean> input) {
-                int changeIdx;
-                if (input == null) {
-                    changeIdx = -1;
-                } else if (input.get(0)) {
-                    changeIdx = 0;
-                } else if (input.get(1)) {
-                    changeIdx = 1;
-                } else {
-                    throw new IllegalArgumentException("Verification: Change output missing.");
-                }
-                if (input != null && input.get(0) && input.get(1)) {
-                    // Shouldn't happen really. In theory user can send money to a new change address
-                    // of themselves which they've generated manually, but it's unlikely, so for
-                    // simplicity we don't handle it.
-                    throw new IllegalArgumentException("Verification: Cannot send to a change address.");
-                }
-                final TransactionOutput output = transaction.decoded.getOutputs().get(1 - Math.abs(changeIdx));
-                if (recipient != null) {
-                    final Address gotAddress = output.getScriptPubKey().getToAddress(Network.NETWORK);
-                    if (!gotAddress.equals(recipient)) {
-                        throw new IllegalArgumentException("Verification: Invalid recipient address.");
-                    }
-                }
-                if (amount != null && !output.getValue().equals(amount)) {
-                    throw new IllegalArgumentException("Verification: Invalid output amount.");
-                }
-
-                // 3. Verify fee value:
-                Coin inValue = Coin.ZERO, outValue = Coin.ZERO;
-                for (final TransactionInput in : transaction.decoded.getInputs()) {
-                    if (countedUtxoValues.get(in.getOutpoint()) == null) {
-                        final Transaction prevTx = transaction.prevoutRawTxs.get(in.getOutpoint().getHash().toString());
-                        if (!prevTx.getHash().equals(in.getOutpoint().getHash())) {
-                            throw new IllegalArgumentException("Verification: Prev tx hash invalid");
-                        }
-                        inValue = inValue.add(prevTx.getOutput((int) in.getOutpoint().getIndex()).getValue());
-                    } else {
-                        inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
-                    }
-                }
-                for (final TransactionOutput out : transaction.decoded.getOutputs()) {
-                    outValue = outValue.add(out.getValue());
-                }
-                final Coin fee = inValue.subtract(outValue);
-                if (fee.compareTo(Coin.valueOf(1000)) == -1) {
-                    throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi).");
-                }
-                final int kBfee = (int) (500000.0 * ((double) transaction.decoded.getMessageSize()) / 1000.0);
-                if (fee.compareTo(Coin.valueOf(kBfee)) == 1) {
-                    throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB).");
-                }
-                if (amount == null) {
-                    return output.getValue();
-                } else {
-                    return fee;
-                }
-            }
-        });
-    }
-
     @NonNull
     public ListenableFuture<Boolean> initEnableTwoFac(@NonNull final String type, @NonNull final String details, @NonNull final Map<?, ?> twoFacData) {
         return client.initEnableTwoFac(type, details, twoFacData);
@@ -1549,11 +878,6 @@ public class GaService extends Service {
         }
     }
 
-    @Nullable
-    public PeerGroup getPeerGroup(){
-        return this.peerGroup;
-    }
-    
     public int getCurBlock(){
         return curBlock;
     }
@@ -1563,10 +887,14 @@ public class GaService extends Service {
     }
 
     public boolean getSpvWiFiDialogShown(){
-        return spvWiFiDialogShown;
+        return spv.spvWiFiDialogShown;
     }
 
     public void setSpvWiFiDialogShown(final boolean shown){
-        spvWiFiDialogShown = shown;
+        spv.spvWiFiDialogShown = shown;
+    }
+
+    Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
+        return spv.unspentOutputsOutpoints;
     }
 }
