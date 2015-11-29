@@ -42,6 +42,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.QrBitmap;
 
 import org.bitcoinj.crypto.MnemonicException;
@@ -90,23 +91,37 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
         final TextView qrCodeIcon = (TextView) findViewById(R.id.signupQrCodeIcon);
         final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
-        final ListenableFuture<String> mnemonicPassphrase = getGAService().getMnemonicPassphrase();
-        Futures.addCallback(mnemonicPassphrase, new FutureCallback<String>() {
+
+        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
+
             @Override
-            public void onSuccess(@Nullable final String result) {
-                SignUpActivity.this.runOnUiThread(new Runnable() {
+            public void onSuccess(@javax.annotation.Nullable final Void result) {
+                final ListenableFuture<String> mnemonicPassphrase = getGAService().getMnemonicPassphrase();
+                Futures.addCallback(mnemonicPassphrase, new FutureCallback<String>() {
                     @Override
-                    public void run() {
-                        mnemonicText.setText(result);
+                    public void onSuccess(@Nullable final String result) {
+                        SignUpActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mnemonicText.setText(result);
+                            }
+                        });
                     }
-                });
+
+                    @Override
+                    public void onFailure(@NonNull final Throwable t) {
+                        finish();
+                    }
+                }, getGAService().es);
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
-
+            public void onFailure(final Throwable t) {
+                finish();
             }
-        }, getGAService().es);
+        });
+
+
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
@@ -152,8 +167,6 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             }
         });
 
-        final GaService gaService = getGAService();
-
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
@@ -161,13 +174,13 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                     if (getGAService().onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
-                        onSignUp = Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                        onSignUp = Futures.transform(getGAService().onConnected, new AsyncFunction<Void, LoginData>() {
                             @NonNull
                             @Override
                             public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
-                                return gaService.signup(mnemonicText.getText().toString());
+                                return getGAService().signup(mnemonicText.getText().toString());
                             }
-                        }, gaService.es);
+                        }, getGAService().es);
                     } else {
                         if (isChecked) {
                             SignUpActivity.this.runOnUiThread(new Runnable() {
@@ -203,7 +216,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
                             final Intent pinSaveActivity = new Intent(SignUpActivity.this, PinSaveActivity.class);
 
-                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
+                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", getGAService().getMnemonics());
                             getGAService().resetSignUp();
                             onSignUp = null;
                             finish();

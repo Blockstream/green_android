@@ -286,7 +286,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             	// And finally login
             	final BTChipPublicKey masterPublicKeyFixed = masterPublicKey;
             	final BTChipPublicKey loginPublicKeyFixed = loginPublicKey;
-                Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
+                Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(final @Nullable Void result) {
                         final GaService gaService = getGAService();

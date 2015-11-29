@@ -178,7 +178,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
 
     private void login() {
-        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
+        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final @Nullable Void result) {
                 loginAfterServiceConnected();

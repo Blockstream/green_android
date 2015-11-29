@@ -32,7 +32,7 @@ import java.util.Observer;
 public class GreenAddressApplication extends MultiDexApplication {
 
     public GaService gaService;
-    @NonNull public final SettableFuture<Void> onServiceConnected = SettableFuture.create();
+    @NonNull public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
     private boolean mBound = false;
     @Nullable
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
@@ -46,14 +46,14 @@ public class GreenAddressApplication extends MultiDexApplication {
             gaService = binder.gaService;
             mBound = true;
             connectionObservable.setService(gaService);
-            onServiceConnected.set(null);
+            onServiceAttached.set(null);
         }
 
         @Override
         public void onServiceDisconnected(@NonNull final ComponentName arg0) {
             mBound = false;
             connectionObservable = null;
-            onServiceConnected.setException(new GAException(arg0.toString()));
+            onServiceAttached.setException(new GAException(arg0.toString()));
         }
     };
 

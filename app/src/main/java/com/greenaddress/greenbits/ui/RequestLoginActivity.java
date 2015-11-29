@@ -191,7 +191,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                     instructions.setText(getResources().getString(R.string.firstLoginRequestedInstructionsOldTrezor));
                     return;
                 }
-                Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
+                Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(@Nullable Void result) {
                         final GaService gaService = getGAService();
@@ -326,7 +326,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                 btchipDialog.show();
             }
         });
-        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
+        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final @Nullable Void result) {
                 final GaService gaService = getGAService();

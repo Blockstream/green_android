@@ -59,7 +59,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
 
 
     private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final String pinText, @NonNull final TextView pinError) {
-        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
+        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final @Nullable Void result) {
                 loginAfterServiceConnected(pinLoginButton, ident, pinText, pinError);
@@ -237,7 +237,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
                     @Override
                     public void onSuccess(@Nullable final Void result) {
 
-                        Futures.addCallback(getGAApp().onServiceConnected, new FutureCallback<Void>() {
+                        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
                             @Override
                             public void onSuccess(final @Nullable Void result) {
                                 final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();

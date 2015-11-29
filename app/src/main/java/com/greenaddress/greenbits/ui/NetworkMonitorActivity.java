@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.SPV;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.FilteredBlock;
@@ -36,7 +37,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
 {
 
     @NonNull
-    private ArrayList<PrettyPeer> peerList = new ArrayList<>();
+    private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> peerListAdapter;
     private String bloominfo = "";
     @Nullable
@@ -49,7 +50,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
 
         setContentView(R.layout.activity_network);
 
-        ListView view = (ListView) findViewById(R.id.peerlistview);
+        final ListView view = (ListView) findViewById(R.id.peerlistview);
 
         view.setEmptyView(findViewById(R.id.empty_list_view));
     }
@@ -59,7 +60,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         super.onPause();
 
         unregisterReceiver(uiUpdated);
-        PeerGroup peerGroup = getGAService().spv.getPeerGroup();
+        final PeerGroup peerGroup = getGAService().spv.getPeerGroup();
         if (peerGroup != null && peerListener != null) {
             peerGroup.removeEventListener(peerListener);
         }
@@ -75,43 +76,51 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
 
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
-        peerList = new ArrayList<>();
-        PeerGroup peerGroup = getGAService().spv.getPeerGroup();
+        peerList.clear();
+        final GaService gaService = getGAService();
+        final SPV spv = gaService.spv;
+
+        final PeerGroup peerGroup = spv.getPeerGroup();
         if (peerGroup != null && peerGroup.isRunning()) {
 
-            for (Peer peer : peerGroup.getConnectedPeers()) {
+            for (final Peer peer : peerGroup.getConnectedPeers()) {
                 peerList.add(new PrettyPeer(peer));
             }
 
+            final TextView tview = (TextView) findViewById(R.id.bloominfo);
+
             if (peerList.size() > 0) {
                 bloominfo = peerList.get(0).peer.getBloomFilter().toString();
-                TextView tview = (TextView) findViewById(R.id.bloominfo);
-                tview.setText(bloominfo);
+            } else {
+                bloominfo = "No bloom info available.";
             }
+
+            tview.setText(String.format("%s Blocks left %s", bloominfo, gaService.getCurBlock() - spv.getSpvHeight() ));
+
 
             peerListAdapter =
                     new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peerList);
-            ListView view = (ListView) findViewById(R.id.peerlistview);
+            final ListView view = (ListView) findViewById(R.id.peerlistview);
             view.setAdapter(peerListAdapter);
 
             peerListener = new PeerEventListener() {
                 @Override
-                public void onPeersDiscovered(Set<PeerAddress> peerAddresses) {
+                public void onPeersDiscovered(final Set<PeerAddress> peerAddresses) {
 
                 }
 
                 @Override
-                public void onBlocksDownloaded(Peer peer, Block block, @Nullable FilteredBlock filteredBlock, int blocksLeft) {
+                public void onBlocksDownloaded(final Peer peer, final Block block, final @Nullable FilteredBlock filteredBlock, final int blocksLeft) {
 
                 }
 
                 @Override
-                public void onChainDownloadStarted(Peer peer, int blocksLeft) {
+                public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
 
                 }
 
                 @Override
-                public synchronized void onPeerConnected(@NonNull final Peer peer, int peerCount) {
+                public synchronized void onPeerConnected(@NonNull final Peer peer, final int peerCount) {
                     final PrettyPeer new_ppeer = new PrettyPeer(peer);
 
 
@@ -122,7 +131,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
                             peerListAdapter.notifyDataSetChanged();
 
                             bloominfo = peer.getBloomFilter().toString();
-                            TextView tview = (TextView) findViewById(R.id.bloominfo);
+                            final TextView tview = (TextView) findViewById(R.id.bloominfo);
                             tview.setText(bloominfo);
                         }
                     });
@@ -133,9 +142,9 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            PrettyPeer new_ppeer = new PrettyPeer(peer);
+                            final PrettyPeer new_ppeer = new PrettyPeer(peer);
                             for (Iterator<PrettyPeer> it = peerList.iterator(); it.hasNext(); ) {
-                                PrettyPeer ppeer = it.next();
+                                final PrettyPeer ppeer = it.next();
                                 if (new_ppeer.peer == ppeer.peer) {
                                     it.remove();
                                 }
@@ -147,18 +156,18 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
 
                 @Nullable
                 @Override
-                public Message onPreMessageReceived(Peer peer, Message m) {
+                public Message onPreMessageReceived(final Peer peer, final Message m) {
                     return null;
                 }
 
                 @Override
-                public void onTransaction(Peer peer, org.bitcoinj.core.Transaction t) {
+                public void onTransaction(final Peer peer, final org.bitcoinj.core.Transaction t) {
 
                 }
 
                 @Nullable
                 @Override
-                public List<Message> getData(Peer peer, GetDataMessage m) {
+                public List<Message> getData(final Peer peer, final GetDataMessage m) {
                     return null;
                 }
             };
@@ -211,7 +220,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         }
     };
 
-    private class PrettyPeer{
+    private class PrettyPeer {
         final Peer peer;
         public PrettyPeer(final Peer peer) {
             this.peer = peer;
@@ -220,7 +229,7 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         @NonNull
         public String toString(){
             String ipAddr = peer.toString();
-            if(ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")){
+            if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
                 ipAddr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "Trusted Onion");
                 final Node n = new Node(ipAddr);
                 ipAddr = n.toString();

@@ -503,10 +503,8 @@ public class MainFragment extends GAFragment implements Observer {
                             mainEmptyTransText.setVisibility(View.VISIBLE);
                         }
 
-                        String oldFirstTxHash = null;
-                        if (currentList.size() > 0) {
-                            oldFirstTxHash = currentList.get(0).txhash;
-                        }
+                        final String oldFirstTxHash = currentList.size() > 0? currentList.get(0).txhash : null;
+
                         currentList.clear();
                         for (int i = 0; i < resultList.size(); ++i) {
                             try {
