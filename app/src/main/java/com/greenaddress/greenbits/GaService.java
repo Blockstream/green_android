@@ -564,7 +564,7 @@ public class GaService extends Service {
     }
 
     @NonNull
-    public ListenableFuture<String> signAndSendTransaction(@NonNull final PreparedTransaction prepared, @NonNull final Object twoFacData) {
+    public ListenableFuture<String> signAndSendTransaction(@NonNull final PreparedTransaction prepared, final Object twoFacData) {
         return Futures.transform(client.signTransaction(prepared, false), new AsyncFunction<List<String>, String>() {
             @NonNull
             @Override
@@ -575,7 +575,7 @@ public class GaService extends Service {
     }
 
     @NonNull
-    public ListenableFuture<String> sendTransaction(@NonNull final List<TransactionSignature> signatures, @NonNull final Object twoFacData) {
+    public ListenableFuture<String> sendTransaction(@NonNull final List<TransactionSignature> signatures, final Object twoFacData) {
         final List<String> signaturesStrings = new LinkedList<>();
         for (final TransactionSignature sig : signatures) {
             signaturesStrings.add(new String(Hex.encode(sig.encodeToBitcoin())));

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,8 +30,6 @@ import org.bitcoinj.crypto.MnemonicCode;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.annotation.Nullable;
 
 public class PinSaveActivity extends ActionBarActivity implements Observer {
 
@@ -147,12 +147,12 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         pinSaveText.setOnEditorActionListener(
                 new EditText.OnEditorActionListener() {
                     @Override
-                    public boolean onEditorAction(final TextView v, final int actionId, @NonNull final KeyEvent event) {
+                    public boolean onEditorAction(final TextView v, final int actionId, @Nullable final KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                 actionId == EditorInfo.IME_ACTION_DONE ||
-                                event.getAction() == KeyEvent.ACTION_DOWN &&
+                                (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            if (!event.isShiftPressed()) {
+                            if (event != null && !event.isShiftPressed()) {
                                 // the user is done typing.
                                 setPin(pinSaveText.getText().toString());
                                 return true; // consume.

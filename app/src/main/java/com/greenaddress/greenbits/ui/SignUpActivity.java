@@ -41,8 +41,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.QrBitmap;
 
 import org.bitcoinj.crypto.MnemonicException;
@@ -116,7 +114,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
             }
 
             @Override
-            public void onFailure(final Throwable t) {
+            public void onFailure(@NonNull final Throwable t) {
                 finish();
             }
         });

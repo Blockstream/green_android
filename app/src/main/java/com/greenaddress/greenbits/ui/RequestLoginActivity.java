@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -300,17 +301,18 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
 
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
                 pinValue.requestFocus();
-                btchipDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-                btchipDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                final Window btchipWindow = btchipDialog.getWindow();
+                btchipWindow.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                btchipWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 pinValue.setOnEditorActionListener(
                         new EditText.OnEditorActionListener() {
                             @Override
-                            public boolean onEditorAction(final TextView v, final int actionId, @NonNull final KeyEvent event) {
+                            public boolean onEditorAction(final TextView v, final int actionId, @Nullable final KeyEvent event) {
                                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                         actionId == EditorInfo.IME_ACTION_DONE ||
-                                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                                        (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
                                                 event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                                    if (!event.isShiftPressed()) {
+                                    if (event != null && !event.isShiftPressed()) {
                                         // the user is done typing.
                                         final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
                                         prog.setVisibility(View.VISIBLE);
@@ -491,7 +493,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
     private GaService getGAService() {
         return getGAApp().gaService;
     }
-    
+
     @Nullable
     private BTChipTransport getTransport(@Nullable final Tag t) {
     	BTChipTransport transport = null;

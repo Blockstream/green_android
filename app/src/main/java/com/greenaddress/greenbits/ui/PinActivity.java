@@ -174,12 +174,12 @@ public class PinActivity extends ActionBarActivity implements Observer {
             pinText.setOnEditorActionListener(
                     new EditText.OnEditorActionListener() {
                         @Override
-                        public boolean onEditorAction(final TextView v, final int actionId, @NonNull final KeyEvent event) {
+                        public boolean onEditorAction(final TextView v, final int actionId, @Nullable final KeyEvent event) {
                             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                     actionId == EditorInfo.IME_ACTION_DONE ||
-                                    event.getAction() == KeyEvent.ACTION_DOWN &&
+                                    (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
                                             event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                                if (!event.isShiftPressed()) {
+                                if (event != null && !event.isShiftPressed()) {
                                     // the user is done typing.
                                     if (!pinText.getText().toString().isEmpty()) {
                                         login(pinLoginButton, ident, pinText.getText().toString(), pinError);
