@@ -150,7 +150,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                                     mnemonicDialog.setContentView(inflatedLayout);
                                 }
                                 mnemonicDialog.show();
-                                BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                                final BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
                                 bd.setFilterBitmap(false);
                                 qrcodeMnemonic.setImageDrawable(bd);
                             }

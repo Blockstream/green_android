@@ -18,7 +18,4 @@
         android:id="@+id/bitcoinScaleBits"
         android:orderInCategory="80"
         android:title="@string/bitcoinScaleBitsText" />
-    <!--<item android:id="@+id/bitcoinScaleSatoshi"-->
-    <!--android:title="@string/bitcoinScaleSatoshiText"-->
-    <!--android:orderInCategory="70" />-->
 </menu>

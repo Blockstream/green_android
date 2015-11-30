@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits.ui;
+package com.greenaddress.greenbits.ui.monitor;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +15,9 @@ import android.widget.TextView;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.SPV;
+import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.ui.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.FilteredBlock;

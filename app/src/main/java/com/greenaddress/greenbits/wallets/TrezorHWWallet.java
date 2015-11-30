@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits.ui;
+package com.greenaddress.greenbits.wallets;
 
 import android.support.annotation.NonNull;
 
@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
-class TrezorHWWallet implements ISigningWallet {
+public class TrezorHWWallet implements ISigningWallet {
 
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final Trezor trezor;

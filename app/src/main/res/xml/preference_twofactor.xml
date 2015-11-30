@@ -1,18 +1,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <CheckBoxPreference android:key="twoFacWarning"
-        android:title="@string/hideTwoFacWarning" />
+                        android:title="@string/hideTwoFacWarning"/>
 
     <CheckBoxPreference android:key="twoFacEmail"
-        android:title="@string/twoFacEmail" />
+                        android:title="@string/twoFacEmail"/>
 
     <CheckBoxPreference android:key="twoFacGauth"
-        android:title="@string/twoFacGauth" />
+                        android:title="@string/twoFacGauth"/>
 
     <CheckBoxPreference android:key="twoFacSMS"
-        android:title="@string/twoFacSMS" />
+                        android:title="@string/twoFacSMS"/>
 
     <CheckBoxPreference android:key="twoFacPhone"
-        android:title="@string/twoFacPhoneCall" />
+                        android:title="@string/twoFacPhoneCall"/>
 
 </PreferenceScreen>

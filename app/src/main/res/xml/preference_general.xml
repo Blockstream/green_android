@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference android:key="mnemonic_passphrase"
+                android:title="@string/mnemonic_passphrase"
+                android:defaultValue=""
+                android:summary="@string/mnemonic_passphrase_not_available"/>
+
+    <EditTextPreference android:key="altime"
+                        android:title="@string/autologout_time"
+                        android:inputType="number"
+                        android:hint="5"/>
+
+    <Preference android:key="ledger_wallet"
+                android:title="@string/improve_security_ledger"
+                android:dependency=""
+                android:summary="@string/improve_security_ledger_detail" >
+        <intent android:action="android.intent.action.VIEW" android:data="https://www.ledgerwallet.com/r/bead"/>
+    </Preference>
+
+</PreferenceScreen>

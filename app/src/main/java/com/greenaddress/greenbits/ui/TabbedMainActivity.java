@@ -33,6 +33,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
+import com.greenaddress.greenbits.ui.monitor.NetworkMonitorActivity;
+import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
 
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;

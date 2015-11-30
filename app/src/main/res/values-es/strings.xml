@@ -88,7 +88,7 @@
     <string name="txMemoText">Memo</string>
 
     <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">GreenBits</string>
+    <string name="SettingsAppName">GreenBits</string>
     <string name="txDateText">Fecha</string>
     <string name="txAmountText">Monto</string>
     <string name="newTxAmount">Monto: </string>
@@ -179,5 +179,6 @@
     <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
     <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
     <string name="useNativeAuthentication">Use Android\'s authentication</string>
+    <string name="genericsettings">Info &amp; settings</string>
 
 </resources>

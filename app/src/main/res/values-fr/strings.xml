@@ -83,7 +83,7 @@
         <item>minutes</item>
         <item>secondes</item>
     </string-array>
-    <string name="pref_header_notifications">Restauration</string>
+    <string name="SettingsAppName">Restauration</string>
     <string name="txSubTitle">Détails transaction</string>
     <string name="txHashText">Hash</string>
     <string name="txRecipientText">Destinataire</string>
@@ -181,5 +181,6 @@
     <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
     <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
     <string name="useNativeAuthentication">Use Android\'s authentication</string>
+    <string name="genericsettings">Info &amp; settings</string>
 
 </resources>

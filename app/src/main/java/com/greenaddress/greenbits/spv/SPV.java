@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits;
+package com.greenaddress.greenbits.spv;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.subgraph.orchid.TorClient;
 
@@ -276,7 +277,7 @@ public class SPV {
         }
     }
 
-    boolean spvWiFiDialogShown = false;
+    public boolean spvWiFiDialogShown = false;
 
     private final GaService gaService;
     @Nullable

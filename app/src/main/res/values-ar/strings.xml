@@ -83,7 +83,7 @@
   <string name="txRecipientText">المستفيد</string>
   <string name="txMemoText">مذكرة</string>
   <!--Example settings for Notifications-->
-  <string name="pref_header_notifications">غرين بيتس</string>
+  <string name="SettingsAppName">غرين بيتس</string>
   <string name="txDateText">التاريخ</string>
   <string name="txAmountText">مبلغ</string>
   <string name="newTxAmount">مبلغ</string>
@@ -173,4 +173,6 @@
   <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
   <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
   <string name="useNativeAuthentication">Use Android\'s authentication</string>
+  <string name="genericsettings">Info &amp; settings</string>
+
 </resources>

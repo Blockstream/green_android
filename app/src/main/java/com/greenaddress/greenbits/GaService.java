@@ -27,7 +27,8 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
-import com.greenaddress.greenbits.ui.BTChipHWWallet;
+import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.Address;
@@ -724,7 +725,7 @@ public class GaService extends Service {
     }
 
 
-    void notifyObservers(final Sha256Hash tx) {
+    public void notifyObservers(final Sha256Hash tx) {
         // FIXME: later spent outputs can be purged
         final SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_" + getReceivingId(), MODE_PRIVATE);
         final SharedPreferences.Editor editor = verified_utxo.edit();
@@ -894,7 +895,7 @@ public class GaService extends Service {
         spv.spvWiFiDialogShown = shown;
     }
 
-    Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
+    public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
         return spv.unspentOutputsOutpoints;
     }
 }

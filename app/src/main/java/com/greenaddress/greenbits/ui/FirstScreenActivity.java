@@ -31,6 +31,7 @@ import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.ledger.tbase.comm.LedgerTransportTEEProxy;
 import com.ledger.tbase.comm.LedgerTransportTEEProxyFactory;
 

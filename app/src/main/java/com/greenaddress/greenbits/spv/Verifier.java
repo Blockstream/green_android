@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits;
+package com.greenaddress.greenbits.spv;
 
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;

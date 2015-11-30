@@ -37,7 +37,6 @@
     <string name="attemptsLeft">%s attempts left</string>
 
 
-
     <string-array name="twoFactorChoices">
         <item>Email</item>
         <item>SMS</item>
@@ -101,7 +100,7 @@
     <string name="action_network">Network monitor</string>
 
     <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">GreenBits</string>
+    <string name="SettingsAppName">GreenBits</string>
     <string name="txDateText">Date</string>
     <string name="txAmountText">Amount</string>
     <string name="newTxAmount">Amount: </string>
@@ -190,5 +189,6 @@
     <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
     <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
     <string name="useNativeAuthentication">Use Android\'s authentication</string>
+    <string name="genericsettings">Info &amp; settings</string>
 
 </resources>

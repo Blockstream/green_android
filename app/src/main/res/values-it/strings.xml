@@ -84,7 +84,7 @@
   <string name="txRecipientText">Destinatario</string>
   <string name="txMemoText">Memo</string>
   <!--Example settings for Notifications-->
-  <string name="pref_header_notifications">GreenBits</string>
+  <string name="SettingsAppName">GreenBits</string>
   <string name="txDateText">Data</string>
   <string name="txAmountText">Importo</string>
   <string name="newTxAmount">Importo: </string>
@@ -175,5 +175,6 @@
   <string name="enterValidAddressTitleTorDisabled">Tor non è attivabile!</string>
   <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) e superiore non supporta la libreria Tor usata (Orchid).</string>
   <string name="useNativeAuthentication">Riusa l\'autenticazione Android</string>
+  <string name="genericsettings">Info &amp; configurazione</string>
 
 </resources>

@@ -1,6 +1,8 @@
-package com.greenaddress.greenbits;
+package com.greenaddress.greenbits.spv;
 
 import android.support.annotation.NonNull;
+
+import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.Sha256Hash;

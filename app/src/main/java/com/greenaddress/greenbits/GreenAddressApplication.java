@@ -22,7 +22,7 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.SettingsActivity;
+import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.Map;
