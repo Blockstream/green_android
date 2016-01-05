@@ -65,7 +65,8 @@
         android:layout_height="wrap_content" />
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/activity_vertical_margin"/>
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:id="@+id/txRecipientMargin"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,7 +97,6 @@
 
         android:textColor="@color/tertiaryTextColor"
         android:layout_width="fill_parent"
-        android:gravity="right"
         android:textIsSelectable="true"
         android:id="@+id/txDateText"
         android:textSize="20sp"
@@ -117,8 +117,7 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right">
+                android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -130,7 +129,6 @@
                     android:id="@+id/txBitcoinUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="right"
                     android:text="&#xf15a; "
                     android:textColor="@color/tertiaryTextColor"
                     android:textSize="20sp"
@@ -148,6 +146,7 @@
 
 
     <View
+        android:id="@+id/txMemoMargin"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/activity_vertical_margin"/>
 
@@ -169,7 +168,8 @@
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/activity_vertical_margin"/>
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:id="@+id/txReceivedOnMargin"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -187,7 +187,45 @@
                 android:id="@+id/txReceivedOnText"
                 android:layout_height="wrap_content" />
 
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/activity_vertical_margin"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="droid"
+                android:id="@+id/txFeeInfoTitle"
+                android:text="@string/txFeeInfo"
+                android:textColor="@color/textColor"
+                android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/txFeeScale"
+                android:textColor="@color/tertiaryTextColor"
+                android:textSize="20sp"
+                />
+            <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                android:id="@+id/txFeeUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&#xf15a; "
+                android:textColor="@color/tertiaryTextColor"
+                android:textSize="20sp"
+                />
+            <TextView android:text="memo"
+                android:textColor="@color/tertiaryTextColor"
+                android:layout_width="wrap_content"
+                android:textIsSelectable="true"
+                android:id="@+id/txFeeInfoText"
+                android:layout_height="wrap_content"
+                android:textSize="20sp" />
+        </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

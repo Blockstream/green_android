@@ -72,6 +72,9 @@ public class MainFragment extends GAFragment implements Observer {
         final Integer blockHeight = txJSON.containsKey("block_height") && txJSON.get("block_height") != null ?
                 (int) txJSON.get("block_height") : null;
 
+        final int size = (int) txJSON.get("size");
+        final long fee = Long.valueOf((String)txJSON.get("fee"));
+
         String counterparty = null;
         long amount = 0;
         Transaction.TYPE type;
@@ -152,7 +155,7 @@ public class MainFragment extends GAFragment implements Observer {
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return new Transaction(type, amount, counterparty,
                 df.parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
-                receivedOn);
+                receivedOn, fee, size);
     }
 
     private void updateBalance() {

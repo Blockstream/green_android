@@ -119,6 +119,10 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
             final TextView unconfirmedText = (TextView) rootView.findViewById(R.id.txUnconfirmedText);
 
+            final TextView feeScale = (TextView) rootView.findViewById(R.id.txFeeScale);
+            final TextView feeUnit = (TextView) rootView.findViewById(R.id.txFeeUnit);
+            final TextView feeInfoText = (TextView) rootView.findViewById(R.id.txFeeInfoText);
+
             hashText.setMovementMethod(LinkMovementMethod.getInstance());
 
             final Transaction t = (Transaction) getActivity().getIntent().getSerializableExtra("TRANSACTION");
@@ -148,10 +152,13 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final Coin coin = Coin.valueOf(t.amount);
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
             bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+            feeScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
             if (btcUnit == null || btcUnit.equals("bits")) {
                 bitcoinUnit.setText("bits ");
+                feeUnit.setText("bits ");
             } else {
                 bitcoinUnit.setText(Html.fromHtml("&#xf15a; "));
+                feeUnit.setText(Html.fromHtml("&#xf15a; "));
             }
             final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
             final DecimalFormat formatter = new DecimalFormat("#,###.########");
@@ -162,12 +169,37 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 amount.setText(btcBalance);
             }
 
+            final Coin fee = Coin.valueOf(t.fee);
+            final Coin feePerKb;
+            if (t.size > 0) {
+                feePerKb = Coin.valueOf(1000 * t.fee / t.size);
+            } else {
+                // shouldn't happen, but just in case let's avoid division by zero
+                feePerKb = Coin.valueOf(0);
+            }
+            final String btcFee = bitcoinFormat.noCode().format(fee).toString();
+            final String btcFeePerKb = bitcoinFormat.noCode().format(feePerKb).toString();
+            String feeInfoTextStr = "";
+            try {
+                feeInfoTextStr += formatter.format(formatter.parse(btcFee));
+            } catch (@NonNull final ParseException e) {
+                feeInfoTextStr += btcFee;
+            }
+            feeInfoTextStr += " / " + String.valueOf(t.size) + " / ";
+            try {
+                feeInfoTextStr += formatter.format(formatter.parse(btcFeePerKb));
+            } catch (@NonNull final ParseException e) {
+                feeInfoTextStr += btcFeePerKb;
+            }
+            feeInfoText.setText(feeInfoTextStr);
+
             dateText.setText(SimpleDateFormat.getInstance().format(t.date));
             if (t.memo != null && t.memo.length() > 0) {
                 memoText.setText(t.memo);
             } else {
                 memoText.setVisibility(View.GONE);
                 memoTitle.setVisibility(View.GONE);
+                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
             }
 
             if (t.counterparty != null && t.counterparty.length() > 0) {
@@ -175,6 +207,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             } else {
                 recipientText.setVisibility(View.GONE);
                 recipientTitle.setVisibility(View.GONE);
+                rootView.findViewById(R.id.txRecipientMargin).setVisibility(View.GONE);
             }
 
             if (t.receivedOn != null && t.receivedOn.length() > 0) {
@@ -182,6 +215,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             } else {
                 receivedOnText.setVisibility(View.GONE);
                 receivedOnTitle.setVisibility(View.GONE);
+                rootView.findViewById(R.id.txReceivedOnMargin).setVisibility(View.GONE);
             }
 
             return rootView;

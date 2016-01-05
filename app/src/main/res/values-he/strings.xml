@@ -182,6 +182,7 @@
     <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
     <string name="useNativeAuthentication">Use Android\'s authentication</string>
     <string name="genericsettings">Info &amp; settings</string>
+    <string name="txFeeInfo">Fee / Size (bytes) / Fee per kB</string>
 
 </resources>
 
