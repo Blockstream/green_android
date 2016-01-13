@@ -152,7 +152,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                                 actionId == EditorInfo.IME_ACTION_DONE ||
                                 (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            if (event != null && !event.isShiftPressed()) {
+                            if (event == null || !event.isShiftPressed()) {
                                 // the user is done typing.
                                 setPin(pinSaveText.getText().toString());
                                 return true; // consume.
