@@ -56,22 +56,10 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
                 // delete all spv data
 
-                final File blockChainFile = new File(gaService.getDir("blockstore_" + gaService.getReceivingId(), Context.MODE_PRIVATE), "blockchain.spvchain");
-                if (blockChainFile.exists()) {
-                    blockChainFile.delete();
-                }
-
-                try {
-                    gaService.getSharedPreferences("verified_utxo_spendable_value_"
-                            + gaService.getReceivingId(), Context.MODE_PRIVATE).edit().clear().commit();
-                    gaService.getSharedPreferences("verified_utxo_"
-                            + gaService.getReceivingId(), Context.MODE_PRIVATE).edit().clear().commit();
-                } catch (final NullPointerException e) {
-                    // ignore
-                }
+                gaService.spv.resetSpv();
 
                 // restart spv if it was enabled
-                
+
                 if (spvPreferences.getBoolean("enabled", true)) {
                     gaService.spv.setUpSPV();
                     if (gaService.getCurBlock() - gaService.spv.getSpvHeight() > 1000) {

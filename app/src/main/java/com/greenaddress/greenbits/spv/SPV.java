@@ -57,7 +57,7 @@ import java.util.Set;
 
 public class SPV {
 
-    private Map<TransactionOutPoint, Coin> countedUtxoValues;
+    private final Map<TransactionOutPoint, Coin> countedUtxoValues = new HashMap<>();
 
     public void startIfEnabled() {
         isSpvSyncing = false;
@@ -84,8 +84,28 @@ public class SPV {
 
     }
 
+    public void resetSpv() {
+
+        // delete all spv data
+        final File blockChainFile = new File(gaService.getDir("blockstore_" + gaService.getReceivingId(), Context.MODE_PRIVATE), "blockchain.spvchain");
+        if (blockChainFile.exists()) {
+            blockChainFile.delete();
+        }
+
+        try {
+            gaService.getSharedPreferences("verified_utxo_spendable_value_"
+                    + gaService.getReceivingId(), Context.MODE_PRIVATE).edit().clear().commit();
+            gaService.getSharedPreferences("verified_utxo_"
+                    + gaService.getReceivingId(), Context.MODE_PRIVATE).edit().clear().commit();
+        } catch (final NullPointerException e) {
+            // ignore
+        }
+
+        resetUnspent();
+    }
+
     @NonNull
-    public Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
+    public final Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
 
     public void updateUnspentOutputs() {
         if (!gaService.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)) {
@@ -145,11 +165,11 @@ public class SPV {
         });
     }
     public void resetUnspent() {
-        unspentOutpointsSubaccounts = new HashMap<>();
-        unspentOutpointsPointers = new HashMap<>();
-        unspentOutputsOutpoints = new HashMap<>();
-        countedUtxoValues = new HashMap<>();
-        verifiedBalancesCoin = new HashMap<>();
+        unspentOutpointsSubaccounts.clear();
+        unspentOutpointsPointers.clear();
+        unspentOutputsOutpoints.clear();
+        countedUtxoValues.clear();
+        verifiedBalancesCoin.clear();
     }
 
     public void addUtxoToValues(@NonNull final Sha256Hash txHash) {
@@ -262,9 +282,9 @@ public class SPV {
             // should rollback already
         }
     }
-    public Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints;
-    private Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts;
-    private Map<TransactionOutPoint, Integer> unspentOutpointsPointers;
+    public final Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints = new HashMap<>();
+    private final Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts = new HashMap<>();
+    private final Map<TransactionOutPoint, Integer> unspentOutpointsPointers = new HashMap<>();
     private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
         unspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subaccount);
         unspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
