@@ -18,6 +18,7 @@ import com.afollestad.materialdialogs.Theme;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.ui.R;
 
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -33,7 +34,71 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
         GAPreferenceFragment.bindPreferenceSummaryToValue(findPreference("trusted_peer"));
+        final Preference reset_spv = getPreferenceManager().findPreference("reset_spv");
+        reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                final SharedPreferences spvPreferences = getActivity().getSharedPreferences("SPV", Context.MODE_PRIVATE);
 
+                // stop SPV if enabled
+
+                if (spvPreferences.getBoolean("enabled", true)) {
+                    try {
+                        if (gaService.spv.isPeerGroupRunning()) {
+                            gaService.spv.stopSPVSync();
+                        }
+                        gaService.spv.tearDownSPV();
+                    } catch (final NullPointerException e) {
+                        // ignore
+                    }
+
+                }
+
+                // delete all spv data
+
+                final File blockChainFile = new File(gaService.getDir("blockstore_" + gaService.getReceivingId(), Context.MODE_PRIVATE), "blockchain.spvchain");
+                if (blockChainFile.exists()) {
+                    blockChainFile.delete();
+                }
+
+                try {
+                    gaService.getSharedPreferences("verified_utxo_spendable_value_"
+                            + gaService.getReceivingId(), Context.MODE_PRIVATE).edit().clear().commit();
+                    gaService.getSharedPreferences("verified_utxo_"
+                            + gaService.getReceivingId(), Context.MODE_PRIVATE).edit().clear().commit();
+                } catch (final NullPointerException e) {
+                    // ignore
+                }
+
+                // restart spv if it was enabled
+                
+                if (spvPreferences.getBoolean("enabled", true)) {
+                    gaService.spv.setUpSPV();
+                    if (gaService.getCurBlock() - gaService.spv.getSpvHeight() > 1000) {
+                        if (gApp.getConnectionObservable().isWiFiUp()) {
+                            gaService.spv.startSpvSync();
+                        } else {
+                            // no wifi - do we want to sync?
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    askUserForSpvNoWiFi();
+                                }
+                            });
+                        }
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gaService.spv.startSpvSync();
+                            }
+                        });
+
+                    }
+                }
+                return false;
+            }
+        });
 
         final CheckBoxPreference spvEnabled = (CheckBoxPreference) findPreference("spvEnabled");
         final SharedPreferences spvPreferences = getActivity().getSharedPreferences("SPV", Context.MODE_PRIVATE);
