@@ -1009,7 +1009,16 @@ public class WalletClient {
                         final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.pointer, privateDerivation));
 
                         final Script script = new Script(Hex.decode(prevOut.script));
-                        final Sha256Hash hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
+                        final Sha256Hash hash;
+                        if (prevOut.scriptType.equals(14)) {
+                            hash = t.hashForSignatureV2(
+                                    ii,
+                                    script.getProgram(),
+                                    Coin.valueOf(prevOut.value),
+                                    Transaction.SigHash.ALL, false);
+                        } else {
+                            hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
+                        }
                         return pointerKey.signHash(hash);
                     }
                 });

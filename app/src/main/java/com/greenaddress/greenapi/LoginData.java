@@ -16,6 +16,7 @@ public class LoginData {
     public final String receiving_id;
     public String gait_path;  // can change on first login (registration)
     public final int earliest_key_creation_time;
+    public final boolean segwit;
 
     public LoginData(final Map<?, ?> map) throws IOException {
         this.exchange = (String) map.get("exchange");
@@ -25,6 +26,11 @@ public class LoginData {
         this.subaccounts = (ArrayList) map.get("subaccounts");
         this.gait_path = (String) map.get("gait_path");
         this.receiving_id = (String) map.get("receiving_id");
+        if (map.get("segwit") == null) {
+            this.segwit = false;
+        } else {
+            this.segwit = (Boolean) map.get("segwit");
+        }
         if (map.containsKey("earliest_key_creation_time")) {
             this.earliest_key_creation_time = (Integer) map.get("earliest_key_creation_time");
         } else {

@@ -49,6 +49,7 @@ import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.Fiat;
 import org.spongycastle.util.encoders.Hex;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -66,6 +67,8 @@ import java.util.Observable;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+
+import static org.bitcoinj.script.ScriptOpCodes.OP_CHECKMULTISIG;
 
 public class GaService extends Service {
 
@@ -357,7 +360,24 @@ public class GaService extends Service {
                     pubkeys.add(derivedBackupPointer);
                 }
 
-                final byte[] expectedP2SH = Utils.sha256hash160(Script.createMultiSigOutputScript(2, pubkeys));
+                final byte[] multisig = Script.createMultiSigOutputScript(2, pubkeys);
+
+                if(client.getLoginData().segwit) {
+                    // allow segwit p2sh only if segwit is enabled
+                    ByteArrayOutputStream bits = new ByteArrayOutputStream();
+                    bits.write(0);
+                    try {
+                        Script.writeBytes(bits, Sha256Hash.hash(multisig));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);  // cannot happen
+                    }
+                    if (Arrays.equals(gotP2SH, Utils.sha256hash160(bits.toByteArray()))) {
+                        return true;
+                    }
+                }
+
+                final byte[] expectedP2SH = Utils.sha256hash160(multisig);
+
                 return Arrays.equals(gotP2SH, expectedP2SH);
             }
         });
