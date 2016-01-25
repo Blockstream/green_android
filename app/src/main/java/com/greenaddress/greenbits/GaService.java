@@ -362,7 +362,7 @@ public class GaService extends Service {
 
                 final byte[] multisig = Script.createMultiSigOutputScript(2, pubkeys);
 
-                if(client.getLoginData().segwit) {
+                if (client.getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     ByteArrayOutputStream bits = new ByteArrayOutputStream();
                     bits.write(0);
@@ -613,7 +613,7 @@ public class GaService extends Service {
                 final Integer pointer = ((Integer) input.get("pointer"));
                 final byte[] script = Hex.decode((String) input.get("script")),
                              scriptHash;
-                if(client.getLoginData().segwit) {
+                if (client.getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     ByteArrayOutputStream bits = new ByteArrayOutputStream();
                     bits.write(0);
