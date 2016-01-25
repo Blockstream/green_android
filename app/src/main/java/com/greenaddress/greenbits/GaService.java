@@ -611,7 +611,21 @@ public class GaService extends Service {
             @Override
             public ListenableFuture<String> apply(@NonNull final Map input) throws Exception {
                 final Integer pointer = ((Integer) input.get("pointer"));
-                final byte[] scriptHash = Utils.sha256hash160(Hex.decode((String) input.get("script")));
+                final byte[] script = Hex.decode((String) input.get("script")),
+                             scriptHash;
+                if(client.getLoginData().segwit) {
+                    // allow segwit p2sh only if segwit is enabled
+                    ByteArrayOutputStream bits = new ByteArrayOutputStream();
+                    bits.write(0);
+                    try {
+                        Script.writeBytes(bits, Sha256Hash.hash(script));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);  // cannot happen
+                    }
+                    scriptHash = Utils.sha256hash160(bits.toByteArray());
+                } else {
+                    scriptHash = Utils.sha256hash160(script);
+                }
                 return Futures.transform(verifyP2SHSpendableBy(
                         ScriptBuilder.createP2SHOutputScript(scriptHash),
                         subaccount, pointer), new Function<Boolean, String>() {
