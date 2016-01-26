@@ -175,5 +175,7 @@
   <string name="useNativeAuthentication">Use Android\'s authentication</string>
   <string name="genericsettings">Info &amp; settings</string>
   <string name="txFeeInfo">Fee / Size (bytes) / Fee per kB</string>
+  <string name="doubleSpend">double spend</string>
+  <string name="txDoubleSpentBy">Double spend by hash</string>
 
 </resources>

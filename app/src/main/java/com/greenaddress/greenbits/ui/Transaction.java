@@ -18,6 +18,7 @@ public class Transaction implements Serializable {
     public final String counterparty;
     public final String receivedOn;
     public final String txhash;
+    public final String doubleSpentBy;
     public final Date date;
     public final String memo;
     public boolean spvVerified;
@@ -25,7 +26,7 @@ public class Transaction implements Serializable {
     public final long fee;
     public final int size;
 
-    public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn, final long fee, final int size) {
+    public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn, final long fee, final int size, final String doubleSpentBy) {
         this.type = type;
         this.amount = amount;
         this.counterparty = counterparty;
@@ -39,6 +40,7 @@ public class Transaction implements Serializable {
         this.receivedOn = receivedOn;
         this.fee = fee;
         this.size = size;
+        this.doubleSpentBy = doubleSpentBy;
     }
 
     public String toString() {

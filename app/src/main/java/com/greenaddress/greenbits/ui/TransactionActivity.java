@@ -111,6 +111,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final TextView memoText = (TextView) rootView.findViewById(R.id.txMemoText);
             final TextView memoTitle = (TextView) rootView.findViewById(R.id.txMemoTitle);
 
+            final TextView doubleSpentByText = (TextView) rootView.findViewById(R.id.txDoubleSpentByText);
+            final TextView doubleSpentByTitle = (TextView) rootView.findViewById(R.id.txDoubleSpentByTitle);
+
             final TextView recipientText = (TextView) rootView.findViewById(R.id.txRecipientText);
             final TextView recipientTitle = (TextView) rootView.findViewById(R.id.txRecipientTitle);
 
@@ -200,6 +203,14 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 memoText.setVisibility(View.GONE);
                 memoTitle.setVisibility(View.GONE);
                 rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
+            }
+
+            if (t.doubleSpentBy != null) {
+                doubleSpentByText.setText(Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>"));
+            } else {
+                doubleSpentByText.setVisibility(View.GONE);
+                doubleSpentByTitle.setVisibility(View.GONE);
+                rootView.findViewById(R.id.txDoubleSpentByMargin).setVisibility(View.GONE);
             }
 
             if (t.counterparty != null && t.counterparty.length() > 0) {

@@ -155,7 +155,7 @@ public class MainFragment extends GAFragment implements Observer {
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return new Transaction(type, amount, counterparty,
                 df.parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
-                receivedOn, fee, size);
+                receivedOn, fee, size, (String) txJSON.get("double_spent_by"));
     }
 
     private void updateBalance() {

@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -81,7 +82,13 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);
         }
 
-        holder.textWhen.setText(TimeAgo.fromNow(current.date.getTime(), getContext()));
+        if (current.doubleSpentBy == null) {
+            holder.textWhen.setTextColor(getContext().getResources().getColor(R.color.tertiaryTextColor));
+            holder.textWhen.setText(TimeAgo.fromNow(current.date.getTime(), getContext()));
+        } else {
+            holder.textWhen.setTextColor(Color.RED);
+            holder.textWhen.setText(getContext().getResources().getText(R.string.doubleSpend));
+        }
 
         String message;
         if (current.type.equals(Transaction.TYPE.OUT) && current.counterparty != null && current.counterparty.length() > 0) {

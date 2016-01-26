@@ -82,6 +82,28 @@
                 android:textIsSelectable="true"
                 android:id="@+id/txRecipientText"
                 android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:id="@+id/txDoubleSpentByMargin"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="droid"
+                android:id="@+id/txDoubleSpentByTitle"
+                android:text="@string/txDoubleSpentBy"
+                android:textColor="@color/textColor"
+                android:textSize="24sp" />
+
+            <TextView android:text="memo"
+                      android:textColor="@color/tertiaryTextColor"
+                      android:layout_width="wrap_content"
+                      android:textIsSelectable="true"
+                      android:id="@+id/txDoubleSpentByText"
+                      android:layout_height="wrap_content" />
+
     <View
         android:layout_width="wrap_content"
         android:layout_height="@dimen/activity_vertical_margin"/>
