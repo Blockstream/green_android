@@ -86,8 +86,16 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             holder.textWhen.setTextColor(getContext().getResources().getColor(R.color.tertiaryTextColor));
             holder.textWhen.setText(TimeAgo.fromNow(current.date.getTime(), getContext()));
         } else {
-            holder.textWhen.setTextColor(Color.RED);
-            holder.textWhen.setText(getContext().getResources().getText(R.string.doubleSpend));
+            if (current.doubleSpentBy.equals("malleability")) {
+                holder.textWhen.setTextColor(Color.parseColor("#FF8000"));
+                holder.textWhen.setText(getContext().getResources().getText(R.string.malleated));
+            } else if (current.doubleSpentBy.equals("update")) {
+                holder.textWhen.setTextColor(Color.parseColor("#FF8000"));
+                holder.textWhen.setText(getContext().getResources().getText(R.string.updated));
+            } else {
+                holder.textWhen.setTextColor(Color.RED);
+                holder.textWhen.setText(getContext().getResources().getText(R.string.doubleSpend));
+            }
         }
 
         String message;

@@ -206,7 +206,11 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             }
 
             if (t.doubleSpentBy != null) {
-                doubleSpentByText.setText(Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>"));
+                if (t.doubleSpentBy.equals("malleability") || t.doubleSpentBy.equals("update")) {
+                    doubleSpentByText.setText(t.doubleSpentBy);
+                } else {
+                    doubleSpentByText.setText(Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>"));
+                }
             } else {
                 doubleSpentByText.setVisibility(View.GONE);
                 doubleSpentByTitle.setVisibility(View.GONE);
