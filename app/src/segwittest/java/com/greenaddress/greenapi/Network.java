@@ -3,7 +3,7 @@ package com.greenaddress.greenapi;
 import org.bitcoinj.core.NetworkParameters;
 
 public abstract class Network {
-    public final static NetworkParameters NETWORK = NetworkParameters.fromID(NetworkParameters.ID_TESTNET);
+    public final static NetworkParameters NETWORK = new SegNetParams();
     public final static String GAIT_TOKEN_URL = "https://segwit.greenaddress.it/token/";
     public final static String GAIT_WAMP_URL = "wss://segwitwss.greenaddress.it/ws/inv";
     public final static String BLOCKEXPLORER = "https://segnet.metaco.com/transactions/";
