@@ -187,6 +187,7 @@
     <string name="txDoubleSpentBy">Double spend by</string>
     <string name="updated">updated</string>
     <string name="malleated">malleated</string>
+    <string name="replaceable">replaceable</string>
 
 </resources>
 

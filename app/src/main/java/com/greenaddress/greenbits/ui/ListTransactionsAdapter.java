@@ -43,6 +43,7 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
             holder.textValue = (TextView) returnedView.findViewById(R.id.listValueText);
             holder.textValueQuestionMark = (TextView) returnedView.findViewById(R.id.listValueQuestionMark);
             holder.textWhen = (TextView) returnedView.findViewById(R.id.listWhenText);
+            holder.textReplaceable = (TextView) returnedView.findViewById(R.id.listReplaceableText);
             holder.textWho = (TextView) returnedView.findViewById(R.id.listWhoText);
             holder.inOutIcon = (TextView) returnedView.findViewById(R.id.listInOutIcon);
             holder.mainLayout = (RelativeLayout) returnedView.findViewById(R.id.list_item_layout);
@@ -96,6 +97,12 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
                 holder.textWhen.setTextColor(Color.RED);
                 holder.textWhen.setText(getContext().getResources().getText(R.string.doubleSpend));
             }
+        }
+
+        if (!current.replaceable) {
+            holder.textReplaceable.setVisibility(View.GONE);
+        } else {
+            holder.textReplaceable.setVisibility(View.VISIBLE);
         }
 
         String message;
@@ -155,6 +162,7 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         public TextView listNumberConfirmation;
         TextView textValue;
         TextView textWhen;
+        TextView textReplaceable;
         TextView bitcoinIcon;
         TextView textWho;
         TextView inOutIcon;
