@@ -176,11 +176,11 @@
   <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) e superiore non supporta la libreria Tor usata (Orchid).</string>
   <string name="useNativeAuthentication">Riusa l\'autenticazione Android</string>
   <string name="genericsettings">Info &amp; configurazione</string>
-  <string name="txFeeInfo">Fee / Size (bytes) / Fee per kB</string>
-  <string name="doubleSpend">double spend</string>
-  <string name="txDoubleSpentBy">Double spend by</string>
-  <string name="updated">updated</string>
-  <string name="malleated">malleated</string>
-  <string name="replaceable">replaceable</string>
+  <string name="txFeeInfo">Commissione / Dimensione (bytes) / Commissione per kB</string>
+  <string name="doubleSpend">doppio spesa</string>
+  <string name="txDoubleSpentBy">Doppio spesa da</string>
+  <string name="updated">aggiornata</string>
+  <string name="malleated">modificata</string>
+  <string name="replaceable">sostituibile</string>
 
 </resources>
