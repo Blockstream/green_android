@@ -396,7 +396,7 @@ public class SPV {
                 @Override
                 public void run()
                 {
-                    Toast.makeText(gaService.getApplicationContext(), announcement+trusted_peer, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(gaService.getApplicationContext(), announcement, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -435,7 +435,9 @@ public class SPV {
             startSpvAfterInit = true;
             return;
         }
-        toastTrustedSPV("Attempting connection to trusted peer: ");
+        final String trusted_peer = gaService.getSharedPreferences("TRUSTED", Context.MODE_PRIVATE).getString("address", "");
+
+        toastTrustedSPV(String.format("Attempting connection to trusted peers: %s", trusted_peer));
         Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
             public void onSuccess(final @Nullable Object result) {
@@ -444,7 +446,7 @@ public class SPV {
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
                         isSpvSyncing = true;
                         spvBlocksLeft = blocksLeft;
-                        toastTrustedSPV("Connected to trusted peer: ");
+                        toastTrustedSPV(String.format("Downloading chain from trusted peer: %s", peer.getAddr()));
                     }
 
                     @Override
