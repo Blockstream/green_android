@@ -18,7 +18,6 @@ import com.afollestad.materialdialogs.Theme;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.ui.R;
 
-import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -153,18 +152,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         trusted_peer.setText(trustedPreferences.getString("address", ""));
         trusted_peer.setSummary(trustedPreferences.getString("address", ""));
         trusted_peer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            boolean addrCorrect(@NonNull final String addr) {
-
-                try {
-                    final int idx = addr.indexOf(":");
-                    if (idx != -1) {
-                        Integer.parseInt(addr.substring(idx + 1));
-                    }
-                } catch (@NonNull final NumberFormatException e) {
-                    return false;
-                }
-                return addr.isEmpty() || addr.contains(".");
-            }
 
             class SPVAsync extends AsyncTask<Object, Object, Object>{
 
@@ -185,32 +172,58 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                     return null;
                 }
             }
+
+            boolean isBadAddress(final String s) {
+                boolean addrCorrect;
+                try {
+                    final int idx = s.indexOf(":");
+                    if (idx != -1) {
+                        Integer.parseInt(s.substring(idx + 1));
+                    }
+                } catch (@NonNull final NumberFormatException e) {
+                    addrCorrect = false;
+                }
+                addrCorrect = s.isEmpty() || s.contains(".");
+
+                if (!addrCorrect) {
+                    new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
+                            .title(getResources().getString(R.string.enterValidAddressTitle))
+                            .content(getResources().getString(R.string.enterValidAddressText))
+                            .positiveColorRes(R.color.accent)
+                            .negativeColorRes(R.color.white)
+                            .titleColorRes(R.color.white)
+                            .contentColorRes(android.R.color.white)
+                            .theme(Theme.DARK)
+                            .positiveText("OK")
+                            .build().show();
+                    return true;
+                }
+                return false;
+            }
+
             @Override
             public boolean onPreferenceChange(final Preference preference, @NonNull final Object newValue) {
 
                 try {
                     final String newString = newValue.toString().trim().replaceAll("\\s","");
-
-                    if (!addrCorrect(newString)) {
-                        new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                                .title(getResources().getString(R.string.enterValidAddressTitle))
-                                .content(getResources().getString(R.string.enterValidAddressText))
-                                .positiveColorRes(R.color.accent)
-                                .negativeColorRes(R.color.white)
-                                .titleColorRes(R.color.white)
-                                .contentColorRes(android.R.color.white)
-                                .theme(Theme.DARK)
-                                .positiveText("OK")
-                                .build().show();
-                        return true;
+                    if (newString.contains(",")) {
+                        for (final String s: newString.split(",")) {
+                            if (isBadAddress(s)) {
+                                return true;
+                            }
+                        }
+                    } else {
+                        if (isBadAddress(newString)) {
+                            return true;
+                        }
                     }
 
                     final String newLower = newString.toLowerCase();
-                    if (newString.isEmpty() || newLower.endsWith(".onion") || newLower.contains(".onion:" )) {
+                    if (newString.isEmpty() || newLower.contains(".onion")) {
 
                         final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
                         if (currentapiVersion >= 23 &&
-                                (newLower.endsWith(".onion") || newLower.contains(".onion:"))) {
+                                (newLower.contains(".onion"))) {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
                             // and HS connectivity.
                             new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())

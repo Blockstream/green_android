@@ -461,26 +461,64 @@ public class SPV {
             }
         });
     }
+
+    void setupPeerGroup(final PeerGroup peerGroup, final String trusted_addr) {
+        SPVMode mode;
+        if (!trusted_addr.isEmpty() && trusted_addr.contains(".")) {
+            final String trusted_lower = trusted_addr.toLowerCase();
+            if (trusted_lower.contains(".onion")) {
+                mode = SPVMode.ONION;
+            }
+            else {
+                mode = SPVMode.TRUSTED;
+            }
+
+        } else {
+            mode = SPVMode.NORMAL;
+        }
+
+        if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
+            try {
+                peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            peerGroup.setMaxConnections(1);
+        }
+        else if (mode == SPVMode.NORMAL) {
+            peerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
+        }
+        else if (mode == SPVMode.ONION) {
+
+            try {
+                final Node n = new Node(trusted_addr);
+
+                final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
+                    @NonNull
+                    public InetSocketAddress toSocketAddress() {
+                        return InetSocketAddress.createUnresolved(n.addr, n.port);
+                    }
+                };
+                peerGroup.addAddress(OnionAddr);
+            } catch (@NonNull final Exception e){
+                e.printStackTrace();
+            }
+        }
+        else {
+            final Node n = new Node(trusted_addr);
+            try {
+                peerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
+            } catch (@NonNull final UnknownHostException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public synchronized void setUpSPV(){
         //teardownSPV must be called if SPV already exists
         //and stopSPV if previous still running.
         if (peerGroup != null) {
             Log.d(TAG, "Must stop and tear down SPV before setting up again!");
             return;
-        }
-        System.setProperty("user.home", gaService.getFilesDir().toString());
-        final String trusted_addr = gaService.getSharedPreferences("TRUSTED", Context.MODE_PRIVATE).getString("address", "");
-        SPVMode mode;
-        if (!trusted_addr.isEmpty() && trusted_addr.contains(".")){
-            final String trusted_lower = trusted_addr.toLowerCase();
-            if (trusted_lower.endsWith(".onion") || trusted_lower.contains(".onion:")) {
-                mode = SPVMode.ONION;
-            }
-            else{
-                mode = SPVMode.TRUSTED;
-            }
-        }else{
-            mode = SPVMode.NORMAL;
         }
 
         final File blockChainFile = new File(gaService.getDir("blockstore_" + gaService.getReceivingId(), Context.MODE_PRIVATE), "blockchain.spvchain");
@@ -509,52 +547,31 @@ public class SPV {
             blockChain = new BlockChain(Network.NETWORK, blockStore);
             blockChain.addListener(blockChainListener = new BlockChainListener(gaService));
 
-            peerGroup = new PeerGroup(Network.NETWORK, blockChain);
-            peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
+            System.setProperty("user.home", gaService.getFilesDir().toString());
+            final String trusted_addr = gaService.getSharedPreferences("TRUSTED", Context.MODE_PRIVATE).getString("address", "");
 
-            if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
-                try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
-                peerGroup.setMaxConnections(1);
-            }
-            else if (mode == SPVMode.NORMAL) {
-                peerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
-            }
-            else if (mode == SPVMode.ONION) {
+            if (trusted_addr.toLowerCase().contains(".onion")) {
                 try {
                     final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
                     peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
                     peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
-                } catch (@NonNull final Exception e){
+                } catch (@NonNull final Exception e) {
                     e.printStackTrace();
                 }
-                try {
-                    final Node n = new Node(trusted_addr);
-
-                    final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
-                        @NonNull
-                        public InetSocketAddress toSocketAddress() {
-                            return InetSocketAddress.createUnresolved(n.addr, n.port);
-                        }
-                    };
-                    peerGroup.addAddress(OnionAddr);
-                    peerGroup.setMaxConnections(1);
-                } catch (@NonNull final Exception e){
-                    e.printStackTrace();
-                }
+            } else {
+                peerGroup = new PeerGroup(Network.NETWORK, blockChain);
+                peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
             }
-            else {
-                peerGroup.setMaxConnections(1);
-                final Node n = new Node(trusted_addr);
-                try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
-                } catch (@NonNull final UnknownHostException e) {
-                    e.printStackTrace();
-                }
 
+            if (trusted_addr.contains(",")) {
+                final String[] addresses = trusted_addr.split(",");
+                for (final String s: addresses) {
+                    setupPeerGroup(peerGroup, s);
+                }
+                peerGroup.setMaxConnections(addresses.length);
+            } else {
+                setupPeerGroup(peerGroup, trusted_addr);
+                peerGroup.setMaxConnections(1);
             }
         } catch (@NonNull final BlockStoreException e) {
             e.printStackTrace();
