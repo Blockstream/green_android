@@ -15,6 +15,22 @@
             <option value="$PROJECT_DIR$/app/material-dialogs/core" />
             <option value="$PROJECT_DIR$/bitcoinj" />
             <option value="$PROJECT_DIR$/bitcoinj/core" />
+            <option value="$PROJECT_DIR$/jawampa" />
+            <option value="$PROJECT_DIR$/jawampa/jawampa-core" />
+            <option value="$PROJECT_DIR$/jawampa/jawampa-netty" />
+          </set>
+        </option>
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app/material-dialogs" />
+            <option value="$PROJECT_DIR$/app/material-dialogs/core" />
+            <option value="$PROJECT_DIR$/bitcoinj" />
+            <option value="$PROJECT_DIR$/bitcoinj/core" />
+            <option value="$PROJECT_DIR$/jawampa" />
+            <option value="$PROJECT_DIR$/jawampa/jawampa-core" />
+            <option value="$PROJECT_DIR$/jawampa/jawampa-netty" />
           </set>
         </option>
       </GradleProjectSettings>

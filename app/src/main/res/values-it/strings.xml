@@ -182,5 +182,8 @@
   <string name="updated">aggiornata</string>
   <string name="malleated">modificata</string>
   <string name="replaceable">sostituibile</string>
+  <string name="pref_header_proxy">Http Proxy</string>
 
+  <string name="pref_title_display_hostname">Indirizzo</string>
+  <string name="pref_title_display_port">Porta</string>
 </resources>

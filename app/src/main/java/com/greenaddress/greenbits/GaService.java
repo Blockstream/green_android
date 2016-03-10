@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -28,8 +29,8 @@ import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.spv.SPV;
-import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
@@ -67,8 +68,6 @@ import java.util.Observable;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-
-import static org.bitcoinj.script.ScriptOpCodes.OP_CHECKMULTISIG;
 
 public class GaService extends Service {
 
@@ -313,6 +312,13 @@ public class GaService extends Service {
                 }
             }
         }, es);
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        final String proxyHost = sharedPref.getString("proxy_host", null);
+        final String proxyPort = sharedPref.getString("proxy_port", null);
+
+        if (proxyHost != null && proxyPort != null) {
+            client.setProxy(proxyHost, proxyPort);
+        }
     }
 
     @NonNull

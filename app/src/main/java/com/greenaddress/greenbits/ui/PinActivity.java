@@ -30,6 +30,7 @@ import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -377,8 +378,11 @@ public class PinActivity extends ActionBarActivity implements Observer {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.common_menu, menu);
+
+        // disable proxy until fully working
+        // getMenuInflater().inflate(R.menu.proxy_menu, menu);
+
         this.menu = menu;
         return true;
     }
@@ -404,6 +408,12 @@ public class PinActivity extends ActionBarActivity implements Observer {
         int id = item.getItemId();
         if (id == R.id.network_unavailable) {
             Toast.makeText(PinActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        if (id == R.id.proxy_preferences) {
+            final Intent settingsActivity = new Intent(PinActivity.this, ProxySettingsActivity.class);
+            startActivity(settingsActivity);
             return true;
         }
         return super.onOptionsItemSelected(item);

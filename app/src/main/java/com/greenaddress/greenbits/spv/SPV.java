@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.spv;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -35,6 +36,7 @@ import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.Wallet;
+import org.bitcoinj.net.BlockingClientManager;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
@@ -552,18 +554,30 @@ public class SPV {
             System.setProperty("user.home", gaService.getFilesDir().toString());
             final String trusted_addr = gaService.getSharedPreferences("TRUSTED", Context.MODE_PRIVATE).getString("address", "");
 
-            if (trusted_addr.toLowerCase().contains(".onion")) {
-                try {
-                    final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
-                    peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
-                    peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
-                } catch (@NonNull final Exception e) {
-                    e.printStackTrace();
-                }
+            final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(gaService);
+            final String proxyHost = sharedPref.getString("proxy_host", null);
+            final String proxyPort = sharedPref.getString("proxy_port", null);
+
+            if (proxyHost != null && proxyPort != null) {
+                System.setProperty("http.proxyHost", proxyHost);
+                System.setProperty("http.proxyPort", proxyPort);
+                final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
+                peerGroup = new PeerGroup(context, blockChain, new BlockingClientManager());
             } else {
-                peerGroup = new PeerGroup(Network.NETWORK, blockChain);
-                peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
+                System.setProperty("http.proxyHost", "");
+                System.setProperty("http.proxyPort", "");
+                if (trusted_addr.toLowerCase().contains(".onion")) {
+                    try {
+                        final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
+                        peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
+                    } catch (@NonNull final Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    peerGroup = new PeerGroup(Network.NETWORK, blockChain);
+                }
             }
+            peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
 
             if (trusted_addr.contains(",")) {
                 final String[] addresses = trusted_addr.split(",");
@@ -571,9 +585,11 @@ public class SPV {
                     setupPeerGroup(peerGroup, s);
                 }
                 peerGroup.setMaxConnections(addresses.length);
-            } else {
+            } else if (!trusted_addr.isEmpty()) {
                 setupPeerGroup(peerGroup, trusted_addr);
                 peerGroup.setMaxConnections(1);
+            } else {
+                setupPeerGroup(peerGroup, trusted_addr);
             }
         } catch (@NonNull final BlockStoreException e) {
             e.printStackTrace();

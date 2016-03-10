@@ -31,6 +31,7 @@ import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.ledger.tbase.comm.LedgerTransportTEEProxy;
 import com.ledger.tbase.comm.LedgerTransportTEEProxyFactory;
@@ -341,9 +342,9 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // getMenuInflater().inflate(R.menu.first_screen, menu);
-        return true;
+		// Disable proxy until fully working
+		// getMenuInflater().inflate(R.menu.proxy_menu, menu);
+		return true;
     }
 
     @Override
@@ -351,7 +352,12 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-
+		final int id = item.getItemId();
+		if (id == R.id.proxy_preferences) {
+			final Intent settingsActivity = new Intent(FirstScreenActivity.this, ProxySettingsActivity.class);
+			startActivity(settingsActivity);
+			return true;
+		}
         return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 

@@ -1,24 +1,21 @@
 package com.greenaddress.greenbits.ui.preferences;
 
+
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -31,19 +28,48 @@ import java.util.Observer;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity implements Observer {
+public class ProxySettingsActivity extends AppCompatPreferenceActivity {
+    /**
+     * A preference value change listener that updates the preference's summary
+     * to reflect its new value.
+     */
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+            String stringValue = value.toString();
+
+            if (preference instanceof ListPreference) {
+                // For list preferences, look up the correct display value in
+                // the preference's 'entries' list.
+                ListPreference listPreference = (ListPreference) preference;
+                int index = listPreference.findIndexOfValue(stringValue);
+
+                // Set the summary to reflect the new value.
+                preference.setSummary(
+                        index >= 0
+                                ? listPreference.getEntries()[index]
+                                : null);
+
+            }  else {
+                // For all other preferences, set the summary to the value's
+                // simple string representation.
+                preference.setSummary(stringValue);
+            }
+            return true;
+        }
+    };
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
      * example, 10" tablets are extra-large.
      */
-    private static boolean isXLargeTablet(final Context context) {
+    private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
     }
@@ -52,7 +78,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Obs
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
-        final ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -72,23 +98,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Obs
      */
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(final List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
+    public void onBuildHeaders(List<Header> target) {
+        loadHeadersFromResource(R.xml.pref_proxyheaders, target);
     }
 
     /**
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
      */
-    protected boolean isValidFragment(final String fragmentName) {
+    protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GAPreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || SPVPreferenceFragment.class.getName().equals(fragmentName)
-                || ProxyPreferenceFragment.class.getName().equals(fragmentName)
-                || TwoFactorPreferenceFragment.class.getName().equals(fragmentName);
+                || ProxyPreferenceFragment.class.getName().equals(fragmentName);
     }
-
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         int id = item.getItemId();
@@ -97,45 +118,5 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Obs
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void update(final Observable observable, final Object data) {
-
-    }
-
-    private GreenAddressApplication gApp() {
-        return (GreenAddressApplication) getApplication();
-    }
-    private GaService gaService() {
-        return gApp().gaService;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        testKickedOut();
-        if (gaService() == null) {
-            finish();
-            return;
-        }
-
-        gApp().getConnectionObservable().addObserver(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        gApp().getConnectionObservable().deleteObserver(this);
-    }
-
-    private void testKickedOut() {
-        if (gApp().getConnectionObservable().getIsForcedLoggedOut()
-                || gApp().getConnectionObservable().getIsForcedTimeout()) {
-            // FIXME: Should pass flag to activity so it shows it was forced logged out
-            final Intent firstScreenActivity = new Intent(SettingsActivity.this, FirstScreenActivity.class);
-            startActivity(firstScreenActivity);
-            finish();
-        }
     }
 }

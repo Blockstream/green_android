@@ -9,3 +9,6 @@
 	path = bitcoinj
 	url = https://github.com/greenaddress/bitcoinj.git
 	branch = release-0.13
+[submodule "jawampa"]
+	path = jawampa
+	url = https://github.com/greenaddress/jawampa.git

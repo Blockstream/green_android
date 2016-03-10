@@ -3,6 +3,7 @@ package com.greenaddress.greenapi;
 import android.util.Base64;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -38,6 +39,9 @@ import org.spongycastle.util.encoders.Hex;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -45,6 +49,7 @@ import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,11 +59,19 @@ import javax.annotation.Nullable;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import de.tavendo.autobahn.Wamp;
-import de.tavendo.autobahn.WampConnection;
-import de.tavendo.autobahn.WampOptions;
-import de.tavendo.autobahn.secure.WebSocket;
-import de.tavendo.autobahn.secure.WebSocketMessage;
+import rx.Scheduler;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import ws.wamp.jawampa.ApplicationError;
+import ws.wamp.jawampa.CallFlags;
+import ws.wamp.jawampa.PubSubData;
+import ws.wamp.jawampa.Reply;
+import ws.wamp.jawampa.WampClient;
+import ws.wamp.jawampa.WampClientBuilder;
+import ws.wamp.jawampa.auth.client.WampCra;
+import ws.wamp.jawampa.connection.IWampConnectorProvider;
+import ws.wamp.jawampa.transport.netty.NettyWampClientConnectorProvider;
 
 
 public class WalletClient {
@@ -70,15 +83,106 @@ public class WalletClient {
 
     private final INotificationHandler m_notificationHandler;
     private final ListeningExecutorService es;
-    private WampConnection mConnection;
+    private WampClient mConnection;
+    private Scheduler mScheduler = Schedulers.newThread();
     private LoginData loginData;
     private ISigningWallet hdWallet;
 
     private String mnemonics = null;
+    private SocketAddress proxyAddress = null;
+
+    /**
+     * Call handler.
+     */
+    public interface CallHandler {
+
+        /**
+         * Fired on successful completion of call.
+         *
+         * @param result     The RPC result transformed into the type that was specified in call.
+         */
+        public void onResult(Object result);
+
+        /**
+         * Fired on call failure.
+         *
+         * @param errorUri   The URI or CURIE of the error that occurred.
+         * @param errorDesc  A human readable description of the error.
+         */
+        public void onError(String errorUri, String errorDesc);
+    }
+
+    /**
+     * Handler for PubSub events.
+     */
+    public interface EventHandler {
+
+        /**
+         * Fired when an event for the PubSub subscription is received.
+         *
+         * @param topicUri   The URI or CURIE of the topic the event was published to.
+         * @param event      The event, transformed into the type that was specified when subscribing.
+         */
+        public void onEvent(String topicUri, Object event);
+    }
+
+    private void clientCall(final String procedure, final Class resClass, final CallHandler handler, Object... args) {
+        final String translatedProcedure = procedure.replace("http://greenaddressit.com/", "com.greenaddress.").replace("/", ".");
+        final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        final com.fasterxml.jackson.databind.node.ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
+        final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
+        mConnection.call(
+                translatedProcedure, flags, argsNode, null
+        ).observeOn(mScheduler).subscribe(new Action1<Reply>() {
+            @Override
+            public void call(Reply reply) {
+                final JsonNode node = reply.arguments().get(0);
+                handler.onResult(mapper.convertValue(node, resClass));
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                handler.onError(throwable.toString(), throwable.toString());
+            }
+        });
+    }
+
+    private void clientSubscribe(final String s, final Class mapClass, final EventHandler eventHandler) {
+        mConnection.makeSubscription(s).observeOn(mScheduler).subscribe(new Action1<PubSubData>() {
+            @Override
+            public void call(PubSubData pubSubData) {
+                final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
+                eventHandler.onEvent(s, mapper.convertValue(
+                        pubSubData.arguments().get(0),
+                        mapClass
+                ));
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                Log.i(TAG, "Subscribe failed ("+s+"): " + throwable.toString());
+            }
+        });
+    }
+
+    private void unsubscribeWrapper() { }
+
+    private void disconnectWrapper() { }
 
     public WalletClient(final INotificationHandler notificationHandler, final ListeningExecutorService es) {
         this.m_notificationHandler = notificationHandler;
         this.es = es;
+    }
+
+    public void setProxy(final String host, final String port) {
+        if (host != null && !host.equals("") && port != null && !port.equals("")) {
+            proxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
+            httpClient.setProxy(new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, Integer.parseInt(port))));
+        } else {
+            proxyAddress = null;
+            httpClient.setProxy(null);
+        }
     }
 
     private static List<String> split(final String words) {
@@ -120,9 +224,9 @@ public class WalletClient {
 
         hdWallet = null;
         if (mConnection != null) {
-            mConnection.unsubscribe();
+            unsubscribeWrapper();
             try {
-                mConnection.disconnect();
+                disconnectWrapper();
             } catch (final NullPointerException npe) {
                 // ignore
             }
@@ -137,9 +241,23 @@ public class WalletClient {
     private final OkHttpClient httpClient = new OkHttpClient();
 
     private String getToken() throws IOException {
+        // try onion first if proxy is set, use normal domain if it fails (non Orbot proxy)
+        try {
+            if (httpClient.getProxy() != null && !Network.GAIT_ONION.isEmpty()) {
+                final Request request = new Request.Builder()
+                        .url(String.format("http://%s/token/", Network.GAIT_ONION))
+                        .build();
+                return httpClient.newCall(request).execute().body().string();
+            }
+        } catch (final IOException io) {
+            // pass
+            io.printStackTrace();
+        }
+
         final Request request = new Request.Builder()
                 .url(Network.GAIT_TOKEN_URL)
                 .build();
+
         return httpClient.newCall(request).execute().body().string();
     }
 
@@ -162,7 +280,7 @@ public class WalletClient {
         final DeterministicKey deterministicKey = HDKeyDerivation.createMasterPrivateKey(mySeed);
         final String hexMasterPublicKey = Hex.toHexString(deterministicKey.getPubKey());
         final String hexChainCode = Hex.toHexString(deterministicKey.getChainCode());
-        mConnection.call("http://greenaddressit.com/login/register", Boolean.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/login/register", Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set(deterministicKey);
@@ -201,7 +319,7 @@ public class WalletClient {
         final String hexMasterPublicKey = Hex.toHexString(masterPublicKey);
         final String hexChainCode = Hex.toHexString(masterChaincode);
 
-        mConnection.call("http://greenaddressit.com/login/register", Boolean.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/login/register", Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set(signingWallet);
@@ -235,7 +353,7 @@ public class WalletClient {
     private ListenableFuture<LoginData> setupPath(final String mnemonics, final LoginData loginData) {
         final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
         final String pathHex = Hex.toHexString(mnemonicToPath(mnemonics));
-        mConnection.call("http://greenaddressit.com/login/set_gait_path", Void.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/login/set_gait_path", Void.class, new CallHandler() {
 
             @Override
             public void onResult(final Object result) {
@@ -254,7 +372,7 @@ public class WalletClient {
     private ListenableFuture<LoginData> setupPathBTChip(final byte[] path, final LoginData loginData) {
         final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
         final String pathHex = Hex.toHexString(path);
-        mConnection.call("http://greenaddressit.com/login/set_gait_path", Void.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/login/set_gait_path", Void.class, new CallHandler() {
 
             @Override
             public void onResult(final Object result) {
@@ -272,7 +390,7 @@ public class WalletClient {
     
     public ListenableFuture<Map<?, ?>> getBalance(final int subaccount) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/txs/get_balance", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/txs/get_balance", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
@@ -289,7 +407,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int pointer) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/txs/get_balance", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/txs/get_balance", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
@@ -305,7 +423,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getTwoFacConfig() {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/twofactor/get_config", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/twofactor/get_config", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
@@ -321,7 +439,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getAvailableCurrencies() {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/login/available_currencies", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/login/available_currencies", Map.class, new CallHandler() {
             @Override
             public void onResult(Object result) {
                 asyncWamp.set((Map) result);
@@ -337,7 +455,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/login/set_pricing_source", Boolean.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/login/set_pricing_source", Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
                 asyncWamp.set((Boolean) o);
@@ -351,60 +469,18 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    private ListenableFuture<AuthReq> getAuthReq() {
-        final SettableFuture<AuthReq> asyncWamp = SettableFuture.create();
-        try {
-            final String token = getToken();
-            mConnection.call("http://api.wamp.ws/procedure#authreq", String.class, new Wamp.CallHandler() {
-                @Override
-                public void onResult(final Object result) {
-                    asyncWamp.set(new AuthReq(token, result.toString()));
-                }
-
-                @Override
-                public void onError(final String errorUri, final String errorDesc) {
-                    asyncWamp.setException(new GAException(errorDesc));
-                }
-            }, token);
-        } catch (final IOException e) {
-            asyncWamp.setException(e);
-        }
-
-        return asyncWamp;
-    }
-
-    private ListenableFuture<Void> doAuth(final AuthReq authReq) {
-        final SettableFuture<Void> asyncWamp = SettableFuture.create();
-        try {
-            mConnection.call("http://api.wamp.ws/procedure#" + "auth", Void.class, new Wamp.CallHandler() {
-                @Override
-                public void onResult(final Object result) {
-                    asyncWamp.set(null);
-                }
-
-                @Override
-                public void onError(final String errorUri, final String errorDesc) {
-                    asyncWamp.setException(new GAException(errorDesc));
-                }
-            }, authSignature(authReq));
-        } catch (final SignatureException e) {
-            asyncWamp.setException(e);
-        }
-        return asyncWamp;
-    }
-
     public ListenableFuture<Void> connect() {
         final ListenableFuture<AuthReq> getAuthReq = Futures.transform(low_level_connect(), new AsyncFunction<Void, AuthReq>() {
             @Override
             public ListenableFuture<AuthReq> apply(final Void input) throws Exception {
-                return getAuthReq();
+                return Futures.immediateFuture(new AuthReq("", ""));
             }
         }, es);
 
         final ListenableFuture<Void> connectAuthed = Futures.transform(getAuthReq, new AsyncFunction<AuthReq, Void>() {
             @Override
             public ListenableFuture<Void> apply(final AuthReq input) throws Exception {
-                return doAuth(input);
+                return Futures.immediateFuture(null);
             }
         }, es);
 
@@ -412,29 +488,11 @@ public class WalletClient {
             @Override
             public void onSuccess(@Nullable final Void result) {
 
-                mConnection.subscribe("http://greenaddressit.com/block_count", Map.class, new Wamp.EventHandler() {
+                clientSubscribe("com.greenaddress.blocks", Map.class, new EventHandler() {
                     @Override
                     public void onEvent(final String topicUri, final Object event) {
                         Log.i(TAG, "BLOCKS IS " + event.toString());
                         m_notificationHandler.onNewBlock(Integer.parseInt(((Map) event).get("count").toString()));
-                    }
-                });
-
-
-                mConnection.subscribe("http://greenaddressit.com/tx_notify", Map.class, new Wamp.EventHandler() {
-                    @Override
-                    public void onEvent(final String topicUri, final Object event) {
-                        final Map<?, ?> res = (Map) event;
-                        final String txhash = (String) res.get("txhash"),
-                                value = (String) res.get("value"),
-                                wallet_id = (String) res.get("wallet_id");
-                        final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
-                        final int[] subaccounts_int = new int[subaccounts.size()];
-                        for (int i = 0; i < subaccounts.size(); ++i) {
-                            subaccounts_int[i] = ((Integer) subaccounts.get(i));
-                        }
-                        m_notificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
-                                subaccounts_int, Long.valueOf(value), txhash);
                     }
                 });
             }
@@ -448,60 +506,109 @@ public class WalletClient {
         return connectAuthed;
     }
 
+    private void subscribeToWallet() {
+        clientSubscribe("com.greenaddress.txs.wallet_" + loginData.receiving_id, Map.class, new EventHandler() {
+            @Override
+            public void onEvent(final String topicUri, final Object event) {
+                final Map<?, ?> res = (Map) event;
+                final String txhash = (String) res.get("txhash"),
+                        value = (String) res.get("value"),
+                        wallet_id = (String) res.get("wallet_id");
+                final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
+                final int[] subaccounts_int = new int[subaccounts.size()];
+                for (int i = 0; i < subaccounts.size(); ++i) {
+                    subaccounts_int[i] = ((Integer) subaccounts.get(i));
+                }
+                m_notificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
+                        subaccounts_int, Long.valueOf(value), txhash);
+            }
+        });
+    }
+
     private ListenableFuture<Void> low_level_connect() {
         final SettableFuture<Void> asyncWamp = SettableFuture.create();
-        final String wsuri = Network.GAIT_WAMP_URL;
-        mConnection = new WampConnection();
-        final WampOptions options = new WampOptions();
-        options.setReceiveTextMessagesRaw(true);
-        options.setMaxMessagePayloadSize(1024 * 1024);
-        options.setMaxFramePayloadSize(1024 * 1024);
-        options.setTcpNoDelay(true);
-
-        Wamp.ConnectionHandler handler = new Wamp.ConnectionHandler() {
-
-            WebSocketMessage.Close c = null;
-
+        mScheduler.createWorker().schedule(new Action0() {
             @Override
-            public void onOpen() {
-                asyncWamp.set(null);
-            }
-
-            @Override
-            public void onClose(final WebSocket.WebSocketConnectionObserver.WebSocketCloseNotification webSocketCloseNotification, final String s) {
-                int code = webSocketCloseNotification.ordinal();
-
-                if (c != null) {
-                    code = c.getCode();
-                    c = null;
+            public void call() {
+                final String wsuri = Network.GAIT_WAMP_URL;
+                final String token;
+                final WampClientBuilder builder = new WampClientBuilder();
+                final IWampConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
+                try {
+                    token = getToken();
+                } catch (final IOException e) {
+                    asyncWamp.setException(e);
+                    return;
+                }
+                try {
+                    builder.withConnectorProvider(connectorProvider)
+                            .withProxyAddress(proxyAddress)
+                            .withUri(wsuri)
+                            .withRealm("realm1")
+                            .withNrReconnects(0)
+                            .withAuthMethod(new WampCra(token))
+                            .withAuthId(token);
+                } catch (final ApplicationError e) {
+                    asyncWamp.setException(e);
+                    return;
                 }
 
-                m_notificationHandler.onConnectionClosed(code);
-                asyncWamp.setException(new GAException(s));
+                // FIXME: add proxy to wamp connection
+                // final String wstoruri = String.format("ws://%s/ws/inv", Network.GAIT_ONION);
+                // final String ws2toruri = String.format("ws://%s/v2/ws", Network.GAIT_ONION);
 
+                try {
+                    mConnection = builder.build();
+                } catch (final Exception e) {
+                    asyncWamp.setException(new GAException(e.toString()));
+                    return;
+                }
+
+                mConnection.statusChanged()
+                    .observeOn(mScheduler)
+                    .subscribe(new Action1<WampClient.State>() {
+
+                        boolean initialDisconnectedStateSeen = false;
+                        boolean connected = false;
+
+                        @Override
+                        public void call(final WampClient.State newStatus) {
+                            if (newStatus instanceof WampClient.ConnectedState) {
+                                // Client got connected to the remote router
+                                // and the session was established
+                                connected = true;
+                                asyncWamp.set(null);
+                            } else if (newStatus instanceof WampClient.DisconnectedState) {
+                                if (!initialDisconnectedStateSeen) {
+                                    // First state set is always 'disconnected'
+                                    initialDisconnectedStateSeen = true;
+                                } else {
+                                    if (connected) {
+                                        // Client got disconnected from the remote router
+                                        m_notificationHandler.onConnectionClosed(0);
+                                    } else {
+                                        // or the last possible connect attempt failed
+                                        asyncWamp.setException(new GAException("Disconnected"));
+                                    }
+                                }
+                            }
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(final Throwable throwable) {
+                            Log.d(TAG, throwable.toString());
+                        }
+                    });
+                try {
+                    mConnection.open();
+                } catch (final IllegalStateException e) {
+                    // already disconnected
+                    return;
+                }
             }
+        });
 
-            @Override
-            public void onCloseMessage(final WebSocketMessage.Close close) {
-                Log.i(TAG, "onCloseMessage code=" + close.getCode() + "; reason=" + close.getReason());
-                c = close;
-            }
-        };
-        try {
-            mConnection.connect(wsuri, handler, options);
-        } catch (final NullPointerException e) {
-            // FIXME: it shouldn't be caught here, it's a workaround for the following exception
-            //        which should be fixed in Autobahn-SW:
-            // java.lang.NullPointerException
-            //  at de.tavendo.autobahn.secure.WebSocketConnection.scheduleReconnect(WebSocketConnection.java:255)
-            //  at de.tavendo.autobahn.secure.WebSocketConnection.onClose(WebSocketConnection.java:279)
-            //  at de.tavendo.autobahn.secure.WebSocketConnection.connect(WebSocketConnection.java:226)
-            //  at de.tavendo.autobahn.secure.WebSocketConnection.connect(WebSocketConnection.java:172)
 
-            asyncWamp.setException(new GAException(e.toString()));
-            // don't call onConnectionClosed here because it results in infinite recursive reconnection
-            // in GaService
-        }
         return asyncWamp;
     }
 
@@ -621,7 +728,7 @@ public class WalletClient {
         Futures.addCallback(signature_arg, new FutureCallback<String[]>() {
             @Override
             public void onSuccess(final @Nullable String[] result) {
-                mConnection.call("http://greenaddressit.com/login/authenticate", Object.class, new Wamp.CallHandler() {
+                clientCall("http://greenaddressit.com/login/authenticate", Object.class, new CallHandler() {
                     @Override
                     public void onResult(final Object loginData) {
                         try {
@@ -630,6 +737,7 @@ public class WalletClient {
                                 asyncWamp.setException(new LoginFailed());
                             } else {
                                 WalletClient.this.loginData = new LoginData((Map) loginData);
+                                subscribeToWallet();  // requires receiving_id to be set
                                 WalletClient.this.hdWallet = deterministicKey;
 
                                 asyncWamp.set(WalletClient.this.loginData);
@@ -663,7 +771,7 @@ public class WalletClient {
                 final SettableFuture<String> asyncWamp = SettableFuture.create();
                 final Address address = new Address(Network.NETWORK, addr);
 
-                mConnection.call("http://greenaddressit.com/login/get_challenge", String.class, new Wamp.CallHandler() {
+                clientCall("http://greenaddressit.com/login/get_challenge", String.class, new CallHandler() {
                     @Override
                     public void onResult(final Object result) {
                         asyncWamp.set(result.toString());
@@ -687,7 +795,7 @@ public class WalletClient {
                 final SettableFuture<String> asyncWamp = SettableFuture.create();
                 final Address address = new Address(Network.NETWORK, addr);
 
-                mConnection.call("http://greenaddressit.com/login/get_trezor_challenge", String.class, new Wamp.CallHandler() {
+                clientCall("http://greenaddressit.com/login/get_trezor_challenge", String.class, new CallHandler() {
                     @Override
                     public void onResult(final Object result) {
                         asyncWamp.set(result.toString());
@@ -724,7 +832,7 @@ public class WalletClient {
 
     public ListenableFuture<LoginData> pinLogin(final PinData data, final String pin, final String device_id) {
         final SettableFuture<DeterministicKey> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/pin/get_password", String.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/pin/get_password", String.class, new CallHandler() {
             @Override
             public void onResult(final Object pass) {
                 final String password = pass.toString();
@@ -762,7 +870,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getMyTransactions(final Integer subaccount) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/txs/get_list_v2", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/txs/get_list_v2", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object txs) {
                 asyncWamp.set((Map) txs);
@@ -778,7 +886,7 @@ public class WalletClient {
 
     public ListenableFuture<Map> getNewAddress(final int subaccount) {
         final SettableFuture<Map> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/vault/fund", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/vault/fund", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object address) {
                 asyncWamp.set((Map) address);
@@ -794,7 +902,7 @@ public class WalletClient {
 
     private ListenableFuture<PinData> getPinData(final String pin, final SetPinData setPinData) {
         final SettableFuture<PinData> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/pin/get_password", String.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/pin/get_password", String.class, new CallHandler() {
 
             @Override
             public void onResult(final Object password) {
@@ -841,7 +949,7 @@ public class WalletClient {
             return asyncWamp;
         }
 
-        mConnection.call("http://greenaddressit.com/pin/set_pin_login", String.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/pin/set_pin_login", String.class, new CallHandler() {
 
             @Override
             public void onResult(final Object ident) {
@@ -870,7 +978,7 @@ public class WalletClient {
 
     public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {
         final SettableFuture<PreparedTransaction.PreparedData> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/vault/prepare_tx", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/vault/prepare_tx", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object prepared) {
                 asyncWamp.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, loginData.subaccounts, httpClient));
@@ -896,7 +1004,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/vault/process_bip0070_url", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/vault/process_bip0070_url", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object data) {
                 asyncWamp.set((Map) data);
@@ -926,7 +1034,7 @@ public class WalletClient {
             dataClone.put(key, privateData.get(key));
         }
 
-        mConnection.call("http://greenaddressit.com/vault/prepare_payreq", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/vault/prepare_payreq", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object prepared) {
                 asyncWamp.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, loginData.subaccounts, httpClient));
@@ -947,7 +1055,7 @@ public class WalletClient {
             pubKeyObjs[i] = pubKey[i] & 0xff;
         }
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/vault/prepare_sweep_social", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/vault/prepare_sweep_social", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object prepared) {
                 asyncWamp.set((Map) prepared);
@@ -964,7 +1072,7 @@ public class WalletClient {
 
     public ListenableFuture<String> sendTransaction(final List<String> signatures, final Object TfaData) {
         final SettableFuture<String> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/vault/send_tx", String.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/vault/send_tx", String.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
                 asyncWamp.set(o.toString());
@@ -1091,7 +1199,7 @@ public class WalletClient {
         final String newJSON = os.toString();
 
         final SettableFuture<Boolean> ret = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/login/set_appearance", Map.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/login/set_appearance", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
                 if (!updateImmediately) {
@@ -1120,7 +1228,7 @@ public class WalletClient {
 
     public ListenableFuture<Object> requestTwoFacCode(final String method, final String action, final Object data) {
         final SettableFuture<Object> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/twofactor/request_" + method, Object.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/twofactor/request_" + method, Object.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set(result);
@@ -1141,7 +1249,7 @@ public class WalletClient {
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs() {
         final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new CallHandler() {
             @Override
             public void onResult(final Object txs) {
                 asyncWamp.set((ArrayList) txs);
@@ -1157,7 +1265,7 @@ public class WalletClient {
 
     public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
         final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/txs/get_raw_unspent_output", String.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/txs/get_raw_unspent_output", String.class, new CallHandler() {
             @Override
             public void onResult(final Object tx) {
                 asyncWamp.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
@@ -1173,7 +1281,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> initEnableTwoFac(final String type, final String details, final Map<?, ?> twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/twofactor/init_enable_" + type, Boolean.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/twofactor/init_enable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);
@@ -1190,7 +1298,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> enableTwoFac(final String type, final String code) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);
@@ -1206,7 +1314,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> enableTwoFac(final String type, final String code, final Object twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);
@@ -1222,7 +1330,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> disableTwoFac(final String type, final Map<String, String> twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        mConnection.call("http://greenaddressit.com/twofactor/disable_" + type, Boolean.class, new Wamp.CallHandler() {
+        clientCall("http://greenaddressit.com/twofactor/disable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);

@@ -34,6 +34,14 @@
 -dontwarn com.mysql.**
 -dontwarn org.h2.**
 -dontwarn org.postgresql.**
+-dontwarn org.jboss.**
+-dontwarn org.eclipse.**
+-dontwarn io.netty.**
+-dontwarn org.apache.**
+-dontwarn org.w3c.**
+-dontwarn com.ibm.**
+-dontwarn com.sun.**
+
 
 
 -keepnames class ** { *; }

@@ -6,6 +6,9 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/bitcoinj/bitcoinj.iml" filepath="$PROJECT_DIR$/bitcoinj/bitcoinj.iml" />
       <module fileurl="file://$PROJECT_DIR$/bitcoinj/core/bitcoinj-core.iml" filepath="$PROJECT_DIR$/bitcoinj/core/bitcoinj-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jawampa/jawampa.iml" filepath="$PROJECT_DIR$/jawampa/jawampa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jawampa/jawampa-core/jawampa-core.iml" filepath="$PROJECT_DIR$/jawampa/jawampa-core/jawampa-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jawampa/jawampa-netty/jawampa-netty.iml" filepath="$PROJECT_DIR$/jawampa/jawampa-netty/jawampa-netty.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/material-dialogs/material-dialogs.iml" filepath="$PROJECT_DIR$/app/material-dialogs/material-dialogs.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/material-dialogs/core/material-dialogs-core.iml" filepath="$PROJECT_DIR$/app/material-dialogs/core/material-dialogs-core.iml" />
     </modules>

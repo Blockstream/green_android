@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -219,13 +220,19 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                     }
 
                     final String newLower = newString.toLowerCase();
+
                     if (newString.isEmpty() || newLower.contains(".onion")) {
 
                         final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                        final String proxyHost = sharedPref.getString("proxy_host", null);
+                        final String proxyPort = sharedPref.getString("proxy_port", null);
+
                         if (currentapiVersion >= 23 &&
-                                (newLower.contains(".onion"))) {
+                                (newLower.contains(".onion")) && (proxyHost == null || proxyPort == null)) {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
                             // and HS connectivity.
+                            // but work with Orbot socks if set
                             new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
                                     .title(getResources().getString(R.string.enterValidAddressTitleTorDisabled))
                                     .content(getResources().getString(R.string.enterValidAddressTextTorDisabled))
