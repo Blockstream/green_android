@@ -42,7 +42,13 @@
 -dontwarn com.ibm.**
 -dontwarn com.sun.**
 
-
+-keepattributes Signature,InnerClasses
+-keepclasseswithmembers class io.netty.** {
+    *;
+}
+-keepnames class io.netty.** {
+    *;
+}
 
 -keepnames class ** { *; }
 -keepattributes SourceFile,LineNumberTable
