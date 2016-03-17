@@ -169,9 +169,14 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Throwable t) {
-                        continueButton.setEnabled(true);
-                        Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onFailure(final @NonNull Throwable t) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                continueButton.setEnabled(true);
+                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                         t.printStackTrace();
                     }
                 });
@@ -220,9 +225,14 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Throwable t) {
-                        continueButton.setEnabled(true);
-                        Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onFailure(final @NonNull Throwable t) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                continueButton.setEnabled(true);
+                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                         t.printStackTrace();
                     }
                 });
@@ -289,10 +299,15 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Throwable t) {
-                        continueButton.setEnabled(true);
-                        Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                        t.printStackTrace();
+                    public void onFailure(final @NonNull Throwable t) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                continueButton.setEnabled(true);
+                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                t.printStackTrace();
+                            }
+                        });
                     }
                 });
             }
@@ -327,9 +342,14 @@ public class TwoFactorActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Throwable t) {
-                        continueButton.setEnabled(true);
-                        Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    public void onFailure(final @NonNull Throwable t) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                continueButton.setEnabled(true);
+                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                         t.printStackTrace();
                     }
                 });

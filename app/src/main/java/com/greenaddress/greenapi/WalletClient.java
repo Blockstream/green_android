@@ -142,7 +142,21 @@ public class WalletClient {
         }, new Action1<Throwable>() {
             @Override
             public void call(Throwable throwable) {
-                handler.onError(throwable.toString(), throwable.toString());
+
+                if (throwable instanceof ApplicationError) {
+                    ApplicationError throwableAppError = (ApplicationError) throwable;
+                    if (throwableAppError.arguments().size() >= 2) {
+                        throwable.printStackTrace();
+                        handler.onError(
+                                throwableAppError.arguments().get(0).asText(),
+                                throwableAppError.arguments().get(1).asText()
+                        );
+                    } else {
+                        handler.onError(throwable.toString(), throwable.toString());
+                    }
+                } else {
+                    handler.onError(throwable.toString(), throwable.toString());
+                }
             }
         });
     }
