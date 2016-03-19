@@ -48,10 +48,10 @@ android {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 67
+        versionCode 68
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
-        versionName "1.67"
+        versionName "1.68"
     }
     buildTypes {
         release {
