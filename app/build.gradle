@@ -87,17 +87,7 @@ android {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
     }
 
-    project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
-    subprojects {
-        project.plugins.whenPluginAdded { plugin ->
-            if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)) {
-                project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
-            } else if ("com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
-                project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
-            }
-        }
-    }
 }
 
 configurations {
