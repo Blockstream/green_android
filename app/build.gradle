@@ -81,8 +81,15 @@ android {
             versionName "" + defaultConfig.getProperty("versionName") + "_segwittest"
         }
     }
+    ext {
+        travisBuild = System.getenv("TRAVIS") == "true"
+        // allows for -Dpre-dex=false to be set
+        preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
+    }
     dexOptions {
         javaMaxHeapSize "2g"
+        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
+        preDexLibraries = preDexEnabled && !travisBuild
     }
 }
 

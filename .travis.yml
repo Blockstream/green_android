@@ -15,6 +15,6 @@ android:
 jdk:
     - oraclejdk7
 
-script: "./gradlew assembleDebug"
+script: "./gradlew build connectedCheck"
 
 before_install: "git submodule update --init --recursive"
