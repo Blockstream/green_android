@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -205,12 +208,29 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
             }
 
-            if (t.doubleSpentBy != null) {
-                if (t.doubleSpentBy.equals("malleability") || t.doubleSpentBy.equals("update")) {
-                    doubleSpentByText.setText(t.doubleSpentBy);
-                } else {
-                    doubleSpentByText.setText(Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>"));
+            if (t.doubleSpentBy != null || t.replaced_hashes.size() > 0) {
+                CharSequence res = "";
+                if (t.doubleSpentBy != null) {
+                    if (t.doubleSpentBy.equals("malleability") || t.doubleSpentBy.equals("update")) {
+                        res = t.doubleSpentBy;
+                    } else {
+                        res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>");
+                    }
+                    if (t.replaced_hashes.size() > 0) {
+                        res = TextUtils.concat(res, "; ");
+                    }
                 }
+                if (t.replaced_hashes.size() > 0) {
+                    res = TextUtils.concat(res, Html.fromHtml("replaces transactions:<br/>"));
+                    for (int i = 0; i < t.replaced_hashes.size(); ++i) {
+                        if (i > 0) {
+                            res = TextUtils.concat(res, Html.fromHtml("<br/>"));
+                        }
+                        String txhash = t.replaced_hashes.get(i);
+                        res = TextUtils.concat(res, Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + txhash + "\">" + txhash + "</a>"));
+                    }
+                }
+                doubleSpentByText.setText(res);
             } else {
                 doubleSpentByText.setVisibility(View.GONE);
                 doubleSpentByTitle.setVisibility(View.GONE);

@@ -39,6 +39,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -54,6 +55,7 @@ public class MainFragment extends GAFragment implements Observer {
     private MaterialDialog spvStatusDialog = null;
     private View rootView;
     private List<Transaction> currentList;
+    private Map<String, List<String> > replacedTxs;
     @Nullable
     private Observer curBalanceObserver;
     private int curSubaccount;
@@ -465,6 +467,10 @@ public class MainFragment extends GAFragment implements Observer {
             listView.setAdapter(new ListTransactionsAdapter(activity, R.layout.list_element_transaction, currentList, btcUnit));
         }
 
+        if (replacedTxs == null || newAdapter) {
+            replacedTxs = new HashMap<>();
+        }
+
         final ListenableFuture<Map<?, ?>> txFuture = getGAService().getMyTransactions(curSubaccount);
 
         Futures.addCallback(txFuture, new FutureCallback<Map<?, ?>>() {
@@ -510,13 +516,38 @@ public class MainFragment extends GAFragment implements Observer {
                         final String oldFirstTxHash = currentList.size() > 0? currentList.get(0).txhash : null;
 
                         currentList.clear();
+                        replacedTxs.clear();
                         for (int i = 0; i < resultList.size(); ++i) {
                             try {
-                                currentList.add(processGATransaction((Map<String, Object>) resultList.get(i), (Integer) result.get("cur_block")));
+                                Map<String, Object> txMap = (Map<String, Object>) resultList.get(i);
+                                if (txMap.get("replaced_by") != null) {
+                                    ArrayList replaced_by_arr = (ArrayList) txMap.get("replaced_by");
+                                    for (int j = 0; j < replaced_by_arr.size(); ++j) {
+                                        String replaced_by = (String) replaced_by_arr.get(j);
+                                        if (!replacedTxs.containsKey(replaced_by)) {
+                                            replacedTxs.put(replaced_by, new ArrayList<String>());
+                                        }
+                                        replacedTxs.get(replaced_by).add((String) txMap.get("txhash"));
+                                    }
+                                } else {
+                                    currentList.add(processGATransaction(txMap, (Integer) result.get("cur_block")));
+                                }
                             } catch (@NonNull final ParseException e) {
                                 e.printStackTrace();
                             }
                         }
+
+                        for (int i = 0; i < currentList.size(); ++i) {
+                            String txhash = currentList.get(i).txhash;
+                            if (replacedTxs.containsKey(txhash)) {
+                                for (int j = 0; j < replacedTxs.get(txhash).size(); ++j) {
+                                    currentList.get(i).replaced_hashes.add(
+                                            replacedTxs.get(txhash).get(j)
+                                    );
+                                }
+                            }
+                        }
+
                         String newFirstTxHash = null;
                         if (currentList.size() > 0) {
                             newFirstTxHash = currentList.get(0).txhash;

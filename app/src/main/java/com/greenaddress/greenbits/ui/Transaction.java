@@ -1,7 +1,9 @@
 package com.greenaddress.greenbits.ui;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Transaction implements Serializable {
 
@@ -26,6 +28,7 @@ public class Transaction implements Serializable {
     public final boolean isSpent;
     public final long fee;
     public final int size;
+    public final List<String> replaced_hashes;
 
     public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn, final long fee, final int size, final String doubleSpentBy, final boolean replaceable) {
         this.type = type;
@@ -43,6 +46,7 @@ public class Transaction implements Serializable {
         this.size = size;
         this.doubleSpentBy = doubleSpentBy;
         this.replaceable = replaceable;
+        this.replaced_hashes = new ArrayList<String>();
     }
 
     public String toString() {
