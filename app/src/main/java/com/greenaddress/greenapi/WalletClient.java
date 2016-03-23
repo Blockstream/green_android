@@ -101,7 +101,7 @@ public class WalletClient {
          *
          * @param result     The RPC result transformed into the type that was specified in call.
          */
-        public void onResult(Object result);
+        void onResult(Object result);
 
         /**
          * Fired on call failure.
@@ -109,7 +109,7 @@ public class WalletClient {
          * @param errorUri   The URI or CURIE of the error that occurred.
          * @param errorDesc  A human readable description of the error.
          */
-        public void onError(String errorUri, String errorDesc);
+        void onError(String errorUri, String errorDesc);
     }
 
     /**
@@ -123,7 +123,7 @@ public class WalletClient {
          * @param topicUri   The URI or CURIE of the topic the event was published to.
          * @param event      The event, transformed into the type that was specified when subscribing.
          */
-        public void onEvent(String topicUri, Object event);
+        void onEvent(String topicUri, Object event);
     }
 
     private void clientCall(final String procedure, final Class resClass, final CallHandler handler, Object... args) {
