@@ -718,7 +718,7 @@ public class WalletClient {
                     final SettableFuture<String[]> res = SettableFuture.create();
                     Futures.addCallback(childKey.getPubKey(), new FutureCallback<ECKey>() {
                         @Override
-                        public void onSuccess(@Nullable ECKey result) {
+                        public void onSuccess(final @Nullable ECKey result) {
                             int recId;
                             for (recId = 0; recId < 4; ++recId) {
                                 ECKey recovered = ECKey.recoverFromSignature(recId, signature, challenge_sha, true);
@@ -730,7 +730,7 @@ public class WalletClient {
                         }
 
                         @Override
-                        public void onFailure(Throwable t) {
+                        public void onFailure(final Throwable t) {
                             res.setException(t);
                         }
                     });
