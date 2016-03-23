@@ -4,11 +4,11 @@
 [submodule "material-dialogs"]
 	path = app/material-dialogs
 	url = https://github.com/greenaddress/material-dialogs
-	branch = v0.8.5.6_ga
+	branch = v0.8.5.7_ga
 [submodule "bitcoinj"]
 	path = bitcoinj
 	url = https://github.com/greenaddress/bitcoinj.git
-	branch = release-0.13.5-ga
+	branch = release-0.13.6-ga
 [submodule "jawampa"]
 	path = jawampa
 	url = https://github.com/greenaddress/jawampa.git
