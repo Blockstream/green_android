@@ -36,7 +36,7 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
     private QrBitmap(@NonNull final Parcel in) {
         data = in.readString();
         background_color = in.readInt();
-        qrcode = in.readParcelable(null);
+        qrcode = in.readParcelable(getClass().getClassLoader());
     }
 
     public QrBitmap(@NonNull final String data, final int background_color) {
