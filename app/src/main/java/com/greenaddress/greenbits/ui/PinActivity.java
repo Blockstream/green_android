@@ -60,6 +60,10 @@ public class PinActivity extends ActionBarActivity implements Observer {
 
 
     private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final String pinText, @NonNull final TextView pinError) {
+        if (pinText.length() < 4) {
+            Toast.makeText(PinActivity.this, "PIN has to be between 4 and 15 long", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final @Nullable Void result) {
