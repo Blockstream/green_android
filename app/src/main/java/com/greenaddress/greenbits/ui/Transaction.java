@@ -17,7 +17,7 @@ public class Transaction implements Serializable {
     public final long amount;
     public final String counterparty;
     public final String receivedOn;
-    public boolean replaceable;
+    public final boolean replaceable;
     public final String txhash;
     public final String doubleSpentBy;
     public final Date date;

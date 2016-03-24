@@ -466,7 +466,7 @@ public class SPV {
         });
     }
 
-    void setupPeerGroup(final PeerGroup peerGroup, final String trusted_addr) {
+    private void setupPeerGroup(final PeerGroup peerGroup, final String trusted_addr) {
         SPVMode mode;
         if (!trusted_addr.isEmpty() && trusted_addr.contains(".")) {
             final String trusted_lower = trusted_addr.toLowerCase();

@@ -80,7 +80,7 @@ public class WalletClient {
     private final INotificationHandler m_notificationHandler;
     private final ListeningExecutorService es;
     private WampClient mConnection;
-    private Scheduler mScheduler = Schedulers.newThread();
+    private final Scheduler mScheduler = Schedulers.newThread();
     private LoginData loginData;
     private ISigningWallet hdWallet;
 
