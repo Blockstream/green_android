@@ -227,6 +227,11 @@ public class WalletClient {
         mnemonics = null;
 
         hdWallet = null;
+
+        if (mConnection != null) {
+            mConnection.close();
+            mConnection = null;
+        }
     }
 
 
