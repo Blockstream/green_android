@@ -174,10 +174,6 @@ public class WalletClient {
         });
     }
 
-    private void unsubscribeWrapper() { }
-
-    private void disconnectWrapper() { }
-
     public WalletClient(final INotificationHandler notificationHandler, final ListeningExecutorService es) {
         this.m_notificationHandler = notificationHandler;
         this.es = es;
@@ -231,14 +227,6 @@ public class WalletClient {
         mnemonics = null;
 
         hdWallet = null;
-        if (mConnection != null) {
-            unsubscribeWrapper();
-            try {
-                disconnectWrapper();
-            } catch (final NullPointerException npe) {
-                // ignore
-            }
-        }
     }
 
 
@@ -268,7 +256,7 @@ public class WalletClient {
 
         return httpClient.newCall(request).execute().body().string();
     }
-    
+
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String device_id) {
 
         final SettableFuture<DeterministicKey> asyncWamp = SettableFuture.create();
@@ -400,7 +388,6 @@ public class WalletClient {
         return asyncWamp;
     }
 
-
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int pointer) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
         clientCall("http://greenaddressit.com/txs/get_balance", Map.class, new CallHandler() {
@@ -465,43 +452,6 @@ public class WalletClient {
         return asyncWamp;
     }
 
-    public ListenableFuture<Void> connect() {
-        final ListenableFuture<AuthReq> getAuthReq = Futures.transform(low_level_connect(), new AsyncFunction<Void, AuthReq>() {
-            @Override
-            public ListenableFuture<AuthReq> apply(final Void input) throws Exception {
-                return Futures.immediateFuture(new AuthReq("", ""));
-            }
-        }, es);
-
-        final ListenableFuture<Void> connectAuthed = Futures.transform(getAuthReq, new AsyncFunction<AuthReq, Void>() {
-            @Override
-            public ListenableFuture<Void> apply(final AuthReq input) throws Exception {
-                return Futures.immediateFuture(null);
-            }
-        }, es);
-
-        Futures.addCallback(connectAuthed, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(@Nullable final Void result) {
-
-                clientSubscribe("com.greenaddress.blocks", Map.class, new EventHandler() {
-                    @Override
-                    public void onEvent(final String topicUri, final Object event) {
-                        Log.i(TAG, "BLOCKS IS " + event.toString());
-                        m_notificationHandler.onNewBlock(Integer.parseInt(((Map) event).get("count").toString()));
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-
-            }
-        }, es);
-
-        return connectAuthed;
-    }
-
     private void subscribeToWallet() {
         clientSubscribe("com.greenaddress.txs.wallet_" + loginData.receiving_id, Map.class, new EventHandler() {
             @Override
@@ -521,7 +471,7 @@ public class WalletClient {
         });
     }
 
-    private ListenableFuture<Void> low_level_connect() {
+    public ListenableFuture<Void> connect() {
         final SettableFuture<Void> asyncWamp = SettableFuture.create();
         mScheduler.createWorker().schedule(new Action0() {
             @Override
@@ -599,10 +549,28 @@ public class WalletClient {
                     mConnection.open();
                 } catch (final IllegalStateException e) {
                     // already disconnected
-                    return;
                 }
             }
         });
+
+        Futures.addCallback(asyncWamp, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(@Nullable final Void result) {
+
+                clientSubscribe("com.greenaddress.blocks", Map.class, new EventHandler() {
+                    @Override
+                    public void onEvent(final String topicUri, final Object event) {
+                        Log.i(TAG, "BLOCKS IS " + event.toString());
+                        m_notificationHandler.onNewBlock(Integer.parseInt(((Map) event).get("count").toString()));
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+
+            }
+        }, es);
 
 
         return asyncWamp;
