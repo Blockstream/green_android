@@ -4,6 +4,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -129,8 +130,8 @@ public class WalletClient {
 
     private void clientCall(final String procedure, final Class resClass, final CallHandler handler, Object... args) {
         final String translatedProcedure = procedure.replace("http://greenaddressit.com/", "com.greenaddress.").replace("/", ".");
-        final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        final com.fasterxml.jackson.databind.node.ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
+        final ObjectMapper mapper = new ObjectMapper();
+        final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
         final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
         mConnection.call(
                 translatedProcedure, flags, argsNode, null
@@ -163,8 +164,8 @@ public class WalletClient {
     private void clientSubscribe(final String s, final Class mapClass, final EventHandler eventHandler) {
         mConnection.makeSubscription(s).observeOn(mScheduler).subscribe(new Action1<PubSubData>() {
             @Override
-            public void call(PubSubData pubSubData) {
-                final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            public void call(final PubSubData pubSubData) {
+                final ObjectMapper mapper = new ObjectMapper();
 
                 eventHandler.onEvent(s, mapper.convertValue(
                         pubSubData.arguments().get(0),
@@ -173,7 +174,7 @@ public class WalletClient {
             }
         }, new Action1<Throwable>() {
             @Override
-            public void call(Throwable throwable) {
+            public void call(final Throwable throwable) {
                 Log.i(TAG, "Subscribe failed ("+s+"): " + throwable.toString());
             }
         });
