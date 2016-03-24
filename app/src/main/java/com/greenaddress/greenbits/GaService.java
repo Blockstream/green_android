@@ -30,7 +30,6 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
@@ -843,10 +842,6 @@ public class GaService extends Service {
     public ListenableFuture<PreparedTransaction> preparePayreq(@NonNull final Coin amount, @NonNull final Map<?, ?> data, @NonNull final Map<String, Object> privateData) {
         addRequestForRawTxsIfNecessary(privateData);
         return client.preparePayreq(amount, data, privateData);
-    }
-
-    public boolean isBTChip() {
-        return client.getHdWallet() instanceof BTChipHWWallet;
     }
 
     public String getReceivingId() {
