@@ -44,11 +44,7 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -58,8 +54,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import rx.Scheduler;
 import rx.functions.Action0;
@@ -274,19 +268,7 @@ public class WalletClient {
 
         return httpClient.newCall(request).execute().body().string();
     }
-
-    private String authSignature(final AuthReq request) throws SignatureException {
-        try {
-            final Key sk = new SecretKeySpec(request.token.getBytes(), "HmacSHA256");
-            final Mac mac = Mac.getInstance(sk.getAlgorithm());
-            mac.init(sk);
-            final byte[] hmac = mac.doFinal(request.challenge.getBytes());
-            return Base64.encodeToString(hmac, Base64.NO_WRAP);
-        } catch (final NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new SignatureException("error building signature, invalid key or no such algorithm in device");
-        }
-    }
-
+    
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String device_id) {
 
         final SettableFuture<DeterministicKey> asyncWamp = SettableFuture.create();
