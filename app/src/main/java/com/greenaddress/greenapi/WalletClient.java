@@ -4,6 +4,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -135,22 +136,20 @@ public class WalletClient {
                 translatedProcedure, flags, argsNode, null
         ).observeOn(mScheduler).subscribe(new Action1<Reply>() {
             @Override
-            public void call(Reply reply) {
+            public void call(final Reply reply) {
                 final JsonNode node = reply.arguments().get(0);
                 handler.onResult(mapper.convertValue(node, resClass));
             }
         }, new Action1<Throwable>() {
             @Override
-            public void call(Throwable throwable) {
+            public void call(final Throwable throwable) {
 
                 if (throwable instanceof ApplicationError) {
-                    ApplicationError throwableAppError = (ApplicationError) throwable;
-                    if (throwableAppError.arguments().size() >= 2) {
+                    final ApplicationError throwableAppError = (ApplicationError) throwable;
+                    final ArrayNode anode = throwableAppError.arguments();
+                    if (anode != null && anode.size() >= 2) {
                         throwable.printStackTrace();
-                        handler.onError(
-                                throwableAppError.arguments().get(0).asText(),
-                                throwableAppError.arguments().get(1).asText()
-                        );
+                        handler.onError(anode.get(0).asText(), anode.get(1).asText());
                     } else {
                         handler.onError(throwable.toString(), throwable.toString());
                     }
