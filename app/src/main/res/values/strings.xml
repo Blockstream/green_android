@@ -205,4 +205,5 @@
 
 
     <string name="pref_default_port" translatable="false">8118</string>
+    <string name="optin_rbf">Enable opt-in Replace By Fee</string>
 </resources>

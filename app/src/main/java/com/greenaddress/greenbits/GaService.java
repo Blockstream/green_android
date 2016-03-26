@@ -563,7 +563,7 @@ public class GaService extends Service {
         return client.setPin(seed, mnemonic, pin, device_name);
     }
 
-    private void addRequestForRawTxsIfNecessary(@NonNull final Map<String, Object> privateData) {
+    private void preparePrivData(@NonNull final Map<String, Object> privateData) {
         final int subaccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
         final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subaccount);
@@ -572,17 +572,21 @@ public class GaService extends Service {
         } else {
             privateData.put("prevouts_mode", "skip");
         }
+
+        if (getAppearanceValue("replace_by_fee") != null) {
+            privateData.put("rbf_optin", getAppearanceValue("replace_by_fee"));
+        }
     }
 
     @NonNull
     public ListenableFuture<PreparedTransaction> prepareTx(@NonNull final Coin coinValue, final String recipient, @NonNull final Map<String, Object> privateData) {
-        addRequestForRawTxsIfNecessary(privateData);
+        preparePrivData(privateData);
         return client.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
     }
 
     @NonNull
     public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subaccount, final String recipient, @NonNull final Map<String, Object> privData) {
-        addRequestForRawTxsIfNecessary(privData);
+        preparePrivData(privData);
         return client.prepareTx(
                 getBalanceCoin(subaccount).longValue(),
                 recipient, "receiver", privData
@@ -840,7 +844,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<PreparedTransaction> preparePayreq(@NonNull final Coin amount, @NonNull final Map<?, ?> data, @NonNull final Map<String, Object> privateData) {
-        addRequestForRawTxsIfNecessary(privateData);
+        preparePrivData(privateData);
         return client.preparePayreq(amount, data, privateData);
     }
 

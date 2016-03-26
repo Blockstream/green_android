@@ -17,6 +17,7 @@ public class LoginData {
     public String gait_path;  // can change on first login (registration)
     public final int earliest_key_creation_time;
     public final boolean segwit;
+    public final boolean rbf;
 
     public LoginData(final Map<?, ?> map) throws IOException {
         this.exchange = (String) map.get("exchange");
@@ -30,6 +31,11 @@ public class LoginData {
             this.segwit = false;
         } else {
             this.segwit = (Boolean) map.get("segwit");
+        }
+        if (map.get("rbf") == null) {
+            this.rbf = false;
+        } else {
+            this.rbf = (Boolean) map.get("rbf");
         }
         if (map.containsKey("earliest_key_creation_time")) {
             this.earliest_key_creation_time = (Integer) map.get("earliest_key_creation_time");

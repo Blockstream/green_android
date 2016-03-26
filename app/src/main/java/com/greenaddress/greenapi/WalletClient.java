@@ -715,6 +715,13 @@ public class WalletClient {
                                 WalletClient.this.hdWallet = deterministicKey;
 
                                 asyncWamp.set(WalletClient.this.loginData);
+
+                                if (WalletClient.this.loginData.rbf &&
+                                        getAppearenceValue("replace_by_fee") == null) {
+                                    // enable rbf if server supports it and not disabled
+                                    // by user explicitly
+                                    setAppearanceValue("replace_by_fee", new Boolean(true), false);
+                                }
                             }
                         } catch (final ClassCastException | IOException e) {
 

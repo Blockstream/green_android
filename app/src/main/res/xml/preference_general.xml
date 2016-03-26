@@ -10,6 +10,9 @@
                         android:inputType="number"
                         android:hint="5"/>
 
+    <CheckBoxPreference android:key="optin_rbf"
+                        android:title="@string/optin_rbf" />
+
     <Preference android:key="ledger_wallet"
                 android:title="@string/improve_security_ledger"
                 android:dependency=""

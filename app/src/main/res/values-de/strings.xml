@@ -184,4 +184,5 @@
 
   <string name="pref_title_display_hostname">Hostname</string>
   <string name="pref_title_display_port">Port</string>
+  <string name="optin_rbf">Enable opt-in Replace By Fee</string>
 </resources>

@@ -4,10 +4,15 @@ import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.support.annotation.NonNull;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.ui.R;
+
+import javax.annotation.Nullable;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
@@ -56,6 +61,47 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     return false;
                 }
             });
+        }
+
+        // -- handle opt-in rbf
+        if (!gaService.getClient().getLoginData().rbf) {
+            getPreferenceScreen().removePreference(findPreference("optin_rbf"));
+        } else {
+            final CheckBoxPreference optin_rbf = (CheckBoxPreference) findPreference("optin_rbf");
+            optin_rbf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                    Futures.addCallback(
+                            gaService.setAppearanceValue("replace_by_fee", newValue, false),
+                            new FutureCallback<Boolean>() {
+                                @Override
+                                public void onSuccess(@Nullable Boolean result) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            optin_rbf.setChecked((Boolean) newValue);
+                                            optin_rbf.setEnabled(true);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Throwable t) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            optin_rbf.setEnabled(true);
+                                        }
+                                    });
+                                }
+                            });
+                    // disable until server confirms set
+                    optin_rbf.setEnabled(false);
+                    return false;
+                }
+            });
+            Boolean replace_by_fee = (Boolean) gaService.getAppearanceValue("replace_by_fee");
+            ((CheckBoxPreference) findPreference("optin_rbf")).setChecked(replace_by_fee);
         }
     }
 }
