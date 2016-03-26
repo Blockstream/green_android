@@ -3,7 +3,7 @@
 	url = https://github.com/wg/scrypt.git
 [submodule "material-dialogs"]
 	path = app/material-dialogs
-	url = https://github.com/greenaddress/material-dialogs
+	url = https://github.com/greenaddress/material-dialogs.git
 	branch = v0.8.5.7_ga
 [submodule "bitcoinj"]
 	path = bitcoinj
@@ -12,3 +12,6 @@
 [submodule "jawampa"]
 	path = jawampa
 	url = https://github.com/greenaddress/jawampa.git
+[submodule "secp256k1"]
+	path = app/secp256k1
+	url = https://github.com/bitcoin/secp256k1.git
