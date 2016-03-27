@@ -22,7 +22,7 @@ for ARCH in arm-linux-androideabi mipsel-linux-android x86; do
     ARCHDIR=../src/main/jniLibs/`echo $ARCH_SHORT | sed s/arm/armeabi/` # armeabi|mips|x86
     mkdir -p $ARCHDIR
     cp target/libscrypt.so $ARCHDIR
-    $ARCH-strip $ARCHDIR/libscrypt.so
+    $ANDROID_NDK/toolchains/$ARCH-4.9/prebuilt/$SYSTEM/bin/`echo $ARCH | sed s/x86/i686-linux-android/`-strip $ARCHDIR/libscrypt.so
 done
 
 cd ../secp256k1
@@ -47,7 +47,7 @@ for ARCH in arm-linux-androideabi mipsel-linux-android x86; do
     ARCHDIR=output/`echo $ARCH_SHORT | sed s/arm/armeabi/` # armeabi|mips|x86
     mkdir -p $ARCHDIR
     cp .libs/libsecp256k1.so $ARCHDIR
-    $ARCH-strip $ARCHDIR/libsecp256k1.so
+    $ANDROID_NDK/toolchains/`echo $ARCH | sed s/i686-linux-android/x86/`-4.9/prebuilt/$SYSTEM/bin/$ARCH-strip $ARCHDIR/libsecp256k1.so
 done
 
 cd ..
