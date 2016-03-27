@@ -248,6 +248,31 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp" />
         </LinearLayout>
+
+            <TextView
+                android:id="@+id/txUnconfirmedEstimatedBlocks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Will confirm after blocks (estimated): 15"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"/>
+
+            <Button
+                android:textColor="@color/white"
+                android:id="@+id/txUnconfirmedIncreaseFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/increaseFee" />
+
+            <TextView
+                android:id="@+id/txUnconfirmedRecommendation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="If you increase the fee now to the recommended level, the transaction will be expected to confirm after 2 blocks."
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                android:paddingBottom="20sp"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

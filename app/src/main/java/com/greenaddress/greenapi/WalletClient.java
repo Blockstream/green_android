@@ -566,12 +566,18 @@ public class WalletClient {
         Futures.addCallback(asyncWamp, new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable final Void result) {
-
                 clientSubscribe("com.greenaddress.blocks", Map.class, new EventHandler() {
                     @Override
                     public void onEvent(final String topicUri, final Object event) {
                         Log.i(TAG, "BLOCKS IS " + event.toString());
                         m_notificationHandler.onNewBlock(Integer.parseInt(((Map) event).get("count").toString()));
+                    }
+                });
+                clientSubscribe("com.greenaddress.fee_estimates", Map.class, new EventHandler() {
+                    @Override
+                    public void onEvent(final String topicUri, final Object event) {
+                        Log.i(TAG, "FEE_ESTIMATES IS " + event.toString());
+                        loginData.feeEstimates = (Map) event;
                     }
                 });
             }
@@ -1064,6 +1070,25 @@ public class WalletClient {
                 asyncWamp.setException(new GAException(s2));
             }
         }, signatures, TfaData);
+
+        return asyncWamp;
+    }
+
+
+
+    public ListenableFuture<String> sendRawTransaction(Transaction tx) {
+        final SettableFuture<String> asyncWamp = SettableFuture.create();
+        clientCall("http://greenaddressit.com/vault/send_raw_tx", String.class, new CallHandler() {
+            @Override
+            public void onResult(final Object o) {
+                asyncWamp.set(o.toString());
+            }
+
+            @Override
+            public void onError(final String s, final String s2) {
+                asyncWamp.setException(new GAException(s2));
+            }
+        }, new String(Hex.encode(tx.bitcoinSerialize())));
 
         return asyncWamp;
     }

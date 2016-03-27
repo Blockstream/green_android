@@ -11,8 +11,17 @@ public class Output {
     public final String script;
     public final Long value;
 
+    public Output(Integer subaccount, Integer pointer, Integer branch, Integer scriptType, String script, Long value) {
+        this.subaccount = subaccount;
+        this.pointer = pointer;
+        this.branch = branch;
+        this.scriptType = scriptType;
+        this.script = script;
+        this.value = value;
+    }
+
     public Output(final Map<?, ?> values) {
-        this.subaccount =(Integer) values.get("subaccount");
+        this.subaccount = (Integer) values.get("subaccount");
         this.pointer = (Integer) values.get("pointer");
         this.branch = (Integer) values.get("branch");
         this.scriptType = (Integer) values.get("script_type");

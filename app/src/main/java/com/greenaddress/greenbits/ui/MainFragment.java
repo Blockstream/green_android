@@ -158,7 +158,8 @@ public class MainFragment extends GAFragment implements Observer {
         return new Transaction(type, amount, counterparty,
                 df.parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
                 receivedOn, fee, size, (String) txJSON.get("double_spent_by"),
-                txJSON.get("rbf_optin") != null && (Boolean) txJSON.get("rbf_optin"));
+                txJSON.get("rbf_optin") != null && (Boolean) txJSON.get("rbf_optin"),
+                (String) txJSON.get("data"), eps);
     }
 
     private void updateBalance() {

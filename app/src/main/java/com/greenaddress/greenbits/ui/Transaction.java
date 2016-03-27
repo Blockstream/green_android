@@ -29,8 +29,10 @@ public class Transaction implements Serializable {
     public final long fee;
     public final int size;
     public final List<String> replaced_hashes;
+    public final String data;
+    public final List eps;
 
-    public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn, final long fee, final int size, final String doubleSpentBy, final boolean replaceable) {
+    public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn, final long fee, final int size, final String doubleSpentBy, final boolean replaceable, final String data, final List eps) {
         this.type = type;
         this.amount = amount;
         this.counterparty = counterparty;
@@ -47,6 +49,8 @@ public class Transaction implements Serializable {
         this.doubleSpentBy = doubleSpentBy;
         this.replaceable = replaceable;
         this.replaced_hashes = new ArrayList<String>();
+        this.data = data;
+        this.eps = eps;
     }
 
     public String toString() {

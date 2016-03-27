@@ -12,6 +12,7 @@ public class LoginData {
     public final String exchange;
     public final String currency;
     public final Map<String, Object> appearance;
+    public Map<String, Object> feeEstimates;
     public final ArrayList subaccounts;
     public final String receiving_id;
     public String gait_path;  // can change on first login (registration)
@@ -34,8 +35,14 @@ public class LoginData {
         }
         if (map.get("rbf") == null) {
             this.rbf = false;
+            this.feeEstimates = null;
         } else {
             this.rbf = (Boolean) map.get("rbf");
+            if (this.rbf) {
+                this.feeEstimates = (Map<String, Object>) map.get("fee_estimates");
+            } else {
+                this.feeEstimates = null;
+            }
         }
         if (map.containsKey("earliest_key_creation_time")) {
             this.earliest_key_creation_time = (Integer) map.get("earliest_key_creation_time");
