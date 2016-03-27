@@ -18,4 +18,9 @@ jdk:
 script:
    - ./gradlew clean assembleDebug -PdisablePreDex
 
-before_install: "git submodule update --init --recursive"
+before_install:
+   - git submodule update --init --recursive
+   - curl -O http://dl.google.com/android/repository/android-ndk-r11b-linux-x86_64.zip
+   - unzip -qq ./android-ndk-r11b-linux-x86_64.zip
+   - export ANDROID_NDK_HOME=`pwd`/android-ndk-r11b
+   - rm -fr app/src/main/jniLibs && cd app && ./prepare_fdroid.sh

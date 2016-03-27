@@ -16,7 +16,7 @@ fi
 
 for ARCH in arm-linux-androideabi mipsel-linux-android x86; do
     export ARCH_SHORT=`echo $ARCH | cut -d'-' -f 1 | sed s/mipsel/mips/` # arm|mips|x86
-    export PATH=$ANDROID_NDK/toolchains/$ARCH-4.8/prebuilt/$SYSTEM/bin:$PATH
+    export PATH=$ANDROID_NDK/toolchains/$ARCH-4.9/prebuilt/$SYSTEM/bin:$PATH
     make clean TARGET=android
     make NDK_ROOT=$ANDROID_NDK TARGET=android ARCH_SHORT=$ARCH_SHORT ARCH=`echo $ARCH | sed s/x86/i686-linux-android/`
     ARCHDIR=../src/main/jniLibs/`echo $ARCH_SHORT | sed s/arm/armeabi/` # armeabi|mips|x86
@@ -30,7 +30,7 @@ cd ../secp256k1
 ./autogen.sh
 
 for ARCH in arm-linux-androideabi mipsel-linux-android x86; do
-    export PATH=$ANDROID_NDK/toolchains/$ARCH-4.8/prebuilt/$SYSTEM/bin:$PATH
+    export PATH=$ANDROID_NDK/toolchains/$ARCH-4.9/prebuilt/$SYSTEM/bin:$PATH
 
     export ARCH_SHORT=`echo $ARCH | cut -d'-' -f 1 | sed s/mipsel/mips/` # arm|mips|x86
     export ARCH=`echo $ARCH | sed s/x86/i686-linux-android/`
