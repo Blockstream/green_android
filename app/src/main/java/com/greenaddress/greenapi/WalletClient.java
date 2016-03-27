@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 import javax.annotation.Nullable;
 
@@ -127,32 +128,36 @@ public class WalletClient {
         final ObjectMapper mapper = new ObjectMapper();
         final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
         final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
-        mConnection.call(
-                translatedProcedure, flags, argsNode, null
-        ).observeOn(mScheduler).subscribe(new Action1<Reply>() {
-            @Override
-            public void call(final Reply reply) {
-                final JsonNode node = reply.arguments().get(0);
-                handler.onResult(mapper.convertValue(node, resClass));
-            }
-        }, new Action1<Throwable>() {
-            @Override
-            public void call(final Throwable throwable) {
+        try {
+            mConnection.call(
+                    translatedProcedure, flags, argsNode, null
+            ).observeOn(mScheduler).subscribe(new Action1<Reply>() {
+                @Override
+                public void call(final Reply reply) {
+                    final JsonNode node = reply.arguments().get(0);
+                    handler.onResult(mapper.convertValue(node, resClass));
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(final Throwable throwable) {
 
-                if (throwable instanceof ApplicationError) {
-                    final ApplicationError throwableAppError = (ApplicationError) throwable;
-                    final ArrayNode anode = throwableAppError.arguments();
-                    if (anode != null && anode.size() >= 2) {
-                        throwable.printStackTrace();
-                        handler.onError(anode.get(0).asText(), anode.get(1).asText());
+                    if (throwable instanceof ApplicationError) {
+                        final ApplicationError throwableAppError = (ApplicationError) throwable;
+                        final ArrayNode anode = throwableAppError.arguments();
+                        if (anode != null && anode.size() >= 2) {
+                            throwable.printStackTrace();
+                            handler.onError(anode.get(0).asText(), anode.get(1).asText());
+                        } else {
+                            handler.onError(throwable.toString(), throwable.toString());
+                        }
                     } else {
                         handler.onError(throwable.toString(), throwable.toString());
                     }
-                } else {
-                    handler.onError(throwable.toString(), throwable.toString());
                 }
-            }
-        });
+            });
+        } catch (RejectedExecutionException e) {
+            handler.onError("not connected", "not connected");
+        }
     }
 
     private void clientSubscribe(final String s, final Class mapClass, final EventHandler eventHandler) {
