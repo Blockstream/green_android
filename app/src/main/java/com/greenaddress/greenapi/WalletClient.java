@@ -174,6 +174,7 @@ public class WalletClient {
         }, new Action1<Throwable>() {
             @Override
             public void call(final Throwable throwable) {
+                throwable.printStackTrace();
                 Log.i(TAG, "Subscribe failed ("+s+"): " + throwable.toString());
             }
         });
@@ -471,9 +472,14 @@ public class WalletClient {
                         value = (String) res.get("value"),
                         wallet_id = (String) res.get("wallet_id");
                 final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
-                final int[] subaccounts_int = new int[subaccounts.size()];
-                for (int i = 0; i < subaccounts.size(); ++i) {
-                    subaccounts_int[i] = ((Integer) subaccounts.get(i));
+                int size = subaccounts == null ? 0 : subaccounts.size();
+                final int[] subaccounts_int = new int[size];
+                for (int i = 0; i < size; ++i) {
+                    if (subaccounts.get(i) == null) {
+                        subaccounts_int[i] = 0;
+                    } else {
+                        subaccounts_int[i] = ((Integer) subaccounts.get(i));
+                    }
                 }
                 m_notificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
                         subaccounts_int, Long.valueOf(value), txhash);
