@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -26,11 +27,7 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
-import org.bitcoinj.crypto.TransactionSignature;
-import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
-import org.bitcoinj.script.ScriptChunk;
-import org.bitcoinj.script.ScriptOpCodes;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.spongycastle.util.encoders.Hex;
 
@@ -430,7 +427,23 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                         );
                     }
 
-                    getGAService().getClient().sendRawTransaction(tx);
+                    Futures.addCallback(getGAService().getClient().sendRawTransaction(tx), new FutureCallback<Map<String, Object>>() {
+                        @Override
+                        public void onSuccess(@javax.annotation.Nullable Map<String, Object> result) {
+                            getActivity().finish();
+                        }
+
+                        @Override
+                        public void onFailure(final Throwable t) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    t.printStackTrace();
+                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();                                                            }
+                                });
+                            }
+                        }
+                    );
                 }
 
                 @Override

@@ -1082,12 +1082,12 @@ public class WalletClient {
 
 
 
-    public ListenableFuture<String> sendRawTransaction(Transaction tx) {
-        final SettableFuture<String> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/vault/send_raw_tx", String.class, new CallHandler() {
+    public ListenableFuture<Map<String, Object> > sendRawTransaction(Transaction tx) {
+        final SettableFuture<Map<String, Object>> asyncWamp = SettableFuture.create();
+        clientCall("http://greenaddressit.com/vault/send_raw_tx", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
-                asyncWamp.set(o.toString());
+                asyncWamp.set((Map<String, Object>) o);
             }
 
             @Override
