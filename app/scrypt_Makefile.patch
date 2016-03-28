@@ -9,7 +9,7 @@ index cbb27b2..c707bd4 100644
 -	CC      := arm-linux-androideabi-gcc
 -	SYSROOT := $(NDK_ROOT)/platforms/android-9/arch-arm/
 +	CC      := $(ARCH)-gcc
-+	SYSROOT := $(NDK_ROOT)/platforms/android-9/arch-$(ARCH_SHORT)/
++	SYSROOT := $(NDK_ROOT)/platforms/android-23/arch-$(ARCH_SHORT)/
  	CFLAGS  += --sysroot=$(SYSROOT)
 -	LDFLAGS += -lc -Wl,--fix-cortex-a8 --sysroot=$(SYSROOT)
 +	ifeq ($(ARCH_SHORT), arm)
