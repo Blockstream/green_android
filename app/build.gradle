@@ -64,6 +64,12 @@ android {
             multiDexEnabled true
         }
     }
+    splits {
+        abi {
+            enable true
+            universalApk true
+        }
+    }
     productFlavors {
         production {
         }
