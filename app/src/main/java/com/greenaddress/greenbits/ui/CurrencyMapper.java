@@ -12,6 +12,8 @@ import java.util.Map;
 class CurrencyMapper {
     @NonNull private static final Map<String, String> map = new HashMap<>();
 
+    public static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
+
     static {
         map.put("USD", "&#xf155;");
         map.put("AUD", "&#xf155;");
@@ -49,7 +51,7 @@ class CurrencyMapper {
             if (btcUnit.equals("BTC")) {
                 return MonetaryFormat.BTC;
             } else if (btcUnit.equals("mBTC")) {
-                return MonetaryFormat.MBTC;
+                return MBTC;
             } else if (btcUnit.equals(Html.fromHtml("&micro;").toString() + "BTC")) {
                 return MonetaryFormat.UBTC;
             } else {
