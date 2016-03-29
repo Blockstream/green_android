@@ -2,6 +2,8 @@
 
 set -e
 
+echo ${JAVA_HOME:?}
+echo ${ANDROID_NDK:?}
 
 cd scrypt
 patch -p1 < ../scrypt_Makefile.patch

@@ -17,3 +17,4 @@ app/manifest-merger-*-report.txt
 .*.swo
 
 *.apk
+app/src/main/jniLibs/*
