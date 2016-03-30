@@ -39,7 +39,18 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_twofactor);
         setHasOptionsMenu(true);
+        if (gaService == null) {
+            Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+
+            getActivity().finish();
+        }
         final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();
+
+        if (twoFacConfig == null || twoFacConfig.isEmpty()) {
+            Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+
+            getActivity().finish();
+        }
 
         final CheckBoxPreference emailTwoFacEnabled = (CheckBoxPreference) findPreference("twoFacEmail");
         emailTwoFacEnabled.setChecked(twoFacConfig.get("email").equals(true));
