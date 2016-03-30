@@ -1082,7 +1082,7 @@ public class WalletClient {
 
 
 
-    public ListenableFuture<Map<String, Object> > sendRawTransaction(Transaction tx, Map<String, String> twoFacData) {
+    public ListenableFuture<Map<String, Object> > sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
         final SettableFuture<Map<String, Object>> asyncWamp = SettableFuture.create();
         clientCall("http://greenaddressit.com/vault/send_raw_tx", Map.class, new CallHandler() {
             @Override
@@ -1092,7 +1092,7 @@ public class WalletClient {
 
             @Override
             public void onError(final String s, final String s2) {
-                asyncWamp.setException(new GAException(s2));
+                asyncWamp.setException(new GAException(returnErrorUri ? s : s2));
             }
         }, new String(Hex.encode(tx.bitcoinSerialize())), twoFacData);
 

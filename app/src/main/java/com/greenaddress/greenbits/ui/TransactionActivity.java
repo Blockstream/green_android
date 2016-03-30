@@ -26,6 +26,7 @@ import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
@@ -334,7 +335,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
         private void replaceByFee(Transaction txData, Coin feerate) {
             final org.bitcoinj.core.Transaction tx = new org.bitcoinj.core.Transaction(Network.NETWORK, Hex.decode(txData.data));
             Integer change_pointer = null, subaccount_pointer = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
-            long requiredFeeDelta = tx.getMessageSize(); // assumes mintxfee = 1000
+            // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
+            // by at most 4 bytes per input (signatures have variable lengths)
+            long requiredFeeDelta = tx.getMessageSize() + tx.getInputs().size() * 4;
             List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
             tx.clearInputs();
             for (int i = 0; i < txData.eps.size(); ++i) {
@@ -351,7 +354,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 newInput.setSequenceNumber(0);
                 tx.addInput(newInput);
             }
-            Coin newFeeWithRate = feerate.multiply(tx.getMessageSize()).divide(1000);
+            final Coin newFeeWithRate = feerate.multiply(tx.getMessageSize()).divide(1000);
             Coin feeDelta = Coin.valueOf(Math.max(
                     newFeeWithRate.subtract(tx.getFee()).longValue(),
                     requiredFeeDelta
@@ -439,8 +442,49 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                                 ).build()
                         );
                     }
+                    Map<String, Object> twoFacData = new HashMap<String, Object>();
+                    twoFacData.put("try_under_limits_bump", Long.valueOf(tx.getFee().subtract(oldFee).longValue()));
+                    final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(tx, twoFacData, true);
+                    Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
+                        @Override
+                        public void onSuccess(@Nullable final Map result) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // FIXME: Add notification with "Transaction sent"?
+                                    getActivity().finish();
+                                }
+                            });
+                        }
 
-                    showIncreaseSummary(null, oldFee, tx.getFee(), tx);
+                        @Override
+                        public void onFailure(@NonNull final Throwable t) {
+                            if (t instanceof GAException && ((GAException)t).getMessage().equals("http://greenaddressit.com/error#auth")) {
+                                // 2FA required
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        final List<String> enabledTwoFac =
+                                                getGAService().getEnabledTwoFacNames(true);
+                                        if (enabledTwoFac.size() > 1) {
+                                            show2FAChoices(oldFee, tx.getFee(), tx);
+                                        } else {
+                                            showIncreaseSummary(enabledTwoFac.get(0), oldFee, tx.getFee(), tx);
+                                        }
+                                    }
+                                });
+                            } else {
+                                t.printStackTrace();
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+
+                        }
+                    }, getGAService().es);
                 }
 
                 @Override
@@ -449,6 +493,31 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 }
             });
 
+        }
+
+        private void show2FAChoices(final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
+            Log.i(TAG, "params " + oldFee + " " + newFee);
+            String[] enabledTwoFacNames = new String[]{};
+            final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
+            mTwoFactor = new MaterialDialog.Builder(getActivity())
+                    .title(R.string.twoFactorChoicesTitle)
+                    .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
+                    .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                        @Override
+                        public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            showIncreaseSummary(enabledTwoFacNamesSystem.get(which), oldFee, newFee, signedTx);
+                            return true;
+                        }
+                    })
+                    .positiveText(R.string.choose)
+                    .negativeText(R.string.cancel)
+                    .positiveColorRes(R.color.accent)
+                    .negativeColorRes(R.color.accent)
+                    .titleColorRes(R.color.white)
+                    .contentColorRes(android.R.color.white)
+                    .theme(Theme.DARK)
+                    .build();
+            mTwoFactor.show();
         }
 
         private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
@@ -487,7 +556,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             feeText.setText(bitcoinFormat.noCode().format(oldFee));
 
 
-            final Map<String, String> twoFacData;
+            final Map<String, Object> twoFacData;
 
             if (method == null) {
                 twoFAText.setVisibility(View.GONE);
@@ -497,8 +566,13 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 twoFAText.setText("2FA " + method + " code");
                 twoFacData = new HashMap<>();
                 twoFacData.put("method", method);
+                twoFacData.put("bump_fee_amount", newFee.subtract(oldFee).longValue());
                 if (!method.equals("gauth")) {
-                    getGAService().requestTwoFacCode(method, "send_tx");
+                    Map<String, Long> amount = new HashMap<>();
+                    amount.put("amount", newFee.subtract(oldFee).longValue());
+                    getGAService().requestTwoFacCode(
+                            method, "bump_fee", amount
+                    );
                 }
             }
 
@@ -518,7 +592,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                             if (twoFacData != null) {
                                 twoFacData.put("code", newTx2FACodeText.getText().toString());
                             }
-                            final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(signedTx, twoFacData);
+                            final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(signedTx, twoFacData, false);
                             Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
                                 @Override
                                 public void onSuccess(@Nullable final Map result) {
