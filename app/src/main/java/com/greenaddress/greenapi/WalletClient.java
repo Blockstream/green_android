@@ -1260,6 +1260,10 @@ public class WalletClient {
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs() {
+        return getAllUnspentOutputs(0);
+    }
+
+    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs) {
         final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
         clientCall("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new CallHandler() {
             @Override
@@ -1271,7 +1275,7 @@ public class WalletClient {
             public void onError(final String errUri, final String errDesc) {
                 asyncWamp.setException(new GAException(errDesc));
             }
-        }, 0);
+        }, confs);
         return asyncWamp;
     }
 

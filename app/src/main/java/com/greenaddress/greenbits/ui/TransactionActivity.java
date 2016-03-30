@@ -31,10 +31,16 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.TransactionInput;
+import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
+import org.bitcoinj.script.ScriptChunk;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.spongycastle.util.encoders.Hex;
 
@@ -203,7 +209,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                             public void onClick(View v) {
                                 double feerate = (Double)((Map)feeEstimates.get("1")).get("feerate");
                                 Coin feerateCoin = Coin.valueOf((long)(feerate*1000*1000*100));
-                                replaceByFee(t, feerateCoin);
+                                replaceByFee(t, feerateCoin, null, 0);
                             }
                         });
                     } else {
@@ -332,12 +338,19 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             return rootView;
         }
 
-        private void replaceByFee(Transaction txData, Coin feerate) {
+        private void replaceByFee(final Transaction txData, final Coin feerate, Integer txSize, final int level) {
+            if (level > 10) {
+                throw new RuntimeException("Recursion limit exceeded");
+            }
             final org.bitcoinj.core.Transaction tx = new org.bitcoinj.core.Transaction(Network.NETWORK, Hex.decode(txData.data));
-            Integer change_pointer = null, subaccount_pointer = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+            Integer change_pointer = null;
+            final Integer subaccount_pointer = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
             // by at most 4 bytes per input (signatures have variable lengths)
-            long requiredFeeDelta = tx.getMessageSize() + tx.getInputs().size() * 4;
+            if (txSize == null) {
+                txSize = tx.getMessageSize();
+            }
+            long requiredFeeDelta = txSize + tx.getInputs().size() * 4;
             List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
             tx.clearInputs();
             for (int i = 0; i < txData.eps.size(); ++i) {
@@ -354,7 +367,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 newInput.setSequenceNumber(0);
                 tx.addInput(newInput);
             }
-            final Coin newFeeWithRate = feerate.multiply(tx.getMessageSize()).divide(1000);
+            final Coin newFeeWithRate = feerate.multiply(txSize).divide(1000);
             Coin feeDelta = Coin.valueOf(Math.max(
                     newFeeWithRate.subtract(tx.getFee()).longValue(),
                     requiredFeeDelta
@@ -393,9 +406,135 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             }
 
             if (remainingFeeDelta.compareTo(Coin.ZERO) > 0) {
-                throw new RuntimeException("adding outputs not implemented");
+                final Coin finalRemaining = remainingFeeDelta;
+                Futures.addCallback(getGAService().getClient().getAllUnspentOutputs(1), new FutureCallback<ArrayList>() {
+                    @Override
+                    public void onSuccess(@javax.annotation.Nullable ArrayList result) {
+                        Coin remaining = finalRemaining;
+                        final List<ListenableFuture<byte[]>> scripts = new ArrayList<>();
+                        final List<Map<String, Object>> moreInputs = new ArrayList<>();
+                        for (Object utxo_ : result) {
+                            Map<String, Object> utxo = (Map<String, Object>) utxo_;
+                            remaining = remaining.subtract(Coin.valueOf(Long.valueOf((String)utxo.get("value"))));
+                            scripts.add(getGAService().createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
+                            moreInputs.add(utxo);
+                            if (remaining.compareTo(Coin.ZERO) <= 0) {
+                                break;
+                            }
+                        }
+                        if (remaining.compareTo(Coin.ZERO) > 0) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.insufficientFundsText, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        } else {
+                            if (remaining.compareTo(Coin.ZERO) < 0) {
+                                final Coin changeValue = remaining.multiply(-1);
+                                // we need to add a new change output
+                                Futures.addCallback(getGAService().getClient().getNewAddress(subaccount_pointer), new FutureCallback<Map>() {
+                                    @Override
+                                    public void onSuccess(final @javax.annotation.Nullable Map result) {
+                                        tx.addOutput(
+                                                changeValue,
+                                                Address.fromP2SHHash(
+                                                        Network.NETWORK,
+                                                        Utils.sha256hash160(Hex.decode((String)result.get("script")))
+                                                )
+                                        );
+                                        Futures.addCallback(Futures.allAsList(scripts), new FutureCallback<List<byte[]>>() {
+                                            @Override
+                                            public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
+                                                doReplaceByFee(
+                                                        txData,
+                                                        feerate,
+                                                        tx,
+                                                        (Integer) result.get("pointer"),
+                                                        subaccount_pointer,
+                                                        oldFee,
+                                                        moreInputs,
+                                                        morePrevouts,
+                                                        level
+                                                );
+                                            }
+
+                                            @Override
+                                            public void onFailure(final Throwable t) {
+                                                t.printStackTrace();
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(final Throwable t) {
+                                        t.printStackTrace();
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
+                                });
+                            } else {
+                                // we were lucky enough to match the required value
+                                Futures.addCallback(Futures.allAsList(scripts), new FutureCallback<List<byte[]>>() {
+                                    @Override
+                                    public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
+                                        doReplaceByFee(
+                                                txData,
+                                                feerate,
+                                                tx,
+                                                null,
+                                                subaccount_pointer,
+                                                oldFee,
+                                                moreInputs,
+                                                morePrevouts,
+                                                level
+                                        );
+                                    }
+
+                                    @Override
+                                    public void onFailure(final Throwable t) {
+                                        t.printStackTrace();
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        t.printStackTrace();
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+            } else {
+                doReplaceByFee(txData, feerate, tx, change_pointer, subaccount_pointer, oldFee, null, null, level);
             }
 
+        }
+
+        private void doReplaceByFee(Transaction txData, Coin feerate, final org.bitcoinj.core.Transaction tx, Integer change_pointer, Integer subaccount_pointer, final Coin oldFee, List<Map<String, Object>> moreInputs, List<byte[]> morePrevouts, final int level) {
             Boolean requires_2factor = false;
             String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
 
@@ -403,7 +542,6 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                     change_pointer, subaccount_pointer, requires_2factor,
                     tx, twoOfThreeBackupChaincode, twoOfThreeBackupPubkey
             );
-
 
             for (int i = 0; i < txData.eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) txData.eps.get(i);
@@ -417,6 +555,61 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                         new String(Hex.encode(tx.getInput((Integer) ep.get("pt_idx")).getScriptSig().getChunks().get(3).data)),
                         tx.getInput((Integer) ep.get("pt_idx")).getValue().longValue()
                 ));
+            }
+
+            int i = 0;
+            if (moreInputs != null) {
+                for (Map<String, Object> ep : moreInputs) {
+                    prepTx.prev_outputs.add(new Output(
+                            (Integer) ep.get("subaccount"),
+                            (Integer) ep.get("pointer"),
+                            1,
+                            10,  // == P2SH_FORTIFIED_OUT
+                            new String(Hex.encode(morePrevouts.get(i))),
+                            Long.valueOf((String) ep.get("value"))
+                    ));
+                    tx.addInput(
+                            new TransactionInput(
+                                    Network.NETWORK,
+                                    null,
+                                    new ScriptBuilder().addChunk(
+                                            // OP_0
+                                            new ScriptChunk(0, new byte[0])
+                                    ).data(
+                                            // GA sig:
+                                            new byte[71]
+                                    ).data(
+                                            // our sig:
+                                            new byte[71]
+                                    ).data(
+                                            // the original outscript
+                                            morePrevouts.get(i)
+                                    ).build().getProgram(),
+                                    new TransactionOutPoint(
+                                            Network.NETWORK,
+                                            (Integer) ep.get("pt_idx"),
+                                            Sha256Hash.wrap(Hex.decode((String) ep.get("txhash")))
+                                    ),
+                                    Coin.valueOf(Long.valueOf((String) ep.get("value")))
+                            )
+                    );
+                    i++;
+                }
+            }
+
+            // verify if the increased fee is enough to achieve wanted feerate
+            // (can be too small in case of added inputs)
+            final int estimatedSize = tx.getMessageSize() + tx.getInputs().size() * 4;
+            if (feerate.multiply(estimatedSize).divide(1000).compareTo(tx.getFee()) > 0) {
+                replaceByFee(txData, feerate, estimatedSize, level + 1);
+                return;
+            }
+
+            // also verify if it's enough for 'bandwidth fee increment' condition
+            // of RBF
+            if (tx.getFee().subtract(oldFee).compareTo(Coin.valueOf(tx.getMessageSize() + tx.getInputs().size() * 4)) < 0) {
+                replaceByFee(txData, feerate, estimatedSize, level + 1);
+                return;
             }
 
             Futures.addCallback(getGAService().getClient().signTransaction(prepTx, false), new FutureCallback<List<String>>() {
@@ -488,11 +681,16 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(final Throwable t) {
                     t.printStackTrace();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             });
-
         }
 
         private void show2FAChoices(final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {

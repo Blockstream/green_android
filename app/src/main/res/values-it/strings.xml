@@ -194,4 +194,5 @@
   <string name="newFeeText">New Fee:</string>
   <string name="oldFeeText">Old Fee:</string>
   <string name="feeIncreaseTitle">Fee increase</string>
+  <string name="insufficientFundsText">Insufficient funds</string>
 </resources>

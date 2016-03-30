@@ -320,12 +320,7 @@ public class GaService extends Service {
         }
     }
 
-    @NonNull
-    private ListenableFuture<Boolean> verifyP2SHSpendableBy(@NonNull final Script scriptHash, final Integer subaccount, final Integer pointer) {
-        if (!scriptHash.isPayToScriptHash())
-            return Futures.immediateFuture(false);
-        final byte[] gotP2SH = scriptHash.getPubKeyHash();
-
+    public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
         final DeterministicKey gaWallet = getGaDeterministicKey(subaccount);
         final ECKey gaKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(pointer));
@@ -337,10 +332,10 @@ public class GaService extends Service {
             userWallet = userWallet.deriveChildKey(new ChildNumber(subaccount, true));
         }
 
-        return Futures.transform(userWallet.getPubKey(), new Function<DeterministicKey, Boolean>() {
+        return Futures.transform(userWallet.getPubKey(), new Function<DeterministicKey, byte[]>() {
             @NonNull
             @Override
-            public Boolean apply(final @Nullable DeterministicKey master) {
+            public byte[] apply(final @Nullable DeterministicKey master) {
                 final DeterministicKey derivedRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
                 final DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer));
                 pubkeys.add(derivedPointer);
@@ -365,8 +360,21 @@ public class GaService extends Service {
                     pubkeys.add(derivedBackupPointer);
                 }
 
-                final byte[] multisig = Script.createMultiSigOutputScript(2, pubkeys);
+                return Script.createMultiSigOutputScript(2, pubkeys);
+            }
+        });
+    }
 
+    @NonNull
+    private ListenableFuture<Boolean> verifyP2SHSpendableBy(@NonNull final Script scriptHash, final Integer subaccount, final Integer pointer) {
+        if (!scriptHash.isPayToScriptHash())
+            return Futures.immediateFuture(false);
+        final byte[] gotP2SH = scriptHash.getPubKeyHash();
+
+        return Futures.transform(createOutScript(subaccount, pointer), new Function<byte[], Boolean>() {
+            @javax.annotation.Nullable
+            @Override
+            public Boolean apply(@javax.annotation.Nullable byte[] multisig) {
                 if (client.getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     ByteArrayOutputStream bits = new ByteArrayOutputStream();
