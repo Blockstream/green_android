@@ -129,7 +129,6 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     }
 
     private boolean validateMnemonic(@NonNull final String mnemonic) {
-        // FIXME: add support for BIP38'ed mnemonics
         // FIXME: add support for different bip39 word lists like Japanese, Spanish, etc
         InputStream closable = null;
         try {
