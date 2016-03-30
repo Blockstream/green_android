@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +16,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
@@ -35,6 +41,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -111,6 +118,10 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends GAFragment {
+
+        @NonNull private static final String TAG = PlaceholderFragment.class.getSimpleName();
+        private Dialog mSummary;
+        private Dialog mTwoFactor;
 
         @Override
         public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
@@ -340,10 +351,12 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 newInput.setSequenceNumber(0);
                 tx.addInput(newInput);
             }
+            Coin newFeeWithRate = feerate.multiply(tx.getMessageSize()).divide(1000);
             Coin feeDelta = Coin.valueOf(Math.max(
-                    feerate.subtract(tx.getFee()).longValue(),
+                    newFeeWithRate.subtract(tx.getFee()).longValue(),
                     requiredFeeDelta
             ));
+            final Coin oldFee = tx.getFee();
             Coin remainingFeeDelta = feeDelta;
             List<TransactionOutput> origOuts = new ArrayList<>(tx.getOutputs());
             tx.clearOutputs();
@@ -427,23 +440,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                         );
                     }
 
-                    Futures.addCallback(getGAService().getClient().sendRawTransaction(tx), new FutureCallback<Map<String, Object>>() {
-                        @Override
-                        public void onSuccess(@javax.annotation.Nullable Map<String, Object> result) {
-                            getActivity().finish();
-                        }
-
-                        @Override
-                        public void onFailure(final Throwable t) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    t.printStackTrace();
-                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();                                                            }
-                                });
-                            }
-                        }
-                    );
+                    showIncreaseSummary(null, oldFee, tx.getFee(), tx);
                 }
 
                 @Override
@@ -452,6 +449,121 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 }
             });
 
+        }
+
+        private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
+            Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
+
+            final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+            final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+
+            final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+
+            ((TextView) inflatedLayout.findViewById(R.id.newTxAmountLabel)).setText(R.string.newFeeText);
+            final TextView amountText = (TextView) inflatedLayout.findViewById(R.id.newTxAmountText);
+            final TextView amountScale = (TextView) inflatedLayout.findViewById(R.id.newTxAmountScaleText);
+            final TextView amountUnit = (TextView) inflatedLayout.findViewById(R.id.newTxAmountUnitText);
+            ((TextView) inflatedLayout.findViewById(R.id.newTxFeeLabel)).setText(R.string.oldFeeText);
+            final TextView feeText = (TextView) inflatedLayout.findViewById(R.id.newTxFeeText);
+            final TextView feeScale = (TextView) inflatedLayout.findViewById(R.id.newTxFeeScale);
+            final TextView feeUnit = (TextView) inflatedLayout.findViewById(R.id.newTxFeeUnit);
+
+            inflatedLayout.findViewById(R.id.newTxRecipientLabel).setVisibility(View.GONE);
+            inflatedLayout.findViewById(R.id.newTxRecipientText).setVisibility(View.GONE);
+            final TextView twoFAText = (TextView) inflatedLayout.findViewById(R.id.newTx2FATypeText);
+            final EditText newTx2FACodeText = (EditText) inflatedLayout.findViewById(R.id.newTx2FACodeText);
+            final String prefix = CurrencyMapper.mapBtcFormatToPrefix(bitcoinFormat);
+
+            amountScale.setText(Html.fromHtml(prefix));
+            feeScale.setText(Html.fromHtml(prefix));
+            if (prefix.isEmpty()) {
+                amountUnit.setText("bits ");
+                feeUnit.setText("bits ");
+            } else {
+                amountUnit.setText(Html.fromHtml("&#xf15a; "));
+                feeUnit.setText(Html.fromHtml("&#xf15a; "));
+            }
+            amountText.setText(bitcoinFormat.noCode().format(newFee));
+            feeText.setText(bitcoinFormat.noCode().format(oldFee));
+
+
+            final Map<String, String> twoFacData;
+
+            if (method == null) {
+                twoFAText.setVisibility(View.GONE);
+                newTx2FACodeText.setVisibility(View.GONE);
+                twoFacData = null;
+            } else {
+                twoFAText.setText("2FA " + method + " code");
+                twoFacData = new HashMap<>();
+                twoFacData.put("method", method);
+                if (!method.equals("gauth")) {
+                    getGAService().requestTwoFacCode(method, "send_tx");
+                }
+            }
+
+            mSummary = new MaterialDialog.Builder(getActivity())
+                    .title(R.string.feeIncreaseTitle)
+                    .customView(inflatedLayout, true)
+                    .positiveText(R.string.send)
+                    .negativeText(R.string.cancel)
+                    .positiveColorRes(R.color.accent)
+                    .negativeColorRes(R.color.accent)
+                    .titleColorRes(R.color.white)
+                    .contentColorRes(android.R.color.white)
+                    .theme(Theme.DARK)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                            if (twoFacData != null) {
+                                twoFacData.put("code", newTx2FACodeText.getText().toString());
+                            }
+                            final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(signedTx, twoFacData);
+                            Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
+                                @Override
+                                public void onSuccess(@Nullable final Map result) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // FIXME: Add notification with "Transaction sent"?
+                                            getActivity().finish();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull final Throwable t) {
+                                    t.printStackTrace();
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }, getGAService().es);
+                        }
+                    })
+                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                            Log.i(TAG, "SHOWN ON CLOSE!");
+                        }
+                    })
+                    .build();
+
+            mSummary.show();
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            if (mSummary != null) {
+                mSummary.dismiss();
+            }
+            if (mTwoFactor != null) {
+                mTwoFactor.dismiss();
+            }
         }
     }
 }

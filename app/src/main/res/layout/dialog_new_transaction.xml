@@ -10,6 +10,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/newTxAmountLabel"
             android:text="@string/newTxAmount"
             android:textColor="@color/whiteSecondary"
             android:textSize="20sp"
@@ -49,6 +50,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/newTxFeeLabel"
             android:text="@string/newTxFee"
             android:textColor="@color/whiteSecondary"
             android:textSize="20sp"
@@ -86,6 +88,7 @@
         android:paddingTop="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/newTxRecipientLabel"
         android:text="@string/newTxRecipient"
         android:textColor="@color/whiteSecondary"
         android:textSize="20sp" />

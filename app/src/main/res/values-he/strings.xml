@@ -197,5 +197,8 @@
     <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %s blocks.</string>
     <string name="recommendationSingleBlock">If you increase the fee now to the recommended level, the transaction will be expected to confirm after 1 block.</string>
     <string name="increaseFee">Increase fee</string>
+    <string name="newFeeText">New Fee:</string>
+    <string name="oldFeeText">Old Fee:</string>
+    <string name="feeIncreaseTitle">Fee increase</string>
 </resources>
 
