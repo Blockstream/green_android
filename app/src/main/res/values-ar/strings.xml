@@ -193,4 +193,6 @@
   <string name="oldFeeText">Old Fee:</string>
   <string name="feeIncreaseTitle">Fee increase</string>
   <string name="insufficientFundsText">Insufficient funds</string>
+  <string name="app_version">Version</string>
+
 </resources>

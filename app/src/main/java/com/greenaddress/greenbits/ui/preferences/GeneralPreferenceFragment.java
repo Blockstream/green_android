@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
 
 import javax.annotation.Nullable;
@@ -62,6 +63,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 }
             });
         }
+
+        // -- handle version
+
+        findPreference("app_version").setSummary(String.format(
+                "%s, %s, SDK:%s",
+                BuildConfig.VERSION_NAME,
+                BuildConfig.BUILD_TYPE, android.os.Build.VERSION.SDK_INT));
+
 
         // -- handle opt-in rbf
         if (!gaService.getClient().getLoginData().rbf) {
