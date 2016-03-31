@@ -1,6 +1,9 @@
 #!/bin/bash
 
 set -e
+if [ -z "$JAVA_HOME" ]; then
+    export JAVA_HOME=$JAVA7_HOME;
+fi
 
 echo ${JAVA_HOME:?}
 echo ${ANDROID_NDK:?}
