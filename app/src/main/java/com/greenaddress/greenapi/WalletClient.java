@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
@@ -66,7 +65,6 @@ import ws.wamp.jawampa.PubSubData;
 import ws.wamp.jawampa.Reply;
 import ws.wamp.jawampa.WampClient;
 import ws.wamp.jawampa.WampClientBuilder;
-import ws.wamp.jawampa.auth.client.WampCra;
 import ws.wamp.jawampa.connection.IWampConnectorProvider;
 import ws.wamp.jawampa.transport.netty.NettyWampClientConnectorProvider;
 
@@ -74,9 +72,8 @@ import ws.wamp.jawampa.transport.netty.NettyWampClientConnectorProvider;
 public class WalletClient {
 
     private static final String TAG = WalletClient.class.getSimpleName();
-    private static final String USER_AGENT = String.format("%s (%s;%s;%s;%s)",
-            BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME,
-            BuildConfig.FLAVOR, BuildConfig.BUILD_TYPE, android.os.Build.VERSION.SDK_INT);
+    private static final String USER_AGENT = String.format("%s;%s;%s",
+            BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE, android.os.Build.VERSION.SDK_INT);
 
     private final INotificationHandler m_notificationHandler;
     private final ListeningExecutorService es;
