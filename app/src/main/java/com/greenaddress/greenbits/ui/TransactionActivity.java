@@ -38,7 +38,6 @@ import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
-import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.script.ScriptChunk;
 import org.bitcoinj.utils.MonetaryFormat;
@@ -652,7 +651,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
                         @Override
                         public void onFailure(@NonNull final Throwable t) {
-                            if (t instanceof GAException && ((GAException)t).getMessage().equals("http://greenaddressit.com/error#auth")) {
+                            if (t instanceof GAException && t.getMessage().equals("http://greenaddressit.com/error#auth")) {
                                 // 2FA required
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
