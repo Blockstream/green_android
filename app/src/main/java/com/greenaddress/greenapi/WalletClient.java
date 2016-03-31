@@ -247,27 +247,6 @@ public class WalletClient {
 
     private final OkHttpClient httpClient = new OkHttpClient();
 
-    private String getToken() throws IOException {
-        // try onion first if proxy is set, use normal domain if it fails (non Orbot proxy)
-        try {
-            if (httpClient.getProxy() != null && !Network.GAIT_ONION.isEmpty()) {
-                final Request request = new Request.Builder()
-                        .url(String.format("http://%s/token/", Network.GAIT_ONION))
-                        .build();
-                return httpClient.newCall(request).execute().body().string();
-            }
-        } catch (final IOException io) {
-            // pass
-            io.printStackTrace();
-        }
-
-        final Request request = new Request.Builder()
-                .url(Network.GAIT_TOKEN_URL)
-                .build();
-
-        return httpClient.newCall(request).execute().body().string();
-    }
-
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String device_id) {
 
         final SettableFuture<DeterministicKey> asyncWamp = SettableFuture.create();
@@ -493,23 +472,14 @@ public class WalletClient {
             @Override
             public void call() {
                 final String wsuri = Network.GAIT_WAMP_URL;
-                final String token;
                 final WampClientBuilder builder = new WampClientBuilder();
                 final IWampConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
-                try {
-                    token = getToken();
-                } catch (final IOException e) {
-                    asyncWamp.setException(e);
-                    return;
-                }
                 try {
                     builder.withConnectorProvider(connectorProvider)
                             .withProxyAddress(proxyAddress)
                             .withUri(wsuri)
                             .withRealm("realm1")
-                            .withNrReconnects(0)
-                            .withAuthMethod(new WampCra(token))
-                            .withAuthId(token);
+                            .withNrReconnects(0);
                 } catch (final ApplicationError e) {
                     asyncWamp.setException(e);
                     return;
