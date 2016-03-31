@@ -4,7 +4,6 @@ import org.bitcoinj.core.NetworkParameters;
 
 public abstract class Network {
     public final static NetworkParameters NETWORK = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
-    public final static String GAIT_TOKEN_URL = "https://greenaddress.it/token/";
     public final static String GAIT_WAMP_URL = "wss://prodwss.greenaddress.it/v2/ws/";
     public final static String BLOCKEXPLORER = "https://insight.bitpay.com/tx/";
     public final static String depositPubkey = "0322c5f5c9c4b9d1c3e22ca995e200d724c2d7d8b6953f7b38fddf9296053c961f";
