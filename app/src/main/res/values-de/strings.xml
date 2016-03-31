@@ -184,7 +184,7 @@
 
   <string name="pref_title_display_hostname">Hostname</string>
   <string name="pref_title_display_port">Port</string>
-  <string name="optin_rbf">Enable opt-in Replace By Fee</string>
+  <string name="optin_rbf">Enable transaction replacement</string>
   <string name="willConfirmAfter">Will confirm after blocks (estimated): %s</string>
   <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %s blocks.</string>
   <string name="recommendationSingleBlock">If you increase the fee now to the recommended level, the transaction will be expected to confirm after 1 block.</string>
