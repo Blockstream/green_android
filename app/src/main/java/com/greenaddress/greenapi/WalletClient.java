@@ -550,7 +550,9 @@ public class WalletClient {
                     @Override
                     public void onEvent(final String topicUri, final Object event) {
                         Log.i(TAG, "FEE_ESTIMATES IS " + event.toString());
-                        loginData.feeEstimates = (Map) event;
+                        if (loginData != null) {
+                            loginData.feeEstimates = (Map) event;
+                        }
                     }
                 });
             }
