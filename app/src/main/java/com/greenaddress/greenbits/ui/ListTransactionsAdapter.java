@@ -109,8 +109,13 @@ class ListTransactionsAdapter extends ArrayAdapter<Transaction> {
         }
 
         String message;
-        if (current.type.equals(Transaction.TYPE.OUT) && current.counterparty != null && current.counterparty.length() > 0) {
-            message = current.counterparty;
+        if (current.type.equals(Transaction.TYPE.OUT) && current.counterparty != null
+                && current.counterparty.length() > 0) {
+            if (current.counterparty.length() > 13) {
+                message = String.format("%s...", current.counterparty.substring(0, 10));
+            } else {
+                message = current.counterparty;
+            }
         } else {
             message = getTypeString(current.type);
         }
