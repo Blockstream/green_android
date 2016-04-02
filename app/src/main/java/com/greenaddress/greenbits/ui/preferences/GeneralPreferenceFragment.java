@@ -67,10 +67,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         // -- handle version
 
         findPreference("app_version").setSummary(String.format(
-                "%s, %s, %s, SDK:%s",
+                "%s, %s",
                 BuildConfig.VERSION_NAME,
-                BuildConfig.BUILD_TYPE, System.getProperty("os.arch"),
-                android.os.Build.VERSION.SDK_INT));
+                BuildConfig.BUILD_TYPE));
 
 
         // -- handle opt-in rbf
@@ -85,7 +84,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                             gaService.setAppearanceValue("replace_by_fee", newValue, false),
                             new FutureCallback<Boolean>() {
                                 @Override
-                                public void onSuccess(@Nullable Boolean result) {
+                                public void onSuccess(final @Nullable Boolean result) {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -96,7 +95,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                 }
 
                                 @Override
-                                public void onFailure(Throwable t) {
+                                public void onFailure(final Throwable t) {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -110,7 +109,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     return false;
                 }
             });
-            Boolean replace_by_fee = (Boolean) gaService.getAppearanceValue("replace_by_fee");
+            final Boolean replace_by_fee = (Boolean) gaService.getAppearanceValue("replace_by_fee");
             ((CheckBoxPreference) findPreference("optin_rbf")).setChecked(replace_by_fee);
         }
     }
