@@ -67,9 +67,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         // -- handle version
 
         findPreference("app_version").setSummary(String.format(
-                "%s, %s, SDK:%s",
+                "%s, %s, %s, SDK:%s",
                 BuildConfig.VERSION_NAME,
-                BuildConfig.BUILD_TYPE, android.os.Build.VERSION.SDK_INT));
+                BuildConfig.BUILD_TYPE, System.getProperty("os.arch"),
+                android.os.Build.VERSION.SDK_INT));
 
 
         // -- handle opt-in rbf
