@@ -138,7 +138,7 @@
     <string name="txUnverifiedTx">Transaction not verified. Please wait for synchronization to gain trust in this transaction. Remaining blocks:</string>
     <string name="unconfirmedBalanceTitle">Unconfirmed balance</string>
     <string name="unconfirmedBalanceText">Your balance is not confirmed. It means either you have some unconfirmed incoming transactions, or SPV verification has not finished. Remaining blocks for SPV verification:</string>
-    <string name="spvNoWiFiText">You have over 6000 missing block headers to sync via SPV and WiFi connection is not available. What do you want to do?</string>
+    <string name="spvNoWiFiText">You have over 1 megabyte to sync via SPV and WiFi connection is not available. What do you want to do?</string>
     <string name="spvNoWiFiSyncAnyway">SYNC ANYWAY</string>
     <string name="spvNoWifiWaitForWiFi">WAIT FOR WI-FI</string>
     <string name="spvNoWiFiTitle">SPV synchronization</string>

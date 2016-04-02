@@ -1,28 +1,36 @@
 package com.greenaddress.greenbits.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,15 +67,19 @@ import java.util.Observer;
 import de.schildbach.wallet.ui.ScanActivity;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
-public class TabbedMainActivity extends ActionBarActivity implements ActionBar.TabListener, Observer {
+public class TabbedMainActivity extends ActionBarActivity implements Observer {
     public static final int
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2;
+
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
+
+
     @Nullable
     public static TabbedMainActivity instance = null;
 
-    private ViewPager mViewPager;
     private Menu menu;
 
     @Override
@@ -92,43 +104,129 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
         launch(isBitcoinURL);
     }
 
+    private void configureNoTwoFacFooter() {
+
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
+        if (!((Boolean) getGAService().getTwoFacConfig().get("any") || twoFacWarning)) {
+            final Snackbar snackbar = Snackbar
+                    .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning).toString(), Snackbar.LENGTH_INDEFINITE)
+
+                    .setAction("Setup 2FA", new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View view) {
+                            startActivity(new Intent(TabbedMainActivity.this, SettingsActivity.class));
+                        }
+                    });
+            snackbar.setActionTextColor(Color.RED);
+
+            final View snackbarView = snackbar.getView();
+            snackbarView.setBackgroundColor(Color.DKGRAY);
+            final TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.WHITE);
+            snackbar.show();
+        }
+    }
+
+    public void configureSubaccountsFooter(final int curSubaccount, @NonNull final TextView accountName, @NonNull final LinearLayout footer, @NonNull final LinearLayout clickableArea) {
+        if (getGAService().getSubaccounts().size() > 0) {
+            accountName.setText(getResources().getText(R.string.main_account));
+            final ArrayList subaccounts = getGAService().getSubaccounts();
+            for (Object subaccount : subaccounts) {
+                final Map<String, ?> subaccountMap = (Map) subaccount;
+                final String name = (String) subaccountMap.get("name");
+                if (subaccountMap.get("pointer").equals(curSubaccount)) {
+                    accountName.setText(name);
+                }
+            }
+            footer.setVisibility(View.VISIBLE);
+            clickableArea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    final PopupMenu popup = new PopupMenu(TabbedMainActivity.this, view);
+                    int i = 0;
+                    popup.getMenu().add(0, i, i, getResources().getText(R.string.main_account));
+                    final ArrayList subaccounts = getGAService().getSubaccounts();
+                    for (final Object subaccount : subaccounts) {
+                        i += 1;
+                        Map<String, ?> subaccountMap = (Map) subaccount;
+                        final String name = (String) subaccountMap.get("name");
+                        popup.getMenu().add(0, i, i, name);
+                    }
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(@NonNull final MenuItem item) {
+                            accountName.setText(item.getTitle());
+                            int curSubaccount;
+                            if (item.getItemId() == 0) {
+                                curSubaccount = 0;
+                            } else {
+                                curSubaccount = ((Integer) ((Map<String, ?>) subaccounts.get(item.getItemId() - 1)).get("pointer"));
+                            }
+                            onSubaccountUpdate(curSubaccount);
+                            return false;
+                        }
+                    });
+                    popup.show();
+                }
+            });
+        }
+    }
+
+    private void onSubaccountUpdate(final int input) {
+        final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).edit();
+        editor.putInt("curSubaccount", input);
+        editor.apply();
+
+        Intent data = new Intent("fragmentupdater");
+        data.putExtra("sub", input);
+        TabbedMainActivity.this.sendBroadcast(data);
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
 
     @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
     private void launch(boolean isBitcoinURL) {
         setContentView(R.layout.activity_tabbed_main);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Set up the action bar.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        final SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(pagerAdapter);
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+
+        if (getGAService().getTwoFacConfig() != null) {
+            configureNoTwoFacFooter();
+        }
+        final Handler handler = new Handler();
+
+        getGAService().getTwoFacConfigObservable().addObserver(new Observer() {
             @Override
-            public void onPageSelected(final int position) {
-                actionBar.setSelectedNavigationItem(position);
-                setIdVisible(position == 0, R.id.action_share);
+            public void update(final Observable observable, final Object data) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        configureNoTwoFacFooter();
+                    }
+                });
             }
         });
 
+        final int curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < pagerAdapter.getCount(); ++i) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(pagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
-        }
+
+        configureSubaccountsFooter(
+                curSubaccount,
+                (TextView) findViewById(R.id.sendAccountName),
+                (LinearLayout) findViewById(R.id.mainFooter),
+                (LinearLayout) findViewById(R.id.footerClickableArea));
+
+
         if (isBitcoinURL) {
             if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
                 if (Build.VERSION.SDK_INT < 16) {
@@ -167,21 +265,6 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
     public void onPause() {
         super.onPause();
         getGAApp().getConnectionObservable().deleteObserver(this);
-    }
-
-    @Override
-    public void onTabSelected(@NonNull final ActionBar.Tab tab, final FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(final ActionBar.Tab tab, final FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(final ActionBar.Tab tab, final FragmentTransaction fragmentTransaction) {
     }
 
     @Override
@@ -379,7 +462,9 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
                 @Override
                 public void run() {
                     final MenuItem item = menu.findItem(id);
-                    item.setVisible(visible);
+                    if (item != null) {
+                        item.setVisible(visible);
+                    }
                 }
             });
         }
@@ -485,13 +570,10 @@ public class TabbedMainActivity extends ActionBarActivity implements ActionBar.T
 
             switch (index) {
                 case 0:
-                    setIdVisible(true, R.id.action_share);
                     return new ReceiveFragment();
                 case 1:
-                    setIdVisible(false, R.id.action_share);
                     return new MainFragment();
                 case 2:
-                    setIdVisible(false, R.id.action_share);
                     return new SendFragment();
             }
 

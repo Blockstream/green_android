@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -17,6 +16,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -27,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -38,7 +38,7 @@ import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
 
-public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListener {
+public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredTagListener {
     @NonNull private static final String TAG = ReceiveFragment.class.getSimpleName();
 
     @Nullable
@@ -108,6 +108,8 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
         tagDispatcher.disableExclusiveNfc();
     }
 
+    View rootView;
+
     @Override
     public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                                @Nullable final Bundle savedInstanceState) {
@@ -119,9 +121,9 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
         tagDispatcher = TagDispatcher.get(getActivity(), this);
         tagDispatcher.enableExclusiveNfc();
 
-        curSubaccount = getGAApp().getSharedPreferences("receive", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+        curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
-        final View rootView = inflater.inflate(R.layout.fragment_receive, container, false);
+        rootView = inflater.inflate(R.layout.fragment_receive, container, false);
         final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
         final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
@@ -153,8 +155,8 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
 
         final ImageView qrcodeInDialog = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
         onAddress = new FutureCallback<QrBitmap>() {
-            @Override
-            public void onSuccess(@Nullable final QrBitmap result) {
+
+            private void onUiThread(@Nullable final QrBitmap result) {
                 address = result;
 
                 final Activity activity = getActivity();
@@ -210,6 +212,16 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                     });
                 }
             }
+            @Override
+            public void onSuccess(@Nullable final QrBitmap result) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onUiThread(result);
+                    }
+                });
+
+            }
 
             @Override
             public void onFailure(@NonNull final Throwable t) {
@@ -248,31 +260,6 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
                 }
         );
 
-        getGAApp().configureSubaccountsFooter(
-                curSubaccount,
-                getActivity(),
-                (TextView) rootView.findViewById(R.id.sendAccountName),
-                (LinearLayout) rootView.findViewById(R.id.receiveFooter),
-                (LinearLayout) rootView.findViewById(R.id.footerClickableArea),
-                new Function<Integer, Void>() {
-                    @Nullable
-                    @Override
-                    public Void apply(final @Nullable Integer input) {
-                        curSubaccount = input;
-                        final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("receive", Context.MODE_PRIVATE).edit();
-                        editor.putInt("curSubaccount", curSubaccount);
-                        editor.apply();
-                        startNewAddressAnimation(rootView);
-                        Futures.addCallback(
-                                getGAService().getNewAddress(curSubaccount),
-                                onAddress, getGAService().es);
-                        return null;
-                    }
-                },
-                rootView.findViewById(R.id.receiveNoTwoFacFooter)
-        );
-
-
         return rootView;
     }
 
@@ -305,11 +292,32 @@ public class ReceiveFragment extends GAFragment implements OnDiscoveredTagListen
         receiveAddress.setText("");
         imageView.setImageBitmap(null);
     }
-    
+
     @Override
     public void tagDiscovered(final Tag t) {
     	Log.d("NFC", "Tag discovered " + t);
     }
-    
-    
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu (final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.receive, menu);
+    }
+
+    @Override
+    protected void onSubaccountChanged(final int input) {
+        curSubaccount = input;
+        if (rootView != null) {
+            startNewAddressAnimation(rootView);
+        }
+        Futures.addCallback(
+                getGAService().getNewAddress(curSubaccount),
+                onAddress, getGAService().es);
+    }
 }

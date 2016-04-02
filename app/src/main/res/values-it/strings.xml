@@ -122,7 +122,7 @@
   <string name="txUnverifiedTx">Transazione non verificata. Per piacere aspetta la sicronizzazione per fidarti di questa transazione. Blocchi rimanenti:</string>
   <string name="unconfirmedBalanceTitle">Bilancio non confermato</string>
   <string name="unconfirmedBalanceText">Il tuo bilancio non è confermato. Significa che forse hai delle transazione appena ricevute o che comunque la verifica SPV non è finita. Blocchi rimanenti per la verifica SPV:</string>
-  <string name="spvNoWiFiText">Ti mancano oltre 6000 header di blocchi da sincronizzare via SPV e non è disponibile la connessione WiFi. Cosa vuoi fare?</string>
+  <string name="spvNoWiFiText">Ti manca oltre 1 megabyte da sincronizzare via SPV e non è disponibile la connessione WiFi. Cosa vuoi fare?</string>
   <string name="spvNoWiFiSyncAnyway">SINCRONIZZA COMUNQUE</string>
   <string name="spvNoWifiWaitForWiFi">IN ATTESA DI WI-FI</string>
   <string name="spvNoWiFiTitle">Sincronizzazione SPV</string>

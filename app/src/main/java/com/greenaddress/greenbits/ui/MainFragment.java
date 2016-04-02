@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -46,7 +44,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TimeZone;
 
-public class MainFragment extends GAFragment implements Observer {
+public class MainFragment extends SubaccountFragment implements Observer {
     private static final int P2SH_FORTIFIED_OUT = 10;
     @Nullable
     private Observer wiFiObserver = null;
@@ -254,7 +252,6 @@ public class MainFragment extends GAFragment implements Observer {
         secondP.setMovementMethod(LinkMovementMethod.getInstance());
         thirdP.setMovementMethod(LinkMovementMethod.getInstance());
 
-
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
         final View.OnClickListener unconfirmedClickListener = new View.OnClickListener() {
@@ -356,32 +353,6 @@ public class MainFragment extends GAFragment implements Observer {
 
         reloadTransactions(getActivity());
 
-        getGAApp().configureSubaccountsFooter(
-                curSubaccount,
-                getActivity(),
-                (TextView) rootView.findViewById(R.id.sendAccountName),
-                (LinearLayout) rootView.findViewById(R.id.mainFooter),
-                (LinearLayout) rootView.findViewById(R.id.footerClickableArea),
-                new Function<Integer, Void>() {
-                    @Nullable
-                    @Override
-                    public Void apply(final @Nullable Integer input) {
-                        getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
-                        curSubaccount = input;
-                        curBalanceObserver = makeBalanceObserver();
-                        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
-                        reloadTransactions(getActivity());
-                        updateBalance();
-
-                        final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).edit();
-                        editor.putInt("curSubaccount", curSubaccount);
-                        editor.apply();
-
-                        return null;
-                    }
-                },
-                rootView.findViewById(R.id.mainNoTwoFacFooter)
-        );
 
         return rootView;
     }
@@ -493,8 +464,8 @@ public class MainFragment extends GAFragment implements Observer {
                         if (gaService.getSharedPreferences("SPV", FragmentActivity.MODE_PRIVATE).getBoolean("enabled", true)) {
                             gaService.spv.setUpSPV();
                             if (!gaService.spv.getIsSpvSyncing()) {
-                                // download up to 468kB (80bytes * 6000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
-                                if (curBlock - gaService.spv.getSpvHeight() > 6000) {
+                                // download up to 1.04 mB (80bytes * 13000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
+                                if (curBlock - gaService.spv.getSpvHeight() > 13000) {
                                     if (connObservable.isWiFiUp()) {
                                         gaService.spv.startSpvSync();
                                     } else {
@@ -648,5 +619,15 @@ public class MainFragment extends GAFragment implements Observer {
     @Override
     public void update(final Observable observable, final Object data) {
         reloadTransactions(getActivity());
+    }
+
+    @Override
+    protected void onSubaccountChanged(final int input) {
+        getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
+        curSubaccount = input;
+        curBalanceObserver = makeBalanceObserver();
+        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        reloadTransactions(getActivity());
+        updateBalance();
     }
 }
