@@ -28,7 +28,7 @@ public class PreparedTransaction {
     public final String twoOfThreeBackupChaincode;
     public final String twoOfThreeBackupPubkey;
 
-    public PreparedTransaction(Integer change_pointer, Integer subaccount_pointer, Boolean requires_2factor, Transaction decoded, String twoOfThreeBackupChaincode, String twoOfThreeBackupPubkey) {
+    public PreparedTransaction(final Integer change_pointer, final Integer subaccount_pointer, final Boolean requires_2factor, final Transaction decoded, final String twoOfThreeBackupChaincode, final String twoOfThreeBackupPubkey) {
         this.change_pointer = change_pointer;
         this.subaccount_pointer = subaccount_pointer;
         this.requires_2factor = requires_2factor;
