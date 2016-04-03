@@ -101,10 +101,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
                     @Nullable
                     @Override
-                    protected Object doInBackground(Object[] params) {
+                    protected Object doInBackground(final Object[] params) {
                         final Boolean nowEnabled = (Boolean) newValue;
 
                         if (nowEnabled) {
+                            gaService.setSpvWiFiDialogShown(false);
                             gaService.spv.setUpSPV();
                             if (gaService.getCurBlock() - gaService.spv.getSpvHeight() > 1000) {
                                 if (gApp.getConnectionObservable().isWiFiUp()) {
@@ -308,7 +309,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        gaService.setSpvWiFiDialogShown(false);
                         makeWiFiObserver();
                     }
                 })
