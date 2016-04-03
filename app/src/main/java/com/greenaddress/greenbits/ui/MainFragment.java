@@ -428,7 +428,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
         reloadTransactions(activity, false);
     }
 
-
     private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
         final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
@@ -579,7 +578,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        getGAService().setSpvWiFiDialogShown(false);
                         makeWiFiObserver();
                     }
                 })
