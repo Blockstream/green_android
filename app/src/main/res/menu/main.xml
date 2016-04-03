@@ -3,14 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.greenaddress.greenbits.ui.MainActivity">
     <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_white_48dp"
-        android:orderInCategory="100"
-        android:title="@string/action_search"
-        android:visible="false"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/network_unavailable"
         android:icon="@drawable/plug_ffffff"
         android:orderInCategory="90"
