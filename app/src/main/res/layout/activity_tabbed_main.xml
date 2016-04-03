@@ -37,50 +37,15 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="95dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <LinearLayout
-        android:id="@+id/mainFooter"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:background="@color/primary"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/sendAccountNameLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/footerAccount"
-            android:textColor="@color/white"
-            android:textSize="20sp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" "/>
-        <LinearLayout
-            android:id="@+id/footerClickableArea"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/sendAccountName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-            <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" &#xf0d7;"
-                android:textColor="@color/white"
-                android:textSize="20sp"/>
-        </LinearLayout>
-    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_recent_actors_black_24dp"/>
 
 </android.support.design.widget.CoordinatorLayout>

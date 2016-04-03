@@ -99,7 +99,7 @@
   <string name="trezorProvidePin">يرجى تقديم Hardware Wallet PIN الخاص بك. انظر إلى الجهاز لمعرفة رقم الموقع :</string>
   <string name="trezorProvidePassphrase">يرجى تقديم عبارة المرور Hardware Wallet  الخاصة بك.</string>
   <string name="main_account">الصفحة الرئيسية</string>
-  <string name="footerAccount">الحساب:</string>
+  <string name="footerAccount">الحساب</string>
   <string name="btchipProvidePIN">يرجى تقديم BTChip PIN الخاص بك:</string>
   <string name="firstLoginRequestedInstructionsOldTrezor">نظام تشغيل Hardware Wallet قديم . الرجاء الترقية إلى 1.3.0 على الأقل في http://mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
   <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>

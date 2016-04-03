@@ -107,15 +107,14 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/receiveAddressLayout"
-        android:gravity="center"
-        android:paddingBottom="60dp">
-
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/receiveQrImageView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:contentDescription="Bitcoin address QrCode"
+            android:paddingBottom="70dp"
             android:layout_gravity="center" />
 
     </RelativeLayout>

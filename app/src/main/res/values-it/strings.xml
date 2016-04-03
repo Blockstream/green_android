@@ -100,7 +100,7 @@
   <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Trezor per la posizione dei tasti:</string>
   <string name="trezorProvidePassphrase">Per piacere inserisci la passphrase del tuo Trezor</string>
   <string name="main_account">Principale</string>
-  <string name="footerAccount">Account: </string>
+  <string name="footerAccount">Conto</string>
   <string name="btchipProvidePIN">Digita il tuo PIN per BTChip:</string>
   <string name="firstLoginRequestedInstructionsOldTrezor">Rilevato TREZOR firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.3.0 da http://mytrezor.com/ dal tuo PC.</string>
   <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>

@@ -107,6 +107,7 @@ dependencies {
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:design:23.2.1'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
     compile 'com.google.zxing:core:3.2.1'
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'com.android.support:multidex:1.0.1'

@@ -116,7 +116,7 @@
     <string name="trezorProvidePin">Please provide your Hardware Wallet PIN. Look at the device for number positions:</string>
     <string name="trezorProvidePassphrase">Please provide your Hardware Wallet passphrase.</string>
     <string name="main_account">Main</string>
-    <string name="footerAccount">Account: </string>
+    <string name="footerAccount">Account</string>
     <string name="btchipProvidePIN">Please provide your BTChip PIN:</string>
     <string name="firstLoginRequestedInstructionsOldTrezor">Outdated Hardware Wallet firmware. Please upgrade to at least 1.3.0 at http://mytrezor.com/ from your computer.</string>
     <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %d. Please reconnect your BTChip before trying again.</string>

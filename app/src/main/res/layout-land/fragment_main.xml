@@ -85,16 +85,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/mainBalanceLayout"
-        android:layout_above="@id/mainFooter"
-        >
-        <ListView
+        android:layout_below="@id/mainBalanceLayout">
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/mainTransactionList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-        android:visibility="gone"
-
-            />
+            android:visibility="gone"
+            android:scrollbars="vertical"/>
 
         <LinearLayout
             android:gravity="center"
@@ -102,8 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
 
 
             <TextView
@@ -113,7 +109,7 @@
                 android:gravity="center"
                 android:padding="16dp"
                 android:text="@string/noBalanceFirstLine"
-                android:textSize="20sp" />
+                android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/mainSecondParagraphText"
@@ -135,5 +131,4 @@
 
         </LinearLayout>
     </LinearLayout>
-
 </RelativeLayout>

@@ -104,7 +104,7 @@
     <string name="trezorProvidePin">Entrer votre code PIN, regarder votre Hardware Wallet pour avoir les positions des numéros:</string>
     <string name="trezorProvidePassphrase">Merci d\'insérer votre phrase de restauration Hardware Wallet</string>
     <string name="main_account">Principal</string>
-    <string name="footerAccount">Compte: </string>
+    <string name="footerAccount">Compte</string>
     <string name="btchipProvidePIN">Merci de saisir votre PIN:</string>
     <string name="firstLoginRequestedInstructionsOldTrezor">Firmware Hardware Wallet périmé. Merci de le mettre à jour sur http://mytrezor.com/.</string>
     <string name="btchipInvalidPIN">PIN incorrect. Tentatives restantes: %d. Merci de débrancher votre wallet avant de recommencer.</string>

@@ -17,6 +17,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -29,8 +30,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,7 +72,6 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2;
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
 
@@ -128,49 +126,70 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         }
     }
 
-    public void configureSubaccountsFooter(final int curSubaccount, @NonNull final TextView accountName, @NonNull final LinearLayout footer, @NonNull final LinearLayout clickableArea) {
-        if (getGAService().getSubaccounts().size() > 0) {
-            accountName.setText(getResources().getText(R.string.main_account));
-            final ArrayList subaccounts = getGAService().getSubaccounts();
-            for (Object subaccount : subaccounts) {
-                final Map<String, ?> subaccountMap = (Map) subaccount;
-                final String name = (String) subaccountMap.get("name");
-                if (subaccountMap.get("pointer").equals(curSubaccount)) {
-                    accountName.setText(name);
-                }
-            }
-            footer.setVisibility(View.VISIBLE);
-            clickableArea.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View view) {
-                    final PopupMenu popup = new PopupMenu(TabbedMainActivity.this, view);
-                    int i = 0;
-                    popup.getMenu().add(0, i, i, getResources().getText(R.string.main_account));
-                    final ArrayList subaccounts = getGAService().getSubaccounts();
-                    for (final Object subaccount : subaccounts) {
-                        i += 1;
-                        Map<String, ?> subaccountMap = (Map) subaccount;
-                        final String name = (String) subaccountMap.get("name");
-                        popup.getMenu().add(0, i, i, name);
-                    }
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(@NonNull final MenuItem item) {
-                            accountName.setText(item.getTitle());
-                            int curSubaccount;
-                            if (item.getItemId() == 0) {
-                                curSubaccount = 0;
-                            } else {
-                                curSubaccount = ((Integer) ((Map<String, ?>) subaccounts.get(item.getItemId() - 1)).get("pointer"));
-                            }
-                            onSubaccountUpdate(curSubaccount);
-                            return false;
-                        }
-                    });
-                    popup.show();
-                }
-            });
+    public void configureSubaccountsFooter(final int curSubaccount) {
+        if (getGAService().getSubaccounts().isEmpty()) {
+            return;
         }
+
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.VISIBLE);
+
+
+        String subaccountName = getResources().getText(R.string.main_account).toString();
+        final ArrayList subaccounts = getGAService().getSubaccounts();
+        for (Object subaccount : subaccounts) {
+            final Map<String, ?> subaccountMap = (Map) subaccount;
+            final String name = (String) subaccountMap.get("name");
+            if (subaccountMap.get("pointer").equals(curSubaccount)) {
+                subaccountName = name;
+                break;
+            }
+        }
+        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), subaccountName));
+
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                final ArrayList<String> subaccounts_list = new ArrayList<>();
+
+                subaccounts_list.add(getResources().getText(R.string.main_account).toString());
+
+                final ArrayList subs = getGAService().getSubaccounts();
+                for (final Object subaccount : subs) {
+                    subaccounts_list.add(((Map) subaccount).get("name").toString());
+                }
+
+                final MaterialDialog.ListCallback lcb = new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(final MaterialDialog dialog, final View view, final int which, final CharSequence text) {
+                        final SharedPreferences sp = getGAApp().getSharedPreferences("main",
+                                Context.MODE_PRIVATE);
+
+                        final int curSubaccount;
+                        if (which == 0) {
+                            curSubaccount = 0;
+                        } else {
+                            final ArrayList subaccounts = getGAService().getSubaccounts();
+                            curSubaccount = ((Integer) ((Map<String, ?>) subaccounts.get(which - 1)).get("pointer"));
+                        }
+
+                        if (sp.getInt("curSubaccount", 0) != curSubaccount) {
+                            setTitle(String.format("%s %s", getResources().getText(R.string.app_name), text));
+                            onSubaccountUpdate(curSubaccount);
+                        }
+                    }
+                };
+
+                new MaterialDialog.Builder(TabbedMainActivity.this)
+                        .title(R.string.footerAccount)
+                        .items(subaccounts_list)
+                        .autoDismiss(true)
+                        .itemsCallback(lcb).show();
+
+
+            }
+        });
     }
 
     private void onSubaccountUpdate(final int input) {
@@ -178,10 +197,9 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         editor.putInt("curSubaccount", input);
         editor.apply();
 
-        Intent data = new Intent("fragmentupdater");
+        final Intent data = new Intent("fragmentupdater");
         data.putExtra("sub", input);
         TabbedMainActivity.this.sendBroadcast(data);
-        mSectionsPagerAdapter.notifyDataSetChanged();
     }
 
     @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
@@ -191,11 +209,11 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         setSupportActionBar(toolbar);
 
         // Set up the action bar.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setAdapter(sectionsPagerAdapter);
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -220,11 +238,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         final int curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
 
-        configureSubaccountsFooter(
-                curSubaccount,
-                (TextView) findViewById(R.id.sendAccountName),
-                (LinearLayout) findViewById(R.id.mainFooter),
-                (LinearLayout) findViewById(R.id.footerClickableArea));
+        configureSubaccountsFooter(curSubaccount);
 
 
         if (isBitcoinURL) {
@@ -275,7 +289,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
                 String scanned = data.getStringExtra("com.greenaddress.greenbits.QrText");
                 if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
-                    scanned = "bitcoin:" + scanned;
+                    scanned = String.format("bitcoin:%s", scanned);
                 }
                 final Intent browsable = new Intent(this, TabbedMainActivity.class);
                 browsable.setData(Uri.parse(scanned));
@@ -365,7 +379,8 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                                         public void onSuccess(final @Nullable Boolean result) {
                                             if (result) {
                                                 final List<TransactionSignature> signatures = new ArrayList<>();
-                                                for (int i = 0; i < tx.getInputs().size(); ++i) {
+                                                final int size = tx.getInputs().size();
+                                                for (int i = 0; i < size; ++i) {
                                                     signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
                                                 }
                                                 Futures.addCallback(getGAService().sendTransaction(signatures, null), new FutureCallback<String>() {

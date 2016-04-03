@@ -3,17 +3,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-
-
-    >
-
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="64dp"
         android:layout_height="wrap_content"
-
-
         android:id="@+id/listInOutRelative">
         <com.greenaddress.greenbits.ui.FontAwesomeTextView
             android:id="@+id/listInOutIcon"
@@ -100,7 +94,7 @@
         android:layout_toLeftOf="@id/listRightElement"
         android:gravity="center_vertical"
         android:id="@+id/listCentralElement"
-        >
+    >
 
         <TextView
             android:id="@+id/listWhoText"

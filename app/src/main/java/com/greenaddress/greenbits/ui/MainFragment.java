@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -15,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -242,6 +243,13 @@ public class MainFragment extends SubaccountFragment implements Observer {
     public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                                final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new DividerItem(getActivity()));
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
         curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
 
         final TextView firstP = (TextView) rootView.findViewById(R.id.mainFirstParagraphText);
@@ -353,7 +361,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
         reloadTransactions(getActivity());
 
-
         return rootView;
     }
 
@@ -406,17 +413,13 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        // "Make sure the content of your adapter is not modified from a background
-                        //  thread, but only from the UI thread. Make sure your adapter calls
-                        //  notifyDataSetChanged() when its content changes."
                         for (final Transaction tx : currentList) {
                             tx.spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
                                             + (getGAService().getReceivingId()),
                                     Context.MODE_PRIVATE).getBoolean(tx.txhash, false);
                         }
-                        final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
-                        ((ListTransactionsAdapter) listView.getAdapter()).notifyDataSetChanged();
-                        listView.invalidateViews();  // hopefully we don't need http://stackoverflow.com/a/19655916
+                        final RecyclerView recycleView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+                        recycleView.getAdapter().notifyDataSetChanged();
                     }
                 });
             }
@@ -428,14 +431,20 @@ public class MainFragment extends SubaccountFragment implements Observer {
         reloadTransactions(activity, false);
     }
 
+    private ListTransactionsAdapter lta = null;
+
     private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
-        final ListView listView = (ListView) rootView.findViewById(R.id.mainTransactionList);
+        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
         final String btcUnit = (String) getGAService().getAppearanceValue("unit");
 
         if (currentList == null || newAdapter) {
             currentList = new ArrayList<>();
-            listView.setAdapter(new ListTransactionsAdapter(activity, R.layout.list_element_transaction, currentList, btcUnit));
+            lta = new ListTransactionsAdapter(activity, currentList, btcUnit);
+            recyclerView.setAdapter(lta);
+            // FIXME, more efficient to use swap
+            // recyclerView.swapAdapter(lta, false);
+
         }
 
         if (replacedTxs == null || newAdapter) {
@@ -477,10 +486,10 @@ public class MainFragment extends SubaccountFragment implements Observer {
                             }
                         }
                         if (resultList != null && resultList.size() > 0) {
-                            listView.setVisibility(View.VISIBLE);
+                            recyclerView.setVisibility(View.VISIBLE);
                             mainEmptyTransText.setVisibility(View.GONE);
                         } else {
-                            listView.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
                             mainEmptyTransText.setVisibility(View.VISIBLE);
                         }
 
@@ -524,12 +533,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
                             newFirstTxHash = currentList.get(0).txhash;
                         }
 
-                        ((ListTransactionsAdapter) listView.getAdapter()).notifyDataSetChanged();
+                        recyclerView.getAdapter().notifyDataSetChanged();
 
                         // scroll to top when new tx comes in
                         if (oldFirstTxHash != null && newFirstTxHash != null &&
                                 !oldFirstTxHash.equals(newFirstTxHash)) {
-                            listView.smoothScrollToPosition(0);
+                            recyclerView.smoothScrollToPosition(0);
                         }
 
                     }
@@ -542,7 +551,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listView.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
                         mainEmptyTransText.setVisibility(View.VISIBLE);
                     }
                 });
