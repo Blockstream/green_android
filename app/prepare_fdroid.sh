@@ -8,6 +8,11 @@ fi
 echo ${JAVA_HOME:?}
 echo ${ANDROID_NDK:?}
 
+export ANDROID_VERSION="23"
+if [ ! -d $ANDROID_NDK/platforms/android-$ANDROID_VERSION ]; then
+    export ANDROID_VERSION="21";
+fi
+
 cd scrypt
 patch -p1 < ../scrypt_Makefile.patch
 
@@ -22,6 +27,7 @@ fi
 for ARCH in aarch64-linux-android mips64el-linux-android x86_64 arm-linux-androideabi mipsel-linux-android x86; do
     export ARCH_SHORT=`echo $ARCH | cut -d'-' -f 1 | sed s/mipsel/mips/ | sed s/aarch64/arm64/ | sed s/mips64el/mips64/` # arm|mips|x86
     export PATH=$ANDROID_NDK/toolchains/$ARCH-4.9/prebuilt/$SYSTEM/bin:$PATH
+    export SYSROOT=$ANDROID_NDK/platforms/android-$ANDROID_VERSION/arch-$ARCH_SHORT/
 
     if [ "$ARCH" = "arm-linux-androideabi" ]; then
             for flags in "-mhard-float -D_NDK_MATH_NO_SOFTFP=1@-Wl,--no-warn-mismatch -lm_hard" "@"; do
@@ -33,7 +39,7 @@ for ARCH in aarch64-linux-android mips64el-linux-android x86_64 arm-linux-androi
                     if [ "$flags" = "@" ]; then
                             export ARCHDIR=../src/main/jniLibs/`echo $ARCH_SHORT | sed s/arm$/armeabi/ | sed s/arm64/arm64-v8a/`;
                     else
-                            export ARCHDIR=../src/main/jniLibs/armeabi-v7a
+                            export ARCHDIR=../src/main/jniLibs/armeabi-v7a;
                     fi
                     mkdir -p $ARCHDIR
                     cp target/libscrypt.so $ARCHDIR
@@ -62,7 +68,7 @@ for ARCH in aarch64-linux-android mips64el-linux-android x86_64 arm-linux-androi
     export ARCH_SHORT=`echo $ARCH | cut -d'-' -f 1 | sed s/mipsel/mips/ | sed s/aarch64/arm64/ | sed s/mips64el/mips64/` # arm|mips|x86
     export ARCH=`echo $ARCH | sed s/x86$/i686-linux-android/ | sed s/x86_64/x86_64-linux-android/`
 
-    export SYSROOT=$ANDROID_NDK/platforms/android-23/arch-$ARCH_SHORT/
+    export SYSROOT=$ANDROID_NDK/platforms/android-$ANDROID_VERSION/arch-$ARCH_SHORT/
     export CC=$ARCH-gcc
     export CPP=$ARCH-cpp
     export CPPFLAGS=--sysroot=$SYSROOT
