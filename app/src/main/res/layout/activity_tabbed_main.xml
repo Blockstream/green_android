@@ -46,6 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
+        android:visibility="gone"
         android:src="@drawable/ic_recent_actors_black_24dp"/>
 
 </android.support.design.widget.CoordinatorLayout>
