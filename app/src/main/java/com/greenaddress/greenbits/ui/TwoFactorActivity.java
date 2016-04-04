@@ -48,13 +48,11 @@ public class TwoFactorActivity extends ActionBarActivity {
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
         final List<String> enabledTwoFacNames = gaService.getEnabledTwoFacNames(false);
         final List<String> enabledTwoFacNamesSystem = gaService.getEnabledTwoFacNames(true);
-        int i = 0;
-        for (String name : allTwoFacSystem) {
-            if (name.equals(twoFacType)) {
+        for (int i = 0; i < allTwoFacSystem.length; ++i) {
+            if (allTwoFacSystem[i].equals(twoFacType)) {
                 twoFacTypeName = allTwoFac[i];
                 break;
             }
-            i++;
         }
         setTitle(new Formatter().format(getTitle().toString(), twoFacTypeName).toString());
 
@@ -67,17 +65,16 @@ public class TwoFactorActivity extends ActionBarActivity {
             final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
             radioGroup.removeViews(0, radioGroup.getChildCount());
 
-            int j = 0;
-            for (String name : enabledTwoFacNames) {
+            for (int i = 0; i < enabledTwoFacNames.size(); ++i) {
                 RadioButton button = new RadioButton(TwoFactorActivity.this);
-                button.setText(name);
-                button.setId(j++);
+                button.setText(enabledTwoFacNames.get(i));
+                button.setId(i);
                 radioGroup.addView(button);
             }
 
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                public void onCheckedChanged(final RadioGroup group, final int checkedId) {
                     continueButton.setEnabled(true);
                 }
             });
@@ -133,7 +130,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         final GaService gaService = getGAService();
         setContentView(R.layout.activity_two_factor_3_provide_details);
         final Button continueButton = (Button) findViewById(R.id.continueButton);
-        TextView prompt = (TextView) findViewById(R.id.prompt);
+        final TextView prompt = (TextView) findViewById(R.id.prompt);
         final TextView details = (TextView) findViewById(R.id.details);
         prompt.setText(new Formatter().format(
                 prompt.getText().toString(),
@@ -143,14 +140,14 @@ public class TwoFactorActivity extends ActionBarActivity {
         if (!twoFacType.equals("email")) {
             findViewById(R.id.emailNotices).setVisibility(View.GONE);
         }
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (0 == details.getText().toString().trim().length()) return;
+            public void onClick(final View v) {
+                if (details.getText().toString().trim().isEmpty()) return;
                 continueButton.setEnabled(false);
                 final Map<String, String> twoFacData = new HashMap<>();
                 if (proxyCode != null) {  // two factor required
@@ -159,7 +156,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                 }
                 Futures.addCallback(gaService.initEnableTwoFac(twoFacType, details.getText().toString(), twoFacData), new FutureCallback<Boolean>() {
                     @Override
-                    public void onSuccess(@Nullable Boolean result) {
+                    public void onSuccess(final @Nullable Boolean result) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -185,8 +182,8 @@ public class TwoFactorActivity extends ActionBarActivity {
     }
 
     private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, @NonNull final String newMethod) {
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.activity_two_factor_2_4_provide_code, null, false);
+        final LayoutInflater inflater = getLayoutInflater();
+        final View view = inflater.inflate(R.layout.activity_two_factor_2_4_provide_code, null, false);
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
         setContentView(view);
 
@@ -195,7 +192,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         final EditText code = (EditText) findViewById(R.id.code);
         description.setText(getResources().getString(R.string.twoFacProvideAuthCodeDescription));
         prompt.setText(new Formatter().format(prompt.getText().toString(), oldMethodName).toString());
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
         final GaService gaService = getGAService();
@@ -206,7 +203,7 @@ public class TwoFactorActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 continueButton.setEnabled(false);
-                Map<String, String> data = new HashMap<>();
+                final Map<String, String> data = new HashMap<>();
                 data.put("method", oldMethod);
                 data.put("code", code.getText().toString());
                 Futures.addCallback(gaService.requestTwoFacCode("proxy", newMethod, data), new FutureCallback<Object>() {
@@ -241,8 +238,8 @@ public class TwoFactorActivity extends ActionBarActivity {
     }
 
     private void showGauthDetails(final int stepNum, final int numSteps, @Nullable final String proxyCode) {
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.activity_two_factor_3_gauth_details, null, false);
+        final LayoutInflater inflater = getLayoutInflater();
+        final View view = inflater.inflate(R.layout.activity_two_factor_3_gauth_details, null, false);
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
         setContentView(view);
 
@@ -250,14 +247,14 @@ public class TwoFactorActivity extends ActionBarActivity {
         final TextView textCode = (TextView) findViewById(R.id.textCode);
         final Button continueButton = (Button) findViewById(R.id.continueButton);
         final EditText code = (EditText) findViewById(R.id.code);
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
         final GaService gaService = getGAService();
 
-        String gauth_url = (String) gaService.getTwoFacConfig().get("gauth_url");
+        final String gauth_url = (String) gaService.getTwoFacConfig().get("gauth_url");
         try {
-            BitmapDrawable bd = new BitmapDrawable(getResources(), new QrBitmap(gauth_url, 0).call().qrcode);
+            final BitmapDrawable bd = new BitmapDrawable(getResources(), new QrBitmap(gauth_url, 0).call().qrcode);
             bd.setFilterBitmap(false);
             imageView.setImageDrawable(bd);
         } catch (WriterException e) {
@@ -293,7 +290,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                 continueButton.setEnabled(false);
                 Futures.addCallback(gaService.enableTwoFac("gauth", code.getText().toString().trim(), twoFacData), new FutureCallback<Boolean>() {
                     @Override
-                    public void onSuccess(@Nullable Boolean result) {
+                    public void onSuccess(final @Nullable Boolean result) {
                         setResult(RESULT_OK);
                         finish();
                     }
@@ -315,8 +312,8 @@ public class TwoFactorActivity extends ActionBarActivity {
     }
 
     private void showProvideConfirmationCode(final int stepNum, final int numSteps) {
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.activity_two_factor_2_4_provide_code, null, false);
+        final LayoutInflater inflater = getLayoutInflater();
+        final View view = inflater.inflate(R.layout.activity_two_factor_2_4_provide_code, null, false);
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
         setContentView(view);
 
@@ -325,7 +322,7 @@ public class TwoFactorActivity extends ActionBarActivity {
         final TextView prompt = (TextView) findViewById(R.id.prompt);
         prompt.setText(new Formatter().format(prompt.getText().toString(), twoFacTypeName).toString());
         final GaService gaService = getGAService();
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
