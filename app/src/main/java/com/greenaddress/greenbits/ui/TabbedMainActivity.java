@@ -40,6 +40,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.monitor.NetworkMonitorActivity;
 import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
 
@@ -126,16 +127,20 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     }
 
     private void configureSubaccountsFooter(final int curSubaccount) {
-        if (getGAService().getSubaccounts().isEmpty()) {
+        final GaService gs = getGAService();
+        if (gs == null) {
             return;
         }
-
+        final ArrayList subs = gs.getSubaccounts();
+        if (subs == null || subs.isEmpty()) {
+            return;
+        }
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
 
         String subaccountName = getResources().getText(R.string.main_account).toString();
-        final ArrayList subaccounts = getGAService().getSubaccounts();
+        final ArrayList subaccounts = subs;
         for (Object subaccount : subaccounts) {
             final Map<String, ?> subaccountMap = (Map) subaccount;
             final String name = (String) subaccountMap.get("name");
@@ -162,6 +167,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                 final MaterialDialog.ListCallback lcb = new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(final MaterialDialog dialog, final View view, final int which, final CharSequence text) {
+
                         final SharedPreferences sp = getGAApp().getSharedPreferences("main",
                                 Context.MODE_PRIVATE);
 
@@ -185,8 +191,6 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                         .items(subaccounts_list)
                         .autoDismiss(true)
                         .itemsCallback(lcb).show();
-
-
             }
         });
     }
