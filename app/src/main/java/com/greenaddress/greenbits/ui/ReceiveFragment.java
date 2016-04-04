@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -33,6 +35,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.QrBitmap;
+
+import org.bitcoinj.uri.BitcoinURI;
 
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
@@ -319,5 +323,26 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Futures.addCallback(
                 getGAService().getNewAddress(curSubaccount),
                 onAddress, getGAService().es);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        final int id = item.getItemId();
+        if (id == R.id.action_share) {
+            if (address != null && !address.data.isEmpty()) {
+                //SHARE intent
+                final Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, BitcoinURI.convertToBitcoinURI(address.data, null, null, null));
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

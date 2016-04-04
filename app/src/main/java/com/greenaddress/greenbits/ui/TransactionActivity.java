@@ -634,8 +634,8 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                                 ).build()
                         );
                     }
-                    Map<String, Object> twoFacData = new HashMap<String, Object>();
-                    twoFacData.put("try_under_limits_bump", Long.valueOf(tx.getFee().subtract(oldFee).longValue()));
+                    Map<String, Object> twoFacData = new HashMap<>();
+                    twoFacData.put("try_under_limits_bump", tx.getFee().subtract(oldFee).longValue());
                     final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(tx, twoFacData, true);
                     Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
                         @Override

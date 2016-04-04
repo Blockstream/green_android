@@ -26,21 +26,24 @@ public class ListTransactionsAdapter extends
     private final String btcUnit;
     private final Context context;
 
+    public ListTransactionsAdapter(final Context context, final List<Transaction> transactions, final String btcUnit) {
+        this.transactions = transactions;
+        this.btcUnit = btcUnit;
+        this.context = context;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        final Context context = parent.getContext();
-        final LayoutInflater inflater = LayoutInflater.from(context);
-        final View transactionView = inflater.inflate(R.layout.list_element_transaction, parent, false);
-        final ViewHolder viewHolder = new ViewHolder(transactionView);
-        return viewHolder;
+        return new ViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_element_transaction, parent, false));
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final Transaction current = transactions.get(position);
+        final Transaction transaction = transactions.get(position);
 
 
-        final long val = current.amount;
+        final long val = transaction.amount;
         final Coin coin = Coin.valueOf(val);
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
@@ -60,17 +63,17 @@ public class ListTransactionsAdapter extends
         }
 
         if (!context.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true) ||
-                current.spvVerified || current.isSpent || current.type.equals(Transaction.TYPE.OUT)) {
+                transaction.spvVerified || transaction.isSpent || transaction.type.equals(Transaction.TYPE.OUT)) {
             holder.textValueQuestionMark.setVisibility(View.GONE);
         } else {
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);
         }
 
-        if (current.doubleSpentBy == null) {
+        if (transaction.doubleSpentBy == null) {
             holder.textWhen.setTextColor(context.getResources().getColor(R.color.tertiaryTextColor));
-            holder.textWhen.setText(TimeAgo.fromNow(current.date.getTime(), context));
+            holder.textWhen.setText(TimeAgo.fromNow(transaction.date.getTime(), context));
         } else {
-            switch (current.doubleSpentBy) {
+            switch (transaction.doubleSpentBy) {
                 case "malleability":
                     holder.textWhen.setTextColor(Color.parseColor("#FF8000"));
                     holder.textWhen.setText(context.getResources().getText(R.string.malleated));
@@ -85,24 +88,24 @@ public class ListTransactionsAdapter extends
             }
         }
 
-        if (!current.replaceable) {
+        if (!transaction.replaceable) {
             holder.textReplaceable.setVisibility(View.GONE);
         } else {
             holder.textReplaceable.setVisibility(View.VISIBLE);
         }
 
         String message;
-        if (current.type.equals(Transaction.TYPE.OUT) && current.counterparty != null
-                && current.counterparty.length() > 0) {
-            if (current.counterparty.length() > 13) {
-                message = String.format("%s...", current.counterparty.substring(0, 10));
+        if (transaction.type.equals(Transaction.TYPE.OUT) && transaction.counterparty != null
+                && transaction.counterparty.length() > 0) {
+            if (transaction.counterparty.length() > 13) {
+                message = String.format("%s...", transaction.counterparty.substring(0, 10));
             } else {
-                message = current.counterparty;
+                message = transaction.counterparty;
             }
         } else {
-            message = getTypeString(current.type);
+            message = getTypeString(transaction.type);
         }
-        holder.textWho.setText(String.format("%s%s", message, current.memo != null ? " *" : ""));
+        holder.textWho.setText(String.format("%s%s", message, transaction.memo != null ? " *" : ""));
 
         holder.mainLayout.setBackgroundColor(val > 0 ?
                 context.getResources().getColor(R.color.superLightGreen) :
@@ -110,7 +113,7 @@ public class ListTransactionsAdapter extends
 
         );
 
-        if (current.hasEnoughConfirmations()) {
+        if (transaction.hasEnoughConfirmations()) {
             holder.inOutIcon.setText(val > 0 ?
                     Html.fromHtml("&#xf090;") :
                     Html.fromHtml("&#xf08b;")
@@ -119,7 +122,7 @@ public class ListTransactionsAdapter extends
         } else {
             holder.inOutIcon.setText(Html.fromHtml("&#xf017;"));
             holder.listNumberConfirmation.setVisibility(View.VISIBLE);
-            holder.listNumberConfirmation.setText(String.valueOf(current.getConfirmations()));
+            holder.listNumberConfirmation.setText(String.valueOf(transaction.getConfirmations()));
 
         }
 
@@ -127,7 +130,7 @@ public class ListTransactionsAdapter extends
             @Override
             public void onClick(final View v) {
                 final Intent transactionActivity = new Intent(context, TransactionActivity.class);
-                transactionActivity.putExtra("TRANSACTION", current);
+                transactionActivity.putExtra("TRANSACTION", transaction);
                 context.startActivity(transactionActivity);
             }
         });
@@ -148,7 +151,7 @@ public class ListTransactionsAdapter extends
 
     @Override
     public int getItemCount() {
-        return transactions == null? 0 : transactions.size();
+        return transactions == null ? 0 : transactions.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -179,11 +182,5 @@ public class ListTransactionsAdapter extends
             bitcoinScale = (TextView) itemView.findViewById(R.id.listBitcoinScaleText);
             listNumberConfirmation = (TextView) itemView.findViewById(R.id.listNumberConfirmation);
         }
-    }
-
-    public ListTransactionsAdapter(final Context context, final List<Transaction> transactions, final String btcUnit) {
-        this.transactions = transactions;
-        this.btcUnit = btcUnit;
-        this.context = context;
     }
 }

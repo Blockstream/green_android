@@ -45,5 +45,5 @@ public class FailHardActivity extends AppCompatActivity {
                         finish();
                     }
                 })).build().show();
-        }
+    }
 }

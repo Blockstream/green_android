@@ -183,6 +183,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                         Integer.parseInt(s.substring(idx + 1));
                     }
                 } catch (@NonNull final NumberFormatException e) {
+                    return true;
                 }
                 addrCorrect = s.isEmpty() || s.contains(".");
 

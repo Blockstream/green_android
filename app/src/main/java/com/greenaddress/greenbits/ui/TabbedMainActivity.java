@@ -51,7 +51,6 @@ import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.BIP38PrivateKey;
 import org.bitcoinj.crypto.TransactionSignature;
-import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.spongycastle.util.encoders.Hex;
 
@@ -108,7 +107,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
         if (!((Boolean) getGAService().getTwoFacConfig().get("any") || twoFacWarning)) {
             final Snackbar snackbar = Snackbar
-                    .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning).toString(), Snackbar.LENGTH_INDEFINITE)
+                    .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
 
                     .setAction("Setup 2FA", new View.OnClickListener() {
                         @Override
@@ -126,7 +125,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         }
     }
 
-    public void configureSubaccountsFooter(final int curSubaccount) {
+    private void configureSubaccountsFooter(final int curSubaccount) {
         if (getGAService().getSubaccounts().isEmpty()) {
             return;
         }
@@ -515,21 +514,6 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         } else if (id == R.id.action_logout) {
             getGAService().disconnect(false);
             finish();
-            return true;
-        } else if (id == R.id.action_share) {
-            final TextView receiveAddress = (TextView) findViewById(R.id.receiveAddressText);
-            if (receiveAddress != null) {
-                final String address = receiveAddress.getText().toString();
-                if (!address.isEmpty()) {
-                    //SHARE intent
-                    final Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, BitcoinURI.convertToBitcoinURI(address.replace("\n", "").replace("\r", ""), null, null, null));
-                    sendIntent.setType("text/plain");
-                    startActivity(sendIntent);
-                }
-            }
-
             return true;
         }
         else if (id == R.id.action_network){

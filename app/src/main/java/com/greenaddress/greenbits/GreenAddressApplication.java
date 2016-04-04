@@ -87,7 +87,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         } catch (final SecurityException e) {
             e.printStackTrace();
             errorTitle = "Security exception";
-            errorContent = String.format("{} please contact support info@greenaddress.it", e.getMessage());
+            errorContent = String.format("%s please contact support info@greenaddress.it", e.getMessage());
         }
 
         if (errorTitle == null && Secp256k1Context.isEnabled()) {

@@ -702,7 +702,7 @@ public class WalletClient {
                                         getAppearenceValue("replace_by_fee") == null) {
                                     // enable rbf if server supports it and not disabled
                                     // by user explicitly
-                                    setAppearanceValue("replace_by_fee", new Boolean(true), false);
+                                    setAppearanceValue("replace_by_fee", Boolean.TRUE, false);
                                 }
                             }
                         } catch (final ClassCastException | IOException e) {

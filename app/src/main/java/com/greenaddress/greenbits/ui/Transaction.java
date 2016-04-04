@@ -48,7 +48,7 @@ public class Transaction implements Serializable {
         this.size = size;
         this.doubleSpentBy = doubleSpentBy;
         this.replaceable = replaceable;
-        this.replaced_hashes = new ArrayList<String>();
+        this.replaced_hashes = new ArrayList<>();
         this.data = data;
         this.eps = eps;
     }

@@ -431,8 +431,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
         reloadTransactions(activity, false);
     }
 
-    private ListTransactionsAdapter lta = null;
-
     private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
         final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
@@ -440,8 +438,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
         if (currentList == null || newAdapter) {
             currentList = new ArrayList<>();
-            lta = new ListTransactionsAdapter(activity, currentList, btcUnit);
-            recyclerView.setAdapter(lta);
+            recyclerView.setAdapter(new ListTransactionsAdapter(activity, currentList, btcUnit));
             // FIXME, more efficient to use swap
             // recyclerView.swapAdapter(lta, false);
 
