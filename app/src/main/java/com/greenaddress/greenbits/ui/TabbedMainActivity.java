@@ -106,10 +106,17 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
-        if (!((Boolean) getGAService().getTwoFacConfig().get("any") || twoFacWarning)) {
+        final GaService gs = getGAService();
+        if (gs == null) {
+            return;
+        }
+        final Map<?,?> twoFacConfig = gs.getTwoFacConfig();
+        if (twoFacConfig == null) {
+            return;
+        }
+        if (!((Boolean) twoFacConfig.get("any") || twoFacWarning)) {
             final Snackbar snackbar = Snackbar
                     .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
-
                     .setAction("Setup 2FA", new View.OnClickListener() {
                         @Override
                         public void onClick(final View view) {
@@ -219,13 +226,17 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        if (getGAService().getTwoFacConfig() != null) {
-            configureNoTwoFacFooter();
+        final GaService gs = getGAService();
+        if (gs == null) {
+            Toast.makeText(TabbedMainActivity.this, "Not connected", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        configureNoTwoFacFooter();
+
         final Handler handler = new Handler();
 
-        getGAService().getTwoFacConfigObservable().addObserver(new Observer() {
+        gs.getTwoFacConfigObservable().addObserver(new Observer() {
             @Override
             public void update(final Observable observable, final Object data) {
                 handler.post(new Runnable() {
