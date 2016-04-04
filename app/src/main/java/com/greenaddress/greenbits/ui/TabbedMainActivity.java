@@ -140,8 +140,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
 
         String subaccountName = getResources().getText(R.string.main_account).toString();
-        final ArrayList subaccounts = subs;
-        for (Object subaccount : subaccounts) {
+        for (Object subaccount : subs) {
             final Map<String, ?> subaccountMap = (Map) subaccount;
             final String name = (String) subaccountMap.get("name");
             if (subaccountMap.get("pointer").equals(curSubaccount)) {
