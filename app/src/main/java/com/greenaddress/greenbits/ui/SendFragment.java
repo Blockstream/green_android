@@ -929,9 +929,9 @@ public class SendFragment extends SubaccountFragment {
         converting = true;
         final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
                 .toBigInteger().longValue());
-        final ExchangeRate rate = new ExchangeRate(exchangeFiat);
 
         try {
+            final ExchangeRate rate = new ExchangeRate(exchangeFiat);
             final Coin btcValue = bitcoinFormat.parse(amountEdit.getText().toString());
             Fiat fiatValue = rate.coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
