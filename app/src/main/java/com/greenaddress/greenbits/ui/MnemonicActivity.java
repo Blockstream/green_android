@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -68,14 +69,19 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @NonNull private static final String TAG = MnemonicActivity.class.getSimpleName();
 
     private void showErrorCorrection(final String closeWord, final String badWord) {
+        if (closeWord == null) return;
         final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
         final Snackbar snackbar = Snackbar
                 .make(mnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
                 .setAction("Correct", new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        mnemonicText.setText(mnemonicText.getText().toString().replace(badWord, closeWord));
-                        if (validateMnemonic(mnemonicText.getText().toString())) {
+                        mnemonicText.setOnTouchListener(null);
+                        final String mnemonicStr = mnemonicText.getText().toString()
+                                .replace(badWord, closeWord);
+                        mnemonicText.setText(mnemonicStr);
+                        final int words = mnemonicStr.split(" ").length;
+                        if (validateMnemonic(mnemonicStr) && (words == 24 || words == 27)) {
                             login();
                         }
                     }
@@ -98,17 +104,10 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             return false;
         } catch (@NonNull final MnemonicException.MnemonicWordException e) {
             setWord(e.badWord);
-            String temp = null;
             try {
-                temp = MnemonicHelper.getClosestWord(e.badWord, this);
+                showErrorCorrection(MnemonicHelper.getClosestWord(e.badWord, this), e.badWord);
             } catch (@NonNull final IOException eGnore) {
                 // ignore
-            }
-            final String closeWord = temp;
-            if (closeWord == null) {
-                Toast.makeText(MnemonicActivity.this, "'" + e.badWord + "'" + " is not a valid word", Toast.LENGTH_LONG).show();
-            } else {
-                showErrorCorrection(closeWord, e.badWord);
             }
             return false;
         } catch (@NonNull final MnemonicException e) {
@@ -372,6 +371,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         e.printStackTrace();
                     }
                 }
+                edit.setOnTouchListener(null);
                 final Spans copy = spans;
                 spans = null;
                 if (copy != null) {
@@ -500,6 +500,18 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     private void setWord(final String badWord) {
 
         final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
+
+        mnemonicText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(final View view, final MotionEvent motionEvent) {
+                try {
+                    showErrorCorrection(MnemonicHelper.getClosestWord(badWord, MnemonicActivity.this), badWord);
+                } catch (@NonNull final IOException eGnore) {
+                    // ignore
+                }
+                return false;
+            }
+        });
 
         final Spannable spannable = mnemonicText.getText();
         final String mnemonics = spannable.toString();
