@@ -90,6 +90,7 @@ android {
     }
 
     dexOptions {
+        maxProcessCount 4
         javaMaxHeapSize "2g"
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
     }
