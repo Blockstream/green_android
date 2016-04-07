@@ -196,5 +196,5 @@
   <string name="feeIncreaseTitle">Fee increase</string>
   <string name="insufficientFundsText">Insufficient funds</string>
   <string name="app_version">Versione</string>
-
+  <string name="invalidWord">La parola \'%1$s\' non è valida, vuoi che sia corretta con %2$s?</string>
 </resources>

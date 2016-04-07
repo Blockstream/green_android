@@ -202,6 +202,6 @@
     <string name="feeIncreaseTitle">Fee increase</string>
     <string name="insufficientFundsText">Insufficient funds</string>
     <string name="app_version">Version</string>
-
+    <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
 </resources>
 

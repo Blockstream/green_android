@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextUtils;
@@ -66,7 +67,26 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
     @NonNull private static final String TAG = MnemonicActivity.class.getSimpleName();
 
+    private void showErrorCorrection(final String closeWord, final String badWord) {
+        final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
+        final Snackbar snackbar = Snackbar
+                .make(mnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
+                .setAction("Correct", new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View view) {
+                        mnemonicText.setText(mnemonicText.getText().toString().replace(badWord, closeWord));
+                        if (validateMnemonic(mnemonicText.getText().toString())) {
+                            login();
+                        }
+                    }
+                });
 
+        final View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(Color.DKGRAY);
+        final TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
     private boolean validateMnemonic(@NonNull final String mnemonic) {
         // FIXME: add support for different bip39 word lists like Japanese, Spanish, etc
         InputStream closable = null;
@@ -77,7 +97,19 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             Toast.makeText(MnemonicActivity.this, "Can't find resources file bip39-wordlist.txt, please contact support.", Toast.LENGTH_LONG).show();
             return false;
         } catch (@NonNull final MnemonicException.MnemonicWordException e) {
-            setWord(e.badWord, true);
+            setWord(e.badWord);
+            String temp = null;
+            try {
+                temp = MnemonicHelper.getClosestWord(e.badWord, this);
+            } catch (@NonNull final IOException eGnore) {
+                // ignore
+            }
+            final String closeWord = temp;
+            if (closeWord == null) {
+                Toast.makeText(MnemonicActivity.this, "'" + e.badWord + "'" + " is not a valid word", Toast.LENGTH_LONG).show();
+            } else {
+                showErrorCorrection(closeWord, e.badWord);
+            }
             return false;
         } catch (@NonNull final MnemonicException e) {
             Toast.makeText(MnemonicActivity.this, "Invalid passphrase (has to be 24 or 27 words)", Toast.LENGTH_LONG).show();
@@ -286,7 +318,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                if(KeyEvent.KEYCODE_ENTER == event.getKeyCode()) {
+                if(event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode()) {
                     return true;
                 }
                 if (actionId == EditorInfo.IME_ACTION_GO) {
@@ -333,7 +365,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                             if (spans != null && word.equals(spans.word)) {
                                 return;
                             }
-                            setWord(word, false);
+                            setWord(word);
                             return;
                         }
                     } catch (final IOException e) {
@@ -465,7 +497,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
     Spans spans;
 
-    private void setWord(final String badWord, final boolean loginAttempt) {
+    private void setWord(final String badWord) {
 
         final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
 
@@ -492,20 +524,6 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         spans = new Spans(badWord);
         for (final Object s: spans.spans) {
             spannable.setSpan(s, start, end, 0);
-        }
-
-        if (loginAttempt) {
-            String closeworld = null;
-            try {
-                closeworld = MnemonicHelper.getClosestWord(badWord, this);
-            } catch (@NonNull final IOException eGnore) {
-                // ignore
-            }
-            if (closeworld == null) {
-                Toast.makeText(MnemonicActivity.this, "'" + badWord + "'" + " is not a valid word", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(MnemonicActivity.this, "'" + badWord + "'" + " is not a valid word, did you mean '" + closeworld + "'?", Toast.LENGTH_LONG).show();
-            }
         }
     }
 
