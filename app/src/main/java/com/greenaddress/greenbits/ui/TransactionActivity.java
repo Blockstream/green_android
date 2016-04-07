@@ -187,9 +187,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                     // unconfirmed outgoing output/redeposit - can be RBF'd
                     int currentEstimate = 25, bestEstimate;
                     final Map<String, Object> feeEstimates = getGAService().getClient().getLoginData().feeEstimates;
-                    String checkValues[] = {"1", "3", "6"};
+                    final String checkValues[] = {"1", "3", "6"};
                     for (String value : checkValues) {
-                        Number feerate = (Number)((Map)feeEstimates.get(value)).get("feerate");
+                        final Double feerate = Double.parseDouble((String)((Map)feeEstimates.get(value)).get("feerate"));
                         if (feePerKb.compareTo(Coin.valueOf((long)(feerate.doubleValue()*1000*1000*100))) >= 0) {
                             currentEstimate = (Integer)((Map)feeEstimates.get(value)).get("blocks");
                             break;
@@ -205,9 +205,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                         }
                         unconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
-                                double feerate = (Double)((Map)feeEstimates.get("1")).get("feerate");
-                                Coin feerateCoin = Coin.valueOf((long)(feerate*1000*1000*100));
+                            public void onClick(final View v) {
+                                final double feerate = Double.parseDouble((String)((Map)feeEstimates.get("1")).get("feerate"));
+                                final Coin feerateCoin = Coin.valueOf((long)(feerate*1000*1000*100));
                                 replaceByFee(t, feerateCoin, null, 0);
                             }
                         });
