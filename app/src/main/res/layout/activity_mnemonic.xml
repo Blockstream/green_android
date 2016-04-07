@@ -53,6 +53,7 @@
                     android:imeOptions="actionGo"
                     android:inputType="textMultiLine|textNoSuggestions"
                     android:minLines="2"
+                    android:digits="abcdefghijklmnopqrstuvwxyz "
                     android:text=""
                     android:textColor="@color/secondaryTextColor"
                     android:textSize="24sp"/>
