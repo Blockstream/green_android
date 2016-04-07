@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -11,9 +10,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.Editable;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
@@ -32,7 +32,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.dd.CircularProgressButton;
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -42,29 +41,21 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
-import com.lambdaworks.crypto.SCrypt;
 
-import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.crypto.DRMWorkaround;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.crypto.MnemonicException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.annotation.Nullable;
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 
 import de.schildbach.wallet.ui.ScanActivity;
 
@@ -73,60 +64,6 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
     @NonNull private static final String TAG = MnemonicActivity.class.getSimpleName();
 
-    private static int countSubStr(@NonNull final String sub, @NonNull final String s) {
-        int c = 0;
-        for (int l = s.indexOf(sub); l != -1;
-             l = s.indexOf(sub, l + sub.length())) {
-            ++c;
-        }
-        return c;
-    }
-
-    private static int levenshteinDistance(@NonNull final String inputA, @NonNull final String inputB) {
-        final String strA = inputA.toLowerCase();
-        final String strB = inputB.toLowerCase();
-        final int[] c = new int[strB.length() + 1];
-        for (int i = 0; i < c.length; ++i) {
-            c[i] = i;
-        }
-        for (int i = 1; i <= strA.length(); ++i) {
-            c[0] = i;
-            int n = i - 1;
-            for (int j = 1; j <= strB.length(); ++j) {
-                final int cj = Math.min(1 + Math.min(c[j], c[j - 1]), strA.charAt(i - 1) == strB.charAt(j - 1) ? n : n + 1);
-                n = c[j];
-                c[j] = cj;
-            }
-        }
-        return c[strB.length()];
-    }
-
-    private String getClosestWord(@NonNull final String word) throws IOException {
-        final InputStream is = getAssets().open("bip39-wordlist.txt");
-        final List<String> words = new ArrayList<>();
-
-        String line;
-
-        try {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            while ((line = reader.readLine()) != null) {
-                words.add(line);
-            }
-        } finally {
-            is.close();
-        }
-
-        final List<Integer> scores = new ArrayList<>();
-        for (final String w : words) {
-            scores.add(Integer.MAX_VALUE);
-        }
-
-        for (int i = 0; i < words.size(); ++i) {
-            scores.set(i, levenshteinDistance(word, words.get(i)));
-        }
-
-        return words.get(scores.indexOf(Collections.min(scores)));
-    }
 
     private boolean validateMnemonic(@NonNull final String mnemonic) {
         // FIXME: add support for different bip39 word lists like Japanese, Spanish, etc
@@ -138,28 +75,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             Toast.makeText(MnemonicActivity.this, "Can't find resources file bip39-wordlist.txt, please contact support.", Toast.LENGTH_LONG).show();
             return false;
         } catch (@NonNull final MnemonicException.MnemonicWordException e) {
-            // show red only if there's a single match as we don't know the position of the failure
-            if (countSubStr(e.badWord, mnemonic) == 1) {
-                final int start = mnemonic.indexOf(e.badWord);
-                final int end = start + e.badWord.length();
-                final Spannable spannable = new SpannableString(mnemonic);
-                spannable.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
-                spannable.setSpan(new StyleSpan(Typeface.ITALIC), start, end, 0);
-                spannable.setSpan(new UnderlineSpan(), start, end, 0);
-                spannable.setSpan(new ForegroundColorSpan(Color.RED), start, end, 0);
-                ((EditText) findViewById(R.id.mnemonicText)).setText(spannable);
-            }
-            String closeworld = null;
-            try {
-                closeworld = getClosestWord(e.badWord);
-            } catch (@NonNull final IOException eGnore) {
-                // ignore
-            }
-            if (closeworld == null) {
-                Toast.makeText(MnemonicActivity.this, "'" + e.badWord + "'" + " is not a valid word", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(MnemonicActivity.this, "'" + e.badWord + "'" + " is not a valid word, did you mean '" + closeworld + "'?", Toast.LENGTH_LONG).show();
-            }
+            setWord(e.badWord, true);
             return false;
         } catch (@NonNull final MnemonicException e) {
             Toast.makeText(MnemonicActivity.this, "Invalid passphrase (has to be 24 or 27 words)", Toast.LENGTH_LONG).show();
@@ -218,6 +134,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 //This larger function is somehow being called in another
                 //non-main thread when cold-start NFC mnemonics login is
                 // prompted, causing this to fail.
+                okButton.setEnabled(false);
                 okButton.setProgress(50);
             }
         });
@@ -235,7 +152,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                             try {
                                 final byte[] entropy = gaService.getMnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
                                 final String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
-                                final byte[] decrypted = decryptMnemonic(entropy, normalizedPassphrase);
+                                final byte[] decrypted = MnemonicHelper.decryptMnemonic(entropy, normalizedPassphrase);
                                 return gaService.login(Joiner.on(" ").join(gaService.getMnemonicCode().toMnemonic(decrypted)));
                             } catch (@NonNull final IOException | GeneralSecurityException | MnemonicException e) {
                                 throw new RuntimeException(e);
@@ -273,34 +190,14 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     public void run() {
                         Toast.makeText(MnemonicActivity.this, message, Toast.LENGTH_LONG).show();
                         okButton.setProgress(0);
-
+                        okButton.setEnabled(true);
                     }
                 });
             }
         }, gaService.es);
     }
 
-    private byte[] decryptMnemonic(@NonNull final byte[] entropy, @NonNull final String normalizedPassphrase) throws GeneralSecurityException {
-        final byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
-        final byte[] encrypted = Arrays.copyOf(entropy, 32);
-        final byte[] derived = SCrypt.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, 64);
-        final byte[] key = Arrays.copyOfRange(derived, 32, 64);
-        final SecretKeySpec keyspec = new SecretKeySpec(key, "AES");
 
-        DRMWorkaround.maybeDisableExportControls();
-        @SuppressLint("GetInstance") // ECB for 256 bits is enough, and is the same that BIP38 uses
-        final Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-
-        cipher.init(Cipher.DECRYPT_MODE, keyspec);
-        final byte[] decrypted = cipher.doFinal(encrypted, 0, 32);
-        for (int i = 0; i < 32; ++i)
-            decrypted[i] ^= derived[i];
-
-        final byte[] hash = Sha256Hash.twiceOf(decrypted).getBytes();
-        if (!Arrays.equals(Arrays.copyOf(hash, 4), salt))
-            throw new RuntimeException("Invalid checksum");
-        return decrypted;
-    }
 
     @NonNull
     private ListenableFuture<String> askForPassphrase() {
@@ -310,7 +207,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.passphraseValue);
-                MaterialDialog dialog = new MaterialDialog.Builder(MnemonicActivity.this)
+                final MaterialDialog dialog = new MaterialDialog.Builder(MnemonicActivity.this)
                         .title("Encryption passphrase")
                         .customView(inflatedLayout, true)
                         .positiveText("OK")
@@ -325,7 +222,16 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                             public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                 passphraseFuture.set(passphraseValue.getText().toString());
                             }
-                        }).build();
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull final MaterialDialog dialog, @NonNull final DialogAction which) {
+                                final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
+                                okButton.setProgress(0);
+                                okButton.setEnabled(true);
+                            }
+                        })
+                        .build();
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
                 passphraseValue.requestFocus();
                 dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
@@ -381,8 +287,38 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             }
         });
 
-        NFCIntentMnemonicLogin();
+        edit.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(final Editable s) {
+                final String mnemonic = s.toString();
+                for (final String word : mnemonic.split(" ")) {
+                    try {
+                        if (word.length() > 2 && !MnemonicHelper.hasWord(word, MnemonicActivity.this)) {
+                            if (spans != null && word.equals(spans.word)) {
+                                return;
+                            }
+                            setWord(word, false);
+                            return;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                final Spans copy = spans;
+                spans = null;
+                if (copy != null) {
+                    for (final Object span : copy.spans) {
+                        s.removeSpan(span);
+                    }
+                }
+            }
+            public void beforeTextChanged(final CharSequence s, final int start,
+                                          final int count, final int after){}
+            public void onTextChanged(final CharSequence s, final int start,
+                                      final int before, final int count) {
+            }
+        });
 
+        NFCIntentMnemonicLogin();
     }
 
     private void NFCIntentMnemonicLogin() {
@@ -419,7 +355,6 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         });
                     }
 
-
                 } catch (@NonNull final IOException | MnemonicException e) {
                     e.printStackTrace();
                 } finally {
@@ -439,7 +374,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     @Override
                     public void onSuccess(final @Nullable String passphrase) {
                         try {
-                            final byte[] decrypted = decryptMnemonic(array, passphrase);
+                            final byte[] decrypted = MnemonicHelper.decryptMnemonic(array, passphrase);
                             final GaService gaService = getGAService();
                             final String mnemonics = Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted));
                             edit.setText(mnemonics);
@@ -491,11 +426,67 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
+    Spans spans;
+
+    private void setWord(final String badWord, final boolean loginAttempt) {
+
+        final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
+
+        final Spannable spannable = mnemonicText.getText();
+        final String mnemonics = spannable.toString();
+
+        int start = 0;
+        final String[] split = mnemonics.split(" ");
+        for (int i = 0; i < split.length; ++i) {
+            if (split[i].equals(badWord)) {
+                break;
+            }
+            start += split[i].length() + 1;
+        }
+
+        final int end = start + badWord.length();
+
+        if (spans != null) {
+            for (final Object o: spans.spans) {
+                spannable.removeSpan(o);
+            }
+        }
+
+        spans = new Spans(badWord);
+        for (final Object s: spans.spans) {
+            spannable.setSpan(s, start, end, 0);
+        }
+
+        if (loginAttempt) {
+            String closeworld = null;
+            try {
+                closeworld = MnemonicHelper.getClosestWord(badWord, this);
+            } catch (@NonNull final IOException eGnore) {
+                // ignore
+            }
+            if (closeworld == null) {
+                Toast.makeText(MnemonicActivity.this, "'" + badWord + "'" + " is not a valid word", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MnemonicActivity.this, "'" + badWord + "'" + " is not a valid word, did you mean '" + closeworld + "'?", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    class Spans {
+        final String word;
+        final List<Object> spans = new ArrayList<>(4);
+        Spans(final String word) {
+            this.word = word;
+            spans.add(new StyleSpan(Typeface.BOLD));
+            spans.add(new StyleSpan(Typeface.ITALIC));
+            spans.add(new UnderlineSpan());
+            spans.add(new ForegroundColorSpan(Color.RED));
+        }
+    }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, @android.support.annotation.Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "" + data);
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
         if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
             edit.setText(data.getStringExtra("com.greenaddress.greenbits.QrText"));
