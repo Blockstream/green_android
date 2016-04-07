@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,6 +93,10 @@ public class PinActivity extends ActionBarActivity implements Observer {
 
         pinLoginButton.setIndeterminateProgressMode(true);
         pinLoginButton.setProgress(50);
+        final EditText pinTextEdit = (EditText) findViewById(R.id.pinText);
+
+        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(pinTextEdit.getWindowToken(), 0);
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @NonNull
@@ -141,8 +146,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
                 PinActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        final EditText pinText = (EditText) findViewById(R.id.pinText);
-                        pinText.setText("");
+                        pinTextEdit.setText("");
                         Toast.makeText(PinActivity.this, tstMsg, Toast.LENGTH_LONG).show();
 
                         pinLoginButton.setProgress(0);
