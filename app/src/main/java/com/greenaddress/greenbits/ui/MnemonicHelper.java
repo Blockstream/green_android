@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.crypto.Cipher;
@@ -105,7 +104,32 @@ public class MnemonicHelper {
         for (int i = 0; i < N_OF_WORDS; ++i) {
             scores.add(levenshteinDistance(word, words[i]));
         }
-
-        return words[scores.indexOf(Collections.min(scores))];
+        Integer min = Integer.MAX_VALUE;
+        final List<Integer> matches = new ArrayList<>();
+        for (int i = 0; i < N_OF_WORDS; ++i) {
+            final Integer score = scores.get(i);
+            if (score.compareTo(min) < 0) {
+                min = score;
+                matches.clear();
+                matches.add(i);
+            } else if (score.compareTo(min) == 0) {
+                matches.add(i);
+            }
+        }
+        for (final Integer m : matches) {
+            final String match = words[m];
+            // give preference to words that start with our word
+            if (match.startsWith(word)) {
+                return match;
+            }
+        }
+        for (final Integer m : matches) {
+            final String match = words[m];
+            // give preference to words that end with our word
+            if (match.endsWith(word)) {
+                return match;
+            }
+        }
+        return words[matches.get(0)];
     }
 }
