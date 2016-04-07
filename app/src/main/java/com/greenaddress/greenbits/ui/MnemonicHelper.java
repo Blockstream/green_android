@@ -44,10 +44,11 @@ public class MnemonicHelper {
         return c[strB.length()];
     }
 
-    static boolean hasWord(final String word, final ContextWrapper ctxw) throws IOException {
+    static boolean isValidWord(final String word, final ContextWrapper ctxw, final boolean equals) throws IOException {
         final String[] words = getWords(ctxw);
         for (int i = 0; i < N_OF_WORDS; ++i) {
-            if (words[i].equals(word)) {
+            if ((!equals && words[i].startsWith(word)) ||
+                    (equals && words[i].equals(word))) {
                 return true;
             }
         }

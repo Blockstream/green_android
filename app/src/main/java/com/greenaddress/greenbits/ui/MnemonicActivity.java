@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -121,8 +123,13 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         }
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
         final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
-
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
+            }
+        });
         if (!validateMnemonic(edit.getText().toString())) {
             return;
         }
@@ -279,6 +286,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+                if(KeyEvent.KEYCODE_ENTER == event.getKeyCode()) {
+                    return true;
+                }
                 if (actionId == EditorInfo.IME_ACTION_GO) {
                     login();
                     return true;
@@ -290,16 +300,43 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         edit.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(final Editable s) {
                 final String mnemonic = s.toString();
-                for (final String word : mnemonic.split(" ")) {
+                if (mnemonic.startsWith(" ")) {
+                    s.replace(0, 1, "");
+                    return;
+                }
+                final int space_idx = mnemonic.lastIndexOf("  ");
+                if (space_idx != -1) {
                     try {
-                        if (word.length() > 2 && !MnemonicHelper.hasWord(word, MnemonicActivity.this)) {
+                        s.replace(space_idx, 2, " ");
+                    } catch (final IndexOutOfBoundsException ignore) {
+                        // seems caused by backspace on a physical keyboard via emulator
+                        // ideally we handle this better but this seems to work
+                    }
+                    return;
+                }
+                final String[] split = mnemonic.split(" ");
+                final boolean endsWithSpace = mnemonic.endsWith(" ");
+                final int lastElement = split.length - 1;
+                for (int i = 0; i < split.length; ++i) {
+                    final String word = split[i];
+                    try {
+                        // check for equality
+                        // not last or last but postponed by a space
+                        // otherwise just that it's the start of a word
+                        final boolean isLastElement = i == lastElement;
+                        final boolean checkEqual =
+                                !isLastElement
+                                        || (isLastElement && endsWithSpace);
+
+                        if (!MnemonicHelper.isValidWord(word, MnemonicActivity.this,
+                                checkEqual)) {
                             if (spans != null && word.equals(spans.word)) {
                                 return;
                             }
                             setWord(word, false);
                             return;
                         }
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         e.printStackTrace();
                     }
                 }
