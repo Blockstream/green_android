@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -39,6 +41,8 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             Toast.makeText(PinSaveActivity.this, "PIN has to be between 4 and 15 digits", Toast.LENGTH_SHORT).show();
             return;
         }
+        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(findViewById(R.id.pinSaveText).getWindowToken(), 0);
         final String mnemonic_str = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
         final List<String> mnemonic = java.util.Arrays.asList(mnemonic_str.split(" "));
         final Button pinSkipButton = (Button) findViewById(R.id.pinSkipButton);
@@ -115,10 +119,10 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             try {
                 KeyStoreAES.createKey(true);
 
-                final CheckBox pinSaveText = (CheckBox) findViewById(R.id.useNativeAuthentication);
-                pinSaveText.setVisibility(View.VISIBLE);
+                final CheckBox nativeAuth = (CheckBox) findViewById(R.id.useNativeAuthentication);
+                nativeAuth.setVisibility(View.VISIBLE);
 
-                pinSaveText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                nativeAuth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                         if (isChecked) {
