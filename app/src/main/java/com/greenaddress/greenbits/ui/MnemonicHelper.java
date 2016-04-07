@@ -25,23 +25,23 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class MnemonicHelper {
 
-    private static int levenshteinDistance(@NonNull final String inputA, @NonNull final String inputB) {
-        final String strA = inputA.toLowerCase();
-        final String strB = inputB.toLowerCase();
-        final int[] c = new int[strB.length() + 1];
-        for (int i = 0; i < c.length; ++i) {
-            c[i] = i;
+    private static int levenshteinDistance(@NonNull final String sA, @NonNull final String sB) {
+        final int s1 = sA.length() + 1;
+        final int s2 = sB.length() + 1;
+
+        int[] c = new int[s1];
+        int[] nc = new int[s1];
+
+        for (int j = 0; j < s1; ++j) c[j] = j;
+
+        for (int j = 1; j < s2; ++j) {
+            nc[0] = j;
+            for(int k = 1; k < s1; ++k)
+                nc[k] = Math.min(Math.min(c[k] + 1, nc[k - 1] + 1), c[k - 1]
+                        + ((sA.charAt(k - 1) == sB.charAt(j - 1)) ? 0 : 1));
+            final int[] swap = c; c = nc; nc = swap;
         }
-        for (int i = 1; i <= strA.length(); ++i) {
-            c[0] = i;
-            int n = i - 1;
-            for (int j = 1; j <= strB.length(); ++j) {
-                final int cj = Math.min(1 + Math.min(c[j], c[j - 1]), strA.charAt(i - 1) == strB.charAt(j - 1) ? n : n + 1);
-                n = c[j];
-                c[j] = cj;
-            }
-        }
-        return c[strB.length()];
+        return c[s1 - 1];
     }
 
     static boolean isValidWord(final String word, final ContextWrapper ctxw, final boolean equals) throws IOException {
