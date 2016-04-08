@@ -68,7 +68,7 @@
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:id="@+id/radioGroup">
 
                 <RadioButton
@@ -97,7 +97,7 @@
         android:text="@string/continueText"
         android:textColor="@color/white"
         android:id="@+id/continueButton"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         style="@style/myButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"

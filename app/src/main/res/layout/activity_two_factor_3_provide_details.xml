@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/twoFacProvideDetails"
                 android:id="@+id/prompt"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:layout_marginTop="15sp"
                 android:layout_marginBottom="10sp"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/twoFacEmailConfirmNotice"
                     android:id="@+id/textView7"
-                    android:layout_gravity="center_horizontal|left"
+                    android:layout_gravity="center_horizontal|start"
                     android:layout_marginLeft="10sp"
                     android:layout_marginRight="10sp" />
             </LinearLayout>
@@ -107,7 +107,7 @@
         android:text="@string/continueText"
         android:textColor="@color/white"
         android:id="@+id/continueButton"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         style="@style/myButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"

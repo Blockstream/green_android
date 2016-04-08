@@ -44,9 +44,10 @@
         android:paddingRight="16dp"
         android:paddingLeft="16dp"
         android:id="@+id/listRightElement"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical|right"
+        android:gravity="center_vertical|end"
 
         android:textColor="@color/textColor">
 
@@ -92,6 +93,7 @@
         android:layout_toEndOf="@id/listInOutRelative"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/listRightElement"
+        android:layout_toStartOf="@id/listRightElement"
         android:gravity="center_vertical"
         android:id="@+id/listCentralElement"
     >

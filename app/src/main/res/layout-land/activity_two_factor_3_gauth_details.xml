@@ -135,7 +135,7 @@
         android:text="@string/continueText"
         android:textColor="@color/white"
         android:id="@+id/continueButton"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         style="@style/myButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"

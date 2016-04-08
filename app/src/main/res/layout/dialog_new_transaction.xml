@@ -18,7 +18,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="right">
+            android:gravity="end">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="right">
+            android:gravity="end">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -117,9 +117,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="@color/whiteSecondary"
-        android:inputType="numberPassword"
-
-        />
+        android:inputType="numberPassword"/>
 
 
 </LinearLayout>

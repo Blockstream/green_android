@@ -8,7 +8,6 @@
         android:id="@+id/sweepAddressMainText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="text"
         android:textColor="@color/whiteSecondary"
         android:textSize="20sp" />
 
@@ -20,7 +19,6 @@
         android:lines="3"
         android:maxLines="3"
         android:singleLine="false"
-        android:text="1\n2\n3"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:typeface="monospace" />
@@ -30,7 +28,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:text="text"
         android:textColor="@color/whiteSecondary" />
 
     <EditText
@@ -38,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:textColor="@color/whiteSecondary" />
 
 

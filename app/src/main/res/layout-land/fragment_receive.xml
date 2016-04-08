@@ -29,16 +29,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="12dp"
+        android:layout_toEndOf="@id/receiveAddressLayout"
         android:layout_toRightOf="@id/receiveAddressLayout"
         android:layout_alignParentRight="true"
-        >
+        android:layout_alignParentEnd="true"
+
+    >
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="droid"
-            android:gravity="left"
+            android:gravity="start"
             android:text="@string/receiveAddressSubTitle"
             android:textColor="@color/textColor"
             android:textSize="24sp" />

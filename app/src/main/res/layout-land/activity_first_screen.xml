@@ -1,98 +1,99 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/textColor"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.greenaddress.greenbits.ui.FirstScreenActivity">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/textColor"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:context="com.greenaddress.greenbits.ui.FirstScreenActivity">
 
 
     <ImageView
         android:id="@+id/firstLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo_big"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/app_description"
         android:paddingLeft="16dp"
-        android:contentDescription="GreenAddress Logo"
-        android:paddingRight="16dp"/>
-
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_centerVertical="true"
-    android:layout_toRightOf="@+id/firstLogo"
-    android:id="@+id/linearLayout">
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/welcomeGreenBits"
-        android:textColor="@color/white"
-        android:textSize="24sp" />
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="10dp"/>
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/greenaddress_headline"
-        android:textColor="@color/whiteSecondary" />
-
+        android:paddingRight="16dp"
+        android:src="@drawable/logo_big"/>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal"
-        android:padding="20dp">
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/firstLogo"
+        android:layout_toEndOf="@+id/firstLogo"
+        android:orientation="vertical">
 
-
-        <Button
-            android:id="@+id/firstLogInButton"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/hide"
-            android:elevation="8dp"
-            android:text="@string/firstLogInText"
-            android:textColor="@color/accent" />
+            android:gravity="center"
+            android:text="@string/welcomeGreenBits"
+            android:textColor="@color/white"
+            android:textSize="24sp"/>
 
         <View
-            android:layout_width="16dp"
-            android:layout_height="fill_parent" />
+            android:layout_width="fill_parent"
+            android:layout_height="10dp"/>
 
-        <Button
-            android:id="@+id/firstSignUpButton"
-            style="@style/myButton"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/firstSignUpText"
-            android:textColor="@color/white"
+            android:gravity="center"
+            android:text="@string/greenaddress_headline"
+            android:textColor="@color/whiteSecondary"/>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:padding="20dp">
+
+
+            <Button
+                android:id="@+id/firstLogInButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/hide"
+                android:elevation="8dp"
+                android:text="@string/firstLogInText"
+                android:textColor="@color/accent"/>
+
+            <View
+                android:layout_width="16dp"
+                android:layout_height="fill_parent"/>
+
+            <Button
+                android:id="@+id/firstSignUpButton"
+                style="@style/myButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/firstSignUpText"
+                android:textColor="@color/white"
 
             />
 
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
 
     <TextView
+        android:id="@+id/firstMadeByText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/madeBy"
-        android:textColor="@color/whiteSecondary"
-        android:id="@+id/firstMadeByText"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:text="@string/madeBy"
+        android:textColor="@color/whiteSecondary"/>
 
 </RelativeLayout>
