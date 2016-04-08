@@ -396,7 +396,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                                                 for (int i = 0; i < size; ++i) {
                                                     signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
                                                 }
-                                                Futures.addCallback(getGAService().sendTransaction(signatures, null), new FutureCallback<String>() {
+                                                Futures.addCallback(getGAService().sendTransaction(signatures), new FutureCallback<String>() {
                                                     @Override
                                                     public void onSuccess(final @Nullable String result) {
 

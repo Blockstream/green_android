@@ -436,11 +436,11 @@ public class GaService extends Service {
     }
 
     @NonNull
-    private ListenableFuture<LoginData> login() {
+    private void login() {
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
         final ListenableFuture<LoginData> future = client.login(deviceId);
         Futures.addCallback(future, handleLoginData, es);
-        return future;
+        return;
     }
 
     @NonNull
@@ -831,8 +831,8 @@ public class GaService extends Service {
 
 
     @NonNull
-    public ListenableFuture<Object> requestTwoFacCode(@NonNull final String method, @NonNull final String action) {
-        return client.requestTwoFacCode(method, action);
+    public void requestTwoFacCode(@NonNull final String method, @NonNull final String action) {
+        client.requestTwoFacCode(method, action);
     }
 
     @NonNull
