@@ -11,7 +11,7 @@ public class Output {
     public final String script;
     public final Long value;
 
-    public Output(Integer subaccount, Integer pointer, Integer branch, Integer scriptType, String script, Long value) {
+    public Output(final Integer subaccount, final Integer pointer, final Integer branch, final Integer scriptType, final String script, final Long value) {
         this.subaccount = subaccount;
         this.pointer = pointer;
         this.branch = branch;
