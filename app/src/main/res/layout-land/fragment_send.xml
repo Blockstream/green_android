@@ -30,7 +30,6 @@
                     android:orientation="horizontal"
                     android:paddingBottom="8dp">
                     <TextView
-
                         android:id="@+id/sendSubAccountBitcoinScale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -42,7 +41,7 @@
                         android:id="@+id/sendSubAccountBalanceUnit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
+                        android:gravity="end"
                         android:text="&#xf15a; "
                         android:textColor="@color/textColor"
                         android:textSize="34sp" />
@@ -52,7 +51,6 @@
                         android:id="@+id/sendSubAccountBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=" 0.00"
                         android:textColor="@color/textColor"
                         android:textSize="34sp" />
                 </LinearLayout>
@@ -143,7 +141,6 @@
                                 android:id="@+id/sendBitcoinUnitText"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
                                 android:gravity="center"
                                 android:text="&#xf15a;"
                                 android:textColor="@color/accent"
@@ -157,6 +154,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal|center_vertical"
+                            android:layout_toEndOf="@id/sendBitcoinGroup"
                             android:layout_toRightOf="@id/sendBitcoinGroup"
                             android:textColor="@color/textColor"
                             android:gravity="end|center_vertical"
@@ -169,7 +167,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_gravity="right">
+                        android:layout_gravity="end">
                         <TextView
                             android:id="@+id/sendMaxLabel"
                             android:layout_width="wrap_content"
@@ -206,8 +204,6 @@
                             android:id="@+id/sendFiatIcon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-
                             android:gravity="center"
                             android:text="&#xf155;"
                             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -222,8 +218,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal|center_vertical"
                         android:layout_toRightOf="@id/sendFiatGroup"
-                        android:layout_weight="1"
-                        android:gravity="right"
+                        android:layout_toEndOf="@id/sendFiatGroup"
+                        android:gravity="end"
                         android:textColor="@color/textColor"
                         android:hint="0.00"
                         android:inputType="numberDecimal"

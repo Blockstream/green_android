@@ -10,15 +10,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="right|bottom"
+        android:gravity="end|bottom"
         android:paddingLeft="@dimen/activity_horizontal_margin">
 
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:paddingRight="@dimen/activity_horizontal_margin">
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin">
             <TextView
                 android:id="@+id/mainBitcoinScaleText"
                 android:layout_width="wrap_content"
@@ -36,7 +36,6 @@
                 android:id="@+id/mainBalanceText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
                 android:textColor="@color/textColor"
                 android:textSize="34sp" />
 
@@ -55,6 +54,7 @@
             android:layout_height="wrap_content"
 
             android:paddingBottom="8dp"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin">
 
             <com.greenaddress.greenbits.ui.FontAwesomeTextView
@@ -70,9 +70,7 @@
                 android:id="@+id/mainLocalBalanceText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
                 android:textColor="@color/secondaryTextColor"
-
                 android:textSize="24sp"
 
                 />

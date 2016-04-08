@@ -30,7 +30,6 @@
                     android:orientation="horizontal"
                     android:paddingBottom="8dp">
                     <TextView
-
                         android:id="@+id/sendSubAccountBitcoinScale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -48,11 +47,9 @@
                         android:textSize="34sp" />
 
                     <TextView
-
                         android:id="@+id/sendSubAccountBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=" 0.00"
                         android:textColor="@color/textColor"
                         android:textSize="34sp" />
                 </LinearLayout>
