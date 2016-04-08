@@ -41,20 +41,17 @@ for ARCH in aarch64-linux-android mips64el-linux-android x86_64 arm-linux-androi
                     else
                             export ARCHDIR=../src/main/jniLibs/armeabi-v7a;
                     fi
-                    mkdir -p $ARCHDIR
-                    cp target/libscrypt.so $ARCHDIR
-                    $ANDROID_NDK/toolchains/$ARCH-4.9/prebuilt/$SYSTEM/bin/`echo $ARCH | sed s/x86$/i686-linux-android/ | sed s/x86_64/x86_64-linux-android/`-strip $ARCHDIR/libscrypt.so
             done
     else
-            export CFLAGS=--sysroot=$SYSROOT
-            unset LDFLAGS
+            export CFLAGS=--sysroot=$SYSROOT;
+            unset LDFLAGS;
             make clean TARGET=android;
             make NDK_ROOT=$ANDROID_NDK TARGET=android ARCH_SHORT=$ARCH_SHORT ARCH=`echo $ARCH | sed s/x86$/i686-linux-android/ | sed s/x86_64/x86_64-linux-android/`;
-            ARCHDIR=../src/main/jniLibs/`echo $ARCH_SHORT | sed s/arm$/armeabi/ | sed s/arm64/arm64-v8a/`;
-            mkdir -p $ARCHDIR;
-            cp target/libscrypt.so $ARCHDIR;
-            $ANDROID_NDK/toolchains/$ARCH-4.9/prebuilt/$SYSTEM/bin/`echo $ARCH | sed s/x86$/i686-linux-android/ | sed s/x86_64/x86_64-linux-android/`-strip $ARCHDIR/libscrypt.so;
+            export ARCHDIR=../src/main/jniLibs/`echo $ARCH_SHORT | sed s/arm$/armeabi/ | sed s/arm64/arm64-v8a/`;
     fi
+    mkdir -p $ARCHDIR
+    cp target/libscrypt.so $ARCHDIR
+    $ANDROID_NDK/toolchains/$ARCH-4.9/prebuilt/$SYSTEM/bin/`echo $ARCH | sed s/x86$/i686-linux-android/ | sed s/x86_64/x86_64-linux-android/`-strip $ARCHDIR/libscrypt.so
 done
 patch -p1 -R < ../scrypt_Makefile.patch
 
@@ -87,20 +84,17 @@ for ARCH in aarch64-linux-android mips64el-linux-android x86_64 arm-linux-androi
                     else
                             export ARCHDIR=../src/main/jniLibs/armeabi-v7a;
                     fi
-                    mkdir -p $ARCHDIR
-                    cp .libs/libsecp256k1.so $ARCHDIR
-                    $ANDROID_NDK/toolchains/`echo $ARCH | sed s/i686-linux-android/x86/ | sed s/x86_64-linux-android/x86_64/`-4.9/prebuilt/$SYSTEM/bin/$ARCH-strip $ARCHDIR/libsecp256k1.so
             done
     else
             unset LDFLAGS
             ./configure --host=$ARCH --target=$ARCH --enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh;
             make -o configure clean;
             make -o configure;
-            ARCHDIR=../src/main/jniLibs/`echo $ARCH_SHORT | sed s/arm$/armeabi/ | sed s/arm64/arm64-v8a/`;
-            mkdir -p $ARCHDIR;
-            cp .libs/libsecp256k1.so $ARCHDIR;
-            $ANDROID_NDK/toolchains/`echo $ARCH | sed s/i686-linux-android/x86/ | sed s/x86_64-linux-android/x86_64/`-4.9/prebuilt/$SYSTEM/bin/$ARCH-strip $ARCHDIR/libsecp256k1.so;
-   fi
+            export ARCHDIR=../src/main/jniLibs/`echo $ARCH_SHORT | sed s/arm$/armeabi/ | sed s/arm64/arm64-v8a/`;
+    fi
+    mkdir -p $ARCHDIR
+    cp .libs/libsecp256k1.so $ARCHDIR
+    $ANDROID_NDK/toolchains/`echo $ARCH | sed s/i686-linux-android/x86/ | sed s/x86_64-linux-android/x86_64/`-4.9/prebuilt/$SYSTEM/bin/$ARCH-strip $ARCHDIR/libsecp256k1.so
 done
 
 cd ..
