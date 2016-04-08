@@ -288,7 +288,7 @@ public class TwoFactorActivity extends ActionBarActivity {
                     twoFacData.put("code", proxyCode);
                 }
                 continueButton.setEnabled(false);
-                Futures.addCallback(gaService.enableTwoFac("gauth", code.getText().toString().trim(), twoFacData), new FutureCallback<Boolean>() {
+                Futures.addCallback(gaService.enableTwoFac(code.getText().toString().trim(), twoFacData), new FutureCallback<Boolean>() {
                     @Override
                     public void onSuccess(final @Nullable Boolean result) {
                         setResult(RESULT_OK);

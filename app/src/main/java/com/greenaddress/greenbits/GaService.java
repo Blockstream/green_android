@@ -613,12 +613,12 @@ public class GaService extends Service {
     }
 
     @NonNull
-    public ListenableFuture<String> sendTransaction(@NonNull final List<TransactionSignature> signatures, final Object twoFacData) {
+    public ListenableFuture<String> sendTransaction(@NonNull final List<TransactionSignature> signatures) {
         final List<String> signaturesStrings = new LinkedList<>();
         for (final TransactionSignature sig : signatures) {
             signaturesStrings.add(new String(Hex.encode(sig.encodeToBitcoin())));
         }
-        return client.sendTransaction(signaturesStrings, twoFacData);
+        return client.sendTransaction(signaturesStrings, null);
     }
 
     @NonNull
@@ -878,8 +878,8 @@ public class GaService extends Service {
     }
 
     @NonNull
-    public ListenableFuture<Boolean> enableTwoFac(@NonNull final String type, @NonNull final String code, @NonNull final Object twoFacData) {
-        return Futures.transform(client.enableTwoFac(type, code, twoFacData), new Function<Boolean, Boolean>() {
+    public ListenableFuture<Boolean> enableTwoFac(@NonNull final String code, @NonNull final Object twoFacData) {
+        return Futures.transform(client.enableTwoFac("gauth", code, twoFacData), new Function<Boolean, Boolean>() {
             @Nullable
             @Override
             public Boolean apply(final @Nullable Boolean input) {

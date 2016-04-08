@@ -416,8 +416,8 @@ public class SPV {
         }
     }
 
-    public boolean getIsSpvSyncing() {
-        return isSpvSyncing;
+    public boolean spvNotSyncing() {
+        return !isSpvSyncing;
     }
 
     public boolean isPeerGroupRunning(){
