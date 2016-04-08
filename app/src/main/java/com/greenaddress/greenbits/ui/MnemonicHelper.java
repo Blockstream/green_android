@@ -43,15 +43,15 @@ public class MnemonicHelper {
         return c[s1 - 1];
     }
 
-    static boolean isValidWord(final String word, final ContextWrapper ctxw, final boolean equals) throws IOException {
+    static boolean isInvalidWord(final String word, final ContextWrapper ctxw, final boolean equals) throws IOException {
         final String[] words = getWords(ctxw);
         for (int i = 0; i < N_OF_WORDS; ++i) {
             if ((!equals && words[i].startsWith(word)) ||
                     (equals && words[i].equals(word))) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     static byte[] decryptMnemonic(@NonNull final byte[] entropy, @NonNull final String normalizedPassphrase) throws GeneralSecurityException {

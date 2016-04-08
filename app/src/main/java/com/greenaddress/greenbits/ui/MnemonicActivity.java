@@ -354,13 +354,8 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         // check for equality
                         // not last or last but postponed by a space
                         // otherwise just that it's the start of a word
-                        final boolean isLastElement = i == lastElement;
-                        final boolean checkEqual =
-                                !isLastElement
-                                        || (isLastElement && endsWithSpace);
-
-                        if (!MnemonicHelper.isValidWord(word, MnemonicActivity.this,
-                                checkEqual)) {
+                        if (MnemonicHelper.isInvalidWord(word, MnemonicActivity.this,
+                                !(i == lastElement) || endsWithSpace)) {
                             if (spans != null && word.equals(spans.word)) {
                                 return;
                             }
