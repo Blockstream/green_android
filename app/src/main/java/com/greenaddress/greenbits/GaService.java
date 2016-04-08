@@ -440,7 +440,6 @@ public class GaService extends Service {
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
         final ListenableFuture<LoginData> future = client.login(deviceId);
         Futures.addCallback(future, handleLoginData, es);
-        return;
     }
 
     @NonNull
@@ -543,7 +542,7 @@ public class GaService extends Service {
     }
 
     public void fireBalanceChanged(final int subaccount) {
-        if (balancesCoin != null && getBalanceCoin(subaccount) != null) {  // can be null if called from addUtxoToValues before balance is fetched
+        if (getBalanceCoin(subaccount) != null) {  // can be null if called from addUtxoToValues before balance is fetched
             balanceObservables.get(subaccount).setChanged();
             balanceObservables.get(subaccount).notifyObservers();
         }

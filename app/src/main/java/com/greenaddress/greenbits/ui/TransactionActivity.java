@@ -190,7 +190,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                     final String checkValues[] = {"1", "3", "6"};
                     for (String value : checkValues) {
                         final Double feerate = Double.parseDouble((String)((Map)feeEstimates.get(value)).get("feerate"));
-                        if (feePerKb.compareTo(Coin.valueOf((long)(feerate.doubleValue()*1000*1000*100))) >= 0) {
+                        if (feePerKb.compareTo(Coin.valueOf((long)(feerate*1000*1000*100))) >= 0) {
                             currentEstimate = (Integer)((Map)feeEstimates.get(value)).get("blocks");
                             break;
                         }
@@ -533,19 +533,20 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
         }
 
-        private void doReplaceByFee(Transaction txData, Coin feerate, final org.bitcoinj.core.Transaction tx, Integer change_pointer, Integer subaccount_pointer, final Coin oldFee, List<Map<String, Object>> moreInputs, List<byte[]> morePrevouts, final int level) {
-            Boolean requires_2factor = false;
+        private void doReplaceByFee(final Transaction txData, final Coin feerate,
+                                    final org.bitcoinj.core.Transaction tx,
+                                    final Integer change_pointer, final Integer subaccount_pointer,
+                                    final Coin oldFee, final List<Map<String, Object>> moreInputs,
+                                    final List<byte[]> morePrevouts, final int level) {
             String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
 
-            PreparedTransaction prepTx = new PreparedTransaction(
-                    change_pointer, subaccount_pointer, requires_2factor,
+            final PreparedTransaction prepTx = new PreparedTransaction(
+                    change_pointer, subaccount_pointer, /*requires_2factor*/false,
                     tx, twoOfThreeBackupChaincode, twoOfThreeBackupPubkey
             );
 
-            for (int i = 0; i < txData.eps.size(); ++i) {
-                final Map<String, Object> ep = (Map<String, Object>) txData.eps.get(i);
+            for (final Map<String, Object> ep : (List<Map<String, Object>>)txData.eps) {
                 if (((Boolean) ep.get("is_credit"))) continue;
-
                 prepTx.prev_outputs.add(new Output(
                         (Integer) ep.get("subaccount"),
                         (Integer) ep.get("pubkey_pointer"),
@@ -558,7 +559,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
             int i = 0;
             if (moreInputs != null) {
-                for (Map<String, Object> ep : moreInputs) {
+                for (final Map<String, Object> ep : moreInputs) {
                     prepTx.prev_outputs.add(new Output(
                             (Integer) ep.get("subaccount"),
                             (Integer) ep.get("pointer"),
@@ -613,10 +614,10 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
             Futures.addCallback(getGAService().getClient().signTransaction(prepTx, false), new FutureCallback<List<String>>() {
                 @Override
-                public void onSuccess(@javax.annotation.Nullable List<String> signatures) {
+                public void onSuccess(final @javax.annotation.Nullable List<String> signatures) {
 
                     int i = 0;
-                    for (String sig : signatures) {
+                    for (final String sig : signatures) {
                         TransactionInput input = tx.getInput(i++);
                         input.setScriptSig(
                                 new ScriptBuilder().addChunk(
@@ -634,7 +635,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                                 ).build()
                         );
                     }
-                    Map<String, Object> twoFacData = new HashMap<>();
+                    final Map<String, Object> twoFacData = new HashMap<>();
                     twoFacData.put("try_under_limits_bump", tx.getFee().subtract(oldFee).longValue());
                     final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(tx, twoFacData, true);
                     Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
@@ -694,7 +695,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
         private void show2FAChoices(final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
             Log.i(TAG, "params " + oldFee + " " + newFee);
-            String[] enabledTwoFacNames = new String[]{};
+            final String[] enabledTwoFacNames = new String[]{};
             final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
             mTwoFactor = new MaterialDialog.Builder(getActivity())
                     .title(R.string.twoFactorChoicesTitle)

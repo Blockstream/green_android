@@ -1204,8 +1204,8 @@ public class WalletClient {
         return ret;
     }
 
-    public ListenableFuture<Object> requestTwoFacCode(final String method, final String action) {
-        return requestTwoFacCode(method, action, null);
+    public void requestTwoFacCode(final String method, final String action) {
+        requestTwoFacCode(method, action, null);
     }
 
     public ListenableFuture<Object> requestTwoFacCode(final String method, final String action, final Object data) {

@@ -45,7 +45,7 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
     }
 
     @NonNull
-    private static Bitmap toBitmap(@NonNull final QRCode code, final int qrcode_color, final int background_color) {
+    private static Bitmap toBitmap(@NonNull final QRCode code, final int background_color) {
         final ByteMatrix matrix = code.getMatrix();
         final int SCALE = 4;
         final int height = matrix.getHeight() * SCALE;
@@ -53,7 +53,7 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
         final Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
-                bmp.setPixel(x, y, matrix.get(x / SCALE, y / SCALE) == 1 ? qrcode_color : background_color);
+                bmp.setPixel(x, y, matrix.get(x / SCALE, y / SCALE) == 1 ? Color.BLACK : background_color);
             }
         }
         return bmp;
@@ -62,7 +62,7 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
     @NonNull
     public QrBitmap call() throws WriterException {
         QRCode code = Encoder.encode(data, ErrorCorrectionLevel.M);
-        this.qrcode = toBitmap(code, Color.BLACK, background_color);
+        this.qrcode = toBitmap(code, background_color);
         return this;
     }
 
