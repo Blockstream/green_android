@@ -490,7 +490,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
-    Spans spans;
+    private Spans spans;
 
     private void setWord(final String badWord) {
 
@@ -512,12 +512,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         final String mnemonics = spannable.toString();
 
         int start = 0;
-        final String[] split = mnemonics.split(" ");
-        for (int i = 0; i < split.length; ++i) {
-            if (split[i].equals(badWord)) {
-                break;
-            }
-            start += split[i].length() + 1;
+        for (final String word: mnemonics.split(" ")) {
+            if (word.equals(badWord)) break;
+            start += word.length() + 1;
         }
 
         final int end = start + badWord.length();
