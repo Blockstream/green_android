@@ -22,7 +22,7 @@ import java.util.List;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-public class MnemonicHelper {
+class MnemonicHelper {
 
     private static int levenshteinDistance(@NonNull final String sA, @NonNull final String sB) {
         final int s1 = sA.length() + 1;

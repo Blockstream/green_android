@@ -112,7 +112,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         tagDispatcher.disableExclusiveNfc();
     }
 
-    View rootView;
+    private View rootView;
 
     @Override
     public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
