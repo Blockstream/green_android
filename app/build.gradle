@@ -48,10 +48,10 @@ android {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 75
+        versionCode 76
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
-        versionName "1.75"
+        versionName "1.76"
     }
     buildTypes {
         release {
@@ -92,7 +92,6 @@ android {
     dexOptions {
         maxProcessCount 4
         javaMaxHeapSize "2g"
-        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
     }
 }
 
@@ -112,7 +111,7 @@ dependencies {
     compile 'com.google.zxing:core:3.2.1'
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.squareup.okhttp:okhttp:2.7.2'
+    compile 'com.squareup.okhttp:okhttp:2.7.3'
 }
 
 repositories {

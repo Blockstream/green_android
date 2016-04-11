@@ -18,6 +18,7 @@ allprojects {
     }
 }
 
+// Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 subprojects {
