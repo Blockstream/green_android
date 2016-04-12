@@ -448,7 +448,9 @@ public class SPV {
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
                         isSpvSyncing = true;
                         spvBlocksLeft = blocksLeft;
-                        toastTrustedSPV(String.format("Downloading chain from trusted peer: %s", peer.getAddr()));
+                        final PeerAddress addr = peer.getAddress();
+                        toastTrustedSPV(String.format("Downloading chain from trusted peer: %s",
+                                addr == null ? "?" : addr.toString()));
                     }
 
                     @Override
