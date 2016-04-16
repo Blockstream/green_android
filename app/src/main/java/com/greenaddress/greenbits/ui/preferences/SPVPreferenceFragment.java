@@ -206,6 +206,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             @Override
             public boolean onPreferenceChange(final Preference preference, @NonNull final Object newValue) {
 
+                if (trustedPreferences.getString("address", "").equals(newValue)) {
+                    return false;
+                }
                 try {
                     final String newString = newValue.toString().trim().replaceAll("\\s","");
                     if (newString.contains(",")) {
