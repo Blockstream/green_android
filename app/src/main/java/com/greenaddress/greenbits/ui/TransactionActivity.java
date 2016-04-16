@@ -188,8 +188,8 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                     int currentEstimate = 25, bestEstimate;
                     final Map<String, Object> feeEstimates = getGAService().getClient().getLoginData().feeEstimates;
                     final String checkValues[] = {"1", "3", "6"};
-                    for (String value : checkValues) {
-                        final Double feerate = Double.parseDouble((String)((Map)feeEstimates.get(value)).get("feerate"));
+                    for (final String value : checkValues) {
+                        final double feerate = Double.parseDouble(((Map)feeEstimates.get(value)).get("feerate").toString());
                         if (feePerKb.compareTo(Coin.valueOf((long)(feerate*1000*1000*100))) >= 0) {
                             currentEstimate = (Integer)((Map)feeEstimates.get(value)).get("blocks");
                             break;
@@ -206,8 +206,8 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                         unconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(final View v) {
-                                final double feerate = Double.parseDouble((String)((Map)feeEstimates.get("1")).get("feerate"));
-                                final Coin feerateCoin = Coin.valueOf((long)(feerate*1000*1000*100));
+                                final double feerate = Double.parseDouble(((Map) feeEstimates.get("1")).get("feerate").toString());
+                                final Coin feerateCoin = Coin.valueOf((long) (feerate * 1000 * 1000 * 100));
                                 replaceByFee(t, feerateCoin, null, 0);
                             }
                         });
