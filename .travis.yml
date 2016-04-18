@@ -20,7 +20,7 @@ script:
 
 before_install:
    - git submodule update --init --recursive
-   - curl -O http://dl.google.com/android/repository/android-ndk-r11b-linux-x86_64.zip
-   - unzip -qq ./android-ndk-r11b-linux-x86_64.zip
-   - export ANDROID_NDK=`pwd`/android-ndk-r11b
+   - curl -O http://dl.google.com/android/repository/android-ndk-r11c-linux-x86_64.zip
+   - unzip -qq ./android-ndk-r11c-linux-x86_64.zip
+   - export ANDROID_NDK=`pwd`/android-ndk-r11c
    - rm -fr app/src/main/jniLibs && pushd app && ./prepare_fdroid.sh && popd
