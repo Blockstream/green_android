@@ -41,6 +41,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
 import org.bitcoinj.crypto.MnemonicException;
@@ -168,17 +169,18 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
+                final GaService gs = getGAService();
                 if (onSignUp == null) {
-                    if (getGAService().onConnected != null) {
+                    if (gs != null && gs.onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
-                        onSignUp = Futures.transform(getGAService().onConnected, new AsyncFunction<Void, LoginData>() {
+                        onSignUp = Futures.transform(gs.onConnected, new AsyncFunction<Void, LoginData>() {
                             @NonNull
                             @Override
                             public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
-                                return getGAService().signup(mnemonicText.getText().toString());
+                                return gs.signup(mnemonicText.getText().toString());
                             }
-                        }, getGAService().es);
+                        }, gs.es);
                     } else {
                         if (isChecked) {
                             SignUpActivity.this.runOnUiThread(new Runnable() {
