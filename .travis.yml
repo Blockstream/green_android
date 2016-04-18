@@ -16,7 +16,7 @@ jdk:
     - oraclejdk7
 
 script:
-   - ./gradlew clean assembleDebug -PdisablePreDex
+   - ./gradlew clean assembleProductRelease assembleProduction_21Release -PdisablePreDex
 
 before_install:
    - git submodule update --init --recursive
