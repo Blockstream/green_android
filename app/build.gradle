@@ -48,7 +48,7 @@ android {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 77
+        versionCode 177
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
         versionName "1.77"
@@ -73,12 +73,30 @@ android {
     }
     productFlavors {
         production {
+            versionCode Integer.parseInt(String.format("%s%s", 14, defaultConfig.getProperty("versionCode")))
+        }
+        production_21 {
+            minSdkVersion 21
+            versionCode Integer.parseInt(String.format("%s%s", 21, defaultConfig.getProperty("versionCode")))
         }
         btctestnet {
+            versionCode Integer.parseInt(String.format("%s%s", 14, defaultConfig.getProperty("versionCode")))
+            applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
+            versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
+        }
+        btctestnet_21 {
+            minSdkVersion 21
+            versionCode Integer.parseInt(String.format("%s%s", 21, defaultConfig.getProperty("versionCode")))
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
         }
         regtest {
+            applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
+            versionName "" + defaultConfig.getProperty("versionName") + "_regtest"
+        }
+        regtest_21 {
+            minSdkVersion 21
+            versionCode Integer.parseInt(String.format("%s%s", 21, defaultConfig.getProperty("versionCode")))
             applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
             versionName "" + defaultConfig.getProperty("versionName") + "_regtest"
         }
@@ -89,9 +107,32 @@ android {
         }
     }
 
+    sourceSets {
+        production_21 {
+            java.srcDirs = ['src/production/java', 'src/main/java']
+            assets.srcDirs = ['src/production/assets', 'src/main/assets']
+        }
+        btctestnet_21 {
+            java.srcDirs = ['src/btctestnet/java', 'src/main/java']
+            assets.srcDirs = ['src/btctestnet/assets', 'src/main/assets']
+        }
+        regtest_21 {
+            java.srcDirs = ['src/regtest/java', 'src/main/java']
+            assets.srcDirs = ['src/regtest/assets', 'src/main/assets']
+        }
+        segwittest {
+            res.srcDirs = ['src/btctestnet/res']
+        }
+    }
+
     dexOptions {
-        maxProcessCount 4
-        javaMaxHeapSize "2g"
+        maxProcessCount 2
+        javaMaxHeapSize "2048M"
+        incremental false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
@@ -100,8 +141,9 @@ configurations {
 }
 
 dependencies {
-    compile project(':app:material-dialogs:core'), project(':bitcoinj'), project(':bitcoinj:core'),
-            project(':jawampa'), project(':jawampa:jawampa-core'), project(':jawampa:jawampa-netty')
+    compile project(':app:material-dialogs:core'), project(':app:PasswordEditText:library'),
+            project(':bitcoinj:core'), project(':jawampa'),
+            project(':jawampa:jawampa-core'), project(':jawampa:jawampa-netty')
     compile 'com.fasterxml.jackson:jackson-datatype-json-org:1.8.0'
     compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
     compile 'com.android.support:support-v4:23.3.0'
@@ -116,4 +158,24 @@ dependencies {
 
 repositories {
     jcenter()
+}
+
+// optional step, runs if you have ../redex/redex and /usr/local/bin/python3
+android.applicationVariants.all {  v ->
+    final File redex_local = new File("../redex/redex");
+    final String redex_path = redex_local.getAbsolutePath();
+    final File python_local = new File("/usr/local/bin/python3");
+    final String python_path = python_local.getAbsolutePath();
+
+    if (v.buildType.name == "release" && redex_local.exists() && python_local.exists()) {
+        v.assemble.doLast {
+            v.outputs.each { o ->
+                println("Release mode detected and redex found, redexing $o.outputFile");
+                exec {
+                    commandLine "$python_path", "$redex_path", "$o.outputFile", '-o', "$o.outputFile"
+                    environment ANDROID_SDK: "${android.getSdkDirectory().getAbsolutePath()}"
+                }
+            }
+        }
+    }
 }

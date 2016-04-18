@@ -16,23 +16,22 @@
         android:gravity="center"
         android:text="@string/pinTitleText"
         android:textSize="34sp"
-        android:paddingBottom="10dp"
-        />
+        android:paddingBottom="10dp" />
 
-    <EditText
+    <com.maksim88.passwordedittext.PasswordEditText
         android:id="@+id/pinText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
+        app:pet_nonMonospaceFont="true"
         android:ems="10"
         android:gravity="center"
         android:hint=""
         android:inputType="numberPassword"
         android:maxLength="15"
         android:textColor="@color/secondaryTextColor"
-
         android:textSize="34sp" />
 
     <TextView
@@ -43,16 +42,14 @@
         android:textSize="16sp"
         android:textColor="@color/accentPressed"
         android:gravity="center"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="10dp"
-        >
+        android:paddingTop="10dp">
 
         <com.dd.CircularProgressButton
             android:id="@+id/pinLoginButton"

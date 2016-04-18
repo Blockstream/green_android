@@ -15,26 +15,24 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/pinTitleText"
-        android:textSize="34sp"
-
-        />
+        android:textSize="34sp" />
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="20dp" />
 
-    <EditText
+    <com.maksim88.passwordedittext.PasswordEditText
         android:id="@+id/pinSaveText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        app:pet_nonMonospaceFont="true"
         android:ems="10"
         android:gravity="center"
         android:hint=""
         android:inputType="numberPassword"
         android:maxLength="15"
         android:textColor="@color/secondaryTextColor"
-
         android:textSize="34sp" />
 
     <CheckBox

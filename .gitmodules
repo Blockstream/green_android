@@ -15,3 +15,6 @@
 [submodule "secp256k1"]
 	path = app/secp256k1
 	url = https://github.com/bitcoin/secp256k1.git
+[submodule "PasswordEditText"]
+	path = app/PasswordEditText
+	url = https://github.com/greenaddress/PasswordEditText.git
