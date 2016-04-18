@@ -80,6 +80,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                         final String mnemonicStr = mnemonicText.getText().toString()
                                 .replace(badWord, closeWord);
                         mnemonicText.setText(mnemonicStr);
+                        final int textLength = mnemonicStr.length();
+                        mnemonicText.setSelection(textLength, textLength);
+
                         final int words = mnemonicStr.split(" ").length;
                         if (validateMnemonic(mnemonicStr) && (words == 24 || words == 27)) {
                             login();
@@ -100,8 +103,8 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             closable = getAssets().open("bip39-wordlist.txt");
             new MnemonicCode(closable, null).check(Arrays.asList(mnemonic.split(" ")));
         } catch (@NonNull final IOException e) {
-            Toast.makeText(MnemonicActivity.this, "Can't find resources file bip39-wordlist.txt, please contact support.", Toast.LENGTH_LONG).show();
-            return false;
+            // couldn't find mnemonics file
+            throw new RuntimeException(e.getMessage());
         } catch (@NonNull final MnemonicException.MnemonicWordException e) {
             setWord(e.badWord);
             try {
@@ -111,7 +114,6 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             }
             return false;
         } catch (@NonNull final MnemonicException e) {
-            Toast.makeText(MnemonicActivity.this, "Invalid passphrase (has to be 24 or 27 words)", Toast.LENGTH_LONG).show();
             return false;
         } finally {
             if (closable != null) {
@@ -162,6 +164,12 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             }
         });
         if (!validateMnemonic(edit.getText().toString())) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MnemonicActivity.this, "Invalid passphrase (has to be 24 or 27 words)", Toast.LENGTH_LONG).show();
+                }
+            });
             return;
         }
 
