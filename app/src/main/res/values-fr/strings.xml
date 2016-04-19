@@ -136,9 +136,9 @@
     <string name="YES">OUI</string>
     <string name="enableSPV">Autoriser SPV</string>
     <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connection or low end phones.</string>
-    <string name="changingRequiresRestartWarnOnionTitle">Attention : adresse non-.onion découverte ! (redémarrage requis)</string>
-    <string name="changingRequiresRestartWarnOnionText">La connexion aux nœuds Tor (.onion) permet une confidentialité et une sécurité maximales. Si vous choisissez de continuer, veuillez redémarrer l\'appli pour que la modification prenne effet.</string>
-    <string name="nbleSPVSummaryoTwoFactorWarning">Authentification à deux facteurs non activée !\n Veuillez aller dans les paramètres pour l\'activer !</string>
+    <string name="changingRequiresRestartTitle">Redémarrage nécessaire</string>
+    <string name="changingRequiresRestartText">Le changement de cette valeur requiert le redémarrage de l\'application pour prendre effet. Veuillez redémarrer GreenBits.</string>
+    <string name="noTwoFactorWarning">Authentification à deux facteurs non activée !\n Veuillez aller dans les paramètres pour l\'activer !</string>
     <string name="scan_camera_problem_dialog_message">L\'appareil photo a un problème. Vous devriez redémarrer votre appareil.</string>
     <string name="scan_camera_problem_dialog_title">Problème d\'appareil photo</string>
     <string name="providePassphrase">Veuillez fournir votre phrase de passe :</string>
