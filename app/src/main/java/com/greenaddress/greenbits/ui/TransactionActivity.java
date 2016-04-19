@@ -23,13 +23,17 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
+import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
@@ -540,9 +544,12 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                                     final List<byte[]> morePrevouts, final int level) {
             String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
 
+            final Map<String, org.bitcoinj.core.Transaction> prevoutRawTxs = new HashMap<>();
+
             final PreparedTransaction prepTx = new PreparedTransaction(
                     change_pointer, subaccount_pointer, /*requires_2factor*/false,
-                    tx, twoOfThreeBackupChaincode, twoOfThreeBackupPubkey
+                    tx, twoOfThreeBackupChaincode, twoOfThreeBackupPubkey,
+                    prevoutRawTxs
             );
 
             for (final Map<String, Object> ep : (List<Map<String, Object>>)txData.eps) {
@@ -612,7 +619,35 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 return;
             }
 
-            Futures.addCallback(getGAService().getClient().signTransaction(prepTx, false), new FutureCallback<List<String>>() {
+            ListenableFuture<Void> prevouts = Futures.immediateFuture(null);
+            if (getGAService().getClient().getHdWallet() instanceof TrezorHWWallet) {
+                for (final TransactionInput inp : tx.getInputs()) {
+                    prevouts = Futures.transform(prevouts, new AsyncFunction<Void, Void>() {
+                        @Override
+                        public ListenableFuture<Void> apply(Void input) throws Exception {
+                            return Futures.transform(
+                                    getGAService().getClient().getRawOutput(inp.getOutpoint().getHash()),
+                                    new Function<org.bitcoinj.core.Transaction, Void>() {
+                                        @Override
+                                        public Void apply(org.bitcoinj.core.Transaction input) {
+                                            prevoutRawTxs.put(new String(Hex.encode(inp.getOutpoint().getHash().getBytes())), input);
+                                            return null;
+                                        }
+                                    }
+                            );
+                        }
+                    });
+                }
+            }
+
+            ListenableFuture<List<String>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<String>>() {
+                @Override
+                public ListenableFuture<List<String>> apply(Void input) throws Exception {
+                    return getGAService().getClient().signTransaction(prepTx, false);
+                }
+            });
+
+            Futures.addCallback(signed, new FutureCallback<List<String>>() {
                 @Override
                 public void onSuccess(final @javax.annotation.Nullable List<String> signatures) {
 

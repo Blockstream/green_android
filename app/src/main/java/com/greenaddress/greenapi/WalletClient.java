@@ -1265,6 +1265,22 @@ public class WalletClient {
         return asyncWamp;
     }
 
+    public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
+        final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
+        clientCall("http://greenaddressit.com/txs/get_raw_output", String.class, new CallHandler() {
+            @Override
+            public void onResult(final Object tx) {
+                asyncWamp.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, txHash.toString());
+        return asyncWamp;
+    }
+
     public ListenableFuture<Boolean> initEnableTwoFac(final String type, final String details, final Map<?, ?> twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
         clientCall("http://greenaddressit.com/twofactor/init_enable_" + type, Boolean.class, new CallHandler() {

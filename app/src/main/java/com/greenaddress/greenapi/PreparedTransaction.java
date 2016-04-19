@@ -24,17 +24,18 @@ public class PreparedTransaction {
     public final Boolean requires_2factor;
     public final List<Output> prev_outputs = new ArrayList<>();
     public final Transaction decoded;
-    public final Map<String, Transaction> prevoutRawTxs = new HashMap<>();
+    public final Map<String, Transaction> prevoutRawTxs;
     public final String twoOfThreeBackupChaincode;
     public final String twoOfThreeBackupPubkey;
 
-    public PreparedTransaction(final Integer change_pointer, final Integer subaccount_pointer, final Boolean requires_2factor, final Transaction decoded, final String twoOfThreeBackupChaincode, final String twoOfThreeBackupPubkey) {
+    public PreparedTransaction(final Integer change_pointer, final Integer subaccount_pointer, final Boolean requires_2factor, final Transaction decoded, final String twoOfThreeBackupChaincode, final String twoOfThreeBackupPubkey, final Map<String, Transaction> prevoutRawTxs) {
         this.change_pointer = change_pointer;
         this.subaccount_pointer = subaccount_pointer;
         this.requires_2factor = requires_2factor;
         this.decoded = decoded;
         this.twoOfThreeBackupChaincode = twoOfThreeBackupChaincode;
         this.twoOfThreeBackupPubkey = twoOfThreeBackupPubkey;
+        this.prevoutRawTxs = prevoutRawTxs;
     }
 
     public static class PreparedData {
@@ -59,6 +60,8 @@ public class PreparedTransaction {
     }
 
     public PreparedTransaction(final PreparedData pte) {
+
+        this.prevoutRawTxs = new HashMap<>();
 
         String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
         if (pte.privateData != null && pte.privateData.get("subaccount") != null && !pte.privateData.get("subaccount").equals(0)) {
