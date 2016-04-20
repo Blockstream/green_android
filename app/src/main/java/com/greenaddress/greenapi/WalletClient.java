@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.bitcoinj.core.Address;
@@ -775,7 +776,7 @@ public class WalletClient {
                         Log.i(TAG, "RESULT LOGIN " + errorDesc);
                         asyncWamp.setException(new GAException(errorDesc));
                     }
-                }, address.toString());
+                }, address.toString(), !(deterministicKey instanceof TrezorHWWallet));
                 return asyncWamp;
             }
         });
