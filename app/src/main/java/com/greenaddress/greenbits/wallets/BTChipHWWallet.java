@@ -7,6 +7,7 @@ import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
 import com.btchip.BitcoinTransaction;
 import com.btchip.comm.BTChipTransport;
+import com.btchip.utils.BufferUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -114,12 +115,7 @@ public class BTChipHWWallet implements ISigningWallet {
                 final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[tx.decoded.getInputs().size()];
                 if (!dongle.hasScreenSupport()) {                
                     for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                        final byte[] inputHash = tx.decoded.getInputs().get(i).getOutpoint().getHash().getBytes();
-                        for (int j = 0; j < inputHash.length / 2; ++j) {
-                            final byte temp = inputHash[j];
-                            inputHash[j] = inputHash[inputHash.length - j - 1];
-                            inputHash[inputHash.length - j - 1] = temp;
-                        }
+                        final byte[] inputHash = tx.decoded.getInputs().get(i).getOutpoint().getHash().getReversedBytes();
                         final byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);
                         long index = tx.decoded.getInputs().get(i).getOutpoint().getIndex();
                         input[input.length - 4] = (byte) (index % 256);
@@ -129,7 +125,9 @@ public class BTChipHWWallet implements ISigningWallet {
                         input[input.length - 2] = (byte) (index % 256);
                         index /= 256;
                         input[input.length - 1] = (byte) (index % 256);
-                        inputs[i] = dongle.createInput(input, false);
+                        ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
+                        BufferUtils.writeUint32BE(sequenceBuf, tx.decoded.getInputs().get(i).getSequenceNumber());
+                        inputs[i] = dongle.createInput(input, sequenceBuf.toByteArray(), false);
                     }
                 }
                 else {
@@ -138,7 +136,7 @@ public class BTChipHWWallet implements ISigningWallet {
                    final long index = outpoint.getIndex();
                    final ByteArrayInputStream in = new ByteArrayInputStream(tx.prevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
                    final BitcoinTransaction encodedTx = new BitcoinTransaction(in);
-                   inputs[i] = dongle.getTrustedInput(encodedTx, index);
+                   inputs[i] = dongle.getTrustedInput(encodedTx, index, tx.decoded.getInputs().get(i).getSequenceNumber());
                  }                    
                 }
                 for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
