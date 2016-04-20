@@ -210,8 +210,8 @@ public class MainFragment extends SubaccountFragment implements Observer {
         final FontAwesomeTextView balanceFiatIcon = (FontAwesomeTextView) rootView.findViewById(R.id.mainLocalBalanceIcon);
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
-            balanceText.setText(formatter.format(formatter.parse(btcBalance)));
-        } catch (@NonNull final ParseException e) {
+            balanceText.setText(formatter.format(Double.valueOf(btcBalance)));
+        } catch (@NonNull final NumberFormatException e) {
             balanceText.setText(btcBalance);
         }
 
@@ -222,9 +222,8 @@ public class MainFragment extends SubaccountFragment implements Observer {
         balanceBitcoinIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 
         try {
-            balanceFiatText.setText(formatter.format(formatter.parse(fiatBalance)));
-
-        } catch (@NonNull final ParseException e) {
+            balanceFiatText.setText(formatter.format(Double.valueOf(fiatBalance)));
+        } catch (@NonNull final NumberFormatException e) {
             balanceFiatText.setText(fiatBalance);
         }
 

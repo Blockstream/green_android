@@ -809,8 +809,8 @@ public class SendFragment extends SubaccountFragment {
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
 
         try {
-            sendSubAccountBalance.setText(formatter.format(formatter.parse(btcBalance)));
-        } catch (@NonNull final ParseException e) {
+            sendSubAccountBalance.setText(formatter.format(Double.valueOf(btcBalance)));
+        } catch (@NonNull final NumberFormatException e) {
             sendSubAccountBalance.setText(btcBalance);
         }
 
@@ -1015,8 +1015,8 @@ public class SendFragment extends SubaccountFragment {
                     @Override
                     public void run() {
                         try {
-                            sendSubAccountBalance.setText(formatter.format(formatter.parse(btcBalance)));
-                        } catch (@NonNull final ParseException e) {
+                            sendSubAccountBalance.setText(formatter.format(Double.valueOf(btcBalance)));
+                        } catch (@NonNull final NumberFormatException e) {
                             sendSubAccountBalance.setText(btcBalance);
                         }                        }
                 });

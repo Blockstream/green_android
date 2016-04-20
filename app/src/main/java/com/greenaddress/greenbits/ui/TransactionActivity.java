@@ -262,8 +262,8 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final DecimalFormat formatter = new DecimalFormat("#,###.########");
 
             try {
-                amount.setText(formatter.format(formatter.parse(btcBalance)));
-            } catch (@NonNull final ParseException e) {
+                amount.setText(formatter.format(Double.valueOf(btcBalance)));
+            } catch (@NonNull final NumberFormatException e) {
                 amount.setText(btcBalance);
             }
 
@@ -272,14 +272,14 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final String btcFeePerKb = bitcoinFormat.noCode().format(feePerKb).toString();
             String feeInfoTextStr = "";
             try {
-                feeInfoTextStr += formatter.format(formatter.parse(btcFee));
-            } catch (@NonNull final ParseException e) {
+                feeInfoTextStr += formatter.format(Double.valueOf(btcFee));
+            } catch (@NonNull final NumberFormatException e) {
                 feeInfoTextStr += btcFee;
             }
             feeInfoTextStr += " / " + String.valueOf(t.size) + " / ";
             try {
-                feeInfoTextStr += formatter.format(formatter.parse(btcFeePerKb));
-            } catch (@NonNull final ParseException e) {
+                feeInfoTextStr += formatter.format(Double.valueOf(btcFeePerKb));
+            } catch (@NonNull final NumberFormatException e) {
                 feeInfoTextStr += btcFeePerKb;
             }
             feeInfoText.setText(feeInfoTextStr);

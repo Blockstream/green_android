@@ -16,7 +16,6 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.List;
 
 public class ListTransactionsAdapter extends
@@ -55,10 +54,11 @@ public class ListTransactionsAdapter extends
         }
 
         final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
+
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
-            holder.textValue.setText(formatter.format(formatter.parse(btcBalance)));
-        } catch (@NonNull final ParseException e) {
+            holder.textValue.setText(formatter.format(Double.valueOf(btcBalance)));
+        } catch (@NonNull final NumberFormatException e) {
             holder.textValue.setText(btcBalance);
         }
 
