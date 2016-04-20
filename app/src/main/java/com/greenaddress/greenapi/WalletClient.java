@@ -448,14 +448,20 @@ public class WalletClient {
                 final String txhash = (String) res.get("txhash"),
                         value = (String) res.get("value"),
                         wallet_id = (String) res.get("wallet_id");
-                final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
-                int size = subaccounts == null ? 0 : subaccounts.size();
-                final int[] subaccounts_int = new int[size];
-                for (int i = 0; i < size; ++i) {
-                    if (subaccounts.get(i) == null) {
-                        subaccounts_int[i] = 0;
-                    } else {
-                        subaccounts_int[i] = ((Integer) subaccounts.get(i));
+                final int[] subaccounts_int;
+                if (res.get("subaccounts") instanceof Number) {
+                    subaccounts_int = new int[1];
+                    subaccounts_int[0] = ((Number) res.get("subaccounts")).intValue();
+                } else {
+                    final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
+                    int size = subaccounts == null ? 0 : subaccounts.size();
+                    subaccounts_int = new int[size];
+                    for (int i = 0; i < size; ++i) {
+                        if (subaccounts.get(i) == null) {
+                            subaccounts_int[i] = 0;
+                        } else {
+                            subaccounts_int[i] = ((Integer) subaccounts.get(i));
+                        }
                     }
                 }
                 m_notificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
