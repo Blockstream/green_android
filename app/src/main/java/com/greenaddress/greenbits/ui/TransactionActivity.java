@@ -544,6 +544,14 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                                     final List<byte[]> morePrevouts, final int level) {
             String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
 
+            for (final Object subaccount_ : getGAService().getSubaccounts()) {
+                final Map<String, ?> subaccountMap = (Map) subaccount_;
+                if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount_pointer)) {
+                    twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
+                    twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
+                }
+            }
+
             final Map<String, org.bitcoinj.core.Transaction> prevoutRawTxs = new HashMap<>();
 
             final PreparedTransaction prepTx = new PreparedTransaction(
