@@ -347,7 +347,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             }
             final org.bitcoinj.core.Transaction tx = new org.bitcoinj.core.Transaction(Network.NETWORK, Hex.decode(txData.data));
             Integer change_pointer = null;
-            final Integer subaccount_pointer = getGAApp().getSharedPreferences("send", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+            final Integer subaccount_pointer = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
             // by at most 4 bytes per input (signatures have variable lengths)
             if (txSize == null) {
@@ -410,7 +410,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
             if (remainingFeeDelta.compareTo(Coin.ZERO) > 0) {
                 final Coin finalRemaining = remainingFeeDelta;
-                Futures.addCallback(getGAService().getClient().getAllUnspentOutputs(1), new FutureCallback<ArrayList>() {
+                Futures.addCallback(getGAService().getClient().getAllUnspentOutputs(1, subaccount_pointer), new FutureCallback<ArrayList>() {
                     @Override
                     public void onSuccess(@javax.annotation.Nullable ArrayList result) {
                         Coin remaining = finalRemaining;
