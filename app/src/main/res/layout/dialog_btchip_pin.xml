@@ -12,7 +12,7 @@
         android:textColor="@color/whiteSecondary"
         android:textSize="20sp" />
 
-    <EditText
+    <com.maksim88.passwordedittext.PasswordEditText
         android:id="@+id/btchipPINValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

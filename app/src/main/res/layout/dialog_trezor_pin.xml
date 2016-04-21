@@ -55,7 +55,7 @@
 
     </GridLayout>
 
-    <EditText
+    <com.maksim88.passwordedittext.PasswordEditText
         android:id="@+id/trezorPinValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
