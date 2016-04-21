@@ -52,6 +52,8 @@ import java.util.Observer;
 
 public class SignUpActivity extends ActionBarActivity implements Observer {
     @NonNull private static final String TAG = SignUpActivity.class.getSimpleName();
+    private static final int PINSAVE = 1337;
+
     private boolean mWriteMode = false;
     private Dialog mnemonicDialog;
     private Dialog nfcDialog;
@@ -219,8 +221,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                             pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", getGAService().getMnemonics());
                             getGAService().resetSignUp();
                             onSignUp = null;
-                            finish();
-                            startActivity(pinSaveActivity);
+                            startActivityForResult(pinSaveActivity, PINSAVE);
                         }
 
                         @Override
@@ -390,5 +391,17 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     @Override
     public void update(Observable observable, Object data) {
 
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, @android.support.annotation.Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PINSAVE:
+                final Intent tabbedMainActivity = new Intent(SignUpActivity.this, TabbedMainActivity.class);
+                startActivity(tabbedMainActivity);
+                finish();
+                break;
+        }
     }
 }

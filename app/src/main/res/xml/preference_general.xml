@@ -4,6 +4,11 @@
                 android:title="@string/mnemonic_passphrase"
                 android:defaultValue=""
                 android:summary="@string/mnemonic_passphrase_not_available"/>
+    <Preference android:key="reset_pin"
+        android:title="@string/setPin"
+        android:defaultValue=""
+        android:summary="">
+    </Preference>
 
     <EditTextPreference android:key="altime"
                         android:title="@string/autologout_time"

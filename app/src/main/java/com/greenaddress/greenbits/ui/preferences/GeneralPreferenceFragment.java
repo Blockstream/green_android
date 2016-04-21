@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.preferences;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,12 +12,14 @@ import android.support.annotation.NonNull;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import javax.annotation.Nullable;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
+    private static final int PINSAVE = 1337;
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,19 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     return false;
                 }
             });
+        }
+        if (mnemonic != null) {
+            findPreference("reset_pin").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    final Intent pinSaveActivity = new Intent(getActivity(), PinSaveActivity.class);
+                    pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", mnemonic);
+                    startActivityForResult(pinSaveActivity, PINSAVE);
+                    return false;
+                }
+            });
+        } else {
+            getPreferenceScreen().removePreference(findPreference("reset_pin"));
         }
 
         // -- handle version

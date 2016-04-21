@@ -62,9 +62,8 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                         editor.putInt("counter", 0);
                         editor.putString("encrypted", result.encrypted);
                         editor.apply();
-                        final Intent tabbedMainActivity = new Intent(PinSaveActivity.this, TabbedMainActivity.class);
-                        startActivity(tabbedMainActivity);
-                        PinSaveActivity.this.finish();
+                        setResult(RESULT_OK);
+                        finish();
                     }
 
                     @Override
@@ -94,17 +93,16 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == ACTIVITY_REQUEST_CODE) {
-            // Challenge completed, proceed with using cipher
-            if (resultCode == RESULT_OK && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                try {
-                    setPin(KeyStoreAES.tryEncrypt(this));
-                } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
-                    KeyStoreAES.showAuthenticationScreen(this);
-                } catch (final KeyStoreAES.KeyInvalidated e) {
-                    Toast.makeText(this, "Problem with key "
-                            + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
+        // Challenge completed, proceed with using cipher
+        if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                setPin(KeyStoreAES.tryEncrypt(this));
+            } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
+                KeyStoreAES.showAuthenticationScreen(this);
+            } catch (final KeyStoreAES.KeyInvalidated e) {
+                Toast.makeText(this, "Problem with key "
+                        + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -177,8 +175,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             // Skip
             @Override
             public void onClick(final View view) {
-                final Intent tabbedActivity = new Intent(PinSaveActivity.this, TabbedMainActivity.class);
-                startActivity(tabbedActivity);
+                setResult(RESULT_CANCELED);
                 finish();
             }
         });

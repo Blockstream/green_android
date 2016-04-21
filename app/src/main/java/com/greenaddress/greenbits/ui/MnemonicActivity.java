@@ -66,6 +66,11 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class MnemonicActivity extends ActionBarActivity implements Observer {
 
+    private static final int PINSAVE = 1337;
+    private static final int QRSCANNER = 1338;
+    private static final int CAMERA_PERMISSION = 150;
+
+
     @NonNull private static final String TAG = MnemonicActivity.class.getSimpleName();
 
     private void showErrorCorrection(final String closeWord, final String badWord) {
@@ -219,11 +224,11 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 if (getCallingActivity() == null) {
                     final Intent pinSaveActivity = new Intent(MnemonicActivity.this, PinSaveActivity.class);
                     pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
-                    startActivity(pinSaveActivity);
+                    startActivityForResult(pinSaveActivity, PINSAVE);
                 } else {
                     setResult(RESULT_OK);
+                    MnemonicActivity.this.finish();
                 }
-                MnemonicActivity.this.finish();
             }
 
             @Override
@@ -310,11 +315,10 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                                             final String[] perms = {"android.permission.CAMERA"};
                                             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
                                                     checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
-                                                final int permsRequestCode = 150;
-                                                requestPermissions(perms, permsRequestCode);
+                                                requestPermissions(perms, CAMERA_PERMISSION);
                                             } else {
                                                 final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
-                                                startActivityForResult(scanner, 0);
+                                                startActivityForResult(scanner, QRSCANNER);
                                             }
                                         }
                                     }
@@ -554,10 +558,19 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, @android.support.annotation.Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        final EditText edit = (EditText) findViewById(R.id.mnemonicText);
-        if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
-            edit.setText(data.getStringExtra("com.greenaddress.greenbits.QrText"));
-            login();
+        switch (requestCode) {
+            case PINSAVE:
+                final Intent tabbedMainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);
+                startActivity(tabbedMainActivity);
+                finish();
+                break;
+            case QRSCANNER:
+                final EditText edit = (EditText) findViewById(R.id.mnemonicText);
+                if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
+                    edit.setText(data.getStringExtra("com.greenaddress.greenbits.QrText"));
+                    login();
+                }
+                break;
         }
     }
 
@@ -585,13 +598,13 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     public void onRequestPermissionsResult(final int permsRequestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         switch (permsRequestCode) {
 
-            case 150:
+            case CAMERA_PERMISSION:
 
                 final boolean cameraPermissionGranted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
 
                 if (cameraPermissionGranted) {
                     final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
-                    startActivityForResult(scanner, 0);
+                    startActivityForResult(scanner, QRSCANNER);
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Please enable camera permissions to use scan functionality.", Toast.LENGTH_SHORT).show();
