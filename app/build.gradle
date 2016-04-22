@@ -159,23 +159,3 @@ dependencies {
 repositories {
     jcenter()
 }
-
-// optional step, runs if you have ../redex/redex and /usr/local/bin/python3
-android.applicationVariants.all {  v ->
-    final File redex_local = new File("../redex/redex");
-    final String redex_path = redex_local.getAbsolutePath();
-    final File python_local = new File("/usr/local/bin/python3");
-    final String python_path = python_local.getAbsolutePath();
-
-    if (v.buildType.name == "release" && redex_local.exists() && python_local.exists()) {
-        v.assemble.doLast {
-            v.outputs.each { o ->
-                println("Release mode detected and redex found, redexing $o.outputFile");
-                exec {
-                    commandLine "$python_path", "$redex_path", "$o.outputFile", '-o', "$o.outputFile"
-                    environment ANDROID_SDK: "${android.getSdkDirectory().getAbsolutePath()}"
-                }
-            }
-        }
-    }
-}
