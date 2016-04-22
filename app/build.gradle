@@ -109,19 +109,19 @@ android {
 
     sourceSets {
         production_21 {
-            java.srcDirs = ['src/production/java', 'src/main/java']
-            assets.srcDirs = ['src/production/assets', 'src/main/assets']
+            java { srcDir 'src/production/java' }
+            assets { srcDir 'src/production/assets' }
         }
         btctestnet_21 {
-            java.srcDirs = ['src/btctestnet/java', 'src/main/java']
-            assets.srcDirs = ['src/btctestnet/assets', 'src/main/assets']
+            java { srcDir 'src/btctestnet/java' }
+            assets { srcDir 'src/btctestnet/assets' }
         }
         regtest_21 {
-            java.srcDirs = ['src/regtest/java', 'src/main/java']
-            assets.srcDirs = ['src/regtest/assets', 'src/main/assets']
+            java { srcDir 'src/regtest/java' }
+            assets { srcDir 'src/regtest/assets' }
         }
         segwittest {
-            res.srcDirs = ['src/btctestnet/res']
+            res { srcDir 'src/btctestnet/res' }
         }
     }
 
