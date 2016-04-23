@@ -71,7 +71,7 @@ function build() {
 
     mkdir -p $output_dir
     ${arch_name}-strip .libs/libsecp256k1.so
-    mv .libs/libsecp256k1.so $output_dir
+    cp .libs/libsecp256k1.so $output_dir
 }
 
 if [ -d secp256k1 ]; then
