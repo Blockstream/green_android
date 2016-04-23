@@ -48,10 +48,10 @@ android {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 179
+        versionCode 180
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
-        versionName "1.79"
+        versionName "1.80"
     }
     buildTypes {
         release {
@@ -75,26 +75,22 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
             output.versionCodeOverride =
-                    project.ext.versionCodes.get(output.getFilter(
-                            com.android.build.OutputFile.ABI), 0) * 10000000 + android.defaultConfig.versionCode
+                    variant.mergedFlavor.minSdkVersion.apiLevel * 1000000 + project.ext.versionCodes.get(output.getFilter(
+                            com.android.build.OutputFile.ABI), 0) * 10000 + android.defaultConfig.versionCode
         }
     }
     productFlavors {
         production {
-            versionCode Integer.parseInt(String.format("%s%s", 14, defaultConfig.getProperty("versionCode")))
         }
         production_21 {
             minSdkVersion 21
-            versionCode Integer.parseInt(String.format("%s%s", 21, defaultConfig.getProperty("versionCode")))
         }
         btctestnet {
-            versionCode Integer.parseInt(String.format("%s%s", 14, defaultConfig.getProperty("versionCode")))
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
         }
         btctestnet_21 {
             minSdkVersion 21
-            versionCode Integer.parseInt(String.format("%s%s", 21, defaultConfig.getProperty("versionCode")))
             applicationId = "com.greenaddress.greenbits_android_wallet.testnet"
             versionName "" + defaultConfig.getProperty("versionName") + "_testnet"
         }
@@ -104,7 +100,6 @@ android {
         }
         regtest_21 {
             minSdkVersion 21
-            versionCode Integer.parseInt(String.format("%s%s", 21, defaultConfig.getProperty("versionCode")))
             applicationId = "com.greenaddress.greenbits_android_wallet.regtest"
             versionName "" + defaultConfig.getProperty("versionName") + "_regtest"
         }
