@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 if [ -z "$JAVA_HOME" ]; then
     export JAVA_HOME=$JAVA7_HOME
 fi
