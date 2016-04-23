@@ -25,4 +25,4 @@ before_install:
    - unzip -qq ./android-ndk-r11c-linux-x86_64.zip
    - export ANDROID_NDK=`pwd`/android-ndk-r11c
    - rm -fr app/src/main/jniLibs && pushd app && ./prepare_fdroid.sh && popd
-   - find app/src/main/jniLibs
+   - find app/src/main/jniLibs | xargs ls -laht
