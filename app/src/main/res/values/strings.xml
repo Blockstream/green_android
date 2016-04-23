@@ -98,6 +98,7 @@
     <string name="txMemoText">Memo</string>
     <string name="title_network_monitor">Network monitor</string>
     <string name="action_network">Network monitor</string>
+    <string name="action_about">About</string>
 
     <!-- Example settings for Notifications -->
     <string name="SettingsAppName">GreenBits</string>

@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
 
@@ -79,13 +78,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         } else {
             getPreferenceScreen().removePreference(findPreference("reset_pin"));
         }
-
-        // -- handle version
-
-        findPreference("app_version").setSummary(String.format(
-                "%s, %s",
-                BuildConfig.VERSION_NAME,
-                BuildConfig.BUILD_TYPE));
 
 
         // -- handle opt-in rbf

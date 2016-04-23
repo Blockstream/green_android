@@ -170,6 +170,7 @@
   <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
   <string name="title_network_monitor">Network monitor</string>
   <string name="action_network">Network monitor</string>
+  <string name="action_about">About</string>
   <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
   <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
   <string name="useNativeAuthentication">Use Android\'s authentication</string>

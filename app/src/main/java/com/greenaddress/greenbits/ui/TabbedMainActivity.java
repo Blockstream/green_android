@@ -505,8 +505,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         // as you specify a parent activity in AndroidManifest.xml.
         final int id = item.getItemId();
         if (id == R.id.action_settings) {
-            final Intent settingsActivity = new Intent(TabbedMainActivity.this, SettingsActivity.class);
-            startActivity(settingsActivity);
+            startActivity(new Intent(TabbedMainActivity.this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_sweep) {
             final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
@@ -515,8 +514,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             final String[] perms = {"android.permission.CAMERA"};
             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
                     checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
-                final int permsRequestCode = 200;
-                requestPermissions(perms, permsRequestCode);
+                requestPermissions(perms, /*permsRequestCode*/ 200);
             }
             else {
                 startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
@@ -530,9 +528,10 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             finish();
             return true;
         }
-        else if (id == R.id.action_network){
-            final Intent networkActivity = new Intent(TabbedMainActivity.this, NetworkMonitorActivity.class);
-            startActivity(networkActivity);
+        else if (id == R.id.action_network) {
+            startActivity(new Intent(TabbedMainActivity.this, NetworkMonitorActivity.class));
+        } else if (id == R.id.action_about) {
+            startActivity(new Intent(TabbedMainActivity.this, AboutActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -540,8 +539,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     private void testKickedOut() {
         if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
-            final Intent firstScreenActivity = new Intent(TabbedMainActivity.this, FirstScreenActivity.class);
-            startActivity(firstScreenActivity);
+            startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
             finish();
         }
     }
@@ -560,8 +558,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     public void update(final Observable observable, final Object data) {
         if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
-            final Intent firstScreenActivity = new Intent(TabbedMainActivity.this, FirstScreenActivity.class);
-            startActivity(firstScreenActivity);
+            startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
         }
         final ConnectivityObservable.State currentState = getGAApp().getConnectionObservable().getState();
         setIdVisible(currentState != ConnectivityObservable.State.LOGGEDIN, R.id.network_unavailable);
@@ -644,6 +641,5 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                 break;
             }
         }
-
     }
 }

@@ -24,11 +24,5 @@
                 android:summary="@string/improve_security_ledger_detail" >
         <intent android:action="android.intent.action.VIEW" android:data="https://www.ledgerwallet.com/r/bead"/>
     </Preference>
-    <Preference android:key="app_version"
-                android:title="@string/app_version"
-                android:defaultValue=""
-                android:summary="">
-        <intent android:action="android.intent.action.VIEW" android:data="https://github.com/greenaddress/GreenBits/releases"/>
-    </Preference>
 
 </PreferenceScreen>
