@@ -42,7 +42,8 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
             return;
         }
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(findViewById(R.id.pinSaveText).getWindowToken(), 0);
+        final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
+        imm.hideSoftInputFromWindow(pinSaveText.getWindowToken(), 0);
         final String mnemonic_str = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
         final List<String> mnemonic = java.util.Arrays.asList(mnemonic_str.split(" "));
         final Button pinSkipButton = (Button) findViewById(R.id.pinSkipButton);
@@ -50,6 +51,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
 
         pinSaveButton.setIndeterminateProgressMode(true);
         pinSaveButton.setProgress(50);
+        pinSaveText.setEnabled(false);
         pinSkipButton.setVisibility(View.GONE);
 
         Futures.addCallback(getGAService().setPin(MnemonicCode.toSeed(mnemonic, ""), mnemonic_str,
@@ -72,6 +74,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                             @Override
                             public void run() {
                                 pinSaveButton.setProgress(0);
+                                pinSaveText.setEnabled(true);
                                 pinSkipButton.setVisibility(View.VISIBLE);
                             }
                         });

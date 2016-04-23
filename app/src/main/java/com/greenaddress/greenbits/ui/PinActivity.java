@@ -60,7 +60,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
 
-    private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final String pinText, @NonNull final TextView pinError) {
+    private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
         if (pinText.length() < 4) {
             Toast.makeText(PinActivity.this, "PIN has to be between 4 and 15 long", Toast.LENGTH_SHORT).show();
             return;
@@ -79,7 +79,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
         });
     }
 
-    private void loginAfterServiceConnected(@NonNull final CircularProgressButton pinLoginButton, final String ident, final String pinText, @NonNull final TextView pinError) {
+    private void loginAfterServiceConnected(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
             Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
@@ -93,16 +93,16 @@ public class PinActivity extends ActionBarActivity implements Observer {
 
         pinLoginButton.setIndeterminateProgressMode(true);
         pinLoginButton.setProgress(50);
-        final EditText pinTextEdit = (EditText) findViewById(R.id.pinText);
+        pinText.setEnabled(false);
 
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(pinTextEdit.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(pinText.getWindowToken(), 0);
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @NonNull
             @Override
             public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                return gaService.pinLogin(pinData, pinText);
+                return gaService.pinLogin(pinData, pinText.getText().toString());
             }
         };
 
@@ -146,17 +146,17 @@ public class PinActivity extends ActionBarActivity implements Observer {
                 PinActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        pinTextEdit.setText("");
+
                         Toast.makeText(PinActivity.this, tstMsg, Toast.LENGTH_LONG).show();
-
-                        pinLoginButton.setProgress(0);
-
 
                         if (counter >= 3) {
                             final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
                             startActivity(firstScreenActivity);
                             finish();
                         } else {
+                            pinText.setText("");
+                            pinLoginButton.setProgress(0);
+                            pinText.setEnabled(true);
                             pinError.setVisibility(View.VISIBLE);
                             pinError.setText(getString(R.string.attemptsLeft, 3 - counter));
                         }
@@ -191,7 +191,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
                                 if (event == null || !event.isShiftPressed()) {
                                     // the user is done typing.
                                     if (!pinText.getText().toString().isEmpty()) {
-                                        login(pinLoginButton, ident, pinText.getText().toString(), pinError);
+                                        login(pinLoginButton, ident, pinText, pinError);
                                         return true; // consume.
                                     }
                                 }
@@ -204,7 +204,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
             pinLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    login(pinLoginButton, ident, pinText.getText().toString(), pinError);
+                    login(pinLoginButton, ident, pinText, pinError);
                 }
             });
 
