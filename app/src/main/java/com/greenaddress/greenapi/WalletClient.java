@@ -74,7 +74,7 @@ public class WalletClient {
 
     private static final String TAG = WalletClient.class.getSimpleName();
     private static final String USER_AGENT = String.format("%s;%s;%s;%s",
-            BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE,
+            BuildConfig.VERSION_CODE, BuildConfig.BUILD_TYPE,
             android.os.Build.VERSION.SDK_INT, System.getProperty("os.arch"));
 
     private final INotificationHandler m_notificationHandler;
