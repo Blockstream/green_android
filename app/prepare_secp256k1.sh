@@ -63,7 +63,7 @@ function build() {
     echo '============================================================'
     echo $arch$arch_suffix
     echo '============================================================'
-    configure_opts="--enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh --enable-endomorphism --with-asm=$with_asm"
+    configure_opts="--enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh --enable-endomorphism --with-asm=$with_asm --disable-dependency-tracking --enable-silent-rules"
     ./configure --host=$arch_name --target=$arch_name $configure_opts >/dev/null
     make -o configure clean -j$NUM_JOBS >/dev/null 2>&1
     make -o configure -j$NUM_JOBS
