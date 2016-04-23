@@ -14,7 +14,8 @@
 	url = https://github.com/greenaddress/jawampa.git
 [submodule "secp256k1"]
 	path = app/secp256k1
-	url = https://github.com/bitcoin/secp256k1.git
+	url = https://github.com/greenaddress/secp256k1.git
+	branch = laanwj_arm_rebased
 [submodule "PasswordEditText"]
 	path = app/PasswordEditText
 	url = https://github.com/greenaddress/PasswordEditText.git

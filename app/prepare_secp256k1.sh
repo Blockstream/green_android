@@ -42,6 +42,8 @@ function build() {
     export CFLAGS="$CPPFLAGS"
     export LDFLAGS=""
 
+    with_asm="auto"
+
     if [ "$arch" == "arm-linux-androideabi" ]; then
         if [ -z "$suffix" ]; then
             # armeabi. Only software floating point supported
@@ -50,15 +52,18 @@ function build() {
             # armeabi-v7a. Use FPU, but remain compatible with soft-float code.
             export CFLAGS="$CFLAGS -mfloat-abi=softfp -mfpu=neon -flax-vector-conversions"
         fi
+        with_asm="arm"
     elif [ "$arch" == "aarch64-linux-android" ]; then
         # arm64-v8a. Hardware floating point and NEON support are built in
         export CFLAGS="$CFLAGS -flax-vector-conversions"
+    elif [ "$arch" == "x86_64" ]; then
+        with_asm="x86_64"
     fi
 
     echo '============================================================'
     echo $arch$arch_suffix
     echo '============================================================'
-    configure_opts="--enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh"
+    configure_opts="--enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh --enable-endomorphism --with-asm=$with_asm"
     ./configure --host=$arch_name --target=$arch_name $configure_opts >/dev/null
     make -o configure clean -j$NUM_JOBS >/dev/null 2>&1
     make -o configure -j$NUM_JOBS
