@@ -154,7 +154,7 @@ public class WalletClient {
                     }
                 }
             });
-        } catch (RejectedExecutionException e) {
+        } catch (final RejectedExecutionException e) {
             handler.onError("not connected", "not connected");
         }
     }
