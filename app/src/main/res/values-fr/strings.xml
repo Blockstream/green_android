@@ -188,4 +188,17 @@
   <string name="invalidWord">\'%1$s\' est un mot invalide, voulez-vous le corriger par %2$s ?</string>
   <string name="setPin">Configurer le code PIN</string>
   <string name="set2FA">CONFIGURER 2FA</string>
+  <string name="resetSPV">Réinitialiser SPV</string>
+  <string name="err_send_invalid_bitcoin_uri">URI Bitcoin invalide</string>
+  <string name="err_send_not_connected_will_resume">Non connecté, la connexion reprendra automatiquement</string>
+  <string name="err_send_need_recipient">Veuillez saisir un bénéficiaire </string>
+  <string name="err_request_login_no_pin">Aucun code PIN fourni, sortie.</string>
+  <string name="err_tabbed_sweep_failed">La vérification a échoué : Adresse de sortie invalide</string>
+  <string name="err_tabbed_sweep_requires_camera_permissions">Veuillez autoriser l\'accès à l\'appareil photo pour utiliser le balayage.</string>
+  <string name="err_qrscan_requires_camera_permissions">Veuillez autoriser l\'accès à l\'appareil photo pour utiliser la numérisation.</string>
+  <string name="err_mnemonic_activity_logout_required">Vous devez d\'abord vous déconnecter avant de vous connecter.</string>
+  <string name="err_mnemonic_activity_invalid_mnemonic">Phrase de récupération invalide (doit avoir 24 ou 27 mots)</string>
+  <string name="err_pin_save_wrong_length">Le code PIN doit avoir entre 4 et 15 chiffres</string>
+  <string name="err_sign_up_nfc_not_writable">Erreur : tag non accessible en écriture</string>
+  <string name="err_sign_up_nfc_too_small">Erreur : tag trop petit</string>
 </resources>
