@@ -10,7 +10,6 @@
     tools:context="com.greenaddress.greenbits.ui.TabbedMainActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/appbar_padding_top"

@@ -5,7 +5,6 @@
 	android:orientation="vertical" >
 
 	<fragment android:name="com.greenaddress.greenbits.ui.monitor.PeerListFragment"
-		android:id="@+id/peer_list_fragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		/>

@@ -5,7 +5,6 @@
     tools:context="com.greenaddress.greenbits.ui.ReceiveFragment">
 
     <RelativeLayout
-        android:id="@+id/receiveImageLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/receiveAddressLayout"
@@ -35,7 +34,6 @@
         android:layout_alignParentEnd="true">
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="droid"

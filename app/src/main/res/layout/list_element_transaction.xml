@@ -94,9 +94,7 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/listRightElement"
         android:layout_toStartOf="@id/listRightElement"
-        android:gravity="center_vertical"
-        android:id="@+id/listCentralElement"
-    >
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/listWhoText"

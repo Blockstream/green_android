@@ -21,7 +21,6 @@
   <string name="receive_title">إستلام</string>
   <string name="main_title">كل</string>
   <string name="send_title">ارسال</string>
-  <string name="action_search">بحث</string>
   <string name="pinTitleText">رقم PIN</string>
   <string name="network_unavailable">خروج</string>
   <string name="newTxTitle">معاملة جديدة</string>
@@ -83,7 +82,6 @@
   <string name="txRecipientText">المستفيد</string>
   <string name="txMemoText">مذكرة</string>
   <!--Example settings for Notifications-->
-  <string name="SettingsAppName">غرين بيتس</string>
   <string name="txDateText">التاريخ</string>
   <string name="txAmountText">مبلغ</string>
   <string name="newTxAmount">مبلغ</string>
@@ -105,11 +103,8 @@
   <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>
   <string name="btchipNotSetup">لم يتم تعيين BTChip . يرجى إعداده باستخدام عميل سطح المكتب ليكون قادرا على استخدامها.</string>
   <string name="instantConfirmation">تأكيد فوري</string>
-  <string name="pref_header_more">المزيد من الإعدادات</string>
   <string name="trezor_login_failed">فشل تسجيل دخول Hardware Wallet</string>
   <string name="trezor_login_failed_details">هذا يعني ربما تحتاج إلى إقران جهاز Hardware Wallet الخاص بك مع GreenAddress باستخدام تطبيق سطح المكتب.</string>
-  <string name="more_settings">انظر إلى تطبيق GreenAddress لمزيد من الإعدادات</string>
-  <string name="more_settings_detail">التطبيق السابق لدينا  يسمح بتغيير إعدادات أخرى مثل حسابات فرعية، ومشاهدة تسجيل الدخول فقط، وأكثر من ذلك.</string>
   <string name="improve_security_ledger">حسين الأمن الخاص بك مع ليدجر</string>
   <string name="improve_security_ledger_detail">Ledger Wallet:البطاقة الذكية لتئمين ال بيتكوين الخاص بك.</string>
   <string name="mnemonic_passphrase">عبارة المرور المتعلق بالذاكرة</string>

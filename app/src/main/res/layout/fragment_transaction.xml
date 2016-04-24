@@ -75,7 +75,7 @@
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
-            <TextView android:text="recipient"
+            <TextView android:text="@string/txRecipientText"
                 android:textColor="@color/tertiaryTextColor"
                 android:layout_width="wrap_content"
                 android:textIsSelectable="true"
@@ -216,7 +216,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="droid"
-                android:id="@+id/txFeeInfoTitle"
                 android:text="@string/txFeeInfo"
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
@@ -252,7 +251,7 @@
                 android:id="@+id/txUnconfirmedEstimatedBlocks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Will confirm after blocks (estimated): 15"
+                android:text="@string/willConfirmAfter"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"/>
 
@@ -268,7 +267,7 @@
                 android:id="@+id/txUnconfirmedRecommendation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="If you increase the fee now to the recommended level, the transaction will be expected to confirm after 2 blocks."
+                android:text="@string/recommendationBlocks"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
                 android:paddingBottom="20sp"/>

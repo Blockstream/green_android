@@ -26,7 +26,6 @@
     <string name="receive_title">RECEIVE</string>
     <string name="main_title">ALL</string>
     <string name="send_title">SEND</string>
-    <string name="action_search">Search</string>
     <string name="pinTitleText">PIN</string>
     <string name="network_unavailable">Disconnected</string>
     <string name="newTxTitle">New transaction</string>
@@ -101,7 +100,6 @@
     <string name="action_about">About</string>
 
     <!-- Example settings for Notifications -->
-    <string name="SettingsAppName">GreenBits</string>
     <string name="txDateText">Date</string>
     <string name="txAmountText">Amount</string>
     <string name="newTxAmount">Amount: </string>
@@ -123,11 +121,8 @@
     <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %d. Please reconnect your BTChip before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
     <string name="instantConfirmation">Instant Confirmation</string>
-    <string name="pref_header_more">More settings</string>
     <string name="trezor_login_failed">Hardware Wallet login failed</string>
     <string name="trezor_login_failed_details">It probably means you need to pair your Hardware Wallet device with GreenAddress using the desktop app.</string>
-    <string name="more_settings">See GreenAddress app for more settings</string>
-    <string name="more_settings_detail">Our previous app allows changing other settings like subaccounts, watch only login, and more.</string>
     <string name="improve_security_ledger">Improve your security with Ledger</string>
     <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard security for your Bitcoins.</string>
     <string name="mnemonic_passphrase">Mnemonic passphrase</string>

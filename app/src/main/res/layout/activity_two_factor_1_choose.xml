@@ -25,8 +25,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/progress"
-                android:id="@+id/textView3" />
+                android:text="@string/progress" />
 
             <ProgressBar
                 style="@style/myProgressBar"
@@ -50,7 +49,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/twoFacStep1Description"
-                android:id="@+id/textView4"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10sp"
                 android:layout_marginBottom="10sp" />
@@ -59,7 +57,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/twoFacStep1SelectExisting"
-                android:id="@+id/textView5"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15sp"
                 android:layout_marginBottom="10sp"
@@ -75,14 +72,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Google Authenticator"
-                    android:id="@+id/radioButton"
                     android:checked="false" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SMS"
-                    android:id="@+id/radioButton2"
                     android:checked="false" />
 
             </RadioGroup>

@@ -18,7 +18,6 @@
   <string name="receive_title">Recevoir</string>
   <string name="main_title">Tout</string>
   <string name="send_title">Envoyer</string>
-  <string name="action_search">Rechercher</string>
   <string name="pinTitleText">Code PIN</string>
   <string name="network_unavailable">Déconnecté</string>
   <string name="newTxTitle">Nouvelle transaction</string>
@@ -82,7 +81,6 @@
   <string name="action_network">Moniteur réseau</string>
   <string name="action_about">À propos</string>
   <!--Example settings for Notifications-->
-  <string name="SettingsAppName">GreenBits</string>
   <string name="txDateText">Date</string>
   <string name="txAmountText">Montant</string>
   <string name="newTxAmount">Montant : </string>
@@ -104,11 +102,8 @@
   <string name="btchipInvalidPIN">Code PIN incorrect. Tentatives restantes : %d. Veuillez reconnecter votre BTChip avant de recommencer.</string>
   <string name="btchipNotSetup">Votre BTChip n\'est pas initialisé. Veuillez l\'initialiser depuis votre ordinateur pour l\'utiliser.</string>
   <string name="instantConfirmation">Confirmation instantanée</string>
-  <string name="pref_header_more">Paramètres supplémentaires</string>
   <string name="trezor_login_failed">La connexion au portefeuille matériel a échoué</string>
   <string name="trezor_login_failed_details">Cela signifie probablement que vous devez relier votre portefeuille matériel avec GreenAddress en utilisant l\'application de bureau.</string>
-  <string name="more_settings">Reportez-vous à l\'application GreenAddress pour plus de paramètres</string>
-  <string name="more_settings_detail">Notre précédente appli permet de modifier d\'autres paramètres, comme les sous-comptes, le mode lecture seule, et plus.</string>
   <string name="improve_security_ledger">Améliorez votre sécurité avec Ledger</string>
   <string name="improve_security_ledger_detail">Ledger Wallet : la sécurité de la carte à puce pour vos Bitcoins.</string>
   <string name="mnemonic_passphrase">Phrase de récupération mnémonique</string>

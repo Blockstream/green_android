@@ -23,7 +23,6 @@
     <string name="receive_title">קבל</string>
     <string name="main_title">פעולות אחרונות</string>
     <string name="send_title">שלח</string>
-    <string name="action_search">חיפוש</string>
     <string name="network_unavailable">מנותק</string>
 
     <string name="newTxTitle">פעולה חדשה</string>
@@ -83,7 +82,6 @@
     <string name="txMemoText">הערה</string>
 
     <!-- Example settings for Notifications -->
-    <string name="SettingsAppName">גיבוי</string>
     <string name="txDateText">תאריך</string>
     <string name="txAmountText">סכום</string>
     <string name="newTxAmount">סכום: </string>
@@ -106,6 +104,5 @@
     <string name="btchipInvalidPIN">קוד PIN שגוי. נסיונות נותרים: %d. אנא חברו מחדש את ההתקן לפני נסיון נוסף.</string>
     <string name="btchipNotSetup">התקן לא מוכן. אנא הגדירו אותו באמצעות תוכנת המחשב בכדי להשתמש בו.</string>
     <string name="instantConfirmation">אישור מיידי</string>
-    <string name="pref_header_more">הגדרות נוספות</string>
 </resources>
 

@@ -17,7 +17,6 @@
   <string name="receive_title">RICEVI</string>
   <string name="main_title">BILANCIO</string>
   <string name="send_title">INVIA</string>
-  <string name="action_search">Cerca</string>
   <string name="network_unavailable">Disconnesso</string>
   <string name="newTxTitle">Nuova transazione</string>
   <string name="sweepAddressTitle">Preleva tutto da qrcode</string>
@@ -74,7 +73,6 @@
   <string name="txSubTitle">Dettagli transazione</string>
   <string name="txRecipientText">Destinatario</string>
   <!--Example settings for Notifications-->
-  <string name="SettingsAppName">GreenBits</string>
   <string name="txDateText">Data</string>
   <string name="txAmountText">Importo</string>
   <string name="newTxAmount">Importo: </string>
@@ -96,11 +94,8 @@
   <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
   <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
   <string name="instantConfirmation">Conferma istantanea</string>
-  <string name="pref_header_more">Configurazione aggiuntiva</string>
   <string name="trezor_login_failed">TREZOR accesso fallito</string>
   <string name="trezor_login_failed_details">Probabilmente significa che devi usare l\'app su desktop per configurare TREZOR con GreenAddress.</string>
-  <string name="more_settings">Vedi altra app per più opzioni di configurazione</string>
-  <string name="more_settings_detail">La nostra precedente app permette di cambiare altre impostazioni come sotto-account, accesso watch only, e altro.</string>
   <string name="improve_security_ledger">Migliora la tua sicurezza con Ledger</string>
   <string name="improve_security_ledger_detail">Ledger Wallet: Sicurezza da Smartcard per i tuoi Bitcoins.</string>
   <string name="mnemonic_passphrase">Passphrase mnemonica</string>
