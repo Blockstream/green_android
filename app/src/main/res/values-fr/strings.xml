@@ -7,11 +7,11 @@
   <string name="sendSendButton">Valider &amp; Envoyer</string>
   <string name="pinSaveText">Enregistrer</string>
   <string name="pinLoginText">Se connecter</string>
-  <string name="title_activity_qr_scanner">Scanner QR code</string>
+  <string name="title_activity_qr_scanner">Numériser code QR</string>
   <string name="title_activity_sign_up">S\'inscrire</string>
   <string name="signupContinueButtonText">CONTINUER</string>
   <string name="signupCheckBoxText">J\'ai sécurisé la phrase de récupération et j\'ai lu les CGU</string>
-  <string name="termsofservice">&lt;a href="https://greenaddress.it/fr/tos/"&gt;CGU&lt;/a&gt;</string>
+  <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">CGU</a></string>
   <string name="firstSignUpText">S\'INSCRIRE</string>
   <string name="firstLogInText">SE CONNECTER</string>
   <string name="bitcoinScaleUnitText">Unité</string>
@@ -59,7 +59,7 @@
   <string name="invalid_key">Clé invalide</string>
   <string name="warning">Attention !</string>
   <string name="save_password_now">Vous DEVEZ enregistrer votre phrase de récupération MAINTENANT</string>
-  <string name="greenaddress_headline">le portefeuille bitcoin le plus simple, sécurisé et rapide</string>
+  <string name="greenaddress_headline">Le portefeuille bitcoin le plus simple, sécurisé et rapide</string>
   <string name="pinSkipText">PASSER</string>
   <string name="sendOptionalMemo">Note optionnelle</string>
   <string name="madeBy">par GreenAddress</string>
@@ -75,7 +75,7 @@
   <string name="txTypeIn">Dépôt </string>
   <string name="txTypeOut">Retirer</string>
   <string name="txTypeRedeposit">Déposer de nouveau</string>
-  <string name="mnemonicHint">Écrivez votre phrase de récupération GreenAddress ou scanner son code QR</string>
+  <string name="mnemonicHint">Écrivez votre phrase de récupération GreenAddress ou numérisez son code QR</string>
   <string name="title_activity_settings">Paramètres</string>
   <string name="ago"> ago</string>
   <string name="txSubTitle">Détails de la transaction</string>
@@ -95,9 +95,9 @@
   <string name="invalidAmountAndAddress">Montant et adresse invalides</string>
   <string name="invalidAddress">Adresse invalide</string>
   <string name="invalidAmount">Montant invalide</string>
-  <string name="noBalanceFirstLine">&lt;a href="https://bitcoin.org/fr/getting-started"&gt;Débuter&lt;/a&gt; avec Bitcoin</string>
-  <string name="noBalanceSecondLine">Où &lt;a href="http://howtobuybitcoins.info/"&gt;acheter&lt;/a&gt; des bitcoins</string>
-  <string name="noBalanceThirdLine">Lire notre &lt;a href="https://greenaddress.it/faq"&gt;FAQ&lt;/a&gt;</string>
+  <string name="noBalanceFirstLine"><a href="https://bitcoin.org/fr/debuter">Débuter</a> avec Bitcoin</string>
+  <string name="noBalanceSecondLine">Où <a href="http://howtobuybitcoins.info/">acheter</a> des bitcoins</string>
+  <string name="noBalanceThirdLine">Lisez notre <a href="https://greenaddress.it/faq">FAQ</a></string>
   <string name="trezor_headline">Veuillez suivre les instructions sur votre portefeuille matériel</string>
   <string name="trezorProvidePin">Veuillez saisir le code PIN de votre portefeuille matériel. Regardez l\'appareil pour avoir la position des numéros :</string>
   <string name="trezorProvidePassphrase">Veuillez saisir la phrase de récupération de votre portefeuille matériel.</string>
@@ -196,5 +196,5 @@
   <string name="app_version">Version</string>
   <string name="invalidWord">\'%1$s\' est un mot invalide, voulez-vous le corriger par %2$s ?</string>
   <string name="app_description">Logo GreenAddress</string>
-  <string name="setPin">Configurer code PIN</string>
+  <string name="setPin">Configurer le code PIN</string>
 </resources>
