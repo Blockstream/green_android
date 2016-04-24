@@ -118,7 +118,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             final Snackbar snackbar = Snackbar
                     .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
                     .setActionTextColor(Color.RED)
-                    .setAction("Setup 2FA", new View.OnClickListener() {
+                    .setAction(getString(R.string.set2FA), new View.OnClickListener() {
                         @Override
                         public void onClick(final View view) {
                             startActivity(new Intent(TabbedMainActivity.this, SettingsActivity.class));

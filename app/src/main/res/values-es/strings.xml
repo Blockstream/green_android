@@ -204,4 +204,5 @@
     <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
     <string name="app_description">GreenAddress Logo</string>
     <string name="setPin">Eliges una clave PIN</string>
+    <string name="set2FA">SETUP 2FA</string>
 </resources>

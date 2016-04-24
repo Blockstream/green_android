@@ -200,4 +200,5 @@
   <string name="invalidWord">La parola \'%1$s\' non è valida, vuoi che sia corretta con %2$s?</string>
   <string name="app_description">Logo GreenAddress</string>
   <string name="setPin">Configura PIN</string>
+  <string name="set2FA">Configura 2FA</string>
 </resources>
