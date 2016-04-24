@@ -59,7 +59,6 @@ import org.bitcoinj.utils.MonetaryFormat;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +71,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 public class SendFragment extends SubaccountFragment {
 
     @NonNull private static final String TAG = SendFragment.class.getSimpleName();
+    private static final int REQUEST_SEND_QR_SCAN = 0;
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private EditText amountEdit;
@@ -118,7 +118,7 @@ public class SendFragment extends SubaccountFragment {
 
         amountScale.setText(Html.fromHtml(prefix));
         feeScale.setText(Html.fromHtml(prefix));
-        if (prefix.isEmpty()) {
+        if (prefix == null || prefix.isEmpty()) {
             amountUnit.setText("bits ");
             feeUnit.setText("bits ");
         } else {
@@ -129,7 +129,10 @@ public class SendFragment extends SubaccountFragment {
         feeText.setText(bitcoinFormat.noCode().format(fee));
 
         if (payreqData == null) {
-            recipientText.setText(recipient.substring(0, 12) + "\n" + recipient.substring(12, 24) + "\n" + recipient.substring(24));
+            recipientText.setText(String.format("%s\n%s\n%s",
+                    recipient.substring(0, 12),
+                    recipient.substring(12, 24),
+                    recipient.substring(24)));
         } else {
             recipientText.setText(recipient);
         }
@@ -141,7 +144,7 @@ public class SendFragment extends SubaccountFragment {
             newTx2FACodeText.setVisibility(View.GONE);
             twoFacData = null;
         } else {
-            twoFAText.setText("2FA " + method + " code");
+            twoFAText.setText(String.format("2FA %s code", method));
             twoFacData = new HashMap<>();
             twoFacData.put("method", method);
             if (!method.equals("gauth")) {
@@ -206,25 +209,17 @@ public class SendFragment extends SubaccountFragment {
                             }
                         }, getGAService().es);
                     }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        Log.i(TAG, "SHOWN ON CLOSE!");
-                    }
-                })
-                .build();
+                }).build();
 
         mSummary.show();
     }
 
     private void show2FAChoices(final Coin fee, final Coin amount, @NonNull final String recipient, @NonNull final PreparedTransaction prepared) {
         Log.i(TAG, "params " + fee + " " + amount + " " + recipient);
-        final String[] enabledTwoFacNames = new String[]{};
         final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
         mTwoFactor = new MaterialDialog.Builder(getActivity())
                 .title(R.string.twoFactorChoicesTitle)
-                .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
+                .items(getGAService().getEnabledTwoFacNames(false).toArray(new String[]{}))
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
                     public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -365,7 +360,7 @@ public class SendFragment extends SubaccountFragment {
             try {
                 bitcoinUri = new BitcoinURI(uri.toString());
             } catch (BitcoinURIParseException e) {
-                Toast.makeText(getActivity(), "Failed parsing Bitcoin URI", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.err_send_invalid_bitcoin_uri), Toast.LENGTH_LONG).show();
             }
             if (bitcoinUri != null) {
                 processBitcoinURI(bitcoinUri);
@@ -378,7 +373,7 @@ public class SendFragment extends SubaccountFragment {
             @Override
             public void onClick(final View view) {
                 if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                    Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
                     return;
                 }
                 final String recipient = recipientEdit.getText().toString();
@@ -392,7 +387,7 @@ public class SendFragment extends SubaccountFragment {
                 amount = nonFinalAmount;
 
                 if (recipient.isEmpty()) {
-                    Toast.makeText(getActivity(), "You need to provide a recipient", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.err_send_need_recipient), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -536,7 +531,7 @@ public class SendFragment extends SubaccountFragment {
                 if (isChecked) {
                     amountEdit.setEnabled(false);
                     amountFiatEdit.setEnabled(false);
-                    amountEdit.setText("MAX");
+                    amountEdit.setText(getString(R.string.send_max_amount));
                 } else {
                     amountEdit.setText("");
                     amountEdit.setEnabled(true);
@@ -566,7 +561,7 @@ public class SendFragment extends SubaccountFragment {
 
                                                 scanIcon.startAnimation(iconPressed);
                                                 final Intent qrcodeScanner = new Intent(getActivity(), ScanActivity.class);
-                                                getActivity().startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
+                                                getActivity().startActivityForResult(qrcodeScanner, REQUEST_SEND_QR_SCAN);
                                             }
                                         }
                                     }
@@ -578,7 +573,7 @@ public class SendFragment extends SubaccountFragment {
                     @Override
                     public void onClick(final View view) {
                         if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                            Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
                             return;
                         }
                         final PopupMenu popup = new PopupMenu(getActivity(), view);
@@ -681,7 +676,7 @@ public class SendFragment extends SubaccountFragment {
                     @Override
                     public void onClick(final View view) {
                         if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                            Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
                             return;
                         }
                         fiatPopup.setOnMenuItemClickListener(
@@ -938,8 +933,8 @@ public class SendFragment extends SubaccountFragment {
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             amountFiatEdit.setText(fiatValue.toPlainString());
         } catch (@NonNull final ArithmeticException | IllegalArgumentException e) {
-            if (amountEdit.getText().toString().equals("MAX")) {
-                amountFiatEdit.setText("MAX");
+            if (amountEdit.getText().toString().equals(getString(R.string.send_max_amount))) {
+                amountFiatEdit.setText(getString(R.string.send_max_amount));
             } else {
                 amountFiatEdit.setText("");
             }

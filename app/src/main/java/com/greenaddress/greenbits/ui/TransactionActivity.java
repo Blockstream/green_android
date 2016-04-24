@@ -28,7 +28,6 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
@@ -48,7 +47,6 @@ import org.bitcoinj.utils.MonetaryFormat;
 import org.spongycastle.util.encoders.Hex;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -804,7 +802,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 newTx2FACodeText.setVisibility(View.GONE);
                 twoFacData = null;
             } else {
-                twoFAText.setText("2FA " + method + " code");
+                twoFAText.setText(String.format("2FA %s code", method));
                 twoFacData = new HashMap<>();
                 twoFacData.put("method", method);
                 twoFacData.put("bump_fee_amount", newFee.subtract(oldFee).longValue());

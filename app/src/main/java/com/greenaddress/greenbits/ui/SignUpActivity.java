@@ -325,16 +325,16 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                     ndef.connect();
                     if (!ndef.isWritable()) {
                         Toast.makeText(getApplicationContext(),
-                                "Error: tag not writable",
+                                getString(R.string.err_sign_up_nfc_not_writable),
                                 Toast.LENGTH_SHORT).show();
                     }
                     if (ndef.getMaxSize() < size) {
                         Toast.makeText(getApplicationContext(),
-                                "Error: tag too small",
+                                getString(R.string.err_sign_up_nfc_too_small),
                                 Toast.LENGTH_SHORT).show();
                     }
                     ndef.writeNdefMessage(message);
-                    nfcTagsWritten.setText("" + (Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
+                    nfcTagsWritten.setText(String.valueOf(Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
 
                 } else {
                     final NdefFormatable format = NdefFormatable.get(detectedTag);
@@ -342,7 +342,7 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
                         try {
                             format.connect();
                             format.format(message);
-                            nfcTagsWritten.setText("" + (Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
+                            nfcTagsWritten.setText(String.valueOf(Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
                         } catch (@NonNull final IOException e) {
                         }
                     }

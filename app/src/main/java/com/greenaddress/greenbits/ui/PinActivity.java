@@ -74,7 +74,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+                Toast.makeText(PinActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -82,7 +82,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     private void loginAfterServiceConnected(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
-            Toast.makeText(PinActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+            Toast.makeText(PinActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
             return;
         }
 

@@ -67,7 +67,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends ActionBarActivity implements Observer {
-    public static final int
+    private static final int
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2;
@@ -228,7 +228,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         tabLayout.setupWithViewPager(mViewPager);
         final GaService gs = getGAService();
         if (gs == null) {
-            Toast.makeText(TabbedMainActivity.this, "Not connected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TabbedMainActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -409,7 +409,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                                                     }
                                                 });
                                             } else {
-                                                Toast.makeText(TabbedMainActivity.this, "Verification failed: Invalid output address", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(TabbedMainActivity.this, getString(R.string.err_tabbed_sweep_failed), Toast.LENGTH_LONG).show();
                                             }
                                         }
 
@@ -624,7 +624,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                     startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
                 }
                 else {
-                   Toast.makeText(getApplicationContext(), "Please enable camera permissions to use sweep functionality.", Toast.LENGTH_SHORT).show();
+                   Toast.makeText(getApplicationContext(), getString(R.string.err_tabbed_sweep_requires_camera_permissions), Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
@@ -636,7 +636,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                     startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), "Please enable camera permissions to use scan functionality.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.err_qrscan_requires_camera_permissions), Toast.LENGTH_SHORT).show();
                 }
                 break;
             }

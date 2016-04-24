@@ -295,8 +295,10 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                Toast.makeText(RequestLoginActivity.this, "No PIN provided, exiting.", Toast.LENGTH_LONG).show();
-                                RequestLoginActivity.this.finish();                            }
+                                Toast.makeText(RequestLoginActivity.this,
+                                        getString(R.string.err_request_login_no_pin), Toast.LENGTH_LONG).show();
+                                RequestLoginActivity.this.finish();
+                            }
                         });
 
                 btchipDialog = builder.build();

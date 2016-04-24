@@ -253,7 +253,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     @Override
                     public void onClick(final View view) {
                         if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                            Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
                             return;
                         }
                         startNewAddressAnimation(rootView);

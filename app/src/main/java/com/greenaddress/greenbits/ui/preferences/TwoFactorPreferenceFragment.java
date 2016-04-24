@@ -40,14 +40,14 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         addPreferencesFromResource(R.xml.preference_twofactor);
         setHasOptionsMenu(true);
         if (gaService == null) {
-            Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
 
             getActivity().finish();
         }
         final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();
 
         if (twoFacConfig == null || twoFacConfig.isEmpty()) {
-            Toast.makeText(getActivity(), "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
 
             getActivity().finish();
         }

@@ -15,9 +15,6 @@
   <string name="firstSignUpText">S\'INSCRIRE</string>
   <string name="firstLogInText">SE CONNECTER</string>
   <string name="bitcoinScaleUnitText">Unité</string>
-  <string name="bitcoinScaleMilliText">Milli</string>
-  <string name="bitcoinScaleMicroText">Micro</string>
-  <string name="bitcoinScaleBitsText">Bits</string>
   <string name="receive_title">Recevoir</string>
   <string name="main_title">Tout</string>
   <string name="send_title">Envoyer</string>
@@ -79,7 +76,6 @@
   <string name="title_activity_settings">Paramètres</string>
   <string name="ago"> ago</string>
   <string name="txSubTitle">Détails de la transaction</string>
-  <string name="txHashText">Hash</string>
   <string name="txRecipientText">Destinataire</string>
   <string name="txMemoText">Note</string>
   <string name="title_network_monitor">Moniteur réseau</string>
@@ -142,9 +138,6 @@
   <string name="providePassphrase">Veuillez saisir votre phrase de récupération :</string>
   <string name="pref_header_twofactor">Authentification à deux facteurs</string>
   <string name="twoFacPhoneCall">Appel téléphonique</string>
-  <string name="twoFacSMS">SMS</string>
-  <string name="twoFacGauth">Google Authenticator</string>
-  <string name="twoFacEmail">E-mail</string>
   <string name="hideTwoFacWarning">Retirer l\'avertissement 2FA</string>
   <string name="twoFacSetupHeader">%s 2FA setup</string>
   <string name="progress">Progression :</string>
@@ -181,7 +174,6 @@
   <string name="updated">mis à jour</string>
   <string name="malleated">modifié</string>
   <string name="replaceable">remplaçable</string>
-  <string name="pref_header_proxy">Proxy Http</string>
   <string name="pref_title_display_hostname">Nom d\'hôte</string>
   <string name="pref_title_display_port">Port</string>
   <string name="optin_rbf">Activer le remplacement de transaction</string>
@@ -193,10 +185,7 @@
   <string name="oldFeeText">Anciens frais :</string>
   <string name="feeIncreaseTitle">Augmentation des frais</string>
   <string name="insufficientFundsText">Fonds insuffisants </string>
-  <string name="app_version">Version</string>
   <string name="invalidWord">\'%1$s\' est un mot invalide, voulez-vous le corriger par %2$s ?</string>
-  <string name="app_description">Logo GreenAddress</string>
   <string name="setPin">Configurer le code PIN</string>
   <string name="set2FA">CONFIGURER 2FA</string>
-  <string name="resetSPV">Reset SPV</string>
 </resources>

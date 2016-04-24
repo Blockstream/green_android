@@ -142,7 +142,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(MnemonicActivity.this, "Not connected, connection will resume automatically", Toast.LENGTH_LONG).show();
+                Toast.makeText(MnemonicActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -151,12 +151,12 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         final GaService gaService = getGAService();
         
         if (getGAApp().getConnectionObservable().getState() == ConnectivityObservable.State.LOGGEDIN) {
-            Toast.makeText(MnemonicActivity.this, "You must first logout before signing in.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MnemonicActivity.this, getString(R.string.err_mnemonic_activity_logout_required), Toast.LENGTH_LONG).show();
             return;
         }
 
         if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.CONNECTED) {
-            Toast.makeText(MnemonicActivity.this, "Not connected", Toast.LENGTH_LONG).show();
+            Toast.makeText(MnemonicActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
             return;
         }
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
@@ -172,7 +172,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MnemonicActivity.this, "Invalid passphrase (has to be 24 or 27 words)", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MnemonicActivity.this, getString(R.string.err_mnemonic_activity_invalid_mnemonic), Toast.LENGTH_LONG).show();
                 }
             });
             return;
@@ -607,7 +607,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                     startActivityForResult(scanner, QRSCANNER);
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), "Please enable camera permissions to use scan functionality.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.err_qrscan_requires_camera_permissions), Toast.LENGTH_SHORT).show();
                 }
         }
     }

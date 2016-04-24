@@ -15,9 +15,6 @@
   <string name="firstSignUpText">REGISTRIEREN</string>
   <string name="firstLogInText">ANMELDEN</string>
   <string name="bitcoinScaleUnitText">Einheit</string>
-  <string name="bitcoinScaleMilliText">Milli</string>
-  <string name="bitcoinScaleMicroText">Micro</string>
-  <string name="bitcoinScaleBitsText">Bits</string>
   <string name="receive_title">EMPFANGEN</string>
   <string name="main_title">ÜBERSICHT</string>
   <string name="send_title">SENDEN</string>
@@ -71,7 +68,6 @@
   <string name="receiveAddressSubTitle">Adresse</string>
   <string name="sendPayTo">Empfänger-Adresse</string>
   <string name="action_sweep">Übertragen</string>
-  <string name="action_logout">Log out</string>
   <string name="txTypeIn">Eingang</string>
   <string name="txTypeOut">Ausgang</string>
   <string name="txTypeRedeposit">Rückzahlung</string>
@@ -79,11 +75,8 @@
   <string name="title_activity_settings">Einstellungen</string>
   <string name="ago">vor</string>
   <string name="txSubTitle">Transaktionsdetails</string>
-  <string name="txHashText">Hash</string>
   <string name="txRecipientText">Empfänger</string>
-  <string name="txMemoText">Memo</string>
   <!--Example settings for Notifications-->
-  <string name="SettingsAppName">GreenBits</string>
   <string name="txDateText">Datum</string>
   <string name="txAmountText">Betrag</string>
   <string name="newTxAmount">Betrag:</string>
@@ -139,9 +132,6 @@
   <string name="providePassphrase">Bitte geben sie ihren Kennwortsatz an:</string>
   <string name="pref_header_twofactor">2-Faktor-Authentifizierung</string>
   <string name="twoFacPhoneCall">Anruf</string>
-  <string name="twoFacSMS">SMS</string>
-  <string name="twoFacGauth">Google Authenticator</string>
-  <string name="twoFacEmail">E-mail</string>
   <string name="hideTwoFacWarning">2FA Warnung nicht anzeigen</string>
   <string name="twoFacSetupHeader">%s 2FA einrichten</string>
   <string name="progress">Fortschritt:</string>
@@ -163,41 +153,4 @@
   <string name="copyAddress">Kopieren</string>
   <string name="txReceivedOn">Empfangsadresse</string>
   <string name="twoFacGauthTextCode">Oder sie benutzen den folgenden Code: %s. Vergessen sie nicht in zu sichern!</string>
-  <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-  <string name="enterValidAddressTitle">Not a valid address!</string>
-  <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
-  <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
-  <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
-  <string name="title_network_monitor">Network monitor</string>
-  <string name="action_network">Network monitor</string>
-  <string name="action_about">About</string>
-  <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
-  <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
-  <string name="useNativeAuthentication">Use Android\'s authentication</string>
-  <string name="genericsettings">Info &amp; settings</string>
-  <string name="txFeeInfo">Fee / Size (bytes) / Fee per kB</string>
-  <string name="doubleSpend">double spend</string>
-  <string name="txDoubleSpentBy">Double spend by</string>
-  <string name="updated">updated</string>
-  <string name="malleated">malleated</string>
-  <string name="replaceable">replaceable</string>
-  <string name="pref_header_proxy">Http Proxy</string>
-
-  <string name="pref_title_display_hostname">Hostname</string>
-  <string name="pref_title_display_port">Port</string>
-  <string name="optin_rbf">Enable transaction replacement</string>
-  <string name="willConfirmAfter">Will confirm after blocks (estimated): %s</string>
-  <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %s blocks.</string>
-  <string name="recommendationSingleBlock">If you increase the fee now to the recommended level, the transaction will be expected to confirm after 1 block.</string>
-  <string name="increaseFee">Increase fee</string>
-  <string name="newFeeText">New Fee:</string>
-  <string name="oldFeeText">Old Fee:</string>
-  <string name="feeIncreaseTitle">Fee increase</string>
-  <string name="insufficientFundsText">Insufficient funds</string>
-  <string name="app_version">Version</string>
-  <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
-  <string name="app_description">GreenAddress Logo</string>
-  <string name="setPin">Setup PIN</string>
-  <string name="set2FA">SETUP 2FA</string>
-  <string name="resetSPV">Reset SPV</string>
 </resources>

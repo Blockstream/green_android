@@ -38,7 +38,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
 
     private void setPin(@NonNull final String pinText) {
         if (pinText.length() < 4) {
-            Toast.makeText(PinSaveActivity.this, "PIN has to be between 4 and 15 digits", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PinSaveActivity.this, getString(R.string.err_pin_save_wrong_length), Toast.LENGTH_SHORT).show();
             return;
         }
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
