@@ -59,7 +59,6 @@
             style="@style/myButton"
             app:cpb_colorIndicator="@color/accent"
             app:cpb_selectorIdle="@drawable/buttonprogressselector"
-            android:elevation="8dp"
             android:textColor="@color/white"
             app:cpb_textIdle="@string/pinLoginText" />
 

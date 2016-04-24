@@ -74,7 +74,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:elevation="8dp"
                     android:textColor="@color/white"
                     app:cpb_colorIndicator="@color/accent"
                     app:cpb_selectorIdle="@drawable/buttonprogressselector"
