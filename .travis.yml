@@ -17,7 +17,7 @@ jdk:
 
 script:
    - sed -i -e 's/enable true/enable false/g' app/build.gradle
-   - ./gradlew --stacktrace clean assembleProductRelease assembleProduction_21Release -PdisablePreDex
+   - ./gradlew --stacktrace clean assembleProductRelease -PdisablePreDex
 
 before_install:
    - git submodule update --init --recursive
