@@ -198,4 +198,5 @@
   <string name="app_description">Logo GreenAddress</string>
   <string name="setPin">Configurer le code PIN</string>
   <string name="set2FA">CONFIGURER 2FA</string>
+  <string name="resetSPV">Reset SPV</string>
 </resources>

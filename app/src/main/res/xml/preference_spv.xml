@@ -7,6 +7,6 @@
                         android:title="@string/trustedspv"
                         android:dependency="spvEnabled"/>
     <Preference android:key="reset_spv"
-                android:title="Reset SPV"
+                android:title="@string/resetSPV"
                 android:dependency="spvEnabled"/>
 </PreferenceScreen>
