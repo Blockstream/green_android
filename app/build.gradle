@@ -160,7 +160,7 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.okhttp:okhttp:2.7.3'
-    compile 'com.github.medyo:android-about-page:1.0'
+    compile 'com.github.medyo:android-about-page:1.0.2'
 }
 
 repositories {
