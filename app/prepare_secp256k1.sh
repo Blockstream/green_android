@@ -46,12 +46,13 @@ function build() {
     with_asm="auto"
 
     if [ "$arch" == "arm-linux-androideabi" ]; then
-        if [ -z "$suffix" ]; then
+        if [ -z "$arch_suffix" ]; then
             # armeabi. Only software floating point supported
             export CFLAGS="$CFLAGS -mfloat-abi=soft"
         else
             # armeabi-v7a. Use FPU, but remain compatible with soft-float code.
-            export CFLAGS="$CFLAGS -mfloat-abi=softfp -mfpu=neon -flax-vector-conversions"
+            export CFLAGS="$CFLAGS -march=armv7-a -mfloat-abi=softfp -mfpu=neon -flax-vector-conversions"
+            export LDFLAGS="-march=armv7-a -Wl,--fix-cortex-a8"
         fi
         with_asm="arm"
     elif [ "$arch" == "aarch64-linux-android" ]; then
