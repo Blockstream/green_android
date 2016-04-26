@@ -29,7 +29,7 @@
     <string name="twoFactorChoicesTitle">בחר אימות שני</string>
     <string name="choose">בחר</string>
     <string name="cancel">ביטול</string>
-    <string name="attemptsLeft">%s נסיונות נותרו</string>
+    <string name="attemptsLeft">%1$d נסיונות נותרו</string>
 
     <string-array name="twoFactorChoices">
         <item>דוא"ל</item>
@@ -75,7 +75,7 @@
     <string name="txTypeRedeposit">הפקדה מחדש</string>
     <string name="mnemonicHint">יש להקיש את סיסמאת GreenAddress או לסרוק את הברקוד.</string>
     <string name="title_activity_settings">הגדרות</string>
-    <string name="ago">לפני</string>
+    <string name="ago">%1$d %2$s לפני</string>
     <string name="txSubTitle">פרטי פעולה</string>
     <string name="txHashText">גיבוב</string>
     <string name="txRecipientText">נמען</string>

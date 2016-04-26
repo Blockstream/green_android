@@ -26,13 +26,10 @@ class TimeAgo {
             final long timeSince = timeDiff / TIMES.get(i);
             if (timeSince > 0) {
                 final Resources res = ctx.getResources();
-                return String
-                        .format("%s %s %s",
-                                timeSince,
-                                timeSince > 1 ?
-                                        res.getStringArray(R.array.timesStringPlurals)[i] :
-                                        res.getStringArray(R.array.timesStrings)[i],
-                                ctx.getString(R.string.ago));
+                return ctx.getString(R.string.ago, timeSince,
+                        timeSince > 1 ?
+                                res.getStringArray(R.array.timesStringPlurals)[i] :
+                                res.getStringArray(R.array.timesStrings)[i]);
             }
         }
         return "NOW";

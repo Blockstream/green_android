@@ -25,7 +25,7 @@
   <string name="twoFactorChoicesTitle">2-Faktor-Authentifizierung wählen</string>
   <string name="choose">WÄHLEN</string>
   <string name="cancel">ABBRECHEN</string>
-  <string name="attemptsLeft">noch %s Versuche übrig</string>
+  <string name="attemptsLeft">noch %1$d Versuche übrig</string>
   <string-array name="twoFactorChoices">
     <item>Email</item>
     <item>SMS</item>
@@ -61,7 +61,7 @@
   <string name="madeBy">by GreenAddress</string>
   <string name="welcomeGreenBits">Willkommen zu GreenBits</string>
   <string name="attemptsFinished">Ungültiger PIN. Sie haben keine Versuche mehr übrig. Bitte loggen sie sich mit ihrem Kennwortsatz ein.</string>
-  <string name="attemptsLeftLong">Ungültiger PIN. Sie haben %s Versuche übrig</string>
+  <string name="attemptsLeftLong">Ungültiger PIN. Sie haben %1$d Versuche übrig</string>
   <string name="warnOnPaste">Beachten sie bitte das andere Apps die Zwischenablage lesen oder verändern können</string>
   <string name="toastOnCopyAddress">Adresse in Zwischenablage kopiert.</string>
   <string name="receiveAddressSubTitle">Adresse</string>
@@ -72,7 +72,7 @@
   <string name="txTypeRedeposit">Rückzahlung</string>
   <string name="mnemonicHint">GreenAddress Kennwortsatz eingeben oder qrcode einscannen</string>
   <string name="title_activity_settings">Einstellungen</string>
-  <string name="ago">vor</string>
+  <string name="ago">%1$d %2$s vor</string>
   <string name="txSubTitle">Transaktionsdetails</string>
   <string name="txRecipientText">Empfänger</string>
   <!--Example settings for Notifications-->

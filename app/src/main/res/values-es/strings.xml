@@ -25,7 +25,7 @@
     <string name="twoFactorChoicesTitle">Selecione método de autenticación de 2 factores</string>
     <string name="choose">SELECCIONAR</string>
     <string name="cancel">CANCELAR</string>
-    <string name="attemptsLeft">%s intentos restantes</string>
+    <string name="attemptsLeft">%1$d intentos restantes</string>
 
     <string-array name="twoFactorChoices">
         <item>Email</item>
@@ -64,7 +64,7 @@
     <string name="madeBy">creado por GreenAddress</string>
     <string name="welcomeGreenBits">Bienvenido a GreenBits</string>
     <string name="attemptsFinished">PIN inválido, usted no dispone de mas intentos. Por favor, ingrese usando su frase clave.</string>
-    <string name="attemptsLeftLong">PIN inválido, usted dispone de %s intentos restantes</string>
+    <string name="attemptsLeftLong">PIN inválido, usted dispone de %1$d intentos restantes</string>
     <string name="warnOnPaste">Sea cuidadoso, algunas aplicaciones podrían leer o alterar su portapapeles</string>
     <string name="toastOnCopyAddress">Dirección copiada al portapepeles.</string>
     <string name="receiveAddressSubTitle">Dirección</string>
@@ -75,7 +75,7 @@
     <string name="txTypeRedeposit">Redepositar</string>
     <string name="mnemonicHint">Ingrese su frase clave de GreenAddress o escanee un código qr</string>
     <string name="title_activity_settings">Configuración</string>
-    <string name="ago">hace</string>
+    <string name="ago">%1$d %2$s hace</string>
     <string name="txSubTitle">Detalles de tansacción</string>
     <string name="txRecipientText">Receptor</string>
 

@@ -25,7 +25,7 @@
   <string name="twoFactorChoicesTitle">Choisir la méthode d\'authentification à 2 facteurs</string>
   <string name="choose">CHOISIR</string>
   <string name="cancel">ANNULER</string>
-  <string name="attemptsLeft">%s tentatives restantes</string>
+  <string name="attemptsLeft">%1$d tentatives restantes</string>
   <string-array name="twoFactorChoices">
     <item>Email</item>
     <item>SMS</item>
@@ -61,7 +61,7 @@
   <string name="madeBy">par GreenAddress</string>
   <string name="welcomeGreenBits">Bienvenue sur GreenBits</string>
   <string name="attemptsFinished">Code PIN invalide, vous n\'avez plus de tentatives restantes. Connectez-vous en utilisant votre phrase de récupération.</string>
-  <string name="attemptsLeftLong">Code PIN invalide, il ne vous reste que %s tentatives restantes</string>
+  <string name="attemptsLeftLong">Code PIN invalide, il ne vous reste que %1$d tentatives restantes</string>
   <string name="warnOnPaste">Attention, d\'autres applications peuvent lire ou modifier votre presse-papier</string>
   <string name="toastOnCopyAddress">Adresse copiée dans le presse-papier.</string>
   <string name="receiveAddressSubTitle">Adresse</string>
@@ -73,7 +73,7 @@
   <string name="txTypeRedeposit">Déposer de nouveau</string>
   <string name="mnemonicHint">Écrivez votre phrase de récupération GreenAddress ou numérisez son code QR</string>
   <string name="title_activity_settings">Paramètres</string>
-  <string name="ago"> ago</string>
+  <string name="ago">%1$d %2$s ago</string>
   <string name="txSubTitle">Détails de la transaction</string>
   <string name="txRecipientText">Destinataire</string>
   <string name="txMemoText">Note</string>

@@ -1,19 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="action_settings">Configurazione</string>
-  <string name="title_activity_mnemonic">Accedi</string>
+  <string name="title_activity_mnemonic">Ripristina</string>
   <string name="sendToText">A</string>
   <string name="sendAmountText">Ammontare</string>
   <string name="sendSendButton">VERIFICA &amp; INVIA</string>
   <string name="pinSaveText">Salva</string>
-  <string name="pinLoginText">Accedi</string>
-  <string name="title_activity_sign_up">Registrati</string>
+  <string name="pinLoginText">Entra</string>
+  <string name="title_activity_sign_up">Nuovo</string>
   <string name="signupContinueButtonText">CONTINUA</string>
   <string name="signupCheckBoxText">Ho custodito la passphrase e ho letto le condizioni</string>
   <string name="termsofservice"><a href="https://greenaddress.it/it/tos/">Condizioni d\'utilizzo</a></string>
 
-  <string name="firstSignUpText">REGISTRATI</string>
-  <string name="firstLogInText">ACCEDI</string>
+  <string name="firstSignUpText">NUOVO</string>
+  <string name="firstLogInText">RIPRISTINA</string>
   <string name="receive_title">RICEVI</string>
   <string name="main_title">BILANCIO</string>
   <string name="send_title">INVIA</string>
@@ -23,7 +23,7 @@
   <string name="twoFactorChoicesTitle">Scegli l\'autenticazione a due fattori</string>
   <string name="choose">SCEGLI</string>
   <string name="cancel">CANCELLA</string>
-  <string name="attemptsLeft">%s tentativi rimasti</string>
+  <string name="attemptsLeft">%1$d tentativi rimasti</string>
   <string-array name="twoFactorChoices">
     <item>Email</item>
     <item>SMS</item>
@@ -59,7 +59,7 @@
   <string name="madeBy">da GreenAddress</string>
   <string name="welcomeGreenBits">Benvenuti in GreenBits</string>
   <string name="attemptsFinished">PIN non valido, non sono rimasti tentativi. Per piacere accedi con la passphrase.</string>
-  <string name="attemptsLeftLong">PIN non valido, hai %s tentativi rimanenti</string>
+  <string name="attemptsLeftLong">PIN non valido, hai %1$d tentativi rimanenti</string>
   <string name="warnOnPaste">Agire con cautela, altre applicazioni posso leggere o cambiare la clipboard</string>
   <string name="toastOnCopyAddress">Indirizzo copiato.</string>
   <string name="receiveAddressSubTitle">Indirizzo</string>
@@ -69,7 +69,7 @@
   <string name="txTypeRedeposit">Giroconto</string>
   <string name="mnemonicHint">Inserisci la tua passphrase GreenAddress o fai lo scan del qrcode</string>
   <string name="title_activity_settings">Configurazione</string>
-  <string name="ago"> fa</string>
+  <string name="ago">%1$d %2$s fa</string>
   <string name="txSubTitle">Dettagli transazione</string>
   <string name="txRecipientText">Destinatario</string>
   <!--Example settings for Notifications-->

@@ -28,7 +28,7 @@
   <string name="twoFactorChoicesTitle">اختيار طريقتين للتحقق </string>
   <string name="choose">اختيار</string>
   <string name="cancel">إلغاء</string>
-  <string name="attemptsLeft">%s  محاولة متبقية</string>
+  <string name="attemptsLeft">%1$d  محاولة متبقية</string>
   <string-array name="twoFactorChoices">
     <item>البريد الإلكتروني</item>
     <item>الرسائل القصيرة</item>
