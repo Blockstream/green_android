@@ -153,7 +153,7 @@
   <string name="phoneNumber">numéro de téléphone</string>
   <string name="newAddress">Nouvelle</string>
   <string name="copyAddress">Copier</string>
-  <string name="txReceivedOn">Reçue le</string>
+  <string name="txReceivedOn">Reçue par</string>
   <string name="twoFacGauthTextCode">Ou vous pouvez utiliser le code suivant (touchez pour copier) :  %s. N\'oubliez pas de sauvegarder !</string>
   <string name="trustedspv">Se connecter uniquement à un pair de confiance pour SPV</string>
   <string name="enterValidAddressTitle">L\'adresse n\'est pas valide !</string>
