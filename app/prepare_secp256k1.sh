@@ -41,10 +41,11 @@ function build() {
     export CPPFLAGS="--sysroot=$ANDROID_NDK/platforms/android-$ANDROID_VERSION/arch-$arch_short/"
     export CFLAGS="$CPPFLAGS"
     export LDFLAGS=""
-
-    with_asm="auto"
+    configure_opts="--enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh --enable-endomorphism --disable-dependency-tracking --enable-silent-rules"
 
     if [ "$arch" == "arm-linux-androideabi" ]; then
+        # --with-asm=arm does not default to enabled under arm, so enable it
+        configure_opts="$configure_opts --with-asm=arm"
         if [ -z "$arch_suffix" ]; then
             # armeabi. Only software floating point supported
             export CFLAGS="$CFLAGS -mfloat-abi=soft"
@@ -53,18 +54,14 @@ function build() {
             export CFLAGS="$CFLAGS -march=armv7-a -mfloat-abi=softfp -mfpu=neon -flax-vector-conversions"
             export LDFLAGS="-march=armv7-a -Wl,--fix-cortex-a8"
         fi
-        with_asm="arm"
     elif [ "$arch" == "aarch64-linux-android" ]; then
         # arm64-v8a. Hardware floating point and NEON support are built in
         export CFLAGS="$CFLAGS -flax-vector-conversions"
-    elif [ "$arch" == "x86_64" ]; then
-        with_asm="x86_64"
     fi
 
     echo '============================================================'
     echo $arch$arch_suffix
     echo '============================================================'
-    configure_opts="--enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh --enable-endomorphism --with-asm=$with_asm --disable-dependency-tracking --enable-silent-rules"
     ./configure --host=$arch_name --target=$arch_name $configure_opts >/dev/null
     make -o configure clean -j$NUM_JOBS >/dev/null 2>&1
     make -o configure -j$NUM_JOBS
