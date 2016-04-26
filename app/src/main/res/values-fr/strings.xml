@@ -1,22 +1,23 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="action_settings">Paramètres</string>
-  <string name="title_activity_mnemonic">Se connecter</string>
+  <string name="title_activity_mnemonic">Restaurer</string>
   <string name="sendToText">À</string>
   <string name="sendAmountText">Montant</string>
   <string name="sendSendButton">Valider &amp; Envoyer</string>
   <string name="pinSaveText">Enregistrer</string>
-  <string name="pinLoginText">Se connecter</string>
+  <string name="pinLoginText">Entrer</string>
   <string name="title_activity_qr_scanner">Numériser code QR</string>
-  <string name="title_activity_sign_up">S\'inscrire</string>
+  <string name="title_activity_sign_up">Créer</string>
   <string name="signupContinueButtonText">CONTINUER</string>
   <string name="signupCheckBoxText">J\'ai sécurisé la phrase de récupération et j\'ai lu les CGU</string>
   <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">CGU</a></string>
-  <string name="firstSignUpText">S\'INSCRIRE</string>
-  <string name="firstLogInText">SE CONNECTER</string>
+  <string name="firstSignUpText">CRÉER</string>
+  <string name="firstLogInText">RESTAURER</string>
   <string name="bitcoinScaleUnitText">Unité</string>
+  <string name="bitcoinScaleBitsText">Bits</string>
   <string name="receive_title">Recevoir</string>
-  <string name="main_title">Tout</string>
+  <string name="main_title">ACTIVITÉ</string>
   <string name="send_title">Envoyer</string>
   <string name="pinTitleText">Code PIN</string>
   <string name="network_unavailable">Déconnecté</string>
@@ -61,7 +62,7 @@
   <string name="madeBy">par GreenAddress</string>
   <string name="welcomeGreenBits">Bienvenue sur GreenBits</string>
   <string name="attemptsFinished">Code PIN invalide, vous n\'avez plus de tentatives restantes. Connectez-vous en utilisant votre phrase de récupération.</string>
-  <string name="attemptsLeftLong">Code PIN invalide, il ne vous reste que %1$d tentatives restantes</string>
+  <string name="attemptsLeftLong">Code PIN invalide, vous avez %1$d tentatives restantes</string>
   <string name="warnOnPaste">Attention, d\'autres applications peuvent lire ou modifier votre presse-papier</string>
   <string name="toastOnCopyAddress">Adresse copiée dans le presse-papier.</string>
   <string name="receiveAddressSubTitle">Adresse</string>
@@ -73,7 +74,7 @@
   <string name="txTypeRedeposit">Déposer de nouveau</string>
   <string name="mnemonicHint">Écrivez votre phrase de récupération GreenAddress ou numérisez son code QR</string>
   <string name="title_activity_settings">Paramètres</string>
-  <string name="ago">%1$d %2$s ago</string>
+  <string name="ago">il y a %1$d %2$s</string>
   <string name="txSubTitle">Détails de la transaction</string>
   <string name="txRecipientText">Destinataire</string>
   <string name="txMemoText">Note</string>
@@ -169,6 +170,7 @@
   <string name="updated">mis à jour</string>
   <string name="malleated">modifié</string>
   <string name="replaceable">remplaçable</string>
+  <string name="pref_header_proxy">Proxy Http</string>
   <string name="pref_title_display_hostname">Nom d\'hôte</string>
   <string name="pref_title_display_port">Port</string>
   <string name="optin_rbf">Activer le remplacement de transaction</string>
@@ -194,6 +196,7 @@
   <string name="err_mnemonic_activity_logout_required">Vous devez d\'abord vous déconnecter avant de vous connecter.</string>
   <string name="err_mnemonic_activity_invalid_mnemonic">Phrase de récupération invalide (doit avoir 24 ou 27 mots)</string>
   <string name="err_pin_save_wrong_length">Le code PIN doit avoir entre 4 et 15 chiffres</string>
+  <string name="send_max_amount">MAX</string>
   <string name="err_sign_up_nfc_not_writable">Erreur : tag non accessible en écriture</string>
   <string name="err_sign_up_nfc_too_small">Erreur : tag trop petit</string>
 </resources>
