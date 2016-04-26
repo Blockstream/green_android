@@ -73,6 +73,7 @@ import ws.wamp.jawampa.transport.netty.NettyWampClientConnectorProvider;
 public class WalletClient {
 
     private static final String TAG = WalletClient.class.getSimpleName();
+    private static final String GA_KEY = "GreenAddress.it HD wallet path";
     private static final String USER_AGENT = String.format("%s;%s;%s;%s",
             BuildConfig.VERSION_CODE, BuildConfig.BUILD_TYPE,
             android.os.Build.VERSION.SDK_INT, System.getProperty("os.arch"));
@@ -205,7 +206,7 @@ public class WalletClient {
     private static byte[] mnemonicToPath(final String mnemonic) {
         final byte[] step1 = PBKDF2SHA512.derive(mnemonic, "greenaddress_path", 2048, 64);
         final HMac hmac = new HMac(new SHA512Digest());
-        hmac.init(new KeyParameter("GreenAddress.it HD wallet path".getBytes()));
+        hmac.init(new KeyParameter(GA_KEY.getBytes()));
         hmac.update(step1, 0, step1.length);
         final byte[] step2 = new byte[64];
         hmac.doFinal(step2, 0);
@@ -214,7 +215,7 @@ public class WalletClient {
     
     private static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {    	
         final HMac hmac = new HMac(new SHA512Digest());
-        hmac.init(new KeyParameter("GreenAddress.it HD wallet path".getBytes()));
+        hmac.init(new KeyParameter(GA_KEY.getBytes()));
         hmac.update(chainCode, 0, chainCode.length);
         hmac.update(publicKey, 0, publicKey.length);
         final byte[] step2 = new byte[64];
@@ -879,10 +880,10 @@ public class WalletClient {
                 try {
                     final byte[] salt = new byte[16];
                     new SecureRandom().nextBytes(salt);
-                    final String salt_b64 = new String(Base64.encode(salt, Base64.NO_WRAP));
+                    final String salt_b64 = Base64.encodeToString(salt, Base64.NO_WRAP);
 
-                    final String encrypted = salt_b64 + ";" + new String(
-                            Base64.encode(AES256.encrypt(setPinData.json,
+                    final String encrypted = String.format("%s;%s", salt_b64,
+                            Base64.encodeToString(AES256.encrypt(setPinData.json,
                                             PBKDF2SHA512.derive(password.toString(), salt_b64, 2048, 32)),
                                     Base64.NO_WRAP));
 
