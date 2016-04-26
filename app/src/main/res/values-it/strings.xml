@@ -163,7 +163,7 @@
   <string name="pref_title_display_hostname">Indirizzo</string>
   <string name="pref_title_display_port">Porta</string>
   <string name="optin_rbf">Abilita sostituisci transazione</string>
-  <string name="app_version">Versione</string>
+  <string name="app_version">Versione %1$s %2$s</string>
   <string name="invalidWord">La parola \'%1$s\' non è valida, vuoi che sia corretta con %2$s?</string>
   <string name="setPin">Configura PIN</string>
   <string name="set2FA">Configura 2FA</string>

@@ -66,7 +66,7 @@
         <activity
             android:name=".TabbedMainActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/title_activity_main">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -112,7 +112,7 @@
             android:windowSoftInputMode="stateVisible"/>
         <activity
             android:name=".FirstScreenActivity"
-            android:label="@string/title_activity_first_screen"/>
+            android:label="@string/app_name"/>
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"/>
