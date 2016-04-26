@@ -807,12 +807,12 @@ public class WalletClient {
             @Override
             public void onResult(final Object pass) {
                 final String password = pass.toString();
-                final String[] encrypted_splitted = data.encrypted.split(";");
+                final String[] split = data.encrypted.split(";");
 
                 try {
                     final String decrypted = new String(AES256.decrypt(
-                            Base64.decode(encrypted_splitted[1], Base64.NO_WRAP), PBKDF2SHA512.derive(
-                                    password, encrypted_splitted[0], 2048, 32)));
+                            Base64.decode(split[1], Base64.NO_WRAP), PBKDF2SHA512.derive(
+                                    password, split[0], 2048, 32)));
                     final Map<String, String> json = new MappingJsonFactory().getCodec().readValue(
                             decrypted, Map.class);
                     mnemonics = json.get("mnemonic");
