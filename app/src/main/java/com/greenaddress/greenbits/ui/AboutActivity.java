@@ -29,7 +29,7 @@ public class AboutActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         final AboutPage aboutPage = new AboutPage(this)
-                .setDescription(getString(R.string.app_name))
+                .setDescription(getString(R.string.greenaddress_headline))
                 .setImage(R.drawable.logo_big)
                 .addEmail("info@greenaddress.it")
                 .addFacebook("GreenAddressIT")
