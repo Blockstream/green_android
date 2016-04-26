@@ -203,21 +203,21 @@ public class WalletClient {
     }
 
     private static byte[] mnemonicToPath(final String mnemonic) {
-        byte[] step1 = PBKDF2SHA512.derive(mnemonic, "greenaddress_path", 2048, 64);
-        HMac hmac = new HMac(new SHA512Digest());
+        final byte[] step1 = PBKDF2SHA512.derive(mnemonic, "greenaddress_path", 2048, 64);
+        final HMac hmac = new HMac(new SHA512Digest());
         hmac.init(new KeyParameter("GreenAddress.it HD wallet path".getBytes()));
         hmac.update(step1, 0, step1.length);
-        byte[] step2 = new byte[64];
+        final byte[] step2 = new byte[64];
         hmac.doFinal(step2, 0);
         return step2;
     }
     
     private static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {    	
-        HMac hmac = new HMac(new SHA512Digest());
+        final HMac hmac = new HMac(new SHA512Digest());
         hmac.init(new KeyParameter("GreenAddress.it HD wallet path".getBytes()));
         hmac.update(chainCode, 0, chainCode.length);
         hmac.update(publicKey, 0, publicKey.length);
-        byte[] step2 = new byte[64];
+        final byte[] step2 = new byte[64];
         hmac.doFinal(step2, 0);
         return step2;    	
     }
