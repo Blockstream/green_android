@@ -34,7 +34,8 @@ public class AboutActivity extends ActionBarActivity {
                 .addEmail("info@greenaddress.it")
                 .addFacebook("GreenAddressIT")
                 .addTwitter("GreenAddress")
-                .addYoutube("UCcTlQ46wcp-pmwAg_Rj1DHQ");
+                .addYoutube("UCcTlQ46wcp-pmwAg_Rj1DHQ")
+                .addWebsite("https://greenaddress.it");
         final String pkgName = getPackageName();
         final String installer = getPackageManager().getInstallerPackageName(pkgName);
         if ("com.android.vending".equals(installer)) {
