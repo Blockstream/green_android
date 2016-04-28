@@ -76,7 +76,6 @@
   <string name="txTypeRedeposit">إعادة الإيداع</string>
   <string name="mnemonicHint">اكتب عبارة المرور GreenAddress الخاص بك أو إمسح رمز الاستجابة السريعة (QR CODE)</string>
   <string name="title_activity_settings">الإعدادات</string>
-  <string name="ago">منذ</string>
   <string name="txSubTitle">تفاصيل المعاملات</string>
   <string name="txHashText">مزيج</string>
   <string name="txRecipientText">المستفيد</string>
