@@ -60,3 +60,4 @@
 
 -keepnames class ** { *; }
 -keepattributes SourceFile,LineNumberTable
+-keep class mehdi.sakout.aboutpage.** { *; }
