@@ -37,7 +37,6 @@ import java.util.Set;
 
 public final class NetworkMonitorActivity extends FragmentActivity implements Observer
 {
-
     @NonNull
     private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> peerListAdapter;
@@ -94,10 +93,10 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
             if (peerList.size() > 0) {
                 bloominfo = peerList.get(0).peer.getBloomFilter().toString();
             } else {
-                bloominfo = "No bloom info available.";
+                bloominfo = getString(R.string.network_monitor_bloom_info);
             }
 
-            tview.setText(String.format("%s Blocks left %s", bloominfo, gaService.getCurBlock() - spv.getSpvHeight() ));
+            tview.setText(getString(R.string.network_monitor_banner, bloominfo, gaService.getCurBlock() - spv.getSpvHeight()));
 
 
             peerListAdapter =
@@ -232,12 +231,16 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
         public String toString(){
             String ipAddr = peer.toString();
             if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
-                ipAddr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", "Trusted Onion");
-                final Node n = new Node(ipAddr);
-                ipAddr = n.toString();
+                ipAddr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", null);
+                if (ipAddr != null) {
+                    final Node n = new Node(ipAddr);
+                    ipAddr = n.toString();
+                }
             }
-            return "IP Addr: "+ipAddr+"\n"+"Version: "+peer.getPeerVersionMessage().subVer+"\nBlockheight: "+
-                    peer.getBestHeight();
+            return String.format("%s\n%s\n%s\n%s", getString(R.string.network_monitor_peer_addr, ipAddr),
+                    getString(R.string.network_monitor_peer_version, peer.getPeerVersionMessage().subVer),
+                    getString(R.string.network_monitor_peer_block, peer.getBestHeight()),
+                    getString(R.string.network_monitor_peer_ping, peer.getLastPingTime()));
         }
     }
 

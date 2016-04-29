@@ -222,4 +222,10 @@
     <string name="send_max_amount">MAX</string>
     <string name="err_sign_up_nfc_not_writable">Error: tag not writable</string>
     <string name="err_sign_up_nfc_too_small">Error: tag too small</string>
+    <string name="network_monitor_peer_addr">IP Addr: %1$s</string>
+    <string name="network_monitor_peer_version">Version: %1$s</string>
+    <string name="network_monitor_peer_block">Block height: %1$d</string>
+    <string name="network_monitor_peer_ping">Last ping: %1$d ms</string>
+    <string name="network_monitor_bloom_info">No bloom info available.</string>
+    <string name="network_monitor_banner">%1$s Blocks left %2$d</string>
 </resources>
