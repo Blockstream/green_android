@@ -218,13 +218,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             }
             @Override
             public void onSuccess(@Nullable final QrBitmap result) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onUiThread(result);
-                    }
-                });
-
+                onUiThread(result);
             }
 
             @Override
