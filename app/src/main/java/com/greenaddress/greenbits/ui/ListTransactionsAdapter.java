@@ -94,23 +94,20 @@ public class ListTransactionsAdapter extends
             holder.textReplaceable.setVisibility(View.VISIBLE);
         }
 
-        String message;
+        final String message;
         if (transaction.type.equals(Transaction.TYPE.OUT) && transaction.counterparty != null
                 && transaction.counterparty.length() > 0) {
-            if (transaction.counterparty.length() > 13) {
-                message = String.format("%s...", transaction.counterparty.substring(0, 10));
-            } else {
                 message = transaction.counterparty;
-            }
         } else {
-            message = getTypeString(transaction.type);
+            message = transaction.memo == null ? getTypeString(transaction.type) : transaction.memo;
         }
-        holder.textWho.setText(String.format("%s%s", message, transaction.memo != null ? " *" : ""));
+
+        holder.textWho.setText(message.length() > 13
+                ? String.format("%s...", message.substring(0, 10)) : message);
 
         holder.mainLayout.setBackgroundColor(val > 0 ?
                 context.getResources().getColor(R.color.superLightGreen) :
                 context.getResources().getColor(R.color.superLightPink)
-
         );
 
         if (transaction.hasEnoughConfirmations()) {
@@ -123,7 +120,6 @@ public class ListTransactionsAdapter extends
             holder.inOutIcon.setText(Html.fromHtml("&#xf017;"));
             holder.listNumberConfirmation.setVisibility(View.VISIBLE);
             holder.listNumberConfirmation.setText(String.valueOf(transaction.getConfirmations()));
-
         }
 
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
