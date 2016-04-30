@@ -633,4 +633,11 @@ public class MainFragment extends SubaccountFragment implements Observer {
         reloadTransactions(getActivity());
         updateBalance();
     }
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            hideKeyboard();
+        }
+    }
 }

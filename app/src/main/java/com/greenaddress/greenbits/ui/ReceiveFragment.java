@@ -72,8 +72,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (!pausing && rootView != null) {
             // get a new address every time the tab is displayed
             if (isVisibleToUser) {
+                hideKeyboard();
                 // get a new address:
-                if (address == null) {
+                if (address == null && !setting_qrcode) {
+                    setting_qrcode = true;
                     final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
                     Futures.addCallback(ft, onAddress, getGAService().es);
                     startNewAddressAnimation(rootView);
@@ -92,10 +94,13 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         }
     }
 
+    boolean setting_qrcode = false;
+
     @Override
     void onGAResume() {
         Log.i(TAG, "onGaResume");
-        if (onAddress != null && address == null) {
+        if (onAddress != null && address == null && !setting_qrcode) {
+            setting_qrcode = true;
             final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
             Futures.addCallback(ft, onAddress, getGAService().es);
         }
@@ -169,6 +174,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         @Override
                         public void run() {
 
+
                             final Activity activity = getActivity();
                             if (activity == null) {
                                 return;
@@ -182,6 +188,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                             imageView.setImageDrawable(bd);
 
                             receiveAddress.setText(String.format("%s\n%s\n%s", result.data.substring(0, 12), result.data.substring(12, 24), result.data.substring(24)));
+                            setting_qrcode = false;
 
 
                             imageView.setOnClickListener(new View.OnClickListener() {
@@ -246,14 +253,19 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        startNewAddressAnimation(rootView);
+                        if (!setting_qrcode) {
 
-                        final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
-                        Futures.addCallback(ft, onAddress, getGAService().es);
+                            if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
+                                Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            setting_qrcode = true;
+
+                            startNewAddressAnimation(rootView);
+
+                            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+                            Futures.addCallback(ft, onAddress, getGAService().es);
+                        }
                     }
                 }
         );
@@ -314,9 +326,13 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (rootView != null) {
             startNewAddressAnimation(rootView);
         }
-        Futures.addCallback(
-                getGAService().getNewAddress(curSubaccount),
-                onAddress, getGAService().es);
+        if (!setting_qrcode) {
+            setting_qrcode = true;
+
+            Futures.addCallback(
+                    getGAService().getNewAddress(curSubaccount),
+                    onAddress, getGAService().es);
+        }
     }
 
     @Override
