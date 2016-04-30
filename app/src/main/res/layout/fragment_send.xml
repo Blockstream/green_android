@@ -129,7 +129,8 @@
                             android:id="@+id/sendBitcoinGroup"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:padding="16dp">
+                            android:paddingTop="14dp"
+                            android:paddingLeft="14dp">
 
                             <TextView
                                 android:id="@+id/sendBitcoinScaleText"
@@ -158,6 +159,7 @@
                             android:layout_toEndOf="@id/sendBitcoinGroup"
                             android:textColor="@color/textColor"
                             android:gravity="end|center_vertical"
+                            android:paddingLeft="14dp"
                             android:hint="0.00"
                             android:inputType="numberDecimal"
                             android:textSize="24sp" />
@@ -198,7 +200,8 @@
                         android:id="@+id/sendFiatGroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="16dp">
+                        android:paddingTop="14dp"
+                        android:paddingLeft="14dp">
 
                         <com.greenaddress.greenbits.ui.FontAwesomeTextView
 
@@ -217,6 +220,7 @@
                         android:id="@+id/sendAmountFiatEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingLeft="14dp"
                         android:layout_gravity="center_horizontal|center_vertical"
                         android:layout_toRightOf="@id/sendFiatGroup"
                         android:layout_toEndOf="@id/sendFiatGroup"
