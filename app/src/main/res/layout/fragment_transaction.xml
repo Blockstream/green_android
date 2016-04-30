@@ -15,13 +15,6 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
             android:orientation="vertical">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="droid"
-        android:text="@string/txSubTitle"
-        android:textColor="@color/textColor"
-        android:textSize="36sp" />
     <View
         android:layout_width="wrap_content"
         android:layout_height="@dimen/activity_vertical_margin"/>
@@ -43,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/txUnconfirmedTx"
-            android:textColor="@color/textColor"
+            android:textColor="@color/accent"
             android:textSize="16sp"
             android:paddingBottom="20sp"/>
     </LinearLayout>
@@ -56,8 +49,8 @@
         android:textColor="@color/textColor"
         android:textSize="24sp" />
 
-    <TextView android:text="hash"
-        android:textColor="@color/tertiaryTextColor"
+    <TextView
+        android:textColor="@color/accent"
         android:layout_width="wrap_content"
         android:textIsSelectable="true"
         android:id="@+id/txHashText"
@@ -76,7 +69,7 @@
                 android:textSize="24sp" />
 
             <TextView android:text="@string/txRecipientText"
-                android:textColor="@color/tertiaryTextColor"
+                android:textColor="@color/accent"
                 android:layout_width="wrap_content"
                 android:textIsSelectable="true"
                 android:id="@+id/txRecipientText"
@@ -96,8 +89,8 @@
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
-            <TextView android:text="memo"
-                      android:textColor="@color/tertiaryTextColor"
+            <TextView
+                android:textColor="@color/accent"
                       android:layout_width="wrap_content"
                       android:textIsSelectable="true"
                       android:id="@+id/txDoubleSpentByText"
@@ -114,9 +107,8 @@
         android:textColor="@color/textColor"
         android:textSize="24sp" />
 
-    <TextView android:text="date"
-
-        android:textColor="@color/tertiaryTextColor"
+    <TextView
+        android:textColor="@color/accent"
         android:layout_width="fill_parent"
         android:textIsSelectable="true"
         android:id="@+id/txDateText"
@@ -143,7 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txBitcoinScale"
-                    android:textColor="@color/tertiaryTextColor"
+                    android:textColor="@color/accent"
                     android:textSize="20sp"
                     />
                 <com.greenaddress.greenbits.ui.FontAwesomeTextView
@@ -151,11 +143,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="&#xf15a; "
-                    android:textColor="@color/tertiaryTextColor"
+                    android:textColor="@color/accent"
                     android:textSize="20sp"
                      />
                 <TextView android:text="amount"
-                    android:textColor="@color/tertiaryTextColor"
+                    android:textColor="@color/accent"
                     android:layout_width="wrap_content"
 
                     android:textIsSelectable="true"
@@ -180,8 +172,8 @@
         android:id="@+id/txMemoTitle"
         android:textSize="24sp" />
 
-    <TextView android:text="memo"
-        android:textColor="@color/tertiaryTextColor"
+    <TextView
+        android:textColor="@color/accent"
         android:layout_width="wrap_content"
         android:textIsSelectable="true"
         android:id="@+id/txMemoText"
@@ -201,8 +193,8 @@
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
-            <TextView android:text="memo"
-                android:textColor="@color/tertiaryTextColor"
+            <TextView
+                android:textColor="@color/accent"
                 android:layout_width="wrap_content"
                 android:textIsSelectable="true"
                 android:id="@+id/txReceivedOnText"
@@ -227,7 +219,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/txFeeScale"
-                android:textColor="@color/tertiaryTextColor"
+                android:textColor="@color/accent"
                 android:textSize="20sp"
                 />
             <com.greenaddress.greenbits.ui.FontAwesomeTextView
@@ -235,11 +227,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="&#xf15a; "
-                android:textColor="@color/tertiaryTextColor"
+                android:textColor="@color/accent"
                 android:textSize="20sp"
                 />
-            <TextView android:text="memo"
-                android:textColor="@color/tertiaryTextColor"
+            <TextView
+                android:textColor="@color/accent"
                 android:layout_width="wrap_content"
                 android:textIsSelectable="true"
                 android:id="@+id/txFeeInfoText"
@@ -252,7 +244,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/willConfirmAfter"
-                android:textColor="@color/textColor"
+                android:textColor="@color/accent"
                 android:textSize="16sp"/>
 
             <Button

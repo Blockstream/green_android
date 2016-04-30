@@ -145,7 +145,7 @@
         </activity>
         <activity
             android:name=".TransactionActivity"
-            android:label="@string/app_name"/>
+            android:label="@string/txSubTitle"/>
         <activity
             android:name=".TwoFactorActivity"
             android:label="@string/twoFacSetupHeader">

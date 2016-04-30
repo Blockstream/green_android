@@ -115,7 +115,7 @@
     <string name="footerAccount">Account</string>
     <string name="btchipProvidePIN">Please provide your BTChip PIN:</string>
     <string name="firstLoginRequestedInstructionsOldTrezor">Outdated Hardware Wallet firmware. Please upgrade to at least 1.3.0 at http://mytrezor.com/ from your computer.</string>
-    <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %d. Please reconnect your BTChip before trying again.</string>
+    <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %1$d. Please reconnect your BTChip before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
     <string name="instantConfirmation">Instant Confirmation</string>
     <string name="trezor_login_failed">Hardware Wallet login failed</string>
@@ -154,17 +154,17 @@
     <string name="twoFacEmail">E-mail</string>
     <string name="hideTwoFacWarning">Hide 2FA warning</string>
 
-    <string name="twoFacSetupHeader">%s 2FA setup</string>
+    <string name="twoFacSetupHeader">%1$s 2FA setup</string>
     <string name="progress">Progress:</string>
     <string name="twoFacStep1Description">First, you need to provide an authentication code from some of your already set up two factor authentication methods. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
     <string name="twoFacStep1SelectExisting">Select existing 2FA method to authenticate setting up a new one:</string>
     <string name="twoFacProvideGauthDetailsDescription">You need to provide one code from your new Google Authenticator. You can obtain it by scanning the QR code below in the Google Authenticator app.</string>
     <string name="twoFacProvideGauthDetails">Please provide your Google Authenticator code.</string>
-    <string name="twoFacProvideDetails">Please provide your %s.</string>
+    <string name="twoFacProvideDetails">Please provide your %1$s.</string>
     <string name="twoFacEmailChangeNotice">Providing an email enables notifications and transactions recovery</string>
     <string name="twoFacEmailConfirmNotice">You will need to confirm your email in the next step, otherwise you won\'t receive any notifications.</string>
     <string name="twoFacProvideConfirmationCodeDescription">You need to provide the confirmation code to make sure you have access to the new two factor authentication method. After you providing the code, the method will be enabled.</string>
-    <string name="twoFacProvideConfirmationCode">Please provide your %s code.</string>
+    <string name="twoFacProvideConfirmationCode">Please provide your %1$s code.</string>
     <string name="continueText">Continue</string>
     <string name="twoFacProvideAuthCodeDescription">You need to provide existing two factor authentication code. This is to prevent malicious users from changing your 2FA settings without your consent.</string>
     <string name="recoveryAndNotifications">Recovery and Notifications</string>
@@ -173,7 +173,7 @@
     <string name="newAddress">New</string>
     <string name="copyAddress">Copy</string>
     <string name="txReceivedOn">Received on</string>
-    <string name="twoFacGauthTextCode">Or you can use the following code (touch to copy) : %s. Remember to back it up!</string>
+    <string name="twoFacGauthTextCode">Or you can use the following code (touch to copy) : %1$s. Remember to back it up!</string>
     <string name="trustedspv">Only connect to a trusted peer for SPV</string>
     <string name="enterValidAddressTitle">Not a valid address!</string>
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
@@ -195,8 +195,8 @@
     <string name="pref_default_host" translatable="false">127.0.0.1</string>
     <string name="pref_default_port" translatable="false">8118</string>
     <string name="optin_rbf">Enable transaction replacement</string>
-    <string name="willConfirmAfter">Will confirm after blocks (estimated): %s</string>
-    <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %s blocks.</string>
+    <string name="willConfirmAfter">Will confirm after blocks (estimated): %1$d</string>
+    <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %1$d blocks.</string>
     <string name="recommendationSingleBlock">If you increase the fee now to the recommended level, the transaction will be expected to confirm after 1 block.</string>
     <string name="increaseFee">Increase fee</string>
     <string name="newFeeText">New Fee:</string>
@@ -228,4 +228,6 @@
     <string name="network_monitor_peer_ping">Last ping: %1$d ms</string>
     <string name="network_monitor_bloom_info">No bloom info available.</string>
     <string name="network_monitor_banner">%1$s Blocks left %2$d</string>
+    <string name="transaction_view_block_explorer">Are you sure you want the transaction %1$s to be opened in the block exploerer %2$s?</string>
+
 </resources>

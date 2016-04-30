@@ -3,12 +3,12 @@ package com.greenaddress.greenbits.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -164,10 +164,30 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final TextView feeUnit = (TextView) rootView.findViewById(R.id.txFeeUnit);
             final TextView feeInfoText = (TextView) rootView.findViewById(R.id.txFeeInfoText);
 
-            hashText.setMovementMethod(LinkMovementMethod.getInstance());
-
             final Transaction t = (Transaction) getActivity().getIntent().getSerializableExtra("TRANSACTION");
-            hashText.setText(Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.txhash + "\">" + t.txhash + "</a>"));
+            hashText.setText(t.txhash);
+            hashText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.warning)
+                            .content(getString(R.string.transaction_view_block_explorer, t.txhash,  Network.BLOCKEXPLORER))
+                            .positiveText(R.string.continueText)
+                            .negativeText(R.string.cancel)
+                            .positiveColorRes(R.color.accent)
+                            .negativeColorRes(R.color.accent)
+                            .titleColorRes(R.color.white)
+                            .contentColorRes(android.R.color.white)
+                            .theme(Theme.DARK)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW,
+                                            Uri.parse(TextUtils.concat(Network.BLOCKEXPLORER, t.txhash).toString())));
+                                }
+                            }).build().show();
+                }
+            });
 
             final Coin fee = Coin.valueOf(t.fee);
             final Coin feePerKb;
@@ -290,7 +310,8 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 memoTitle.setVisibility(View.GONE);
                 rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
             }
-
+            // FIXME: use a list instead of double a TextView to show double spends to allow for a warning to be shown before the browser is open
+            // this is to prevent to accidentally leak to block explorers your addresses
             if (t.doubleSpentBy != null || t.replaced_hashes.size() > 0) {
                 CharSequence res = "";
                 if (t.doubleSpentBy != null) {
