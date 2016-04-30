@@ -122,7 +122,7 @@
             android:screenOrientation="landscape"/>
         <activity
             android:name=".monitor.NetworkMonitorActivity"
-            android:label="@string/title_network_monitor"/>
+            android:label="@string/action_network"/>
         <activity
             android:name=".RequestLoginActivity"
             android:label="Login">

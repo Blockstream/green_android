@@ -7,15 +7,14 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.ui.ActionBarActivity;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.R;
 
@@ -35,7 +34,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
-public final class NetworkMonitorActivity extends FragmentActivity implements Observer
+public final class NetworkMonitorActivity extends ActionBarActivity implements Observer
 {
     @NonNull
     private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
@@ -192,15 +191,6 @@ public final class NetworkMonitorActivity extends FragmentActivity implements Ob
             startActivity(firstScreenActivity);
             finish();
         }
-    }
-
-    @NonNull
-    private GreenAddressApplication getGAApp() {
-        return (GreenAddressApplication) getApplication();
-    }
-
-    private GaService getGAService() {
-        return getGAApp().gaService;
     }
 
     @Override

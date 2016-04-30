@@ -78,8 +78,7 @@
   <string name="txSubTitle">Détails de la transaction</string>
   <string name="txRecipientText">Destinataire</string>
   <string name="txMemoText">Note</string>
-  <string name="title_network_monitor">Moniteur réseau</string>
-  <string name="action_network">Moniteur réseau</string>
+  <string name="action_network">Moniteur Réseau</string>
   <string name="action_about">À propos</string>
   <!--Example settings for Notifications-->
   <string name="txDateText">Date</string>

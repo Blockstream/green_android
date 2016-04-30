@@ -162,7 +162,6 @@
   <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
   <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
   <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
-  <string name="title_network_monitor">Network monitor</string>
   <string name="action_network">Network monitor</string>
   <string name="action_about">About</string>
   <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
