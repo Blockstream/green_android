@@ -428,7 +428,7 @@ public class GaService extends Service {
                 new ImmutableList.Builder<ChildNumber>().build(),
                 Hex.decode(Network.depositChainCode),
                 ECKey.fromPublicOnly(Hex.decode(Network.depositPubkey)).getPubKeyPoint(),
-                null, null), new ChildNumber(subaccount != 0?3:1)));
+                null, null), new ChildNumber(subaccount != 0 ? 3 : 1)));
 
         final DeterministicKey key = subaccount == 0 ? nodePath : HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(subaccount, false));
         gaDeterministicKeys.put(subaccount, key);
