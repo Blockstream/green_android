@@ -188,6 +188,6 @@
   <string name="network_monitor_bloom_info">Non ci sono informazioni sul filtro bloom.</string>
   <string name="network_monitor_banner">%1$s Blocchi rimanenti %2$d</string>
   <string name="trustedspvExample">Per esempio: 8.90.14.2:8333,40.116.12.85:8333</string>
-  <string name="view_block_explorer">Sei sicuro di voler aprire %1$s sul block explorer %2$s?</string>
+  <string name="view_block_explorer">Sei sicuro di voler mandare al block explorer %1$s i dettagli?</string>
   <string name="no_peers_connected">Nessun Nodo Connesso</string>
 </resources>

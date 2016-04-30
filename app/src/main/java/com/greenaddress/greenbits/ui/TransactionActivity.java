@@ -46,6 +46,8 @@ import org.bitcoinj.script.ScriptChunk;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.spongycastle.util.encoders.Hex;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -131,14 +133,23 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
         private Dialog mSummary;
         private Dialog mTwoFactor;
 
-        private void openInBrowser(final TextView textView, final String text, final String url) {
-            textView.setText(text);
+        private void openInBrowser(final TextView textView, final String identifier, final String url) {
+            textView.setText(identifier);
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    String domain = url;
+                    try {
+                        domain = new URI(url).getHost();
+                    } catch (final URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
                     new MaterialDialog.Builder(getActivity())
                             .title(R.string.warning)
-                            .content(getString(R.string.view_block_explorer, text,  url))
+                            .content(getString(R.string.view_block_explorer,
+                                    domain.startsWith("www.") ? domain.substring(4) : domain))
                             .positiveText(R.string.continueText)
                             .negativeText(R.string.cancel)
                             .positiveColorRes(R.color.accent)
@@ -150,7 +161,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                                 @Override
                                 public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                     startActivity(new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse(TextUtils.concat(url, text).toString())));
+                                            Uri.parse(TextUtils.concat(url, identifier).toString())));
                                 }
                             }).build().show();
                 }
