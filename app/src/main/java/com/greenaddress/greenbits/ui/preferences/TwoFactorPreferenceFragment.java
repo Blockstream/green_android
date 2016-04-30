@@ -43,6 +43,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
 
             getActivity().finish();
+            return;
         }
         final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();
 
@@ -50,6 +51,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
 
             getActivity().finish();
+            return;
         }
 
         final CheckBoxPreference emailTwoFacEnabled = (CheckBoxPreference) findPreference("twoFacEmail");
