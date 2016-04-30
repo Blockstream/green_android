@@ -92,7 +92,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final Transaction t = (Transaction) getIntent().getSerializableExtra("TRANSACTION");
             final Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, Network.BLOCKEXPLORER + t.txhash);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, Network.BLOCKEXPLORER_TX + t.txhash);
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
             return true;
@@ -131,6 +131,32 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
         private Dialog mSummary;
         private Dialog mTwoFactor;
 
+        private void openInBrowser(final TextView textView, final String text, final String url) {
+            textView.setText(text);
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.warning)
+                            .content(getString(R.string.view_block_explorer, text,  url))
+                            .positiveText(R.string.continueText)
+                            .negativeText(R.string.cancel)
+                            .positiveColorRes(R.color.accent)
+                            .negativeColorRes(R.color.accent)
+                            .titleColorRes(R.color.white)
+                            .contentColorRes(android.R.color.white)
+                            .theme(Theme.DARK)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW,
+                                            Uri.parse(TextUtils.concat(url, text).toString())));
+                                }
+                            }).build().show();
+                }
+            });
+        }
+
         @Override
         public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                                    final Bundle savedInstanceState) {
@@ -165,29 +191,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final TextView feeInfoText = (TextView) rootView.findViewById(R.id.txFeeInfoText);
 
             final Transaction t = (Transaction) getActivity().getIntent().getSerializableExtra("TRANSACTION");
-            hashText.setText(t.txhash);
-            hashText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new MaterialDialog.Builder(getActivity())
-                            .title(R.string.warning)
-                            .content(getString(R.string.transaction_view_block_explorer, t.txhash,  Network.BLOCKEXPLORER))
-                            .positiveText(R.string.continueText)
-                            .negativeText(R.string.cancel)
-                            .positiveColorRes(R.color.accent)
-                            .negativeColorRes(R.color.accent)
-                            .titleColorRes(R.color.white)
-                            .contentColorRes(android.R.color.white)
-                            .theme(Theme.DARK)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                    startActivity(new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse(TextUtils.concat(Network.BLOCKEXPLORER, t.txhash).toString())));
-                                }
-                            }).build().show();
-                }
-            });
+
+            openInBrowser(hashText, t.txhash, Network.BLOCKEXPLORER_TX);
+
 
             final Coin fee = Coin.valueOf(t.fee);
             final Coin feePerKb;
@@ -310,7 +316,8 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 memoTitle.setVisibility(View.GONE);
                 rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
             }
-            // FIXME: use a list instead of double a TextView to show double spends to allow for a warning to be shown before the browser is open
+            // FIXME: use a list instead of reusing a TextView to show all double spends to allow
+            // for a warning to be shown before the browser is open
             // this is to prevent to accidentally leak to block explorers your addresses
             if (t.doubleSpentBy != null || t.replaced_hashes.size() > 0) {
                 CharSequence res = "";
@@ -318,7 +325,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                     if (t.doubleSpentBy.equals("malleability") || t.doubleSpentBy.equals("update")) {
                         res = t.doubleSpentBy;
                     } else {
-                        res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>");
+                        res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>");
                     }
                     if (t.replaced_hashes.size() > 0) {
                         res = TextUtils.concat(res, "; ");
@@ -331,7 +338,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                             res = TextUtils.concat(res, Html.fromHtml("<br/>"));
                         }
                         String txhash = t.replaced_hashes.get(i);
-                        res = TextUtils.concat(res, Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER + "" + txhash + "\">" + txhash + "</a>"));
+                        res = TextUtils.concat(res, Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + txhash + "\">" + txhash + "</a>"));
                     }
                 }
                 doubleSpentByText.setText(res);
@@ -350,7 +357,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             }
 
             if (t.receivedOn != null && t.receivedOn.length() > 0) {
-                receivedOnText.setText(t.receivedOn);
+                openInBrowser(receivedOnText, t.receivedOn, Network.BLOCKEXPLORER_ADDRESS);
             } else {
                 receivedOnText.setVisibility(View.GONE);
                 receivedOnTitle.setVisibility(View.GONE);
