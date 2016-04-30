@@ -2,6 +2,8 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -69,8 +71,10 @@ public class ListTransactionsAdapter extends
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);
         }
 
+        final Resources res = context.getResources();
+
         if (transaction.doubleSpentBy == null) {
-            holder.textWhen.setTextColor(context.getResources().getColor(R.color.tertiaryTextColor));
+            holder.textWhen.setTextColor(res.getColor(R.color.tertiaryTextColor));
             holder.textWhen.setText(TimeAgo.fromNow(transaction.date.getTime(), context));
         } else {
             switch (transaction.doubleSpentBy) {
@@ -103,11 +107,12 @@ public class ListTransactionsAdapter extends
         }
 
         holder.textWho.setText(message.length() > 13
+                && res.getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE
                 ? String.format("%s...", message.substring(0, 10)) : message);
 
         holder.mainLayout.setBackgroundColor(val > 0 ?
-                context.getResources().getColor(R.color.superLightGreen) :
-                context.getResources().getColor(R.color.superLightPink)
+                res.getColor(R.color.superLightGreen) :
+                res.getColor(R.color.superLightPink)
         );
 
         if (transaction.hasEnoughConfirmations()) {
