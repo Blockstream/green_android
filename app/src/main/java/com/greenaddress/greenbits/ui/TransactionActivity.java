@@ -667,7 +667,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 }
             }
 
-            ListenableFuture<List<String>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<String>>() {
+            final ListenableFuture<List<String>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<String>>() {
                 @Override
                 public ListenableFuture<List<String>> apply(Void input) throws Exception {
                     return getGAService().getClient().signTransaction(prepTx, false);
@@ -680,7 +680,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
                     int i = 0;
                     for (final String sig : signatures) {
-                        TransactionInput input = tx.getInput(i++);
+                        final TransactionInput input = tx.getInput(i++);
                         input.setScriptSig(
                                 new ScriptBuilder().addChunk(
                                         // OP_0
