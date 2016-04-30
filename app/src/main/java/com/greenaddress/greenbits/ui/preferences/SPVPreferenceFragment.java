@@ -1,10 +1,8 @@
 package com.greenaddress.greenbits.ui.preferences;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -22,7 +20,6 @@ import com.greenaddress.greenbits.ui.R;
 import java.util.Observable;
 import java.util.Observer;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class SPVPreferenceFragment extends GAPreferenceFragment {
 
     @Nullable
@@ -151,8 +148,14 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         });
 
         final SharedPreferences trustedPreferences = getActivity().getSharedPreferences("TRUSTED", Context.MODE_PRIVATE);
-        trusted_peer.setText(trustedPreferences.getString("address", ""));
-        trusted_peer.setSummary(trustedPreferences.getString("address", ""));
+        final String address = trustedPreferences.getString("address", "");
+
+        if (!address.isEmpty()) {
+            trusted_peer.setText(address);
+            trusted_peer.setSummary(address);
+        } else {
+            trusted_peer.setSummary(R.string.trustedspvExample);
+        }
         trusted_peer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
             class SPVAsync extends AsyncTask<Object, Object, Object>{
@@ -255,7 +258,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                         editor.apply();
 
                         gaService.setAppearanceValue("trusted_peer_addr", newString, true);
-                        trusted_peer.setSummary(newString);
+                        if (!newString.isEmpty())
+                            trusted_peer.setSummary(newString);
+                        else
+                            trusted_peer.setSummary(R.string.trustedspvExample);
+
                         new SPVAsync().execute();
                     }
                     else {

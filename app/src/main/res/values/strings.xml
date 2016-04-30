@@ -173,7 +173,8 @@
     <string name="copyAddress">Copy</string>
     <string name="txReceivedOn">Received on</string>
     <string name="twoFacGauthTextCode">Or you can use the following code (touch to copy) : %1$s. Remember to back it up!</string>
-    <string name="trustedspv">Only connect to a trusted peer for SPV</string>
+    <string name="trustedspv">Only connect to trusted peer[s] for SPV</string>
+    <string name="trustedspvExample">Example: 8.90.14.2:8333,40.116.12.85:8333</string>
     <string name="enterValidAddressTitle">Not a valid address!</string>
     <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>

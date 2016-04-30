@@ -5,6 +5,7 @@
 
     <EditTextPreference android:key="trusted_peer"
                         android:title="@string/trustedspv"
+                        android:summary="@string/trustedspvExample"
                         android:dependency="spvEnabled"/>
     <Preference android:key="reset_spv"
                 android:title="@string/resetSPV"
