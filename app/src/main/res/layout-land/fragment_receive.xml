@@ -19,6 +19,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="10dp"
+            android:paddingBottom="8dp"
             android:layout_gravity="center" />
 
     </RelativeLayout>
