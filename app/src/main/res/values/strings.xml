@@ -230,4 +230,6 @@
     <string name="network_monitor_banner">%1$s Blocks left %2$d</string>
     <string name="view_block_explorer">Are you sure you want to send to block explorer %1$s the details?</string>
     <string name="no_peers_connected">No Peers Connected</string>
+    <string name="settings_currency">Fiat exchange currency</string>
+    <string name="settings_denomination">Bitcoin denomination</string>
 </resources>

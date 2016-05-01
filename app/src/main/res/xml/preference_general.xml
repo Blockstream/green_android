@@ -10,6 +10,14 @@
         android:summary="">
     </Preference>
 
+    <ListPreference
+        android:key="fiat_key"
+        android:title="@string/settings_currency" />
+
+    <ListPreference
+        android:key="denomination_key"
+        android:title="@string/settings_denomination" />
+
     <EditTextPreference android:key="altime"
                         android:title="@string/autologout_time"
                         android:inputType="number"

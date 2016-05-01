@@ -1,22 +1,25 @@
 package com.greenaddress.greenbits.ui.preferences;
 
-import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.support.annotation.NonNull;
+import android.text.Html;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private static final int PINSAVE = 1337;
     @Override
@@ -65,6 +68,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 }
             });
         }
+
+        // -- handle pin
         if (mnemonic != null) {
             findPreference("reset_pin").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -79,6 +84,71 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             getPreferenceScreen().removePreference(findPreference("reset_pin"));
         }
 
+        // -- handle currency and bitcoin denomination
+        final ListPreference fiatCurrency = (ListPreference) findPreference("fiat_key");
+        final ListPreference bitcoinDenomination = (ListPreference)  findPreference("denomination_key");
+        final ArrayList<String> units = new ArrayList<>();
+
+        units.add("BTC");
+        units.add("mBTC");
+        units.add(Html.fromHtml("&micro;").toString() + "BTC");
+        units.add("bits");
+
+        bitcoinDenomination.setEntries(units.toArray(new String[4]));
+        bitcoinDenomination.setEntryValues(units.toArray(new String[4]));
+        bitcoinDenomination.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o) {
+                gaService.setAppearanceValue("unit", o.toString(), true);
+                bitcoinDenomination.setSummary(o.toString());
+                return true;
+            }
+        });
+        final String btcUnit = (String) gaService.getAppearanceValue("unit");
+        if (btcUnit == null || btcUnit.equals("bits")) {
+            bitcoinDenomination.setSummary("bits");
+        } else {
+            bitcoinDenomination.setSummary(btcUnit);
+        }
+
+        fiatCurrency.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o) {
+                final String[] split = o.toString().split(" ");
+                gaService.setPricingSource(split[0], split[1]);
+                fiatCurrency.setSummary(o.toString());
+                return true;
+            }
+        });
+
+        Futures.addCallback(
+                gaService.getCurrencyExchangePairs(),
+                new FutureCallback<List<List<String>>>() {
+                    @Override
+                    public void onSuccess(@android.support.annotation.Nullable final List<List<String>> result) {
+                        final Activity activity = getActivity();
+                        if (activity != null) {
+                            final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
+
+                            for (final List<String> currency_exchange : result) {
+                                final boolean current = currency_exchange.get(0).equals(gaService.getFiatCurrency())
+                                        && currency_exchange.get(1).equals(gaService.getFiatExchange());
+                                final String pair = String.format("%s %s", currency_exchange.get(0), currency_exchange.get(1));
+                                if (current) {
+                                    fiatCurrency.setSummary(pair);
+                                }
+                                fiatPairs.add(pair);
+                            }
+                            fiatCurrency.setEntries(fiatPairs.toArray(new String[result.size()]));
+                            fiatCurrency.setEntryValues(fiatPairs.toArray(new String[result.size()]));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull final Throwable t) {
+                        t.printStackTrace();
+                    }
+                }, gaService.es);
 
         // -- handle opt-in rbf
         if (!gaService.getClient().getLoginData().rbf) {
@@ -120,5 +190,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             final Boolean replace_by_fee = (Boolean) gaService.getAppearanceValue("replace_by_fee");
             ((CheckBoxPreference) findPreference("optin_rbf")).setChecked(replace_by_fee);
         }
+        getActivity().setResult(getActivity().RESULT_OK, null);
     }
 }

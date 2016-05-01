@@ -70,7 +70,8 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     private static final int
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
-            REQUEST_BITCOIN_URL_LOGIN = 2;
+            REQUEST_BITCOIN_URL_LOGIN = 2,
+            REQUEST_SETTINGS = 3;
 
     private ViewPager mViewPager;
 
@@ -121,7 +122,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                     .setAction(getString(R.string.set2FA), new View.OnClickListener() {
                         @Override
                         public void onClick(final View view) {
-                            startActivity(new Intent(TabbedMainActivity.this, SettingsActivity.class));
+                            startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
                         }
                     });
 
@@ -298,180 +299,189 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_SEND_QR_SCAN) {
-            if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
-                String scanned = data.getStringExtra("com.greenaddress.greenbits.QrText");
-                if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
-                    scanned = String.format("bitcoin:%s", scanned);
+        switch (requestCode) {
+            case REQUEST_SETTINGS:
+                final int curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+                getGAService().updateBalance(curSubaccount);
+                startActivity(new Intent(this, TabbedMainActivity.class));
+                finish();
+                break;
+            case REQUEST_SEND_QR_SCAN:
+                if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
+                    String scanned = data.getStringExtra("com.greenaddress.greenbits.QrText");
+                    if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
+                        scanned = String.format("bitcoin:%s", scanned);
+                    }
+                    final Intent browsable = new Intent(this, TabbedMainActivity.class);
+                    browsable.setData(Uri.parse(scanned));
+                    browsable.addCategory(Intent.CATEGORY_BROWSABLE);
+                    startActivity(browsable);
                 }
-                final Intent browsable = new Intent(this, TabbedMainActivity.class);
-                browsable.setData(Uri.parse(scanned));
-                browsable.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(browsable);
-            }
-        } else if (requestCode == REQUEST_SWEEP_PRIVKEY) {
-            if (data == null) {
-                return;
-            }
-            ECKey keyNonFinal = null;
-            BIP38PrivateKey keyBip38NonFinal = null;
-            try {
-                keyNonFinal = new DumpedPrivateKey(Network.NETWORK,
-                        data.getStringExtra("com.greenaddress.greenbits.QrText")).getKey();
-            } catch (@NonNull final AddressFormatException e) {
-                try {
-                    keyBip38NonFinal = new BIP38PrivateKey(Network.NETWORK,
-                            data.getStringExtra("com.greenaddress.greenbits.QrText"));
-                } catch (@NonNull final AddressFormatException e1) {
-                    Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_key), Toast.LENGTH_LONG).show();
+                break;
+            case REQUEST_BITCOIN_URL_LOGIN:
+                if (resultCode == RESULT_OK) {
+                    launch(true);
+                } else {
+                    finish();
+                }
+                break;
+            case REQUEST_SWEEP_PRIVKEY:
+                if (data == null) {
                     return;
                 }
-
-            }
-            final ECKey keyNonBip38 = keyNonFinal;
-            final BIP38PrivateKey keyBip38 = keyBip38NonFinal;
-            final FutureCallback<Map<?, ?>> callback = new FutureCallback<Map<?, ?>>() {
-                @Override
-                public void onSuccess(final @Nullable Map<?, ?> result) {
-                    final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
-                    final TextView passwordPrompt = (TextView) inflatedLayout.findViewById(R.id.sweepAddressPasswordPromptText);
-                    final TextView mainText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressMainText);
-                    final TextView addressText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressAddressText);
-                    final EditText passwordEdit = (EditText) inflatedLayout.findViewById(R.id.sweepAddressPasswordText);
-                    final Transaction txNonBip38;
-                    final String address;
-                    if (keyBip38 == null) {
-                        passwordPrompt.setVisibility(View.GONE);
-                        passwordEdit.setVisibility(View.GONE);
-                        txNonBip38 = new Transaction(Network.NETWORK,
-                                Hex.decode((String) result.get("tx")));
-                        final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(
-                                (String) getGAService().getAppearanceValue("unit"));
-                        Coin outputsValue = Coin.ZERO;
-                        for (final TransactionOutput output : txNonBip38.getOutputs()) {
-                            outputsValue = outputsValue.add(output.getValue());
-                        }
-                        mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> ("
-                                + format.postfixCode().format(outputsValue) + ") funds from the address below?"));
-                        address = keyNonBip38.toAddress(Network.NETWORK).toString();
-                    } else {
-                        passwordPrompt.setText(getResources().getString(R.string.sweep_bip38_passphrase_prompt));
-                        txNonBip38 = null;
-                        // amount not known until decrypted
-                        mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> funds from the password protected BIP38 key below?"));
-                        address = data.getStringExtra("com.greenaddress.greenbits.QrText");
+                ECKey keyNonFinal = null;
+                BIP38PrivateKey keyBip38NonFinal = null;
+                try {
+                    keyNonFinal = new DumpedPrivateKey(Network.NETWORK,
+                            data.getStringExtra("com.greenaddress.greenbits.QrText")).getKey();
+                } catch (@NonNull final AddressFormatException e) {
+                    try {
+                        keyBip38NonFinal = new BIP38PrivateKey(Network.NETWORK,
+                                data.getStringExtra("com.greenaddress.greenbits.QrText"));
+                    } catch (@NonNull final AddressFormatException e1) {
+                        Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_key), Toast.LENGTH_LONG).show();
+                        return;
                     }
 
+                }
+                final ECKey keyNonBip38 = keyNonFinal;
+                final BIP38PrivateKey keyBip38 = keyBip38NonFinal;
+                final FutureCallback<Map<?, ?>> callback = new FutureCallback<Map<?, ?>>() {
+                    @Override
+                    public void onSuccess(final @Nullable Map<?, ?> result) {
+                        final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
+                        final TextView passwordPrompt = (TextView) inflatedLayout.findViewById(R.id.sweepAddressPasswordPromptText);
+                        final TextView mainText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressMainText);
+                        final TextView addressText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressAddressText);
+                        final EditText passwordEdit = (EditText) inflatedLayout.findViewById(R.id.sweepAddressPasswordText);
+                        final Transaction txNonBip38;
+                        final String address;
+                        if (keyBip38 == null) {
+                            passwordPrompt.setVisibility(View.GONE);
+                            passwordEdit.setVisibility(View.GONE);
+                            txNonBip38 = new Transaction(Network.NETWORK,
+                                    Hex.decode((String) result.get("tx")));
+                            final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(
+                                    (String) getGAService().getAppearanceValue("unit"));
+                            Coin outputsValue = Coin.ZERO;
+                            for (final TransactionOutput output : txNonBip38.getOutputs()) {
+                                outputsValue = outputsValue.add(output.getValue());
+                            }
+                            mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> ("
+                                    + format.postfixCode().format(outputsValue) + ") funds from the address below?"));
+                            address = keyNonBip38.toAddress(Network.NETWORK).toString();
+                        } else {
+                            passwordPrompt.setText(getResources().getString(R.string.sweep_bip38_passphrase_prompt));
+                            txNonBip38 = null;
+                            // amount not known until decrypted
+                            mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> funds from the password protected BIP38 key below?"));
+                            address = data.getStringExtra("com.greenaddress.greenbits.QrText");
+                        }
 
-                    addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
-                    new MaterialDialog.Builder(TabbedMainActivity.this)
-                            .title(R.string.sweepAddressTitle)
-                            .customView(inflatedLayout, true)
-                            .positiveText(R.string.sweep)
-                            .negativeText(R.string.cancel)
-                            .positiveColorRes(R.color.accent)
-                            .negativeColorRes(R.color.accent)
-                            .titleColorRes(R.color.white)
-                            .contentColorRes(android.R.color.white)
-                            .theme(Theme.DARK)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Nullable
-                                Transaction tx;
-                                @Nullable
-                                ECKey key;
+                        addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
-                                private void doSweep() {
-                                    final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
-                                    Futures.addCallback(getGAService().verifySpendableBy(
-                                            tx.getOutputs().get(0),
+                        new MaterialDialog.Builder(TabbedMainActivity.this)
+                                .title(R.string.sweepAddressTitle)
+                                .customView(inflatedLayout, true)
+                                .positiveText(R.string.sweep)
+                                .negativeText(R.string.cancel)
+                                .positiveColorRes(R.color.accent)
+                                .negativeColorRes(R.color.accent)
+                                .titleColorRes(R.color.white)
+                                .contentColorRes(android.R.color.white)
+                                .theme(Theme.DARK)
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Nullable
+                                    Transaction tx;
+                                    @Nullable
+                                    ECKey key;
+
+                                    private void doSweep() {
+                                        final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
+                                        Futures.addCallback(getGAService().verifySpendableBy(
+                                                tx.getOutputs().get(0),
                                                 0,
-                                            ((Integer) result.get("out_pointer"))
-                                    ), new FutureCallback<Boolean>() {
-                                        @Override
-                                        public void onSuccess(final @Nullable Boolean result) {
-                                            if (result) {
-                                                final List<TransactionSignature> signatures = new ArrayList<>();
-                                                final int size = tx.getInputs().size();
-                                                for (int i = 0; i < size; ++i) {
-                                                    signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
-                                                }
-                                                Futures.addCallback(getGAService().sendTransaction(signatures), new FutureCallback<String>() {
-                                                    @Override
-                                                    public void onSuccess(final @Nullable String result) {
+                                                ((Integer) result.get("out_pointer"))
+                                        ), new FutureCallback<Boolean>() {
+                                            @Override
+                                            public void onSuccess(final @Nullable Boolean result) {
+                                                if (result) {
+                                                    final List<TransactionSignature> signatures = new ArrayList<>();
+                                                    final int size = tx.getInputs().size();
+                                                    for (int i = 0; i < size; ++i) {
+                                                        signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
+                                                    }
+                                                    Futures.addCallback(getGAService().sendTransaction(signatures), new FutureCallback<String>() {
+                                                        @Override
+                                                        public void onSuccess(final @Nullable String result) {
 
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(@NonNull final Throwable t) {
+                                                            t.printStackTrace();
+                                                            Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                                } else {
+                                                    Toast.makeText(TabbedMainActivity.this, getString(R.string.err_tabbed_sweep_failed), Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(@NonNull final Throwable t) {
+                                                t.printStackTrace();
+                                                Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                        if (keyBip38 != null) {
+                                            try {
+                                                key = keyBip38.decrypt(passwordEdit.getText().toString());
+                                                Futures.addCallback(getGAService().prepareSweepSocial(
+                                                        key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
+                                                    @Override
+                                                    public void onSuccess(@Nullable final Map<?, ?> result) {
+                                                        tx = new Transaction(Network.NETWORK,
+                                                                Hex.decode((String) result.get("tx")));
+                                                        doSweep();
                                                     }
 
                                                     @Override
                                                     public void onFailure(@NonNull final Throwable t) {
-                                                        t.printStackTrace();
                                                         Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                                     }
                                                 });
-                                            } else {
-                                                Toast.makeText(TabbedMainActivity.this, getString(R.string.err_tabbed_sweep_failed), Toast.LENGTH_LONG).show();
+                                            } catch (@NonNull final BIP38PrivateKey.BadPassphraseException e) {
+                                                Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_passphrase), Toast.LENGTH_LONG).show();
                                             }
+
+                                        } else {
+                                            tx = txNonBip38;
+                                            key = keyNonBip38;
+                                            doSweep();
                                         }
-
-                                        @Override
-                                        public void onFailure(@NonNull final Throwable t) {
-                                            t.printStackTrace();
-                                            Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                    if (keyBip38 != null) {
-                                        try {
-                                            key = keyBip38.decrypt(passwordEdit.getText().toString());
-                                            Futures.addCallback(getGAService().prepareSweepSocial(
-                                                    key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
-                                                @Override
-                                                public void onSuccess(@Nullable final Map<?, ?> result) {
-                                                    tx = new Transaction(Network.NETWORK,
-                                                            Hex.decode((String) result.get("tx")));
-                                                    doSweep();
-                                                }
-
-                                                @Override
-                                                public void onFailure(@NonNull final Throwable t) {
-                                                    Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-                                        } catch (@NonNull final BIP38PrivateKey.BadPassphraseException e) {
-                                            Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_passphrase), Toast.LENGTH_LONG).show();
-                                        }
-
-                                    } else {
-                                        tx = txNonBip38;
-                                        key = keyNonBip38;
-                                        doSweep();
                                     }
-                                }
-                            })
-                            .build().show();
-                }
+                                })
+                                .build().show();
+                    }
 
-                @Override
-                public void onFailure(@NonNull final Throwable t) {
-                    Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onFailure(@NonNull final Throwable t) {
+                        Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                };
+                if (keyBip38 == null) {
+                    Futures.addCallback(getGAService().prepareSweepSocial(
+                            keyNonBip38.getPubKey(), false), callback);
+                } else {
+                    callback.onSuccess(null);
                 }
-            };
-            if (keyBip38 == null) {
-                Futures.addCallback(getGAService().prepareSweepSocial(
-                        keyNonBip38.getPubKey(), false), callback);
-            } else {
-                callback.onSuccess(null);
-            }
-
-        } else if (requestCode == REQUEST_BITCOIN_URL_LOGIN) {
-            if (resultCode == RESULT_OK) {
-                launch(true);
-            } else {
-                finish();
-            }
+                break;
         }
     }
 
@@ -505,7 +515,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         // as you specify a parent activity in AndroidManifest.xml.
         final int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivity(new Intent(TabbedMainActivity.this, SettingsActivity.class));
+            startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
             return true;
         } else if (id == R.id.action_sweep) {
             final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);

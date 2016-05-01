@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,16 +13,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.SpannedString;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -32,8 +25,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,8 +32,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -88,10 +77,7 @@ public class SendFragment extends SubaccountFragment {
     private boolean fromIntentURI = false;
 
 
-    private LinearLayout fiatGroup;
-    private PopupMenu fiatPopup;
     private boolean converting = false;
-    private int selected_group = 1;  // incremented on each selection change, not sure if there's
     private MonetaryFormat bitcoinFormat;
     // any better way to do it
     private View rootView;
@@ -219,7 +205,7 @@ public class SendFragment extends SubaccountFragment {
         final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
         mTwoFactor = new MaterialDialog.Builder(getActivity())
                 .title(R.string.twoFactorChoicesTitle)
-                .items(getGAService().getEnabledTwoFacNames(false).toArray(new String[]{}))
+                .items(getGAService().getEnabledTwoFacNames(false).toArray(new String[4]))
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
                     public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -567,135 +553,10 @@ public class SendFragment extends SubaccountFragment {
                                     }
         );
 
-        final LinearLayout bitcoinGroup = (LinearLayout) rootView.findViewById(R.id.sendBitcoinGroup);
-        bitcoinGroup.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        final PopupMenu popup = new PopupMenu(getActivity(), view);
-                        popup.setOnMenuItemClickListener(
-                                new PopupMenu.OnMenuItemClickListener() {
-
-                                    @Override
-                                    public boolean onMenuItemClick(@NonNull final MenuItem item) {
-                                        MonetaryFormat newFormat = bitcoinFormat;
-                                        final GaService gaService = getGAService();
-                                        switch (item.getItemId()) {
-                                            case R.id.bitcoinScaleUnit:
-                                                gaService.setAppearanceValue("unit", "BTC", true);
-                                                bitcoinScale.setText("");
-                                                bitcoinUnitText.setText(Html.fromHtml("&#xf15a;"));
-                                                newFormat = CurrencyMapper.mapBtcUnitToFormat("BTC");
-                                                break;
-                                            case R.id.bitcoinScaleMilli:
-                                                gaService.setAppearanceValue("unit", "mBTC", true);
-                                                bitcoinScale.setText("m");
-                                                bitcoinUnitText.setText(Html.fromHtml("&#xf15a;"));
-                                                newFormat = CurrencyMapper.mapBtcUnitToFormat("mBTC");
-                                                break;
-                                            case R.id.bitcoinScaleMicro:
-                                                gaService.setAppearanceValue("unit", Html.fromHtml("&micro;").toString() + "BTC", true);
-                                                bitcoinScale.setText(Html.fromHtml("&micro;"));
-                                                bitcoinUnitText.setText(Html.fromHtml("&#xf15a;"));
-                                                newFormat = CurrencyMapper.mapBtcUnitToFormat(Html.fromHtml("&micro;").toString() + "BTC");
-                                                break;
-                                            case R.id.bitcoinScaleBits:
-                                                gaService.setAppearanceValue("unit", "bits", true);
-                                                bitcoinScale.setText("");
-                                                bitcoinUnitText.setText("bits");
-                                                newFormat = CurrencyMapper.mapBtcUnitToFormat("bits");
-                                        }
-                                        // update the values in main fragment
-                                        gaService.fireBalanceChanged(0);
-                                        for (final Object subaccount : gaService.getSubaccounts()) {
-                                            final Map<String, ?> subaccountMap = (Map) subaccount;
-                                            gaService.fireBalanceChanged(((Integer) subaccountMap.get("pointer")));
-                                        }
-
-                                        updateBalance();
-                                        try {
-                                            final Coin oldValue = bitcoinFormat.parse(amountEdit.getText().toString());
-                                            bitcoinFormat = newFormat;
-                                            amountEdit.setText(newFormat.noCode().format(oldValue));
-                                        } catch (@NonNull final IllegalArgumentException e) {
-                                            bitcoinFormat = newFormat;
-                                            amountEdit.setText("");
-                                        }
-                                        return false;
-                                    }
-                                }
-                        );
-
-                        popup.inflate(R.menu.bitcoin_scale);
-                        popup.show();
-                    }
-                }
-        );
-
-
-        fiatGroup = (LinearLayout) rootView.findViewById(R.id.sendFiatGroup);
 
         changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon),
                 getGAService().getFiatCurrency());
 
-        fiatPopup = new PopupMenu(getActivity(), fiatGroup);
-        final ArrayList<List<String>> currencyExchangePairs = new ArrayList<>();
-
-        Futures.addCallback(
-                getGAService().getCurrencyExchangePairs(),
-                new FutureCallback<List<List<String>>>() {
-                    @Override
-                    public void onSuccess(@Nullable final List<List<String>> result) {
-                        final Activity activity = getActivity();
-                        if (activity != null) {
-                            int order = 0;
-                            for (final List<String> currency_exchange : result) {
-                                currencyExchangePairs.add(currency_exchange);
-                                final boolean current = currency_exchange.get(0).equals(getGAService().getFiatCurrency())
-                                        && currency_exchange.get(1).equals(getGAService().getFiatExchange());
-                                final int group = current ? selected_group : Menu.NONE;
-                                fiatPopup.getMenu().add(group, order, order, formatFiatListItem(activity, currency_exchange.get(0), currency_exchange.get(1)));
-                                order += 1;
-                            }
-                            fiatPopup.getMenu().setGroupEnabled(selected_group, false);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-                        t.printStackTrace();
-                    }
-                }, getGAService().es);
-
-        fiatGroup.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        fiatPopup.setOnMenuItemClickListener(
-                                new PopupMenu.OnMenuItemClickListener() {
-
-                                    @Override
-                                    public boolean onMenuItemClick(@NonNull final MenuItem item) {
-
-                                        final List<String> currency_exchange = currencyExchangePairs.get(item.getItemId());
-
-                                        changePricingSource(item.getItemId(), currency_exchange.get(0), currency_exchange.get(1));
-                                        return false;
-                                    }
-                                }
-                        );
-                        fiatPopup.show();
-                    }
-                }
-        );
         amountFiatEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
@@ -816,88 +677,6 @@ public class SendFragment extends SubaccountFragment {
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
     }
 
-    private void changePricingSource(final int order, final String currency, final String exchange) {
-        fiatGroup.setEnabled(false);
-        final Animation rotateAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
-        fiatGroup.startAnimation(rotateAnim);
-        final ListenableFuture<Map<?, ?>> balanceFuture = Futures.transform(getGAService().setPricingSource(currency, exchange),
-                new AsyncFunction<Boolean, Map<?, ?>>() {
-                    @NonNull
-                    @Override
-                    public ListenableFuture<Map<?, ?>> apply(@NonNull final Boolean input) throws Exception {
-                        return getGAService().updateBalance(curSubaccount);
-                    }
-                }, getGAService().es);
-        final ListenableFuture future = Futures.transform(balanceFuture, new Function<Map<?, ?>, Object>() {
-            @Nullable
-            @Override
-            public Object apply(@Nullable final Map<?, ?> result) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Activity activity = getActivity();
-                        if (activity != null) {
-                            convertBtcToFiat(Float.valueOf((String) result.get("fiat_exchange")));
-                            changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon), currency);
-                            fiatPopup.getMenu().setGroupEnabled(selected_group++, true);
-                            fiatPopup.getMenu().removeItem(order);
-                            fiatPopup.getMenu().add(selected_group, order, order, formatFiatListItem(activity, currency, exchange));
-                            fiatPopup.getMenu().setGroupEnabled(selected_group, false);
-                        }
-                    }
-                });
-                return null;
-            }
-        }, getGAService().es);
-        Futures.addCallback(future, new FutureCallback() {
-            @Override
-            public void onSuccess(@Nullable final Object result) {
-                final Activity activity = getActivity();
-                if (activity != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            fiatGroup.setEnabled(true);
-                            fiatGroup.clearAnimation();
-                        }
-                    });
-                }
-
-            }
-
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-                final Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            fiatGroup.setEnabled(true);
-                            fiatGroup.clearAnimation();
-                        }
-                    });
-                }
-            }
-        }, getGAService().es);
-    }
-
-    @NonNull
-    private Spanned formatFiatListItem(@NonNull final Activity activity, final String currency, final String exchange) {
-        final String converted = CurrencyMapper.map(currency);
-        final Spanned other = new SpannedString(currency + " (" + exchange + ")");
-        if (converted != null) {
-            final Spanned unit = Html.fromHtml(converted + " ");
-
-            final SpannableStringBuilder sb = new SpannableStringBuilder(TextUtils.concat(unit, other));
-
-            sb.setSpan(new CustomTypefaceSpan("", Typeface.createFromAsset(activity.getAssets(), "fonts/fontawesome-webfont.ttf")), 0, unit.length(),
-                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-
-            return sb;
-        }
-        return other;
-    }
-
     private void changeFiatIcon(@NonNull final FontAwesomeTextView fiatIcon, final String currency) {
 
         final String converted = CurrencyMapper.map(currency);
@@ -910,7 +689,6 @@ public class SendFragment extends SubaccountFragment {
             fiatIcon.setDefaultTypeface();
             fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         }
-
     }
 
     private void convertBtcToFiat() {
