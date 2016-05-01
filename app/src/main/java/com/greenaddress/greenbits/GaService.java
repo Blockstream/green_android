@@ -227,7 +227,7 @@ public class GaService extends Service {
         }, es);
     }
 
-    public boolean isValidAddress(final String address) {
+    public static boolean isValidAddress(final String address) {
         try {
             new org.bitcoinj.core.Address(Network.NETWORK, address);
             return true;

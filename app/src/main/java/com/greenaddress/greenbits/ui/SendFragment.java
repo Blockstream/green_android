@@ -377,8 +377,7 @@ public class SendFragment extends SubaccountFragment {
                     return;
                 }
 
-                final GaService gaService = getGAService();
-                final boolean validAddress = gaService.isValidAddress(recipient);
+                final boolean validAddress = GaService.isValidAddress(recipient);
 
                 final boolean validAmount =
                         !(amount.compareTo(Coin.ZERO) <= 0) ||

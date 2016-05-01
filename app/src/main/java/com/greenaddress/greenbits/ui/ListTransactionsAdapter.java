@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -13,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
@@ -98,17 +99,23 @@ public class ListTransactionsAdapter extends
             holder.textReplaceable.setVisibility(View.VISIBLE);
         }
 
-        final String message;
-        if (transaction.type.equals(Transaction.TYPE.OUT) && transaction.counterparty != null
-                && transaction.counterparty.length() > 0) {
-                message = transaction.counterparty;
-        } else {
-            message = transaction.memo == null ? getTypeString(transaction.type) : transaction.memo;
-        }
+        final boolean humanCpty = transaction.type.equals(Transaction.TYPE.OUT)
+                && transaction.counterparty != null && transaction.counterparty.length() > 0
+                && !GaService.isValidAddress(transaction.counterparty);
 
-        holder.textWho.setText(message.length() > 13
-                && res.getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE
-                ? String.format("%s...", message.substring(0, 10)) : message);
+        final String message = transaction.memo == null ?
+                humanCpty ?
+                        transaction.counterparty
+                        :
+                        getTypeString(transaction.type)
+                :
+                humanCpty ?
+                        String.format("%s %s", transaction.counterparty, transaction.memo)
+                        :
+                        transaction.memo;
+
+
+        holder.textWho.setText(message);
 
         holder.mainLayout.setBackgroundColor(val > 0 ?
                 res.getColor(R.color.superLightGreen) :
