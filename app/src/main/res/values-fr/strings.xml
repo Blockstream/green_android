@@ -14,8 +14,6 @@
   <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">CGU</a></string>
   <string name="firstSignUpText">CRÉER</string>
   <string name="firstLogInText">RESTAURER</string>
-  <string name="bitcoinScaleUnitText">Unité</string>
-  <string name="bitcoinScaleBitsText">Bits</string>
   <string name="receive_title">Recevoir</string>
   <string name="main_title">ACTIVITÉ</string>
   <string name="send_title">Envoyer</string>

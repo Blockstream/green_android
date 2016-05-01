@@ -17,10 +17,6 @@
 
     <string name="firstSignUpText">CREATE</string>
     <string name="firstLogInText">RESTORE</string>
-    <string name="bitcoinScaleUnitText">Unit</string>
-    <string name="bitcoinScaleMilliText">Milli</string>
-    <string name="bitcoinScaleMicroText">Micro</string>
-    <string name="bitcoinScaleBitsText">Bits</string>
     <string name="receive_title">RECEIVE</string>
     <string name="main_title">ACTIVITY</string>
     <string name="send_title">SEND</string>

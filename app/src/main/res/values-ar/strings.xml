@@ -14,10 +14,6 @@
   <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">>شروط الخدمة</a></string>
   <string name="firstSignUpText">سجل نفسك</string>
   <string name="firstLogInText">تسجيل الدخول</string>
-  <string name="bitcoinScaleUnitText">وحدة</string>
-  <string name="bitcoinScaleMilliText">ميلي</string>
-  <string name="bitcoinScaleMicroText">مايكرو</string>
-  <string name="bitcoinScaleBitsText">بتات</string>
   <string name="receive_title">إستلام</string>
   <string name="main_title">كل</string>
   <string name="send_title">ارسال</string>

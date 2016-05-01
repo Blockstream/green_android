@@ -16,10 +16,6 @@
 
     <string name="firstSignUpText">הירשם</string>
     <string name="firstLogInText">כניסה</string>
-    <string name="bitcoinScaleUnitText">ביטקוין</string>
-    <string name="bitcoinScaleMilliText">מילי-ביטקוין</string>
-    <string name="bitcoinScaleMicroText">מיקרו-ביטקוין</string>
-    <string name="bitcoinScaleBitsText">ביטים</string>
     <string name="receive_title">קבל</string>
     <string name="main_title">פעולות אחרונות</string>
     <string name="send_title">שלח</string>

@@ -14,7 +14,6 @@
   <string name="termsofservice"><a href="https://greenaddress.it/de/tos/">AGBs</a></string>
   <string name="firstSignUpText">REGISTRIEREN</string>
   <string name="firstLogInText">ANMELDEN</string>
-  <string name="bitcoinScaleUnitText">Einheit</string>
   <string name="receive_title">EMPFANGEN</string>
   <string name="main_title">ÜBERSICHT</string>
   <string name="send_title">SENDEN</string>

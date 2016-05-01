@@ -15,7 +15,6 @@
     <string name="termsofservice"><a href="https://greenaddress.it/es/tos/">Términos y Condiciones de servicio</a></string>
     <string name="firstSignUpText">INSCRIBIRSE</string>
     <string name="firstLogInText">INGRESAR</string>
-    <string name="bitcoinScaleUnitText">Unidad</string>
     <string name="receive_title">RECIBIR</string>
     <string name="main_title">TODO</string>
     <string name="send_title">ENVIAR</string>
