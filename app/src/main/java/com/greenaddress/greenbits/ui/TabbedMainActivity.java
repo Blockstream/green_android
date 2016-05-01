@@ -510,38 +510,36 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        final int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
-            return true;
-        } else if (id == R.id.action_sweep) {
-            final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
+        switch(item.getItemId()) {
+            case R.id.action_settings:
+                startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
+                return true;
+            case R.id.action_sweep:
+                final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
+                //New Marshmallow permissions paradigm
+                final String[] perms = {"android.permission.CAMERA"};
+                if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
+                        checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(perms, /*permsRequestCode*/ 200);
+                }
+                else {
+                    startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
+                }
+                return true;
+            case R.id.network_unavailable:
+                Toast.makeText(TabbedMainActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.action_logout:
+                getGAService().disconnect(false);
+                finish();
+                return true;
+            case R.id.action_network:
+                startActivity(new Intent(TabbedMainActivity.this, NetworkMonitorActivity.class));
+                return true;
+            case R.id.action_about:
+                startActivity(new Intent(TabbedMainActivity.this, AboutActivity.class));
+                return true;
 
-            //New Marshmallow permissions paradigm
-            final String[] perms = {"android.permission.CAMERA"};
-            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
-                    checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(perms, /*permsRequestCode*/ 200);
-            }
-            else {
-                startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
-            }
-            return true;
-        } else if (id == R.id.network_unavailable) {
-            Toast.makeText(TabbedMainActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
-            return true;
-        } else if (id == R.id.action_logout) {
-            getGAService().disconnect(false);
-            finish();
-            return true;
-        }
-        else if (id == R.id.action_network) {
-            startActivity(new Intent(TabbedMainActivity.this, NetworkMonitorActivity.class));
-        } else if (id == R.id.action_about) {
-            startActivity(new Intent(TabbedMainActivity.this, AboutActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
