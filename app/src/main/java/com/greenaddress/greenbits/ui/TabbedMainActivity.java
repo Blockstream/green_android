@@ -72,13 +72,9 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2,
             REQUEST_SETTINGS = 3;
-
-    private ViewPager mViewPager;
-
-
     @Nullable
     public static TabbedMainActivity instance = null;
-
+    private ViewPager mViewPager;
     private Menu menu;
 
     @Override
@@ -111,7 +107,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         if (gs == null) {
             return;
         }
-        final Map<?,?> twoFacConfig = gs.getTwoFacConfig();
+        final Map<?, ?> twoFacConfig = gs.getTwoFacConfig();
         if (twoFacConfig == null) {
             return;
         }
@@ -510,7 +506,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_settings:
                 startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
                 return true;
@@ -518,11 +514,10 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                 final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
                 //New Marshmallow permissions paradigm
                 final String[] perms = {"android.permission.CAMERA"};
-                if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 &&
                         checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(perms, /*permsRequestCode*/ 200);
-                }
-                else {
+                } else {
                     startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
                 }
                 return true;
@@ -554,10 +549,9 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
     @Override
     public void onBackPressed() {
-        if (mViewPager.getCurrentItem() == 1){
+        if (mViewPager.getCurrentItem() == 1) {
             finish();
-        }
-        else{
+        } else {
             mViewPager.setCurrentItem(1);
         }
     }
@@ -570,6 +564,34 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         }
         final ConnectivityObservable.State currentState = getGAApp().getConnectionObservable().getState();
         setIdVisible(currentState != ConnectivityObservable.State.LOGGEDIN, R.id.network_unavailable);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int permsRequestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        switch (permsRequestCode) {
+            case 200: {
+                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+                if (cameraPermissionGranted) {
+                    final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
+                    startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.err_tabbed_sweep_requires_camera_permissions), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case 100: {
+                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+                if (cameraPermissionGranted) {
+                    final Intent qrcodeScanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
+                    startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.err_qrscan_requires_camera_permissions), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+        }
     }
 
     /**
@@ -617,37 +639,6 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                     return getString(R.string.send_title).toUpperCase(l);
             }
             return null;
-        }
-    }
-
-    @Override
-
-    public void onRequestPermissionsResult(final int permsRequestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults){
-        switch (permsRequestCode){
-            case 200: {
-                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-                if (cameraPermissionGranted) {
-                    final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
-                    startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
-                }
-                else {
-                   Toast.makeText(getApplicationContext(), getString(R.string.err_tabbed_sweep_requires_camera_permissions), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
-            case 100: {
-                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-                if (cameraPermissionGranted) {
-                    final Intent qrcodeScanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
-                    startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.err_qrscan_requires_camera_permissions), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
         }
     }
 }
