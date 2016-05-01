@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -24,11 +25,13 @@ import java.util.List;
 public class ListTransactionsAdapter extends
         RecyclerView.Adapter<ListTransactionsAdapter.ViewHolder> {
 
+    private final static int REQUEST_TX_DETAILS = 4;
+
     private final List<Transaction> transactions;
     private final String btcUnit;
-    private final Context context;
+    private final Activity context;
 
-    public ListTransactionsAdapter(final Context context, final List<Transaction> transactions, final String btcUnit) {
+    public ListTransactionsAdapter(final Activity context, final List<Transaction> transactions, final String btcUnit) {
         this.transactions = transactions;
         this.btcUnit = btcUnit;
         this.context = context;
@@ -139,7 +142,7 @@ public class ListTransactionsAdapter extends
             public void onClick(final View v) {
                 final Intent transactionActivity = new Intent(context, TransactionActivity.class);
                 transactionActivity.putExtra("TRANSACTION", transaction);
-                context.startActivity(transactionActivity);
+                context.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
             }
         });
     }

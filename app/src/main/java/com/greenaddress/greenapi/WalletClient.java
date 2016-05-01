@@ -1241,6 +1241,22 @@ public class WalletClient {
         return getAllUnspentOutputs(0, null);
     }
 
+    public ListenableFuture<Boolean> changeMemo(final String txhash, final String memo) {
+        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
+        clientCall("http://greenaddressit.com/txs/change_memo", Boolean.class, new CallHandler() {
+            @Override
+            public void onResult(final Object ack) {
+                asyncWamp.set((Boolean) ack);
+            }
+
+            @Override
+            public void onError(final String errUri, final String errDesc) {
+                asyncWamp.setException(new GAException(errDesc));
+            }
+        }, txhash, memo);
+        return asyncWamp;
+    }
+
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
         final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
         clientCall("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new CallHandler() {

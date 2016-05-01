@@ -71,7 +71,8 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2,
-            REQUEST_SETTINGS = 3;
+            REQUEST_SETTINGS = 3,
+            REQUEST_TX_DETAILS = 4;
     @Nullable
     public static TabbedMainActivity instance = null;
     private ViewPager mViewPager;
@@ -296,6 +297,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
+            case REQUEST_TX_DETAILS:
             case REQUEST_SETTINGS:
                 final int curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
                 getGAService().updateBalance(curSubaccount);

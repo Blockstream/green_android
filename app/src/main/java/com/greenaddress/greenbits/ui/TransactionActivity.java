@@ -73,6 +73,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        setResult(RESULT_OK);
     }
 
     @Override
@@ -181,7 +182,9 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
             final TextView dateText = (TextView) rootView.findViewById(R.id.txDateText);
             final TextView memoText = (TextView) rootView.findViewById(R.id.txMemoText);
-            final TextView memoTitle = (TextView) rootView.findViewById(R.id.txMemoTitle);
+
+            final TextView memoEdit = (TextView) rootView.findViewById(R.id.sendToNoteIcon);
+            final EditText memoEditText = (EditText) rootView.findViewById(R.id.sendToNoteText);
 
             final TextView doubleSpentByText = (TextView) rootView.findViewById(R.id.txDoubleSpentByText);
             final TextView doubleSpentByTitle = (TextView) rootView.findViewById(R.id.txDoubleSpentByTitle);
@@ -196,6 +199,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             final TextView unconfirmedEstimatedBlocks = (TextView) rootView.findViewById(R.id.txUnconfirmedEstimatedBlocks);
             final TextView unconfirmedRecommendation = (TextView) rootView.findViewById(R.id.txUnconfirmedRecommendation);
             final Button unconfirmedIncreaseFee = (Button) rootView.findViewById(R.id.txUnconfirmedIncreaseFee);
+            final Button saveMemo = (Button) rootView.findViewById(R.id.saveMemo);
 
             final TextView feeScale = (TextView) rootView.findViewById(R.id.txFeeScale);
             final TextView feeUnit = (TextView) rootView.findViewById(R.id.txFeeUnit);
@@ -205,7 +209,59 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
             openInBrowser(hashText, t.txhash, Network.BLOCKEXPLORER_TX);
 
+            memoEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                        final boolean editVisible = memoEditText.getVisibility() == View.VISIBLE;
+                        memoEditText.setText(memoText.getText().toString());
+                        memoEditText.setVisibility(editVisible ? View.GONE : View.VISIBLE);
+                        saveMemo.setVisibility(editVisible ? View.GONE : View.VISIBLE);
+                        memoText.setVisibility(editVisible ? View.VISIBLE: View.GONE);
+                }
+            });
 
+            saveMemo.setOnClickListener(new View.OnClickListener() {
+
+                private void onDisableEdit() {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            memoText.setText(memoEditText.getText().toString());
+                            saveMemo.setVisibility(View.GONE);
+                            memoEditText.setVisibility(View.GONE);
+                            if (memoText.getText().toString().isEmpty()) {
+                                memoText.setVisibility(View.GONE);
+                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
+                            } else {
+                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.VISIBLE);
+                                memoText.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onClick(final View view) {
+                    final String edited = memoEditText.getText().toString();
+                    if (!edited.equals(memoText.getText().toString())) {
+                        final ListenableFuture<Boolean> saved =
+                                getGAService().getClient().changeMemo(t.txhash, edited);
+                        Futures.addCallback(saved, new FutureCallback<Boolean>() {
+                            @Override
+                            public void onSuccess(final @javax.annotation.Nullable Boolean result) {
+                                onDisableEdit();
+                            }
+
+                            @Override
+                            public void onFailure(final Throwable t) {
+                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        onDisableEdit();
+                    }
+                }
+            });
             final Coin fee = Coin.valueOf(t.fee);
             final Coin feePerKb;
             if (t.size > 0) {
@@ -324,7 +380,6 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 memoText.setText(t.memo);
             } else {
                 memoText.setVisibility(View.GONE);
-                memoTitle.setVisibility(View.GONE);
                 rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
             }
             // FIXME: use a list instead of reusing a TextView to show all double spends to allow
