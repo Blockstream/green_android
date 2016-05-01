@@ -1,9 +1,7 @@
 package com.greenaddress.greenbits.ui.preferences;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -27,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private static final int REQUEST_ENABLE_2FA = 0;
