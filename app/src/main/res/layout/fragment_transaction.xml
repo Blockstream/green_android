@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
 
     android:orientation="vertical"
@@ -8,201 +9,209 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:orientation="vertical">
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/activity_vertical_margin"/>
+            android:paddingTop="@dimen/activity_vertical_margin">
 
-    <LinearLayout
-        android:id="@+id/txUnconfirmed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="\? "
-            android:textColor="@color/accent"
-            android:textSize="24sp" />
-
-        <TextView
-            android:id="@+id/txUnconfirmedText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/txUnconfirmedTx"
-            android:textColor="@color/accent"
-            android:textSize="16sp"
-            android:paddingBottom="20sp"/>
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="droid"
-        android:text="@string/txHashText"
-        android:textColor="@color/textColor"
-        android:textSize="24sp" />
-
-    <TextView
-        android:textColor="@color/accent"
-        android:layout_width="wrap_content"
-        android:textIsSelectable="true"
-        android:id="@+id/txHashText"
-        android:layout_height="wrap_content" />
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/activity_vertical_margin"
-                android:id="@+id/txRecipientMargin"/>
+                android:layout_height="@dimen/activity_vertical_margin" />
+
+            <LinearLayout
+                android:id="@+id/txUnconfirmed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\? "
+                    android:textColor="@color/accent"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/txUnconfirmedText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="20sp"
+                    android:text="@string/txUnconfirmedTx"
+                    android:textColor="@color/accent"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="droid"
+                android:text="@string/txHashText"
+                android:textColor="@color/textColor"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/txHashText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent"
+                android:textIsSelectable="true" />
+
+            <View
+                android:id="@+id/txRecipientMargin"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/activity_vertical_margin" />
+
+            <TextView
                 android:id="@+id/txRecipientTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="droid"
                 android:text="@string/txRecipientText"
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
-            <TextView android:text="@string/txRecipientText"
-                android:textColor="@color/accent"
-                android:layout_width="wrap_content"
-                android:textIsSelectable="true"
+            <TextView
                 android:id="@+id/txRecipientText"
-                android:layout_height="wrap_content" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/txRecipientText"
+                android:textColor="@color/accent"
+                android:textIsSelectable="true" />
 
             <View
+                android:id="@+id/txDoubleSpentByMargin"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/activity_vertical_margin"
-                android:id="@+id/txDoubleSpentByMargin"/>
+                android:layout_height="@dimen/activity_vertical_margin" />
 
             <TextView
+                android:id="@+id/txDoubleSpentByTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="droid"
-                android:id="@+id/txDoubleSpentByTitle"
                 android:text="@string/txDoubleSpentBy"
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
             <TextView
+                android:id="@+id/txDoubleSpentByText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textColor="@color/accent"
-                      android:layout_width="wrap_content"
-                      android:textIsSelectable="true"
-                      android:id="@+id/txDoubleSpentByText"
-                      android:layout_height="wrap_content" />
+                android:textIsSelectable="true" />
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/activity_vertical_margin"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="droid"
-        android:text="@string/txDateText"
-        android:textColor="@color/textColor"
-        android:textSize="24sp" />
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/activity_vertical_margin" />
 
-    <TextView
-        android:textColor="@color/accent"
-        android:layout_width="fill_parent"
-        android:textIsSelectable="true"
-        android:id="@+id/txDateText"
-        android:textSize="20sp"
-        android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="droid"
+                android:text="@string/txDateText"
+                android:textColor="@color/textColor"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/txDateText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent"
+                android:textIsSelectable="true"
+                android:textSize="20sp" />
 
 
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/activity_vertical_margin" />
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/activity_vertical_margin"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="droid"
-        android:text="@string/txAmountText"
-        android:textColor="@color/textColor"
-        android:textSize="24sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="droid"
+                android:text="@string/txAmountText"
+                android:textColor="@color/textColor"
+                android:textSize="24sp" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
+                    android:id="@+id/txBitcoinScale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/txBitcoinScale"
                     android:textColor="@color/accent"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
+
                 <com.greenaddress.greenbits.ui.FontAwesomeTextView
                     android:id="@+id/txBitcoinUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="&#xf15a; "
                     android:textColor="@color/accent"
-                    android:textSize="20sp"
-                     />
-                <TextView android:text="amount"
-                    android:textColor="@color/accent"
-                    android:layout_width="wrap_content"
+                    android:textSize="20sp" />
 
-                    android:textIsSelectable="true"
+                <TextView
                     android:id="@+id/txAmountText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"/>
-                </LinearLayout>
 
+                    android:text="amount"
+                    android:textColor="@color/accent"
+                    android:textIsSelectable="true"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-
-    <View
-        android:id="@+id/txMemoMargin"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/activity_vertical_margin"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="droid"
-        android:text="@string/txMemoText"
-        android:textColor="@color/textColor"
-        android:id="@+id/txMemoTitle"
-        android:textSize="24sp" />
-
-    <TextView
-        android:textColor="@color/accent"
-        android:layout_width="wrap_content"
-        android:textIsSelectable="true"
-        android:id="@+id/txMemoText"
-        android:layout_height="wrap_content" />
 
             <View
+                android:id="@+id/txMemoMargin"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/activity_vertical_margin"
-                android:id="@+id/txReceivedOnMargin"/>
+                android:layout_height="@dimen/activity_vertical_margin" />
 
             <TextView
+                android:id="@+id/txMemoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="droid"
+                android:text="@string/txMemoText"
+                android:textColor="@color/textColor"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/txMemoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent"
+                android:textIsSelectable="true" />
+
+            <View
+                android:id="@+id/txReceivedOnMargin"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/activity_vertical_margin" />
+
+            <TextView
                 android:id="@+id/txReceivedOnTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="droid"
                 android:text="@string/txReceivedOn"
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
             <TextView
-                android:textColor="@color/accent"
-                android:layout_width="wrap_content"
-                android:textIsSelectable="true"
                 android:id="@+id/txReceivedOnText"
-                android:layout_height="wrap_content" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent"
+                android:textIsSelectable="true" />
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/activity_vertical_margin"/>
+                android:layout_height="@dimen/activity_vertical_margin" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -212,32 +221,33 @@
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/txFeeScale"
-                android:textColor="@color/accent"
-                android:textSize="20sp"
-                />
-            <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                android:id="@+id/txFeeUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#xf15a; "
-                android:textColor="@color/accent"
-                android:textSize="20sp"
-                />
-            <TextView
-                android:textColor="@color/accent"
-                android:layout_width="wrap_content"
-                android:textIsSelectable="true"
-                android:id="@+id/txFeeInfoText"
-                android:layout_height="wrap_content"
-                android:textSize="20sp" />
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/txFeeScale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/accent"
+                    android:textSize="20sp" />
+
+                <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                    android:id="@+id/txFeeUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="&#xf15a; "
+                    android:textColor="@color/accent"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/txFeeInfoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/accent"
+                    android:textIsSelectable="true"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txUnconfirmedEstimatedBlocks"
@@ -245,24 +255,24 @@
                 android:layout_height="wrap_content"
                 android:text="@string/willConfirmAfter"
                 android:textColor="@color/accent"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <Button
-                android:textColor="@color/white"
-                style="@style/myButton"
                 android:id="@+id/txUnconfirmedIncreaseFee"
+                style="@style/myButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/increaseFee" />
+                android:text="@string/increaseFee"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/txUnconfirmedRecommendation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="20sp"
                 android:text="@string/recommendationBlocks"
                 android:textColor="@color/textColor"
-                android:textSize="16sp"
-                android:paddingBottom="20sp"/>
+                android:textSize="16sp" />
 
         </LinearLayout>
     </ScrollView>
