@@ -106,7 +106,7 @@ public class ListTransactionsAdapter extends
                 && transaction.counterparty != null && transaction.counterparty.length() > 0
                 && !GaService.isValidAddress(transaction.counterparty);
 
-        final String message = transaction.memo == null ?
+        final String message = transaction.memo == null || transaction.memo.isEmpty() ?
                 humanCpty ?
                         transaction.counterparty
                         :
