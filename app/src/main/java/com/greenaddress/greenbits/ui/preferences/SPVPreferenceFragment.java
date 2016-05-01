@@ -298,6 +298,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 return false;
             }
         });
+        getActivity().setResult(getActivity().RESULT_OK, null);
     }
     private void askUserForSpvNoWiFi() {
         gaService.setSpvWiFiDialogShown(true);
