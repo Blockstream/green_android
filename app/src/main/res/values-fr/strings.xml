@@ -67,9 +67,9 @@
   <string name="sendPayTo">Payer à</string>
   <string name="action_sweep">Balayer</string>
   <string name="action_logout">Se déconnecter</string>
-  <string name="txTypeIn">Dépôt </string>
-  <string name="txTypeOut">Retirer</string>
-  <string name="txTypeRedeposit">Déposer de nouveau</string>
+  <string name="txTypeIn">Reçus</string>
+  <string name="txTypeOut">Envoyés</string>
+  <string name="txTypeRedeposit">Déplacés</string>
   <string name="mnemonicHint">Écrivez votre phrase de récupération GreenAddress ou numérisez son code QR</string>
   <string name="title_activity_settings">Paramètres</string>
   <string name="ago">il y a %1$d %2$s</string>

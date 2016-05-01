@@ -78,9 +78,9 @@
     <string name="sendPayTo">Pay to</string>
     <string name="action_sweep">Sweep</string>
     <string name="action_logout">Log out</string>
-    <string name="txTypeIn">Deposit</string>
-    <string name="txTypeOut">Withdraw</string>
-    <string name="txTypeRedeposit">Redeposit</string>
+    <string name="txTypeIn">Received</string>
+    <string name="txTypeOut">Sent</string>
+    <string name="txTypeRedeposit">Moved</string>
     <string name="mnemonicHint">Type your GreenAddress passphrase or scan its qrcode</string>
     <string name="title_activity_settings">Settings</string>
     <string name="ago">%1$d %2$s ago</string>

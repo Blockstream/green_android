@@ -64,8 +64,8 @@
   <string name="toastOnCopyAddress">Indirizzo copiato.</string>
   <string name="receiveAddressSubTitle">Indirizzo</string>
   <string name="sendPayTo">Paga a</string>
-  <string name="txTypeIn">Deposito</string>
-  <string name="txTypeOut">Prelievo</string>
+  <string name="txTypeIn">Ricevuto</string>
+  <string name="txTypeOut">Mandato</string>
   <string name="txTypeRedeposit">Giroconto</string>
   <string name="mnemonicHint">Inserisci la tua passphrase GreenAddress o fai lo scan del qrcode</string>
   <string name="title_activity_settings">Configurazione</string>
