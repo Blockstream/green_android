@@ -90,24 +90,23 @@ public class GaService extends Service {
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
 
-    @NonNull private final Map<Integer, Coin> balancesCoin = new HashMap<>();
+    private final Map<Integer, Coin> balancesCoin = new HashMap<>();
 
-    @NonNull private final Map<Integer, Fiat> balancesFiat = new HashMap<>();
+    private final Map<Integer, Fiat> balancesFiat = new HashMap<>();
     private float fiatRate;
     private String fiatCurrency;
     private String fiatExchange;
     private ArrayList subaccounts;
 
-    @Nullable
-    private Map<Integer, DeterministicKey> gaDeterministicKeys;
+    private final Map<Integer, DeterministicKey> gaDeterministicKeys = new HashMap<>();
     private String receivingId;
     private byte[] gaitPath;
     @Nullable
     private Map<?, ?> twoFacConfig;
-    @NonNull private final GaObservable twoFacConfigObservable = new GaObservable();
+    private final GaObservable twoFacConfigObservable = new GaObservable();
     @Nullable
     private String deviceId;
-    @Nullable
+
     public final SPV spv = new SPV(this);
 
     private int background_color;
@@ -139,7 +138,7 @@ public class GaService extends Service {
 
             spv.resetUnspent();
 
-            gaDeterministicKeys = new HashMap<>();
+            gaDeterministicKeys.clear();
 
             spv.startIfEnabled();
             connectionObservable.setState(ConnectivityObservable.State.LOGGEDIN);
@@ -283,7 +282,7 @@ public class GaService extends Service {
 
             @Override
             public void onConnectionClosed(final int code) {
-                gaDeterministicKeys = null;
+                gaDeterministicKeys.clear();
 
                 if (code == 4000) {
                     connectionObservable.setForcedLoggedOut();
