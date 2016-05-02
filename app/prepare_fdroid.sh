@@ -1,6 +1,10 @@
 #!/bin/bash
 
 set -e
+if [ -z "$ANDROID_NDK"]; then
+    export ANDROID_NDK=$(dirname `which ndk-build 2>/dev/null`)
+fi
 
-./prepare_scrypt.sh
-./prepare_secp256k1.sh
+echo ${ANDROID_NDK:?}
+exec ./prepare_scrypt.sh
+exec ./prepare_secp256k1.sh
