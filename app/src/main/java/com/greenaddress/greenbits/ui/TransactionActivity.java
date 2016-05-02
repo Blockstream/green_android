@@ -254,7 +254,12 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
 
                             @Override
                             public void onFailure(final Throwable t) {
-                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
                             }
                         });
                     } else {
