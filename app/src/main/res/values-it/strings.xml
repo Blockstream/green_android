@@ -117,7 +117,6 @@
   <string name="YES">SI</string>
   <string name="enableSPV">Abilita SPV</string>
   <string name="enableSPVSummary">Simple Payment Verification (Verifica Semplice di Pagamento) permette di fidarsi del saldo e delle proprie transazioni grazie alla sincronizzazione con il network Bitcoin. Richiede banda ed elaborazione, quindi si consiglia di spegnerlo se non si ha una buona connessione o si faccia uso di telefoni di fascia bassa.</string>
-  <string name="changingRequiresRestartTitle">Richiesto riavvio</string>
   <string name="changingRequiresRestartText">Cambiare questo valore richiedere il riavvio dell\'app per ottenere pieno effetto. Riavviare GreenBits.</string>
   <string name="noTwoFactorWarning">Non hai impostato nessuna autenticazione a due fattori! Per favore, vai nelle impostazioni a configurarlo!</string>
   <string name="scan_camera_problem_dialog_message">La fotocamera ha un problema. Probabilmente c\'è bisogno di riavviare il dispositivo.</string>

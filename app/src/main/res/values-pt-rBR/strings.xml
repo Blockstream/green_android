@@ -121,7 +121,6 @@
   <string name="YES">SIM</string>
   <string name="enableSPV">Ativar SPV</string>
   <string name="enableSPVSummary">Uma simples verificação de pagamento permite confiar em suas transações e saldo graças à sincronização com a rede Bitcoin. Ele adiciona requisitos de largura de banda e de processamento, de modo que você pode desligá-lo em más ligações ou telefones antigos.</string>
-  <string name="changingRequiresRestartTitle">Reinício necessário</string>
   <string name="changingRequiresRestartText">Alterar este valor requer a reinicialização do aplicativo para ter efeito. Por favor, reinicie GreenBits.</string>
   <string name="noTwoFactorWarning">Você não tem dupla autenticação! \ Por favor, vá as configurações para configurá-lo!</string>
   <string name="scan_camera_problem_dialog_message">A câmera possui um problema. Você provavelmente precisará reiniciar o dispositivo.</string>

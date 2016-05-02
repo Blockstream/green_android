@@ -119,7 +119,6 @@
   <string name="YES">JA</string>
   <string name="enableSPV">EZB Aktivieren</string>
   <string name="enableSPVSummary">Die einfache Zahlungsbestätigung, oder EZB, erlaubt ihnen ein erhöhtes Vertrauen in Transaktionen und Kontostände dank der Synchronisierung mit dem Bitcoin-Netzwerk. Dies erhöht allerdings Bandbreiten- und Verarbeitungsanforderungen, weshalb sie diese Option bei mangelnder Verbindung und Low-End-Geräten eventuell lieber ausschalten.</string>
-  <string name="changingRequiresRestartTitle">Neustart nötig</string>
   <string name="changingRequiresRestartText">Ein Neustart ist nötig um diese Einstellung vollständig vorzunehmen. Bitte starten sie GreenBits neu.</string>
   <string name="noTwoFactorWarning">Sie haben keine 2-Faktor-Authentifizierung!\nBitte stellen sie dies in den Einstellungen ein!</string>
   <string name="scan_camera_problem_dialog_message">Die Kamera hat ein Problem. Wahrscheinlich ist ein Neustart des Gerätes nötig.</string>

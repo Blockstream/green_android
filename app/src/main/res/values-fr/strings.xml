@@ -123,7 +123,6 @@
   <string name="YES">OUI</string>
   <string name="enableSPV">Autoriser SPV</string>
   <string name="enableSPVSummary">La vérification simplifiée de paiement (SPV) permet d\'attester de la fiabilité de vos transactions et de votre solde grâce à la synchronisation avec le réseau Bitcoin. Elle demande des ressources réseaux et de traitements, désactivez-la sur des appareils lents ou qui ne disposent pas d\'une bonne connexion.</string>
-  <string name="changingRequiresRestartTitle">Redémarrage nécessaire</string>
   <string name="changingRequiresRestartText">Le changement de cette valeur requiert le redémarrage de l\'application pour prendre effet. Veuillez redémarrer GreenBits.</string>
   <string name="noTwoFactorWarning">Vous n\'avez pas l\'authentification à deux facteurs !</string>
   <string name="scan_camera_problem_dialog_message">L\'appareil photo a un problème. Vous devriez redémarrer votre appareil.</string>

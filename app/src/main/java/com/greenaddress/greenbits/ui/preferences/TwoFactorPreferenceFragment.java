@@ -81,24 +81,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             }
         });
 
-        final CheckBoxPreference twoFacWarning = (CheckBoxPreference) findPreference("twoFacWarning");
-        twoFacWarning.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                new MaterialDialog.Builder(TwoFactorPreferenceFragment.this.getActivity())
-                        .title(getResources().getString(R.string.changingRequiresRestartTitle))
-                        .content(getResources().getString(R.string.changingRequiresRestartText))
-                        .positiveColorRes(R.color.accent)
-                        .negativeColorRes(R.color.white)
-                        .titleColorRes(R.color.white)
-                        .contentColorRes(android.R.color.white)
-                        .theme(Theme.DARK)
-                        .positiveText("OK")
-                        .build().show();
-                return true;
-            }
-        });
-
         final CheckBoxPreference phoneTwoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFacPhone");
         phoneTwoFacEnabled.setChecked(twoFacConfig.get("phone").equals(true));
         phoneTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
