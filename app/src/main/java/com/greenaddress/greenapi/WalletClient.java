@@ -414,12 +414,12 @@ public class WalletClient {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
         clientCall("http://greenaddressit.com/login/available_currencies", Map.class, new CallHandler() {
             @Override
-            public void onResult(Object result) {
+            public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
             }
 
             @Override
-            public void onError(String errorUri, String errorDesc) {
+            public void onError(final String errorUri, final String errorDesc) {
                 asyncWamp.setException(new GAException(errorDesc));
             }
         });
