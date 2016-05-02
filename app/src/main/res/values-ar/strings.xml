@@ -121,7 +121,6 @@
   <string name="YES">نعم</string>
   <string name="enableSPV">تفعيل SPV</string>
   <string name="enableSPVSummary">التحقق من الدفع بسيط يسمح الثقة في المعاملات الخاصة بك والتوازن بفضل التزامن مع شبكة بيتكوين. وتضيف متطلبات عرض النطاق الترددي والتجهيز، لذلك قد ترغب في إطفائه إذا كان على اتصالات الظعيفة أو الهواتف المنخفضة التكلفة.</string>
-  <string name="changingRequiresRestartText">تغيير هذه القيمة يتطلب إعادة تشغيل التطبيق لتصبح سارية المفعول , الرجاء إعادة تشغيل GreenBits.</string>
   <string name="noTwoFactorWarning">ليس لديك تحقق مزدوجn!\nيرجى الإنتقال إلى إعدادات إنشائه!</string>
   <string name="scan_camera_problem_dialog_message">مشكلة في الكاميرا . ربما كنت تحتاج إلى إعادة تشغيل الجهاز.</string>
   <string name="scan_camera_problem_dialog_title">مشكلة في الكاميرا</string>
