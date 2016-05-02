@@ -113,7 +113,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         fiatCurrency.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object o) {
+            public boolean onPreferenceChange(final Preference preference, final Object o) {
                 final String[] split = o.toString().split(" ");
                 gaService.setPricingSource(split[0], split[1]);
                 fiatCurrency.setSummary(o.toString());
@@ -127,20 +127,25 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     @Override
                     public void onSuccess(@android.support.annotation.Nullable final List<List<String>> result) {
                         final Activity activity = getActivity();
-                        if (activity != null) {
-                            final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
+                        if (activity != null && result != null) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
 
-                            for (final List<String> currency_exchange : result) {
-                                final boolean current = currency_exchange.get(0).equals(gaService.getFiatCurrency())
-                                        && currency_exchange.get(1).equals(gaService.getFiatExchange());
-                                final String pair = String.format("%s %s", currency_exchange.get(0), currency_exchange.get(1));
-                                if (current) {
-                                    fiatCurrency.setSummary(pair);
+                                    for (final List<String> currency_exchange : result) {
+                                        final boolean current = currency_exchange.get(0).equals(gaService.getFiatCurrency())
+                                                && currency_exchange.get(1).equals(gaService.getFiatExchange());
+                                        final String pair = String.format("%s %s", currency_exchange.get(0), currency_exchange.get(1));
+                                        if (current) {
+                                            fiatCurrency.setSummary(pair);
+                                        }
+                                        fiatPairs.add(pair);
+                                    }
+                                    fiatCurrency.setEntries(fiatPairs.toArray(new String[result.size()]));
+                                    fiatCurrency.setEntryValues(fiatPairs.toArray(new String[result.size()]));
                                 }
-                                fiatPairs.add(pair);
-                            }
-                            fiatCurrency.setEntries(fiatPairs.toArray(new String[result.size()]));
-                            fiatCurrency.setEntryValues(fiatPairs.toArray(new String[result.size()]));
+                            });
                         }
                     }
 
@@ -148,7 +153,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     public void onFailure(@NonNull final Throwable t) {
                         t.printStackTrace();
                     }
-                }, gaService.es);
+                });
 
         // -- handle opt-in rbf
         if (!gaService.getClient().getLoginData().rbf) {
