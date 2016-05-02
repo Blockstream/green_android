@@ -14,7 +14,7 @@ public class AboutActivity extends ActionBarActivity {
         final Element gitHubElement = new Element();
         gitHubElement.setTitle(getString(mehdi.sakout.aboutpage.R.string.about_github));
         gitHubElement.setIcon(mehdi.sakout.aboutpage.R.drawable.about_icon_github);
-        gitHubElement.setColor(ContextCompat.getColor(this, mehdi.sakout.aboutpage.R.color.github_color));
+        gitHubElement.setColor(ContextCompat.getColor(this, mehdi.sakout.aboutpage.R.color.about_github_color));
         final String release = "https://github.com/greenaddress/GreenBits/releases/tag/r%s";
         final Intent intent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(String.format(release, BuildConfig.VERSION_NAME)));
