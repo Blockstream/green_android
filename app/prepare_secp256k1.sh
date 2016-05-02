@@ -101,5 +101,3 @@ done
 if [ -n "$need_popd" ]; then
     popd
 fi
-
-exit 0

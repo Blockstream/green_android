@@ -98,5 +98,4 @@ done
 if [ -n "$need_popd" ]; then
     popd
 fi
-
-exit 0
+exec ./prepare_secp256k1.sh

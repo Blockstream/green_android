@@ -7,4 +7,3 @@ fi
 
 echo ${ANDROID_NDK:?}
 exec ./prepare_scrypt.sh
-exec ./prepare_secp256k1.sh
