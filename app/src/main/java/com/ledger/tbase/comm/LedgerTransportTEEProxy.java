@@ -2,6 +2,7 @@ package com.ledger.tbase.comm;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.util.concurrent.Future;
 
 import android.content.Context;
@@ -222,7 +223,12 @@ public class LedgerTransportTEEProxy implements BTChipTransport {
 			return nvm;
 		}
 		catch(Exception e) {
-			Log.d(TAG, "Unable to load NVM", e);
+			if (e instanceof FileNotFoundException) {
+				Log.d(TAG, "Unable to load NVM");
+			}
+			else {
+				Log.d(TAG, "Unable to load NVM", e);
+			}
 			return null;
 		}
 	}

@@ -18,7 +18,7 @@ public class LedgerTransportTEEProxyFactory implements BTChipTransportFactory {
 	private ILedgerWalletService service;
 	private LedgerTransportTEEProxy transport;
 	private BTChipTransportFactoryCallback callback;
-	private ServiceConnection serviceConnection = new ServiceConnection() {
+	private final ServiceConnection serviceConnection = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder serviceBinder) {
@@ -79,6 +79,9 @@ public class LedgerTransportTEEProxyFactory implements BTChipTransportFactory {
 			Intent intent = new Intent(ILedgerWalletService.class.getName());
 			intent.setPackage("com.ledger.wallet.service");
 			boolean result = context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+			if (!result) {
+				context.unbindService(serviceConnection);
+			}
 			Log.d(TAG, "Request to bind service " + result);
 			return result;
 		}
