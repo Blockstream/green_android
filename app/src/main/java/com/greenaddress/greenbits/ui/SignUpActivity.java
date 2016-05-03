@@ -24,8 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -126,9 +124,6 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
-                final Animation iconPressed = AnimationUtils.loadAnimation(SignUpActivity.this, R.anim.rotation);
-                qrCodeIcon.startAnimation(iconPressed);
-
                 final ListenableFuture<QrBitmap> mnemonicQrcode = getGAService().getQrCodeForMnemonicPassphrase();
                 Futures.addCallback(mnemonicQrcode, new FutureCallback<QrBitmap>() {
 

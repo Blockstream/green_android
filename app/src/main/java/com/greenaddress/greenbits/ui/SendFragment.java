@@ -19,8 +19,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -532,7 +530,6 @@ public class SendFragment extends SubaccountFragment {
             updateBalance();
         }
 
-        final Animation iconPressed = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.icon_pressed);
         scanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(final View view) {
@@ -544,7 +541,6 @@ public class SendFragment extends SubaccountFragment {
                                                 getActivity().requestPermissions(perms, permsRequestCode);
                                             } else {
 
-                                                scanIcon.startAnimation(iconPressed);
                                                 final Intent qrcodeScanner = new Intent(getActivity(), ScanActivity.class);
                                                 getActivity().startActivityForResult(qrcodeScanner, REQUEST_SEND_QR_SCAN);
                                             }

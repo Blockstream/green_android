@@ -14,7 +14,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -402,7 +401,6 @@ public class PinActivity extends ActionBarActivity implements Observer {
                 public void run() {
                     final MenuItem item = menu.findItem(R.id.network_unavailable);
                     item.setVisible(visible);
-                    AnimationUtils.loadAnimation(PinActivity.this, R.anim.rotation);
                 }
             });
         }

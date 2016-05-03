@@ -23,8 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -141,12 +139,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         final TextView newAddressIcon = (TextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
-        final Animation iconPressed = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_pressed);
         copyIcon.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        copyIcon.startAnimation(iconPressed);
                         // Gets a handle to the clipboard service.
                         final ClipboardManager clipboard = (ClipboardManager)
                                 getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
@@ -287,8 +283,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (getActivity() == null) return;
 
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
-        final Animation rotateAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
-        newAddressIcon.startAnimation(rotateAnim);
         newAddressIcon.setText(Html.fromHtml("&#xf021;"));
         newAddressIcon.setAwesomeTypeface();
         newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
