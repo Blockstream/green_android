@@ -373,14 +373,14 @@ public class GaService extends Service {
         return Futures.transform(createOutScript(subaccount, pointer), new Function<byte[], Boolean>() {
             @javax.annotation.Nullable
             @Override
-            public Boolean apply(@javax.annotation.Nullable byte[] multisig) {
+            public Boolean apply(final @javax.annotation.Nullable byte[] multisig) {
                 if (client.getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
-                    ByteArrayOutputStream bits = new ByteArrayOutputStream();
+                    final ByteArrayOutputStream bits = new ByteArrayOutputStream();
                     bits.write(0);
                     try {
                         Script.writeBytes(bits, Sha256Hash.hash(multisig));
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         throw new RuntimeException(e);  // cannot happen
                     }
                     if (Arrays.equals(gotP2SH, Utils.sha256hash160(bits.toByteArray()))) {
@@ -630,11 +630,11 @@ public class GaService extends Service {
                              scriptHash;
                 if (client.getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
-                    ByteArrayOutputStream bits = new ByteArrayOutputStream();
+                    final ByteArrayOutputStream bits = new ByteArrayOutputStream();
                     bits.write(0);
                     try {
                         Script.writeBytes(bits, Sha256Hash.hash(script));
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         throw new RuntimeException(e);  // cannot happen
                     }
                     scriptHash = Utils.sha256hash160(bits.toByteArray());
