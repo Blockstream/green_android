@@ -15,7 +15,6 @@ import com.satoshilabs.trezor.Trezor;
 import com.subgraph.orchid.encoders.Hex;
 
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
@@ -66,7 +65,7 @@ public class TrezorHWWallet implements ISigningWallet {
 
     @NonNull
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(final Sha256Hash hash) {
+    public ListenableFuture<ECKey.ECDSASignature> signHash(final byte[] hash) {
         return Futures.immediateFuture(null);
     }
 

@@ -3,7 +3,6 @@ package com.greenaddress.greenapi;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 
@@ -14,7 +13,7 @@ public interface ISigningWallet {
 
     ListenableFuture<byte[]> getIdentifier();
 
-    ListenableFuture<ECKey.ECDSASignature> signHash(Sha256Hash hash);
+    ListenableFuture<ECKey.ECDSASignature> signHash(byte[] hash);
 
     ListenableFuture<ECKey.ECDSASignature> signMessage(String message);
 

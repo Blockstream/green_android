@@ -29,8 +29,8 @@ public class DeterministicSigningKey implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(final Sha256Hash hash) {
-        return Futures.immediateFuture(ECKey.fromPrivate(hdWallet.getPrivKey()).sign(hash));
+    public ListenableFuture<ECKey.ECDSASignature> signHash(final byte[] hash) {
+        return Futures.immediateFuture(ECKey.fromPrivate(hdWallet.getPrivKey()).sign(Sha256Hash.wrap(hash)));
     }
 
     @Override

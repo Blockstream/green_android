@@ -23,7 +23,6 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.ui.RequestLoginActivity;
 
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.UnsafeByteArrayOutputStream;
@@ -211,8 +210,8 @@ public class BTChipHWWallet implements ISigningWallet {
 
     @android.support.annotation.Nullable
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(final Sha256Hash hash) {
-        return null;
+    public ListenableFuture<ECKey.ECDSASignature> signHash(final byte[] hash) {
+        return Futures.immediateFuture(null);
     }
 
     @NonNull

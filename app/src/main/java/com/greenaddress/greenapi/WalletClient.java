@@ -144,7 +144,7 @@ public class WalletClient {
                         final ApplicationError throwableAppError = (ApplicationError) throwable;
                         final ArrayNode anode = throwableAppError.arguments();
                         if (anode != null && anode.size() >= 2) {
-                            throwable.printStackTrace();
+                            Log.w(TAG, throwable);
                             handler.onError(anode.get(0).asText(), anode.get(1).asText());
                         } else {
                             handler.onError(throwable.toString(), throwable.toString());
@@ -173,7 +173,7 @@ public class WalletClient {
         }, new Action1<Throwable>() {
             @Override
             public void call(final Throwable throwable) {
-                throwable.printStackTrace();
+                Log.w(TAG, throwable);
                 Log.i(TAG, "Subscribe failed ("+s+"): " + throwable.toString());
             }
         });
@@ -629,7 +629,6 @@ public class WalletClient {
         final ListenableFuture<ECKey.ECDSASignature> signature;
         final String path_hex;
         final ISigningWallet childKey;
-        final Sha256Hash challenge_sha;
         final ListenableFuture<String[]> signature_arg;
         if (deterministicKey.canSignHashes()) {
             final BigInteger challenge = new BigInteger(challengeString);
@@ -640,9 +639,8 @@ public class WalletClient {
             }
             //Log.d(TAG, "Our address: " + address + " server challenge: " + challengeString);
             path_hex = getRandomHexString(16);
-            challenge_sha = Sha256Hash.wrap(challengeBytes);
             childKey = createSubpathForLogin(deterministicKey, path_hex);
-            signature = childKey.signHash(challenge_sha);
+            signature = childKey.signHash(challengeBytes);
             signature_arg = Futures.transform(signature, new Function<ECKey.ECDSASignature, String[]>() {
                 @Nullable
                 @Override
@@ -657,8 +655,7 @@ public class WalletClient {
             childKey = deterministicKey.deriveChildKey(new ChildNumber(0x4741b11e));
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] data = Utils.formatMessageForSigning(message);
-
-            challenge_sha = Sha256Hash.twiceOf(data);
+            final Sha256Hash challenge_sha = Sha256Hash.twiceOf(data);
             signature = childKey.signMessage(message);
             signature_arg = Futures.transform(signature, new AsyncFunction<ECKey.ECDSASignature, String[]>() {
                 @Nullable
@@ -670,7 +667,7 @@ public class WalletClient {
                         public void onSuccess(final @Nullable ECKey result) {
                             int recId;
                             for (recId = 0; recId < 4; ++recId) {
-                                ECKey recovered = ECKey.recoverFromSignature(recId, signature, challenge_sha, true);
+                                final ECKey recovered = ECKey.recoverFromSignature(recId, signature, challenge_sha, true);
                                 if (recovered != null && recovered.equals(result)) {
                                     break;
                                 }
@@ -1116,7 +1113,7 @@ public class WalletClient {
                         } else {
                             hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
                         }
-                        return pointerKey.signHash(hash);
+                        return pointerKey.signHash(hash.getBytes());
                     }
                 });
                 lastSignature = Futures.transform(lastSignature, new Function<ECKey.ECDSASignature, ECKey.ECDSASignature>() {
