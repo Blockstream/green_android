@@ -124,13 +124,12 @@ public class WalletClient {
     }
 
     private void clientCall(final String procedure, final Class resClass, final CallHandler handler, Object... args) {
-        final String translatedProcedure = procedure.replace("http://greenaddressit.com/", "com.greenaddress.").replace("/", ".");
         final ObjectMapper mapper = new ObjectMapper();
         final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
         final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
         try {
             mConnection.call(
-                    translatedProcedure, flags, argsNode, null
+                    procedure, flags, argsNode, null
             ).observeOn(mScheduler).subscribe(new Action1<Reply>() {
                 @Override
                 public void call(final Reply reply) {
@@ -254,7 +253,7 @@ public class WalletClient {
         final DeterministicKey deterministicKey = HDKeyDerivation.createMasterPrivateKey(mySeed);
         final String hexMasterPublicKey = Hex.toHexString(deterministicKey.getPubKey());
         final String hexChainCode = Hex.toHexString(deterministicKey.getChainCode());
-        clientCall("http://greenaddressit.com/login/register", Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.login.register", Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set(deterministicKey);
@@ -293,7 +292,7 @@ public class WalletClient {
         final String hexMasterPublicKey = Hex.toHexString(masterPublicKey);
         final String hexChainCode = Hex.toHexString(masterChaincode);
 
-        clientCall("http://greenaddressit.com/login/register", Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.login.register", Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set(signingWallet);
@@ -327,7 +326,7 @@ public class WalletClient {
     private ListenableFuture<LoginData> setupPath(final String mnemonics, final LoginData loginData) {
         final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
         final String pathHex = Hex.toHexString(mnemonicToPath(mnemonics));
-        clientCall("http://greenaddressit.com/login/set_gait_path", Void.class, new CallHandler() {
+        clientCall("com.greenaddress.login.set_gait_path", Void.class, new CallHandler() {
 
             @Override
             public void onResult(final Object result) {
@@ -346,7 +345,7 @@ public class WalletClient {
     private ListenableFuture<LoginData> setupPathBTChip(final byte[] path, final LoginData loginData) {
         final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
         final String pathHex = Hex.toHexString(path);
-        clientCall("http://greenaddressit.com/login/set_gait_path", Void.class, new CallHandler() {
+        clientCall("com.greenaddress.login.set_gait_path", Void.class, new CallHandler() {
 
             @Override
             public void onResult(final Object result) {
@@ -364,7 +363,7 @@ public class WalletClient {
     
     public ListenableFuture<Map<?, ?>> getBalance(final int subaccount) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/txs/get_balance", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.txs.get_balance", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
@@ -380,7 +379,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int pointer) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/txs/get_balance", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.txs.get_balance", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
@@ -396,7 +395,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getTwoFacConfig() {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/twofactor/get_config", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.twofactor.get_config", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
@@ -412,7 +411,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getAvailableCurrencies() {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/login/available_currencies", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.login.available_currencies", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Map) result);
@@ -428,7 +427,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/login/set_pricing_source", Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.login.set_pricing_source", Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
                 asyncWamp.set((Boolean) o);
@@ -692,7 +691,7 @@ public class WalletClient {
         Futures.addCallback(signature_arg, new FutureCallback<String[]>() {
             @Override
             public void onSuccess(final @Nullable String[] result) {
-                clientCall("http://greenaddressit.com/login/authenticate", Object.class, new CallHandler() {
+                clientCall("com.greenaddress.login.authenticate", Object.class, new CallHandler() {
                     @Override
                     public void onResult(final Object loginData) {
                         try {
@@ -742,7 +741,7 @@ public class WalletClient {
                 final SettableFuture<String> asyncWamp = SettableFuture.create();
                 final Address address = new Address(Network.NETWORK, addr);
 
-                clientCall("http://greenaddressit.com/login/get_challenge", String.class, new CallHandler() {
+                clientCall("com.greenaddress.login.get_challenge", String.class, new CallHandler() {
                     @Override
                     public void onResult(final Object result) {
                         asyncWamp.set(result.toString());
@@ -766,7 +765,7 @@ public class WalletClient {
                 final SettableFuture<String> asyncWamp = SettableFuture.create();
                 final Address address = new Address(Network.NETWORK, addr);
 
-                clientCall("http://greenaddressit.com/login/get_trezor_challenge", String.class, new CallHandler() {
+                clientCall("com.greenaddress.login.get_trezor_challenge", String.class, new CallHandler() {
                     @Override
                     public void onResult(final Object result) {
                         asyncWamp.set(result.toString());
@@ -803,7 +802,7 @@ public class WalletClient {
 
     public ListenableFuture<LoginData> pinLogin(final PinData data, final String pin, final String device_id) {
         final SettableFuture<DeterministicKey> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/pin/get_password", String.class, new CallHandler() {
+        clientCall("com.greenaddress.pin.get_password", String.class, new CallHandler() {
             @Override
             public void onResult(final Object pass) {
                 final String password = pass.toString();
@@ -841,7 +840,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> getMyTransactions(final Integer subaccount) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/txs/get_list_v2", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.txs.get_list_v2", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object txs) {
                 asyncWamp.set((Map) txs);
@@ -857,7 +856,7 @@ public class WalletClient {
 
     public ListenableFuture<Map> getNewAddress(final int subaccount) {
         final SettableFuture<Map> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/vault/fund", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.vault.fund", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object address) {
                 asyncWamp.set((Map) address);
@@ -873,7 +872,7 @@ public class WalletClient {
 
     private ListenableFuture<PinData> getPinData(final String pin, final SetPinData setPinData) {
         final SettableFuture<PinData> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/pin/get_password", String.class, new CallHandler() {
+        clientCall("com.greenaddress.pin.get_password", String.class, new CallHandler() {
 
             @Override
             public void onResult(final Object password) {
@@ -920,7 +919,7 @@ public class WalletClient {
             return asyncWamp;
         }
 
-        clientCall("http://greenaddressit.com/pin/set_pin_login", String.class, new CallHandler() {
+        clientCall("com.greenaddress.pin.set_pin_login", String.class, new CallHandler() {
 
             @Override
             public void onResult(final Object ident) {
@@ -949,7 +948,7 @@ public class WalletClient {
 
     public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {
         final SettableFuture<PreparedTransaction.PreparedData> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/vault/prepare_tx", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.vault.prepare_tx", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object prepared) {
                 asyncWamp.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, loginData.subaccounts, httpClient));
@@ -975,7 +974,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/vault/process_bip0070_url", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.vault.process_bip0070_url", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object data) {
                 asyncWamp.set((Map) data);
@@ -1005,7 +1004,7 @@ public class WalletClient {
             dataClone.put(key, privateData.get(key));
         }
 
-        clientCall("http://greenaddressit.com/vault/prepare_payreq", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.vault.prepare_payreq", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object prepared) {
                 asyncWamp.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, loginData.subaccounts, httpClient));
@@ -1026,7 +1025,7 @@ public class WalletClient {
             pubKeyObjs[i] = pubKey[i] & 0xff;
         }
         final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/vault/prepare_sweep_social", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.vault.prepare_sweep_social", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object prepared) {
                 asyncWamp.set((Map) prepared);
@@ -1043,7 +1042,7 @@ public class WalletClient {
 
     public ListenableFuture<String> sendTransaction(final List<String> signatures, final Object TfaData) {
         final SettableFuture<String> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/vault/send_tx", String.class, new CallHandler() {
+        clientCall("com.greenaddress.vault.send_tx", String.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
                 asyncWamp.set(o.toString());
@@ -1062,7 +1061,7 @@ public class WalletClient {
 
     public ListenableFuture<Map<String, Object> > sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
         final SettableFuture<Map<String, Object>> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/vault/send_raw_tx", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.vault.send_raw_tx", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
                 asyncWamp.set((Map<String, Object>) o);
@@ -1189,7 +1188,7 @@ public class WalletClient {
         final String newJSON = os.toString();
 
         final SettableFuture<Boolean> ret = SettableFuture.create();
-        clientCall("http://greenaddressit.com/login/set_appearance", Map.class, new CallHandler() {
+        clientCall("com.greenaddress.login.set_appearance", Map.class, new CallHandler() {
             @Override
             public void onResult(final Object o) {
                 if (!updateImmediately) {
@@ -1218,7 +1217,7 @@ public class WalletClient {
 
     public ListenableFuture<Object> requestTwoFacCode(final String method, final String action, final Object data) {
         final SettableFuture<Object> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/twofactor/request_" + method, Object.class, new CallHandler() {
+        clientCall("com.greenaddress.twofactor.request_" + method, Object.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set(result);
@@ -1243,7 +1242,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> changeMemo(final String txhash, final String memo) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/txs/change_memo", Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.txs.change_memo", Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object ack) {
                 asyncWamp.set((Boolean) ack);
@@ -1259,7 +1258,7 @@ public class WalletClient {
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
         final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/txs/get_all_unspent_outputs", ArrayList.class, new CallHandler() {
+        clientCall("com.greenaddress.txs.get_all_unspent_outputs", ArrayList.class, new CallHandler() {
             @Override
             public void onResult(final Object txs) {
                 asyncWamp.set((ArrayList) txs);
@@ -1275,7 +1274,7 @@ public class WalletClient {
 
     public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
         final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/txs/get_raw_unspent_output", String.class, new CallHandler() {
+        clientCall("com.greenaddress.txs.get_raw_unspent_output", String.class, new CallHandler() {
             @Override
             public void onResult(final Object tx) {
                 asyncWamp.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
@@ -1291,7 +1290,7 @@ public class WalletClient {
 
     public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
         final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/txs/get_raw_output", String.class, new CallHandler() {
+        clientCall("com.greenaddress.txs.get_raw_output", String.class, new CallHandler() {
             @Override
             public void onResult(final Object tx) {
                 asyncWamp.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
@@ -1307,7 +1306,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> initEnableTwoFac(final String type, final String details, final Map<?, ?> twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/twofactor/init_enable_" + type, Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.twofactor.init_enable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);
@@ -1324,7 +1323,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> enableTwoFac(final String type, final String code) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.twofactor.enable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);
@@ -1340,7 +1339,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> enableTwoFac(final String type, final String code, final Object twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/twofactor/enable_" + type, Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.twofactor.enable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);
@@ -1356,7 +1355,7 @@ public class WalletClient {
 
     public ListenableFuture<Boolean> disableTwoFac(final String type, final Map<String, String> twoFacData) {
         final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("http://greenaddressit.com/twofactor/disable_" + type, Boolean.class, new CallHandler() {
+        clientCall("com.greenaddress.twofactor.disable_" + type, Boolean.class, new CallHandler() {
             @Override
             public void onResult(final Object result) {
                 asyncWamp.set((Boolean) result);
