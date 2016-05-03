@@ -376,14 +376,7 @@ public class GaService extends Service {
             public Boolean apply(final @javax.annotation.Nullable byte[] multisig) {
                 if (client.getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
-                    final ByteArrayOutputStream bits = new ByteArrayOutputStream();
-                    bits.write(0);
-                    try {
-                        Script.writeBytes(bits, Sha256Hash.hash(multisig));
-                    } catch (final IOException e) {
-                        throw new RuntimeException(e);  // cannot happen
-                    }
-                    if (Arrays.equals(gotP2SH, Utils.sha256hash160(bits.toByteArray()))) {
+                    if (Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig)))) {
                         return true;
                     }
                 }
@@ -619,6 +612,17 @@ public class GaService extends Service {
         return client.sendTransaction(signaturesStrings, null);
     }
 
+    private static byte[] getSegWitScript(final byte[] input) {
+        final ByteArrayOutputStream bits = new ByteArrayOutputStream();
+        bits.write(0);
+        try {
+            Script.writeBytes(bits, Sha256Hash.hash(input));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);  // cannot happen
+        }
+        return bits.toByteArray();
+    }
+
     @NonNull
     public ListenableFuture<QrBitmap> getNewAddress(final int subaccount) {
         final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
@@ -630,14 +634,7 @@ public class GaService extends Service {
                              scriptHash;
                 if (client.getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
-                    final ByteArrayOutputStream bits = new ByteArrayOutputStream();
-                    bits.write(0);
-                    try {
-                        Script.writeBytes(bits, Sha256Hash.hash(script));
-                    } catch (final IOException e) {
-                        throw new RuntimeException(e);  // cannot happen
-                    }
-                    scriptHash = Utils.sha256hash160(bits.toByteArray());
+                    scriptHash = Utils.sha256hash160(getSegWitScript(script));
                 } else {
                     scriptHash = Utils.sha256hash160(script);
                 }
