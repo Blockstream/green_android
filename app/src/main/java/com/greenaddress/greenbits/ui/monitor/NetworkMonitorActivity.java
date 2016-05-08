@@ -18,30 +18,22 @@ import com.greenaddress.greenbits.ui.ActionBarActivity;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.R;
 
-import org.bitcoinj.core.Block;
-import org.bitcoinj.core.FilteredBlock;
-import org.bitcoinj.core.GetDataMessage;
-import org.bitcoinj.core.Message;
 import org.bitcoinj.core.Peer;
-import org.bitcoinj.core.PeerAddress;
-import org.bitcoinj.core.PeerEventListener;
 import org.bitcoinj.core.PeerGroup;
+import org.bitcoinj.core.listeners.PeerConnectedEventListener;
+import org.bitcoinj.core.listeners.PeerDisconnectedEventListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
-public final class NetworkMonitorActivity extends ActionBarActivity implements Observer
+public final class NetworkMonitorActivity extends ActionBarActivity implements Observer, PeerConnectedEventListener, PeerDisconnectedEventListener
 {
     @NonNull
     private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> peerListAdapter;
     private String bloominfo = "";
-    @Nullable
-    private PeerEventListener peerListener;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState)
@@ -61,8 +53,9 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
 
         unregisterReceiver(uiUpdated);
         final PeerGroup peerGroup = getGAService().spv.getPeerGroup();
-        if (peerGroup != null && peerListener != null) {
-            peerGroup.removeEventListener(peerListener);
+        if (peerGroup != null) {
+            peerGroup.removeConnectedEventListener(this);
+            peerGroup.removeDisconnectedEventListener(this);
         }
 
         peerList.clear();
@@ -103,76 +96,9 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
             final ListView view = (ListView) findViewById(R.id.peerlistview);
             view.setAdapter(peerListAdapter);
 
-            peerListener = new PeerEventListener() {
-                @Override
-                public void onPeersDiscovered(final Set<PeerAddress> peerAddresses) {
+            peerGroup.addConnectedEventListener(this);
+            peerGroup.addDisconnectedEventListener(this);
 
-                }
-
-                @Override
-                public void onBlocksDownloaded(final Peer peer, final Block block, final @Nullable FilteredBlock filteredBlock, final int blocksLeft) {
-
-                }
-
-                @Override
-                public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
-
-                }
-
-                @Override
-                public synchronized void onPeerConnected(@NonNull final Peer peer, final int peerCount) {
-                    final PrettyPeer new_ppeer = new PrettyPeer(peer);
-
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            peerList.add(new_ppeer);
-                            peerListAdapter.notifyDataSetChanged();
-
-                            bloominfo = peer.getBloomFilter().toString();
-                            final TextView tview = (TextView) findViewById(R.id.bloominfo);
-                            tview.setText(bloominfo);
-                        }
-                    });
-                }
-
-                @Override
-                public synchronized void onPeerDisconnected(final Peer peer, int peerCount) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final PrettyPeer new_ppeer = new PrettyPeer(peer);
-                            for (Iterator<PrettyPeer> it = peerList.iterator(); it.hasNext(); ) {
-                                final PrettyPeer ppeer = it.next();
-                                if (new_ppeer.peer == ppeer.peer) {
-                                    it.remove();
-                                }
-                            }
-                            peerListAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }
-
-                @Nullable
-                @Override
-                public Message onPreMessageReceived(final Peer peer, final Message m) {
-                    return null;
-                }
-
-                @Override
-                public void onTransaction(final Peer peer, final org.bitcoinj.core.Transaction t) {
-
-                }
-
-                @Nullable
-                @Override
-                public List<Message> getData(final Peer peer, final GetDataMessage m) {
-                    return null;
-                }
-            };
-
-            peerGroup.addEventListener(peerListener);
         }
 
         testKickedOut();
@@ -192,7 +118,40 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
             finish();
         }
     }
+    @Override
+    public synchronized void onPeerConnected(@NonNull final Peer peer, final int peerCount) {
+        final PrettyPeer new_ppeer = new PrettyPeer(peer);
 
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                peerList.add(new_ppeer);
+                peerListAdapter.notifyDataSetChanged();
+
+                bloominfo = peer.getBloomFilter().toString();
+                final TextView tview = (TextView) findViewById(R.id.bloominfo);
+                tview.setText(bloominfo);
+            }
+        });
+    }
+
+    @Override
+    public synchronized void onPeerDisconnected(final Peer peer, int peerCount) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final PrettyPeer new_ppeer = new PrettyPeer(peer);
+                for (Iterator<PrettyPeer> it = peerList.iterator(); it.hasNext(); ) {
+                    final PrettyPeer ppeer = it.next();
+                    if (new_ppeer.peer == ppeer.peer) {
+                        it.remove();
+                    }
+                }
+                peerListAdapter.notifyDataSetChanged();
+            }
+        });
+    }
     @Override
     public void update(@NonNull final Observable observable, @NonNull final Object data) {
 

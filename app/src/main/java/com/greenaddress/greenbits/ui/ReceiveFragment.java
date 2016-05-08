@@ -31,9 +31,11 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.QrBitmap;
 
+import org.bitcoinj.core.Address;
 import org.bitcoinj.uri.BitcoinURI;
 
 import nordpol.android.OnDiscoveredTagListener;
@@ -340,7 +342,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 //SHARE intent
                 final Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, BitcoinURI.convertToBitcoinURI(address.data, null, null, null));
+                sendIntent.putExtra(Intent.EXTRA_TEXT, BitcoinURI.convertToBitcoinURI(Address.fromBase58(Network.NETWORK, address.data), null, null, null));
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
             }
