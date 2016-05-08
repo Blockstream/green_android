@@ -127,6 +127,10 @@ public class WalletClient {
         final ObjectMapper mapper = new ObjectMapper();
         final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
         final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
+        if (mConnection == null) {
+            handler.onError("not connected", "not connected");
+            return;
+        }
         try {
             mConnection.call(
                     procedure, flags, argsNode, null
