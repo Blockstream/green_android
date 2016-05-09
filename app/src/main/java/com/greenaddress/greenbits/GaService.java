@@ -427,7 +427,6 @@ public class GaService extends Service {
         return key;
     }
 
-    @NonNull
     private void login() {
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
         final ListenableFuture<LoginData> future = client.login(deviceId);
@@ -503,7 +502,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<Map<?, ?>> updateBalance(final int subaccount) {
-        final ListenableFuture<Map<?, ?>> future = client.getBalance(subaccount);
+        final ListenableFuture<Map<?, ?>> future = client.getSubaccountBalance(subaccount);
         Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
@@ -825,9 +824,8 @@ public class GaService extends Service {
     }
 
 
-    @NonNull
     public void requestTwoFacCode(@NonNull final String method, @NonNull final String action) {
-        client.requestTwoFacCode(method, action);
+        client.requestTwoFacCode(method, action, null);
     }
 
     @NonNull
