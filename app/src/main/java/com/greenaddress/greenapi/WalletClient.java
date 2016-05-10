@@ -78,15 +78,15 @@ public class WalletClient {
             BuildConfig.VERSION_CODE, BuildConfig.BUILD_TYPE,
             android.os.Build.VERSION.SDK_INT, System.getProperty("os.arch"));
 
-    private final INotificationHandler m_notificationHandler;
-    private final ListeningExecutorService es;
-    private WampClient mConnection;
     private final Scheduler mScheduler = Schedulers.newThread();
-    private LoginData loginData;
-    private ISigningWallet hdWallet;
+    private final ListeningExecutorService mExecutor;
+    private final INotificationHandler mNotificationHandler;
+    private WampClient mConnection;
+    private SocketAddress mProxy = null;
+    private LoginData mLoginData;
+    private ISigningWallet mHDParent;
 
     private String mnemonics = null;
-    private SocketAddress proxyAddress = null;
 
     /**
      * Call handler.
@@ -99,7 +99,9 @@ public class WalletClient {
          * @param result     The RPC result transformed into the type that was specified in call.
          */
         void onResult(Object result);
+    }
 
+    public interface ErrorHandler {
         /**
          * Fired on call failure.
          *
@@ -114,22 +116,13 @@ public class WalletClient {
             public void onResult(final Object result) {
                 f.set((V) result);
             }
-            public void onError(final String uri, final String err) {
-                f.setException(new GAException(err));
-            }
         };
     }
 
-    private CallHandler stringHandler(final SettableFuture<String> f, final boolean log) {
+    private <V> CallHandler stringHandler(final SettableFuture<V> f) {
         return new CallHandler() {
             public void onResult(final Object result) {
-                f.set(result.toString());
-            }
-            public void onError(final String uri, final String err) {
-                // FIXME: Log errors generically in clientCall() instead
-                if (log)
-                    Log.i(TAG, "RESULT LOGIN " + err);
-                f.setException(new GAException(err));
+                f.set((V)result.toString());
             }
         };
     }
@@ -148,44 +141,73 @@ public class WalletClient {
         void onEvent(String topicUri, Object event);
     }
 
-    private void clientCall(final String procedure, final Class resClass, final CallHandler handler, Object... args) {
+    private void onCallError(final SettableFuture rpc, final String procedure,
+                             final ErrorHandler errHandler,
+                             final String uri, final String err) {
+        final StringBuilder b = new StringBuilder();
+        b.append(procedure).append("->").append(uri).append(":").append(err);
+        Log.d(TAG, b.toString());
+        if (errHandler != null)
+            errHandler.onError(uri, err);
+        else
+            rpc.setException(new GAException(err));
+    }
+
+    private void clientCall(final SettableFuture rpc, final String procedure, final Class result,
+                            final CallHandler handler, final ErrorHandler errHandler,
+                            Object... args) {
         final ObjectMapper mapper = new ObjectMapper();
         final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
-        final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
-        if (mConnection == null) {
-            handler.onError("not connected", "not connected");
-            return;
-        }
-        try {
-            mConnection.call(
-                    "com.greenaddress." + procedure, flags, argsNode, null
-            ).observeOn(mScheduler).subscribe(new Action1<Reply>() {
-                @Override
-                public void call(final Reply reply) {
-                    final JsonNode node = reply.arguments().get(0);
-                    handler.onResult(mapper.convertValue(node, resClass));
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(final Throwable throwable) {
 
-                    if (throwable instanceof ApplicationError) {
-                        final ApplicationError throwableAppError = (ApplicationError) throwable;
-                        final ArrayNode anode = throwableAppError.arguments();
-                        if (anode != null && anode.size() >= 2) {
-                            Log.w(TAG, throwable);
-                            handler.onError(anode.get(0).asText(), anode.get(1).asText());
-                        } else {
-                            handler.onError(throwable.toString(), throwable.toString());
-                        }
-                    } else {
-                        handler.onError(throwable.toString(), throwable.toString());
+        final Action1<Reply> replyHandler = new Action1<Reply>() {
+            @Override
+            public void call(final Reply reply) {
+                final JsonNode node = reply.arguments().get(0);
+                handler.onResult(mapper.convertValue(node, result));
+            }
+        };
+
+        final Action1<Throwable> errorHandler = new Action1<Throwable>() {
+            @Override
+            public void call(final Throwable err) {
+
+                if (err instanceof ApplicationError) {
+                    final ArrayNode a = ((ApplicationError) err).arguments();
+                    if (a != null && a.size() >= 2) {
+                        onCallError(rpc, procedure, errHandler, a.get(0).asText(), a.get(1).asText());
+                        return;
                     }
                 }
-            });
+                onCallError(rpc, procedure, errHandler, err.toString(), err.toString());
+            }
+        };
+
+        try {
+            if (mConnection != null) {
+                final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
+                final String callName = "com.greenaddress." + procedure;
+                mConnection.call(callName, flags, argsNode, null)
+                           .observeOn(mScheduler)
+                           .subscribe(replyHandler, errorHandler);
+                return;
+            }
         } catch (final RejectedExecutionException e) {
-            handler.onError("not connected", "not connected");
+            // Fall through
         }
+        onCallError(rpc, procedure, errHandler, "not connected", "not connected");
+    }
+
+    private void clientCall(final SettableFuture rpc, final String procedure, final Class result,
+                            final CallHandler handler, Object... args) {
+        clientCall(rpc, procedure, result, handler, null, args);
+    }
+
+    private <V> ListenableFuture<V> simpleCall(final String procedure, final Class result, Object... args) {
+        final SettableFuture<V> rpc = SettableFuture.create();
+        final CallHandler handler = result == null ? stringHandler(rpc) : simpleHandler(rpc);
+        final Class resultClass = result == null ? String.class : result;
+        clientCall(rpc, procedure, resultClass, handler, args);
+        return rpc;
     }
 
     private void clientSubscribe(final String s, final Class mapClass, final EventHandler eventHandler) {
@@ -212,16 +234,16 @@ public class WalletClient {
     }
 
     public WalletClient(final INotificationHandler notificationHandler, final ListeningExecutorService es) {
-        this.m_notificationHandler = notificationHandler;
-        this.es = es;
+        mNotificationHandler = notificationHandler;
+        mExecutor = es;
     }
 
     public void setProxy(final String host, final String port) {
         if (host != null && !host.equals("") && port != null && !port.equals("")) {
-            proxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
+            mProxy = new InetSocketAddress(host, Integer.parseInt(port));
             httpClient.setProxy(new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, Integer.parseInt(port))));
         } else {
-            proxyAddress = null;
+            mProxy = null;
             httpClient.setProxy(null);
         }
     }
@@ -231,7 +253,7 @@ public class WalletClient {
     }
 
     public LoginData getLoginData() {
-        return loginData;
+        return mLoginData;
     }
 
     private static byte[] mnemonicToPath(final String mnemonic) {
@@ -260,10 +282,10 @@ public class WalletClient {
 
     public void disconnect() {
         // FIXME: Server should handle logout without having to disconnect
-        loginData = null;
+        mLoginData = null;
         mnemonics = null;
 
-        hdWallet = null;
+        mHDParent = null;
 
         if (mConnection != null) {
             mConnection.close();
@@ -273,27 +295,21 @@ public class WalletClient {
 
 
     public boolean canLogin() {
-        return hdWallet != null;
+        return mHDParent != null;
     }
 
     private final OkHttpClient httpClient = new OkHttpClient();
 
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String device_id) {
 
-        final SettableFuture<DeterministicKey> asyncWamp = SettableFuture.create();
+        final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
         final byte[] mySeed = MnemonicCode.toSeed(WalletClient.split(mnemonics), "");
         final DeterministicKey deterministicKey = HDKeyDerivation.createMasterPrivateKey(mySeed);
         final String hexMasterPublicKey = Hex.toHexString(deterministicKey.getPubKey());
         final String hexChainCode = Hex.toHexString(deterministicKey.getChainCode());
-        clientCall("login.register", Boolean.class, new CallHandler() {
-            @Override
+        clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
             public void onResult(final Object result) {
-                asyncWamp.set(deterministicKey);
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
+                rpc.set(deterministicKey);
             }
         }, hexMasterPublicKey, hexChainCode, USER_AGENT);
 
@@ -313,26 +329,20 @@ public class WalletClient {
             }
         };
 
-        return Futures.transform(Futures.transform(
-                asyncWamp, registrationToLogin, es), loginToSetPathPostLogin, es);
+        return Futures.transform(Futures.transform(rpc, registrationToLogin, mExecutor),
+                                 loginToSetPathPostLogin, mExecutor);
     }
 
 
     public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode, final String device_id) {
 
-        final SettableFuture<ISigningWallet> asyncWamp = SettableFuture.create();
+        final SettableFuture<ISigningWallet> rpc = SettableFuture.create();
         final String hexMasterPublicKey = Hex.toHexString(masterPublicKey);
         final String hexChainCode = Hex.toHexString(masterChaincode);
 
-        clientCall("login.register", Boolean.class, new CallHandler() {
-            @Override
+        clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
             public void onResult(final Object result) {
-                asyncWamp.set(signingWallet);
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
+                rpc.set(signingWallet);
             }
         }, hexMasterPublicKey, hexChainCode, String.format("%s HW", USER_AGENT));
 
@@ -351,27 +361,20 @@ public class WalletClient {
             }
         };
 
-        return Futures.transform(Futures.transform(
-                asyncWamp, registrationToLogin, es), loginToSetPathPostLogin, es);
+        return Futures.transform(Futures.transform(rpc, registrationToLogin, mExecutor),
+                                 loginToSetPathPostLogin, mExecutor);
     }
 
     private ListenableFuture<LoginData> setupPathImpl(final byte[] bytes, final LoginData loginData) {
-        final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
+        final SettableFuture<LoginData> rpc = SettableFuture.create();
         final String pathHex = Hex.toHexString(bytes);
-        clientCall("login.set_gait_path", Void.class, new CallHandler() {
-
-            @Override
+        clientCall(rpc, "login.set_gait_path", Void.class, new CallHandler() {
             public void onResult(final Object result) {
                 loginData.gait_path = pathHex;
-                asyncWamp.set(loginData);
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
+                rpc.set(loginData);
             }
         }, pathHex);
-        return asyncWamp;
+        return rpc;
     }
 
     private ListenableFuture<LoginData> setupPath(final String mnemonics, final LoginData loginData) {
@@ -383,32 +386,19 @@ public class WalletClient {
     }
 
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int subAccount) {
-        final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("txs.get_balance", Map.class, simpleHandler(asyncWamp), subAccount);
-        return asyncWamp;
+        return simpleCall("txs.get_balance", Map.class, subAccount);
     }
 
     public ListenableFuture<Map<?, ?>> getTwoFacConfig() {
-        final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("twofactor.get_config", Map.class, simpleHandler(asyncWamp));
-        return asyncWamp;
+        return simpleCall("twofactor.get_config", Map.class);
     }
 
     public ListenableFuture<Map<?, ?>> getAvailableCurrencies() {
-        final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("login.available_currencies", Map.class, simpleHandler(asyncWamp));
-        return asyncWamp;
-    }
-
-    public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
-        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("login.set_pricing_source", Boolean.class,
-                   simpleHandler(asyncWamp), currency, exchange);
-        return asyncWamp;
+        return simpleCall("login.available_currencies", Map.class);
     }
 
     private void subscribeToWallet() {
-        clientSubscribe("txs.wallet_" + loginData.receiving_id, Map.class, new EventHandler() {
+        clientSubscribe("txs.wallet_" + mLoginData.receiving_id, Map.class, new EventHandler() {
             @Override
             public void onEvent(final String topicUri, final Object event) {
                 final Map<?, ?> res = (Map) event;
@@ -431,14 +421,14 @@ public class WalletClient {
                         }
                     }
                 }
-                m_notificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
+                mNotificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
                         subaccounts_int, Long.valueOf(value), txhash);
             }
         });
     }
 
     public ListenableFuture<Void> connect() {
-        final SettableFuture<Void> asyncWamp = SettableFuture.create();
+        final SettableFuture<Void> rpc = SettableFuture.create();
         mScheduler.createWorker().schedule(new Action0() {
             @Override
             public void call() {
@@ -447,12 +437,12 @@ public class WalletClient {
                 final IWampConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
                 try {
                     builder.withConnectorProvider(connectorProvider)
-                            .withProxyAddress(proxyAddress)
+                            .withProxyAddress(mProxy)
                             .withUri(wsuri)
                             .withRealm("realm1")
                             .withNrReconnects(0);
                 } catch (final ApplicationError e) {
-                    asyncWamp.setException(e);
+                    rpc.setException(e);
                     return;
                 }
 
@@ -463,7 +453,7 @@ public class WalletClient {
                 try {
                     mConnection = builder.build();
                 } catch (final Exception e) {
-                    asyncWamp.setException(new GAException(e.toString()));
+                    rpc.setException(new GAException(e.toString()));
                     return;
                 }
 
@@ -480,7 +470,7 @@ public class WalletClient {
                                 // Client got connected to the remote router
                                 // and the session was established
                                 connected = true;
-                                asyncWamp.set(null);
+                                rpc.set(null);
                             } else if (newStatus instanceof WampClient.DisconnectedState) {
                                 if (!initialDisconnectedStateSeen) {
                                     // First state set is always 'disconnected'
@@ -488,10 +478,10 @@ public class WalletClient {
                                 } else {
                                     if (connected) {
                                         // Client got disconnected from the remote router
-                                        m_notificationHandler.onConnectionClosed(0);
+                                        mNotificationHandler.onConnectionClosed(0);
                                     } else {
                                         // or the last possible connect attempt failed
-                                        asyncWamp.setException(new GAException("Disconnected"));
+                                        rpc.setException(new GAException("Disconnected"));
                                     }
                                 }
                             }
@@ -510,22 +500,22 @@ public class WalletClient {
             }
         });
 
-        Futures.addCallback(asyncWamp, new FutureCallback<Void>() {
+        Futures.addCallback(rpc, new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable final Void result) {
                 clientSubscribe("blocks", Map.class, new EventHandler() {
                     @Override
                     public void onEvent(final String topicUri, final Object event) {
                         Log.i(TAG, "BLOCKS IS " + event.toString());
-                        m_notificationHandler.onNewBlock(Integer.parseInt(((Map) event).get("count").toString()));
+                        mNotificationHandler.onNewBlock(Integer.parseInt(((Map) event).get("count").toString()));
                     }
                 });
                 clientSubscribe("fee_estimates", Map.class, new EventHandler() {
                     @Override
                     public void onEvent(final String topicUri, final Object event) {
                         Log.i(TAG, "FEE_ESTIMATES IS " + event.toString());
-                        if (loginData != null) {
-                            loginData.feeEstimates = (Map) event;
+                        if (mLoginData != null) {
+                            mLoginData.feeEstimates = (Map) event;
                         }
                     }
                 });
@@ -535,10 +525,10 @@ public class WalletClient {
             public void onFailure(final Throwable t) {
 
             }
-        }, es);
+        }, mExecutor);
 
 
-        return asyncWamp;
+        return rpc;
     }
 
     public ListenableFuture<LoginData> login(final String mnemonics_str, final String device_id) {
@@ -550,7 +540,7 @@ public class WalletClient {
     }
 
     public ListenableFuture<LoginData> login(final String device_id) {
-        return login(hdWallet, device_id);
+        return login(mHDParent, device_id);
     }
 
     private String getRandomHexString(final int numchars) {
@@ -565,7 +555,7 @@ public class WalletClient {
     // derive private key for signing the challenge, using 8 bytes instead of 64
     private ISigningWallet createSubpathForLogin(final ISigningWallet parentKey, final String path_hex) {
         ISigningWallet key = parentKey;
-        final BigInteger path = new BigInteger(com.subgraph.orchid.encoders.Hex.decode(path_hex));
+        final BigInteger path = new BigInteger(Hex.decode(path_hex));
         byte[] bytes = path.toByteArray();
         if (bytes.length < 8) {
             final byte[] bytes_pad = new byte[8];
@@ -590,7 +580,7 @@ public class WalletClient {
     }
 
     private ListenableFuture<LoginData> authenticate(final String challengeString, final ISigningWallet deterministicKey, final String device_id) {
-        final SettableFuture<LoginData> asyncWamp = SettableFuture.create();
+        final SettableFuture<LoginData> rpc = SettableFuture.create();
 
         final ListenableFuture<ECKey.ECDSASignature> signature;
         final String path_hex;
@@ -654,22 +644,20 @@ public class WalletClient {
         Futures.addCallback(signature_arg, new FutureCallback<String[]>() {
             @Override
             public void onSuccess(final @Nullable String[] result) {
-                clientCall("login.authenticate", Object.class, new CallHandler() {
-                    @Override
+                clientCall(rpc, "login.authenticate", Object.class, new CallHandler() {
                     public void onResult(final Object loginData) {
                         try {
                             if (loginData instanceof Boolean) {
                                 // login failed
-                                asyncWamp.setException(new LoginFailed());
+                                rpc.setException(new LoginFailed());
                             } else {
-                                WalletClient.this.loginData = new LoginData((Map) loginData);
+                                mLoginData = new LoginData((Map) loginData);
                                 subscribeToWallet();  // requires receiving_id to be set
-                                WalletClient.this.hdWallet = deterministicKey;
+                                mHDParent = deterministicKey;
 
-                                asyncWamp.set(WalletClient.this.loginData);
+                                rpc.set(mLoginData);
 
-                                if (WalletClient.this.loginData.rbf &&
-                                        getAppearenceValue("replace_by_fee") == null) {
+                                if (mLoginData.rbf && getAppearanceValue("replace_by_fee") == null) {
                                     // enable rbf if server supports it and not disabled
                                     // by user explicitly
                                     setAppearanceValue("replace_by_fee", Boolean.TRUE, false);
@@ -677,24 +665,18 @@ public class WalletClient {
                             }
                         } catch (final ClassCastException | IOException e) {
 
-                            asyncWamp.setException(e);
+                            rpc.setException(e);
                         }
-                    }
-
-                    @Override
-                    public void onError(final String uri, final String err) {
-                        Log.i(TAG, "RESULT LOGIN " + err);
-                        asyncWamp.setException(new GAException(err));
                     }
                 }, result, true, path_hex, device_id, USER_AGENT);
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                asyncWamp.setException(t);
+                rpc.setException(t);
             }
         });
-        return asyncWamp;
+        return rpc;
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet key, final String device_id) {
@@ -705,16 +687,11 @@ public class WalletClient {
             new AsyncFunction<byte[], String>() {
                 @Override
                 public ListenableFuture<String> apply(final byte[] addr) throws Exception {
-                    final Address address = new Address(Network.NETWORK, addr);
-                    final SettableFuture<String> asyncWamp = SettableFuture.create();
+                    final String address = new Address(Network.NETWORK, addr).toString();
                     if (canSignHashes)
-                        clientCall("login.get_challenge", String.class,
-                                   stringHandler(asyncWamp, true), address.toString());
-                    else
-                        clientCall("login.get_trezor_challenge", String.class,
-                                   stringHandler(asyncWamp, true), address.toString(),
-                                   !(key instanceof TrezorHWWallet));
-                    return asyncWamp;
+                        return simpleCall("login.get_challenge", null, address);
+                    return simpleCall("login.get_trezor_challenge", null, address,
+                                      !(key instanceof TrezorHWWallet));
                 }
             });
 
@@ -724,13 +701,12 @@ public class WalletClient {
                 public ListenableFuture<LoginData> apply(final String input) throws Exception {
                     return authenticate(input, key, device_id);
                 }
-            }, es);
+            }, mExecutor);
     }
 
     public ListenableFuture<LoginData> pinLogin(final PinData data, final String pin, final String device_id) {
-        final SettableFuture<DeterministicKey> asyncWamp = SettableFuture.create();
-        clientCall("pin.get_password", String.class, new CallHandler() {
-            @Override
+        final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
+        clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
             public void onResult(final Object pass) {
                 final String password = pass.toString();
                 final String[] split = data.encrypted.split(";");
@@ -742,15 +718,10 @@ public class WalletClient {
                     final Map<String, String> json = new MappingJsonFactory().getCodec().readValue(
                             decrypted, Map.class);
                     mnemonics = json.get("mnemonic");
-                    asyncWamp.set(HDKeyDerivation.createMasterPrivateKey(com.subgraph.orchid.encoders.Hex.decode(json.get("seed"))));
+                    rpc.set(HDKeyDerivation.createMasterPrivateKey(Hex.decode(json.get("seed"))));
                 } catch (final InvalidCipherTextException | IOException e) {
-                    asyncWamp.setException(e);
+                    rpc.setException(e);
                 }
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
             }
         }, pin, data.ident);
 
@@ -762,27 +733,20 @@ public class WalletClient {
             }
         };
 
-        return Futures.transform(asyncWamp, connectToLogin, es);
+        return Futures.transform(rpc, connectToLogin, mExecutor);
     }
 
     public ListenableFuture<Map<?, ?>> getMyTransactions(final Integer subaccount) {
-        final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("txs.get_list_v2", Map.class,
-                   simpleHandler(asyncWamp), null, null, null, null, subaccount);
-        return asyncWamp;
+        return simpleCall("txs.get_list_v2", Map.class, null, null, null, null, subaccount);
     }
 
     public ListenableFuture<Map> getNewAddress(final int subaccount) {
-        final SettableFuture<Map> asyncWamp = SettableFuture.create();
-        clientCall("vault.fund", Map.class, simpleHandler(asyncWamp), subaccount, true);
-        return asyncWamp;
+        return simpleCall("vault.fund", Map.class, subaccount, true);
     }
 
     private ListenableFuture<PinData> getPinData(final String pin, final SetPinData setPinData) {
-        final SettableFuture<PinData> asyncWamp = SettableFuture.create();
-        clientCall("pin.get_password", String.class, new CallHandler() {
-
-            @Override
+        final SettableFuture<PinData> rpc = SettableFuture.create();
+        clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
             public void onResult(final Object password) {
                 try {
                     final byte[] salt = new byte[16];
@@ -794,55 +758,36 @@ public class WalletClient {
                                             PBKDF2SHA512.derive(password.toString(), salt_b64, 2048, 32)),
                                     Base64.NO_WRAP));
 
-                    asyncWamp.set(new PinData(setPinData.ident, encrypted));
+                    rpc.set(new PinData(setPinData.ident, encrypted));
 
                 } catch (final InvalidCipherTextException e) {
-                    asyncWamp.setException(e);
+                    rpc.setException(e);
                 }
             }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
-            }
         }, pin, setPinData.ident);
-        return asyncWamp;
+        return rpc;
     }
 
     private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final byte[] seed, final String pin, final String device_name) {
-        final SettableFuture<SetPinData> asyncWamp = SettableFuture.create();
-        final Map<String, String> out = new HashMap<>();
+        final SettableFuture<SetPinData> rpc = SettableFuture.create();
 
-        out.put("mnemonic", mnemonic);
         mnemonics = mnemonic;
+        final Map<String, String> out = new HashMap<>();
+        out.put("mnemonic", mnemonic);
+        out.put("seed", Hex.toHexString(seed));
+        out.put("path_seed", Hex.toHexString(mnemonicToPath(mnemonic)));
 
-        out.put("seed", new String(com.subgraph.orchid.encoders.Hex.encode(seed)));
-        out.put("path_seed", new String(com.subgraph.orchid.encoders.Hex.encode(mnemonicToPath(mnemonic))));
-
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            new MappingJsonFactory().getCodec().writeValue(os, out);
-        } catch (final IOException e) {
-            asyncWamp.setException(e);
-            return asyncWamp;
+            final byte[] info = serializeJSON(out).toByteArray();
+            clientCall(rpc, "pin.set_pin_login", String.class, new CallHandler() {
+                public void onResult(final Object ident) {
+                    rpc.set(new SetPinData(info, ident.toString()));
+                }
+            }, pin, device_name);
+        } catch (final GAException e) {
+            rpc.setException(e);
         }
-
-        clientCall("pin.set_pin_login", String.class, new CallHandler() {
-
-            @Override
-            public void onResult(final Object ident) {
-                asyncWamp.set(new SetPinData(os.toByteArray(), ident.toString()));
-
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
-            }
-
-        }, pin, device_name);
-
-        return asyncWamp;
+        return rpc;
     }
 
     public ListenableFuture<PinData> setPin(final byte[] seed, final String mnemonic, final String pin, final String device_name) {
@@ -851,24 +796,18 @@ public class WalletClient {
             public ListenableFuture<PinData> apply(final SetPinData pinData) throws Exception {
                 return getPinData(pin, pinData);
             }
-        }, es);
+        }, mExecutor);
     }
 
     public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {
-        final SettableFuture<PreparedTransaction.PreparedData> asyncWamp = SettableFuture.create();
-        clientCall("vault.prepare_tx", Map.class, new CallHandler() {
-            @Override
+        final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
+        clientCall(rpc, "vault.prepare_tx", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                asyncWamp.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, loginData.subaccounts, httpClient));
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
+                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.subaccounts, httpClient));
             }
         }, satoshis, destAddress, feesMode, privateData);
 
-        return processPreparedTx(asyncWamp);
+        return processPreparedTx(rpc);
     }
 
     private ListenableFuture<PreparedTransaction> processPreparedTx(final ListenableFuture<PreparedTransaction.PreparedData> pt) {
@@ -877,19 +816,16 @@ public class WalletClient {
             public PreparedTransaction apply(final PreparedTransaction.PreparedData input) {
                 return new PreparedTransaction(input);
             }
-        }, es);
+        }, mExecutor);
     }
 
     public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
-        final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("vault.process_bip0070_url", Map.class,
-                   simpleHandler(asyncWamp), url);
-        return asyncWamp;
+        return simpleCall("vault.process_bip0070_url", Map.class, url);
     }
 
     public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, Map<?, ?> data, final Map<String, Object> privateData) {
 
-        final SettableFuture<PreparedTransaction.PreparedData> asyncWamp = SettableFuture.create();
+        final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
 
 
         final Map dataClone = new HashMap<>();
@@ -903,65 +839,48 @@ public class WalletClient {
             dataClone.put(key, privateData.get(key));
         }
 
-        clientCall("vault.prepare_payreq", Map.class, new CallHandler() {
-            @Override
+        clientCall(rpc, "vault.prepare_payreq", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                asyncWamp.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, loginData.subaccounts, httpClient));
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
+                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.subaccounts, httpClient));
             }
         }, amount.longValue(), dataClone, privateData);
 
-        return processPreparedTx(asyncWamp);
+        return processPreparedTx(rpc);
     }
 
     public ListenableFuture<Map<?, ?>> prepareSweepSocial(final byte[] pubKey, final boolean useElectrum) {
         final Integer[] pubKeyObjs = new Integer[pubKey.length];
-        for (int i = 0; i < pubKey.length; ++i) {
+        for (int i = 0; i < pubKey.length; ++i)
             pubKeyObjs[i] = pubKey[i] & 0xff;
-        }
-        final SettableFuture<Map<?, ?>> asyncWamp = SettableFuture.create();
-        clientCall("vault.prepare_sweep_social", Map.class,
-                   simpleHandler(asyncWamp), new ArrayList<>(Arrays.asList(pubKeyObjs)), useElectrum);
-        return asyncWamp;
+        return simpleCall("vault.prepare_sweep_social", Map.class,
+                          new ArrayList<>(Arrays.asList(pubKeyObjs)), useElectrum);
 
     }
 
     public ListenableFuture<String> sendTransaction(final List<String> signatures, final Object TfaData) {
-        final SettableFuture<String> asyncWamp = SettableFuture.create();
-        clientCall("vault.send_tx", String.class,
-                   stringHandler(asyncWamp, false), signatures, TfaData);
-        return asyncWamp;
+        return simpleCall("vault.send_tx", null, signatures, TfaData);
     }
 
     public ListenableFuture<Map<String, Object> > sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
-        final SettableFuture<Map<String, Object>> asyncWamp = SettableFuture.create();
-        clientCall("vault.send_raw_tx", Map.class, new CallHandler() {
-            @Override
-            public void onResult(final Object result) {
-                asyncWamp.set((Map<String, Object>) result);
-            }
-
-            @Override
+        final SettableFuture<Map<String, Object>> rpc = SettableFuture.create();
+        final ErrorHandler errHandler = new ErrorHandler() {
             public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(returnErrorUri ? uri : err));
+                rpc.setException(new GAException(returnErrorUri ? uri : err));
             }
-        }, new String(Hex.encode(tx.bitcoinSerialize())), twoFacData);
-
-        return asyncWamp;
+        };
+        final String txStr =  new String(Hex.encode(tx.bitcoinSerialize()));
+        clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc), errHandler, txStr, twoFacData);
+        return rpc;
     }
 
     public ListenableFuture<List<String>> signTransaction(final PreparedTransaction tx, final boolean privateDerivation) {
-        final SettableFuture<List<String>> asyncWamp = SettableFuture.create();
+        final SettableFuture<List<String>> rpc = SettableFuture.create();
 
         final Transaction t = tx.decoded;
         final List<TransactionInput> txInputs = t.getInputs();
         final List<Output> prevOuts = tx.prev_outputs;
         final List<String> signatures = new ArrayList<>(txInputs.size());
-        if (hdWallet.canSignHashes()) {
+        if (mHDParent.canSignHashes()) {
             ListenableFuture<ECKey.ECDSASignature> lastSignature = Futures.immediateFuture(null);
 
             for (int i = 0; i < txInputs.size(); ++i) {
@@ -973,9 +892,9 @@ public class WalletClient {
 
                         final ISigningWallet account;
                         if (prevOut.subaccount == null || prevOut.subaccount == 0) {
-                            account = hdWallet;
+                            account = mHDParent;
                         } else {
-                            account = hdWallet
+                            account = mHDParent
                                     .deriveChildKey(new ChildNumber(3, true))
                                     .deriveChildKey(new ChildNumber(prevOut.subaccount, true));
                         }
@@ -1010,17 +929,17 @@ public class WalletClient {
             Futures.addCallback(lastSignature, new FutureCallback<ECKey.ECDSASignature>() {
                 @Override
                 public void onSuccess(final @Nullable ECKey.ECDSASignature result) {
-                    asyncWamp.set(signatures);
+                    rpc.set(signatures);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    asyncWamp.setException(t);
+                    rpc.setException(t);
                 }
             });
         } else {
-            Futures.addCallback(hdWallet.signTransaction(tx,
-                    Hex.decode(loginData.gait_path)), new FutureCallback<List<ECKey.ECDSASignature>>() {
+            Futures.addCallback(mHDParent.signTransaction(tx,
+                    Hex.decode(mLoginData.gait_path)), new FutureCallback<List<ECKey.ECDSASignature>>() {
                 @Override
                 public void onSuccess(final @Nullable List<ECKey.ECDSASignature> signatures) {
                     final List<String> result = new LinkedList<>();
@@ -1028,21 +947,31 @@ public class WalletClient {
                         final TransactionSignature txSignature = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
                         result.add(Hex.toHexString(txSignature.encodeToBitcoin()));
                     }
-                    asyncWamp.set(result);
+                    rpc.set(result);
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    asyncWamp.setException(t);
+                    rpc.setException(t);
                 }
             });
         }
-        return asyncWamp;
+        return rpc;
 
     }
 
-    public Object getAppearenceValue(final String key) {
-        return loginData.appearance.get(key);
+    public Object getAppearanceValue(final String key) {
+        return mLoginData.appearance.get(key);
+    }
+
+    private <T> ByteArrayOutputStream serializeJSON(T src) throws GAException {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        try {
+            new MappingJsonFactory().getCodec().writeValue(b, src);
+        } catch (final IOException e) {
+            throw new GAException(e.getMessage());
+        }
+        return b;
     }
 
     /**
@@ -1050,71 +979,47 @@ public class WalletClient {
      *                          the value in local settings dict (set false to wait)
      */
     public ListenableFuture<Boolean> setAppearanceValue(final String key, final Object value, final boolean updateImmediately) {
-        final Object oldValue = loginData.appearance.get(key);
-        if (updateImmediately) {
-            loginData.appearance.put(key, value);
-        }
+        final Object oldValue = getAppearanceValue(key);
+        if (updateImmediately)
+            mLoginData.appearance.put(key, value);
 
-        final Map<String, Object> newAppearance = new HashMap<>(loginData.appearance); // clone
+        final Map<String, Object> newAppearance = new HashMap<>(mLoginData.appearance); // clone
         newAppearance.put(key, value);
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final String newJSON;
         try {
-            new MappingJsonFactory().getCodec().writeValue(os, newAppearance);
-        } catch (final IOException e) {
-            return Futures.immediateFailedFuture(new GAException(e.getMessage()));
+            newJSON = serializeJSON(newAppearance).toString();
+        } catch (final GAException e) {
+            if (updateImmediately)
+                mLoginData.appearance.put(key, oldValue); // Restore
+            return Futures.immediateFailedFuture(e);
         }
-        final String newJSON = os.toString();
 
-        final SettableFuture<Boolean> ret = SettableFuture.create();
-        clientCall("login.set_appearance", Map.class, new CallHandler() {
-            @Override
+        final SettableFuture<Boolean> rpc = SettableFuture.create();
+        final CallHandler handler = new CallHandler() {
             public void onResult(final Object result) {
-                if (!updateImmediately) {
-                    loginData.appearance.put(key, value);
-                }
-                ret.set(true);
+                if (!updateImmediately)
+                    mLoginData.appearance.put(key, value);
+                rpc.set(true);
             }
-
-            @Override
+        };
+        final ErrorHandler errHandler = new ErrorHandler() {
             public void onError(final String uri, final String err) {
                 Log.d(TAG, "updateAppearance failed: " + err);
-                if (updateImmediately) {
-                    // restore old value
-                    loginData.appearance.put(key, oldValue);
-                }
-                ret.setException(new GAException(err));
+                if (updateImmediately)
+                    mLoginData.appearance.put(key, oldValue); // Restore
+                rpc.setException(new GAException(err));
             }
-        }, newJSON);
-
-        return ret;
+        };
+        clientCall(rpc, "login.set_appearance", Map.class, handler, errHandler, newJSON);
+        return rpc;
     }
 
-    public ListenableFuture<Object> requestTwoFacCode(final String method, final String action, final Object data) {
-        final SettableFuture<Object> asyncWamp = SettableFuture.create();
-        clientCall("twofactor.request_" + method, Object.class, new CallHandler() {
-            @Override
-            public void onResult(final Object result) {
-                asyncWamp.set(result);
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
-                Log.e(TAG, err);
-            }
-        }, action, data);
-        return asyncWamp;
+    public ListenableFuture<Object> requestTwoFacCode(final String type, final String action, final Object data) {
+        return simpleCall("twofactor.request_" + type, Object.class, action, data);
     }
 
     public ISigningWallet getHdWallet() {
-        return hdWallet;
-    }
-
-    public ListenableFuture<Boolean> changeMemo(final String txhash, final String memo) {
-        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("txs.change_memo", Boolean.class,
-                   simpleHandler(asyncWamp), txhash, memo);
-        return asyncWamp;
+        return mHDParent;
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs() {
@@ -1122,63 +1027,49 @@ public class WalletClient {
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
-        final SettableFuture<ArrayList> asyncWamp = SettableFuture.create();
-        clientCall("txs.get_all_unspent_outputs", ArrayList.class,
-                   simpleHandler(asyncWamp), confs, subaccount);
-        return asyncWamp;
+        return simpleCall("txs.get_all_unspent_outputs", ArrayList.class, confs, subaccount);
     }
 
-    private CallHandler transactionHandler(final SettableFuture<Transaction> asyncWamp) {
-        return new CallHandler() {
-            @Override
+    private ListenableFuture<Transaction> transactionCall(final String procedure, Object... args) {
+        final SettableFuture<Transaction> rpc = SettableFuture.create();
+        final CallHandler handler = new CallHandler() {
             public void onResult(final Object tx) {
-                asyncWamp.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
-            }
-
-            @Override
-            public void onError(final String uri, final String err) {
-                asyncWamp.setException(new GAException(err));
+                rpc.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
             }
         };
+        clientCall(rpc, procedure, String.class, handler, args);
+        return rpc;
     }
 
     public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
-        final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
-        clientCall("txs.get_raw_unspent_output", String.class, transactionHandler(asyncWamp), txHash.toString());
-        return asyncWamp;
+        return transactionCall("txs.get_raw_unspent_output", txHash.toString());
     }
 
     public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
-        final SettableFuture<Transaction> asyncWamp = SettableFuture.create();
-        clientCall("txs.get_raw_output", String.class, transactionHandler(asyncWamp), txHash.toString());
-        return asyncWamp;
+        return transactionCall("txs.get_raw_output", txHash.toString());
+    }
+
+    public ListenableFuture<Boolean> changeMemo(final String txhash, final String memo) {
+        return simpleCall("txs.change_memo", Boolean.class, txhash, memo);
+    }
+
+    public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
+        return simpleCall("login.set_pricing_source", Boolean.class, currency, exchange);
     }
 
     public ListenableFuture<Boolean> initEnableTwoFac(final String type, final String details, final Map<?, ?> twoFacData) {
-        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("twofactor.init_enable_" + type, Boolean.class,
-                   simpleHandler(asyncWamp), details, twoFacData);
-        return asyncWamp;
+        return simpleCall("twofactor.init_enable_" + type, Boolean.class, details, twoFacData);
     }
 
     public ListenableFuture<Boolean> enableTwoFac(final String type, final String code) {
-        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("twofactor.enable_" + type, Boolean.class,
-                   simpleHandler(asyncWamp), code);
-        return asyncWamp;
+        return simpleCall("twofactor.enable_" + type, Boolean.class, code);
     }
 
     public ListenableFuture<Boolean> enableTwoFac(final String type, final String code, final Object twoFacData) {
-        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("twofactor.enable_" + type, Boolean.class,
-                   simpleHandler(asyncWamp), code, twoFacData);
-        return asyncWamp;
+        return simpleCall("twofactor.enable_" + type, Boolean.class, code, twoFacData);
     }
 
     public ListenableFuture<Boolean> disableTwoFac(final String type, final Map<String, String> twoFacData) {
-        final SettableFuture<Boolean> asyncWamp = SettableFuture.create();
-        clientCall("twofactor.disable_" + type, Boolean.class,
-                   simpleHandler(asyncWamp), twoFacData);
-        return asyncWamp;
+        return simpleCall("twofactor.disable_" + type, Boolean.class, twoFacData);
     }
 }

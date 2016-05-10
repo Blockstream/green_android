@@ -806,7 +806,7 @@ public class GaService extends Service {
     }
 
     public Object getAppearanceValue(@NonNull final String key) {
-        return client.getAppearenceValue(key);
+        return client.getAppearanceValue(key);
     }
 
     @Nullable

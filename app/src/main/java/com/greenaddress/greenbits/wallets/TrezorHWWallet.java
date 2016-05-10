@@ -12,12 +12,12 @@ import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.satoshilabs.trezor.Trezor;
-import com.subgraph.orchid.encoders.Hex;
 
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
+import org.spongycastle.util.encoders.Hex;
 
 import java.util.LinkedList;
 import java.util.List;

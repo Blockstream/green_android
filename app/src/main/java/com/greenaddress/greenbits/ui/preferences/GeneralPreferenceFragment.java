@@ -163,6 +163,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             optin_rbf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                    // disable until server confirms set
+                    optin_rbf.setEnabled(false);
+
                     Futures.addCallback(
                             gaService.setAppearanceValue("replace_by_fee", newValue, false),
                             new FutureCallback<Boolean>() {
@@ -187,8 +190,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                     });
                                 }
                             });
-                    // disable until server confirms set
-                    optin_rbf.setEnabled(false);
                     return false;
                 }
             });
