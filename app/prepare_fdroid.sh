@@ -6,4 +6,4 @@ if [ -z "$ANDROID_NDK" ]; then
 fi
 
 echo ${ANDROID_NDK:?}
-exec ./prepare_scrypt.sh
+exec ./prepare_libwally.sh

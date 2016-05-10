@@ -3,6 +3,7 @@ package com.greenaddress.greenapi;
 import android.util.Base64;
 import android.util.Log;
 
+import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -27,15 +28,9 @@ import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
-import org.bitcoinj.crypto.MnemonicCode;
-import org.bitcoinj.crypto.PBKDF2SHA512;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.codehaus.jackson.map.MappingJsonFactory;
-import org.spongycastle.crypto.InvalidCipherTextException;
-import org.spongycastle.crypto.digests.SHA512Digest;
-import org.spongycastle.crypto.macs.HMac;
-import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
@@ -69,11 +64,11 @@ import ws.wamp.jawampa.WampClientBuilder;
 import ws.wamp.jawampa.connection.IWampConnectorProvider;
 import ws.wamp.jawampa.transport.netty.NettyWampClientConnectorProvider;
 
-
 public class WalletClient {
 
     private static final String TAG = WalletClient.class.getSimpleName();
     private static final String GA_KEY = "GreenAddress.it HD wallet path";
+    private static final String GA_PATH = "greenaddress_path";
     private static final String USER_AGENT = String.format("%s;%s;%s;%s",
             BuildConfig.VERSION_CODE, BuildConfig.BUILD_TYPE,
             android.os.Build.VERSION.SDK_INT, System.getProperty("os.arch"));
@@ -248,32 +243,22 @@ public class WalletClient {
         }
     }
 
-    private static List<String> split(final String words) {
-        return new ArrayList<>(Arrays.asList(words.split("\\s+")));
-    }
-
     public LoginData getLoginData() {
         return mLoginData;
     }
 
     private static byte[] mnemonicToPath(final String mnemonic) {
-        final byte[] step1 = PBKDF2SHA512.derive(mnemonic, "greenaddress_path", 2048, 64);
-        final HMac hmac = new HMac(new SHA512Digest());
-        hmac.init(new KeyParameter(GA_KEY.getBytes()));
-        hmac.update(step1, 0, step1.length);
-        final byte[] step2 = new byte[64];
-        hmac.doFinal(step2, 0);
-        return step2;
+        final byte[] pbkdf2_hmac_sha512;
+        pbkdf2_hmac_sha512 = Wally.pbkdf2_hmac_sha512(
+                mnemonic.getBytes(), GA_PATH.getBytes(), 0, 2048, null);
+        return Wally.hmac_sha512(GA_KEY.getBytes(), pbkdf2_hmac_sha512, null);
     }
 
     private static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {
-        final HMac hmac = new HMac(new SHA512Digest());
-        hmac.init(new KeyParameter(GA_KEY.getBytes()));
-        hmac.update(chainCode, 0, chainCode.length);
-        hmac.update(publicKey, 0, publicKey.length);
-        final byte[] step2 = new byte[64];
-        hmac.doFinal(step2, 0);
-        return step2;
+        final byte[] data = new byte[publicKey.length + chainCode.length];
+        System.arraycopy(chainCode, 0, data, 0, chainCode.length);
+        System.arraycopy(publicKey, 0, data, chainCode.length, publicKey.length);
+        return Wally.hmac_sha512(GA_KEY.getBytes(), data, null);
     }
 
     public String getMnemonics() {
@@ -293,7 +278,6 @@ public class WalletClient {
         }
     }
 
-
     public boolean canLogin() {
         return mHDParent != null;
     }
@@ -303,7 +287,7 @@ public class WalletClient {
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String device_id) {
 
         final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
-        final byte[] mySeed = MnemonicCode.toSeed(WalletClient.split(mnemonics), "");
+        final byte[] mySeed = CryptoHelper.mnemonic_to_seed(mnemonics);
         final DeterministicKey deterministicKey = HDKeyDerivation.createMasterPrivateKey(mySeed);
         final String hexMasterPublicKey = Hex.toHexString(deterministicKey.getPubKey());
         final String hexChainCode = Hex.toHexString(deterministicKey.getChainCode());
@@ -531,12 +515,10 @@ public class WalletClient {
         return rpc;
     }
 
-    public ListenableFuture<LoginData> login(final String mnemonics_str, final String device_id) {
-        final List<String> mnemonics = Arrays.asList(mnemonics_str.split(" "));
-        final ISigningWallet wallet = new DeterministicSigningKey(HDKeyDerivation.createMasterPrivateKey(MnemonicCode.toSeed(mnemonics, "")));
-        this.mnemonics = mnemonics_str;
-
-        return login(wallet, device_id);
+    public ListenableFuture<LoginData> login(final String mnemonics, final String device_id) {
+        this.mnemonics = mnemonics;
+        return login(new DeterministicSigningKey(
+                HDKeyDerivation.createMasterPrivateKey(CryptoHelper.mnemonic_to_seed(mnemonics))), device_id);
     }
 
     public ListenableFuture<LoginData> login(final String device_id) {
@@ -610,8 +592,7 @@ public class WalletClient {
             path_hex = "GA";
             childKey = deterministicKey.deriveChildKey(new ChildNumber(0x4741b11e));
             final String message = "greenaddress.it      login " + challengeString;
-            final byte[] data = Utils.formatMessageForSigning(message);
-            final Sha256Hash challenge_sha = Sha256Hash.twiceOf(data);
+            final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message), null);
             signature = childKey.signMessage(message);
             signature_arg = Futures.transform(signature, new AsyncFunction<ECKey.ECDSASignature, String[]>() {
                 @Nullable
@@ -623,7 +604,7 @@ public class WalletClient {
                         public void onSuccess(final @Nullable ECKey result) {
                             int recId;
                             for (recId = 0; recId < 4; ++recId) {
-                                final ECKey recovered = ECKey.recoverFromSignature(recId, signature, challenge_sha, true);
+                                final ECKey recovered = ECKey.recoverFromSignature(recId, signature, Sha256Hash.wrap(challenge_sha), true);
                                 if (recovered != null && recovered.equals(result)) {
                                     break;
                                 }
@@ -708,18 +689,25 @@ public class WalletClient {
         final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
         clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
             public void onResult(final Object pass) {
-                final String password = pass.toString();
                 final String[] split = data.encrypted.split(";");
 
                 try {
-                    final String decrypted = new String(AES256.decrypt(
-                            Base64.decode(split[1], Base64.NO_WRAP), PBKDF2SHA512.derive(
-                                    password, split[0], 2048, 32)));
+
+                    final byte[] pbkdf2_hmac_sha512;
+                    pbkdf2_hmac_sha512 = Wally.pbkdf2_hmac_sha512(
+                            pass.toString().getBytes(), split[0].getBytes(), 0, 2048, null);
+
+                    final byte[] truncated = Arrays.copyOf(pbkdf2_hmac_sha512, 32);
+
+                    final String decrypted = new String(CryptoHelper.decrypt_aes_cbc(
+                            Base64.decode(split[1], Base64.NO_WRAP), truncated));
+
                     final Map<String, String> json = new MappingJsonFactory().getCodec().readValue(
                             decrypted, Map.class);
+
                     mnemonics = json.get("mnemonic");
                     rpc.set(HDKeyDerivation.createMasterPrivateKey(Hex.decode(json.get("seed"))));
-                } catch (final InvalidCipherTextException | IOException e) {
+                } catch (final IOException e) {
                     rpc.setException(e);
                 }
             }
@@ -751,16 +739,19 @@ public class WalletClient {
                 try {
                     final byte[] salt = new byte[16];
                     new SecureRandom().nextBytes(salt);
-                    final String salt_b64 = Base64.encodeToString(salt, Base64.NO_WRAP);
+                    final byte[] pass = password.toString().getBytes();
+                    final byte[] pbkdf2_hmac_sha512;
+                    pbkdf2_hmac_sha512 = Wally.pbkdf2_hmac_sha512(
+                            pass, Base64.encode(salt, Base64.NO_WRAP), 0, 2048, null);
+                    final byte[] truncated = Arrays.copyOf(pbkdf2_hmac_sha512, 32);
+                    final byte[] aes_cbc = CryptoHelper.encrypt_aes_cbc(setPinData.json, truncated);
+                    final String clob = String.format("%s;%s", Base64.encodeToString(salt,
+                            Base64.NO_WRAP), Base64.encodeToString(aes_cbc,
+                            Base64.NO_WRAP));
 
-                    final String encrypted = String.format("%s;%s", salt_b64,
-                            Base64.encodeToString(AES256.encrypt(setPinData.json,
-                                            PBKDF2SHA512.derive(password.toString(), salt_b64, 2048, 32)),
-                                    Base64.NO_WRAP));
+                    rpc.set(new PinData(setPinData.ident, clob));
 
-                    rpc.set(new PinData(setPinData.ident, encrypted));
-
-                } catch (final InvalidCipherTextException e) {
+                } catch (final IllegalArgumentException e) {
                     rpc.setException(e);
                 }
             }

@@ -23,12 +23,10 @@ import android.widget.Toast;
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenbits.KeyStoreAES;
 
-import org.bitcoinj.crypto.MnemonicCode;
-
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -45,7 +43,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
         imm.hideSoftInputFromWindow(pinSaveText.getWindowToken(), 0);
         final String mnemonic_str = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
-        final List<String> mnemonic = java.util.Arrays.asList(mnemonic_str.split(" "));
         final Button pinSkipButton = (Button) findViewById(R.id.pinSkipButton);
         final CircularProgressButton pinSaveButton = (CircularProgressButton) findViewById(R.id.pinSaveButton);
 
@@ -53,8 +50,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         pinSaveButton.setProgress(50);
         pinSaveText.setEnabled(false);
         pinSkipButton.setVisibility(View.GONE);
-
-        Futures.addCallback(getGAService().setPin(MnemonicCode.toSeed(mnemonic, ""), mnemonic_str,
+        Futures.addCallback(getGAService().setPin(CryptoHelper.mnemonic_to_seed(mnemonic_str), mnemonic_str,
                         pinText, "default"),
                 new FutureCallback<PinData>() {
                     @Override

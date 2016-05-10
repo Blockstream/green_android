@@ -9,9 +9,9 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 
+import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.INotificationHandler;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.LoginData;
@@ -41,7 +42,6 @@ import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
-import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.crypto.MnemonicException;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
@@ -51,7 +51,6 @@ import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -240,11 +239,6 @@ public class GaService extends Service {
         super.onCreate();
         uiHandler = new Handler();
 
-        try {
-            MnemonicCode.INSTANCE = new MnemonicCode(getAssets().open("bip39-wordlist.txt"), null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         this.background_color = 0; // transparent
         connectionObservable = ((GreenAddressApplication) getApplication()).getConnectionObservable();
 
@@ -615,7 +609,7 @@ public class GaService extends Service {
         final ByteArrayOutputStream bits = new ByteArrayOutputStream();
         bits.write(0);
         try {
-            Script.writeBytes(bits, Sha256Hash.hash(input));
+            Script.writeBytes(bits, Wally.sha256(input, null));
         } catch (final IOException e) {
             throw new RuntimeException(e);  // cannot happen
         }
@@ -692,39 +686,16 @@ public class GaService extends Service {
     }
 
     @Nullable
-    public MnemonicCode getMnemonicCode() throws IOException {
-        final InputStream closable = getApplicationContext().getAssets().open("bip39-wordlist.txt");
-        try {
-            return new MnemonicCode(closable, null);
-        } finally {
-            closable.close();
-        }
-    }
-
-    @Nullable
     public ListenableFuture<String> getMnemonicPassphrase() {
         if (latestMnemonics == null) {
             latestMnemonics = es.submit(new Callable<String>() {
                 public String call() throws IOException, MnemonicException.MnemonicLengthException {
-                        return TextUtils.join(" ",
-                                getMnemonicCode()
-                                        .toMnemonic(getRandomSeed()));
+                        return CryptoHelper.mnemonic_from_bytes(getRandomSeed());
                 }
             });
             getQrCodeForMnemonicPassphrase();
         }
         return latestMnemonics;
-    }
-
-
-    public byte[] getEntropyFromMnemonics(@NonNull final String mnemonics) throws IOException, MnemonicException.MnemonicChecksumException, MnemonicException.MnemonicLengthException, MnemonicException.MnemonicWordException {
-        final InputStream closable = getApplicationContext().getAssets().open("bip39-wordlist.txt");
-        try {
-            return new MnemonicCode(closable, null)
-                            .toEntropy(Arrays.asList(mnemonics.split(" ")));
-        } finally {
-            closable.close();
-        }
     }
 
     @Nullable

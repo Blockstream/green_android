@@ -38,11 +38,10 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
-
-import org.bitcoinj.crypto.MnemonicException;
 
 import java.io.IOException;
 import java.util.Observable;
@@ -306,11 +305,9 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
 
             final Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             final NdefRecord[] record = new NdefRecord[1];
-            try {
-                record[0] = NdefRecord.createMime("x-gait/mnc", getGAService().getEntropyFromMnemonics(mnemonicText.getText().toString()));
-            } catch (@NonNull final IOException | MnemonicException.MnemonicChecksumException | MnemonicException.MnemonicLengthException | MnemonicException.MnemonicWordException e) {
-                return;
-            }
+
+            record[0] = NdefRecord.createMime("x-gait/mnc",
+                    CryptoHelper.mnemonic_to_bytes(mnemonicText.getText().toString()));
 
             final NdefMessage message = new NdefMessage(record);
             final int size = message.toByteArray().length;

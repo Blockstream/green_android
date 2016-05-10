@@ -3,9 +3,8 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/PasswordEditText" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/libwally-core" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/material-dialogs" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/scrypt" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/secp256k1" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/bitcoinj" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/jawampa" vcs="Git" />
   </component>

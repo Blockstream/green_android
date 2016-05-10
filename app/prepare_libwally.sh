@@ -41,7 +41,7 @@ function build() {
     export CPPFLAGS="--sysroot=$ANDROID_NDK/platforms/android-$ANDROID_VERSION/arch-$arch_short/"
     export CFLAGS="$CPPFLAGS"
     export LDFLAGS=""
-    configure_opts="--enable-jni --enable-experimental --enable-module-schnorr --enable-module-ecdh --enable-endomorphism --disable-dependency-tracking --enable-silent-rules"
+    configure_opts="--enable-silent-rules --disable-dependency-tracking --enable-swig-java --enable-export-all --enable-endomorphism"
 
     if [ "$arch" == "arm-linux-androideabi" ]; then
         # --with-asm=arm does not default to enabled under arm, so enable it
@@ -67,12 +67,15 @@ function build() {
     make -o configure -j$NUM_JOBS
 
     mkdir -p $output_dir
-    ${arch_name}-strip .libs/libsecp256k1.so
-    cp .libs/libsecp256k1.so $output_dir
+    ${arch_name}-strip src/.libs/libwallycore.so
+    mv src/.libs/libwallycore.so $output_dir
 }
 
-if [ -d secp256k1 ]; then
-    pushd secp256k1
+if [ -d libwally-core ]; then
+    pushd ../bitcoinj
+    git apply ../bitcoinj.patch || true
+    popd
+    pushd libwally-core
     need_popd=yes
 fi
 
@@ -86,7 +89,8 @@ echo '============================================================'
 echo Initialising:
 echo $all_archs
 echo '============================================================'
-./autogen.sh
+tools/cleanup.sh
+tools/autogen.sh
 
 
 for a in $all_archs; do

@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.Network;
@@ -48,9 +49,9 @@ import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.DumpedPrivateKey;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
-import org.bitcoinj.crypto.BIP38PrivateKey;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.spongycastle.util.encoders.Hex;
@@ -292,10 +293,12 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
+    private final static int BIP38_FLAGS = (NetworkParameters.fromID(NetworkParameters.ID_MAINNET).equals(Network.NETWORK)
+            ? Wally.BIP38_KEY_MAINNET : Wally.BIP38_KEY_TESTNET) | Wally.BIP38_KEY_COMPRESSED;
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         switch (requestCode) {
             case REQUEST_TX_DETAILS:
             case REQUEST_SETTINGS:
@@ -328,22 +331,19 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                     return;
                 }
                 ECKey keyNonFinal = null;
-                BIP38PrivateKey keyBip38NonFinal = null;
+                final String qrText = data.getStringExtra("com.greenaddress.greenbits.QrText");
                 try {
                     keyNonFinal = new DumpedPrivateKey(Network.NETWORK,
-                            data.getStringExtra("com.greenaddress.greenbits.QrText")).getKey();
+                            qrText).getKey();
                 } catch (@NonNull final AddressFormatException e) {
                     try {
-                        keyBip38NonFinal = new BIP38PrivateKey(Network.NETWORK,
-                                data.getStringExtra("com.greenaddress.greenbits.QrText"));
-                    } catch (@NonNull final AddressFormatException e1) {
+                        Wally.bip38_to_private_key(qrText, null, Wally.BIP38_KEY_COMPRESSED | Wally.BIP38_KEY_QUICK_CHECK, null);
+                    } catch (final IllegalArgumentException e2) {
                         Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_key), Toast.LENGTH_LONG).show();
                         return;
                     }
-
                 }
                 final ECKey keyNonBip38 = keyNonFinal;
-                final BIP38PrivateKey keyBip38 = keyBip38NonFinal;
                 final FutureCallback<Map<?, ?>> callback = new FutureCallback<Map<?, ?>>() {
                     @Override
                     public void onSuccess(final @Nullable Map<?, ?> result) {
@@ -354,7 +354,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                         final EditText passwordEdit = (EditText) inflatedLayout.findViewById(R.id.sweepAddressPasswordText);
                         final Transaction txNonBip38;
                         final String address;
-                        if (keyBip38 == null) {
+                        if (keyNonBip38 != null) {
                             passwordPrompt.setVisibility(View.GONE);
                             passwordEdit.setVisibility(View.GONE);
                             txNonBip38 = new Transaction(Network.NETWORK,
@@ -437,9 +437,13 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
                                     @Override
                                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                        if (keyBip38 != null) {
+                                        if (keyNonBip38 == null) {
                                             try {
-                                                key = keyBip38.decrypt(passwordEdit.getText().toString());
+                                                final String password = passwordEdit.getText().toString();
+                                                final byte[] passbytes = password.getBytes();
+                                                final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS, null);
+                                                key = ECKey.fromPrivate(decryptedPKey);
+
                                                 Futures.addCallback(getGAService().prepareSweepSocial(
                                                         key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
                                                     @Override
@@ -454,7 +458,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                                                         Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                                                     }
                                                 });
-                                            } catch (@NonNull final BIP38PrivateKey.BadPassphraseException e) {
+                                            } catch (@NonNull final IllegalArgumentException e) {
                                                 Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_passphrase), Toast.LENGTH_LONG).show();
                                             }
 
@@ -473,7 +477,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                         Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 };
-                if (keyBip38 == null) {
+                if (keyNonBip38 != null) {
                     Futures.addCallback(getGAService().prepareSweepSocial(
                             keyNonBip38.getPubKey(), false), callback);
                 } else {

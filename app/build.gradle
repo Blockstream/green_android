@@ -11,9 +11,6 @@ android {
         exclude 'jackson-core-asl-1.8.6.jar:META-INF/ASL2.0'
         exclude 'jackson-core-asl-1.8.6.jar:META-INF/LICENSE'
         exclude 'jackson-core-asl-1.8.6.jar:META-INF/NOTICE'
-        exclude 'lib/x86_64/darwin/libscrypt.dylib'
-        exclude 'lib/x86_64/freebsd/libscrypt.so'
-        exclude 'lib/x86_64/linux/libscrypt.so'
         exclude 'org/bitcoinj/crypto/mnemonic/wordlist/english.txt'
         exclude 'org/bitcoinj/crypto/cacerts'
         exclude 'org.bitcoin.production.checkpoints'
@@ -149,7 +146,8 @@ configurations {
 dependencies {
     compile project(':app:material-dialogs:core'), project(':app:PasswordEditText:library'),
             project(':bitcoinj:core'), project(':jawampa'),
-            project(':jawampa:jawampa-core'), project(':jawampa:jawampa-netty')
+            project(':jawampa:jawampa-core'), project(':jawampa:jawampa-netty'),
+            files('libwally-core/src/swig_java/wallycore.jar')
     compile 'com.fasterxml.jackson:jackson-datatype-json-org:1.8.0'
     compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
     compile 'com.android.support:support-v4:23.3.0'

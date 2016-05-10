@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 
+import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenbits.ui.FailHardActivity;
@@ -90,7 +91,11 @@ public class GreenAddressApplication extends MultiDexApplication {
             errorContent = String.format("%s please contact support info@greenaddress.it", e.getMessage());
         }
 
-        if (errorTitle == null && Secp256k1Context.isEnabled()) {
+        if (errorTitle == null && !Wally.isEnabled()) {
+            errorTitle = "libwallycore not found";
+            errorContent = "libwallycore.so not found, this platform is not supported, please contact support info@greenaddress.it";
+        }
+        else if (errorTitle == null && Secp256k1Context.isEnabled()) {
             if (randomizeSecp256k1Context()) {
                 final Intent intent = new Intent(this, GaService.class);
                 bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -99,7 +104,7 @@ public class GreenAddressApplication extends MultiDexApplication {
                 errorContent = "Warning: Randomization of secp256k1lib context failed, please contact support info@greenaddress.it";
             }
         } else if (errorTitle == null){
-            errorTitle = "Libsecp256k1 not found";
+            errorTitle = "libsecp256k1 not found";
             errorContent = "libsecp256k1.so not found, this platform is not supported, please contact support info@greenaddress.it";
         }
         failHardOnCriticalErrors();

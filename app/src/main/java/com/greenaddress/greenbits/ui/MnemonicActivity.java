@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.Spannable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
@@ -35,29 +34,24 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.blockstream.libwally.Wally;
 import com.dd.CircularProgressButton;
-import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 
-import org.bitcoinj.crypto.MnemonicCode;
-import org.bitcoinj.crypto.MnemonicException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.GeneralSecurityException;
-import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -72,6 +66,8 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
 
 
     @NonNull private static final String TAG = MnemonicActivity.class.getSimpleName();
+
+    private Set<String> words = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
 
     private void showErrorCorrection(final String closeWord, final String badWord) {
         if (closeWord == null) return;
@@ -101,36 +97,23 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         textView.setTextColor(Color.WHITE);
         snackbar.show();
     }
+
     private boolean validateMnemonic(@NonNull final String mnemonic) {
-        // FIXME: add support for different bip39 word lists like Japanese, Spanish, etc
-        InputStream closable = null;
         try {
-            closable = getAssets().open("bip39-wordlist.txt");
-            new MnemonicCode(closable, null).check(Arrays.asList(mnemonic.split(" ")));
-        } catch (@NonNull final IOException e) {
-            // couldn't find mnemonics file
-            throw new RuntimeException(e.getMessage());
-        } catch (@NonNull final MnemonicException.MnemonicWordException e) {
-            setWord(e.badWord);
-            try {
-                showErrorCorrection(MnemonicHelper.getClosestWord(e.badWord, this), e.badWord);
-            } catch (@NonNull final IOException eGnore) {
-                // ignore
-            }
-            return false;
-        } catch (@NonNull final MnemonicException e) {
-            return false;
-        } finally {
-            if (closable != null) {
-                try {
-                    closable.close();
-                } catch (@NonNull final IOException e) {
+            Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
+            return true;
+        } catch (final IllegalArgumentException e) {
+            for (final String w : mnemonic.split(" ")) {
+                if (!words.contains(w)) {
+                    setWord(w);
+                    showErrorCorrection(MnemonicHelper.getClosestWord(words.toArray(new String[Wally.BIP39_WORDLIST_LEN]), w), w);
+
+                    break;
                 }
             }
+            return false;
         }
-        return true;
     }
-
 
     private void login() {
         Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
@@ -194,20 +177,16 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             @NonNull
             @Override
             public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                if (edit.getText().toString().trim().split(" ").length == 27) {
+                final String mnemonics = edit.getText().toString().trim();
+                if (mnemonics.split(" ").length == 27) {
                     // encrypted mnemonic
                     return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
                         @Nullable
                         @Override
                         public ListenableFuture<LoginData> apply(final @Nullable String passphrase) {
-                            try {
-                                final byte[] entropy = gaService.getMnemonicCode().toEntropy(Arrays.asList(edit.getText().toString().trim().split(" ")));
-                                final String normalizedPassphrase = Normalizer.normalize(passphrase, Normalizer.Form.NFC);
-                                final byte[] decrypted = MnemonicHelper.decryptMnemonic(entropy, normalizedPassphrase);
-                                return gaService.login(Joiner.on(" ").join(gaService.getMnemonicCode().toMnemonic(decrypted)));
-                            } catch (@NonNull final IOException | GeneralSecurityException | MnemonicException e) {
-                                throw new RuntimeException(e);
-                            }
+                            return gaService.login(
+                                    CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
+
                         }
                     });
                 } else {
@@ -362,20 +341,17 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 final int lastElement = split.length - 1;
                 for (int i = 0; i < split.length; ++i) {
                     final String word = split[i];
-                    try {
-                        // check for equality
-                        // not last or last but postponed by a space
-                        // otherwise just that it's the start of a word
-                        if (MnemonicHelper.isInvalidWord(word, MnemonicActivity.this,
-                                !(i == lastElement) || endsWithSpace)) {
-                            if (spans != null && word.equals(spans.word)) {
-                                return;
-                            }
-                            setWord(word);
+                    // check for equality
+                    // not last or last but postponed by a space
+                    // otherwise just that it's the start of a word
+                    if (MnemonicHelper.isInvalidWord(
+                            words.toArray(new String[Wally.BIP39_WORDLIST_LEN]), word,
+                            !(i == lastElement) || endsWithSpace)) {
+                        if (spans != null && word.equals(spans.word)) {
                             return;
                         }
-                    } catch (final IOException e) {
-                        e.printStackTrace();
+                        setWord(word);
+                        return;
                     }
                 }
                 edit.setOnTouchListener(null);
@@ -393,6 +369,9 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                                       final int before, final int count) {
             }
         });
+        final Object en = Wally.bip39_get_wordlist("en");
+        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i)
+            words.add(Wally.bip39_get_word(en, i));
 
         NFCIntentMnemonicLogin();
     }
@@ -405,42 +384,27 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             edit.setTextColor(Color.WHITE);
             if (intent.getType().equals("x-gait/mnc")) {
                 // not encrypted nfc
-                InputStream closable = null;
-                try {
-                    closable = getAssets().open("bip39-wordlist.txt");
-                    final Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                    final byte[] array = ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload();
-                    final String mnemonics = TextUtils.join(" ",
-                            new MnemonicCode(closable, null)
-                                    .toMnemonic(array));
-                    final GaService gaService = getGAService();
-                    edit.setText(mnemonics);
+                final Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
-                    if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
-                        //Auxillary Future to make sure we are connected.
-                        Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
-                            @Override
-                            public void onSuccess(@Nullable final Void result) {
-                                login();
-                            }
+                final String mnemonics = CryptoHelper.mnemonic_from_bytes(
+                        ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload());
 
-                            @Override
-                            public void onFailure(@NonNull final Throwable t) {
+                final GaService gaService = getGAService();
+                edit.setText(mnemonics);
 
-                            }
-                        });
-                    }
-
-                } catch (@NonNull final IOException | MnemonicException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (closable != null) {
-                        try {
-                            closable.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
+                    //Auxillary Future to make sure we are connected.
+                    Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
+                        @Override
+                        public void onSuccess(@Nullable final Void result) {
+                            login();
                         }
-                    }
+
+                        @Override
+                        public void onFailure(@NonNull final Throwable t) {
+
+                        }
+                    });
                 }
             } else if (intent.getType().equals("x-ga/en")) {
                 // encrypted nfc
@@ -449,26 +413,21 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
                 Futures.addCallback(askForPassphrase(), new FutureCallback<String>() {
                     @Override
                     public void onSuccess(final @Nullable String passphrase) {
-                        try {
-                            final byte[] decrypted = MnemonicHelper.decryptMnemonic(array, passphrase);
-                            final GaService gaService = getGAService();
-                            final String mnemonics = Joiner.on(" ").join(new MnemonicCode().toMnemonic(decrypted));
-                            edit.setText(mnemonics);
-                            if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
-                                Futures.addCallback(gaService.onConnected, new FutureCallback<Void>() {
-                                    @Override
-                                    public void onSuccess(@Nullable final Void result) {
-                                        login();
-                                    }
+                        final String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(array, passphrase);
+                        final GaService gaService = getGAService();
+                        edit.setText(mnemonics);
+                        if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
+                            Futures.addCallback(gaService.onConnected, new FutureCallback<Void>() {
+                                @Override
+                                public void onSuccess(@Nullable final Void result) {
+                                    login();
+                                }
 
-                                    @Override
-                                    public void onFailure(@NonNull final Throwable t) {
+                                @Override
+                                public void onFailure(@NonNull final Throwable t) {
 
-                                    }
-                                });
-                            }
-                        } catch (@NonNull final GeneralSecurityException | IOException | MnemonicException e) {
-                            e.printStackTrace();
+                                }
+                            });
                         }
                     }
 
@@ -511,11 +470,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         mnemonicText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(final View view, final MotionEvent motionEvent) {
-                try {
-                    showErrorCorrection(MnemonicHelper.getClosestWord(badWord, MnemonicActivity.this), badWord);
-                } catch (@NonNull final IOException eGnore) {
-                    // ignore
-                }
+                showErrorCorrection(MnemonicHelper.getClosestWord(words.toArray(new String[Wally.BIP39_WORDLIST_LEN]), badWord), badWord);
                 return false;
             }
         });
