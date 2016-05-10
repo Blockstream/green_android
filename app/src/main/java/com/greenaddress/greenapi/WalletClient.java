@@ -189,12 +189,15 @@ public class WalletClient {
     }
 
     private void clientSubscribe(final String s, final Class mapClass, final EventHandler eventHandler) {
-        mConnection.makeSubscription(s).observeOn(mScheduler).subscribe(new Action1<PubSubData>() {
+        final String topic = "com.greenaddress." + s;
+        mConnection.makeSubscription(topic)
+                   .observeOn(mScheduler)
+                   .subscribe(new Action1<PubSubData>() {
             @Override
             public void call(final PubSubData pubSubData) {
                 final ObjectMapper mapper = new ObjectMapper();
 
-                eventHandler.onEvent(s, mapper.convertValue(
+                eventHandler.onEvent(topic, mapper.convertValue(
                         pubSubData.arguments().get(0),
                         mapClass
                 ));
@@ -203,7 +206,7 @@ public class WalletClient {
             @Override
             public void call(final Throwable throwable) {
                 Log.w(TAG, throwable);
-                Log.i(TAG, "Subscribe failed ("+s+"): " + throwable.toString());
+                Log.i(TAG, "Subscribe failed (" + topic + "): " + throwable.toString());
             }
         });
     }
