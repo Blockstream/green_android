@@ -15,8 +15,6 @@ import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 
-import java.security.SecureRandom;
-
 public class GreenAddressApplication extends MultiDexApplication {
 
     public GaService gaService;
