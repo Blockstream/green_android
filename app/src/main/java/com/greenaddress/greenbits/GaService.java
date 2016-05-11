@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Binder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -69,9 +70,17 @@ import java.util.concurrent.Executors;
 
 public class GaService extends Service {
 
+    class GaBinder extends Binder {
+        public final GaService mService;
+
+        public GaBinder(final GaService service) {
+            mService = service;
+        }
+    }
+    @NonNull private final IBinder mBinder = new GaBinder(this);
+
     @NonNull private static final String TAG = GaService.class.getSimpleName();
     @NonNull public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
-    @NonNull private final IBinder mBinder = new GaBinder(this);
     @NonNull final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
     @NonNull final private GaObservable newTransactionsObservable = new GaObservable();
     @NonNull final private GaObservable newTxVerifiedObservable = new GaObservable();
