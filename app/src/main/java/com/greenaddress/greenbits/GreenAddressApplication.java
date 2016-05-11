@@ -29,7 +29,6 @@ public class GreenAddressApplication extends MultiDexApplication {
     private String errorTitle, errorContent;
     @Nullable
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
-    @Nullable
     private final ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
