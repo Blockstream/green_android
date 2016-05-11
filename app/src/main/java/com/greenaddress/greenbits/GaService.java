@@ -226,6 +226,12 @@ public class GaService extends Service {
         }
     }
 
+    // Sugar for fetching/editing preferences
+    public SharedPreferences cfg(final String name) { return getSharedPreferences(name, MODE_PRIVATE); }
+    public SharedPreferences.Editor cfgEdit(final String name) { return cfg(name).edit(); }
+    public SharedPreferences cfgIn(final String name) { return cfg(name + getReceivingId()); }
+    public SharedPreferences.Editor cfgInEdit(final String name) { return cfgIn(name).edit(); }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -235,19 +241,17 @@ public class GaService extends Service {
         connectionObservable = ((GreenAddressApplication) getApplication()).getConnectionObservable();
 
 
-        deviceId = getSharedPreferences("service", MODE_PRIVATE).getString("device_id", null);
+        deviceId = cfg("service").getString("device_id", null);
         if (deviceId == null) {
             deviceId = UUID.randomUUID().toString();
-            final SharedPreferences.Editor editor = getSharedPreferences("service", MODE_PRIVATE).edit();
-            editor.putString("device_id", deviceId);
-            editor.apply();
+            cfgEdit("service").putString("device_id", deviceId).apply();
         }
 
         client = new WalletClient(new INotificationHandler() {
             @Override
             public void onNewBlock(final int count) {
                 Log.i(TAG, "onNewBlock");
-                if (getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true)) {
+                if (cfg("SPV").getBoolean("enabled", true)) {
                     spv.addToBloomFilter(count, null, -1, -1, -1);
                 }
                 newTransactionsObservable.setChanged();
@@ -551,7 +555,9 @@ public class GaService extends Service {
         final int subaccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
         final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subaccount);
-        if (!getSharedPreferences("SPV", MODE_PRIVATE).getBoolean("enabled", true) ||  verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) || client.getHdWallet().requiresPrevoutRawTxs()) {
+        if (!cfg("SPV").getBoolean("enabled", true) ||
+            verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) ||
+            client.getHdWallet().requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
             privateData.put("prevouts_mode", "skip");
@@ -736,10 +742,7 @@ public class GaService extends Service {
 
     public void notifyObservers(final Sha256Hash tx) {
         // FIXME: later spent outputs can be purged
-        final SharedPreferences verified_utxo = getSharedPreferences("verified_utxo_" + getReceivingId(), MODE_PRIVATE);
-        final SharedPreferences.Editor editor = verified_utxo.edit();
-        editor.putBoolean(tx.toString(), true);
-        editor.apply();
+        cfgInEdit("verified_utxo_").putBoolean(tx.toString(), true).apply();
         spv.addUtxoToValues(tx);
         newTxVerifiedObservable.setChanged();
         newTxVerifiedObservable.notifyObservers();

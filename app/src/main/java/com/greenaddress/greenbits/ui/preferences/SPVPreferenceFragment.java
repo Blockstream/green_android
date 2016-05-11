@@ -35,11 +35,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
-                final SharedPreferences spvPreferences = getActivity().getSharedPreferences("SPV", Context.MODE_PRIVATE);
+                final boolean enabled = gaService.cfg("SPV").getBoolean("enabled", true);
 
                 // stop SPV if enabled
 
-                if (spvPreferences.getBoolean("enabled", true)) {
+                if (enabled) {
                     try {
                         if (gaService.spv.isPeerGroupRunning()) {
                             gaService.spv.stopSPVSync();
@@ -57,7 +57,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
                 // restart spv if it was enabled
 
-                if (spvPreferences.getBoolean("enabled", true)) {
+                if (enabled) {
                     gaService.spv.setUpSPV();
                     if (gaService.getCurBlock() - gaService.spv.getSpvHeight() > 1000) {
                         if (gApp.getConnectionObservable().isWiFiUp()) {
@@ -86,10 +86,10 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         });
 
         final CheckBoxPreference spvEnabled = (CheckBoxPreference) findPreference("spvEnabled");
-        final SharedPreferences spvPreferences = getActivity().getSharedPreferences("SPV", Context.MODE_PRIVATE);
         final EditTextPreference trusted_peer = (EditTextPreference) getPreferenceManager().findPreference("trusted_peer");
-        trusted_peer.setEnabled(spvPreferences.getBoolean("enabled", true));
-        spvEnabled.setChecked(spvPreferences.getBoolean("enabled", true));
+        final boolean enabled = gaService.cfg("SPV").getBoolean("enabled", true);
+        trusted_peer.setEnabled(enabled);
+        spvEnabled.setChecked(enabled);
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
@@ -136,19 +136,15 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                     }
                 }
 
-                final Boolean nowEnabled = (Boolean) newValue;
-                final SharedPreferences.Editor editor = spvPreferences.edit();
-                editor.putBoolean("enabled", nowEnabled);
-                editor.apply();
-                trusted_peer.setEnabled(nowEnabled);
+                gaService.cfgEdit("SPV").putBoolean("enabled", (Boolean)newValue).apply();
+                trusted_peer.setEnabled((Boolean)newValue);
 
                 new SPVButtonPrefAsync().execute();
                 return true;
             }
         });
 
-        final SharedPreferences trustedPreferences = getActivity().getSharedPreferences("TRUSTED", Context.MODE_PRIVATE);
-        final String address = trustedPreferences.getString("address", "");
+        final String address = gaService.cfg("TRUSTED").getString("address", "");
 
         if (!address.isEmpty()) {
             trusted_peer.setText(address);
@@ -209,9 +205,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             @Override
             public boolean onPreferenceChange(final Preference preference, @NonNull final Object newValue) {
 
-                if (trustedPreferences.getString("address", "").equals(newValue)) {
+                if (gaService.cfg("TRUSTED").getString("address", "").equals(newValue))
                     return false;
-                }
+
                 try {
                     final String newString = newValue.toString().trim().replaceAll("\\s","");
                     if (newString.contains(",")) {
@@ -253,9 +249,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                             return true;
                         }
 
-                        final SharedPreferences.Editor editor = trustedPreferences.edit();
-                        editor.putString("address", newString);
-                        editor.apply();
+                        gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
 
                         gaService.setAppearanceValue("trusted_peer_addr", newString, true);
                         if (!newString.isEmpty())
@@ -280,10 +274,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                                     @Override
                                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                         new SPVAsync().execute();
-                                        final SharedPreferences.Editor editor = trustedPreferences.edit();
-                                        editor.putString("address", newString);
-                                        editor.apply();
-
+                                        gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
                                         gaService.setAppearanceValue("trusted_peer_addr", newString, true);
                                         trusted_peer.setSummary(newString);
                                     }

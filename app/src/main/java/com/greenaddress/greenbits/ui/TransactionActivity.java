@@ -444,7 +444,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
             }
             final org.bitcoinj.core.Transaction tx = new org.bitcoinj.core.Transaction(Network.NETWORK, Hex.decode(txData.data));
             Integer change_pointer = null;
-            final Integer subaccount_pointer = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+            final Integer subaccount_pointer = getGAService().cfg("main").getInt("curSubaccount", 0);
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
             // by at most 4 bytes per input (signatures have variable lengths)
             if (txSize == null) {

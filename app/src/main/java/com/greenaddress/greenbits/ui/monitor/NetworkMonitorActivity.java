@@ -180,11 +180,9 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
         public String toString(){
             String ipAddr = peer.toString();
             if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
-                ipAddr = getSharedPreferences("TRUSTED", MODE_PRIVATE).getString("address", null);
-                if (ipAddr != null) {
-                    final Node n = new Node(ipAddr);
-                    ipAddr = n.toString();
-                }
+                ipAddr = getGAService().cfg("TRUSTED").getString("address", null);
+                if (ipAddr != null)
+                    ipAddr = new Node(ipAddr).toString();
             }
             return String.format("%s\n%s\n%s\n%s", getString(R.string.network_monitor_peer_addr, ipAddr),
                     getString(R.string.network_monitor_peer_version, peer.getPeerVersionMessage().subVer),

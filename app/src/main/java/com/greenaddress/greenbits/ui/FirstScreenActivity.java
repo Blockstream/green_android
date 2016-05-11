@@ -363,7 +363,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
             finish();
             return;
         }
-        if (getSharedPreferences("pin", MODE_PRIVATE).getString("ident", null) != null) {
+        if (getGAService().cfg("pin").getString("ident", null) != null) {
             final Intent tabbedMainActivity = new Intent(FirstScreenActivity.this, PinActivity.class);
             startActivity(tabbedMainActivity);
             finish();

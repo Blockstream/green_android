@@ -254,7 +254,7 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
             return;
         }
 
-        if (getSharedPreferences("pin", MODE_PRIVATE).getString("ident", null) != null) {
+        if (getGAService().cfg("pin").getString("ident", null) != null) {
             final Intent pin = new Intent(this, PinActivity.class);
             startActivityForResult(pin, 0);
         } else {

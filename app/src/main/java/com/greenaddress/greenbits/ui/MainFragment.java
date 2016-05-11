@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -150,8 +151,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 type = Transaction.TYPE.REDEPOSIT;
             }
         }
-        final boolean spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
-                + getGAService().getReceivingId(), Context.MODE_PRIVATE).getBoolean(txhash, false);
+        final boolean spvVerified = getGAService().cfgIn("verified_utxo_").getBoolean(txhash, false);
         final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return new Transaction(type, amount, counterparty,
@@ -200,12 +200,11 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
-        if (!getGAApp().getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true)
-                || btcBalance.equals(btcBalanceVerified)) {
+        if (!getGAService().cfg("SPV").getBoolean("enabled", true) || btcBalance.equals(btcBalanceVerified))
             balanceQuestionMark.setVisibility(View.GONE);
-        } else {
+        else
             balanceQuestionMark.setVisibility(View.VISIBLE);
-        }
+
         final TextView balanceFiatText = (TextView) rootView.findViewById(R.id.mainLocalBalanceText);
         final FontAwesomeTextView balanceFiatIcon = (FontAwesomeTextView) rootView.findViewById(R.id.mainLocalBalanceIcon);
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
@@ -249,7 +248,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+        curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
 
         final TextView firstP = (TextView) rootView.findViewById(R.id.mainFirstParagraphText);
         final TextView secondP = (TextView) rootView.findViewById(R.id.mainSecondParagraphText);
@@ -412,11 +411,10 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        for (final Transaction tx : currentList) {
-                            tx.spvVerified = getGAApp().getSharedPreferences("verified_utxo_"
-                                            + (getGAService().getReceivingId()),
-                                    Context.MODE_PRIVATE).getBoolean(tx.txhash, false);
-                        }
+                        final SharedPreferences prefs = getGAService().cfgIn("verified_utxo_");
+                        for (final Transaction tx : currentList)
+                            tx.spvVerified = prefs.getBoolean(tx.txhash, false);
+
                         final RecyclerView recycleView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
                         recycleView.getAdapter().notifyDataSetChanged();
                     }
@@ -465,7 +463,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
                         final GaService gaService = getGAService();
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-                        if (gaService.getSharedPreferences("SPV", FragmentActivity.MODE_PRIVATE).getBoolean("enabled", true)) {
+                        if (gaService.cfg("SPV").getBoolean("enabled", true)) {
                             gaService.spv.setUpSPV();
                             if (gaService.spv.spvNotSyncing()) {
                                 // download up to 1.04 mB (80bytes * 13000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
@@ -558,18 +556,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
     }
 
     private void askUserForSpvNoWiFi() {
-        if (getGAService().getSpvWiFiDialogShown()) return;
-        final Activity activity = getActivity();
-        if (activity == null) {
+        if (getGAService().getSpvWiFiDialogShown() ||
+            getActivity() == null || !getGAService().cfg("SPV").getBoolean("enabled", true))
             return;
-        }
-        if (!getActivity().getSharedPreferences(
-                "SPV",
-                FragmentActivity.MODE_PRIVATE
-        ).getBoolean("enabled", true)) {
-            return;
-        }
+
         getGAService().setSpvWiFiDialogShown(true);
+
         new MaterialDialog.Builder(getActivity())
                 .title(getResources().getString(R.string.spvNoWiFiTitle))
                 .content(getResources().getString(R.string.spvNoWiFiText))

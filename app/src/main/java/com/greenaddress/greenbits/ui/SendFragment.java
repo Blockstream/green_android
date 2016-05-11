@@ -310,7 +310,7 @@ public class SendFragment extends SubaccountFragment {
 
         rootView = inflater.inflate(R.layout.fragment_send, container, false);
 
-        curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+        curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
 
         sendButton = (Button) rootView.findViewById(R.id.sendSendButton);
         maxButton = (Switch) rootView.findViewById(R.id.sendMaxButton);

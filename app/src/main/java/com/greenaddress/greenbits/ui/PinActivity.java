@@ -88,7 +88,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
         final GaService gaService = getGAService();
 
         final PinData pinData = new PinData(ident,
-                getSharedPreferences("pin", MODE_PRIVATE).getString("encrypted", null));
+                gaService.cfg("pin").getString("encrypted", null));
 
         pinLoginButton.setIndeterminateProgressMode(true);
         pinLoginButton.setProgress(50);
@@ -110,26 +110,23 @@ public class PinActivity extends ActionBarActivity implements Observer {
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
             public void onSuccess(@Nullable final LoginData result) {
-                final SharedPreferences.Editor editor = getSharedPreferences("pin", MODE_PRIVATE).edit();
-                editor.putInt("counter", 0);
-                editor.apply();
+                gaService.cfgEdit("pin").putInt("counter", 0).apply();
                 if (getCallingActivity() == null) {
                     final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
                     startActivity(mainActivity);
-                    finish();
                 } else {
                     setResult(RESULT_OK);
-                    finish();
                 }
+                finish();
             }
 
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 String message = t.getMessage();
-                final SharedPreferences pref = getSharedPreferences("pin", MODE_PRIVATE);
-                final int counter = pref.getInt("counter", 0) + 1;
+                final SharedPreferences prefs = gaService.cfg("pin");
+                final int counter = prefs.getInt("counter", 0) + 1;
                 if (t instanceof GAException) {
-                    final SharedPreferences.Editor editor = pref.edit();
+                    final SharedPreferences.Editor editor = prefs.edit();
                     if (counter < 3) {
                         editor.putInt("counter", counter);
                         message = getString(R.string.attemptsLeftLong, 3 - counter);
@@ -169,8 +166,9 @@ public class PinActivity extends ActionBarActivity implements Observer {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String ident = getSharedPreferences("pin", MODE_PRIVATE).getString("ident", null);
-        final String androidLogin = getSharedPreferences("pin", MODE_PRIVATE).getString("native", null);
+        final SharedPreferences prefs = getSharedPreferences("pin", MODE_PRIVATE);
+        final String ident = prefs.getString("ident", null);
+        final String androidLogin = prefs.getString("native", null);
 
         if (androidLogin == null && ident != null) {
             setContentView(R.layout.activity_pin);
@@ -220,10 +218,8 @@ public class PinActivity extends ActionBarActivity implements Observer {
     private void tryDecrypt() {
 
         final SharedPreferences prefs = getSharedPreferences("pin", MODE_PRIVATE);
-
         final String androidLogin = prefs.getString("native", null);
         final String aesiv = prefs.getString("nativeiv", null);
-
         final String ident = prefs.getString("ident", null);
 
         try {

@@ -11,14 +11,13 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 public class GAPreferenceFragment extends PreferenceFragment {
-    GaService gaService = null;
+    protected GaService gaService = null;
     GreenAddressApplication gApp = null;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gApp = ((GreenAddressApplication)getActivity()
-                .getApplication());
+        gApp = ((GreenAddressApplication)getActivity().getApplication());
         gaService = gApp.gaService;
     }
 

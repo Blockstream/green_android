@@ -1,4 +1,5 @@
 package com.greenaddress.greenbits;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenapi.CryptoHelper;
 
 import android.annotation.TargetApi;
@@ -6,7 +7,6 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
@@ -82,7 +82,7 @@ public class KeyStoreAES {
 
     @TargetApi(Build.VERSION_CODES.M)
     @NonNull
-    public static String tryEncrypt(final Context ctx) {
+    public static String tryEncrypt(final GaService gaService) {
         createKey(false);
         final byte[] fakePin = CryptoHelper.randomBytes(32);
         try {
@@ -97,12 +97,11 @@ public class KeyStoreAES {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
             final byte[] encryptedPIN = cipher.doFinal(fakePin);
-            final SharedPreferences.Editor editor = ctx.getSharedPreferences("pin", Context.MODE_PRIVATE).edit();
             final byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-            editor.putString("native", Base64.encodeToString(encryptedPIN, Base64.NO_WRAP));
-            editor.putString("nativeiv", Base64.encodeToString(iv, Base64.NO_WRAP));
-
-            editor.apply();
+            gaService.cfgEdit("pin")
+                     .putString("native", Base64.encodeToString(encryptedPIN, Base64.NO_WRAP))
+                     .putString("nativeiv", Base64.encodeToString(iv, Base64.NO_WRAP))
+                     .apply();
             return Base64.encodeToString(fakePin, Base64.NO_WRAP).substring(0, 15);
         } catch (@NonNull final UserNotAuthenticatedException e) {
             throw new RequiresAuthenticationScreen();

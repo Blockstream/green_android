@@ -173,9 +173,6 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                     @Override
                     public void onSelection(final MaterialDialog dialog, final View view, final int which, final CharSequence text) {
 
-                        final SharedPreferences sp = getGAApp().getSharedPreferences("main",
-                                Context.MODE_PRIVATE);
-
                         final int curSubaccount;
                         if (which == 0) {
                             curSubaccount = 0;
@@ -184,7 +181,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                             curSubaccount = ((Integer) ((Map<String, ?>) subaccounts.get(which - 1)).get("pointer"));
                         }
 
-                        if (sp.getInt("curSubaccount", 0) != curSubaccount) {
+                        if (getGAService().cfg("main").getInt("curSubaccount", 0) != curSubaccount) {
                             setTitle(String.format("%s %s", getResources().getText(R.string.app_name), text));
                             onSubaccountUpdate(curSubaccount);
                         }
@@ -201,9 +198,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     }
 
     private void onSubaccountUpdate(final int input) {
-        final SharedPreferences.Editor editor = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).edit();
-        editor.putInt("curSubaccount", input);
-        editor.apply();
+        getGAService().cfgEdit("main").putInt("curSubaccount", input).apply();
 
         final Intent data = new Intent("fragmentupdater");
         data.putExtra("sub", input);
@@ -247,11 +242,8 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
             }
         });
 
-        final int curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
-
-
+        final int curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
         configureSubaccountsFooter(curSubaccount);
-
 
         if (isBitcoinURL) {
             if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
@@ -302,7 +294,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
         switch (requestCode) {
             case REQUEST_TX_DETAILS:
             case REQUEST_SETTINGS:
-                final int curSubaccount = getGAApp().getSharedPreferences("main", Context.MODE_PRIVATE).getInt("curSubaccount", 0);
+                final int curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
                 getGAService().updateBalance(curSubaccount);
                 startActivity(new Intent(this, TabbedMainActivity.class));
                 finish();

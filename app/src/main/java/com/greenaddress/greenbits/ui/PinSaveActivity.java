@@ -1,8 +1,8 @@
 package com.greenaddress.greenbits.ui;
+import com.greenaddress.greenbits.GaService;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -50,16 +50,17 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         pinSaveButton.setProgress(50);
         pinSaveText.setEnabled(false);
         pinSkipButton.setVisibility(View.GONE);
-        Futures.addCallback(getGAService().setPin(CryptoHelper.mnemonic_to_seed(mnemonic_str), mnemonic_str,
+        final GaService gaService = getGAService();
+        Futures.addCallback(gaService.setPin(CryptoHelper.mnemonic_to_seed(mnemonic_str), mnemonic_str,
                         pinText, "default"),
                 new FutureCallback<PinData>() {
                     @Override
                     public void onSuccess(@Nullable final PinData result) {
-                        final SharedPreferences.Editor editor = getSharedPreferences("pin", MODE_PRIVATE).edit();
-                        editor.putString("ident", result.ident);
-                        editor.putInt("counter", 0);
-                        editor.putString("encrypted", result.encrypted);
-                        editor.apply();
+                        gaService.cfgEdit("pin")
+                                 .putString("ident", result.ident)
+                                 .putInt("counter", 0)
+                                 .putString("encrypted", result.encrypted)
+                                 .apply();
                         setResult(RESULT_OK);
                         finish();
                     }
@@ -75,7 +76,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                             }
                         });
                     }
-                }, getGAService().es);
+                }, gaService.es);
     }
 
     @Override
@@ -96,7 +97,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
-                setPin(KeyStoreAES.tryEncrypt(this));
+                setPin(KeyStoreAES.tryEncrypt(getGAService()));
             } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
                 KeyStoreAES.showAuthenticationScreen(this);
             } catch (final KeyStoreAES.KeyInvalidated e) {
@@ -124,7 +125,7 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                         if (isChecked) {
                             try {
-                                setPin(KeyStoreAES.tryEncrypt(PinSaveActivity.this));
+                                setPin(KeyStoreAES.tryEncrypt(PinSaveActivity.this.getGAService()));
                             } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
                                 KeyStoreAES.showAuthenticationScreen(PinSaveActivity.this);
                             } catch (final KeyStoreAES.KeyInvalidated e) {
