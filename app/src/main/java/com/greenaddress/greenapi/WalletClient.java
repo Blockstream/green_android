@@ -80,8 +80,7 @@ public class WalletClient {
     private SocketAddress mProxy = null;
     private LoginData mLoginData;
     private ISigningWallet mHDParent;
-
-    private String mnemonics = null;
+    private String mMnemonics = null;
 
     /**
      * Call handler.
@@ -262,13 +261,13 @@ public class WalletClient {
     }
 
     public String getMnemonics() {
-        return mnemonics;
+        return mMnemonics;
     }
 
     public void disconnect() {
         // FIXME: Server should handle logout without having to disconnect
         mLoginData = null;
-        mnemonics = null;
+        mMnemonics = null;
 
         mHDParent = null;
 
@@ -308,7 +307,7 @@ public class WalletClient {
         final AsyncFunction<LoginData, LoginData> loginToSetPathPostLogin = new AsyncFunction<LoginData, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final LoginData input) throws Exception {
-                WalletClient.this.mnemonics = mnemonics;
+                mMnemonics = mnemonics;
                 return setupPath(mnemonics, input);
             }
         };
@@ -516,9 +515,10 @@ public class WalletClient {
     }
 
     public ListenableFuture<LoginData> login(final String mnemonics, final String device_id) {
-        this.mnemonics = mnemonics;
-        return login(new DeterministicSigningKey(
-                HDKeyDerivation.createMasterPrivateKey(CryptoHelper.mnemonic_to_seed(mnemonics))), device_id);
+        mMnemonics = mnemonics;
+        final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonics);
+        final DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(seed);
+        return login(new DeterministicSigningKey(master), device_id);
     }
 
     public ListenableFuture<LoginData> login(final String device_id) {
@@ -705,7 +705,7 @@ public class WalletClient {
                     final Map<String, String> json = new MappingJsonFactory().getCodec().readValue(
                             decrypted, Map.class);
 
-                    mnemonics = json.get("mnemonic");
+                    mMnemonics = json.get("mnemonic");
                     rpc.set(HDKeyDerivation.createMasterPrivateKey(Hex.decode(json.get("seed"))));
                 } catch (final IOException e) {
                     rpc.setException(e);
@@ -762,7 +762,7 @@ public class WalletClient {
     private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final byte[] seed, final String pin, final String device_name) {
         final SettableFuture<SetPinData> rpc = SettableFuture.create();
 
-        mnemonics = mnemonic;
+        mMnemonics = mnemonic;
         final Map<String, String> out = new HashMap<>();
         out.put("mnemonic", mnemonic);
         out.put("seed", Hex.toHexString(seed));
