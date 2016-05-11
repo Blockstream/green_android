@@ -12,6 +12,7 @@ import android.support.multidex.MultiDexApplication;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
+import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 
 import org.bitcoin.NativeSecp256k1;
@@ -57,10 +58,7 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     private boolean randomizeSecp256k1Context() {
         try {
-            final SecureRandom secureRandom = new SecureRandom();
-            final byte[] seed = new byte[32];
-            secureRandom.nextBytes(seed);
-            return NativeSecp256k1.randomize(seed);
+            return NativeSecp256k1.randomize(CryptoHelper.randomBytes(32));
 
         } catch (final NativeSecp256k1Util.AssertFailException e) {
             e.printStackTrace();

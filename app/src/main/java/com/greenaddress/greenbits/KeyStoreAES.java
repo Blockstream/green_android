@@ -1,4 +1,5 @@
 package com.greenaddress.greenbits;
+import com.greenaddress.greenapi.CryptoHelper;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -83,8 +84,7 @@ public class KeyStoreAES {
     @NonNull
     public static String tryEncrypt(final Context ctx) {
         createKey(false);
-        final byte[] fakePin = new byte[32];
-        new SecureRandom().nextBytes(fakePin);
+        final byte[] fakePin = CryptoHelper.randomBytes(32);
         try {
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);

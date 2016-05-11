@@ -737,8 +737,7 @@ public class WalletClient {
         clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
             public void onResult(final Object password) {
                 try {
-                    final byte[] salt = new byte[16];
-                    new SecureRandom().nextBytes(salt);
+                    final byte[] salt = CryptoHelper.randomBytes(16);
                     final byte[] pass = password.toString().getBytes();
                     final byte[] pbkdf2_hmac_sha512;
                     pbkdf2_hmac_sha512 = Wally.pbkdf2_hmac_sha512(

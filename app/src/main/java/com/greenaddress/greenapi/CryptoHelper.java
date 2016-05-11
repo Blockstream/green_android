@@ -12,6 +12,12 @@ public class CryptoHelper {
     private final static int BL = Wally.AES_BLOCK_LEN;
     private final static Object WL = Wally.bip39_get_wordlist("en");
 
+    public static byte[] randomBytes(int len) {
+        final byte[] b = new byte[len];
+        new SecureRandom().nextBytes(b);
+        return b;
+    }
+
     public static byte[] mnemonic_to_seed(final String mnemonic) {
         final byte[] seed = new byte[Wally.BIP39_SEED_LEN_512];
         final int written = Wally.bip39_mnemonic_to_seed(mnemonic, /*password*/null, seed);
@@ -45,8 +51,7 @@ public class CryptoHelper {
     }
 
     public static byte[] encrypt_aes_cbc(final byte[] data, final byte[] key) {
-        final byte[] iv = new byte[BL];
-        new SecureRandom().nextBytes(iv);
+        final byte[] iv = randomBytes(BL);
         final byte[] encrypted = new byte[((data.length / BL) + 1) * BL];
         final int written = Wally.aes_cbc(key, iv, data,
                 Wally.AES_FLAG_ENCRYPT, encrypted);

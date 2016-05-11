@@ -150,14 +150,6 @@ public class GaService extends Service {
         }
     };
 
-    @NonNull
-    private static byte[] getRandomSeed() {
-        final SecureRandom secureRandom = new SecureRandom();
-        final byte[] seed = new byte[256 / 8];
-        secureRandom.nextBytes(seed);
-        return seed;
-    }
-
 
     @NonNull
     public Observable getTwoFacConfigObservable() {
@@ -690,7 +682,8 @@ public class GaService extends Service {
         if (latestMnemonics == null) {
             latestMnemonics = es.submit(new Callable<String>() {
                 public String call() throws IOException, MnemonicException.MnemonicLengthException {
-                        return CryptoHelper.mnemonic_from_bytes(getRandomSeed());
+                    final byte[] seed = CryptoHelper.randomBytes(256 / 8);
+                    return CryptoHelper.mnemonic_from_bytes(seed);
                 }
             });
             getQrCodeForMnemonicPassphrase();
