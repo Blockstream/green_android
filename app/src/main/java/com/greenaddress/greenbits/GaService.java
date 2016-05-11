@@ -151,6 +151,8 @@ public class GaService extends Service {
     };
 
 
+    public boolean isSPVEnabled() { return cfg("SPV").getBoolean("enabled", true); }
+
     @NonNull
     public Observable getTwoFacConfigObservable() {
         return twoFacConfigObservable;
@@ -251,9 +253,9 @@ public class GaService extends Service {
             @Override
             public void onNewBlock(final int count) {
                 Log.i(TAG, "onNewBlock");
-                if (cfg("SPV").getBoolean("enabled", true)) {
+                if (isSPVEnabled())
                     spv.addToBloomFilter(count, null, -1, -1, -1);
-                }
+
                 newTransactionsObservable.setChanged();
                 newTransactionsObservable.notifyObservers();
             }
@@ -555,7 +557,7 @@ public class GaService extends Service {
         final int subaccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
         final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subaccount);
-        if (!cfg("SPV").getBoolean("enabled", true) ||
+        if (!isSPVEnabled() ||
             verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) ||
             client.getHdWallet().requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");

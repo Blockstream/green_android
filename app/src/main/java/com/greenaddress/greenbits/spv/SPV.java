@@ -66,7 +66,7 @@ public class SPV {
 
     public void startIfEnabled() {
         isSpvSyncing = false;
-        if (gaService.cfg("SPV").getBoolean("enabled", true)) {
+        if (gaService.isSPVEnabled()) {
             setUpSPV();
 
             if (startSpvAfterInit) {
@@ -111,7 +111,7 @@ public class SPV {
     public final Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
 
     public void updateUnspentOutputs() {
-        if (!gaService.cfg("SPV").getBoolean("enabled", true))
+        if (!gaService.isSPVEnabled())
             return;
 
         Futures.addCallback(gaService.getClient().getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
@@ -367,7 +367,7 @@ public class SPV {
     }
 
     public int getSpvBlocksLeft() {
-        if (gaService.cfg("SPV").getBoolean("enabled", true))
+        if (gaService.isSPVEnabled())
             return spvBlocksLeft;
         return 0;
     }
@@ -407,7 +407,7 @@ public class SPV {
         }
     }
     public int getSpvHeight() {
-        if (blockChain != null && gaService.cfg("SPV").getBoolean("enabled", true))
+        if (blockChain != null && gaService.isSPVEnabled())
             return blockChain.getBestChainHeight();
         return 0;
     }

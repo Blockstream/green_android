@@ -35,7 +35,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
-                final boolean enabled = gaService.cfg("SPV").getBoolean("enabled", true);
+                final boolean enabled = gaService.isSPVEnabled();
 
                 // stop SPV if enabled
 
@@ -87,7 +87,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
         final CheckBoxPreference spvEnabled = (CheckBoxPreference) findPreference("spvEnabled");
         final EditTextPreference trusted_peer = (EditTextPreference) getPreferenceManager().findPreference("trusted_peer");
-        final boolean enabled = gaService.cfg("SPV").getBoolean("enabled", true);
+        final boolean enabled = gaService.isSPVEnabled();
         trusted_peer.setEnabled(enabled);
         spvEnabled.setChecked(enabled);
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

@@ -200,7 +200,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
-        if (!getGAService().cfg("SPV").getBoolean("enabled", true) || btcBalance.equals(btcBalanceVerified))
+        if (!getGAService().isSPVEnabled() || btcBalance.equals(btcBalanceVerified))
             balanceQuestionMark.setVisibility(View.GONE);
         else
             balanceQuestionMark.setVisibility(View.VISIBLE);
@@ -463,7 +463,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
                         final GaService gaService = getGAService();
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-                        if (gaService.cfg("SPV").getBoolean("enabled", true)) {
+                        if (gaService.isSPVEnabled()) {
                             gaService.spv.setUpSPV();
                             if (gaService.spv.spvNotSyncing()) {
                                 // download up to 1.04 mB (80bytes * 13000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
@@ -557,7 +557,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
     private void askUserForSpvNoWiFi() {
         if (getGAService().getSpvWiFiDialogShown() ||
-            getActivity() == null || !getGAService().cfg("SPV").getBoolean("enabled", true))
+            getActivity() == null || !getGAService().isSPVEnabled())
             return;
 
         getGAService().setSpvWiFiDialogShown(true);
