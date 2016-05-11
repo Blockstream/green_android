@@ -15,10 +15,6 @@ import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 
-import org.bitcoin.NativeSecp256k1;
-import org.bitcoin.NativeSecp256k1Util;
-import org.bitcoin.Secp256k1Context;
-
 import java.security.SecureRandom;
 
 public class GreenAddressApplication extends MultiDexApplication {
@@ -55,16 +51,6 @@ public class GreenAddressApplication extends MultiDexApplication {
         return connectionObservable;
     }
 
-    private boolean randomizeSecp256k1Context() {
-        try {
-            return NativeSecp256k1.randomize(CryptoHelper.randomBytes(32));
-
-        } catch (final NativeSecp256k1Util.AssertFailException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     private void failHardOnCriticalErrors() {
         // fail hard
         if (errorTitle != null) {
@@ -92,18 +78,17 @@ public class GreenAddressApplication extends MultiDexApplication {
             errorTitle = "libwallycore not found";
             errorContent = "libwallycore.so not found, this platform is not supported, please contact support info@greenaddress.it";
         }
-        else if (errorTitle == null && Secp256k1Context.isEnabled()) {
-            if (randomizeSecp256k1Context()) {
-                final Intent intent = new Intent(this, GaService.class);
-                bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            } else {
-                errorTitle = "Randomization failed";
-                errorContent = "Warning: Randomization of secp256k1lib context failed, please contact support info@greenaddress.it";
-            }
-        } else if (errorTitle == null){
-            errorTitle = "libsecp256k1 not found";
-            errorContent = "libsecp256k1.so not found, this platform is not supported, please contact support info@greenaddress.it";
+
+        if (errorTitle == null && !CryptoHelper.initialize()) {
+            errorTitle = "Initialization failed";
+            errorContent = "Cryptographic initialization failed, please contact support info@greenaddress.it";
         }
+
+        if (errorTitle == null) {
+            final Intent intent = new Intent(this, GaService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        }
+
         failHardOnCriticalErrors();
     }
 

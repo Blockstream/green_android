@@ -2,6 +2,9 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
 import com.greenaddress.greenbits.ui.MnemonicHelper;
+import org.bitcoin.NativeSecp256k1;
+import org.bitcoin.NativeSecp256k1Util;
+import org.bitcoin.Secp256k1Context;
 
 import java.security.SecureRandom;
 import java.text.Normalizer;
@@ -16,6 +19,15 @@ public class CryptoHelper {
         final byte[] b = new byte[len];
         new SecureRandom().nextBytes(b);
         return b;
+    }
+
+    public static boolean initialize() {
+        try {
+            return Secp256k1Context.isEnabled() && NativeSecp256k1.randomize(randomBytes(32));
+        } catch (final NativeSecp256k1Util.AssertFailException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static byte[] mnemonic_to_seed(final String mnemonic) {
