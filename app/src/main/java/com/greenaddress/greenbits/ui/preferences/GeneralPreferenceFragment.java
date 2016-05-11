@@ -29,15 +29,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         setHasOptionsMenu(true);
 
         // -- handle timeout
-        final SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
-        int timeout = 5;
-        try {
-            timeout = (int) gaService.getAppearanceValue("altimeout");
-        } catch (@NonNull final Exception e) {
-            // not set
-        }
-        editor.putString("altime", Integer.toString(timeout));
-        editor.apply();
+        int timeout = gaService.getAutoLogoutMinutes();
+        getPreferenceManager().getSharedPreferences().edit()
+                              .putString("altime", Integer.toString(timeout))
+                              .apply();
         final Preference altime = findPreference("altime");
         altime.setSummary(String.format("%d %s", timeout, getResources().getString(R.string.autologout_time_default)));
         altime.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

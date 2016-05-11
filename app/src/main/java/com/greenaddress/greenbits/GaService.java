@@ -162,6 +162,14 @@ public class GaService extends Service {
 
     public boolean isSPVEnabled() { return cfg("SPV").getBoolean("enabled", true); }
 
+    public int getAutoLogoutMinutes() {
+        try {
+            return (int)getAppearanceValue("altimeout");
+        } catch (final Exception e) {
+            return 5; // Not logged in/not set, default to 5 min
+        }
+    }
+
     @NonNull
     public Observable getTwoFacConfigObservable() {
         return twoFacConfigObservable;
