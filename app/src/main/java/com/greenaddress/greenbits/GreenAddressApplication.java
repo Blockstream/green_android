@@ -28,7 +28,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         @Override
         public void onServiceConnected(final ComponentName className,
                                        final IBinder service) {
-            gaService = ((GaService.GaBinder)service).mService;
+            gaService = ((GaService.GaBinder)service).getService();
             mBound = true;
             connectionObservable.setService(gaService);
             onServiceAttached.set(null);

@@ -73,13 +73,13 @@ import java.util.concurrent.Executors;
 public class GaService extends Service {
 
     class GaBinder extends Binder {
-        public final GaService mService;
-
-        public GaBinder(final GaService service) {
-            mService = service;
-        }
+        GaService getService() { return GaService.this; }
     }
-    @NonNull private final IBinder mBinder = new GaBinder(this);
+    private final IBinder mBinder = new GaBinder();
+
+    @Override
+    public IBinder onBind(final Intent intent) { return mBinder; }
+
 
     @NonNull private static final String TAG = GaService.class.getSimpleName();
     @NonNull public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
@@ -744,11 +744,6 @@ public class GaService extends Service {
             }, es);
         }
         return latestQrBitmapMnemonics;
-    }
-
-    @Override
-    public IBinder onBind(final Intent intent) {
-        return mBinder;
     }
 
     @NonNull
