@@ -30,20 +30,23 @@ public class TrezorHWWallet implements ISigningWallet {
 
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final Trezor trezor;
-    @NonNull
-    private List<Integer> addrn = new LinkedList<>();
+    private final List<Integer> addrn;
 
     public TrezorHWWallet(final Trezor t) {
         trezor = t;
+        addrn = new LinkedList<>();
+    }
+
+    private TrezorHWWallet(final TrezorHWWallet parent, final Integer childNumber) {
+        trezor = parent.trezor;
+        addrn = new LinkedList<>(parent.addrn);
+        addrn.add(childNumber);
     }
 
     @NonNull
     @Override
     public ISigningWallet deriveChildKey(@NonNull final ChildNumber childNumber) {
-        final TrezorHWWallet child = new TrezorHWWallet(trezor);
-        child.addrn = new LinkedList<>(addrn);
-        child.addrn.add(childNumber.getI());
-        return child;
+        return new TrezorHWWallet(this, childNumber.getI());
     }
 
     @NonNull
