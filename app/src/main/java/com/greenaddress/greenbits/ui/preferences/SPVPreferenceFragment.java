@@ -251,7 +251,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
                         gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
 
-                        gaService.setAppearanceValue("trusted_peer_addr", newString, true);
+                        gaService.setUserConfig("trusted_peer_addr", newString, true);
                         if (!newString.isEmpty())
                             trusted_peer.setSummary(newString);
                         else
@@ -275,7 +275,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
                                         new SPVAsync().execute();
                                         gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
-                                        gaService.setAppearanceValue("trusted_peer_addr", newString, true);
+                                        gaService.setUserConfig("trusted_peer_addr", newString, true);
                                         trusted_peer.setSummary(newString);
                                     }
                                 })

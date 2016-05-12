@@ -40,7 +40,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 try {
                     final Integer altimeout = Integer.parseInt(newValue.toString());
-                    gaService.setAppearanceValue("altimeout", altimeout, true);
+                    gaService.setUserConfig("altimeout", altimeout, true);
                     preference.setSummary(String.format("%d %s", altimeout, getResources().getString(R.string.autologout_time_default)));
                     return true;
                 } catch (@NonNull final Exception e) {
@@ -94,12 +94,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         bitcoinDenomination.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
-                gaService.setAppearanceValue("unit", o.toString(), true);
+                gaService.setUserConfig("unit", o.toString(), true);
                 bitcoinDenomination.setSummary(o.toString());
                 return true;
             }
         });
-        final String btcUnit = (String) gaService.getAppearanceValue("unit");
+        final String btcUnit = (String) gaService.getUserConfig("unit");
         if (btcUnit == null || btcUnit.equals("bits")) {
             bitcoinDenomination.setSummary("bits");
         } else {
@@ -162,7 +162,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     optin_rbf.setEnabled(false);
 
                     Futures.addCallback(
-                            gaService.setAppearanceValue("replace_by_fee", newValue, false),
+                            gaService.setUserConfig("replace_by_fee", newValue, false),
                             new FutureCallback<Boolean>() {
                                 @Override
                                 public void onSuccess(final @Nullable Boolean result) {
@@ -188,7 +188,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     return false;
                 }
             });
-            final Boolean replace_by_fee = (Boolean) gaService.getAppearanceValue("replace_by_fee");
+            final Boolean replace_by_fee = (Boolean) gaService.getUserConfig("replace_by_fee");
             ((CheckBoxPreference) findPreference("optin_rbf")).setChecked(replace_by_fee);
         }
         getActivity().setResult(getActivity().RESULT_OK, null);

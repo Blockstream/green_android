@@ -328,7 +328,7 @@ public class SendFragment extends SubaccountFragment {
         recipientEdit = (EditText) rootView.findViewById(R.id.sendToEditText);
         scanIcon = (TextView) rootView.findViewById(R.id.sendScanIcon);
 
-        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+        final String btcUnit = (String) getGAService().getUserConfig("unit");
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = (TextView) rootView.findViewById(R.id.sendBitcoinUnitText);
         bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -644,7 +644,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void updateBalance() {
-        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+        final String btcUnit = (String) getGAService().getUserConfig("unit");
         final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
         final TextView sendSubAccountBalanceUnit = (TextView) rootView.findViewById(R.id.sendSubAccountBalanceUnit);
         final TextView sendSubAccountBitcoinScale = (TextView) rootView.findViewById(R.id.sendSubAccountBitcoinScale);
@@ -775,7 +775,7 @@ public class SendFragment extends SubaccountFragment {
             @Override
             public void onSuccess(final @Nullable Map<?, ?> result) {
                 final Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")));
-                final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+                final String btcUnit = (String) getGAService().getUserConfig("unit");
                 final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
                 final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                 final String btcBalance = format.noCode().format(coin).toString();

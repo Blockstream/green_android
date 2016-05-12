@@ -638,10 +638,10 @@ public class WalletClient {
 
                                 rpc.set(mLoginData);
 
-                                if (mLoginData.rbf && getAppearanceValue("replace_by_fee") == null) {
+                                if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
                                     // enable rbf if server supports it and not disabled
                                     // by user explicitly
-                                    setAppearanceValue("replace_by_fee", Boolean.TRUE, false);
+                                    setUserConfig("replace_by_fee", Boolean.TRUE, false);
                                 }
                             }
                         } catch (final ClassCastException | IOException e) {
@@ -950,7 +950,7 @@ public class WalletClient {
 
     }
 
-    public Object getAppearanceValue(final String key) {
+    public Object getUserConfig(final String key) {
         return mLoginData.userConfig.get(key);
     }
 
@@ -968,8 +968,8 @@ public class WalletClient {
      * @param updateImmediately whether to not wait for server to reply before updating
      *                          the value in local settings dict (set false to wait)
      */
-    public ListenableFuture<Boolean> setAppearanceValue(final String key, final Object value, final boolean updateImmediately) {
-        final Object oldValue = getAppearanceValue(key);
+    public ListenableFuture<Boolean> setUserConfig(final String key, final Object value, final boolean updateImmediately) {
+        final Object oldValue = getUserConfig(key);
         if (updateImmediately)
             mLoginData.userConfig.put(key, value);
 

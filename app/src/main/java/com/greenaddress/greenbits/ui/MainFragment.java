@@ -170,7 +170,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
         if (monetary == null) {
             return;
         }
-        final String btcUnit = (String) gaService.getAppearanceValue("unit");
+        final String btcUnit = (String) gaService.getUserConfig("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.mainBitcoinScaleText);
@@ -431,7 +431,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
     private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
         final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
-        final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+        final String btcUnit = (String) getGAService().getUserConfig("unit");
 
         if (currentList == null || newAdapter) {
             currentList = new ArrayList<>();

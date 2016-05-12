@@ -352,7 +352,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
                             txNonBip38 = new Transaction(Network.NETWORK,
                                     Hex.decode((String) result.get("tx")));
                             final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(
-                                    (String) getGAService().getAppearanceValue("unit"));
+                                    (String) getGAService().getUserConfig("unit"));
                             Coin outputsValue = Coin.ZERO;
                             for (final TransactionOutput output : txNonBip38.getOutputs()) {
                                 outputsValue = outputsValue.add(output.getValue());

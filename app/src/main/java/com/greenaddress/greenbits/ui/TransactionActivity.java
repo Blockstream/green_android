@@ -342,7 +342,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
                 }
             }
 
-            final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+            final String btcUnit = (String) getGAService().getUserConfig("unit");
             final Coin coin = Coin.valueOf(t.amount);
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
             bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
@@ -861,7 +861,7 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
         private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
             Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
 
-            final String btcUnit = (String) getGAService().getAppearanceValue("unit");
+            final String btcUnit = (String) getGAService().getUserConfig("unit");
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
 
             final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);

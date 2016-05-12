@@ -164,7 +164,7 @@ public class GaService extends Service {
 
     public int getAutoLogoutMinutes() {
         try {
-            return (int)getAppearanceValue("altimeout");
+            return (int)getUserConfig("altimeout");
         } catch (final Exception e) {
             return 5; // Not logged in/not set, default to 5 min
         }
@@ -250,6 +250,11 @@ public class GaService extends Service {
     public SharedPreferences.Editor cfgEdit(final String name) { return cfg(name).edit(); }
     public SharedPreferences cfgIn(final String name) { return cfg(name + getReceivingId()); }
     public SharedPreferences.Editor cfgInEdit(final String name) { return cfgIn(name).edit(); }
+
+    // User config is stored on the server (unlike preferences which are local)
+    public Object getUserConfig(@NonNull final String key) {
+        return client.getUserConfig(key);
+    }
 
     @Override
     public void onCreate() {
@@ -582,9 +587,9 @@ public class GaService extends Service {
             privateData.put("prevouts_mode", "skip");
         }
 
-        if (getAppearanceValue("replace_by_fee") != null) {
-            privateData.put("rbf_optin", getAppearanceValue("replace_by_fee"));
-        }
+        final Object rbf_optin = getUserConfig("replace_by_fee");
+        if (rbf_optin != null)
+            privateData.put("rbf_optin", rbf_optin);
     }
 
     @NonNull
@@ -791,10 +796,6 @@ public class GaService extends Service {
         return subaccounts;
     }
 
-    public Object getAppearanceValue(@NonNull final String key) {
-        return client.getAppearanceValue(key);
-    }
-
     @Nullable
     public Map<?, ?> getTwoFacConfig() {
         return twoFacConfig;
@@ -805,8 +806,8 @@ public class GaService extends Service {
      *                          the value in local settings dict (set false to wait)
      */
     @NonNull
-    public ListenableFuture<Boolean> setAppearanceValue(@NonNull final String key, @NonNull final Object value, final boolean updateImmediately) {
-        return client.setAppearanceValue(key, value, updateImmediately);
+    public ListenableFuture<Boolean> setUserConfig(@NonNull final String key, @NonNull final Object value, final boolean updateImmediately) {
+        return client.setUserConfig(key, value, updateImmediately);
     }
 
 
