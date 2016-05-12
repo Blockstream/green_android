@@ -44,10 +44,14 @@ public class ConnectivityObservable extends Observable {
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
+    private void doNotify(final Object o) {
+         setChanged();
+         notifyObservers(o);
+    }
+
     public void setForcedLoggedOut() {
         this.forcedLoggedout = true;
-        setChanged();
-        notifyObservers(this.forcedLoggedout);
+        doNotify(this.forcedLoggedout);
     }
 
     @NonNull
@@ -61,8 +65,7 @@ public class ConnectivityObservable extends Observable {
             this.forcedLoggedout = false;
             this.forcedTimeoutout = false;
         }
-        setChanged();
-        notifyObservers(state);
+        doNotify(state);
     }
 
     public boolean getIsForcedLoggedOut() {
@@ -122,8 +125,7 @@ public class ConnectivityObservable extends Observable {
                 public Object call() throws Exception {
                     forcedTimeoutout = true;
                     service.disconnect(false);
-                    setChanged();
-                    notifyObservers();
+                    doNotify(null);
                     return null;
                 }
             }, service.getAutoLogoutMinutes(), TimeUnit.MINUTES);
@@ -143,10 +145,8 @@ public class ConnectivityObservable extends Observable {
             setState(ConnectivityObservable.State.OFFLINE);
             changedState = true;
         }
-        if (!changedState && isWiFiUp()) {
-            setChanged();
-            notifyObservers();
-        }
+        if (!changedState && isWiFiUp())
+            doNotify(null);
     }
 
     public boolean isNetworkUp() {
