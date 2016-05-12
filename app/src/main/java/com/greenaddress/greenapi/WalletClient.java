@@ -951,7 +951,7 @@ public class WalletClient {
     }
 
     public Object getAppearanceValue(final String key) {
-        return mLoginData.appearance.get(key);
+        return mLoginData.userConfig.get(key);
     }
 
     private <T> ByteArrayOutputStream serializeJSON(T src) throws GAException {
@@ -971,16 +971,16 @@ public class WalletClient {
     public ListenableFuture<Boolean> setAppearanceValue(final String key, final Object value, final boolean updateImmediately) {
         final Object oldValue = getAppearanceValue(key);
         if (updateImmediately)
-            mLoginData.appearance.put(key, value);
+            mLoginData.userConfig.put(key, value);
 
-        final Map<String, Object> newAppearance = new HashMap<>(mLoginData.appearance); // clone
-        newAppearance.put(key, value);
+        final Map<String, Object> clonedConfig = new HashMap<>(mLoginData.userConfig);
+        clonedConfig.put(key, value);
         final String newJSON;
         try {
-            newJSON = serializeJSON(newAppearance).toString();
+            newJSON = serializeJSON(clonedConfig).toString();
         } catch (final GAException e) {
             if (updateImmediately)
-                mLoginData.appearance.put(key, oldValue); // Restore
+                mLoginData.userConfig.put(key, oldValue); // Restore
             return Futures.immediateFailedFuture(e);
         }
 
@@ -988,7 +988,7 @@ public class WalletClient {
         final CallHandler handler = new CallHandler() {
             public void onResult(final Object result) {
                 if (!updateImmediately)
-                    mLoginData.appearance.put(key, value);
+                    mLoginData.userConfig.put(key, value);
                 rpc.set(true);
             }
         };
@@ -996,7 +996,7 @@ public class WalletClient {
             public void onError(final String uri, final String err) {
                 Log.d(TAG, "updateAppearance failed: " + err);
                 if (updateImmediately)
-                    mLoginData.appearance.put(key, oldValue); // Restore
+                    mLoginData.userConfig.put(key, oldValue); // Restore
                 rpc.setException(new GAException(err));
             }
         };

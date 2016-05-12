@@ -11,7 +11,7 @@ public class LoginData {
 
     public final String exchange;
     public final String currency;
-    public final Map<String, Object> appearance;
+    public final Map<String, Object> userConfig;
     public Map<String, Object> feeEstimates;
     public final ArrayList subaccounts;
     public final String receiving_id;
@@ -23,8 +23,9 @@ public class LoginData {
     public LoginData(final Map<?, ?> map) throws IOException {
         this.exchange = (String) map.get("exchange");
         this.currency = (String) map.get("currency");
-        this.appearance = new MappingJsonFactory().getCodec().readValue(
-                (String) map.get("appearance"), Map.class);
+        // The name 'appearance' for user config is historical
+        final String cfg = (String) map.get("appearance");
+        this.userConfig = new MappingJsonFactory().getCodec().readValue(cfg, Map.class);
         this.subaccounts = (ArrayList) map.get("subaccounts");
         this.gait_path = (String) map.get("gait_path");
         this.receiving_id = (String) map.get("receiving_id");
