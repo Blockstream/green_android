@@ -51,36 +51,24 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     private BTChipTransportFactory transportFactory;
     private static final int CONNECT_TIMEOUT = 2000;
 
+    private void mapClick(final int id, final Intent activityIntent) {
+        findViewById(id).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                startActivity(activityIntent);
+            }
+        });
+    }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_screen);
 
-        final Button loginButton = (Button) findViewById(R.id.firstLogInButton);
-        final Button signupButton = (Button) findViewById(R.id.firstSignUpButton);
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                startActivity(new Intent(FirstScreenActivity.this, MnemonicActivity.class));
-            }
-        });
-
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                startActivity(new Intent(FirstScreenActivity.this, SignUpActivity.class));
-            }
-        });
-
-        final TextView madeBy = (TextView) findViewById(R.id.firstMadeByText);
-
-        madeBy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://greenaddress.it")));
-            }
-        });
+        mapClick(R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
+        mapClick(R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));
+        final Uri homepage = Uri.parse("https://greenaddress.it");
+        mapClick(R.id.firstMadeByText, new Intent(Intent.ACTION_VIEW, homepage));
 
         Log.d(TAG, "Create FirstScreenActivity : TUI " + tuiCall);
         if (tuiCall || (transportFactory != null)) {
