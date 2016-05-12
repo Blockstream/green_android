@@ -323,6 +323,10 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         return true;
     }
 
+    void startNewActivity(final Class activityClass) {
+        startActivity(new Intent(this, activityClass));
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -330,8 +334,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         // as you specify a parent activity in AndroidManifest.xml.
         final int id = item.getItemId();
         if (id == R.id.proxy_preferences) {
-            final Intent settingsActivity = new Intent(FirstScreenActivity.this, ProxySettingsActivity.class);
-            startActivity(settingsActivity);
+            startNewActivity(ProxySettingsActivity.class);
             return true;
         }
         return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
@@ -346,14 +349,10 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
         //FIXME : recheck state, properly handle TEE link anyway
         if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent
-            final Intent mainActivity = new Intent(FirstScreenActivity.this, TabbedMainActivity.class);
-            startActivity(mainActivity);
+            startNewActivity(TabbedMainActivity.class);
             finish();
-            return;
-        }
-        if (getGAService().cfg("pin").getString("ident", null) != null) {
-            final Intent tabbedMainActivity = new Intent(FirstScreenActivity.this, PinActivity.class);
-            startActivity(tabbedMainActivity);
+        } else if (getGAService().cfg("pin").getString("ident", null) != null) {
+            startNewActivity(PinActivity.class);
             finish();
         }
     }
