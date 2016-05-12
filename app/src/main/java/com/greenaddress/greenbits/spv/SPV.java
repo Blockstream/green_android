@@ -92,7 +92,7 @@ public class SPV {
     public void resetSpv() {
 
         // delete all spv data
-        final File blockChainFile = new File(gaService.getDir("blockstore_" + gaService.getReceivingId(), Context.MODE_PRIVATE), "blockchain.spvchain");
+        final File blockChainFile = gaService.getSPVChainFile();
         if (blockChainFile.exists()) {
             blockChainFile.delete();
         }
@@ -523,10 +523,8 @@ public class SPV {
             return;
         }
 
-        final File blockChainFile = new File(gaService.getDir("blockstore_" + gaService.getReceivingId(), Context.MODE_PRIVATE), "blockchain.spvchain");
-
         try {
-            blockStore = new SPVBlockStore(Network.NETWORK, blockChainFile);
+            blockStore = new SPVBlockStore(Network.NETWORK, gaService.getSPVChainFile());
             final StoredBlock storedBlock = blockStore.getChainHead(); // detect corruptions as early as possible
             if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
                 InputStream is = null;

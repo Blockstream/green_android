@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -52,6 +53,7 @@ import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -168,6 +170,11 @@ public class GaService extends Service {
         } catch (final Exception e) {
             return 5; // Not logged in/not set, default to 5 min
         }
+    }
+
+    public File getSPVChainFile() {
+        final String dirName = "blockstore_" + getReceivingId();
+        return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
     }
 
     @NonNull
