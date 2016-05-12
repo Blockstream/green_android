@@ -131,20 +131,19 @@ public class ConnectivityObservable extends Observable {
     }
 
     private void checkNetwork() {
-        final boolean isNetworkUp = isNetworkUp();
-        boolean stateSet = false;
-        if (isNetworkUp) {
+        boolean changedState = false;
+        if (isNetworkUp()) {
             if (state.equals(State.DISCONNECTED) || state.equals(State.OFFLINE)) {
                 setState(ConnectivityObservable.State.DISCONNECTED);
-                stateSet = true;
+                changedState = true;
                 service.reconnect();
             }
         } else {
             setState(ConnectivityObservable.State.DISCONNECTED);
             setState(ConnectivityObservable.State.OFFLINE);
-            stateSet = true;
+            changedState = true;
         }
-        if (isWiFiUp() && !stateSet) {
+        if (!changedState && isWiFiUp()) {
             setChanged();
             notifyObservers();
         }
