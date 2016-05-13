@@ -36,10 +36,6 @@ public class ConnectivityObservable extends Observable {
     public void setService(@NonNull final GaService service) {
         this.service = service;
         checkNetwork();
-        registerReceiver();
-    }
-
-    private void registerReceiver() {
         service.getApplicationContext().registerReceiver(this.mNetBroadReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
@@ -81,25 +77,20 @@ public class ConnectivityObservable extends Observable {
         super.addObserver(ob);
         stopTimer();
 
-        if (service == null)
-            return;
+        assert service != null : "Observer added before service created";
 
-        if (state.equals(State.DISCONNECTED))
+        if (service != null && state.equals(State.DISCONNECTED))
             service.reconnect();
-
-        if (countObservers() == 1)
-            registerReceiver();
     }
 
     @Override
     public synchronized void deleteObserver(final @NonNull Observer ob) {
         super.deleteObserver(ob);
-        if (countObservers() == 0) {
-            if (service != null) {
-                service.getApplicationContext().unregisterReceiver(mNetBroadReceiver);
-            }
+
+        assert service != null : "Observer added before service created";
+
+        if (countObservers() == 0)
             startTimer();
-        }
     }
 
     @Override
