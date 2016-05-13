@@ -20,7 +20,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     public GaService gaService;
     @NonNull public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
     private boolean mBound = false;
-    private String errorTitle, errorContent;
+    private String mErrorTitle, mErrorContent;
     @Nullable
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
     private final ServiceConnection mConnection = new ServiceConnection() {
@@ -44,19 +44,20 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     @Nullable
     public ConnectivityObservable getConnectionObservable() {
-        failHardOnCriticalErrors();
+        if (mErrorTitle != null)
+            failHard(mErrorTitle, mErrorContent);
         return connectionObservable;
     }
 
-    private void failHardOnCriticalErrors() {
-        // fail hard
-        if (errorTitle != null) {
-            final Intent fail = new Intent(this, FailHardActivity.class);
-            fail.putExtra("errorTitle", errorTitle);
-            fail.putExtra("errorContent", errorContent);
-            fail.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(fail);
-        }
+    private void failHard(final String title, final String message) {
+        mErrorTitle = title;
+        mErrorContent = message;
+        final Intent fail = new Intent(this, FailHardActivity.class);
+        fail.putExtra("errorTitle", title);
+        final String supportMessage = "Please contact info@greenaddress.it for support.";
+        fail.putExtra("errorContent", String.format("%s. %s", message, supportMessage));
+        fail.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(fail);
     }
 
     @Override
@@ -67,26 +68,22 @@ public class GreenAddressApplication extends MultiDexApplication {
             PRNGFixes.apply();
         } catch (final SecurityException e) {
             e.printStackTrace();
-            errorTitle = "Security exception";
-            errorContent = String.format("%s please contact support info@greenaddress.it", e.getMessage());
+            failHard("Security exception", e.getMessage());
+            return;
         }
 
-        if (errorTitle == null && !Wally.isEnabled()) {
-            errorTitle = "libwallycore not found";
-            errorContent = "libwallycore.so not found, this platform is not supported, please contact support info@greenaddress.it";
+        if (!Wally.isEnabled()) {
+            failHard("Unsupported platform", "A suitable libwallycore.so was not found");
+            return;
         }
 
-        if (errorTitle == null && !CryptoHelper.initialize()) {
-            errorTitle = "Initialization failed";
-            errorContent = "Cryptographic initialization failed, please contact support info@greenaddress.it";
+        if (!CryptoHelper.initialize()) {
+            failHard("Initialization failed", "Cryptographic initialization failed");
+            return;
         }
 
-        if (errorTitle == null) {
-            final Intent intent = new Intent(this, GaService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-
-        failHardOnCriticalErrors();
+        final Intent intent = new Intent(this, GaService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
