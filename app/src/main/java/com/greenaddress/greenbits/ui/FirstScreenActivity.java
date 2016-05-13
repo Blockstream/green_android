@@ -51,15 +51,6 @@ public class FirstScreenActivity extends GaActivity implements Observer {
     private BTChipTransportFactory transportFactory;
     private static final int CONNECT_TIMEOUT = 2000;
 
-    private void mapClick(final int id, final Intent activityIntent) {
-        findViewById(id).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                startActivity(activityIntent);
-            }
-        });
-    }
-
     @Override
     protected int getMainViewId() { return R.layout.activity_first_screen; }
 
@@ -325,7 +316,7 @@ public class FirstScreenActivity extends GaActivity implements Observer {
         return true;
     }
 
-    void startNewActivity(final Class activityClass) {
+    private void startNewActivity(final Class activityClass) {
         startActivity(new Intent(this, activityClass));
     }
 
@@ -339,7 +330,7 @@ public class FirstScreenActivity extends GaActivity implements Observer {
             startNewActivity(ProxySettingsActivity.class);
             return true;
         }
-        return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override

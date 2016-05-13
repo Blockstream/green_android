@@ -2,9 +2,11 @@ package com.greenaddress.greenbits.ui;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -78,4 +80,16 @@ public abstract class GaActivity extends AppCompatActivity {
     abstract protected void onCreateWithService();
     abstract protected void onPauseWithService();
     abstract protected void onResumeWithService();
+
+    // Utility methods
+
+    protected void mapClick(final int id, final Intent activityIntent) {
+        findViewById(id).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                startActivity(activityIntent);
+            }
+        });
+    }
+
 }
