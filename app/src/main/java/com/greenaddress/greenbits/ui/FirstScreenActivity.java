@@ -42,7 +42,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class FirstScreenActivity extends ActionBarActivity implements Observer {
+public class FirstScreenActivity extends GaActivity implements Observer {
     @NonNull
     private static final String NVM_PATH = "nvm.bin";
     @NonNull
@@ -61,9 +61,11 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_screen);
+    protected int getMainViewId() { return R.layout.activity_first_screen; }
+
+    @Override
+    protected void onCreateWithService() {
+        Log.d(TAG, "onCreateWithService");
 
         mapClick(R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
         mapClick(R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));
@@ -341,8 +343,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onResumeWithService() {
         getGAApp().getConnectionObservable().addObserver(this);
 
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
@@ -358,8 +359,7 @@ public class FirstScreenActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onPauseWithService() {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 

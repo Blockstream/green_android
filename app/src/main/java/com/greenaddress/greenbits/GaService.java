@@ -268,6 +268,9 @@ public class GaService extends Service {
         super.onCreate();
         uiHandler = new Handler();
 
+        // Uncomment to test slow service creation
+        // android.os.SystemClock.sleep(10000);
+
         this.background_color = 0; // transparent
         connectionObservable = ((GreenAddressApplication) getApplication()).getConnectionObservable();
 

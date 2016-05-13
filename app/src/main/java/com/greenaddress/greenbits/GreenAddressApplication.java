@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
@@ -16,6 +17,8 @@ import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 
 public class GreenAddressApplication extends MultiDexApplication {
+
+    private static final String TAG = GreenAddressApplication.class.getSimpleName();
 
     public GaService gaService;
     @NonNull public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
@@ -28,6 +31,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         @Override
         public void onServiceConnected(final ComponentName className,
                                        final IBinder service) {
+            Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
             gaService = ((GaService.GaBinder)service).getService();
             mBound = true;
             connectionObservable.setService(gaService);
@@ -36,6 +40,7 @@ public class GreenAddressApplication extends MultiDexApplication {
 
         @Override
         public void onServiceDisconnected(@NonNull final ComponentName arg0) {
+            Log.d(TAG, "onServiceDisconnected: dispatching onServiceAttached exception");
             mBound = false;
             connectionObservable = null;
             onServiceAttached.setException(new GAException(arg0.toString()));
@@ -82,6 +87,7 @@ public class GreenAddressApplication extends MultiDexApplication {
             return;
         }
 
+        Log.d(TAG, "onCreate: binding service");
         final Intent intent = new Intent(this, GaService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
