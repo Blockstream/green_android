@@ -97,8 +97,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     boolean setting_qrcode = false;
 
     @Override
-    void onGAResume() {
-        Log.i(TAG, "onGaResume");
+    public void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
         if (onAddress != null && address == null && !setting_qrcode) {
             setting_qrcode = true;
             final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
@@ -120,8 +121,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private View rootView;
 
     @Override
-    public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
-                               @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        registerReceiver();
+
         if (savedInstanceState != null) {
             pausing = savedInstanceState.getBoolean("pausing");
             address = savedInstanceState.getParcelable("address");

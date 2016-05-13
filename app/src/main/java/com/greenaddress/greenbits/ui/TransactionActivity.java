@@ -143,8 +143,8 @@ public class TransactionActivity extends GaActivity {
         }
 
         @Override
-        public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
-                                   final Bundle savedInstanceState) {
+        public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+                                 final Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_transaction, container, false);
 
             final TextView hashText = (TextView) rootView.findViewById(R.id.txHashText);

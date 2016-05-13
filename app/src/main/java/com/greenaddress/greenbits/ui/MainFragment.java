@@ -235,8 +235,10 @@ public class MainFragment extends SubaccountFragment implements Observer {
     }
 
     @Override
-    public View onGACreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
-                               final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        registerReceiver();
+
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         recyclerView.setHasFixedSize(true);
@@ -391,7 +393,8 @@ public class MainFragment extends SubaccountFragment implements Observer {
     }
 
     @Override
-    public void onGAResume() {
+    public void onResume() {
+        super.onResume();
         getGAService().getNewTransactionsObservable().addObserver(this);
         getGAService().getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
         if (wiFiObserverRequired) {

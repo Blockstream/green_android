@@ -27,12 +27,9 @@ public abstract class SubaccountFragment extends GAFragment {
 
     abstract protected void onSubaccountChanged(final int input);
 
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
-        final View view = super.onCreateView(inflater, container, savedInstanceState);
+    // Must be called by subclasses after onCreateView()
+    protected void registerReceiver() {
         getActivity().registerReceiver(br, new IntentFilter("fragmentupdater"));
-        return view;
     }
 
     @Override

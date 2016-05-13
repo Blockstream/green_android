@@ -22,48 +22,11 @@ abstract class GAFragment extends Fragment {
         gaApp = (GreenAddressApplication) activity.getApplication();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getGAService() == null) {
-            getActivity().finish();
-            return;
-        }
-        try {
-            onGAResume();
-        } catch (@NonNull final NullPointerException npe) {
-            getActivity().finish();
-        }
-    }
-
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
-        if (getGAService() == null) {
-            getActivity().finish();
-            return null;
-        }
-        try {
-            return onGACreateView(inflater, container, savedInstanceState);
-        } catch (@NonNull final NullPointerException npe) {
-            getActivity().finish();
-            return null;
-        }
-    }
-
-    abstract View onGACreateView(final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState);
-
-    void onGAResume() {
-    }
-
-    GreenAddressApplication getGAApp() {
+    protected GreenAddressApplication getGAApp() {
         return gaApp;
     }
 
-    @Nullable
-    GaService getGAService() {
-        if (gaApp != null) {
-            return gaApp.gaService;
-        }
-        return null;
+    protected GaService getGAService() {
+        return gaApp.gaService;
     }
 }

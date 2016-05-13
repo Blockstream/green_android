@@ -302,11 +302,12 @@ public class SendFragment extends SubaccountFragment {
     }
 
     @Override
-    public View onGACreateView(@Nullable final LayoutInflater inflater, @Nullable final ViewGroup container,
-                               @Nullable final Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
+    public View onCreateView(@Nullable final LayoutInflater inflater, @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        registerReceiver();
+
+        if (savedInstanceState != null)
             pausing = savedInstanceState.getBoolean("pausing");
-        }
 
         rootView = inflater.inflate(R.layout.fragment_send, container, false);
 
