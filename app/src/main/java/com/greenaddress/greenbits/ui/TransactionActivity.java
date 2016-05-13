@@ -54,25 +54,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 
-public class TransactionActivity extends ActionBarActivity implements Observer {
+public class TransactionActivity extends GaActivity {
 
     @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getGAService() == null) {
-            finish();
-            return;
-        }
-        setContentView(R.layout.activity_transaction);
-        if (savedInstanceState == null) {
+    protected int getMainViewId() { return R.layout.activity_transaction; }
+
+    @Override
+    protected void onCreateWithService(final Bundle savedInstanceState) {
+        if (savedInstanceState == null)
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
-        }
         setResult(RESULT_OK);
     }
 
@@ -102,27 +96,6 @@ public class TransactionActivity extends ActionBarActivity implements Observer {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void update(final Observable observable, final Object data) {
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getGAService() == null) {
-            finish();
-            return;
-        }
-        getGAApp().getConnectionObservable().addObserver(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
     /**

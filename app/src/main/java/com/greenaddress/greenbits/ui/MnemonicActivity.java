@@ -49,8 +49,6 @@ import com.greenaddress.greenbits.GaService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -58,7 +56,7 @@ import javax.annotation.Nullable;
 import de.schildbach.wallet.ui.ScanActivity;
 
 
-public class MnemonicActivity extends ActionBarActivity implements Observer {
+public class MnemonicActivity extends GaActivity {
 
     private static final int PINSAVE = 1337;
     private static final int QRSCANNER = 1338;
@@ -272,23 +270,18 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         return passphraseFuture;
     }
 
+    protected int getMainViewId() { return R.layout.activity_mnemonic; }
+
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.i(TAG, getIntent().getType() + "" + getIntent());
-        setContentView(R.layout.activity_mnemonic);
-        final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
+
+        mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {
+            public void onClick(final View v) {
                 MnemonicActivity.this.login();
             }
         });
-
-
-        final TextView scanIcon = (TextView) findViewById(R.id.mnemonicScanIcon);
-        scanIcon.setOnClickListener(new View.OnClickListener() {
-                                        @Override
+        mapClick(R.id.mnemonicScanIcon, new View.OnClickListener() {
                                         public void onClick(final View view) {
                                             //New Marshmallow permissions paradigm
                                             final String[] perms = {"android.permission.CAMERA"};
@@ -442,10 +435,7 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        getGAApp().getConnectionObservable().addObserver(this);
-
+    protected void onResumeWithService() {
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent
@@ -453,12 +443,6 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
             startActivity(mainActivity);
             finish();
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
     private Spans spans;
@@ -542,11 +526,6 @@ public class MnemonicActivity extends ActionBarActivity implements Observer {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void update(final Observable observable, final Object data) {
-
     }
 
     @Override

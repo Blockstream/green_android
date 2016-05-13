@@ -30,18 +30,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TwoFactorActivity extends ActionBarActivity {
+public class TwoFactorActivity extends GaActivity {
 
     private String twoFacType, twoFacTypeName;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateWithService(Bundle savedInstanceState) {
+
         final GaService gaService = getGAService();
-        if (gaService == null) {
-            finish();
-            return;
-        }
         final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();
         twoFacType = getIntent().getStringExtra("method");
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);

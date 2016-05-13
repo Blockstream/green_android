@@ -67,7 +67,7 @@ import java.util.Observer;
 import de.schildbach.wallet.ui.ScanActivity;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
-public class TabbedMainActivity extends ActionBarActivity implements Observer {
+public class TabbedMainActivity extends GaActivity implements Observer {
     private static final int
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
@@ -80,9 +80,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     private Menu menu;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         boolean isBitcoinURL = getIntent().hasCategory(Intent.CATEGORY_BROWSABLE) ||
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()) ||
@@ -105,11 +103,8 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
-        final GaService gs = getGAService();
-        if (gs == null) {
-            return;
-        }
-        final Map<?, ?> twoFacConfig = gs.getTwoFacConfig();
+
+        final Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
         if (twoFacConfig == null) {
             return;
         }
@@ -133,14 +128,10 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     }
 
     private void configureSubaccountsFooter(final int curSubaccount) {
-        final GaService gs = getGAService();
-        if (gs == null) {
+        final ArrayList subs = getGAService().getSubaccounts();
+        if (subs == null || subs.isEmpty())
             return;
-        }
-        final ArrayList subs = gs.getSubaccounts();
-        if (subs == null || subs.isEmpty()) {
-            return;
-        }
+
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
@@ -271,8 +262,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onResumeWithService() {
         getGAApp().getConnectionObservable().addObserver(this);
         testKickedOut();
         instance = this;
@@ -280,8 +270,7 @@ public class TabbedMainActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onPauseWithService() {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 

@@ -4,11 +4,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
 
-public class AboutActivity extends ActionBarActivity {
+public class AboutActivity extends AppCompatActivity {
 
     private Element getGitHubElement() {
         final Element gitHubElement = new Element();

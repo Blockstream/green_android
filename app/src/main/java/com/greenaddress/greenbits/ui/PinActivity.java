@@ -52,7 +52,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 
-public class PinActivity extends ActionBarActivity implements Observer {
+public class PinActivity extends GaActivity implements Observer {
 
     private Menu menu;
     @NonNull private static final String KEYSTORE_KEY = "NativeAndroidAuth";
@@ -163,8 +163,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         final SharedPreferences prefs = getSharedPreferences("pin", MODE_PRIVATE);
         final String ident = prefs.getString("ident", null);
@@ -360,11 +359,12 @@ public class PinActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onResumeWithService() {
         getGAApp().getConnectionObservable().addObserver(this);
 
-        if (getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN) || getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        if (state.equals(ConnectivityObservable.State.LOGGEDIN) ||
+            state.equals(ConnectivityObservable.State.LOGGINGIN)) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
             startActivity(mainActivity);
@@ -373,8 +373,7 @@ public class PinActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onPauseWithService() {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
@@ -418,9 +417,9 @@ public class PinActivity extends ActionBarActivity implements Observer {
     @Override
     public void update(final Observable observable, final Object data) {
         // connectivity changed
-        final ConnectivityObservable.State currentState = getGAApp().getConnectionObservable().getState();
-        if (menu != null) {
-            setPlugVisible(currentState != ConnectivityObservable.State.CONNECTED && currentState != ConnectivityObservable.State.LOGGEDIN && currentState != ConnectivityObservable.State.LOGGINGIN);
-        }
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        setPlugVisible(state != ConnectivityObservable.State.CONNECTED &&
+                       state != ConnectivityObservable.State.LOGGEDIN &&
+                       state != ConnectivityObservable.State.LOGGINGIN);
     }
 }

@@ -47,15 +47,13 @@ import com.satoshilabs.trezor.TrezorGUICallback;
 
 import java.util.Formatter;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.ExecutionException;
 
 import nordpol.android.AndroidCard;
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
-public class RequestLoginActivity extends Activity implements Observer, OnDiscoveredTagListener {
+public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagListener {
 
     @NonNull private static final String TAG = RequestLoginActivity.class.getSimpleName();
     @NonNull private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
@@ -70,15 +68,13 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
     private MaterialDialog nfcWaitDialog;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_login_requested);
+    protected int getMainViewId() { return R.layout.activity_first_login_requested; }
+
+    @Override
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
         tagDispatcher = TagDispatcher.get(this, this);
-
-        getGAApp().getConnectionObservable().addObserver(this);        
 
         if (((tag != null) && (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction()))) ||
                 (getIntent().getAction() != null &&
@@ -470,32 +466,13 @@ public class RequestLoginActivity extends Activity implements Observer, OnDiscov
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        getGAApp().getConnectionObservable().addObserver(this);
+    public void onResumeWithService() {
         tagDispatcher.enableExclusiveNfc();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        getGAApp().getConnectionObservable().deleteObserver(this);
+    public void onPauseWithService() {
         tagDispatcher.disableExclusiveNfc();
-    }
-
-    @Override
-    public void update(final Observable observable, final Object data) {
-
-    }
-
-    @NonNull
-    private GreenAddressApplication getGAApp() {
-        return (GreenAddressApplication) getApplication();
-    }
-
-    private GaService getGAService() {
-        return getGAApp().gaService;
     }
 
     @Nullable

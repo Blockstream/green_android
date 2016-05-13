@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.spv.SPV;
-import com.greenaddress.greenbits.ui.ActionBarActivity;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.R;
 
@@ -25,10 +25,8 @@ import org.bitcoinj.core.listeners.PeerDisconnectedEventListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 
-public final class NetworkMonitorActivity extends ActionBarActivity implements Observer, PeerConnectedEventListener, PeerDisconnectedEventListener
+public final class NetworkMonitorActivity extends GaActivity implements PeerConnectedEventListener, PeerDisconnectedEventListener
 {
     @NonNull
     private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
@@ -36,21 +34,18 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
     private String bloominfo = "";
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState)
+    protected int getMainViewId() { return R.layout.activity_network; }
+
+    @Override
+    protected void onCreateWithService(final Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_network);
-
         final ListView view = (ListView) findViewById(R.id.peerlistview);
 
         view.setEmptyView(findViewById(R.id.empty_list_view));
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
+    public void onPauseWithService() {
         unregisterReceiver(uiUpdated);
         final PeerGroup peerGroup = getGAService().spv.getPeerGroup();
         if (peerGroup != null) {
@@ -59,14 +54,10 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
         }
 
         peerList.clear();
-
-        getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
+    public void onResumeWithService() {
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
         peerList.clear();
@@ -101,16 +92,6 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
 
         }
 
-        testKickedOut();
-        if (getGAService() == null) {
-            finish();
-            return;
-        }
-
-        getGAApp().getConnectionObservable().addObserver(this);
-    }
-
-    private void testKickedOut() {
         if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             final Intent firstScreenActivity = new Intent(NetworkMonitorActivity.this, FirstScreenActivity.class);
@@ -118,6 +99,7 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
             finish();
         }
     }
+
     @Override
     public synchronized void onPeerConnected(@NonNull final Peer peer, final int peerCount) {
         final PrettyPeer new_ppeer = new PrettyPeer(peer);
@@ -151,10 +133,6 @@ public final class NetworkMonitorActivity extends ActionBarActivity implements O
                 peerListAdapter.notifyDataSetChanged();
             }
         });
-    }
-    @Override
-    public void update(@NonNull final Observable observable, @NonNull final Object data) {
-
     }
 
     @Nullable

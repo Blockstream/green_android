@@ -27,10 +27,7 @@ import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenbits.KeyStoreAES;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class PinSaveActivity extends ActionBarActivity implements Observer {
+public class PinSaveActivity extends GaActivity {
 
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
@@ -80,18 +77,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        getGAApp().getConnectionObservable().addObserver(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getGAApp().getConnectionObservable().deleteObserver(this);
-    }
-
-    @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         // Challenge completed, proceed with using cipher
         if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
@@ -108,9 +93,10 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pin_save);
+    protected int getMainViewId() { return R.layout.activity_pin_save; }
+
+    @Override
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -143,7 +129,6 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
 
         final CircularProgressButton pinSaveButton = (CircularProgressButton) findViewById(R.id.pinSaveButton);
-        final Button pinSkipButton = (Button) findViewById(R.id.pinSkipButton);
 
         pinSaveText.setOnEditorActionListener(
                 new EditText.OnEditorActionListener() {
@@ -164,18 +149,15 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
                 }
         );
 
-        pinSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
+        mapClick(R.id.pinSaveButton, new View.OnClickListener() {
             public void onClick(final View view) {
                 setPin(pinSaveText.getText().toString());
             }
         });
 
-        pinSkipButton.setOnClickListener(new View.OnClickListener() {
-            // Skip
-            @Override
+        mapClick(R.id.pinSkipButton, new View.OnClickListener() {
             public void onClick(final View view) {
-                setResult(RESULT_CANCELED);
+                setResult(RESULT_CANCELED); // Skip
                 finish();
             }
         });
@@ -195,10 +177,5 @@ public class PinSaveActivity extends ActionBarActivity implements Observer {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void update(final Observable observable, final Object data) {
-
     }
 }

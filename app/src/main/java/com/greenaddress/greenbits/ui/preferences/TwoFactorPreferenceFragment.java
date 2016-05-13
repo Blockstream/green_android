@@ -36,12 +36,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_twofactor);
         setHasOptionsMenu(true);
-        if (gaService == null) {
-            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
-
-            getActivity().finish();
-            return;
-        }
         final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();
 
         if (twoFacConfig == null || twoFacConfig.isEmpty()) {

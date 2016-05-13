@@ -20,6 +20,7 @@ import com.google.common.util.concurrent.Futures;
 public abstract class GaActivity extends AppCompatActivity {
 
     private static final String TAG = GaActivity.class.getSimpleName();
+    private static final int NO_MAIN_VIEW = 0; // Invalid resource id
     private boolean mServiceAvailable = false;
 
     protected GreenAddressApplication getGAApp() {
@@ -34,7 +35,9 @@ public abstract class GaActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        setContentView(getMainViewId());
+        final int viewId = getMainViewId();
+        if (viewId != NO_MAIN_VIEW)
+            setContentView(viewId);
 
         // Call onCreateWithService() on the GUI thread once our service
         // becomes available. In most cases this will execute immediately.
@@ -44,7 +47,7 @@ public abstract class GaActivity extends AppCompatActivity {
                 GaActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         GaActivity.this.mServiceAvailable = true;
-                        GaActivity.this.onCreateWithService();
+                        GaActivity.this.onCreateWithService(savedInstanceState);
                     }
                 });
             }
@@ -57,39 +60,46 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPause() {
+    final public void onPause() {
         Log.d(TAG, "onPause: service " + (mServiceAvailable ? "available" : "not available"));
         super.onPause();
-        if (mServiceAvailable)
+        if (mServiceAvailable) {
+            getGAApp().getConnectionObservable().decRef();
             onPauseWithService();
+        }
     }
 
     @Override
-    public void onResume() {
+    final public void onResume() {
         Log.d(TAG, "onResume: service " + (mServiceAvailable ? "available" : "not available"));
         super.onResume();
-        if (mServiceAvailable)
+        if (mServiceAvailable) {
+            getGAApp().getConnectionObservable().incRef();
             onResumeWithService();
+        }
     }
 
     /** Override to provide the main view id */
-    abstract protected int getMainViewId();
+    protected int getMainViewId() { return NO_MAIN_VIEW; };
 
     /** Override to provide onCreate/onResume/onPause processing.
       * When called, our service is guaranteed to be available. */
-    abstract protected void onCreateWithService();
-    abstract protected void onPauseWithService();
-    abstract protected void onResumeWithService();
+    abstract protected void onCreateWithService(final Bundle savedInstanceState);
+    protected void onPauseWithService() { }
+    protected void onResumeWithService() { }
 
     // Utility methods
 
+    protected void mapClick(final int id, final View.OnClickListener fn) {
+        findViewById(id).setOnClickListener(fn);
+    }
+
     protected void mapClick(final int id, final Intent activityIntent) {
-        findViewById(id).setOnClickListener(new View.OnClickListener() {
+        mapClick(id, new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 startActivity(activityIntent);
             }
         });
     }
-
 }

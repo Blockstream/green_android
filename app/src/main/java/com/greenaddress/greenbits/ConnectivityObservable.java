@@ -27,11 +27,37 @@ public class ConnectivityObservable extends Observable {
     private State state = State.OFFLINE;
     private boolean forcedLoggedout = false;
     private boolean forcedTimeoutout = false;
+    private int mRefCount = 0; // The number of non-paused activities using the session
     @NonNull private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
         public void onReceive(final Context context, final Intent intent) {
             checkNetwork();
         }
     };
+
+    public void incRef() {
+        assert service != null : "Reference incremented before service created";
+        ++mRefCount;
+        if (disconnectTimeout != null && !disconnectTimeout.isCancelled())
+            disconnectTimeout.cancel(false);
+        if (state.equals(State.DISCONNECTED))
+            service.reconnect();
+    }
+
+    public void decRef() {
+        assert service != null : "Reference decremented before service created";
+        assert mRefCount > 0 : "Incorrect reference count";
+        if (--mRefCount == 0)
+            disconnectTimeout = ex.schedule(new Callable<Object>() {
+                    @Nullable
+                    @Override
+                    public Object call() throws Exception {
+                        forcedTimeoutout = true;
+                        service.disconnect(false);
+                        doNotify(null);
+                        return null;
+                    }
+            }, service.getAutoLogoutMinutes(), TimeUnit.MINUTES);
+    }
 
     public void setService(@NonNull final GaService service) {
         this.service = service;
@@ -70,55 +96,6 @@ public class ConnectivityObservable extends Observable {
 
     public boolean getIsForcedTimeout() {
         return forcedTimeoutout;
-    }
-
-    @Override
-    public void addObserver(@NonNull final Observer ob) {
-        super.addObserver(ob);
-        stopTimer();
-
-        assert service != null : "Observer added before service created";
-
-        if (service != null && state.equals(State.DISCONNECTED))
-            service.reconnect();
-    }
-
-    @Override
-    public synchronized void deleteObserver(final @NonNull Observer ob) {
-        super.deleteObserver(ob);
-
-        assert service != null : "Observer added before service created";
-
-        if (countObservers() == 0)
-            startTimer();
-    }
-
-    @Override
-    public synchronized void deleteObservers() {
-        super.deleteObservers();
-        startTimer();
-    }
-
-    private void stopTimer() {
-        if (disconnectTimeout != null && !disconnectTimeout.isCancelled()) {
-            disconnectTimeout.cancel(false);
-        }
-    }
-
-    private void startTimer() {
-
-        if (service != null) {
-            disconnectTimeout = ex.schedule(new Callable<Object>() {
-                @Nullable
-                @Override
-                public Object call() throws Exception {
-                    forcedTimeoutout = true;
-                    service.disconnect(false);
-                    doNotify(null);
-                    return null;
-                }
-            }, service.getAutoLogoutMinutes(), TimeUnit.MINUTES);
-        }
     }
 
     private void checkNetwork() {

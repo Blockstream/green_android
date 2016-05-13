@@ -42,7 +42,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class FirstScreenActivity extends GaActivity implements Observer {
+public class FirstScreenActivity extends GaActivity {
     @NonNull
     private static final String NVM_PATH = "nvm.bin";
     @NonNull
@@ -55,7 +55,7 @@ public class FirstScreenActivity extends GaActivity implements Observer {
     protected int getMainViewId() { return R.layout.activity_first_screen; }
 
     @Override
-    protected void onCreateWithService() {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreateWithService");
 
         mapClick(R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
@@ -69,12 +69,7 @@ public class FirstScreenActivity extends GaActivity implements Observer {
         }
 
         // Check if a TEE is supported
-        final GaService gaService = getGAService();
-        if (gaService == null) {
-            finish();
-            return;
-        }
-        gaService.es.submit(new Callable<Object>() {
+        getGAService().es.submit(new Callable<Object>() {
             @Nullable
             @Override
             public Object call() {
@@ -335,8 +330,6 @@ public class FirstScreenActivity extends GaActivity implements Observer {
 
     @Override
     public void onResumeWithService() {
-        getGAApp().getConnectionObservable().addObserver(this);
-
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         //FIXME : recheck state, properly handle TEE link anyway
         if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
@@ -347,15 +340,5 @@ public class FirstScreenActivity extends GaActivity implements Observer {
             startNewActivity(PinActivity.class);
             finish();
         }
-    }
-
-    @Override
-    public void onPauseWithService() {
-        getGAApp().getConnectionObservable().deleteObserver(this);
-    }
-
-    @Override
-    public void update(final Observable observable, final Object data) {
-
     }
 }

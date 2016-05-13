@@ -163,13 +163,10 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
     private void updateBalance() {
         final GaService gaService = getGAService();
-        if (gaService == null) {
-            return;
-        }
         final Monetary monetary = gaService.getBalanceCoin(curSubaccount);
-        if (monetary == null) {
+        if (monetary == null)
             return;
-        }
+
         final String btcUnit = (String) gaService.getUserConfig("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);

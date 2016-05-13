@@ -44,10 +44,8 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
 
-public class SignUpActivity extends ActionBarActivity implements Observer {
+public class SignUpActivity extends GaActivity {
     @NonNull private static final String TAG = SignUpActivity.class.getSimpleName();
     private static final int PINSAVE = 1337;
 
@@ -63,9 +61,11 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     private ListenableFuture<LoginData> onSignUp;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+    protected int getMainViewId() { return R.layout.activity_sign_up; }
+
+    @Override
+    protected void onCreateWithService(final Bundle savedInstanceState) {
+
         final CircularProgressButton signupContinueButton = (CircularProgressButton) findViewById(R.id.signupContinueButton);
         final TextView tos = (TextView) findViewById(R.id.textTosLink);
         final CheckBox checkBox = (CheckBox) findViewById(R.id.signupAcceptCheckBox);
@@ -278,23 +278,19 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onResumeWithService() {
         if (mNfcAdapter != null) {
-            mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)}, null);
+            final IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+            final IntentFilter[] filters = new IntentFilter[]{filter};
+            mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, filters, null);
         }
         signupNfcIcon.setVisibility(mNfcAdapter != null && mNfcAdapter.isEnabled() ? View.VISIBLE : View.GONE);
-        getGAApp().getConnectionObservable().addObserver(this);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        if (mNfcAdapter != null) {
+    public void onPauseWithService() {
+        if (mNfcAdapter != null)
             mNfcAdapter.disableForegroundDispatch(this);
-        }
-        getGAApp().getConnectionObservable().deleteObserver(this);
-
     }
 
     @Override
@@ -378,11 +374,6 @@ public class SignUpActivity extends ActionBarActivity implements Observer {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void update(Observable observable, Object data) {
-
     }
 
     @Override
