@@ -85,14 +85,4 @@ public class GreenAddressApplication extends MultiDexApplication {
         final Intent intent = new Intent(this, GaService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-    }
 }
