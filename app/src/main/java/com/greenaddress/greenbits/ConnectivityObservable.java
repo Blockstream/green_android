@@ -21,7 +21,7 @@ public class ConnectivityObservable extends Observable {
     static final int RECONNECT_TIMEOUT = 6000;
     static final int RECONNECT_TIMEOUT_MAX = 50000;
     @NonNull private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
-    private ScheduledFuture<Object> disconnectTimeout;
+    private ScheduledFuture<Object> disconnectTimeout = null;
     private GaService service;
     @NonNull
     private State state = State.OFFLINE;
@@ -100,10 +100,8 @@ public class ConnectivityObservable extends Observable {
     }
 
     private void stopTimer() {
-        if (service != null) {
-            if (disconnectTimeout != null && !disconnectTimeout.isCancelled()) {
-                disconnectTimeout.cancel(false);
-            }
+        if (disconnectTimeout != null && !disconnectTimeout.isCancelled()) {
+            disconnectTimeout.cancel(false);
         }
     }
 
