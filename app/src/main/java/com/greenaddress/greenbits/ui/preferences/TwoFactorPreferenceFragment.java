@@ -30,60 +30,37 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
     private static final int REQUEST_ENABLE_2FA = 0;
     private String twoFacMethod;
 
+    private final CheckBoxPreference getPref(final String method) {
+        return (CheckBoxPreference) findPreference("twoFac" + method);
+    }
+
+    private void setupCheckbox(final Map<?, ?> config, final String method) {
+        final CheckBoxPreference c = getPref(method);
+        c.setChecked(config.get(method.toLowerCase()).equals(true));
+        c.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(final Preference p, final Object newValue) {
+                change2FA(method, (Boolean) newValue);
+                return false;
+            }
+        });
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_twofactor);
         setHasOptionsMenu(true);
-        final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();
 
-        if (twoFacConfig == null || twoFacConfig.isEmpty()) {
+        final Map<?, ?> config = gaService.getTwoFacConfig();
+        if (config == null || config.isEmpty()) {
             Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
-
             getActivity().finish();
-            return;
         }
-
-        final CheckBoxPreference emailTwoFacEnabled = (CheckBoxPreference) findPreference("twoFacEmail");
-        emailTwoFacEnabled.setChecked(twoFacConfig.get("email").equals(true));
-        emailTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                change2FA("Email", (Boolean) newValue);
-                return false;
-            }
-        });
-
-        final CheckBoxPreference gauthTwoFacEnabled = (CheckBoxPreference) findPreference("twoFacGauth");
-        gauthTwoFacEnabled.setChecked(twoFacConfig.get("gauth").equals(true));
-        gauthTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                change2FA("Gauth", (Boolean) newValue);
-                return false;
-            }
-        });
-
-        final CheckBoxPreference smsTwoFacEnabled = (CheckBoxPreference) findPreference("twoFacSMS");
-        smsTwoFacEnabled.setChecked(twoFacConfig.get("sms").equals(true));
-        smsTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                change2FA("SMS", (Boolean) newValue);
-                return false;
-            }
-        });
-
-        final CheckBoxPreference phoneTwoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFacPhone");
-        phoneTwoFacEnabled.setChecked(twoFacConfig.get("phone").equals(true));
-        phoneTwoFacEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                change2FA("Phone", (Boolean) newValue);
-                return false;
-            }
-        });
+        setupCheckbox(config, "Email");
+        setupCheckbox(config, "Gauth");
+        setupCheckbox(config, "SMS");
+        setupCheckbox(config, "Phone");
     }
 
     private void change2FA(@NonNull final String method, final Boolean newValue) {
@@ -162,8 +139,8 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                         Futures.addCallback(gaService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                             @Override
                             public void onSuccess(final @Nullable Boolean result) {
-                                final CheckBoxPreference twoFacEnabled = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
-                                twoFacEnabled.setChecked(false);
+                                final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
+                                c.setChecked(false);
                             }
 
                             @Override
@@ -178,11 +155,9 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            final CheckBoxPreference twoFacEnabled = (CheckBoxPreference) findPreference("twoFac" + twoFacMethod);
-            twoFacEnabled.setChecked(true);
-        } else {
+        if (resultCode == Activity.RESULT_OK)
+            getPref(twoFacMethod).setChecked(true);
+        else
             super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 }
