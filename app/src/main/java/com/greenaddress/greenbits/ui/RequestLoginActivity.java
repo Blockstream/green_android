@@ -477,50 +477,53 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     @Nullable
     private BTChipTransport getTransport(@Nullable final Tag t) {
-    	BTChipTransport transport = null;
-		if (t != null) {
-			AndroidCard card = null;
-			Log.d(TAG, "Start checking NFC transport");
-			try {
-				card = AndroidCard.get(t);
-				transport = new BTChipTransportAndroidNFC(card);
-                transport.setDebug(true);                            		                				
-				transport.exchange(DUMMY_COMMAND).get();
-				Log.d(TAG, "NFC transport checked");
-			}
-        	catch(Exception e) {
-        		Log.d(TAG, "Tag was lost", e);
-        		if (card != null) {
-        			try {
-        				transport.close();
-        			}
-        			catch(@NonNull final Exception e1) {
-        			}
-        			transport = null;
-        		}
-        	}                            	
-		}
-		return transport;    	
+        BTChipTransport transport = null;
+        if (t != null) {
+            AndroidCard card = null;
+            Log.d(TAG, "Start checking NFC transport");
+            try {
+                card = AndroidCard.get(t);
+                transport = new BTChipTransportAndroidNFC(card);
+                transport.setDebug(true);
+                transport.exchange(DUMMY_COMMAND).get();
+                Log.d(TAG, "NFC transport checked");
+            }
+            catch(Exception e) {
+                Log.d(TAG, "Tag was lost", e);
+                if (card != null) {
+                    try {
+                        transport.close();
+                    }
+                    catch(@NonNull final Exception e1) {
+                    }
+                    transport = null;
+                }
+            }
+        }
+        return transport;
     }
-    
+
     @Override
-    public void tagDiscovered(Tag t) {    	
-    	Log.d(TAG, "tagDiscovered " + t);
-    	this.tag = t;
-    	if (transportFuture != null) {
-    		BTChipTransport transport = getTransport(t);
-    		if (transport != null) {
-    			if (transportFuture.set(transport)) {
-    				if (nfcWaitDialog != null) {
-    					RequestLoginActivity.this.runOnUiThread(new Runnable() {
-    						@Override
-    						public void run() {
-    							nfcWaitDialog.hide();    							
-    						}
-    					});    					
-    				}
-    			}
-    		}
-    	}
+    public void tagDiscovered(Tag t) {
+        Log.d(TAG, "tagDiscovered " + t);
+        this.tag = t;
+        if (transportFuture == null)
+            return;
+
+        BTChipTransport transport = getTransport(t);
+        if (transport == null)
+            return;
+
+        if (transportFuture.set(transport)) {
+            if (nfcWaitDialog == null)
+                return;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    nfcWaitDialog.hide();
+                }
+            });
+        }
     }
 }
