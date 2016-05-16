@@ -217,22 +217,11 @@ public class TransactionActivity extends GaActivity {
                 public void onClick(final View view) {
                     final String edited = memoEditText.getText().toString();
                     if (!edited.equals(memoText.getText().toString())) {
-                        final ListenableFuture<Boolean> saved =
-                                getGAService().getClient().changeMemo(t.txhash, edited);
-                        Futures.addCallback(saved, new FutureCallback<Boolean>() {
+                        CB.after(getGAService().getClient().changeMemo(t.txhash, edited),
+                                 new CB.Toast<Boolean>(gaActivity) {
                             @Override
-                            public void onSuccess(final @javax.annotation.Nullable Boolean result) {
+                            public void onSuccess(final Boolean result) {
                                 onDisableEdit();
-                            }
-
-                            @Override
-                            public void onFailure(final Throwable t) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        gaActivity.toast(t.getMessage());
-                                    }
-                                });
                             }
                         });
                     } else {
@@ -480,9 +469,12 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            if (remainingFeeDelta.compareTo(Coin.ZERO) > 0) {
+            if (remainingFeeDelta.compareTo(Coin.ZERO) <= 0)
+                doReplaceByFee(txData, feerate, tx, change_pointer, subaccount_pointer, oldFee, null, null, level);
+            else {
                 final Coin finalRemaining = remainingFeeDelta;
-                Futures.addCallback(getGAService().getClient().getAllUnspentOutputs(1, subaccount_pointer), new FutureCallback<ArrayList>() {
+                CB.after(getGAService().getClient().getAllUnspentOutputs(1, subaccount_pointer),
+                         new CB.Toast<ArrayList>(gaActivity) {
                     @Override
                     public void onSuccess(@javax.annotation.Nullable ArrayList result) {
                         Coin remaining = finalRemaining;
@@ -508,7 +500,8 @@ public class TransactionActivity extends GaActivity {
                             if (remaining.compareTo(Coin.ZERO) < 0) {
                                 final Coin changeValue = remaining.multiply(-1);
                                 // we need to add a new change output
-                                Futures.addCallback(getGAService().getClient().getNewAddress(subaccount_pointer), new FutureCallback<Map>() {
+                                CB.after(getGAService().getClient().getNewAddress(subaccount_pointer),
+                                         new CB.Toast<Map>(gaActivity) {
                                     @Override
                                     public void onSuccess(final @javax.annotation.Nullable Map result) {
                                         tx.addOutput(
@@ -518,95 +511,29 @@ public class TransactionActivity extends GaActivity {
                                                         Utils.sha256hash160(Hex.decode((String)result.get("script")))
                                                 )
                                         );
-                                        Futures.addCallback(Futures.allAsList(scripts), new FutureCallback<List<byte[]>>() {
+                                        CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
                                             @Override
                                             public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
-                                                doReplaceByFee(
-                                                        txData,
-                                                        feerate,
-                                                        tx,
-                                                        (Integer) result.get("pointer"),
-                                                        subaccount_pointer,
-                                                        oldFee,
-                                                        moreInputs,
-                                                        morePrevouts,
-                                                        level
-                                                );
-                                            }
-
-                                            @Override
-                                            public void onFailure(final Throwable t) {
-                                                t.printStackTrace();
-                                                getActivity().runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        gaActivity.toast(t.getMessage());
-                                                    }
-                                                });
-
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onFailure(final Throwable t) {
-                                        t.printStackTrace();
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                gaActivity.toast(t.getMessage());
+                                                doReplaceByFee(txData, feerate, tx, (Integer) result.get("pointer"),
+                                                        subaccount_pointer, oldFee, moreInputs, morePrevouts, level);
                                             }
                                         });
                                     }
                                 });
                             } else {
                                 // we were lucky enough to match the required value
-                                Futures.addCallback(Futures.allAsList(scripts), new FutureCallback<List<byte[]>>() {
+                                CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
                                     @Override
                                     public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
-                                        doReplaceByFee(
-                                                txData,
-                                                feerate,
-                                                tx,
-                                                null,
-                                                subaccount_pointer,
-                                                oldFee,
-                                                moreInputs,
-                                                morePrevouts,
-                                                level
-                                        );
-                                    }
-
-                                    @Override
-                                    public void onFailure(final Throwable t) {
-                                        t.printStackTrace();
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                gaActivity.toast(t.getMessage());
-                                            }
-                                        });
+                                        doReplaceByFee(txData, feerate, tx, null, subaccount_pointer,
+                                                       oldFee, moreInputs, morePrevouts, level);
                                     }
                                 });
                             }
                         }
                     }
-
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        t.printStackTrace();
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gaActivity.toast(t.getMessage());
-                            }
-                        });
-                    }
                 });
-            } else {
-                doReplaceByFee(txData, feerate, tx, change_pointer, subaccount_pointer, oldFee, null, null, level);
             }
-
         }
 
         private void doReplaceByFee(final Transaction txData, final Coin feerate,
@@ -728,7 +655,7 @@ public class TransactionActivity extends GaActivity {
                 }
             });
 
-            Futures.addCallback(signed, new FutureCallback<List<String>>() {
+            CB.after(signed, new CB.Toast<List<String>>(gaActivity) {
                 @Override
                 public void onSuccess(final @javax.annotation.Nullable List<String> signatures) {
 
@@ -794,17 +721,6 @@ public class TransactionActivity extends GaActivity {
 
                         }
                     }, getGAService().es);
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    t.printStackTrace();
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            gaActivity.toast(t.getMessage());
-                        }
-                    });
                 }
             });
         }
@@ -908,7 +824,7 @@ public class TransactionActivity extends GaActivity {
                                 twoFacData.put("code", newTx2FACodeText.getText().toString());
                             }
                             final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(signedTx, twoFacData, false);
-                            Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
+                            Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity) {
                                 @Override
                                 public void onSuccess(@Nullable final Map result) {
                                     getActivity().runOnUiThread(new Runnable() {
@@ -916,17 +832,6 @@ public class TransactionActivity extends GaActivity {
                                         public void run() {
                                             // FIXME: Add notification with "Transaction sent"?
                                             getActivity().finish();
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onFailure(@NonNull final Throwable t) {
-                                    t.printStackTrace();
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            gaActivity.toast(t.getMessage());
                                         }
                                     });
                                 }

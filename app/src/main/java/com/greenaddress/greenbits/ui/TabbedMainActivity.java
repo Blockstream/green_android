@@ -334,7 +334,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     }
                 }
                 final ECKey keyNonBip38 = keyNonFinal;
-                final FutureCallback<Map<?, ?>> callback = new FutureCallback<Map<?, ?>>() {
+                final FutureCallback<Map<?, ?>> callback = new CB.Toast<Map<?, ?>>(caller) {
                     @Override
                     public void onSuccess(final @Nullable Map<?, ?> result) {
                         final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
@@ -387,89 +387,58 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                                     private void doSweep() {
                                         final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
-                                        Futures.addCallback(getGAService().verifySpendableBy(
-                                                tx.getOutputs().get(0),
-                                                0,
-                                                ((Integer) result.get("out_pointer"))
-                                        ), new FutureCallback<Boolean>() {
+                                        final Integer outPointer = (Integer) result.get("out_pointer");
+                                        CB.after(getGAService().verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
+                                                 new CB.Toast<Boolean>(caller) {
                                             @Override
-                                            public void onSuccess(final @Nullable Boolean result) {
-                                                if (result) {
+                                            public void onSuccess(final @Nullable Boolean isSpendable) {
+                                                if (isSpendable) {
                                                     final List<TransactionSignature> signatures = new ArrayList<>();
                                                     final int size = tx.getInputs().size();
                                                     for (int i = 0; i < size; ++i) {
                                                         signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
                                                     }
-                                                    Futures.addCallback(getGAService().sendTransaction(signatures), new FutureCallback<String>() {
-                                                        @Override
-                                                        public void onSuccess(final @Nullable String result) {
-
-                                                        }
-
-                                                        @Override
-                                                        public void onFailure(@NonNull final Throwable t) {
-                                                            t.printStackTrace();
-                                                            caller.toast(t.getMessage());
-                                                        }
-                                                    });
-                                                } else {
+                                                    CB.after(getGAService().sendTransaction(signatures),
+                                                             new CB.Toast<String>(caller) { });
+                                                } else
                                                     caller.toast(R.string.err_tabbed_sweep_failed);
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(@NonNull final Throwable t) {
-                                                t.printStackTrace();
-                                                caller.toast(t.getMessage());
                                             }
                                         });
                                     }
 
                                     @Override
                                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                        if (keyNonBip38 == null) {
-                                            try {
-                                                final String password = passwordEdit.getText().toString();
-                                                final byte[] passbytes = password.getBytes();
-                                                final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS, null);
-                                                key = ECKey.fromPrivate(decryptedPKey);
-
-                                                Futures.addCallback(getGAService().prepareSweepSocial(
-                                                        key.getPubKey(), true), new FutureCallback<Map<?, ?>>() {
-                                                    @Override
-                                                    public void onSuccess(@Nullable final Map<?, ?> result) {
-                                                        tx = new Transaction(Network.NETWORK,
-                                                                Hex.decode((String) result.get("tx")));
-                                                        doSweep();
-                                                    }
-
-                                                    @Override
-                                                    public void onFailure(@NonNull final Throwable t) {
-                                                        caller.toast(t.getMessage());
-                                                    }
-                                                });
-                                            } catch (@NonNull final IllegalArgumentException e) {
-                                                caller.toast(R.string.invalid_passphrase);
-                                            }
-
-                                        } else {
+                                        if (keyNonBip38 != null) {
                                             tx = txNonBip38;
                                             key = keyNonBip38;
                                             doSweep();
+                                            return;
+                                        }
+                                        try {
+                                            final String password = passwordEdit.getText().toString();
+                                            final byte[] passbytes = password.getBytes();
+                                            final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS, null);
+                                            key = ECKey.fromPrivate(decryptedPKey);
+
+                                            CB.after(getGAService().prepareSweepSocial(key.getPubKey(), true),
+                                                     new CB.Toast<Map<?, ?>>(caller) {
+                                                @Override
+                                                public void onSuccess(@Nullable final Map<?, ?> result) {
+                                                    tx = new Transaction(Network.NETWORK, Hex.decode((String) result.get("tx")));
+                                                    doSweep();
+                                                }
+                                            });
+                                        } catch (@NonNull final IllegalArgumentException e) {
+                                            caller.toast(R.string.invalid_passphrase);
                                         }
                                     }
                                 })
                                 .build().show();
                     }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-                        caller.toast(t.getMessage());
-                    }
                 };
                 if (keyNonBip38 != null) {
-                    Futures.addCallback(getGAService().prepareSweepSocial(
-                            keyNonBip38.getPubKey(), false), callback);
+                    CB.after(getGAService().prepareSweepSocial(keyNonBip38.getPubKey(), false),
+                             callback);
                 } else {
                     callback.onSuccess(null);
                 }

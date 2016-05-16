@@ -154,7 +154,7 @@ public class SendFragment extends SubaccountFragment {
                             twoFacData.put("code", newTx2FACodeText.getText().toString());
                         }
                         final ListenableFuture<String> sendFuture = getGAService().signAndSendTransaction(prepared, twoFacData);
-                        Futures.addCallback(sendFuture, new FutureCallback<String>() {
+                        Futures.addCallback(sendFuture, new CB.Toast<String>(gaActivity) {
                             @Override
                             public void onSuccess(@Nullable final String result) {
                                 if (fromIntentURI) {
@@ -178,17 +178,6 @@ public class SendFragment extends SubaccountFragment {
 
                                         final ViewPager mViewPager = (ViewPager) getActivity().findViewById(R.id.container);
                                         mViewPager.setCurrentItem(1);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull final Throwable t) {
-                                t.printStackTrace();
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        gaActivity.toast(t.getMessage());
                                     }
                                 });
                             }
@@ -232,7 +221,7 @@ public class SendFragment extends SubaccountFragment {
             sendButton.setEnabled(false);
             noteIcon.setVisibility(View.GONE);
             Futures.addCallback(getGAService().processBip70URL(URI.getPaymentRequestUrl()),
-                    new FutureCallback<Map<?, ?>>() {
+                    new CB.Toast<Map<?, ?>>(gaActivity) {
                         @Override
                         public void onSuccess(@Nullable final Map<?, ?> result) {
                             payreqData = result;
@@ -270,18 +259,13 @@ public class SendFragment extends SubaccountFragment {
                                 }
                             });
                         }
-
-                        @Override
-                        public void onFailure(@NonNull final Throwable t) {
-                            gaActivity.toast(t.getMessage());
-                        }
                     });
         } else {
             recipientEdit.setText(URI.getAddress().toString());
             if (URI.getAmount() != null) {
                 final ListenableFuture<Map<?, ?>> future;
                 future = getGAService().getClient().getSubaccountBalance(curSubaccount);
-                Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
+                Futures.addCallback(future, new CB.NoOp<Map<?, ?>>() {
                     @Override
                     public void onSuccess(@Nullable final Map<?, ?> result) {
                         getActivity().runOnUiThread(new Runnable() {
@@ -293,11 +277,7 @@ public class SendFragment extends SubaccountFragment {
                                     amountEdit.setEnabled(false);
                                     amountFiatEdit.setEnabled(false);
                                 }
-                            });
-                        }
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-
+                        });
                     }
                 }, getGAService().es);
             }
@@ -441,8 +421,7 @@ public class SendFragment extends SubaccountFragment {
                                 @Override
                                 public void onSuccess(@Nullable final PreparedTransaction result) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    Futures.addCallback(getGAService().spv.validateTxAndCalculateFeeOrAmount(
-                                                    result, recipient, maxButton.isChecked() ? null : amount),
+                                    CB.after(getGAService().spv.validateTxAndCalculateFeeOrAmount(result, recipient, maxButton.isChecked() ? null : amount),
                                             new FutureCallback<Coin>() {
                                                 @Override
                                                 public void onSuccess(@Nullable final Coin fee) {
@@ -768,10 +747,11 @@ public class SendFragment extends SubaccountFragment {
         getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
         curSubaccount = input;
         hideInstantIf2of3();
+        final GaActivity gaActivity = getGaActivity();
 
         curBalanceObserver = makeBalanceObserver();
         getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
-        Futures.addCallback(getGAService().getSubaccountBalance(curSubaccount), new FutureCallback<Map<?, ?>>() {
+        CB.after(getGAService().getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
             @Override
             public void onSuccess(final @Nullable Map<?, ?> result) {
                 final Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")));
@@ -789,11 +769,6 @@ public class SendFragment extends SubaccountFragment {
                             sendSubAccountBalance.setText(btcBalance);
                         }                        }
                 });
-            }
-
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-
             }
         });
     }
