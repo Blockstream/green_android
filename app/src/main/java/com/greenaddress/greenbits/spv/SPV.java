@@ -425,10 +425,10 @@ public class SPV {
         synchronized (startSPVLock) {
             if (syncStarted)
                 return;
-            else
-                syncStarted = true;
+            syncStarted = true;
         }
-        if (isSpvSyncing) return;
+        if (isSpvSyncing)
+             return;
         if (peerGroup == null) {  // disconnected while WiFi got up
             startSpvAfterInit = true;
             return;
