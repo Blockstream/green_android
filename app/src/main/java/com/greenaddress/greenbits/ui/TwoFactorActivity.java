@@ -162,14 +162,7 @@ public class TwoFactorActivity extends GaActivity {
 
                     @Override
                     public void onFailure(final @NonNull Throwable t) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                continueButton.setEnabled(true);
-                                TwoFactorActivity.this.toast(t.getMessage());
-                            }
-                        });
-                        t.printStackTrace();
+                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
                     }
                 });
             }
@@ -218,14 +211,7 @@ public class TwoFactorActivity extends GaActivity {
 
                     @Override
                     public void onFailure(final @NonNull Throwable t) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                continueButton.setEnabled(true);
-                                TwoFactorActivity.this.toast(t.getMessage());
-                            }
-                        });
-                        t.printStackTrace();
+                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
                     }
                 });
             }
@@ -292,14 +278,7 @@ public class TwoFactorActivity extends GaActivity {
 
                     @Override
                     public void onFailure(final @NonNull Throwable t) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                continueButton.setEnabled(true);
-                                TwoFactorActivity.this.toast(t.getMessage());
-                                t.printStackTrace();
-                            }
-                        });
+                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
                     }
                 });
             }
@@ -335,18 +314,21 @@ public class TwoFactorActivity extends GaActivity {
 
                     @Override
                     public void onFailure(final @NonNull Throwable t) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                continueButton.setEnabled(true);
-                                TwoFactorActivity.this.toast(t.getMessage());
-                            }
-                        });
-                        t.printStackTrace();
+                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
                     }
                 });
             }
         });
     }
 
+    private void onContinueFailure(final Button continueBtn, final @NonNull Throwable t) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                continueBtn.setEnabled(true);
+                toast(t.getMessage());
+            }
+        });
+        t.printStackTrace();
+    }
 }
