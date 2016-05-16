@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -189,7 +188,7 @@ public class FirstScreenActivity extends GaActivity {
                         FirstScreenActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(FirstScreenActivity.this, "Trustlet setup failed", Toast.LENGTH_LONG).show();
+                                FirstScreenActivity.this.toast("Trustlet setup failed");
                             }
                         });
                         tuiCall = false;
@@ -231,7 +230,7 @@ public class FirstScreenActivity extends GaActivity {
                     FirstScreenActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(FirstScreenActivity.this, "Trustlet PIN validation failed", Toast.LENGTH_LONG).show();
+                            FirstScreenActivity.this.toast("Trustlet PIN validation failed");
                         }
                     });
                     tuiCall = false;
@@ -245,7 +244,7 @@ public class FirstScreenActivity extends GaActivity {
                         Log.d(TAG, "TEE derived MPK " + Dump.dump(masterPublicKey.getPublicKey()) + " " + Dump.dump(masterPublicKey.getChainCode()));
                         Log.d(TAG, "TEE derived LPK " + Dump.dump(loginPublicKey.getPublicKey()) + " " + Dump.dump(loginPublicKey.getChainCode()));
                     } catch (Exception e) {
-                        Toast.makeText(FirstScreenActivity.this, "Trustlet login failed", Toast.LENGTH_LONG).show();
+                        FirstScreenActivity.this.toast("Trustlet login failed");
                         tuiCall = false;
                         return null;
                     }

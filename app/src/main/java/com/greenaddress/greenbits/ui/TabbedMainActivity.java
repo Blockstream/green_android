@@ -31,7 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -213,7 +212,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         tabLayout.setupWithViewPager(mViewPager);
         final GaService gs = getGAService();
         if (gs == null) {
-            Toast.makeText(TabbedMainActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_SHORT).show();
+            shortToast(R.string.err_send_not_connected_will_resume);
             return;
         }
 
@@ -287,6 +286,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        final TabbedMainActivity caller = TabbedMainActivity.this;
+
         switch (requestCode) {
             case REQUEST_TX_DETAILS:
             case REQUEST_SETTINGS:
@@ -327,7 +329,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     try {
                         Wally.bip38_to_private_key(qrText, null, Wally.BIP38_KEY_COMPRESSED | Wally.BIP38_KEY_QUICK_CHECK, null);
                     } catch (final IllegalArgumentException e2) {
-                        Toast.makeText(TabbedMainActivity.this, R.string.invalid_key, Toast.LENGTH_LONG).show();
+                        toast(R.string.invalid_key);
                         return;
                     }
                 }
@@ -367,7 +369,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                         addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
-                        new MaterialDialog.Builder(TabbedMainActivity.this)
+                        new MaterialDialog.Builder(caller)
                                 .title(R.string.sweepAddressTitle)
                                 .customView(inflatedLayout, true)
                                 .positiveText(R.string.sweep)
@@ -407,18 +409,18 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                                         @Override
                                                         public void onFailure(@NonNull final Throwable t) {
                                                             t.printStackTrace();
-                                                            Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                                            caller.toast(t.getMessage());
                                                         }
                                                     });
                                                 } else {
-                                                    Toast.makeText(TabbedMainActivity.this, getString(R.string.err_tabbed_sweep_failed), Toast.LENGTH_LONG).show();
+                                                    caller.toast(R.string.err_tabbed_sweep_failed);
                                                 }
                                             }
 
                                             @Override
                                             public void onFailure(@NonNull final Throwable t) {
                                                 t.printStackTrace();
-                                                Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                                caller.toast(t.getMessage());
                                             }
                                         });
                                     }
@@ -443,11 +445,11 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                                                     @Override
                                                     public void onFailure(@NonNull final Throwable t) {
-                                                        Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                                        caller.toast(t.getMessage());
                                                     }
                                                 });
                                             } catch (@NonNull final IllegalArgumentException e) {
-                                                Toast.makeText(TabbedMainActivity.this, R.string.invalid_passphrase, Toast.LENGTH_LONG).show();
+                                                caller.toast(R.string.invalid_passphrase);
                                             }
 
                                         } else {
@@ -462,7 +464,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                     @Override
                     public void onFailure(@NonNull final Throwable t) {
-                        Toast.makeText(TabbedMainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                        caller.toast(t.getMessage());
                     }
                 };
                 if (keyNonBip38 != null) {
@@ -500,12 +502,14 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        final TabbedMainActivity caller = TabbedMainActivity.this;
+
         switch (item.getItemId()) {
             case R.id.action_settings:
-                startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
+                startActivityForResult(new Intent(caller, SettingsActivity.class), REQUEST_SETTINGS);
                 return true;
             case R.id.action_sweep:
-                final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
+                final Intent scanner = new Intent(caller, ScanActivity.class);
                 //New Marshmallow permissions paradigm
                 final String[] perms = {"android.permission.CAMERA"};
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 &&
@@ -516,17 +520,17 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 }
                 return true;
             case R.id.network_unavailable:
-                Toast.makeText(TabbedMainActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
+                toast(getGAApp().getConnectionObservable().getState().toString());
                 return true;
             case R.id.action_logout:
                 getGAService().disconnect(false);
                 finish();
                 return true;
             case R.id.action_network:
-                startActivity(new Intent(TabbedMainActivity.this, NetworkMonitorActivity.class));
+                startActivity(new Intent(caller, NetworkMonitorActivity.class));
                 return true;
             case R.id.action_about:
-                startActivity(new Intent(TabbedMainActivity.this, AboutActivity.class));
+                startActivity(new Intent(caller, AboutActivity.class));
                 return true;
 
         }
@@ -556,7 +560,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         if (granted[0] == PackageManager.PERMISSION_GRANTED)
             startActivityForResult(new Intent(this, ScanActivity.class), action);
         else
-            Toast.makeText(getApplicationContext(), msgId, Toast.LENGTH_SHORT).show();
+            shortToast(msgId);
     }
 
     @Override

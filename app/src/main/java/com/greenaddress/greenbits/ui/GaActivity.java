@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -102,4 +103,9 @@ public abstract class GaActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void toast(final int id) { Toast.makeText(this, id, Toast.LENGTH_LONG).show(); }
+    public void toast(final String s) { Toast.makeText(this, s, Toast.LENGTH_LONG).show(); }
+    public void shortToast(final int id) { Toast.makeText(this, id, Toast.LENGTH_SHORT).show(); }
+    public void shortToast(final String s) { Toast.makeText(this, s, Toast.LENGTH_SHORT).show(); }
 }

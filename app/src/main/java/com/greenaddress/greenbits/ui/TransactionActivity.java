@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -179,6 +178,7 @@ public class TransactionActivity extends GaActivity {
             final TextView feeInfoText = (TextView) rootView.findViewById(R.id.txFeeInfoText);
 
             final Transaction t = (Transaction) getActivity().getIntent().getSerializableExtra("TRANSACTION");
+            final GaActivity gaActivity = getGaActivity();
 
             openInBrowser(hashText, t.txhash, Network.BLOCKEXPLORER_TX);
 
@@ -230,7 +230,7 @@ public class TransactionActivity extends GaActivity {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                        gaActivity.toast(t.getMessage());
                                     }
                                 });
                             }
@@ -415,6 +415,8 @@ public class TransactionActivity extends GaActivity {
             if (level > 10) {
                 throw new RuntimeException("Recursion limit exceeded");
             }
+            final GaActivity gaActivity = getGaActivity();
+
             final org.bitcoinj.core.Transaction tx = new org.bitcoinj.core.Transaction(Network.NETWORK, Hex.decode(txData.data));
             Integer change_pointer = null;
             final Integer subaccount_pointer = getGAService().cfg("main").getInt("curSubaccount", 0);
@@ -499,7 +501,7 @@ public class TransactionActivity extends GaActivity {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(getActivity(), R.string.insufficientFundsText, Toast.LENGTH_LONG).show();
+                                    gaActivity.toast(R.string.insufficientFundsText);
                                 }
                             });
                         } else {
@@ -538,7 +540,7 @@ public class TransactionActivity extends GaActivity {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                                        gaActivity.toast(t.getMessage());
                                                     }
                                                 });
 
@@ -552,7 +554,7 @@ public class TransactionActivity extends GaActivity {
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                                gaActivity.toast(t.getMessage());
                                             }
                                         });
                                     }
@@ -581,7 +583,7 @@ public class TransactionActivity extends GaActivity {
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                                gaActivity.toast(t.getMessage());
                                             }
                                         });
                                     }
@@ -596,7 +598,7 @@ public class TransactionActivity extends GaActivity {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                gaActivity.toast(t.getMessage());
                             }
                         });
                     }
@@ -612,6 +614,7 @@ public class TransactionActivity extends GaActivity {
                                     final Integer change_pointer, final Integer subaccount_pointer,
                                     final Coin oldFee, final List<Map<String, Object>> moreInputs,
                                     final List<byte[]> morePrevouts, final int level) {
+            final GaActivity gaActivity = getGaActivity();
             String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
 
             for (final Object subaccount_ : getGAService().getSubaccounts()) {
@@ -784,7 +787,7 @@ public class TransactionActivity extends GaActivity {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                        gaActivity.toast(t.getMessage());
                                     }
                                 });
                             }
@@ -799,7 +802,7 @@ public class TransactionActivity extends GaActivity {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                            gaActivity.toast(t.getMessage());
                         }
                     });
                 }
@@ -833,6 +836,7 @@ public class TransactionActivity extends GaActivity {
 
         private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
             Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
+            final GaActivity gaActivity = getGaActivity();
 
             final String btcUnit = (String) getGAService().getUserConfig("unit");
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -922,7 +926,7 @@ public class TransactionActivity extends GaActivity {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                            gaActivity.toast(t.getMessage());
                                         }
                                     });
                                 }

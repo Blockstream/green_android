@@ -25,7 +25,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -86,6 +85,8 @@ public class SendFragment extends SubaccountFragment {
 
     private void showTransactionSummary(@Nullable final String method, final Coin fee, final Coin amount, @NonNull final String recipient, @NonNull final PreparedTransaction prepared) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
+        final GaActivity gaActivity = getGaActivity();
+
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
         final TextView amountText = (TextView) inflatedLayout.findViewById(R.id.newTxAmountText);
@@ -187,7 +188,7 @@ public class SendFragment extends SubaccountFragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                        gaActivity.toast(t.getMessage());
                                     }
                                 });
                             }
@@ -223,6 +224,8 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void processBitcoinURI(@NonNull final BitcoinURI URI) {
+        final GaActivity gaActivity = getGaActivity();
+
         if (URI.getPaymentRequestUrl() != null) {
             rootView.findViewById(R.id.sendBip70ProgressBar).setVisibility(View.VISIBLE);
             recipientEdit.setEnabled(false);
@@ -270,7 +273,7 @@ public class SendFragment extends SubaccountFragment {
 
                         @Override
                         public void onFailure(@NonNull final Throwable t) {
-                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                            gaActivity.toast(t.getMessage());
                         }
                     });
         } else {
@@ -305,6 +308,7 @@ public class SendFragment extends SubaccountFragment {
     public View onCreateView(@Nullable final LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         registerReceiver();
+        final GaActivity gaActivity = getGaActivity();
 
         if (savedInstanceState != null)
             pausing = savedInstanceState.getBoolean("pausing");
@@ -346,7 +350,7 @@ public class SendFragment extends SubaccountFragment {
             try {
                 bitcoinUri = new BitcoinURI(uri.toString());
             } catch (BitcoinURIParseException e) {
-                Toast.makeText(getActivity(), getString(R.string.err_send_invalid_bitcoin_uri), Toast.LENGTH_LONG).show();
+                gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
             }
             if (bitcoinUri != null) {
                 processBitcoinURI(bitcoinUri);
@@ -359,7 +363,7 @@ public class SendFragment extends SubaccountFragment {
             @Override
             public void onClick(final View view) {
                 if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                    Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
+                    gaActivity.toast(R.string.err_send_not_connected_will_resume);
                     return;
                 }
                 final String recipient = recipientEdit.getText().toString();
@@ -373,7 +377,7 @@ public class SendFragment extends SubaccountFragment {
                 amount = nonFinalAmount;
 
                 if (recipient.isEmpty()) {
-                    Toast.makeText(getActivity(), getString(R.string.err_send_need_recipient), Toast.LENGTH_LONG).show();
+                    gaActivity.toast(R.string.err_send_need_recipient);
                     return;
                 }
 
@@ -474,38 +478,33 @@ public class SendFragment extends SubaccountFragment {
 
                                                 @Override
                                                 public void onFailure(@NonNull final Throwable t) {
-                                                    final Activity activity = getActivity();
-                                                    if (activity != null) {
-                                                        activity.runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                sendButton.setEnabled(true);
-                                                                t.printStackTrace();
-                                                                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();                                                            }
-                                                        });
-                                                    }
+                                                    gaActivity.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            sendButton.setEnabled(true);
+                                                            t.printStackTrace();
+                                                            gaActivity.toast(t.getMessage());
+                                                        }
+                                                    });
                                                 }
                                             });
                                 }
 
                                 @Override
                                 public void onFailure(@NonNull final Throwable t) {
-                                    final Activity activity = getActivity();
-                                    if (activity != null) {
-                                        activity.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                sendButton.setEnabled(true);
-                                                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();                                           }
-                                        });
-                                    }
+                                    gaActivity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            sendButton.setEnabled(true);
+                                            gaActivity.toast(t.getMessage());
+                                        }
+                                    });
                                 }
                             });
                 }
 
-                if (message != null) {
-                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-                }
+                if (message != null)
+                    gaActivity.toast(message);
             }
         });
 

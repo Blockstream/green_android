@@ -22,6 +22,10 @@ abstract class GAFragment extends Fragment {
         gaApp = (GreenAddressApplication) activity.getApplication();
     }
 
+    protected GaActivity getGaActivity() {
+        return (GaActivity) getActivity();
+    }
+
     protected GreenAddressApplication getGAApp() {
         return gaApp;
     }

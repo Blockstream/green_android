@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -291,8 +290,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                Toast.makeText(RequestLoginActivity.this,
-                                        getString(R.string.err_request_login_no_pin), Toast.LENGTH_LONG).show();
+                                RequestLoginActivity.this.toast(R.string.err_request_login_no_pin);
                                 RequestLoginActivity.this.finish();
                             }
                         });
@@ -375,16 +373,14 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                                     // -1 means success
                                                     return gaService.login(hwWallet);
                                                 } else {
+                                                    final String msg = new Formatter().format(getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString();
                                                     RequestLoginActivity.this.runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            if (remainingAttempts > 0) {
-                                                                Toast.makeText(RequestLoginActivity.this, new Formatter().format(
-                                                                        getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString(), Toast.LENGTH_LONG).show();
-
-                                                            } else {
-                                                                Toast.makeText(RequestLoginActivity.this, R.string.btchipNotSetup, Toast.LENGTH_LONG).show();
-                                                            }
+                                                            if (remainingAttempts > 0)
+                                                                RequestLoginActivity.this.toast(msg);
+                                                            else
+                                                                RequestLoginActivity.this.toast(R.string.btchipNotSetup);
 
                                                             RequestLoginActivity.this.finish();
                                                         }

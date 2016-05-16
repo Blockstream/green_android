@@ -29,7 +29,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
@@ -182,7 +181,7 @@ public class SignUpActivity extends GaActivity {
                             SignUpActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(SignUpActivity.this, "You are not connected, please wait", Toast.LENGTH_LONG).show();
+                                    SignUpActivity.this.toast("You are not connected, please wait");
                                 }
                             });
                             checkBox.setChecked(false);
@@ -234,14 +233,14 @@ public class SignUpActivity extends GaActivity {
                         SignUpActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SignUpActivity.this, "Please secure your passphrase and confirm you agree to the Terms of Service", Toast.LENGTH_LONG).show();
+                                SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");
                             }
                         });
                     } else {
                         SignUpActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SignUpActivity.this, "Signup in progress", Toast.LENGTH_LONG).show();
+                                SignUpActivity.this.toast("Signup in progress");
                             }
                         });
                     }
@@ -311,16 +310,10 @@ public class SignUpActivity extends GaActivity {
                 final Ndef ndef = Ndef.get(detectedTag);
                 if (ndef != null) {
                     ndef.connect();
-                    if (!ndef.isWritable()) {
-                        Toast.makeText(getApplicationContext(),
-                                getString(R.string.err_sign_up_nfc_not_writable),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    if (ndef.getMaxSize() < size) {
-                        Toast.makeText(getApplicationContext(),
-                                getString(R.string.err_sign_up_nfc_too_small),
-                                Toast.LENGTH_SHORT).show();
-                    }
+                    if (!ndef.isWritable())
+                        shortToast(R.string.err_sign_up_nfc_not_writable);
+                    if (ndef.getMaxSize() < size)
+                        shortToast(R.string.err_sign_up_nfc_too_small);
                     ndef.writeNdefMessage(message);
                     nfcTagsWritten.setText(String.valueOf(Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
 

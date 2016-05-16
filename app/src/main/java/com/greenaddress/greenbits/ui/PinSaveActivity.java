@@ -18,7 +18,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
@@ -33,7 +32,7 @@ public class PinSaveActivity extends GaActivity {
 
     private void setPin(@NonNull final String pinText) {
         if (pinText.length() < 4) {
-            Toast.makeText(PinSaveActivity.this, getString(R.string.err_pin_save_wrong_length), Toast.LENGTH_SHORT).show();
+            shortToast(R.string.err_pin_save_wrong_length);
             return;
         }
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -86,8 +85,7 @@ public class PinSaveActivity extends GaActivity {
             } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
                 KeyStoreAES.showAuthenticationScreen(this);
             } catch (final KeyStoreAES.KeyInvalidated e) {
-                Toast.makeText(this, "Problem with key "
-                        + e.getMessage(), Toast.LENGTH_LONG).show();
+                toast("Problem with key " + e.getMessage());
             }
         }
     }
@@ -115,8 +113,7 @@ public class PinSaveActivity extends GaActivity {
                             } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
                                 KeyStoreAES.showAuthenticationScreen(PinSaveActivity.this);
                             } catch (final KeyStoreAES.KeyInvalidated e) {
-                                Toast.makeText(PinSaveActivity.this, "Problem with key "
-                                                + e.getMessage(), Toast.LENGTH_LONG).show();
+                                PinSaveActivity.this.toast("Problem with key " + e.getMessage());
                             }
                         }
                     }

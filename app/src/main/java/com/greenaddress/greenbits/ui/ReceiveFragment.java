@@ -26,7 +26,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -123,6 +122,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
+        final GaActivity gaActivity = getGaActivity();
+
         registerReceiver();
 
         if (savedInstanceState != null) {
@@ -154,10 +155,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         final ClipData clip = ClipData.newPlainText("data", receiveAddress.getText().toString().replace("\n", ""));
                         clipboard.setPrimaryClip(clip);
 
-                        final CharSequence text = getActivity().getString(R.string.toastOnCopyAddress) + " " + getActivity().getString(R.string.warnOnPaste);
-
-                        Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
-
+                        final String text = gaActivity.getString(R.string.toastOnCopyAddress) + " " + gaActivity.getString(R.string.warnOnPaste);
+                        gaActivity.toast(text);
                     }
                 }
         );
@@ -257,7 +256,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         if (!setting_qrcode) {
 
                             if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
-                                Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
+                                gaActivity.toast(R.string.err_send_not_connected_will_resume);
                                 return;
                             }
                             setting_qrcode = true;

@@ -18,7 +18,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -61,7 +60,7 @@ public class PinActivity extends GaActivity implements Observer {
 
     private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
         if (pinText.length() < 4) {
-            Toast.makeText(PinActivity.this, "PIN has to be between 4 and 15 long", Toast.LENGTH_SHORT).show();
+            shortToast("PIN has to be between 4 and 15 long");
             return;
         }
         Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
@@ -73,7 +72,7 @@ public class PinActivity extends GaActivity implements Observer {
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(PinActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
+                PinActivity.this.toast(R.string.err_send_not_connected_will_resume);
             }
         });
     }
@@ -81,7 +80,7 @@ public class PinActivity extends GaActivity implements Observer {
     private void loginAfterServiceConnected(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
-            Toast.makeText(PinActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
+            toast(R.string.err_send_not_connected_will_resume);
             return;
         }
 
@@ -142,8 +141,7 @@ public class PinActivity extends GaActivity implements Observer {
                 PinActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-                        Toast.makeText(PinActivity.this, tstMsg, Toast.LENGTH_LONG).show();
+                        PinActivity.this.toast(tstMsg);
 
                         if (counter >= 3) {
                             final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
@@ -244,7 +242,7 @@ public class PinActivity extends GaActivity implements Observer {
                             public void onSuccess(final @Nullable Void result) {
                                 final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
                                 if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
-                                    Toast.makeText(PinActivity.this, "Failed to connect, please reopen the app to authenticate", Toast.LENGTH_LONG).show();
+                                    PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
                                     finish();
                                 }
 
@@ -298,7 +296,7 @@ public class PinActivity extends GaActivity implements Observer {
                                         PinActivity.this.runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(PinActivity.this, tstMsg, Toast.LENGTH_LONG).show();
+                                                PinActivity.this.toast(tstMsg);
                                                 if (counter >= 3) {
                                                     final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
                                                     startActivity(firstScreenActivity);
@@ -312,7 +310,7 @@ public class PinActivity extends GaActivity implements Observer {
                             @Override
                             public void onFailure(@NonNull final Throwable t) {
                                 t.printStackTrace();
-                                Toast.makeText(PinActivity.this, "Failed to connect, please reopen the app to authenticate", Toast.LENGTH_LONG).show();
+                                PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
                                 finish();
                             }
                         });                    }
@@ -343,7 +341,7 @@ public class PinActivity extends GaActivity implements Observer {
             } else {
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go to error/cancellation flow.
-                Toast.makeText(PinActivity.this, "Authentication not provided, closing.", Toast.LENGTH_LONG).show();
+                toast("Authentication not provided, closing.");
                 finish();
             }
         }
@@ -405,7 +403,7 @@ public class PinActivity extends GaActivity implements Observer {
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch(item.getItemId()) {
             case R.id.network_unavailable:
-                Toast.makeText(PinActivity.this, getGAApp().getConnectionObservable().getState().toString(), Toast.LENGTH_LONG).show();
+                toast(getGAApp().getConnectionObservable().getState().toString());
                 return true;
             case R.id.proxy_preferences:
                 startActivity(new Intent(PinActivity.this, ProxySettingsActivity.class));

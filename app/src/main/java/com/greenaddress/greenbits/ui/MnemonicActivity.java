@@ -29,7 +29,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -123,7 +122,7 @@ public class MnemonicActivity extends GaActivity {
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(MnemonicActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
+                MnemonicActivity.this.toast(R.string.err_send_not_connected_will_resume);
             }
         });
     }
@@ -132,12 +131,12 @@ public class MnemonicActivity extends GaActivity {
         final GaService gaService = getGAService();
         
         if (getGAApp().getConnectionObservable().getState() == ConnectivityObservable.State.LOGGEDIN) {
-            Toast.makeText(MnemonicActivity.this, getString(R.string.err_mnemonic_activity_logout_required), Toast.LENGTH_LONG).show();
+            toast(R.string.err_mnemonic_activity_logout_required);
             return;
         }
 
         if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.CONNECTED) {
-            Toast.makeText(MnemonicActivity.this, getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
+            toast(R.string.err_send_not_connected_will_resume);
             return;
         }
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
@@ -153,7 +152,7 @@ public class MnemonicActivity extends GaActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MnemonicActivity.this, getString(R.string.err_mnemonic_activity_invalid_mnemonic), Toast.LENGTH_LONG).show();
+                    MnemonicActivity.this.toast(R.string.err_mnemonic_activity_invalid_mnemonic);
                 }
             });
             return;
@@ -216,7 +215,7 @@ public class MnemonicActivity extends GaActivity {
                 MnemonicActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MnemonicActivity.this, message, Toast.LENGTH_LONG).show();
+                        MnemonicActivity.this.toast(message);
                         okButton.setProgress(0);
                         okButton.setEnabled(true);
                     }
@@ -540,9 +539,8 @@ public class MnemonicActivity extends GaActivity {
                     final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
                     startActivityForResult(scanner, QRSCANNER);
                 }
-                else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.err_qrscan_requires_camera_permissions), Toast.LENGTH_SHORT).show();
-                }
+                else
+                    shortToast(R.string.err_qrscan_requires_camera_permissions);
         }
     }
 }

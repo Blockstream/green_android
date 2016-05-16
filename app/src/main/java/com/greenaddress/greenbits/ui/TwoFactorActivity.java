@@ -17,7 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -167,7 +166,7 @@ public class TwoFactorActivity extends GaActivity {
                             @Override
                             public void run() {
                                 continueButton.setEnabled(true);
-                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                TwoFactorActivity.this.toast(t.getMessage());
                             }
                         });
                         t.printStackTrace();
@@ -223,7 +222,7 @@ public class TwoFactorActivity extends GaActivity {
                             @Override
                             public void run() {
                                 continueButton.setEnabled(true);
-                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                TwoFactorActivity.this.toast(t.getMessage());
                             }
                         });
                         t.printStackTrace();
@@ -270,7 +269,7 @@ public class TwoFactorActivity extends GaActivity {
                         final ClipData clip = ClipData.newPlainText("data", gauthCode);
                         clipboard.setPrimaryClip(clip);
 
-                        Toast.makeText(TwoFactorActivity.this, getString(R.string.warnOnPaste), Toast.LENGTH_LONG).show();
+                        TwoFactorActivity.this.toast(R.string.warnOnPaste);
                     }
                 }
         );
@@ -297,7 +296,7 @@ public class TwoFactorActivity extends GaActivity {
                             @Override
                             public void run() {
                                 continueButton.setEnabled(true);
-                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                TwoFactorActivity.this.toast(t.getMessage());
                                 t.printStackTrace();
                             }
                         });
@@ -340,7 +339,7 @@ public class TwoFactorActivity extends GaActivity {
                             @Override
                             public void run() {
                                 continueButton.setEnabled(true);
-                                Toast.makeText(TwoFactorActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                                TwoFactorActivity.this.toast(t.getMessage());
                             }
                         });
                         t.printStackTrace();
