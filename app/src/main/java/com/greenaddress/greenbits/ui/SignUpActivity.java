@@ -176,16 +176,9 @@ public class SignUpActivity extends GaActivity {
                                 return gs.signup(mnemonicText.getText().toString());
                             }
                         }, gs.es);
-                    } else {
-                        if (isChecked) {
-                            SignUpActivity.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    SignUpActivity.this.toast("You are not connected, please wait");
-                                }
-                            });
-                            checkBox.setChecked(false);
-                        }
+                    } else if (isChecked) {
+                        SignUpActivity.this.toast("You are not connected, please wait");
+                        checkBox.setChecked(false);
                     }
                 }
             }
@@ -229,21 +222,10 @@ public class SignUpActivity extends GaActivity {
                         }
                     }, getGAService().es);
                 } else {
-                    if (!checkBox.isChecked()) {
-                        SignUpActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");
-                            }
-                        });
-                    } else {
-                        SignUpActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                SignUpActivity.this.toast("Signup in progress");
-                            }
-                        });
-                    }
+                    if (!checkBox.isChecked())
+                        SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");
+                    else
+                        SignUpActivity.this.toast("Signup in progress");
                 }
             }
         });

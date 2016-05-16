@@ -185,12 +185,7 @@ public class FirstScreenActivity extends GaActivity {
                             transport.close();
                         } catch (@NonNull final Exception e1) {
                         }
-                        FirstScreenActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                FirstScreenActivity.this.toast("Trustlet setup failed");
-                            }
-                        });
+                        FirstScreenActivity.this.toast("Trustlet setup failed");
                         tuiCall = false;
                         return null;
                     }
@@ -227,12 +222,7 @@ public class FirstScreenActivity extends GaActivity {
                         transport.close();
                     } catch (@NonNull final Exception e1) {
                     }
-                    FirstScreenActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            FirstScreenActivity.this.toast("Trustlet PIN validation failed");
-                        }
-                    });
+                    FirstScreenActivity.this.toast("Trustlet PIN validation failed");
                     tuiCall = false;
                     return null;
                 }

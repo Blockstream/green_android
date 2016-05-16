@@ -104,8 +104,21 @@ public abstract class GaActivity extends AppCompatActivity {
         });
     }
 
-    public void toast(final int id) { Toast.makeText(this, id, Toast.LENGTH_LONG).show(); }
-    public void toast(final String s) { Toast.makeText(this, s, Toast.LENGTH_LONG).show(); }
-    public void shortToast(final int id) { Toast.makeText(this, id, Toast.LENGTH_SHORT).show(); }
-    public void shortToast(final String s) { Toast.makeText(this, s, Toast.LENGTH_SHORT).show(); }
+    private void toastImpl(final int id, final int len) {
+        runOnUiThread(new Runnable() {
+            public void run() { Toast.makeText(GaActivity.this, id, len); }
+        });
+    }
+
+    private void toastImpl(final String s, final int len) {
+        runOnUiThread(new Runnable() {
+            public void run() { Toast.makeText(GaActivity.this, s, len); }
+        });
+    }
+
+    public void toast(final int id) { toastImpl(id, Toast.LENGTH_LONG); }
+    public void toast(final String s) { toastImpl(s, Toast.LENGTH_LONG); }
+    public void toast(final Throwable t) { toastImpl(t.getMessage(), Toast.LENGTH_LONG); }
+    public void shortToast(final int id) { toastImpl(id, Toast.LENGTH_SHORT); }
+    public void shortToast(final String s) { toastImpl(s, Toast.LENGTH_SHORT); }
 }

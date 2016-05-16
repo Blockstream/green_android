@@ -490,12 +490,7 @@ public class TransactionActivity extends GaActivity {
                             }
                         }
                         if (remaining.compareTo(Coin.ZERO) > 0) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gaActivity.toast(R.string.insufficientFundsText);
-                                }
-                            });
+                            gaActivity.toast(R.string.insufficientFundsText);
                         } else {
                             if (remaining.compareTo(Coin.ZERO) < 0) {
                                 final Coin changeValue = remaining.multiply(-1);
@@ -711,12 +706,7 @@ public class TransactionActivity extends GaActivity {
                                 });
                             } else {
                                 t.printStackTrace();
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        gaActivity.toast(t.getMessage());
-                                    }
-                                });
+                                gaActivity.toast(t);
                             }
 
                         }

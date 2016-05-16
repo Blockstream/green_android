@@ -462,7 +462,7 @@ public class SendFragment extends SubaccountFragment {
                                                         public void run() {
                                                             sendButton.setEnabled(true);
                                                             t.printStackTrace();
-                                                            gaActivity.toast(t.getMessage());
+                                                            gaActivity.toast(t);
                                                         }
                                                     });
                                                 }
@@ -475,7 +475,7 @@ public class SendFragment extends SubaccountFragment {
                                         @Override
                                         public void run() {
                                             sendButton.setEnabled(true);
-                                            gaActivity.toast(t.getMessage());
+                                            gaActivity.toast(t);
                                         }
                                     });
                                 }

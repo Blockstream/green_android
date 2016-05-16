@@ -326,7 +326,7 @@ public class TwoFactorActivity extends GaActivity {
             @Override
             public void run() {
                 continueBtn.setEnabled(true);
-                toast(t.getMessage());
+                toast(t);
             }
         });
         t.printStackTrace();

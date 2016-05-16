@@ -36,12 +36,7 @@ public final class CB {
        @Override
        final public void onFailure(final Throwable t) {
            t.printStackTrace();
-           mActivity.runOnUiThread(new Runnable() {
-               @Override
-               public void run() {
-                   mActivity.toast(t.getMessage());
-               }
-           });
+           mActivity.toast(t);
        }
     }
 }

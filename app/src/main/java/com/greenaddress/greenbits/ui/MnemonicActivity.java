@@ -149,12 +149,7 @@ public class MnemonicActivity extends GaActivity {
             }
         });
         if (!validateMnemonic(edit.getText().toString())) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    MnemonicActivity.this.toast(R.string.err_mnemonic_activity_invalid_mnemonic);
-                }
-            });
+            MnemonicActivity.this.toast(R.string.err_mnemonic_activity_invalid_mnemonic);
             return;
         }
 

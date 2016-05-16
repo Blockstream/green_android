@@ -313,7 +313,8 @@ public class PinActivity extends GaActivity implements Observer {
                                 PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
                                 finish();
                             }
-                        });                    }
+                        });
+                    }
 
                     @Override
                     public void onFailure(@NonNull final Throwable t) {
