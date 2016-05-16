@@ -87,8 +87,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         && getIntent().getData().getScheme().equals("bitcoin"));
 
         if (isBitcoinURL) {
-            if (!ConnectivityObservable.State.LOGGEDIN.equals(getGAApp().getConnectionObservable().getState()) || getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGINGIN)) {
-                // login required
+            final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+            if (state.equals(ConnectivityObservable.State.LOGGEDIN) ||
+                state.equals(ConnectivityObservable.State.LOGGINGIN)) {
+                // already logged in, could be from different app via intent
                 final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
                 startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
                 return;
@@ -272,8 +274,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         instance = this;
-        setIdVisible(getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN, R.id.action_share);
-    }
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        setIdVisible(state != ConnectivityObservable.State.LOGGEDIN, R.id.action_share);
+     }
 
     @Override
     public void onPauseWithService() {
@@ -521,8 +524,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
         }
-        final ConnectivityObservable.State currentState = getGAApp().getConnectionObservable().getState();
-        setIdVisible(currentState != ConnectivityObservable.State.LOGGEDIN, R.id.network_unavailable);
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        setIdVisible(state != ConnectivityObservable.State.LOGGEDIN, R.id.network_unavailable);
     }
 
     private void handlePermissionResult(@NonNull final int[] granted, int action, int msgId) {
