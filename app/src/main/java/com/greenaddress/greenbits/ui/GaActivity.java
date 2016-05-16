@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -101,6 +103,19 @@ public abstract class GaActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 startActivity(activityIntent);
+            }
+        });
+    }
+
+    protected void setMenuItemVisible(final Menu m, final int id, final boolean visible) {
+        if (m == null)
+            return;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final MenuItem item = m.findItem(id);
+                if (item != null)
+                    item.setVisible(visible);
             }
         });
     }

@@ -76,7 +76,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Nullable
     public static TabbedMainActivity instance = null;
     private ViewPager mViewPager;
-    private Menu menu;
+    private Menu mMenu;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -275,7 +275,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         instance = this;
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
-        setIdVisible(state != ConnectivityObservable.State.LOGGEDIN, R.id.action_share);
+        setMenuItemVisible(mMenu, R.id.action_share,
+                           state != ConnectivityObservable.State.LOGGEDIN);
      }
 
     @Override
@@ -453,23 +454,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        this.menu = menu;
-
+        mMenu = menu;
         return true;
-    }
-
-    private void setIdVisible(final boolean visible, final int id) {
-        if (menu != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final MenuItem item = menu.findItem(id);
-                    if (item != null) {
-                        item.setVisible(visible);
-                    }
-                }
-            });
-        }
     }
 
     @Override
@@ -525,7 +511,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
         }
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
-        setIdVisible(state != ConnectivityObservable.State.LOGGEDIN, R.id.network_unavailable);
+        setMenuItemVisible(mMenu, R.id.network_unavailable,
+                           state != ConnectivityObservable.State.LOGGEDIN);
     }
 
     private void handlePermissionResult(@NonNull final int[] granted, int action, int msgId) {

@@ -53,7 +53,7 @@ import javax.crypto.spec.IvParameterSpec;
 
 public class PinActivity extends GaActivity implements Observer {
 
-    private Menu menu;
+    private Menu mMenu;
     @NonNull private static final String KEYSTORE_KEY = "NativeAndroidAuth";
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
@@ -376,7 +376,6 @@ public class PinActivity extends GaActivity implements Observer {
         getGAApp().getConnectionObservable().deleteObserver(this);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.common_menu, menu);
@@ -384,20 +383,8 @@ public class PinActivity extends GaActivity implements Observer {
         // disable proxy until fully working
         // getMenuInflater().inflate(R.menu.proxy_menu, menu);
 
-        this.menu = menu;
+        mMenu = menu;
         return true;
-    }
-
-    private void setPlugVisible(final boolean visible) {
-        if (menu != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final MenuItem item = menu.findItem(R.id.network_unavailable);
-                    item.setVisible(visible);
-                }
-            });
-        }
     }
 
     @Override
@@ -417,8 +404,9 @@ public class PinActivity extends GaActivity implements Observer {
     public void update(final Observable observable, final Object data) {
         // connectivity changed
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
-        setPlugVisible(state != ConnectivityObservable.State.CONNECTED &&
-                       state != ConnectivityObservable.State.LOGGEDIN &&
-                       state != ConnectivityObservable.State.LOGGINGIN);
+        setMenuItemVisible(mMenu, R.id.network_unavailable,
+                           state != ConnectivityObservable.State.CONNECTED &&
+                           state != ConnectivityObservable.State.LOGGEDIN &&
+                           state != ConnectivityObservable.State.LOGGINGIN);
     }
 }
