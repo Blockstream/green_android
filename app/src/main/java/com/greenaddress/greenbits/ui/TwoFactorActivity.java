@@ -149,7 +149,8 @@ public class TwoFactorActivity extends GaActivity {
                     twoFacData.put("method", "proxy");
                     twoFacData.put("code", proxyCode);
                 }
-                Futures.addCallback(gaService.initEnableTwoFac(twoFacType, details.getText().toString(), twoFacData), new FutureCallback<Boolean>() {
+                CB.after(gaService.initEnableTwoFac(twoFacType, details.getText().toString(), twoFacData),
+                         new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final @Nullable Boolean result) {
                         runOnUiThread(new Runnable() {
@@ -158,11 +159,6 @@ public class TwoFactorActivity extends GaActivity {
                                 showProvideConfirmationCode(stepNum + 1, numSteps);
                             }
                         });
-                    }
-
-                    @Override
-                    public void onFailure(final @NonNull Throwable t) {
-                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
                     }
                 });
             }
@@ -194,7 +190,8 @@ public class TwoFactorActivity extends GaActivity {
                 final Map<String, String> data = new HashMap<>();
                 data.put("method", oldMethod);
                 data.put("code", code.getText().toString());
-                Futures.addCallback(gaService.requestTwoFacCode("proxy", newMethod, data), new FutureCallback<Object>() {
+                CB.after(gaService.requestTwoFacCode("proxy", newMethod, data),
+                         new CB.Toast<Object>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(@Nullable final Object proxyCode) {
                         runOnUiThread(new Runnable() {
@@ -207,11 +204,6 @@ public class TwoFactorActivity extends GaActivity {
                                 }
                             }
                         });
-                    }
-
-                    @Override
-                    public void onFailure(final @NonNull Throwable t) {
-                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
                     }
                 });
             }
@@ -269,16 +261,12 @@ public class TwoFactorActivity extends GaActivity {
                     twoFacData.put("code", proxyCode);
                 }
                 continueButton.setEnabled(false);
-                Futures.addCallback(gaService.enableTwoFac(code.getText().toString().trim(), twoFacData), new FutureCallback<Boolean>() {
+                CB.after(gaService.enableTwoFac(code.getText().toString().trim(), twoFacData),
+                         new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final @Nullable Boolean result) {
                         setResult(RESULT_OK);
                         finish();
-                    }
-
-                    @Override
-                    public void onFailure(final @NonNull Throwable t) {
-                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
                     }
                 });
             }
@@ -305,30 +293,15 @@ public class TwoFactorActivity extends GaActivity {
             public void onClick(View v) {
                 if (6 != code.getText().toString().trim().length()) return;
                 continueButton.setEnabled(false);
-                Futures.addCallback(gaService.enableTwoFac(twoFacType, code.getText().toString().trim()), new FutureCallback<Boolean>() {
+                CB.after(gaService.enableTwoFac(twoFacType, code.getText().toString().trim()),
+                         new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(@Nullable Boolean result) {
                         setResult(RESULT_OK);
                         finish();
                     }
-
-                    @Override
-                    public void onFailure(final @NonNull Throwable t) {
-                        TwoFactorActivity.this.onContinueFailure(continueButton, t);
-                    }
                 });
             }
         });
-    }
-
-    private void onContinueFailure(final Button continueBtn, final @NonNull Throwable t) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                continueBtn.setEnabled(true);
-                toast(t);
-            }
-        });
-        t.printStackTrace();
     }
 }

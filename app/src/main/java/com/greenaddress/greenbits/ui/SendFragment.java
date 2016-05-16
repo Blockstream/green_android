@@ -416,13 +416,13 @@ public class SendFragment extends SubaccountFragment {
 
                 if (prepared != null) {
                     sendButton.setEnabled(false);
-                    Futures.addCallback(prepared,
-                            new FutureCallback<PreparedTransaction>() {
+                    CB.after(prepared,
+                            new CB.Toast<PreparedTransaction>(gaActivity, sendButton) {
                                 @Override
                                 public void onSuccess(@Nullable final PreparedTransaction result) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
                                     CB.after(getGAService().spv.validateTxAndCalculateFeeOrAmount(result, recipient, maxButton.isChecked() ? null : amount),
-                                            new FutureCallback<Coin>() {
+                                            new CB.Toast<Coin>(gaActivity, sendButton) {
                                                 @Override
                                                 public void onSuccess(@Nullable final Coin fee) {
                                                     final Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
@@ -454,30 +454,7 @@ public class SendFragment extends SubaccountFragment {
                                                         }
                                                     });
                                                 }
-
-                                                @Override
-                                                public void onFailure(@NonNull final Throwable t) {
-                                                    gaActivity.runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            sendButton.setEnabled(true);
-                                                            t.printStackTrace();
-                                                            gaActivity.toast(t);
-                                                        }
-                                                    });
-                                                }
                                             });
-                                }
-
-                                @Override
-                                public void onFailure(@NonNull final Throwable t) {
-                                    gaActivity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            sendButton.setEnabled(true);
-                                            gaActivity.toast(t);
-                                        }
-                                    });
                                 }
                             });
                 }

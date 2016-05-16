@@ -705,7 +705,6 @@ public class TransactionActivity extends GaActivity {
                                     }
                                 });
                             } else {
-                                t.printStackTrace();
                                 gaActivity.toast(t);
                             }
 

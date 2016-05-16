@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
+import android.widget.Button;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -23,20 +25,29 @@ public final class CB {
     }
 
 
-    /** A FutureCallback that shows a toast on failure */
+    /** A FutureCallback that shows a toast (and optionally
+     *  enables a button) on failure
+     */
     public static class Toast<T> extends NoOp<T> {
 
        final GaActivity mActivity;
+       final Button mEnabler;
 
        Toast(final GaActivity activity) {
            super();
            mActivity = activity;
+           mEnabler = null;
+       }
+
+       Toast(final GaActivity activity, Button enabler) {
+           super();
+           mActivity = activity;
+           mEnabler = enabler;
        }
 
        @Override
        final public void onFailure(final Throwable t) {
-           t.printStackTrace();
-           mActivity.toast(t);
+           mActivity.toast(t, mEnabler);
        }
     }
 }
