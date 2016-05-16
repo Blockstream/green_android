@@ -320,7 +320,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     try {
                         Wally.bip38_to_private_key(qrText, null, Wally.BIP38_KEY_COMPRESSED | Wally.BIP38_KEY_QUICK_CHECK, null);
                     } catch (final IllegalArgumentException e2) {
-                        Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_key), Toast.LENGTH_LONG).show();
+                        Toast.makeText(TabbedMainActivity.this, R.string.invalid_key, Toast.LENGTH_LONG).show();
                         return;
                     }
                 }
@@ -350,7 +350,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                     + format.postfixCode().format(outputsValue) + ") funds from the address below?"));
                             address = keyNonBip38.toAddress(Network.NETWORK).toString();
                         } else {
-                            passwordPrompt.setText(getResources().getString(R.string.sweep_bip38_passphrase_prompt));
+                            passwordPrompt.setText(R.string.sweep_bip38_passphrase_prompt);
                             txNonBip38 = null;
                             // amount not known until decrypted
                             mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> funds from the password protected BIP38 key below?"));
@@ -440,7 +440,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                                     }
                                                 });
                                             } catch (@NonNull final IllegalArgumentException e) {
-                                                Toast.makeText(TabbedMainActivity.this, getResources().getString(R.string.invalid_passphrase), Toast.LENGTH_LONG).show();
+                                                Toast.makeText(TabbedMainActivity.this, R.string.invalid_passphrase, Toast.LENGTH_LONG).show();
                                             }
 
                                         } else {

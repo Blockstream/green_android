@@ -32,7 +32,7 @@ public class ClipboardEditText extends EditText {
             case android.R.id.cut:
                 break;
             case android.R.id.paste:
-                Toast.makeText(context, context.getResources().getString(R.string.warnOnPaste), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.warnOnPaste, Toast.LENGTH_LONG).show();
                 break;
             case android.R.id.copy:
                 break;

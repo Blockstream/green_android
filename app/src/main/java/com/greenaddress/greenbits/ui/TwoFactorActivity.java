@@ -186,7 +186,7 @@ public class TwoFactorActivity extends GaActivity {
         final TextView description = (TextView) findViewById(R.id.description);
         final TextView prompt = (TextView) findViewById(R.id.prompt);
         final EditText code = (EditText) findViewById(R.id.code);
-        description.setText(getResources().getString(R.string.twoFacProvideAuthCodeDescription));
+        description.setText(R.string.twoFacProvideAuthCodeDescription);
         prompt.setText(new Formatter().format(prompt.getText().toString(), oldMethodName).toString());
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);

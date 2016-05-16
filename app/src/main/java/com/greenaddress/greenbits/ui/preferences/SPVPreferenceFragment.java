@@ -188,8 +188,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
                 if (!addrCorrect) {
                     new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                            .title(getResources().getString(R.string.enterValidAddressTitle))
-                            .content(getResources().getString(R.string.enterValidAddressText))
+                            .title(R.string.enterValidAddressTitle)
+                            .content(R.string.enterValidAddressText)
                             .positiveColorRes(R.color.accent)
                             .negativeColorRes(R.color.white)
                             .titleColorRes(R.color.white)
@@ -237,8 +237,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                             // and HS connectivity.
                             // but work with Orbot socks if set
                             new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                                    .title(getResources().getString(R.string.enterValidAddressTitleTorDisabled))
-                                    .content(getResources().getString(R.string.enterValidAddressTextTorDisabled))
+                                    .title(R.string.enterValidAddressTitleTorDisabled)
+                                    .content(R.string.enterValidAddressTextTorDisabled)
                                     .positiveColorRes(R.color.accent)
                                     .negativeColorRes(R.color.white)
                                     .titleColorRes(R.color.white)
@@ -261,8 +261,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                     }
                     else {
                         new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                                .title(getResources().getString(R.string.changingWarnOnionTitle))
-                                .content(getResources().getString(R.string.changingWarnOnionText))
+                                .title(R.string.changingWarnOnionTitle)
+                                .content(R.string.changingWarnOnionText)
                                 .positiveText("OK")
                                 .negativeText("Cancel")
                                 .positiveColorRes(R.color.accent)
@@ -294,8 +294,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
     private void askUserForSpvNoWiFi() {
         gaService.setSpvWiFiDialogShown(true);
         new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                .title(getResources().getString(R.string.spvNoWiFiTitle))
-                .content(getResources().getString(R.string.spvNoWiFiText))
+                .title(R.string.spvNoWiFiTitle)
+                .content(R.string.spvNoWiFiText)
                 .positiveText(R.string.spvNoWiFiSyncAnyway)
                 .negativeText(R.string.spvNoWifiWaitForWiFi)
                 .positiveColorRes(R.color.accent)

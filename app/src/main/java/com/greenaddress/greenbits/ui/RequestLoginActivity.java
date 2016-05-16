@@ -182,12 +182,12 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 if (t.getVendorId() == 21324 && (version.get(0) < 1 ||
                         (version.get(0) == 1) && (version.get(1) < 3))) {
                     final TextView instructions = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
-                    instructions.setText(getResources().getString(R.string.firstLoginRequestedInstructionsOldTrezor));
+                    instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
                     return;
                 }
                 if (t.getVendorId() == 11044 && (version.get(0) < 1)) {
                     final TextView instructions = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
-                    instructions.setText(getResources().getString(R.string.firstLoginRequestedInstructionsOldTrezor));
+                    instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
                     return;
                 }
                 Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
@@ -217,8 +217,8 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                         @Override
                                         public void run() {
                                             new MaterialDialog.Builder(RequestLoginActivity.this)
-                                                    .title(getResources().getString(R.string.trezor_login_failed))
-                                                    .content(getResources().getString(R.string.trezor_login_failed_details))
+                                                    .title(R.string.trezor_login_failed)
+                                                    .content(R.string.trezor_login_failed_details)
                                                     .build().show();
                                         }
                                     });
@@ -383,7 +383,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                                                         getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString(), Toast.LENGTH_LONG).show();
 
                                                             } else {
-                                                                Toast.makeText(RequestLoginActivity.this, getResources().getString(R.string.btchipNotSetup), Toast.LENGTH_LONG).show();
+                                                                Toast.makeText(RequestLoginActivity.this, R.string.btchipNotSetup, Toast.LENGTH_LONG).show();
                                                             }
 
                                                             RequestLoginActivity.this.finish();

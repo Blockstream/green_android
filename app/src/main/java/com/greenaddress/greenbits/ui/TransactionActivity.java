@@ -272,7 +272,7 @@ public class TransactionActivity extends GaActivity {
                     unconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
                     if (bestEstimate < currentEstimate && t.replaceable) {
                         if (bestEstimate == 1) {
-                            unconfirmedRecommendation.setText(getResources().getString(R.string.recommendationSingleBlock));
+                            unconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
                         } else {
                             unconfirmedRecommendation.setText(String.format(getResources().getString(R.string.recommendationBlocks), bestEstimate));
                         }

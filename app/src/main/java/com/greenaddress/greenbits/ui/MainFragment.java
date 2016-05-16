@@ -283,7 +283,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                     }
                 }
                 final MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
-                        .title(getResources().getString(R.string.unconfirmedBalanceTitle))
+                        .title(R.string.unconfirmedBalanceTitle)
                         .content(getResources().getString(R.string.unconfirmedBalanceText) + " " + blocksLeft)
                         .positiveColorRes(R.color.accent)
                         .negativeColorRes(R.color.white)
@@ -563,8 +563,8 @@ public class MainFragment extends SubaccountFragment implements Observer {
         getGAService().setSpvWiFiDialogShown(true);
 
         new MaterialDialog.Builder(getActivity())
-                .title(getResources().getString(R.string.spvNoWiFiTitle))
-                .content(getResources().getString(R.string.spvNoWiFiText))
+                .title(R.string.spvNoWiFiTitle)
+                .content(R.string.spvNoWiFiText)
                 .positiveText(R.string.spvNoWiFiSyncAnyway)
                 .negativeText(R.string.spvNoWifiWaitForWiFi)
                 .positiveColorRes(R.color.accent)
