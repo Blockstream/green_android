@@ -214,7 +214,7 @@ public class GaService extends Service {
                 connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
                 Log.i(TAG, "Success CONNECTED callback");
                 triggerOnFullyConnected.set(null);
-                if (!connectionObservable.getIsForcedLoggedOut() && !connectionObservable.getIsForcedTimeout() && client.canLogin()) {
+                if (!connectionObservable.isForcedOff() && client.canLogin()) {
                     login();
                 }
             }

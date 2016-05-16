@@ -79,7 +79,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
         super.onResume();
         getGAApp().getConnectionObservable().incRef();
 
-        if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
+        if (getGAApp().getConnectionObservable().isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             final Intent firstScreenActivity = new Intent(this, FirstScreenActivity.class);
             startActivity(firstScreenActivity);

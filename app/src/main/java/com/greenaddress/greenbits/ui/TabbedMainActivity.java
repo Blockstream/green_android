@@ -264,7 +264,14 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Override
     public void onResumeWithService() {
         getGAApp().getConnectionObservable().addObserver(this);
-        testKickedOut();
+
+        if (getGAApp().getConnectionObservable().isForcedOff()) {
+            // FIXME: Should pass flag to activity so it shows it was forced logged out
+            startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
+            finish();
+            return;
+        }
+
         instance = this;
         setIdVisible(getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.LOGGEDIN, R.id.action_share);
     }
@@ -526,14 +533,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         return super.onOptionsItemSelected(item);
     }
 
-    private void testKickedOut() {
-        if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
-            // FIXME: Should pass flag to activity so it shows it was forced logged out
-            startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
-            finish();
-        }
-    }
-
     @Override
     public void onBackPressed() {
         if (mViewPager.getCurrentItem() == 1) {
@@ -545,7 +544,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     public void update(final Observable observable, final Object data) {
-        if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
+        if (getGAApp().getConnectionObservable().isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
         }

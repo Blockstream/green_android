@@ -60,6 +60,14 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     public void onResumeWithService() {
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
+        if (getGAApp().getConnectionObservable().isForcedOff()) {
+            // FIXME: Should pass flag to activity so it shows it was forced logged out
+            final Intent i = new Intent(NetworkMonitorActivity.this, FirstScreenActivity.class);
+            startActivity(i);
+            finish();
+            return;
+        }
+
         peerList.clear();
         final GaService gaService = getGAService();
         final SPV spv = gaService.spv;
@@ -90,13 +98,6 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             peerGroup.addConnectedEventListener(this);
             peerGroup.addDisconnectedEventListener(this);
 
-        }
-
-        if (getGAApp().getConnectionObservable().getIsForcedLoggedOut() || getGAApp().getConnectionObservable().getIsForcedTimeout()) {
-            // FIXME: Should pass flag to activity so it shows it was forced logged out
-            final Intent firstScreenActivity = new Intent(NetworkMonitorActivity.this, FirstScreenActivity.class);
-            startActivity(firstScreenActivity);
-            finish();
         }
     }
 

@@ -25,8 +25,8 @@ public class ConnectivityObservable extends Observable {
     private GaService service;
     @NonNull
     private State state = State.OFFLINE;
-    private boolean forcedLoggedout = false;
-    private boolean forcedTimeoutout = false;
+    private boolean mForcedLogout = false;
+    private boolean mForcedTimeout = false;
     private int mRefCount = 0; // The number of non-paused activities using the session
     @NonNull private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
         public void onReceive(final Context context, final Intent intent) {
@@ -51,7 +51,7 @@ public class ConnectivityObservable extends Observable {
                     @Nullable
                     @Override
                     public Object call() throws Exception {
-                        forcedTimeoutout = true;
+                        mForcedTimeout = true;
                         service.disconnect(false);
                         doNotify(null);
                         return null;
@@ -72,8 +72,8 @@ public class ConnectivityObservable extends Observable {
     }
 
     public void setForcedLoggedOut() {
-        this.forcedLoggedout = true;
-        doNotify(this.forcedLoggedout);
+        this.mForcedLogout = true;
+        doNotify(this.mForcedLogout);
     }
 
     @NonNull
@@ -84,18 +84,14 @@ public class ConnectivityObservable extends Observable {
     public void setState(@NonNull final State state) {
         this.state = state;
         if (state == State.LOGGEDIN) {
-            this.forcedLoggedout = false;
-            this.forcedTimeoutout = false;
+            mForcedLogout = false;
+            mForcedTimeout = false;
         }
         doNotify(state);
     }
 
-    public boolean getIsForcedLoggedOut() {
-        return forcedLoggedout;
-    }
-
-    public boolean getIsForcedTimeout() {
-        return forcedTimeoutout;
+    public boolean isForcedOff() {
+        return mForcedLogout || mForcedTimeout;
     }
 
     private void checkNetwork() {
