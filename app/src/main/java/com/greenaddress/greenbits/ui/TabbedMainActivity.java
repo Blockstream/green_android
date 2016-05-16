@@ -73,8 +73,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             REQUEST_BITCOIN_URL_LOGIN = 2,
             REQUEST_SETTINGS = 3,
             REQUEST_TX_DETAILS = 4;
-    @Nullable
-    public static TabbedMainActivity instance = null;
     private ViewPager mViewPager;
     private Menu mMenu;
 
@@ -273,7 +271,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             return;
         }
 
-        instance = this;
         final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         setMenuItemVisible(mMenu, R.id.action_share,
                            state != ConnectivityObservable.State.LOGGEDIN);

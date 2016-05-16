@@ -16,7 +16,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.subgraph.orchid.TorClient;
 
 import org.bitcoinj.core.Address;
@@ -351,13 +350,13 @@ public class SPV {
         final String addr;
         final int port;
 
-        Node(@NonNull final String trusted_addr) {
-            final int index_port = trusted_addr.indexOf(":");
+        Node(@NonNull final String trustedAddr) {
+            final int index_port = trustedAddr.indexOf(":");
             if (index_port != -1) {
-                addr = trusted_addr.substring(0, index_port);
-                port = Integer.parseInt(trusted_addr.substring(index_port + 1));
+                addr = trustedAddr.substring(0, index_port);
+                port = Integer.parseInt(trustedAddr.substring(index_port + 1));
             } else {
-                addr = trusted_addr;
+                addr = trustedAddr;
                 port = Network.NETWORK.getPort();
             }
         }
@@ -388,19 +387,6 @@ public class SPV {
         return peerGroup;
     }
 
-    private void toastTrustedSPV(final String announcement){
-        final String trusted_peer = gaService.cfg("TRUSTED").getString("address", "");
-        if(TabbedMainActivity.instance != null && !trusted_peer.isEmpty()){
-            TabbedMainActivity.instance.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Toast.makeText(gaService.getApplicationContext(), announcement, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
     private void recalculate(final boolean recalculateBloom) {
         if (recalculateBloom && peerGroup != null) {
             peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
@@ -433,9 +419,7 @@ public class SPV {
             startSpvAfterInit = true;
             return;
         }
-        final String trusted_peer = gaService.cfg("TRUSTED").getString("address", "");
 
-        toastTrustedSPV(String.format("Attempting connection to trusted peers: %s", trusted_peer));
         Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
             public void onSuccess(final @Nullable Object result) {
@@ -444,16 +428,12 @@ public class SPV {
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
                         isSpvSyncing = true;
                         spvBlocksLeft = blocksLeft;
-                        final PeerAddress addr = peer.getAddress();
-                        toastTrustedSPV(String.format("Downloading chain from trusted peer: %s",
-                                addr == null ? "?" : addr.toString()));
                     }
 
                     @Override
                     public void onBlocksDownloaded(final Peer peer, final Block block, final @Nullable FilteredBlock filteredBlock, final int blocksLeft) {
                         spvBlocksLeft = blocksLeft;
                     }
-
                 });
             }
 
@@ -464,20 +444,12 @@ public class SPV {
         });
     }
 
-    private void setupPeerGroup(final PeerGroup peerGroup, final String trusted_addr) {
-        SPVMode mode;
-        if (!trusted_addr.isEmpty() && trusted_addr.contains(".")) {
-            final String trusted_lower = trusted_addr.toLowerCase();
-            if (trusted_lower.contains(".onion")) {
-                mode = SPVMode.ONION;
-            }
-            else {
-                mode = SPVMode.TRUSTED;
-            }
+    private boolean isOnion(final String addr) { return addr.toLowerCase().contains(".onion"); }
 
-        } else {
-            mode = SPVMode.NORMAL;
-        }
+    private void setupPeerGroup(final PeerGroup peerGroup, final String trustedAddr) {
+        SPVMode mode = SPVMode.NORMAL;
+        if (trustedAddr.contains("."))
+            mode = isOnion(trustedAddr) ? SPVMode.ONION : SPVMode.TRUSTED;
 
         if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
             try {
@@ -493,7 +465,7 @@ public class SPV {
         else if (mode == SPVMode.ONION) {
 
             try {
-                final Node n = new Node(trusted_addr);
+                final Node n = new Node(trustedAddr);
 
                 final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
                     @NonNull
@@ -507,7 +479,7 @@ public class SPV {
             }
         }
         else {
-            final Node n = new Node(trusted_addr);
+            final Node n = new Node(trustedAddr);
             try {
                 peerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
             } catch (@NonNull final UnknownHostException e) {
@@ -515,6 +487,7 @@ public class SPV {
             }
         }
     }
+
     public synchronized void setUpSPV(){
         //teardownSPV must be called if SPV already exists
         //and stopSPV if previous still running.
@@ -548,7 +521,7 @@ public class SPV {
             blockChain.addListener(blockChainListener = new BlockChainListener(gaService));
 
             System.setProperty("user.home", gaService.getFilesDir().toString());
-            final String trusted_addr = gaService.cfg("TRUSTED").getString("address", "");
+            final String trustedAddr = gaService.cfg("TRUSTED").getString("address", "");
 
             final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(gaService);
             final String proxyHost = sharedPref.getString("proxy_host", null);
@@ -562,7 +535,7 @@ public class SPV {
             } else {
                 System.setProperty("http.proxyHost", "");
                 System.setProperty("http.proxyPort", "");
-                if (trusted_addr.toLowerCase().contains(".onion")) {
+                if (isOnion(trustedAddr)) {
                     try {
                         final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
                         peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
@@ -575,17 +548,17 @@ public class SPV {
             }
             peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
 
-            if (trusted_addr.contains(",")) {
-                final String[] addresses = trusted_addr.split(",");
+            if (trustedAddr.contains(",")) {
+                final String[] addresses = trustedAddr.split(",");
                 for (final String s: addresses) {
                     setupPeerGroup(peerGroup, s);
                 }
                 peerGroup.setMaxConnections(addresses.length);
-            } else if (!trusted_addr.isEmpty()) {
-                setupPeerGroup(peerGroup, trusted_addr);
+            } else if (!trustedAddr.isEmpty()) {
+                setupPeerGroup(peerGroup, trustedAddr);
                 peerGroup.setMaxConnections(1);
             } else {
-                setupPeerGroup(peerGroup, trusted_addr);
+                setupPeerGroup(peerGroup, trustedAddr);
             }
         } catch (@NonNull final BlockStoreException e) {
             e.printStackTrace();
