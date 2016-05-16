@@ -358,10 +358,9 @@ public class PinActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResumeWithService(final ConnectivityObservable.State state) {
         getGAApp().getConnectionObservable().addObserver(this);
 
-        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         if (state.equals(ConnectivityObservable.State.LOGGEDIN) ||
             state.equals(ConnectivityObservable.State.LOGGINGIN)) {
             // already logged in, could be from different app via intent

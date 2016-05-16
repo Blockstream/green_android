@@ -261,7 +261,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResumeWithService(final ConnectivityObservable.State state) {
         getGAApp().getConnectionObservable().addObserver(this);
 
         if (getGAApp().getConnectionObservable().isForcedOff()) {
@@ -271,7 +271,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             return;
         }
 
-        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         setMenuItemVisible(mMenu, R.id.action_share,
                            state != ConnectivityObservable.State.LOGGEDIN);
      }

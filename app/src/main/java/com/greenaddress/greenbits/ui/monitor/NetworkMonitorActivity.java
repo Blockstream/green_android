@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.greenaddress.greenapi.Network;
+import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -57,7 +58,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResumeWithService(final ConnectivityObservable.State state) {
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
         if (getGAApp().getConnectionObservable().isForcedOff()) {

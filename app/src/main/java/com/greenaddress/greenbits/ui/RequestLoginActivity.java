@@ -35,6 +35,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenbits.GaService;
@@ -462,7 +463,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResumeWithService(final ConnectivityObservable.State state) {
         tagDispatcher.enableExclusiveNfc();
     }
 

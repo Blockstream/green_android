@@ -318,8 +318,7 @@ public class FirstScreenActivity extends GaActivity {
     }
 
     @Override
-    public void onResumeWithService() {
-        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+    public void onResumeWithService(final ConnectivityObservable.State state) {
         //FIXME : recheck state, properly handle TEE link anyway
         if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent

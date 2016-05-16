@@ -130,12 +130,13 @@ public class MnemonicActivity extends GaActivity {
     private void loginAfterServiceConnected() {
         final GaService gaService = getGAService();
         
-        if (getGAApp().getConnectionObservable().getState() == ConnectivityObservable.State.LOGGEDIN) {
+        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        if (state == ConnectivityObservable.State.LOGGEDIN) {
             toast(R.string.err_mnemonic_activity_logout_required);
             return;
         }
 
-        if (getGAApp().getConnectionObservable().getState() != ConnectivityObservable.State.CONNECTED) {
+        if (state != ConnectivityObservable.State.CONNECTED) {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
@@ -429,8 +430,7 @@ public class MnemonicActivity extends GaActivity {
     }
 
     @Override
-    protected void onResumeWithService() {
-        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+    protected void onResumeWithService(final ConnectivityObservable.State state) {
         if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);

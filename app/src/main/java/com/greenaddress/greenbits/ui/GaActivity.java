@@ -1,4 +1,5 @@
 package com.greenaddress.greenbits.ui;
+import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
@@ -78,8 +79,9 @@ public abstract class GaActivity extends AppCompatActivity {
         Log.d(TAG, "onResume: service " + (mServiceAvailable ? "available" : "not available"));
         super.onResume();
         if (mServiceAvailable) {
-            getGAApp().getConnectionObservable().incRef();
-            onResumeWithService();
+            final ConnectivityObservable c = getGAApp().getConnectionObservable();
+            c.incRef();
+            onResumeWithService(c.getState());
         }
     }
 
@@ -90,7 +92,7 @@ public abstract class GaActivity extends AppCompatActivity {
       * When called, our service is guaranteed to be available. */
     abstract protected void onCreateWithService(final Bundle savedInstanceState);
     protected void onPauseWithService() { }
-    protected void onResumeWithService() { }
+    protected void onResumeWithService(final ConnectivityObservable.State state) { }
 
     // Utility methods
 

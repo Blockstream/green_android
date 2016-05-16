@@ -39,6 +39,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
+import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
@@ -259,7 +260,7 @@ public class SignUpActivity extends GaActivity {
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResumeWithService(final ConnectivityObservable.State state) {
         if (mNfcAdapter != null) {
             final IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
             final IntentFilter[] filters = new IntentFilter[]{filter};

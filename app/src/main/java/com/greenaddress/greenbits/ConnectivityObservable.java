@@ -18,6 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ConnectivityObservable extends Observable {
 
+    public enum State {
+        OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
+    }
+
     static final int RECONNECT_TIMEOUT = 6000;
     static final int RECONNECT_TIMEOUT_MAX = 50000;
     @NonNull private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
@@ -123,9 +127,5 @@ public class ConnectivityObservable extends Observable {
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting()
                 && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-    }
-
-    public enum State {
-        OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
     }
 }
