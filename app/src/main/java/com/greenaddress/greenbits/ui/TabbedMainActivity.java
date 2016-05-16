@@ -552,32 +552,21 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         setIdVisible(currentState != ConnectivityObservable.State.LOGGEDIN, R.id.network_unavailable);
     }
 
+    private void handlePermissionResult(@NonNull final int[] granted, int action, int msgId) {
+        if (granted[0] == PackageManager.PERMISSION_GRANTED)
+            startActivityForResult(new Intent(this, ScanActivity.class), action);
+        else
+            Toast.makeText(getApplicationContext(), msgId, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
-    public void onRequestPermissionsResult(final int permsRequestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-        switch (permsRequestCode) {
-            case 200: {
-                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-                if (cameraPermissionGranted) {
-                    final Intent scanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
-                    startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
-                } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.err_tabbed_sweep_requires_camera_permissions), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
-            case 100: {
-                final boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-                if (cameraPermissionGranted) {
-                    final Intent qrcodeScanner = new Intent(TabbedMainActivity.this, ScanActivity.class);
-                    startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
-                } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.err_qrscan_requires_camera_permissions), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
-        }
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] granted) {
+        if (requestCode == 200)
+                handlePermissionResult(granted, REQUEST_SWEEP_PRIVKEY,
+                                       R.string.err_tabbed_sweep_requires_camera_permissions);
+        else if (requestCode == 100)
+                handlePermissionResult(granted, REQUEST_SEND_QR_SCAN,
+                                       R.string.err_qrscan_requires_camera_permissions);
     }
 
     /**
