@@ -624,4 +624,16 @@ public class SPV {
             startSpvSync();
         }
     }
+
+    public void setEnabled(boolean enabled) {
+
+        if (enabled != gaService.isSPVEnabled()) {
+            gaService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
+            if (enabled) {
+                setUpSPV();
+                startSpvSync();
+            } else
+                stopSPVSync();
+        }
+    }
 }

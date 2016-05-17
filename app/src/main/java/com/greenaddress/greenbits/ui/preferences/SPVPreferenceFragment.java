@@ -46,20 +46,12 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                final Boolean nowEnabled = (Boolean) newValue;
-
-                gaService.cfgEdit("SPV").putBoolean("enabled", nowEnabled).apply();
-                trusted_peer.setEnabled(nowEnabled);
+                trusted_peer.setEnabled((Boolean) newValue);
 
                 new AsyncTask<Object, Object, Object>() {
                     @Override
                     protected Object doInBackground(final Object[] params) {
-
-                        if (nowEnabled) {
-                            gaService.spv.setUpSPV();
-                            gaService.spv.startSpvSync();
-                        } else
-                            gaService.spv.stopSPVSync();
+                        gaService.spv.setEnabled((Boolean) newValue);
                         return null;
                     }
                 }.execute();
