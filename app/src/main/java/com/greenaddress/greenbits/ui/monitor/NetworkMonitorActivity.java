@@ -63,43 +63,36 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
         if (getGAApp().getConnectionObservable().isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
-            final Intent i = new Intent(NetworkMonitorActivity.this, FirstScreenActivity.class);
-            startActivity(i);
+            startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
             return;
         }
 
         peerList.clear();
-        final GaService gaService = getGAService();
-        final SPV spv = gaService.spv;
 
-        final PeerGroup peerGroup = spv.getPeerGroup();
-        if (peerGroup != null && peerGroup.isRunning()) {
+        final PeerGroup peerGroup = getGAService().spv.getPeerGroup();
+        if (peerGroup == null || !peerGroup.isRunning())
+            return;
 
-            for (final Peer peer : peerGroup.getConnectedPeers()) {
-                peerList.add(new PrettyPeer(peer));
-            }
+        for (final Peer peer : peerGroup.getConnectedPeers())
+            peerList.add(new PrettyPeer(peer));
 
-            final TextView tview = (TextView) findViewById(R.id.bloominfo);
+        if (peerList.size() > 0)
+            bloominfo = peerList.get(0).peer.getBloomFilter().toString();
+        else
+            bloominfo = getString(R.string.network_monitor_bloom_info);
 
-            if (peerList.size() > 0) {
-                bloominfo = peerList.get(0).peer.getBloomFilter().toString();
-            } else {
-                bloominfo = getString(R.string.network_monitor_bloom_info);
-            }
+        final int curBlock = getGAService().getCurBlock();
+        final int spvHeight = getGAService().spv.getSpvHeight();
+        final TextView tv = (TextView) findViewById(R.id.bloominfo);
+        tv.setText(getString(R.string.network_monitor_banner, bloominfo, curBlock - spvHeight));
 
-            tview.setText(getString(R.string.network_monitor_banner, bloominfo, gaService.getCurBlock() - spv.getSpvHeight()));
+        peerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peerList);
+        final ListView view = (ListView) findViewById(R.id.peerlistview);
+        view.setAdapter(peerListAdapter);
 
-
-            peerListAdapter =
-                    new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peerList);
-            final ListView view = (ListView) findViewById(R.id.peerlistview);
-            view.setAdapter(peerListAdapter);
-
-            peerGroup.addConnectedEventListener(this);
-            peerGroup.addDisconnectedEventListener(this);
-
-        }
+        peerGroup.addConnectedEventListener(this);
+        peerGroup.addDisconnectedEventListener(this);
     }
 
     @Override
