@@ -58,12 +58,40 @@ import java.util.Set;
 
 public class SPV {
 
+    private final static String TAG = SPV.class.getSimpleName();
+
     private final Map<TransactionOutPoint, Coin> countedUtxoValues = new HashMap<>();
 
     private final String VERIFIED = "verified_utxo_";
     private final String SPENDABLE = "verified_utxo_spendable_value_";
 
+    public final Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
+    public final Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints = new HashMap<>();
+    private final Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts = new HashMap<>();
+    private final Map<TransactionOutPoint, Integer> unspentOutpointsPointers = new HashMap<>();
+    private final GaService gaService;
+    private BlockChainListener blockChainListener;
+    private int spvBlocksLeft = Integer.MAX_VALUE;
+    private BlockStore blockStore;
+    private BlockChain blockChain;
+    private PeerGroup peerGroup;
+    private PeerFilterProvider pfProvider;
+    private final Object startSPVLock = new Object();
+    private boolean isSpvSyncing = false;
+    private boolean startSpvAfterInit = false;
+    private boolean syncStarted = false;
+
+    private enum SPVMode {
+        ONION, TRUSTED, NORMAL
+    }
+
+    public SPV(final GaService gaService) {
+        this.gaService = gaService;
+    }
+
     public void startIfEnabled() {
+        resetUnspent();
+
         isSpvSyncing = false;
         if (gaService.isSPVEnabled()) {
             setUpSPV();
@@ -105,9 +133,6 @@ public class SPV {
 
         resetUnspent();
     }
-
-    @NonNull
-    public final Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
 
     public void updateUnspentOutputs() {
         if (!gaService.isSPVEnabled())
@@ -166,6 +191,7 @@ public class SPV {
             }
         });
     }
+
     public void resetUnspent() {
         unspentOutpointsSubaccounts.clear();
         unspentOutpointsPointers.clear();
@@ -283,9 +309,7 @@ public class SPV {
             // should rollback already
         }
     }
-    public final Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints = new HashMap<>();
-    private final Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts = new HashMap<>();
-    private final Map<TransactionOutPoint, Integer> unspentOutpointsPointers = new HashMap<>();
+
     private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
         unspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subaccount);
         unspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
@@ -298,16 +322,6 @@ public class SPV {
         }
     }
 
-    private final GaService gaService;
-    @Nullable
-    private BlockChainListener blockChainListener;
-    @NonNull private final static String TAG = SPV.class.getSimpleName();
-    public SPV(final GaService gaService) {
-        this.gaService = gaService;
-    }
-    private enum SPVMode {
-        ONION, TRUSTED, NORMAL
-    }
     @NonNull
     public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(@NonNull final PreparedTransaction transaction, @NonNull final String recipientStr, @NonNull final Coin amount) {
         Address recipientNonFinal = null;
@@ -370,17 +384,6 @@ public class SPV {
     }
 
     @Nullable
-    private BlockStore blockStore;
-    @Nullable
-    private BlockChain blockChain;
-    @Nullable
-    private PeerGroup peerGroup;
-    @Nullable
-    private PeerFilterProvider pfProvider;
-    @NonNull private final Object startSPVLock = new Object();
-    private boolean isSpvSyncing = false, startSpvAfterInit = false, syncStarted = false;
-
-    @Nullable
     public PeerGroup getPeerGroup(){
         return peerGroup;
     }
@@ -403,7 +406,6 @@ public class SPV {
     public boolean isPeerGroupRunning(){
         return peerGroup != null && peerGroup.isRunning();
     }
-    private int spvBlocksLeft = Integer.MAX_VALUE;
 
     public synchronized void startSpvSync() {
         synchronized (startSPVLock) {

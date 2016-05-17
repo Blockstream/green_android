@@ -125,7 +125,7 @@ public class GaService extends Service {
     private WalletClient client;
     @Nullable
     private ConnectivityObservable connectionObservable = null;
-    @NonNull private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
+    private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
         @Override
         public void onSuccess(@Nullable final LoginData result) {
             fiatCurrency = result.currency;
@@ -143,8 +143,6 @@ public class GaService extends Service {
                 updateBalance(pointer);
             }
             getAvailableTwoFacMethods();
-
-            spv.resetUnspent();
 
             gaDeterministicKeys.clear();
 
