@@ -685,7 +685,7 @@ public class WalletClient {
             }, mExecutor);
     }
 
-    public ListenableFuture<LoginData> pinLogin(final PinData data, final String pin, final String device_id) {
+    public ListenableFuture<LoginData> login(final PinData data, final String pin, final String device_id) {
         final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
         clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
             public void onResult(final Object pass) {

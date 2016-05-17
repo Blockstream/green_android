@@ -100,7 +100,7 @@ public class PinActivity extends GaActivity implements Observer {
             @NonNull
             @Override
             public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                return gaService.pinLogin(pinData, pinText.getText().toString());
+                return gaService.login(pinData, pinText.getText().toString());
             }
         };
 
@@ -253,7 +253,7 @@ public class PinActivity extends GaActivity implements Observer {
                                     @NonNull
                                     @Override
                                     public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                                        return gaService.pinLogin(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
+                                        return gaService.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
                                     }
                                 };
 

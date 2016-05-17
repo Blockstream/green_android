@@ -465,6 +465,15 @@ public class GaService extends Service {
     }
 
     @NonNull
+    public ListenableFuture<LoginData> login(@NonNull final PinData pinData, final String pin) {
+        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+
+        final ListenableFuture<LoginData> future = client.login(pinData, pin, deviceId);
+        Futures.addCallback(future, handleLoginData, es);
+        return future;
+    }
+
+    @NonNull
     public ListenableFuture<LoginData> signup(@NonNull final String mnemonics) {
         final ListenableFuture<LoginData> signupFuture = client.loginRegister(mnemonics, deviceId);
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
@@ -490,15 +499,6 @@ public class GaService extends Service {
     @Nullable
     public WalletClient getClient() {
         return client;
-    }
-
-    @NonNull
-    public ListenableFuture<LoginData> pinLogin(@NonNull final PinData pinData, final String pin) {
-        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
-
-        final ListenableFuture<LoginData> login = client.pinLogin(pinData, pin, deviceId);
-        Futures.addCallback(login, handleLoginData, es);
-        return login;
     }
 
     public void disconnect(final boolean reconnect) {
