@@ -21,14 +21,13 @@ public class ConnectivityObservable extends Observable {
     public enum State {
         OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
     }
+    private State mState = State.OFFLINE;
 
     static final int RECONNECT_TIMEOUT = 6000;
     static final int RECONNECT_TIMEOUT_MAX = 50000;
     @NonNull private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
-    private ScheduledFuture<Object> disconnectTimeout = null;
+    private ScheduledFuture<Object> mDisconnectTimer = null;
     private GaService service;
-    @NonNull
-    private State state = State.OFFLINE;
     private boolean mForcedLogout = false;
     private boolean mForcedTimeout = false;
     private int mRefCount = 0; // The number of non-paused activities using the session
@@ -41,9 +40,9 @@ public class ConnectivityObservable extends Observable {
     public void incRef() {
         assert service != null : "Reference incremented before service created";
         ++mRefCount;
-        if (disconnectTimeout != null && !disconnectTimeout.isCancelled())
-            disconnectTimeout.cancel(false);
-        if (state.equals(State.DISCONNECTED))
+        if (mDisconnectTimer != null && !mDisconnectTimer.isCancelled())
+            mDisconnectTimer.cancel(false);
+        if (mState.equals(State.DISCONNECTED))
             service.reconnect();
     }
 
@@ -51,13 +50,10 @@ public class ConnectivityObservable extends Observable {
         assert service != null : "Reference decremented before service created";
         assert mRefCount > 0 : "Incorrect reference count";
         if (--mRefCount == 0)
-            disconnectTimeout = ex.schedule(new Callable<Object>() {
-                    @Nullable
+            mDisconnectTimer = ex.schedule(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
-                        mForcedTimeout = true;
-                        service.disconnect(false);
-                        doNotify(null);
+                        setForcedTimeout();
                         return null;
                     }
             }, service.getAutoLogoutMinutes(), TimeUnit.MINUTES);
@@ -70,28 +66,33 @@ public class ConnectivityObservable extends Observable {
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
-    private void doNotify(final Object o) {
+    private void doNotify() {
          setChanged();
-         notifyObservers(o);
-    }
-
-    public void setForcedLoggedOut() {
-        this.mForcedLogout = true;
-        doNotify(this.mForcedLogout);
+         notifyObservers(mState);
     }
 
     @NonNull
     public State getState() {
-        return state;
+        return mState;
     }
 
     public void setState(@NonNull final State state) {
-        this.state = state;
-        if (state == State.LOGGEDIN) {
+        mState = state;
+        if (mState == State.LOGGEDIN) {
             mForcedLogout = false;
             mForcedTimeout = false;
         }
-        doNotify(state);
+        doNotify();
+    }
+
+    private void setForcedTimeout() {
+        mForcedTimeout = true;
+        service.disconnect(false); // Calls setState(DISCONNECTED)
+    }
+
+    public void setDisconnected(final boolean forcedLogout) {
+        this.mForcedLogout = forcedLogout;
+        setState(ConnectivityObservable.State.DISCONNECTED);
     }
 
     public boolean isForcedOff() {
@@ -101,7 +102,7 @@ public class ConnectivityObservable extends Observable {
     private void checkNetwork() {
         boolean changedState = false;
         if (isNetworkUp()) {
-            if (state.equals(State.DISCONNECTED) || state.equals(State.OFFLINE)) {
+            if (mState.equals(State.DISCONNECTED) || mState.equals(State.OFFLINE)) {
                 setState(ConnectivityObservable.State.DISCONNECTED);
                 changedState = true;
                 service.reconnect();
@@ -112,7 +113,7 @@ public class ConnectivityObservable extends Observable {
             changedState = true;
         }
         if (!changedState && isWiFiUp())
-            doNotify(null);
+            doNotify();
     }
 
     public boolean isNetworkUp() {

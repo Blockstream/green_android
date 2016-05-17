@@ -96,7 +96,8 @@ public class GaService extends Service {
     private ListenableFuture<String> latestMnemonics;
     private int curBlock = 0;
 
-    private boolean reconnect = true;
+    private boolean mAutoReconnect = true;
+    private int mReconnectDelay = 0;
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
 
@@ -120,9 +121,6 @@ public class GaService extends Service {
     public final SPV spv = new SPV(this);
 
     private int background_color;
-    // fix me implement Preference change listener?
-    // http://developer.android.com/guide/topics/ui/settings.html
-    private int reconnectTimeout = 0;
     @Nullable
     private WalletClient client;
     @Nullable
@@ -204,7 +202,7 @@ public class GaService extends Service {
     }
 
     void reconnect() {
-        Log.i(TAG, "Submitting reconnect after " + reconnectTimeout);
+        Log.i(TAG, "Submitting reconnect after " + mReconnectDelay);
         onConnected = client.connect();
         connectionObservable.setState(ConnectivityObservable.State.CONNECTING);
 
@@ -224,13 +222,11 @@ public class GaService extends Service {
                 Log.i(TAG, "Failure throwable callback " + t.toString());
                 connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
 
-                if (reconnectTimeout < ConnectivityObservable.RECONNECT_TIMEOUT_MAX) {
-                    reconnectTimeout *= 1.2;
-                }
+                if (mReconnectDelay < ConnectivityObservable.RECONNECT_TIMEOUT_MAX)
+                    mReconnectDelay *= 1.2;
 
-                if (reconnectTimeout == 0) {
-                    reconnectTimeout = ConnectivityObservable.RECONNECT_TIMEOUT;
-                }
+                if (mReconnectDelay == 0)
+                    mReconnectDelay = ConnectivityObservable.RECONNECT_TIMEOUT;
 
                 // FIXME: handle delayed login
                 uiHandler.postDelayed(new Runnable() {
@@ -238,7 +234,7 @@ public class GaService extends Service {
                     public void run() {
                         reconnect();
                     }
-                }, reconnectTimeout);
+                }, mReconnectDelay);
             }
         }, es);
     }
@@ -303,34 +299,30 @@ public class GaService extends Service {
                 }
             }
 
-
             @Override
             public void onConnectionClosed(final int code) {
                 gaDeterministicKeys.clear();
 
-                if (code == 4000) {
-                    connectionObservable.setForcedLoggedOut();
-                }
-                connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
-
+                // Server error codes FIXME: These should be in a class somewhere
+                // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
+                // 1000 NORMAL_CLOSE
+                // 1006 SERVER_RESTART
+                final boolean forcedLogout = code == 4000;
+                connectionObservable.setDisconnected(forcedLogout);
 
                 if (!connectionObservable.isNetworkUp()) {
-                    // do nothing
                     connectionObservable.setState(ConnectivityObservable.State.OFFLINE);
-
-                } else {
-                    // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
-                    Log.i(TAG, "onConnectionClosed code=" + String.valueOf(code));
-                    // FIXME: some callback to UI so you see what's happening.
-                    // 1000 NORMAL_CLOSE
-                    // 1006 SERVER_RESTART
-                    reconnectTimeout = 0;
-                    if (reconnect) {
-                        reconnect();
-                    }
+                    return;
                 }
+
+                Log.i(TAG, "onConnectionClosed code=" + String.valueOf(code));
+                // FIXME: some callback to UI so you see what's happening.
+                mReconnectDelay = 0;
+                if (mAutoReconnect)
+                    reconnect();
             }
         }, es);
+
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final String proxyHost = sharedPref.getString("proxy_host", null);
         final String proxyPort = sharedPref.getString("proxy_port", null);
@@ -510,7 +502,7 @@ public class GaService extends Service {
     }
 
     public void disconnect(final boolean reconnect) {
-        this.reconnect = reconnect;
+        mAutoReconnect = reconnect;
         spv.stopSPVSync();
         spv.tearDownSPV();
         for (final Integer key : balanceObservables.keySet()) {
