@@ -37,9 +37,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 if (enabled) {
                     // Stop SPV
                     try {
-                        if (gaService.spv.isPeerGroupRunning())
-                            gaService.spv.stopSPVSync();
-                        gaService.spv.tearDownSPV();
+                        gaService.spv.stopSPVSync();
                     } catch (final NullPointerException e) {
                         // ignore
                     }
@@ -78,11 +76,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                         if (nowEnabled) {
                             gaService.spv.setUpSPV();
                             gaService.spv.startSpvSync();
-                        } else {
-                            if (gaService.spv.isPeerGroupRunning())
-                                gaService.spv.stopSPVSync();
-                            gaService.spv.tearDownSPV();
-                        }
+                        } else
+                            gaService.spv.stopSPVSync();
                         return null;
                     }
                 }.execute();
@@ -106,16 +101,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 @Override
                 protected Object doInBackground(Object[] params) {
                     boolean alreadySyncing = false;
-                    if (gaService.spv.isPeerGroupRunning()) {
-                        alreadySyncing = true;
-                        gaService.spv.stopSPVSync();
-                    }
-                    gaService.spv.tearDownSPV();
+                    alreadySyncing = gaService.spv.stopSPVSync();
                     System.gc(); //May help save slightly lower heap size devices.
                     gaService.spv.setUpSPV();
-                    if (alreadySyncing) {
+                    if (alreadySyncing)
                         gaService.spv.startSpvSync();
-                    }
                     return null;
                 }
             }

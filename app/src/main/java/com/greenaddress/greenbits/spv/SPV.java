@@ -563,27 +563,26 @@ public class SPV {
         }
     }
 
-    public synchronized void stopSPVSync(){
+    public synchronized boolean stopSPVSync() {
 
-        final Intent i = new Intent("PEERGROUP_UPDATED");
-        i.putExtra("peergroup", "stopSPVSync");
-        gaService.sendBroadcast(i);
+        final boolean isRunning = isPeerGroupRunning();
 
-        if (peerGroup != null && peerGroup.isRunning()) {
+        if (isRunning) {
+            final Intent i = new Intent("PEERGROUP_UPDATED");
+            i.putExtra("peergroup", "stopSPVSync");
+            gaService.sendBroadcast(i);
+
             peerGroup.stop();
 
+            isSpvSyncing = false;
+            syncStarted = false;
         }
-        isSpvSyncing = false;
-        syncStarted = false;
-    }
 
-    public synchronized void tearDownSPV(){
-        if (blockChain != null) {
-            if (blockChainListener != null) {
-                blockChain.removeListener(blockChainListener);
-                blockChainListener = null;
-            }
+        if (blockChain != null && blockChainListener != null) {
+            blockChain.removeListener(blockChainListener);
+            blockChainListener = null;
         }
+
         if (peerGroup != null) {
             if (pfProvider != null) {
                 peerGroup.removePeerFilterProvider(pfProvider);
@@ -591,6 +590,7 @@ public class SPV {
             }
             peerGroup = null;
         }
+
         if (blockStore != null) {
             try {
                 blockStore.close();
@@ -599,5 +599,7 @@ public class SPV {
                 throw new RuntimeException(x);
             }
         }
+
+        return isRunning;
     }
 }

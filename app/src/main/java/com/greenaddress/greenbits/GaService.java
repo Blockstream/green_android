@@ -504,10 +504,8 @@ public class GaService extends Service {
     public void disconnect(final boolean reconnect) {
         mAutoReconnect = reconnect;
         spv.stopSPVSync();
-        spv.tearDownSPV();
-        for (final Integer key : balanceObservables.keySet()) {
+        for (final Integer key : balanceObservables.keySet())
             balanceObservables.get(key).deleteObservers();
-        }
         client.disconnect();
         triggerOnFullyConnected =  SettableFuture.create();
         connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
