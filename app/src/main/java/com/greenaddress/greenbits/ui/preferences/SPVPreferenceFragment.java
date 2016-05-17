@@ -71,11 +71,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
             class SPVAsync extends AsyncTask<Object, Object, Object>{
 
-                @Nullable
                 @Override
                 protected Object doInBackground(Object[] params) {
-                    boolean alreadySyncing = false;
-                    alreadySyncing = gaService.spv.stopSPVSync();
+                    boolean alreadySyncing = gaService.spv.stopSPVSync();
                     gaService.spv.setUpSPV();
                     if (alreadySyncing)
                         gaService.spv.startSpvSync();
@@ -84,31 +82,28 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             }
 
             boolean isBadAddress(final String s) {
-                boolean addrCorrect;
                 try {
                     final int idx = s.indexOf(":");
-                    if (idx != -1) {
+                    if (idx != -1)
                         Integer.parseInt(s.substring(idx + 1));
-                    }
                 } catch (@NonNull final NumberFormatException e) {
                     return true;
                 }
-                addrCorrect = s.isEmpty() || s.contains(".");
 
-                if (!addrCorrect) {
-                    new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                            .title(R.string.enterValidAddressTitle)
-                            .content(R.string.enterValidAddressText)
-                            .positiveColorRes(R.color.accent)
-                            .negativeColorRes(R.color.white)
-                            .titleColorRes(R.color.white)
-                            .contentColorRes(android.R.color.white)
-                            .theme(Theme.DARK)
-                            .positiveText("OK")
-                            .build().show();
-                    return true;
-                }
-                return false;
+                if (s.isEmpty() || s.contains("."))
+                    return false;
+
+                new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
+                        .title(R.string.enterValidAddressTitle)
+                        .content(R.string.enterValidAddressText)
+                        .positiveColorRes(R.color.accent)
+                        .negativeColorRes(R.color.white)
+                        .titleColorRes(R.color.white)
+                        .contentColorRes(android.R.color.white)
+                        .theme(Theme.DARK)
+                        .positiveText("OK")
+                        .build().show();
+                return true;
             }
 
             @Override
@@ -119,17 +114,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
                 try {
                     final String newString = newValue.toString().trim().replaceAll("\\s","");
-                    if (newString.contains(",")) {
-                        for (final String s: newString.split(",")) {
-                            if (isBadAddress(s)) {
-                                return true;
-                            }
-                        }
-                    } else {
-                        if (isBadAddress(newString)) {
+                    for (final String s: newString.split(","))
+                        if (isBadAddress(s))
                             return true;
-                        }
-                    }
 
                     final String newLower = newString.toLowerCase();
 
