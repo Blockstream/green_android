@@ -102,7 +102,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 protected Object doInBackground(Object[] params) {
                     boolean alreadySyncing = false;
                     alreadySyncing = gaService.spv.stopSPVSync();
-                    System.gc(); //May help save slightly lower heap size devices.
                     gaService.spv.setUpSPV();
                     if (alreadySyncing)
                         gaService.spv.startSpvSync();
