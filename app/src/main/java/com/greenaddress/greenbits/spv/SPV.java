@@ -116,24 +116,6 @@ public class SPV {
 
     }
 
-    public void resetSpv() {
-
-        // delete all spv data
-        final File blockChainFile = gaService.getSPVChainFile();
-        if (blockChainFile.exists()) {
-            blockChainFile.delete();
-        }
-
-        try {
-            gaService.cfgInEdit(SPENDABLE).clear().commit();
-            gaService.cfgInEdit(VERIFIED).clear().commit();
-        } catch (final NullPointerException e) {
-            // ignore
-        }
-
-        resetUnspent();
-    }
-
     public void updateUnspentOutputs() {
         if (!gaService.isSPVEnabled())
             return;
@@ -603,5 +585,43 @@ public class SPV {
         }
 
         return isRunning;
+    }
+
+    private void deleteAllData() {
+
+        final File blockChainFile = gaService.getSPVChainFile();
+        if (blockChainFile.exists())
+            blockChainFile.delete();
+
+        try {
+            gaService.cfgInEdit(SPENDABLE).clear().commit();
+            gaService.cfgInEdit(VERIFIED).clear().commit();
+        } catch (final NullPointerException e) {
+            // ignore
+        }
+
+        resetUnspent();
+    }
+
+    public void reset() {
+        final boolean enabled = gaService.isSPVEnabled();
+        if (enabled) {
+            // Stop SPV
+            try {
+                stopSPVSync();
+            } catch (final NullPointerException e) {
+                // FIXME: Why would we get an NPE here
+                // ignore
+            }
+        }
+
+        deleteAllData();
+
+        if (enabled) {
+            // Restart SPV
+            setUpSPV();
+            // FIXME: enabled under WiFi only
+            startSpvSync();
+        }
     }
 }

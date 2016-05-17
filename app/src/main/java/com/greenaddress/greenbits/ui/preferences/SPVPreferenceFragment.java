@@ -28,30 +28,12 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
         GAPreferenceFragment.bindPreferenceSummaryToValue(findPreference("trusted_peer"));
+
         final Preference reset_spv = getPreferenceManager().findPreference("reset_spv");
         reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
-                final boolean enabled = gaService.isSPVEnabled();
-
-                if (enabled) {
-                    // Stop SPV
-                    try {
-                        gaService.spv.stopSPVSync();
-                    } catch (final NullPointerException e) {
-                        // ignore
-                    }
-                }
-
-                // Delete all SPV data
-                gaService.spv.resetSpv();
-
-                if (enabled) {
-                    // Restart SPV
-                    gaService.spv.setUpSPV();
-                    // FIXME: enabled under WiFi only
-                    gaService.spv.startSpvSync();
-                }
+                gaService.spv.reset();
                 return false;
             }
         });
