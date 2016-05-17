@@ -319,9 +319,6 @@ public class GaService extends Service {
                     connectionObservable.setState(ConnectivityObservable.State.OFFLINE);
 
                 } else {
-
-                    connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
-
                     // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
                     Log.i(TAG, "onConnectionClosed code=" + String.valueOf(code));
                     // FIXME: some callback to UI so you see what's happening.
