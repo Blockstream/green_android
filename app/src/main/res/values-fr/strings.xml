@@ -112,13 +112,8 @@
   <string name="txUnconfirmedTx">Transaction non confirmée. Veuillez attendre une confirmation de bloc pour faire confiance à cette transaction.</string>
   <string name="txUnverifiedTx">Transaction non vérifiée. Veuillez attendre la synchronisation pour gagner de la confiance en cette transaction. Blocs restants :</string>
   <string name="unconfirmedBalanceTitle">Solde non confirmé</string>
-  <string name="unconfirmedBalanceText">Votre solde n\'est pas confirmé. Cela signifie que vous avez des transactions entrantes non confirmées, ou que la vérification SPV n\'est pas terminée. Blocs restants pour la vérification SPV :</string>
-  <string name="spvNoWiFiText">Vous avez plus d\'1 mégaoctet à synchroniser via SPV et votre connexion WiFi n\'est pas disponible. Que voulez-vous faire ?</string>
-  <string name="spvNoWiFiSyncAnyway">SYNCHRONISER QUAND MÊME</string>
-  <string name="spvNoWifiWaitForWiFi">ATTENDRE LE WI-FI</string>
+  <string name="unconfirmedBalanceText">Votre solde n\'est pas confirmé. Cela signifie que vous avez des transactions entrantes non confirmées, ou que la vérification SPV n\'est pas terminée.</string>
   <string name="spvNoWiFiTitle">Synchronisation SPV</string>
-  <string name="unconfirmedBalanceSpvNotAvailable">non disponible (pas de synchronisation parce que le Wi-Fi n\'est pas disponible)</string>
-  <string name="unconfirmedBalanceDoSyncWithoutWiFi">Voulez-vous synchroniser sans connexion WiFi ? Cela peut engendrer des frais supplémentaires de la part de votre opérateur téléphonique.</string>
   <string name="NO">NON</string>
   <string name="YES">OUI</string>
   <string name="enableSPV">Autoriser SPV</string>

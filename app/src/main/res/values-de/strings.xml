@@ -108,13 +108,8 @@
   <string name="txUnconfirmedTx">Unbestätigte Transaktion. Bitte warten sie auf Blockbestätigungen, für ein erhöhtes Vertrauen in diese Transaktion.</string>
   <string name="txUnverifiedTx">Ungeprüfte Transaktion. Bitte warte sie auf Synchronisierung, um das Vertrauen in diese Transaktion zu stärken. Verbleibende Blöcke: </string>
   <string name="unconfirmedBalanceTitle">Unbestätigte Bilanz</string>
-  <string name="unconfirmedBalanceText">Kontostand ist nicht bestätigt. Dies liegt entweder an unbestätigten eingehenden Transaktionen, oder daran das die einfache Zahlungsbestätigung noch nicht beendet ist. Verbleibende Blöcke für erfolgreiche EZB:</string>
-  <string name="spvNoWiFiText">Sie haben noch über 1 megabyte  die über EZB synchronisiert werden müssen. Eine WiFi Verbindung ist nicht verfügbar. Was möchten sie tun?</string>
-  <string name="spvNoWiFiSyncAnyway">TROTZDEM SYNCHRONISIEREN</string>
-  <string name="spvNoWifiWaitForWiFi">AUF WI-FI WARTEN</string>
+  <string name="unconfirmedBalanceText">Kontostand ist nicht bestätigt. Dies liegt entweder an unbestätigten eingehenden Transaktionen, oder daran das die einfache Zahlungsbestätigung noch nicht beendet ist.</string>
   <string name="spvNoWiFiTitle">EZB-Synchronizierung</string>
-  <string name="unconfirmedBalanceSpvNotAvailable">nicht verfügbar (keine Synchronisation, da kein Wi-Fi verfügbar ist)</string>
-  <string name="unconfirmedBalanceDoSyncWithoutWiFi">Möchten sie ohne WiFi synchronisieren? Dies könnte ihnen zusätzliche Kosten von ihrem Mobilfunk Netzwerkbetreiber verursachen.</string>
   <string name="NO">NEIN</string>
   <string name="YES">JA</string>
   <string name="enableSPV">EZB Aktivieren</string>

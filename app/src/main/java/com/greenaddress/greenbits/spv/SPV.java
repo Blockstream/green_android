@@ -298,8 +298,6 @@ public class SPV {
         }
     }
 
-    public boolean spvWiFiDialogShown = false;
-
     private final GaService gaService;
     @Nullable
     private BlockChainListener blockChainListener;
@@ -398,8 +396,8 @@ public class SPV {
         return 0;
     }
 
-    public boolean spvNotSyncing() {
-        return !isSpvSyncing;
+    public boolean getIsSpvSyncing() {
+        return isSpvSyncing;
     }
 
     public boolean isPeerGroupRunning(){

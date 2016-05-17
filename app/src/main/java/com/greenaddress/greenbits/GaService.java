@@ -908,14 +908,6 @@ public class GaService extends Service {
         curBlock = newBlock;
     }
 
-    public boolean getSpvWiFiDialogShown(){
-        return spv.spvWiFiDialogShown;
-    }
-
-    public void setSpvWiFiDialogShown(final boolean shown){
-        spv.spvWiFiDialogShown = shown;
-    }
-
     public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
         return spv.unspentOutputsOutpoints;
     }

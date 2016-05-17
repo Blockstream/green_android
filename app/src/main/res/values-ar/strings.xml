@@ -110,13 +110,8 @@
   <string name="txUnconfirmedTx">الصفقة لم تؤكد. يرجى انتظاركتلة التأكيد لإكتساب الثقة في هذه الصفقة.</string>
   <string name="txUnverifiedTx">لم يتم التحقق من الصفقة . يرجى الانتظار التزامن لكسب الثقة في هذه الصفقة. كتل المتبقية:</string>
   <string name="unconfirmedBalanceTitle">الرصيد غير مؤكد</string>
-  <string name="unconfirmedBalanceText">لم يتم تأكيد رصيدك. وهذا يعني إما أن لديك بعض المعاملات الواردة غير مؤكدة، أو التحقق SPV لم ينته.للتحقق  القطع الباقية في SPV:</string>
-  <string name="spvNoWiFiText">لديك أكثر من 1 megabyte رؤوس الكتل  مفقودين للمزامنة عبر SPV واتصال واي فاي غير متوفر. ماذا تريد أن تفعل؟</string>
-  <string name="spvNoWiFiSyncAnyway">مزامنة على أي حال</string>
-  <string name="spvNoWifiWaitForWiFi">إنتظار إتصال WIFI</string>
+  <string name="unconfirmedBalanceText">لم يتم تأكيد رصيدك. وهذا يعني إما أن لديك بعض المعاملات الواردة غير مؤكدة، أو التحقق SPV لم ينته.</string>
   <string name="spvNoWiFiTitle">تزامن SPV</string>
-  <string name="unconfirmedBalanceSpvNotAvailable">غير متوفرة (لا مزامنة , لأنه لا يوجد واي فاي متوفر)</string>
-  <string name="unconfirmedBalanceDoSyncWithoutWiFi">هل تريد مزامنة دون اتصال واي فاي؟ قد تكبد تكاليف إضافية من قبل مشغل الخليوي الخاص بك.</string>
   <string name="NO">لا</string>
   <string name="YES">نعم</string>
   <string name="enableSPV">تفعيل SPV</string>

@@ -49,10 +49,7 @@ import java.util.TimeZone;
 public class MainFragment extends SubaccountFragment implements Observer {
     private static final int P2SH_FORTIFIED_OUT = 10;
     @Nullable
-    private Observer wiFiObserver = null;
-    private boolean wiFiObserverRequired = false;
-    @Nullable
-    private MaterialDialog spvStatusDialog = null;
+    private MaterialDialog mUnconfirmedDialog = null;
     private View rootView;
     private List<Transaction> currentList;
     private Map<String, List<String> > replacedTxs;
@@ -262,86 +259,23 @@ public class MainFragment extends SubaccountFragment implements Observer {
         final View.OnClickListener unconfirmedClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (spvStatusDialog != null) {
-                    return;
-                }
-                if (balanceQuestionMark.getVisibility() != View.VISIBLE) {
-                    // show the message only if question mark is visible
-                    return;
-                }
-                final String blocksLeft;
-                if (wiFiObserver != null) {
-                    blocksLeft = getResources().getString(R.string.unconfirmedBalanceSpvNotAvailable) + "\n\n" +
-                            getResources().getString(R.string.unconfirmedBalanceDoSyncWithoutWiFi);
-                } else {
-                    // no observer means we're synchronizing
-                    final String numblocksLeft = String.valueOf(getGAService().spv.getSpvBlocksLeft());
-                    if (numblocksLeft.equals(String.valueOf(Integer.MAX_VALUE))){
-                        blocksLeft = "Not yet connected to SPV!";
-                    }else{
-                        blocksLeft = numblocksLeft;
-                    }
-                }
-                final MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
-                        .title(R.string.unconfirmedBalanceTitle)
-                        .content(getResources().getString(R.string.unconfirmedBalanceText) + " " + blocksLeft)
-                        .positiveColorRes(R.color.accent)
-                        .negativeColorRes(R.color.white)
-                        .titleColorRes(R.color.white)
-                        .contentColorRes(android.R.color.white)
-                        .theme(Theme.DARK);
-                if (wiFiObserver != null) {
-                    builder.negativeText(R.string.NO)
-                            .positiveText(R.string.YES);
-                }
-                builder.cancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(final DialogInterface dialog) {
-                        spvStatusDialog = null;
-                    }
-                });
-                builder.onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        spvStatusDialog = null;
-                        getGAApp().getConnectionObservable().deleteObserver(wiFiObserver);
-                        wiFiObserver = null;
-                        wiFiObserverRequired = false;
-                        getGAService().spv.startSpvSync();
-                    }
-                }).onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        spvStatusDialog = null;
-                    }
-                });
-                spvStatusDialog = builder.build();
-                spvStatusDialog.show();
-                if (wiFiObserver == null) {
-                    final Handler handler = new Handler();
-                    final Runnable updateContent = new Runnable() {
-                        @Override
-                        public void run() {
-                            if (spvStatusDialog != null) {
-                                try {
-                                    if (getGAService().spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
-                                        spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
-                                                getGAService().spv.getSpvBlocksLeft());
-                                    }
-                                    else {
-                                        spvStatusDialog.setContent(getResources().getString(R.string.unconfirmedBalanceText) + " " +
-                                                "Not yet connected to SPV!");
-                                    }
-                                    handler.postDelayed(this, 2000);
-                                } catch (@NonNull final IllegalStateException e) {
-                                    e.printStackTrace();
-                                    // can happen if the activity is terminated
-                                    // ("Fragment MainFragment not attached to Activity")
+                if (mUnconfirmedDialog == null && balanceQuestionMark.getVisibility() == View.VISIBLE) {
+                    // Question mark is visible and dialog not shown, so show it
+                    mUnconfirmedDialog = new MaterialDialog.Builder(getActivity())
+                            .title(R.string.unconfirmedBalanceTitle)
+                            .content(R.string.unconfirmedBalanceText)
+                            .positiveColorRes(R.color.accent)
+                            .negativeColorRes(R.color.white)
+                            .titleColorRes(R.color.white)
+                            .contentColorRes(android.R.color.white)
+                            .theme(Theme.DARK)
+                            .cancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(final DialogInterface dialog) {
+                                    mUnconfirmedDialog = null;
                                 }
-                            }
-                        }
-                    };
-                    handler.postDelayed(updateContent, 2000);
+                            }).build();
+                    mUnconfirmedDialog.show();
                 }
             }
         };
@@ -349,15 +283,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         curBalanceObserver = makeBalanceObserver();
-
         getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
 
-        if (getGAService().getBalanceCoin(curSubaccount) != null) {
+        if (getGAService().getBalanceCoin(curSubaccount) != null)
             updateBalance();
-        }
 
         reloadTransactions(getActivity());
-
         return rootView;
     }
 
@@ -383,13 +314,8 @@ public class MainFragment extends SubaccountFragment implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        getGAService().getNewTransactionsObservable().deleteObserver(this);
         getGAService().getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
-        final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-        if (wiFiObserver != null) {
-            connObservable.deleteObserver(wiFiObserver);
-            wiFiObserver = null;
-        }
+        getGAService().getNewTransactionsObservable().deleteObserver(this);
     }
 
     @Override
@@ -397,9 +323,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
         super.onResume();
         getGAService().getNewTransactionsObservable().addObserver(this);
         getGAService().getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
-        if (wiFiObserverRequired) {
-            makeWiFiObserver();
-        }
     }
 
     @Nullable
@@ -465,19 +388,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
                         if (gaService.isSPVEnabled()) {
                             gaService.spv.setUpSPV();
-                            if (gaService.spv.spvNotSyncing()) {
-                                // download up to 1.04 mB (80bytes * 13000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
-                                if (curBlock - gaService.spv.getSpvHeight() > 13000) {
-                                    if (connObservable.isWiFiUp()) {
-                                        gaService.spv.startSpvSync();
-                                    } else {
-                                        // no wifi - do we want to sync?
-                                        askUserForSpvNoWiFi();
-                                    }
-                                } else {
-                                    gaService.spv.startSpvSync();
-                                }
-                            }
+                            startSpvSyncIfWifiUp();
                         }
                         if (resultList != null && resultList.size() > 0) {
                             recyclerView.setVisibility(View.VISIBLE);
@@ -555,64 +466,15 @@ public class MainFragment extends SubaccountFragment implements Observer {
         }, getGAService().es);
     }
 
-    private void askUserForSpvNoWiFi() {
-        if (getGAService().getSpvWiFiDialogShown() ||
-            getActivity() == null || !getGAService().isSPVEnabled())
-            return;
-
-        getGAService().setSpvWiFiDialogShown(true);
-
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.spvNoWiFiTitle)
-                .content(R.string.spvNoWiFiText)
-                .positiveText(R.string.spvNoWiFiSyncAnyway)
-                .negativeText(R.string.spvNoWifiWaitForWiFi)
-                .positiveColorRes(R.color.accent)
-                .negativeColorRes(R.color.white)
-                .titleColorRes(R.color.white)
-                .contentColorRes(android.R.color.white)
-                .theme(Theme.DARK)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        makeWiFiObserver();
-                    }
-                })
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        getGAService().spv.startSpvSync();
-                    }
-                })
-                .build().show();
-    }
-
-    private void makeWiFiObserver() {
-        if (wiFiObserver != null) return;
-        final GaService gaService = getGAService();
-        final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-        if (connObservable.isWiFiUp()) {
-            gaService.spv.startSpvSync();
-            wiFiObserverRequired = false;
-            return;
-        }
-        wiFiObserver = new Observer() {
-            @Override
-            public void update(final Observable observable, final Object data) {
-                if (connObservable.isWiFiUp()) {
-                    gaService.spv.startSpvSync();
-                    wiFiObserverRequired = false;
-                    connObservable.deleteObserver(wiFiObserver);
-                    wiFiObserver = null;
-                }
-            }
-        };
-        connObservable.addObserver(wiFiObserver);
-        wiFiObserverRequired = true;
+    private void startSpvSyncIfWifiUp() {
+        // FIXME: download up to 1.04 mB (80bytes * 13000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
+        if (!getGAService().spv.getIsSpvSyncing() && getGAApp().getConnectionObservable().isWiFiUp())
+            getGAService().spv.startSpvSync();
     }
 
     @Override
     public void update(final Observable observable, final Object data) {
+        startSpvSyncIfWifiUp();
         reloadTransactions(getActivity());
     }
 

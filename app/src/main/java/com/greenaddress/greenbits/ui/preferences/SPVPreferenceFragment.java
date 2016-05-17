@@ -22,9 +22,6 @@ import java.util.Observer;
 
 public class SPVPreferenceFragment extends GAPreferenceFragment {
 
-    @Nullable
-    private Observer wiFiObserver = null;
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,49 +34,25 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             public boolean onPreferenceClick(final Preference preference) {
                 final boolean enabled = gaService.isSPVEnabled();
 
-                // stop SPV if enabled
-
                 if (enabled) {
+                    // Stop SPV
                     try {
-                        if (gaService.spv.isPeerGroupRunning()) {
+                        if (gaService.spv.isPeerGroupRunning())
                             gaService.spv.stopSPVSync();
-                        }
                         gaService.spv.tearDownSPV();
                     } catch (final NullPointerException e) {
                         // ignore
                     }
-
                 }
 
-                // delete all spv data
-
+                // Delete all SPV data
                 gaService.spv.resetSpv();
 
-                // restart spv if it was enabled
-
                 if (enabled) {
+                    // Restart SPV
                     gaService.spv.setUpSPV();
-                    if (gaService.getCurBlock() - gaService.spv.getSpvHeight() > 1000) {
-                        if (gApp.getConnectionObservable().isWiFiUp()) {
-                            gaService.spv.startSpvSync();
-                        } else {
-                            // no wifi - do we want to sync?
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    askUserForSpvNoWiFi();
-                                }
-                            });
-                        }
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gaService.spv.startSpvSync();
-                            }
-                        });
-
-                    }
+                    // FIXME: enabled under WiFi only
+                    gaService.spv.startSpvSync();
                 }
                 return false;
             }
@@ -93,53 +66,26 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                final Boolean nowEnabled = (Boolean) newValue;
 
-                class SPVButtonPrefAsync extends AsyncTask<Object, Object, Object> {
+                gaService.cfgEdit("SPV").putBoolean("enabled", nowEnabled).apply();
+                trusted_peer.setEnabled(nowEnabled);
 
-                    @Nullable
+                new AsyncTask<Object, Object, Object>() {
                     @Override
                     protected Object doInBackground(final Object[] params) {
-                        final Boolean nowEnabled = (Boolean) newValue;
 
                         if (nowEnabled) {
-                            gaService.setSpvWiFiDialogShown(false);
                             gaService.spv.setUpSPV();
-                            if (gaService.getCurBlock() - gaService.spv.getSpvHeight() > 1000) {
-                                if (gApp.getConnectionObservable().isWiFiUp()) {
-                                    gaService.spv.startSpvSync();
-                                } else {
-                                    // no wifi - do we want to sync?
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            askUserForSpvNoWiFi();
-                                        }
-                                    });
-                                }
-                            } else {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        gaService.spv.startSpvSync();
-                                    }
-                                });
-
-                            }
-
+                            gaService.spv.startSpvSync();
                         } else {
-                            if (gaService.spv.isPeerGroupRunning()) {
+                            if (gaService.spv.isPeerGroupRunning())
                                 gaService.spv.stopSPVSync();
-                            }
                             gaService.spv.tearDownSPV();
                         }
                         return null;
                     }
-                }
-
-                gaService.cfgEdit("SPV").putBoolean("enabled", (Boolean)newValue).apply();
-                trusted_peer.setEnabled((Boolean)newValue);
-
-                new SPVButtonPrefAsync().execute();
+                }.execute();
                 return true;
             }
         });
@@ -290,51 +236,5 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             }
         });
         getActivity().setResult(getActivity().RESULT_OK, null);
-    }
-    private void askUserForSpvNoWiFi() {
-        gaService.setSpvWiFiDialogShown(true);
-        new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                .title(R.string.spvNoWiFiTitle)
-                .content(R.string.spvNoWiFiText)
-                .positiveText(R.string.spvNoWiFiSyncAnyway)
-                .negativeText(R.string.spvNoWifiWaitForWiFi)
-                .positiveColorRes(R.color.accent)
-                .negativeColorRes(R.color.white)
-                .titleColorRes(R.color.white)
-                .contentColorRes(android.R.color.white)
-                .theme(Theme.DARK)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        gaService.spv.startSpvSync();
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        makeWiFiObserver();
-                    }
-                })
-                .build().show();
-    }
-
-    private void makeWiFiObserver() {
-        if (wiFiObserver != null) return;
-        final ConnectivityObservable connObservable = gApp.getConnectionObservable();
-        if (connObservable.isWiFiUp()) {
-            gaService.spv.startSpvSync();
-            return;
-        }
-        wiFiObserver = new Observer() {
-            @Override
-            public void update(final Observable observable, final Object data) {
-                if (connObservable.isWiFiUp()) {
-                    gaService.spv.startSpvSync();
-                    connObservable.deleteObserver(wiFiObserver);
-                    wiFiObserver = null;
-                }
-            }
-        };
-        connObservable.addObserver(wiFiObserver);
     }
 }
