@@ -380,7 +380,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
                         if (gaService.isSPVEnabled()) {
                             gaService.spv.setUpSPV();
-                            startSpvSyncIfWifiUp();
+                            getGAService().spv.startSpvSync();
                         }
                         if (resultList != null && resultList.size() > 0) {
                             recyclerView.setVisibility(View.VISIBLE);
@@ -458,15 +458,9 @@ public class MainFragment extends SubaccountFragment implements Observer {
         }, getGAService().es);
     }
 
-    private void startSpvSyncIfWifiUp() {
-        // FIXME: download up to 1.04 mB (80bytes * 13000 blocks) of headers without asking if users wants to wait for WiFi, otherwise ask
-        if (!getGAService().spv.getIsSpvSyncing() && getGAApp().getConnectionObservable().isWiFiUp())
-            getGAService().spv.startSpvSync();
-    }
-
     @Override
     public void update(final Observable observable, final Object data) {
-        startSpvSyncIfWifiUp();
+        getGAService().spv.startSpvSync();
         reloadTransactions(getActivity());
     }
 

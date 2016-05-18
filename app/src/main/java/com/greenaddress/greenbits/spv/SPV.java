@@ -381,10 +381,6 @@ public class SPV {
         return 0;
     }
 
-    public boolean getIsSpvSyncing() {
-        return isSpvSyncing;
-    }
-
     public boolean isPeerGroupRunning(){
         return peerGroup != null && peerGroup.isRunning();
     }
