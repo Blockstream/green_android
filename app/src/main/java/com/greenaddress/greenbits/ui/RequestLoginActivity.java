@@ -172,48 +172,37 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
                     return;
                 }
-                Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
+
+                Futures.addCallback(Futures.transform(getGAService().onConnected, new AsyncFunction<Void, LoginData>() {
+                    @NonNull
                     @Override
-                    public void onSuccess(@Nullable Void result) {
-                        final GaService gaService = getGAService();
-
-                        Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
-                            @NonNull
-                            @Override
-                            public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
-                                return gaService.login(new TrezorHWWallet(t));
-                            }
-                        }), new FutureCallback<LoginData>() {
-                            @Override
-                            public void onSuccess(@Nullable final LoginData result) {
-                                final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
-                                startActivity(main);
-                                RequestLoginActivity.this.finish();
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull final Throwable t) {
-                                if (t instanceof LoginFailed) {
-                                    // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            new MaterialDialog.Builder(RequestLoginActivity.this)
-                                                    .title(R.string.trezor_login_failed)
-                                                    .content(R.string.trezor_login_failed_details)
-                                                    .build().show();
-                                        }
-                                    });
-                                } else {
-                                    RequestLoginActivity.this.finish();
-                                }
-                            }
-                        });
+                    public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
+                        return getGAService().login(new TrezorHWWallet(t));
+                    }
+                }), new FutureCallback<LoginData>() {
+                    @Override
+                    public void onSuccess(@Nullable final LoginData result) {
+                        final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
+                        startActivity(main);
+                        RequestLoginActivity.this.finish();
                     }
 
                     @Override
-                    public void onFailure(@NonNull Throwable t) {
-                        t.printStackTrace();
+                    public void onFailure(@NonNull final Throwable t) {
+                        if (t instanceof LoginFailed) {
+                            // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new MaterialDialog.Builder(RequestLoginActivity.this)
+                                            .title(R.string.trezor_login_failed)
+                                            .content(R.string.trezor_login_failed_details)
+                                            .build().show();
+                                }
+                            });
+                        } else {
+                            RequestLoginActivity.this.finish();
+                        }
                     }
                 });
             } else {
@@ -299,122 +288,112 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 btchipDialog.show();
             }
         });
-        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
+        final GaService gaService = getGAService();
+        Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+            @NonNull
             @Override
-            public void onSuccess(final @Nullable Void result) {
-                final GaService gaService = getGAService();
-                Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+            public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
+                return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
                     @NonNull
                     @Override
-                    public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
-                        return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
-                            @NonNull
-                            @Override
-                            public ListenableFuture<LoginData> apply(@NonNull final String pin) throws Exception {
+                    public ListenableFuture<LoginData> apply(@NonNull final String pin) throws Exception {
 
-                                transportFuture = SettableFuture.create();
-                                if (device != null) {
-                                    final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-                                    transportFuture.set(BTChipTransportAndroid.open(manager, device));
-                                } else {
-                                    // If the tag was already tapped, work with it
-                                    final BTChipTransport transport = getTransport(tag);
-                                    if (transport != null) {
-                                        transportFuture.set(transport);
-                                    } else {
-                                        // Prompt the user to tap
-                                        nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
-                                                .title("BTChip")
-                                                .content("Please tap card")
-                                                .build();
-                                        nfcWaitDialog.show();
-                                    }
-                                }
-                                return Futures.transform(transportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
+                        transportFuture = SettableFuture.create();
+                        if (device != null) {
+                            final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                            transportFuture.set(BTChipTransportAndroid.open(manager, device));
+                        } else {
+                            // If the tag was already tapped, work with it
+                            final BTChipTransport transport = getTransport(tag);
+                            if (transport != null) {
+                                transportFuture.set(transport);
+                            } else {
+                                // Prompt the user to tap
+                                nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
+                                        .title("BTChip")
+                                        .content("Please tap card")
+                                        .build();
+                                nfcWaitDialog.show();
+                            }
+                        }
+                        return Futures.transform(transportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
+                            @Nullable
+                            @Override
+                            public ListenableFuture<LoginData> apply(final @Nullable BTChipTransport transport) {
+                                final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
+                                hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
+                                return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
                                     @Nullable
                                     @Override
-                                    public ListenableFuture<LoginData> apply(final @Nullable BTChipTransport transport) {
-                                        final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
-                                        hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
-                                        return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
-                                            @Nullable
-                                            @Override
-                                            public ListenableFuture<LoginData> apply(final @Nullable Integer input) {
-                                                final int remainingAttempts = input;
+                                    public ListenableFuture<LoginData> apply(final @Nullable Integer input) {
+                                        final int remainingAttempts = input;
 
-                                                if (remainingAttempts == -1) {
-                                                    // -1 means success
-                                                    return gaService.login(hwWallet);
-                                                } else {
-                                                    final String msg = new Formatter().format(getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString();
-                                                    RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            if (remainingAttempts > 0)
-                                                                RequestLoginActivity.this.toast(msg);
-                                                            else
-                                                                RequestLoginActivity.this.toast(R.string.btchipNotSetup);
+                                        if (remainingAttempts == -1) {
+                                            // -1 means success
+                                            return gaService.login(hwWallet);
+                                        } else {
+                                            final String msg = new Formatter().format(getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString();
+                                            RequestLoginActivity.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if (remainingAttempts > 0)
+                                                        RequestLoginActivity.this.toast(msg);
+                                                    else
+                                                        RequestLoginActivity.this.toast(R.string.btchipNotSetup);
 
-                                                            RequestLoginActivity.this.finish();
-                                                        }
-                                                    });
-                                                    return Futures.immediateFuture(null);
+                                                    RequestLoginActivity.this.finish();
                                                 }
-                                            }
-                                        });
+                                            });
+                                            return Futures.immediateFuture(null);
+                                        }
                                     }
                                 });
                             }
                         });
                     }
-                }), new FutureCallback<LoginData>() {
-                    @Override
-                    public void onSuccess(@Nullable final LoginData result) {
-                        if (result != null) {
-                            final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
-                            startActivity(main);
-                            RequestLoginActivity.this.finish();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-                        t.printStackTrace();
-                        if (t instanceof LoginFailed) {
-                            // Attempt auto register
-                            try {
-                                final BTChipPublicKey masterPublicKey = hwWallet.getDongle().getWalletPublicKey("");
-                                final BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");
-                                Futures.addCallback(gaService.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
-                                        new FutureCallback<LoginData>() {
-
-                                            @Override
-                                            public void onSuccess(@Nullable final LoginData result) {
-                                                final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
-                                                startActivity(main);
-                                                RequestLoginActivity.this.finish();
-                                            }
-
-                                            @Override
-                                            public void onFailure(@NonNull final Throwable t) {
-                                                t.printStackTrace();
-                                                RequestLoginActivity.this.finish();
-                                            }
-                                        });
-                            } catch (@NonNull final Exception e) {
-                                e.printStackTrace();
-                                RequestLoginActivity.this.finish();
-                            }
-                        } else {
-                            RequestLoginActivity.this.finish();
-                        }
-                    }
                 });
+            }
+        }), new FutureCallback<LoginData>() {
+            @Override
+            public void onSuccess(@Nullable final LoginData result) {
+                if (result != null) {
+                    final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
+                    startActivity(main);
+                    RequestLoginActivity.this.finish();
+                }
             }
 
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 t.printStackTrace();
+                if (t instanceof LoginFailed) {
+                    // Attempt auto register
+                    try {
+                        final BTChipPublicKey masterPublicKey = hwWallet.getDongle().getWalletPublicKey("");
+                        final BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");
+                        Futures.addCallback(gaService.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
+                                new FutureCallback<LoginData>() {
+
+                                    @Override
+                                    public void onSuccess(@Nullable final LoginData result) {
+                                        final Intent main = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
+                                        startActivity(main);
+                                        RequestLoginActivity.this.finish();
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull final Throwable t) {
+                                        t.printStackTrace();
+                                        RequestLoginActivity.this.finish();
+                                    }
+                                });
+                    } catch (@NonNull final Exception e) {
+                        e.printStackTrace();
+                        RequestLoginActivity.this.finish();
+                    }
+                } else {
+                    RequestLoginActivity.this.finish();
+                }
             }
         });
     }
