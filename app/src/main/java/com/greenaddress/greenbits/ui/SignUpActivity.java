@@ -91,36 +91,22 @@ public class SignUpActivity extends GaActivity {
         final TextView qrCodeIcon = (TextView) findViewById(R.id.signupQrCodeIcon);
         final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
 
-        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
-
+        Futures.addCallback(getGAService().getMnemonicPassphrase(), new FutureCallback<String>() {
             @Override
-            public void onSuccess(@javax.annotation.Nullable final Void result) {
-                final ListenableFuture<String> mnemonicPassphrase = getGAService().getMnemonicPassphrase();
-                Futures.addCallback(mnemonicPassphrase, new FutureCallback<String>() {
+            public void onSuccess(@Nullable final String result) {
+                SignUpActivity.this.runOnUiThread(new Runnable() {
                     @Override
-                    public void onSuccess(@Nullable final String result) {
-                        SignUpActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mnemonicText.setText(result);
-                            }
-                        });
+                    public void run() {
+                        mnemonicText.setText(result);
                     }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-                        finish();
-                    }
-                }, getGAService().es);
+                });
             }
 
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 finish();
             }
-        });
-
-
+        }, getGAService().es);
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
