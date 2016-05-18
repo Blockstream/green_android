@@ -28,7 +28,7 @@ import com.google.common.util.concurrent.Futures;
 public abstract class GaActivity extends AppCompatActivity {
 
     private static final String TAG = GaActivity.class.getSimpleName();
-    private static final int NO_MAIN_VIEW = 0; // Invalid resource id
+    private static final int INVALID_RESOURCE_ID = 0;
     private boolean mServiceAvailable = false;
 
     protected GreenAddressApplication getGAApp() {
@@ -44,7 +44,7 @@ public abstract class GaActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         final int viewId = getMainViewId();
-        if (viewId != NO_MAIN_VIEW)
+        if (viewId != INVALID_RESOURCE_ID)
             setContentView(viewId);
 
         // Call onCreateWithService() on the GUI thread once our service
@@ -88,7 +88,7 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     /** Override to provide the main view id */
-    protected int getMainViewId() { return NO_MAIN_VIEW; };
+    protected int getMainViewId() { return INVALID_RESOURCE_ID; };
 
     /** Override to provide onCreate/onResume/onPause processing.
       * When called, our service is guaranteed to be available. */
@@ -162,15 +162,15 @@ public abstract class GaActivity extends AppCompatActivity {
                               .negativeColorRes(R.color.accent)
                               .contentColorRes(R.color.white)
                               .theme(Theme.DARK);
-       if (pos != 0)
+       if (pos != INVALID_RESOURCE_ID)
            b.positiveText(pos);
-       if (neg != 0)
+       if (neg != INVALID_RESOURCE_ID)
            return b.negativeText(neg);
        return b;
     }
 
     public static MaterialDialog.Builder Popup(Activity a, final String title, final int pos) {
-        return Popup(a, title, pos, 0);
+        return Popup(a, title, pos, INVALID_RESOURCE_ID);
     }
 
     public static MaterialDialog.Builder Popup(Activity a, final String title) {
