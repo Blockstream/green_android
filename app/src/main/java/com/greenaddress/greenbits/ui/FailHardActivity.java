@@ -2,13 +2,11 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 
 public class FailHardActivity extends AppCompatActivity {
     private final static String TAG = FailHardActivity.class.getSimpleName();
@@ -23,27 +21,19 @@ public class FailHardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         final Intent i = getIntent();
-        Log.e(TAG, i.getStringExtra("errorTitle"));
-        Log.e(TAG, i.getStringExtra("errorContent"));
+        Log.e(TAG, i.getStringExtra("errorTitle") + ":" + i.getStringExtra("errorContent"));
 
-        (new MaterialDialog.Builder(this)
-                .title(i.getStringExtra("errorTitle"))
-                .content(i.getStringExtra("errorContent"))
-                .positiveColorRes(R.color.accent)
-                .negativeColorRes(R.color.white)
-                .titleColorRes(R.color.white)
-                .contentColorRes(android.R.color.white)
-                .theme(Theme.DARK)
-                .positiveText("CLOSE")
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
+        GaActivity.Popup(this, i.getStringExtra("errorTitle"))
+                  .content(i.getStringExtra("errorContent"))
+                  .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onClick(@NonNull final MaterialDialog dialog, @NonNull final DialogAction which) {
+                    public void onClick(final MaterialDialog dlg, final DialogAction which) {
                         final Intent main = new Intent(Intent.ACTION_MAIN);
                         main.addCategory(Intent.CATEGORY_HOME);
                         main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(main);
                         finish();
                     }
-                })).build().show();
+                  }).build().show();
     }
 }

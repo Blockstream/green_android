@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -369,71 +368,62 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                         addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
-                        new MaterialDialog.Builder(caller)
-                                .title(R.string.sweepAddressTitle)
-                                .customView(inflatedLayout, true)
-                                .positiveText(R.string.sweep)
-                                .negativeText(R.string.cancel)
-                                .positiveColorRes(R.color.accent)
-                                .negativeColorRes(R.color.accent)
-                                .titleColorRes(R.color.white)
-                                .contentColorRes(android.R.color.white)
-                                .theme(Theme.DARK)
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Nullable
-                                    Transaction tx;
-                                    @Nullable
-                                    ECKey key;
+                        Popup(caller, getString(R.string.sweepAddressTitle), R.string.sweep, R.string.cancel)
+                            .customView(inflatedLayout, true)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Nullable
+                                Transaction tx;
+                                @Nullable
+                                ECKey key;
 
-                                    private void doSweep() {
-                                        final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
-                                        final Integer outPointer = (Integer) result.get("out_pointer");
-                                        CB.after(getGAService().verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
-                                                 new CB.Toast<Boolean>(caller) {
+                                private void doSweep() {
+                                    final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
+                                    final Integer outPointer = (Integer) result.get("out_pointer");
+                                    CB.after(getGAService().verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
+                                             new CB.Toast<Boolean>(caller) {
+                                        @Override
+                                        public void onSuccess(final @Nullable Boolean isSpendable) {
+                                            if (isSpendable) {
+                                                final List<TransactionSignature> signatures = new ArrayList<>();
+                                                final int size = tx.getInputs().size();
+                                                for (int i = 0; i < size; ++i) {
+                                                    signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
+                                                }
+                                                CB.after(getGAService().sendTransaction(signatures),
+                                                         new CB.Toast<String>(caller) { });
+                                            } else
+                                                caller.toast(R.string.err_tabbed_sweep_failed);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                    if (keyNonBip38 != null) {
+                                        tx = txNonBip38;
+                                        key = keyNonBip38;
+                                        doSweep();
+                                        return;
+                                    }
+                                    try {
+                                        final String password = passwordEdit.getText().toString();
+                                        final byte[] passbytes = password.getBytes();
+                                        final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS, null);
+                                        key = ECKey.fromPrivate(decryptedPKey);
+
+                                        CB.after(getGAService().prepareSweepSocial(key.getPubKey(), true),
+                                                 new CB.Toast<Map<?, ?>>(caller) {
                                             @Override
-                                            public void onSuccess(final @Nullable Boolean isSpendable) {
-                                                if (isSpendable) {
-                                                    final List<TransactionSignature> signatures = new ArrayList<>();
-                                                    final int size = tx.getInputs().size();
-                                                    for (int i = 0; i < size; ++i) {
-                                                        signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
-                                                    }
-                                                    CB.after(getGAService().sendTransaction(signatures),
-                                                             new CB.Toast<String>(caller) { });
-                                                } else
-                                                    caller.toast(R.string.err_tabbed_sweep_failed);
+                                            public void onSuccess(@Nullable final Map<?, ?> result) {
+                                                tx = new Transaction(Network.NETWORK, Hex.decode((String) result.get("tx")));
+                                                doSweep();
                                             }
                                         });
+                                    } catch (@NonNull final IllegalArgumentException e) {
+                                        caller.toast(R.string.invalid_passphrase);
                                     }
-
-                                    @Override
-                                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                        if (keyNonBip38 != null) {
-                                            tx = txNonBip38;
-                                            key = keyNonBip38;
-                                            doSweep();
-                                            return;
-                                        }
-                                        try {
-                                            final String password = passwordEdit.getText().toString();
-                                            final byte[] passbytes = password.getBytes();
-                                            final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS, null);
-                                            key = ECKey.fromPrivate(decryptedPKey);
-
-                                            CB.after(getGAService().prepareSweepSocial(key.getPubKey(), true),
-                                                     new CB.Toast<Map<?, ?>>(caller) {
-                                                @Override
-                                                public void onSuccess(@Nullable final Map<?, ?> result) {
-                                                    tx = new Transaction(Network.NETWORK, Hex.decode((String) result.get("tx")));
-                                                    doSweep();
-                                                }
-                                            });
-                                        } catch (@NonNull final IllegalArgumentException e) {
-                                            caller.toast(R.string.invalid_passphrase);
-                                        }
-                                    }
-                                })
-                                .build().show();
+                                }
+                            }).build().show();
                     }
                 };
                 if (keyNonBip38 != null) {

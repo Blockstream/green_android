@@ -20,9 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -261,14 +259,8 @@ public class MainFragment extends SubaccountFragment implements Observer {
             public void onClick(final View v) {
                 if (mUnconfirmedDialog == null && balanceQuestionMark.getVisibility() == View.VISIBLE) {
                     // Question mark is visible and dialog not shown, so show it
-                    mUnconfirmedDialog = new MaterialDialog.Builder(getActivity())
-                            .title(R.string.unconfirmedBalanceTitle)
+                    mUnconfirmedDialog = GaActivity.Popup(getActivity(), getString(R.string.unconfirmedBalanceTitle), 0)
                             .content(R.string.unconfirmedBalanceText)
-                            .positiveColorRes(R.color.accent)
-                            .negativeColorRes(R.color.white)
-                            .titleColorRes(R.color.white)
-                            .contentColorRes(android.R.color.white)
-                            .theme(Theme.DARK)
                             .cancelListener(new DialogInterface.OnCancelListener() {
                                 @Override
                                 public void onCancel(final DialogInterface dialog) {

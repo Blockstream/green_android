@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.blockstream.libwally.Wally;
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -230,33 +229,24 @@ public class MnemonicActivity extends GaActivity {
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.passphraseValue);
-                final MaterialDialog dialog = new MaterialDialog.Builder(MnemonicActivity.this)
-                        .title("Encryption passphrase")
+                passphraseValue.requestFocus();
+                final MaterialDialog dialog = Popup(MnemonicActivity.this, "Encryption passphrase")
                         .customView(inflatedLayout, true)
-                        .positiveText("OK")
-                        .negativeText("CANCEL")
-                        .positiveColorRes(R.color.accent)
-                        .negativeColorRes(R.color.accent)
-                        .titleColorRes(R.color.white)
-                        .contentColorRes(android.R.color.white)
-                        .theme(Theme.DARK)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                            public void onClick(final @NonNull MaterialDialog dlg, final @NonNull DialogAction which) {
                                 passphraseFuture.set(passphraseValue.getText().toString());
                             }
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(@NonNull final MaterialDialog dialog, @NonNull final DialogAction which) {
+                            public void onClick(@NonNull final MaterialDialog dlg, @NonNull final DialogAction which) {
                                 final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
                                 okButton.setProgress(0);
                                 okButton.setEnabled(true);
                             }
-                        })
-                        .build();
+                        }).build();
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
-                passphraseValue.requestFocus();
                 dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
                 dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 dialog.show();

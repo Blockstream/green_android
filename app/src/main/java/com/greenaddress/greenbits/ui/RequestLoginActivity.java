@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.btchip.BTChipDongle.BTChipPublicKey;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
@@ -114,23 +113,14 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                         }
                                     });
                                 }
-                                new MaterialDialog.Builder(RequestLoginActivity.this)
-                                        .title("Hardware Wallet PIN")
-                                        .customView(inflatedLayout, true)
-                                        .positiveText("OK")
-                                        .negativeText("CANCEL")
-                                        .positiveColorRes(R.color.accent)
-                                        .negativeColorRes(R.color.accent)
-                                        .titleColorRes(R.color.white)
-                                        .contentColorRes(android.R.color.white)
-                                        .theme(Theme.DARK)
-                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                            @Override
-                                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                                ret.set(pinValue.getText().toString());
-                                            }
-                                        })
-                                        .build().show();
+                                Popup(RequestLoginActivity.this, "Hardware Wallet PIN")
+                                    .customView(inflatedLayout, true)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                            ret.set(pinValue.getText().toString());
+                                        }
+                                    }).build().show();
                             }
                         });
                         try {
@@ -149,23 +139,14 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             public void run() {
                                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
                                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.trezorPassphraseValue);
-                                new MaterialDialog.Builder(RequestLoginActivity.this)
-                                        .title("Hardware Wallet passphrase")
-                                        .customView(inflatedLayout, true)
-                                        .positiveText("OK")
-                                        .negativeText("CANCEL")
-                                        .positiveColorRes(R.color.accent)
-                                        .negativeColorRes(R.color.accent)
-                                        .titleColorRes(R.color.white)
-                                        .contentColorRes(android.R.color.white)
-                                        .theme(Theme.DARK)
-                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                            @Override
-                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                ret.set(passphraseValue.getText().toString());
-                                            }
-                                        })
-                                        .build().show();
+                                Popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
+                                    .customView(inflatedLayout, true)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            ret.set(passphraseValue.getText().toString());
+                                        }
+                                    }).build().show();
                             }
                         });
                         try {
@@ -270,16 +251,8 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
                 final EditText pinValue = (EditText) inflatedLayout.findViewById(R.id.btchipPINValue);
-                final MaterialDialog.Builder builder = new MaterialDialog.Builder(RequestLoginActivity.this)
-                        .title("BTChip PIN")
+                btchipDialog = Popup(RequestLoginActivity.this, "BTChip PIN")
                         .customView(inflatedLayout, true)
-                        .positiveColorRes(R.color.accent)
-                        .negativeColorRes(R.color.accent)
-                        .titleColorRes(R.color.white)
-                        .contentColorRes(android.R.color.white)
-                        .theme(Theme.DARK)
-                        .positiveText("OK")
-                        .negativeText("CANCEL")
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
@@ -294,9 +267,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                 RequestLoginActivity.this.toast(R.string.err_request_login_no_pin);
                                 RequestLoginActivity.this.finish();
                             }
-                        });
-
-                btchipDialog = builder.build();
+                        }).build();
 
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
                 pinValue.requestFocus();

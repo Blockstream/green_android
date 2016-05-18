@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipDongle.BTChipPublicKey;
 import com.btchip.comm.BTChipTransportFactory;
@@ -120,16 +119,8 @@ public class FirstScreenActivity extends GaActivity {
                         FirstScreenActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                new MaterialDialog.Builder(FirstScreenActivity.this)
-                                        .title("Ledger Wallet Trustlet")
+                                Popup(FirstScreenActivity.this, "Ledger Wallet Trustlet")
                                         .content("Ledger Wallet Trustlet is available - do you want to use it to register ?")
-                                        .positiveColorRes(R.color.accent)
-                                        .negativeColorRes(R.color.white)
-                                        .titleColorRes(R.color.white)
-                                        .contentColorRes(android.R.color.white)
-                                        .theme(Theme.DARK)
-                                        .positiveText("OK")
-                                        .negativeText("CANCEL")
                                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                                             @Override
                                             public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
@@ -144,8 +135,7 @@ public class FirstScreenActivity extends GaActivity {
                                                 } catch (@NonNull final Exception e) {
                                                 }
                                             }
-                                        })
-                                        .build().show();
+                                        }).build().show();
                             }
 
                         });

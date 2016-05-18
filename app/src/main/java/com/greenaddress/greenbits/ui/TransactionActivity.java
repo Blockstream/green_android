@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -119,24 +118,17 @@ public class TransactionActivity extends GaActivity {
                         e.printStackTrace();
                     }
 
-                    new MaterialDialog.Builder(getActivity())
-                            .title(R.string.warning)
-                            .content(getString(R.string.view_block_explorer,
-                                    domain.startsWith("www.") ? domain.substring(4) : domain))
-                            .positiveText(R.string.continueText)
-                            .negativeText(R.string.cancel)
-                            .positiveColorRes(R.color.accent)
-                            .negativeColorRes(R.color.accent)
-                            .titleColorRes(R.color.white)
-                            .contentColorRes(android.R.color.white)
-                            .theme(Theme.DARK)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                    startActivity(new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse(TextUtils.concat(url, identifier).toString())));
-                                }
-                            }).build().show();
+                    final String stripped = domain.startsWith("www.") ? domain.substring(4) : domain;
+
+                    Popup(getActivity(), getString(R.string.warning), R.string.continueText, R.string.cancel)
+                        .content(getString(R.string.view_block_explorer, stripped))
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(final MaterialDialog dlg, final DialogAction which) {
+                                final String fullUrl = TextUtils.concat(url, identifier).toString();
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl)));
+                            }
+                        }).build().show();
                 }
             });
         }
@@ -718,24 +710,15 @@ public class TransactionActivity extends GaActivity {
             Log.i(TAG, "params " + oldFee + " " + newFee);
             final String[] enabledTwoFacNames = new String[]{};
             final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
-            mTwoFactor = new MaterialDialog.Builder(getActivity())
-                    .title(R.string.twoFactorChoicesTitle)
-                    .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
-                    .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
-                        @Override
-                        public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                            showIncreaseSummary(enabledTwoFacNamesSystem.get(which), oldFee, newFee, signedTx);
-                            return true;
-                        }
-                    })
-                    .positiveText(R.string.choose)
-                    .negativeText(R.string.cancel)
-                    .positiveColorRes(R.color.accent)
-                    .negativeColorRes(R.color.accent)
-                    .titleColorRes(R.color.white)
-                    .contentColorRes(android.R.color.white)
-                    .theme(Theme.DARK)
-                    .build();
+            mTwoFactor = Popup(getActivity(), getString(R.string.twoFactorChoicesTitle), R.string.choose, R.string.cancel)
+                             .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
+                             .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                                 @Override
+                                 public boolean onSelection(MaterialDialog dlg, View view, int which, CharSequence text) {
+                                     showIncreaseSummary(enabledTwoFacNamesSystem.get(which), oldFee, newFee, signedTx);
+                                     return true;
+                                 }
+                             }).build();
             mTwoFactor.show();
         }
 
@@ -796,16 +779,8 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            mSummary = new MaterialDialog.Builder(getActivity())
-                    .title(R.string.feeIncreaseTitle)
+            mSummary = Popup(getActivity(), getString(R.string.feeIncreaseTitle), R.string.send, R.string.cancel)
                     .customView(inflatedLayout, true)
-                    .positiveText(R.string.send)
-                    .negativeText(R.string.cancel)
-                    .positiveColorRes(R.color.accent)
-                    .negativeColorRes(R.color.accent)
-                    .titleColorRes(R.color.white)
-                    .contentColorRes(android.R.color.white)
-                    .theme(Theme.DARK)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
@@ -841,12 +816,10 @@ public class TransactionActivity extends GaActivity {
         @Override
         public void onDestroyView() {
             super.onDestroyView();
-            if (mSummary != null) {
+            if (mSummary != null)
                 mSummary.dismiss();
-            }
-            if (mTwoFactor != null) {
+            if (mTwoFactor != null)
                 mTwoFactor.dismiss();
-            }
         }
     }
 }

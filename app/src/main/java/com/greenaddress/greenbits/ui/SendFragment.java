@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -137,16 +136,8 @@ public class SendFragment extends SubaccountFragment {
             }
         }
 
-        mSummary = new MaterialDialog.Builder(getActivity())
-                .title(R.string.newTxTitle)
+        mSummary = GaActivity.Popup(getActivity(), getString(R.string.newTxTitle), R.string.send, R.string.cancel)
                 .customView(inflatedLayout, true)
-                .positiveText(R.string.send)
-                .negativeText(R.string.cancel)
-                .positiveColorRes(R.color.accent)
-                .negativeColorRes(R.color.accent)
-                .titleColorRes(R.color.white)
-                .contentColorRes(android.R.color.white)
-                .theme(Theme.DARK)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
@@ -191,8 +182,7 @@ public class SendFragment extends SubaccountFragment {
     private void show2FAChoices(final Coin fee, final Coin amount, @NonNull final String recipient, @NonNull final PreparedTransaction prepared) {
         Log.i(TAG, "params " + fee + " " + amount + " " + recipient);
         final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
-        mTwoFactor = new MaterialDialog.Builder(getActivity())
-                .title(R.string.twoFactorChoicesTitle)
+        mTwoFactor = GaActivity.Popup(getActivity(), getString(R.string.twoFactorChoicesTitle), R.string.choose, R.string.cancel)
                 .items(getGAService().getEnabledTwoFacNames(false).toArray(new String[4]))
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
@@ -200,15 +190,7 @@ public class SendFragment extends SubaccountFragment {
                         showTransactionSummary(enabledTwoFacNamesSystem.get(which), fee, amount, recipient, prepared);
                         return true;
                     }
-                })
-                .positiveText(R.string.choose)
-                .negativeText(R.string.cancel)
-                .positiveColorRes(R.color.accent)
-                .negativeColorRes(R.color.accent)
-                .titleColorRes(R.color.white)
-                .contentColorRes(android.R.color.white)
-                .theme(Theme.DARK)
-                .build();
+                }).build();
         mTwoFactor.show();
     }
 
@@ -710,12 +692,10 @@ public class SendFragment extends SubaccountFragment {
 
     public void onDestroyView() {
         super.onDestroyView();
-        if (mSummary != null) {
+        if (mSummary != null)
             mSummary.dismiss();
-        }
-        if (mTwoFactor != null) {
+        if (mTwoFactor != null)
             mTwoFactor.dismiss();
-        }
     }
 
     @Override

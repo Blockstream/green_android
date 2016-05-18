@@ -14,9 +14,9 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
 
@@ -69,32 +69,25 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             intent.putExtra("method", method.toLowerCase());
             twoFacMethod = method;
             startActivityForResult(intent, REQUEST_ENABLE_2FA);
-        } else {
-            final String[] enabledTwoFacNames = new String[]{};
-            final List<String> enabledTwoFacNamesSystem = gaService.getEnabledTwoFacNames(true);
-            if (enabledTwoFacNamesSystem.size() > 1) {
-                new MaterialDialog.Builder(this.getActivity())
-                        .title(R.string.twoFactorChoicesTitle)
-                        .items(gaService.getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
-                        .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
-                            @Override
-                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                disable2FA(method, enabledTwoFacNamesSystem.get(which));
-                                return true;
-                            }
-                        })
-                        .positiveText(R.string.choose)
-                        .negativeText(R.string.cancel)
-                        .positiveColorRes(R.color.accent)
-                        .negativeColorRes(R.color.accent)
-                        .titleColorRes(R.color.white)
-                        .contentColorRes(android.R.color.white)
-                        .theme(Theme.DARK)
-                        .build().show();
-            } else {
-                disable2FA(method, enabledTwoFacNamesSystem.get(0));
-            }
+            return;
         }
+
+        final String[] enabledTwoFacNames = new String[]{};
+        final List<String> enabledTwoFacNamesSystem = gaService.getEnabledTwoFacNames(true);
+        if (enabledTwoFacNamesSystem.size() <= 1) {
+            disable2FA(method, enabledTwoFacNamesSystem.get(0));
+            return;
+        }
+        GaActivity.Popup(this.getActivity(), getString(R.string.twoFactorChoicesTitle),
+                         R.string.choose, R.string.cancel)
+                  .items(gaService.getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
+                  .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                      @Override
+                      public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                          disable2FA(method, enabledTwoFacNamesSystem.get(which));
+                          return true;
+                      }
+                  }).build().show();
     }
 
     private void disable2FA(@NonNull final String method, @NonNull final String withMethod) {
@@ -120,37 +113,30 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         prompt.setText(new Formatter().format(
                 getResources().getString(R.string.twoFacProvideConfirmationCode),
                 withMethodName).toString());
-        new MaterialDialog.Builder(this.getActivity())
-                .title("2FA")
-                .customView(inflatedLayout, true)
-                .positiveColorRes(R.color.accent)
-                .negativeColorRes(R.color.accent)
-                .titleColorRes(R.color.white)
-                .contentColorRes(android.R.color.white)
-                .theme(Theme.DARK)
-                .positiveText(android.R.string.ok)
-                .negativeText(android.R.string.cancel)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                        final Map<String, String> twoFacData = new HashMap<>();
-                        twoFacData.put("method", withMethod);
-                        twoFacData.put("code", twoFacValue.getText().toString());
-                        Futures.addCallback(gaService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
-                            @Override
-                            public void onSuccess(final @Nullable Boolean result) {
-                                final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
-                                c.setChecked(false);
-                            }
 
-                            @Override
-                            public void onFailure(@NonNull final Throwable t) {
-                                t.printStackTrace();
-                                Toast.makeText(TwoFactorPreferenceFragment.this.getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                }).build().show();
+        GaActivity.Popup(this.getActivity(), "2FA")
+                  .customView(inflatedLayout, true)
+                  .onPositive(new MaterialDialog.SingleButtonCallback() {
+                      @Override
+                      public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                          final Map<String, String> twoFacData = new HashMap<>();
+                          twoFacData.put("method", withMethod);
+                          twoFacData.put("code", twoFacValue.getText().toString());
+                          Futures.addCallback(gaService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
+                              @Override
+                              public void onSuccess(final @Nullable Boolean result) {
+                                  final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
+                                  c.setChecked(false);
+                              }
+
+                              @Override
+                              public void onFailure(@NonNull final Throwable t) {
+                                  t.printStackTrace();
+                                  Toast.makeText(TwoFactorPreferenceFragment.this.getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                              }
+                          });
+                      }
+                  }).build().show();
     }
 
     @Override

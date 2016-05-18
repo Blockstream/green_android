@@ -3,6 +3,7 @@ import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
@@ -149,4 +152,28 @@ public abstract class GaActivity extends AppCompatActivity {
     public void toast(final String s) { toastImpl(s, Toast.LENGTH_LONG); }
     public void shortToast(final int id) { toastImpl(id, Toast.LENGTH_SHORT); }
     public void shortToast(final String s) { toastImpl(s, Toast.LENGTH_SHORT); }
+
+    public static MaterialDialog.Builder Popup(Activity a, final String title, final int pos, final int neg) {
+        MaterialDialog.Builder b;
+        b = new MaterialDialog.Builder(a)
+                              .title(title)
+                              .titleColorRes(R.color.white)
+                              .positiveColorRes(R.color.accent)
+                              .negativeColorRes(R.color.accent)
+                              .contentColorRes(R.color.white)
+                              .theme(Theme.DARK);
+       if (pos != 0)
+           b.positiveText(pos);
+       if (neg != 0)
+           return b.negativeText(neg);
+       return b;
+    }
+
+    public static MaterialDialog.Builder Popup(Activity a, final String title, final int pos) {
+        return Popup(a, title, pos, 0);
+    }
+
+    public static MaterialDialog.Builder Popup(Activity a, final String title) {
+        return Popup(a, title, android.R.string.ok, android.R.string.cancel);
+    }
 }

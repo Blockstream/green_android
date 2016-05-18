@@ -13,8 +13,8 @@ import android.support.annotation.Nullable;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.greenaddress.greenbits.ConnectivityObservable;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.Observable;
@@ -93,16 +93,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 if (s.isEmpty() || s.contains("."))
                     return false;
 
-                new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                        .title(R.string.enterValidAddressTitle)
-                        .content(R.string.enterValidAddressText)
-                        .positiveColorRes(R.color.accent)
-                        .negativeColorRes(R.color.white)
-                        .titleColorRes(R.color.white)
-                        .contentColorRes(android.R.color.white)
-                        .theme(Theme.DARK)
-                        .positiveText("OK")
-                        .build().show();
+                GaActivity.Popup(SPVPreferenceFragment.this.getActivity(),
+                                 getString(R.string.enterValidAddressTitle), android.R.string.ok)
+                          .content(R.string.enterValidAddressText).build().show();
                 return true;
             }
 
@@ -132,16 +125,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
                             // and HS connectivity.
                             // but work with Orbot socks if set
-                            new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                                    .title(R.string.enterValidAddressTitleTorDisabled)
-                                    .content(R.string.enterValidAddressTextTorDisabled)
-                                    .positiveColorRes(R.color.accent)
-                                    .negativeColorRes(R.color.white)
-                                    .titleColorRes(R.color.white)
-                                    .contentColorRes(android.R.color.white)
-                                    .theme(Theme.DARK)
-                                    .positiveText("OK")
-                                    .build().show();
+                            GaActivity.Popup(SPVPreferenceFragment.this.getActivity(),
+                                             getString(R.string.enterValidAddressTitleTorDisabled), android.R.string.ok)
+                                      .content(R.string.enterValidAddressTextTorDisabled).build().show();
                             return true;
                         }
 
@@ -156,26 +142,18 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                         new SPVAsync().execute();
                     }
                     else {
-                        new MaterialDialog.Builder(SPVPreferenceFragment.this.getActivity())
-                                .title(R.string.changingWarnOnionTitle)
-                                .content(R.string.changingWarnOnionText)
-                                .positiveText("OK")
-                                .negativeText("Cancel")
-                                .positiveColorRes(R.color.accent)
-                                .negativeColorRes(R.color.white)
-                                .titleColorRes(R.color.white)
-                                .contentColorRes(android.R.color.white)
-                                .theme(Theme.DARK)
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
-                                        new SPVAsync().execute();
-                                        gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
-                                        gaService.setUserConfig("trusted_peer_addr", newString, true);
-                                        trusted_peer.setSummary(newString);
-                                    }
-                                })
-                                .build().show();
+                        GaActivity.Popup(SPVPreferenceFragment.this.getActivity(),
+                                         getString(R.string.changingWarnOnionTitle))
+                                  .content(R.string.changingWarnOnionText)
+                                  .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                      @Override
+                                      public void onClick(final @NonNull MaterialDialog dlg, final @NonNull DialogAction which) {
+                                          new SPVAsync().execute();
+                                          gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
+                                          gaService.setUserConfig("trusted_peer_addr", newString, true);
+                                          trusted_peer.setSummary(newString);
+                                      }
+                                  }).build().show();
                     }
 
                     return true;
