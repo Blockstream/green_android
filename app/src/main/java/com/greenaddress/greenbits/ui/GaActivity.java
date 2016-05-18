@@ -83,11 +83,8 @@ public abstract class GaActivity extends AppCompatActivity {
     final public void onResume() {
         Log.d(TAG, "onResume: service " + (mServiceAvailable ? "available" : "not available"));
         super.onResume();
-        if (mServiceAvailable) {
-            final ConnectivityObservable c = getGAApp().getConnectionObservable();
-            c.incRef();
-            onResumeWithService(c.getState());
-        }
+        if (mServiceAvailable)
+            onResumeWithService(getGAApp().getConnectionObservable().incRef());
     }
 
     /** Override to provide the main view id */
@@ -96,9 +93,9 @@ public abstract class GaActivity extends AppCompatActivity {
     /** Override to provide onCreate/onResume/onPause processing.
       * When called, our service is guaranteed to be available. */
     abstract protected void onCreateWithService(final Bundle savedInstanceState,
-                                                final ConnectivityObservable.State state);
+                                                final ConnectivityObservable.ConnectionState cs);
     protected void onPauseWithService() { }
-    protected void onResumeWithService(final ConnectivityObservable.State state) { }
+    protected void onResumeWithService(final ConnectivityObservable.ConnectionState cs) { }
 
     // Utility methods
 

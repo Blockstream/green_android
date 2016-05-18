@@ -71,7 +71,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
 
         tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
         tagDispatcher = TagDispatcher.get(this, this);
@@ -435,7 +435,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.State state) {
+    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
         tagDispatcher.enableExclusiveNfc();
     }
 

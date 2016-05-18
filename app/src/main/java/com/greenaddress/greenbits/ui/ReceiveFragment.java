@@ -255,7 +255,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     public void onClick(final View view) {
                         if (!setting_qrcode) {
                             // FIXME: Instead of checking the state here, enable/disable sendButton when state changes
-                            if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
+                            if (!getGAApp().getConnectionObservable().getState().mState.equals(ConnectivityObservable.State.LOGGEDIN)) {
                                 gaActivity.toast(R.string.err_send_not_connected_will_resume);
                                 return;
                             }

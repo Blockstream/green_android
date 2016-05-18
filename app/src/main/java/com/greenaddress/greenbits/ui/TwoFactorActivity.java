@@ -36,7 +36,7 @@ public class TwoFactorActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
 
         final GaService gaService = getGAService();
         final Map<?, ?> twoFacConfig = gaService.getTwoFacConfig();

@@ -78,8 +78,8 @@ public class PinActivity extends GaActivity implements Observer {
     }
 
     private void loginAfterServiceConnected(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
-        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
-        if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
+        final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
+        if (!cs.mState.equals(ConnectivityObservable.State.CONNECTED)) {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
@@ -162,7 +162,7 @@ public class PinActivity extends GaActivity implements Observer {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
 
         final SharedPreferences prefs = getSharedPreferences("pin", MODE_PRIVATE);
         final String ident = prefs.getString("ident", null);
@@ -241,8 +241,8 @@ public class PinActivity extends GaActivity implements Observer {
                         Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
                             @Override
                             public void onSuccess(final @Nullable Void result) {
-                                final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
-                                if (!state.equals(ConnectivityObservable.State.CONNECTED)) {
+                                final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
+                                if (!cs.mState.equals(ConnectivityObservable.State.CONNECTED)) {
                                     PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
                                     finish();
                                 }
@@ -359,11 +359,11 @@ public class PinActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.State state) {
+    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
         getGAApp().getConnectionObservable().addObserver(this);
 
-        if (state.equals(ConnectivityObservable.State.LOGGEDIN) ||
-            state.equals(ConnectivityObservable.State.LOGGINGIN)) {
+        if (cs.mState.equals(ConnectivityObservable.State.LOGGEDIN) ||
+            cs.mState.equals(ConnectivityObservable.State.LOGGINGIN)) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
             startActivity(mainActivity);
@@ -391,7 +391,7 @@ public class PinActivity extends GaActivity implements Observer {
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch(item.getItemId()) {
             case R.id.network_unavailable:
-                toast(getGAApp().getConnectionObservable().getState().toString());
+                toast(getGAApp().getConnectionObservable().getState().mState.toString());
                 return true;
             case R.id.proxy_preferences:
                 startActivity(new Intent(PinActivity.this, ProxySettingsActivity.class));
@@ -402,11 +402,10 @@ public class PinActivity extends GaActivity implements Observer {
 
     @Override
     public void update(final Observable observable, final Object data) {
-        // connectivity changed
-        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
+        final ConnectivityObservable.ConnectionState cs = (ConnectivityObservable.ConnectionState) data;
         setMenuItemVisible(mMenu, R.id.network_unavailable,
-                           state != ConnectivityObservable.State.CONNECTED &&
-                           state != ConnectivityObservable.State.LOGGEDIN &&
-                           state != ConnectivityObservable.State.LOGGINGIN);
+                           cs.mState != ConnectivityObservable.State.CONNECTED &&
+                           cs.mState != ConnectivityObservable.State.LOGGEDIN &&
+                           cs.mState != ConnectivityObservable.State.LOGGINGIN);
     }
 }

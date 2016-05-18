@@ -54,7 +54,7 @@ public class FirstScreenActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
 
         mapClick(R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
         mapClick(R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));
@@ -308,9 +308,9 @@ public class FirstScreenActivity extends GaActivity {
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.State state) {
+    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
         //FIXME : recheck state, properly handle TEE link anyway
-        if (state.equals(ConnectivityObservable.State.LOGGEDIN)) {
+        if (cs.mState.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent
             startNewActivity(TabbedMainActivity.class);
             finish();

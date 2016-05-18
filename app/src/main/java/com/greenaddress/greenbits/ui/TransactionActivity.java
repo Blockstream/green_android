@@ -62,7 +62,7 @@ public class TransactionActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
         if (savedInstanceState == null)
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())

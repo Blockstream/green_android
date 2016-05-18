@@ -77,7 +77,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
 
         boolean isBitcoinURL = getIntent().hasCategory(Intent.CATEGORY_BROWSABLE) ||
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()) ||
@@ -85,8 +85,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         && getIntent().getData().getScheme().equals("bitcoin"));
 
         if (isBitcoinURL) {
-            if (state.equals(ConnectivityObservable.State.LOGGEDIN) ||
-                state.equals(ConnectivityObservable.State.LOGGINGIN)) {
+            if (cs.mState.equals(ConnectivityObservable.State.LOGGEDIN) ||
+                cs.mState.equals(ConnectivityObservable.State.LOGGINGIN)) {
                 // already logged in, could be from different app via intent
                 final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
                 startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
@@ -260,10 +260,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.State state) {
+    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
         getGAApp().getConnectionObservable().addObserver(this);
 
-        if (getGAApp().getConnectionObservable().isForcedOff()) {
+        if (cs.mForcedLogout || cs.mForcedTimeout) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
             finish();
@@ -271,7 +271,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         setMenuItemVisible(mMenu, R.id.action_share,
-                           state != ConnectivityObservable.State.LOGGEDIN);
+                           cs.mState != ConnectivityObservable.State.LOGGEDIN);
      }
 
     @Override
@@ -464,7 +464,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 }
                 return true;
             case R.id.network_unavailable:
-                toast(getGAApp().getConnectionObservable().getState().toString());
+                toast(getGAApp().getConnectionObservable().getState().mState.toString());
                 return true;
             case R.id.action_logout:
                 getGAService().disconnect(false);
@@ -492,13 +492,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     public void update(final Observable observable, final Object data) {
-        if (getGAApp().getConnectionObservable().isForcedOff()) {
+        final ConnectivityObservable.ConnectionState cs = (ConnectivityObservable.ConnectionState) data;
+        if (cs.mForcedLogout || cs.mForcedTimeout) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
         }
-        final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
         setMenuItemVisible(mMenu, R.id.network_unavailable,
-                           state != ConnectivityObservable.State.LOGGEDIN);
+                           cs.mState != ConnectivityObservable.State.LOGGEDIN);
     }
 
     private void handlePermissionResult(@NonNull final int[] granted, int action, int msgId) {

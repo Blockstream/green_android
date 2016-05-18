@@ -21,6 +21,16 @@ public class ConnectivityObservable extends Observable {
     public enum State {
         OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
     }
+
+    public class ConnectionState {
+        public final State mState;
+        public final boolean mForcedLogout;
+        public final boolean mForcedTimeout;
+        public ConnectionState(final State state, final boolean forcedLogout, final boolean forcedTimeout) {
+            mState = state; mForcedLogout = forcedLogout; mForcedTimeout = forcedTimeout;
+        }
+    }
+
     private State mState = State.OFFLINE;
 
     static final int RECONNECT_TIMEOUT = 6000;
@@ -37,13 +47,14 @@ public class ConnectivityObservable extends Observable {
         }
     };
 
-    public void incRef() {
+    public ConnectionState incRef() {
         assert service != null : "Reference incremented before service created";
         ++mRefCount;
         if (mDisconnectTimer != null && !mDisconnectTimer.isCancelled())
             mDisconnectTimer.cancel(false);
         if (mState.equals(State.DISCONNECTED))
             service.reconnect();
+        return getState();
     }
 
     public void decRef() {
@@ -68,12 +79,12 @@ public class ConnectivityObservable extends Observable {
 
     private void doNotify() {
          setChanged();
-         notifyObservers(mState);
+         notifyObservers(getState());
     }
 
     @NonNull
-    public State getState() {
-        return mState;
+    public ConnectionState getState() {
+        return new ConnectionState(mState, mForcedLogout, mForcedTimeout);
     }
 
     public void setState(@NonNull final State state) {

@@ -39,7 +39,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
         final ListView view = (ListView) findViewById(R.id.peerlistview);
 
         view.setEmptyView(findViewById(R.id.empty_list_view));
@@ -58,7 +58,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.State state) {
+    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
         if (getGAApp().getConnectionObservable().isForcedOff()) {

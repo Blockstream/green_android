@@ -65,7 +65,7 @@ public class SignUpActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
 
         final CircularProgressButton signupContinueButton = (CircularProgressButton) findViewById(R.id.signupContinueButton);
         final TextView tos = (TextView) findViewById(R.id.textTosLink);
@@ -261,7 +261,7 @@ public class SignUpActivity extends GaActivity {
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.State state) {
+    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
         if (mNfcAdapter != null) {
             final IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
             final IntentFilter[] filters = new IntentFilter[]{filter};

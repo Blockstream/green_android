@@ -96,7 +96,7 @@ public class PinSaveActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.State state) {
+                                       final ConnectivityObservable.ConnectionState cs) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
