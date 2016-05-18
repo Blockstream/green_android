@@ -216,7 +216,7 @@ public class PinActivity extends GaActivity implements Observer {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(aesiv, Base64.NO_WRAP)));
             final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
 
-            final GaService gaService = getGAApp().gaService;
+            final GaService gaService = getGAApp().mService;
             if (gaService != null && gaService.onConnected != null) {
                 //Auxillary Future to make sure we are connected.
                 Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {

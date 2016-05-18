@@ -36,11 +36,11 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     protected GaService getGAService() {
-        return getGAApp().gaService;
+        return getGAApp().mService;
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected final void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
         super.onCreate(savedInstanceState);
         final int viewId = getMainViewId();

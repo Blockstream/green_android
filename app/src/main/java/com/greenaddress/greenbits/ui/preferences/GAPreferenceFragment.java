@@ -18,7 +18,7 @@ public class GAPreferenceFragment extends PreferenceFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gApp = ((GreenAddressApplication)getActivity().getApplication());
-        gaService = gApp.gaService;
+        gaService = gApp.mService;
     }
 
     private static final Preference.OnPreferenceChangeListener onPreferenceChanged = new Preference.OnPreferenceChangeListener() {

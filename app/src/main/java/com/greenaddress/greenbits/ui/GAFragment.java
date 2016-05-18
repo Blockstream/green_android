@@ -31,6 +31,6 @@ abstract class GAFragment extends Fragment {
     }
 
     protected GaService getGAService() {
-        return gaApp.gaService;
+        return gaApp.mService;
     }
 }

@@ -20,32 +20,11 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
 
-    public GaService gaService;
-    @NonNull public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
-    private boolean mBound = false;
     private String mErrorTitle, mErrorContent;
-    @Nullable
     private ConnectivityObservable connectionObservable = new ConnectivityObservable();
-    private final ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(final ComponentName className,
-                                       final IBinder service) {
-            Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
-            gaService = ((GaService.GaBinder)service).getService();
-            mBound = true;
-            connectionObservable.setService(gaService);
-            onServiceAttached.set(null);
-        }
-
-        @Override
-        public void onServiceDisconnected(@NonNull final ComponentName arg0) {
-            Log.d(TAG, "onServiceDisconnected: dispatching onServiceAttached exception");
-            mBound = false;
-            connectionObservable = null;
-            onServiceAttached.setException(new GAException(arg0.toString()));
-        }
-    };
+    private ServiceConnection mConnection;
+    public GaService mService;
+    public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
 
     @Nullable
     public ConnectivityObservable getConnectionObservable() {
@@ -88,6 +67,24 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
 
         Log.d(TAG, "onCreate: binding service");
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(final ComponentName className,
+                                           final IBinder service) {
+                Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
+                mService = ((GaService.GaBinder)service).getService();
+                connectionObservable.setService(mService);
+                onServiceAttached.set(null);
+            }
+
+            @Override
+            public void onServiceDisconnected(@NonNull final ComponentName arg0) {
+                Log.d(TAG, "onServiceDisconnected: dispatching onServiceAttached exception");
+                connectionObservable = null;
+                onServiceAttached.setException(new GAException(arg0.toString()));
+            }
+        };
+
         final Intent intent = new Intent(this, GaService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
