@@ -63,21 +63,7 @@ public class PinActivity extends GaActivity implements Observer {
             shortToast("PIN has to be between 4 and 15 long");
             return;
         }
-        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final @Nullable Void result) {
-                loginAfterServiceConnected(pinLoginButton, ident, pinText, pinError);
-            }
 
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-                t.printStackTrace();
-                PinActivity.this.toast(R.string.err_send_not_connected_will_resume);
-            }
-        });
-    }
-
-    private void loginAfterServiceConnected(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
         final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
         if (!cs.mState.equals(ConnectivityObservable.State.CONNECTED)) {
             toast(R.string.err_send_not_connected_will_resume);
@@ -86,8 +72,7 @@ public class PinActivity extends GaActivity implements Observer {
 
         final GaService gaService = getGAService();
 
-        final PinData pinData = new PinData(ident,
-                gaService.cfg("pin").getString("encrypted", null));
+        final PinData pinData = new PinData(ident, gaService.cfg("pin").getString("encrypted", null));
 
         pinLoginButton.setIndeterminateProgressMode(true);
         pinLoginButton.setProgress(50);
@@ -238,83 +223,71 @@ public class PinActivity extends GaActivity implements Observer {
                     @Override
                     public void onSuccess(@Nullable final Void result) {
 
-                        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
+                        final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
+                        if (!cs.mState.equals(ConnectivityObservable.State.CONNECTED)) {
+                            PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
+                            finish();
+                        }
+
+                        final PinData pinData = new PinData(ident, prefs.getString("encrypted", null));
+
+                        final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
+                            @NonNull
                             @Override
-                            public void onSuccess(final @Nullable Void result) {
-                                final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
-                                if (!cs.mState.equals(ConnectivityObservable.State.CONNECTED)) {
-                                    PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
+                            public ListenableFuture<LoginData> apply(@Nullable final Void input) {
+                                return gaService.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
+                            }
+                        };
+
+                        final ListenableFuture<LoginData> loginFuture = Futures.transform(gaService.onConnected, connectToLogin, gaService.es);
+
+                        Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
+                            @Override
+                            public void onSuccess(@Nullable final LoginData result) {
+                                final SharedPreferences.Editor editor = prefs.edit();
+                                editor.putInt("counter", 0);
+                                editor.apply();
+                                if (getCallingActivity() == null) {
+                                    final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
+                                    startActivity(mainActivity);
+                                    finish();
+                                } else {
+                                    setResult(RESULT_OK);
                                     finish();
                                 }
-
-                                final PinData pinData = new PinData(ident,
-                                        prefs.getString("encrypted", null));
-
-                                final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
-                                    @NonNull
-                                    @Override
-                                    public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                                        return gaService.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
-                                    }
-                                };
-
-                                final ListenableFuture<LoginData> loginFuture = Futures.transform(gaService.onConnected, connectToLogin, gaService.es);
-
-                                Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
-                                    @Override
-                                    public void onSuccess(@Nullable final LoginData result) {
-                                        final SharedPreferences.Editor editor = prefs.edit();
-                                        editor.putInt("counter", 0);
-                                        editor.apply();
-                                        if (getCallingActivity() == null) {
-                                            final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
-                                            startActivity(mainActivity);
-                                            finish();
-                                        } else {
-                                            setResult(RESULT_OK);
-                                            finish();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NonNull final Throwable t) {
-                                        String message = t.getMessage();
-                                        final int counter = prefs.getInt("counter", 0) + 1;
-                                        if (t instanceof GAException) {
-                                            final SharedPreferences.Editor editor = prefs.edit();
-                                            if (counter < 3) {
-                                                editor.putInt("counter", counter);
-                                                message = getString(R.string.attemptsLeftLong, 3 - counter);
-                                            } else {
-                                                message = getString(R.string.attemptsFinished);
-                                                editor.clear();
-                                            }
-
-                                            editor.apply();
-                                        }
-                                        final String tstMsg = message;
-
-                                        PinActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                PinActivity.this.toast(tstMsg);
-                                                if (counter >= 3) {
-                                                    final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
-                                                    startActivity(firstScreenActivity);
-                                                    finish();
-                                                }
-                                            }
-                                        });
-                                    }
-                                }, gaService.es);                            }
+                            }
 
                             @Override
                             public void onFailure(@NonNull final Throwable t) {
-                                t.printStackTrace();
-                                PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
-                                finish();
+                                String message = t.getMessage();
+                                final int counter = prefs.getInt("counter", 0) + 1;
+                                if (t instanceof GAException) {
+                                    final SharedPreferences.Editor editor = prefs.edit();
+                                    if (counter < 3) {
+                                        editor.putInt("counter", counter);
+                                        message = getString(R.string.attemptsLeftLong, 3 - counter);
+                                    } else {
+                                        message = getString(R.string.attemptsFinished);
+                                        editor.clear();
+                                    }
+
+                                    editor.apply();
+                                }
+                                final String tstMsg = message;
+
+                                PinActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        PinActivity.this.toast(tstMsg);
+                                        if (counter >= 3) {
+                                            final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
+                                            startActivity(firstScreenActivity);
+                                            finish();
+                                        }
+                                    }
+                                });
                             }
-                        });
+                        }, gaService.es);
                     }
 
                     @Override
