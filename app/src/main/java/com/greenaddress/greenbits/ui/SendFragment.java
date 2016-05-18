@@ -724,7 +724,8 @@ public class SendFragment extends SubaccountFragment {
                             sendSubAccountBalance.setText(formatter.format(Double.valueOf(btcBalance)));
                         } catch (@NonNull final NumberFormatException e) {
                             sendSubAccountBalance.setText(btcBalance);
-                        }                        }
+                        }
+                    }
                 });
             }
         });
