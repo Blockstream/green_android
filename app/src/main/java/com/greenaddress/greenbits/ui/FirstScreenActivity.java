@@ -232,49 +232,36 @@ public class FirstScreenActivity extends GaActivity {
                 // And finally login
                 final BTChipPublicKey masterPublicKeyFixed = masterPublicKey;
                 final BTChipPublicKey loginPublicKeyFixed = loginPublicKey;
-                Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
+
+                Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                    @NonNull
                     @Override
-                    public void onSuccess(final @Nullable Void result) {
-                        final GaService gaService = getGAService();
-
-                        Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
-                            @NonNull
-                            @Override
-                            public ListenableFuture<LoginData> apply(@NonNull final Void input) throws Exception {
-                                if (!setup) {
-                                    Log.d(TAG, "TEE login");
-                                    return gaService.login(new BTChipHWWallet(dongle));
-                                } else {
-                                    Log.d(TAG, "TEE signup");
-                                    return gaService.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
-                                }
-                            }
-                        }), new FutureCallback<LoginData>() {
-                            @Override
-                            public void onSuccess(@Nullable final LoginData result) {
-                                Log.d(TAG, "Success");
-                                final Intent main = new Intent(FirstScreenActivity.this, TabbedMainActivity.class);
-                                startActivity(main);
-                                FirstScreenActivity.this.finish();
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull final Throwable t) {
-                                Log.d(TAG, "login failed", t);
-                                if (!(t instanceof LoginFailed)) {
-                                    FirstScreenActivity.this.finish();
-                                }
-                            }
-                        });
+                    public ListenableFuture<LoginData> apply(@NonNull final Void input) throws Exception {
+                        if (!setup) {
+                            Log.d(TAG, "TEE login");
+                            return gaService.login(new BTChipHWWallet(dongle));
+                        } else {
+                            Log.d(TAG, "TEE signup");
+                            return gaService.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
+                        }
+                    }
+                }), new FutureCallback<LoginData>() {
+                    @Override
+                    public void onSuccess(@Nullable final LoginData result) {
+                        Log.d(TAG, "Success");
+                        final Intent main = new Intent(FirstScreenActivity.this, TabbedMainActivity.class);
+                        startActivity(main);
+                        FirstScreenActivity.this.finish();
                     }
 
                     @Override
                     public void onFailure(@NonNull final Throwable t) {
-                        Log.d(TAG, "login crashed", t);
-                        t.printStackTrace();
+                        Log.d(TAG, "login failed", t);
+                        if (!(t instanceof LoginFailed)) {
+                            FirstScreenActivity.this.finish();
+                        }
                     }
                 });
-
 
                 tuiCall = false;
                 return null;
