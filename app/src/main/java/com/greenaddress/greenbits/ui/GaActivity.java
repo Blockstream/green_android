@@ -41,7 +41,7 @@ public abstract class GaActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
         super.onCreate(savedInstanceState);
         final int viewId = getMainViewId();
         if (viewId != INVALID_RESOURCE_ID)
@@ -55,6 +55,7 @@ public abstract class GaActivity extends AppCompatActivity {
                 GaActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         final GaActivity self = GaActivity.this;
+                        Log.d(TAG, "onCreateWithService -> " + self.getClass().getSimpleName());
                         self.mServiceAvailable = true;
                         self.onCreateWithService(savedInstanceState,
                                                  self.getGAApp().getConnectionObservable().getState());
@@ -71,7 +72,8 @@ public abstract class GaActivity extends AppCompatActivity {
 
     @Override
     final public void onPause() {
-        Log.d(TAG, "onPause: service " + (mServiceAvailable ? "available" : "not available"));
+        Log.d(TAG, "onPause -> " + getClass().getSimpleName() +
+              (mServiceAvailable ? "" : " (no attached service)"));
         super.onPause();
         if (mServiceAvailable) {
             getGAApp().getConnectionObservable().decRef();
@@ -81,7 +83,8 @@ public abstract class GaActivity extends AppCompatActivity {
 
     @Override
     final public void onResume() {
-        Log.d(TAG, "onResume: service " + (mServiceAvailable ? "available" : "not available"));
+        Log.d(TAG, "onResume -> " + getClass().getSimpleName() +
+              (mServiceAvailable ? "" : " (no attached service)"));
         super.onResume();
         if (mServiceAvailable)
             onResumeWithService(getGAApp().getConnectionObservable().incRef());
