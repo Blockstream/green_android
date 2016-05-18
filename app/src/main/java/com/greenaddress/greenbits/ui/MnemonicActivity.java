@@ -112,21 +112,6 @@ public class MnemonicActivity extends GaActivity {
     }
 
     private void login() {
-        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final @Nullable Void result) {
-                loginAfterServiceConnected();
-            }
-
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-                t.printStackTrace();
-                MnemonicActivity.this.toast(R.string.err_send_not_connected_will_resume);
-            }
-        });
-    }
-
-    private void loginAfterServiceConnected() {
         final GaService gaService = getGAService();
         
         final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
