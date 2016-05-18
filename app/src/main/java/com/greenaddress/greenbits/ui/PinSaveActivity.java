@@ -24,6 +24,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.PinData;
+import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.KeyStoreAES;
 
 public class PinSaveActivity extends GaActivity {
@@ -94,7 +95,8 @@ public class PinSaveActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_pin_save; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState,
+                                       final ConnectivityObservable.State state) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 

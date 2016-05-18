@@ -258,7 +258,8 @@ public class MnemonicActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_mnemonic; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState,
+                                       final ConnectivityObservable.State state) {
         Log.i(TAG, getIntent().getType() + "" + getIntent());
 
         mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {

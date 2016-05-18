@@ -54,8 +54,10 @@ public abstract class GaActivity extends AppCompatActivity {
             public void onSuccess(final Void result) {
                 GaActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        GaActivity.this.mServiceAvailable = true;
-                        GaActivity.this.onCreateWithService(savedInstanceState);
+                        final GaActivity self = GaActivity.this;
+                        self.mServiceAvailable = true;
+                        self.onCreateWithService(savedInstanceState,
+                                                 self.getGAApp().getConnectionObservable().getState());
                     }
                 });
             }
@@ -93,7 +95,8 @@ public abstract class GaActivity extends AppCompatActivity {
 
     /** Override to provide onCreate/onResume/onPause processing.
       * When called, our service is guaranteed to be available. */
-    abstract protected void onCreateWithService(final Bundle savedInstanceState);
+    abstract protected void onCreateWithService(final Bundle savedInstanceState,
+                                                final ConnectivityObservable.State state);
     protected void onPauseWithService() { }
     protected void onResumeWithService(final ConnectivityObservable.State state) { }
 

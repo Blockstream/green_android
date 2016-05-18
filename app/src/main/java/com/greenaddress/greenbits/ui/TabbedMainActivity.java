@@ -76,7 +76,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private Menu mMenu;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState,
+                                       final ConnectivityObservable.State state) {
 
         boolean isBitcoinURL = getIntent().hasCategory(Intent.CATEGORY_BROWSABLE) ||
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()) ||
@@ -84,7 +85,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         && getIntent().getData().getScheme().equals("bitcoin"));
 
         if (isBitcoinURL) {
-            final ConnectivityObservable.State state = getGAApp().getConnectionObservable().getState();
             if (state.equals(ConnectivityObservable.State.LOGGEDIN) ||
                 state.equals(ConnectivityObservable.State.LOGGINGIN)) {
                 // already logged in, could be from different app via intent

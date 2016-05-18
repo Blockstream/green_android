@@ -324,6 +324,7 @@ public class SendFragment extends SubaccountFragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                // FIXME: Instead of checking the state here, enable/disable sendButton when state changes
                 if (!getGAApp().getConnectionObservable().getState().equals(ConnectivityObservable.State.LOGGEDIN)) {
                     gaActivity.toast(R.string.err_send_not_connected_will_resume);
                     return;

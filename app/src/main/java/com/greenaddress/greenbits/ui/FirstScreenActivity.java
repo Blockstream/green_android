@@ -53,8 +53,8 @@ public class FirstScreenActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_first_screen; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateWithService");
+    protected void onCreateWithService(final Bundle savedInstanceState,
+                                       final ConnectivityObservable.State state) {
 
         mapClick(R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
         mapClick(R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));

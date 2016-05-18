@@ -38,8 +38,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     protected int getMainViewId() { return R.layout.activity_network; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState)
-    {
+    protected void onCreateWithService(final Bundle savedInstanceState,
+                                       final ConnectivityObservable.State state) {
         final ListView view = (ListView) findViewById(R.id.peerlistview);
 
         view.setEmptyView(findViewById(R.id.empty_list_view));

@@ -70,7 +70,8 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState,
+                                       final ConnectivityObservable.State state) {
 
         tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
         tagDispatcher = TagDispatcher.get(this, this);

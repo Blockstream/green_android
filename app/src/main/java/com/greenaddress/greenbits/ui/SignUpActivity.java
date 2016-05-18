@@ -64,7 +64,8 @@ public class SignUpActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_sign_up; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState,
+                                       final ConnectivityObservable.State state) {
 
         final CircularProgressButton signupContinueButton = (CircularProgressButton) findViewById(R.id.signupContinueButton);
         final TextView tos = (TextView) findViewById(R.id.textTosLink);
