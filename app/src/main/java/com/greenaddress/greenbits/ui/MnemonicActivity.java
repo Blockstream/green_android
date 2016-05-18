@@ -359,15 +359,10 @@ public class MnemonicActivity extends GaActivity {
 
                 if (service != null && service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
                     //Auxillary Future to make sure we are connected.
-                    Futures.addCallback(service.triggerOnFullyConnected, new FutureCallback<Void>() {
+                    CB.after(service.triggerOnFullyConnected, new CB.NoOp<Void>() {
                         @Override
                         public void onSuccess(@Nullable final Void result) {
                             login();
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull final Throwable t) {
-
                         }
                     });
                 }
@@ -375,29 +370,19 @@ public class MnemonicActivity extends GaActivity {
                 // encrypted nfc
                 final Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
                 final byte[] array = ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload();
-                Futures.addCallback(askForPassphrase(), new FutureCallback<String>() {
+                CB.after(askForPassphrase(), new CB.NoOp<String>() {
                     @Override
                     public void onSuccess(final @Nullable String passphrase) {
                         final String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(array, passphrase);
                         edit.setText(mnemonics);
                         if (service != null && service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
-                            Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
+                            CB.after(service.onConnected, new CB.NoOp<Void>() {
                                 @Override
                                 public void onSuccess(@Nullable final Void result) {
                                     login();
                                 }
-
-                                @Override
-                                public void onFailure(@NonNull final Throwable t) {
-
-                                }
                             });
                         }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-
                     }
                 });
             }
