@@ -41,7 +41,6 @@ import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.QrBitmap;
 
 import java.io.IOException;
 
@@ -67,6 +66,7 @@ public class SignUpActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState,
                                        final ConnectivityObservable.ConnectionState cs) {
 
+        final GaService gaService = getGAService();
         final CircularProgressButton signupContinueButton = (CircularProgressButton) findViewById(R.id.signupContinueButton);
         final TextView tos = (TextView) findViewById(R.id.textTosLink);
         final CheckBox checkBox = (CheckBox) findViewById(R.id.signupAcceptCheckBox);
@@ -90,80 +90,46 @@ public class SignUpActivity extends GaActivity {
 
         final TextView qrCodeIcon = (TextView) findViewById(R.id.signupQrCodeIcon);
         final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
-
-        Futures.addCallback(getGAService().getMnemonicPassphrase(), new FutureCallback<String>() {
-            @Override
-            public void onSuccess(@Nullable final String result) {
-                SignUpActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mnemonicText.setText(result);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(@NonNull final Throwable t) {
-                finish();
-            }
-        }, getGAService().es);
+        mnemonicText.setText(gaService.getSignUpMnemonic());
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
-                final ListenableFuture<QrBitmap> mnemonicQrcode = getGAService().getQrCodeForMnemonicPassphrase();
-                Futures.addCallback(mnemonicQrcode, new FutureCallback<QrBitmap>() {
+                qrCodeIcon.clearAnimation();
+                if (mnemonicDialog == null) {
+                    final DisplayMetrics displaymetrics = new DisplayMetrics();
+                    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                    final int height = displaymetrics.heightPixels;
+                    final int width = displaymetrics.widthPixels;
+                    Log.i(TAG, height + "x" + width);
+                    final int min = (int) (Math.min(height, width) * 0.8);
+                    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
+                    qrcodeMnemonic.setLayoutParams(layoutParams);
 
-                    @Override
-                    public void onSuccess(@Nullable final QrBitmap result) {
-                        SignUpActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                qrCodeIcon.clearAnimation();
-                                if (mnemonicDialog == null) {
-                                    final DisplayMetrics displaymetrics = new DisplayMetrics();
-                                    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                                    final int height = displaymetrics.heightPixels;
-                                    final int width = displaymetrics.widthPixels;
-                                    Log.i(TAG, height + "x" + width);
-                                    final int min = (int) (Math.min(height, width) * 0.8);
-                                    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
-                                    qrcodeMnemonic.setLayoutParams(layoutParams);
-
-                                    mnemonicDialog = new Dialog(SignUpActivity.this);
-                                    mnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                    mnemonicDialog.setContentView(inflatedLayout);
-                                }
-                                mnemonicDialog.show();
-                                final BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
-                                bd.setFilterBitmap(false);
-                                qrcodeMnemonic.setImageDrawable(bd);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-
-                    }
-                }, getGAService().es);
+                    mnemonicDialog = new Dialog(SignUpActivity.this);
+                    mnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    mnemonicDialog.setContentView(inflatedLayout);
+                }
+                mnemonicDialog.show();
+                final BitmapDrawable bd = new BitmapDrawable(getResources(), gaService.getSignUpQRCode());
+                bd.setFilterBitmap(false);
+                qrcodeMnemonic.setImageDrawable(bd);
             }
         });
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
-                final GaService gs = getGAService();
                 if (onSignUp == null) {
-                    if (gs != null && gs.onConnected != null) {
+                    if (gaService != null && gaService.onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
-                        onSignUp = Futures.transform(gs.onConnected, new AsyncFunction<Void, LoginData>() {
+                        onSignUp = Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
                             @NonNull
                             @Override
                             public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
-                                return gs.signup(mnemonicText.getText().toString());
+                                return gaService.signup(mnemonicText.getText().toString());
                             }
-                        }, gs.es);
+                        }, gaService.es);
                     } else if (isChecked) {
                         SignUpActivity.this.toast("You are not connected, please wait");
                         checkBox.setChecked(false);
@@ -192,8 +158,8 @@ public class SignUpActivity extends GaActivity {
 
                             final Intent pinSaveActivity = new Intent(SignUpActivity.this, PinSaveActivity.class);
 
-                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", getGAService().getMnemonics());
-                            getGAService().resetSignUp();
+                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
+                            gaService.resetSignUp();
                             onSignUp = null;
                             startActivityForResult(pinSaveActivity, PINSAVE);
                         }
@@ -208,7 +174,7 @@ public class SignUpActivity extends GaActivity {
                                 }
                             });
                         }
-                    }, getGAService().es);
+                    }, gaService.es);
                 } else {
                     if (!checkBox.isChecked())
                         SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");

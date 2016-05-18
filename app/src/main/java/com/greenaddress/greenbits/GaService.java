@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.IBinder;
@@ -90,10 +91,8 @@ public class GaService extends Service {
     @NonNull
     public SettableFuture<Void> triggerOnFullyConnected =  SettableFuture.create();
     private Handler uiHandler;
-    @Nullable
-    private ListenableFuture<QrBitmap> latestQrBitmapMnemonics;
-    @Nullable
-    private ListenableFuture<String> latestMnemonics;
+    private String mSignUpMnemonics = null;
+    private QrBitmap mSignUpQRCode = null;
     private int curBlock = 0;
 
     private boolean mAutoReconnect = true;
@@ -192,11 +191,6 @@ public class GaService extends Service {
                 t.printStackTrace();
             }
         }, es);
-    }
-
-    public void resetSignUp() {
-        latestMnemonics = null;
-        latestQrBitmapMnemonics = null;
     }
 
     void reconnect() {
@@ -702,36 +696,25 @@ public class GaService extends Service {
         return currencyExchangePairs;
     }
 
-    @Nullable
-    public ListenableFuture<String> getMnemonicPassphrase() {
-        if (latestMnemonics == null) {
-            latestMnemonics = es.submit(new Callable<String>() {
-                public String call() throws IOException, MnemonicException.MnemonicLengthException {
-                    final byte[] seed = CryptoHelper.randomBytes(256 / 8);
-                    return CryptoHelper.mnemonic_from_bytes(seed);
-                }
-            });
-            getQrCodeForMnemonicPassphrase();
-        }
-        return latestMnemonics;
+    public void resetSignUp() {
+        mSignUpMnemonics = null;
+        mSignUpQRCode = null;
     }
 
-    @Nullable
-    public ListenableFuture<QrBitmap> getQrCodeForMnemonicPassphrase() {
-        if (latestQrBitmapMnemonics == null) {
-            Futures.addCallback(latestMnemonics, new FutureCallback<String>() {
-                @Override
-                public void onSuccess(@Nullable final String mnemonic) {
-                    latestQrBitmapMnemonics = es.submit(new QrBitmap(mnemonic, Color.WHITE));
-                }
+    public String getSignUpMnemonic() {
+        if (mSignUpMnemonics == null)
+            mSignUpMnemonics = CryptoHelper.mnemonic_from_bytes(CryptoHelper.randomBytes(32));
+        return mSignUpMnemonics;
+    }
 
-                @Override
-                public void onFailure(@NonNull final Throwable t) {
-
-                }
-            }, es);
-        }
-        return latestQrBitmapMnemonics;
+    public Bitmap getSignUpQRCode() {
+        if (mSignUpQRCode == null)
+            try {
+                mSignUpQRCode = new QrBitmap(getSignUpMnemonic(), Color.WHITE).call();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        return mSignUpQRCode.qrcode;
     }
 
     @NonNull
