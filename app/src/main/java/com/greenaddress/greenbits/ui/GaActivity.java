@@ -29,7 +29,13 @@ public abstract class GaActivity extends AppCompatActivity {
 
     private static final String TAG = GaActivity.class.getSimpleName();
     private static final int INVALID_RESOURCE_ID = 0;
-    private boolean mServiceAvailable = false;
+
+    // Both of these variables are only assigned in the UI thread.
+    // mService is available to all derived classes as soon as
+    // onCreateWithService() is called. Once assigned it does not
+    // change so may be read from background threads.
+    private boolean mResumed = false;
+    protected GaService mService = null;
 
     protected GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
@@ -56,9 +62,15 @@ public abstract class GaActivity extends AppCompatActivity {
                     public void run() {
                         final GaActivity self = GaActivity.this;
                         Log.d(TAG, "onCreateWithService -> " + self.getClass().getSimpleName());
-                        self.mServiceAvailable = true;
+                        self.mService = getGAApp().mService;
                         self.onCreateWithService(savedInstanceState,
                                                  self.getGAApp().getConnectionObservable().getState());
+                        if (self.mResumed) {
+                            // We resumed before the service became available, and so
+                            // did not call onResumeWithService() then - call it now.
+                            Log.d(TAG, "(delayed)onResumeWithService -> " + self.getClass().getSimpleName());
+                            onResumeWithService(getGAApp().getConnectionObservable().incRef());
+                        }
                     }
                 });
             }
@@ -73,9 +85,10 @@ public abstract class GaActivity extends AppCompatActivity {
     @Override
     final public void onPause() {
         Log.d(TAG, "onPause -> " + getClass().getSimpleName() +
-              (mServiceAvailable ? "" : " (no attached service)"));
+              (mService == null ? " (no attached service)" : ""));
         super.onPause();
-        if (mServiceAvailable) {
+        mResumed = false;
+        if (mService != null) {
             getGAApp().getConnectionObservable().decRef();
             onPauseWithService();
         }
@@ -84,9 +97,10 @@ public abstract class GaActivity extends AppCompatActivity {
     @Override
     final public void onResume() {
         Log.d(TAG, "onResume -> " + getClass().getSimpleName() +
-              (mServiceAvailable ? "" : " (no attached service)"));
+              (mService == null ? " (no attached service)" : ""));
         super.onResume();
-        if (mServiceAvailable)
+        mResumed = true;
+        if (mService != null)
             onResumeWithService(getGAApp().getConnectionObservable().incRef());
     }
 
