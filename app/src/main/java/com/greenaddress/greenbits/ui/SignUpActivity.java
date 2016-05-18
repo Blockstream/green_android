@@ -66,7 +66,8 @@ public class SignUpActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState,
                                        final ConnectivityObservable.ConnectionState cs) {
 
-        final GaService gaService = getGAService();
+        final GaService service = mService;
+
         final CircularProgressButton signupContinueButton = (CircularProgressButton) findViewById(R.id.signupContinueButton);
         final TextView tos = (TextView) findViewById(R.id.textTosLink);
         final CheckBox checkBox = (CheckBox) findViewById(R.id.signupAcceptCheckBox);
@@ -90,7 +91,7 @@ public class SignUpActivity extends GaActivity {
 
         final TextView qrCodeIcon = (TextView) findViewById(R.id.signupQrCodeIcon);
         final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
-        mnemonicText.setText(gaService.getSignUpMnemonic());
+        mnemonicText.setText(service.getSignUpMnemonic());
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
@@ -110,7 +111,7 @@ public class SignUpActivity extends GaActivity {
                     mnemonicDialog.setContentView(inflatedLayout);
                 }
                 mnemonicDialog.show();
-                final BitmapDrawable bd = new BitmapDrawable(getResources(), gaService.getSignUpQRCode());
+                final BitmapDrawable bd = new BitmapDrawable(getResources(), service.getSignUpQRCode());
                 bd.setFilterBitmap(false);
                 qrcodeMnemonic.setImageDrawable(bd);
             }
@@ -120,16 +121,16 @@ public class SignUpActivity extends GaActivity {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                 if (onSignUp == null) {
-                    if (gaService != null && gaService.onConnected != null) {
+                    if (service != null && service.onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
-                        onSignUp = Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                        onSignUp = Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
                             @NonNull
                             @Override
                             public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
-                                return gaService.signup(mnemonicText.getText().toString());
+                                return service.signup(mnemonicText.getText().toString());
                             }
-                        }, gaService.es);
+                        }, service.es);
                     } else if (isChecked) {
                         SignUpActivity.this.toast("You are not connected, please wait");
                         checkBox.setChecked(false);
@@ -158,8 +159,8 @@ public class SignUpActivity extends GaActivity {
 
                             final Intent pinSaveActivity = new Intent(SignUpActivity.this, PinSaveActivity.class);
 
-                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
-                            gaService.resetSignUp();
+                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", service.getMnemonics());
+                            service.resetSignUp();
                             onSignUp = null;
                             startActivityForResult(pinSaveActivity, PINSAVE);
                         }
@@ -174,7 +175,7 @@ public class SignUpActivity extends GaActivity {
                                 }
                             });
                         }
-                    }, gaService.es);
+                    }, service.es);
                 } else {
                     if (!checkBox.isChecked())
                         SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");
@@ -282,10 +283,12 @@ public class SignUpActivity extends GaActivity {
 
     @Override
     public void onBackPressed() {
+        final GaService service = mService;
+
         if (onSignUp != null) {
-            getGAService().resetSignUp();
+            service.resetSignUp();
             onSignUp = null;
-            getGAService().disconnect(true);
+            service.disconnect(true);
         }
         super.onBackPressed();
     }

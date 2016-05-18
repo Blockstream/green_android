@@ -47,8 +47,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     @Override
     public void onPauseWithService() {
+        final GaService service = mService;
+
         unregisterReceiver(uiUpdated);
-        final PeerGroup peerGroup = getGAService().spv.getPeerGroup();
+        final PeerGroup peerGroup = service.spv.getPeerGroup();
         if (peerGroup != null) {
             peerGroup.removeConnectedEventListener(this);
             peerGroup.removeDisconnectedEventListener(this);
@@ -59,6 +61,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     @Override
     public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
+        final GaService service = mService;
+
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
         if (getGAApp().getConnectionObservable().isForcedOff()) {
@@ -70,7 +74,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
         peerList.clear();
 
-        final PeerGroup peerGroup = getGAService().spv.getPeerGroup();
+        final PeerGroup peerGroup = service.spv.getPeerGroup();
         if (peerGroup == null || !peerGroup.isRunning())
             return;
 
@@ -82,8 +86,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         else
             bloominfo = getString(R.string.network_monitor_bloom_info);
 
-        final int curBlock = getGAService().getCurBlock();
-        final int spvHeight = getGAService().spv.getSpvHeight();
+        final int curBlock = service.getCurBlock();
+        final int spvHeight = service.spv.getSpvHeight();
         final TextView tv = (TextView) findViewById(R.id.bloominfo);
         tv.setText(getString(R.string.network_monitor_banner, bloominfo, curBlock - spvHeight));
 
@@ -151,9 +155,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
         @NonNull
         public String toString(){
+            final GaService service = mService;
             String ipAddr = peer.toString();
             if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
-                ipAddr = getGAService().cfg("TRUSTED").getString("address", null);
+                ipAddr = service.cfg("TRUSTED").getString("address", null);
                 if (ipAddr != null)
                     ipAddr = new Node(ipAddr).toString();
             }

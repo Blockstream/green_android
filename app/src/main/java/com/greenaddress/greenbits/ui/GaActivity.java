@@ -41,10 +41,6 @@ public abstract class GaActivity extends AppCompatActivity {
         return (GreenAddressApplication) getApplication();
     }
 
-    protected GaService getGAService() {
-        return getGAApp().mService;
-    }
-
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());

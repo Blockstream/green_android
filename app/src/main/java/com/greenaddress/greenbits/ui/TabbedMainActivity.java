@@ -98,11 +98,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void configureNoTwoFacFooter() {
+        final GaService service = mService;
 
         final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
 
-        final Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
+        final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
         if (twoFacConfig == null) {
             return;
         }
@@ -126,7 +127,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void configureSubaccountsFooter(final int curSubaccount) {
-        final ArrayList subs = getGAService().getSubaccounts();
+        final GaService service = mService;
+
+        final ArrayList subs = service.getSubaccounts();
         if (subs == null || subs.isEmpty())
             return;
 
@@ -153,7 +156,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                 subaccounts_list.add(getResources().getText(R.string.main_account).toString());
 
-                final ArrayList subs = getGAService().getSubaccounts();
+                final ArrayList subs = service.getSubaccounts();
                 for (final Object subaccount : subs) {
                     subaccounts_list.add(((Map) subaccount).get("name").toString());
                 }
@@ -166,11 +169,11 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         if (which == 0) {
                             curSubaccount = 0;
                         } else {
-                            final ArrayList subaccounts = getGAService().getSubaccounts();
+                            final ArrayList subaccounts = service.getSubaccounts();
                             curSubaccount = ((Integer) ((Map<String, ?>) subaccounts.get(which - 1)).get("pointer"));
                         }
 
-                        if (getGAService().cfg("main").getInt("curSubaccount", 0) != curSubaccount) {
+                        if (service.cfg("main").getInt("curSubaccount", 0) != curSubaccount) {
                             setTitle(String.format("%s %s", getResources().getText(R.string.app_name), text));
                             onSubaccountUpdate(curSubaccount);
                         }
@@ -187,7 +190,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void onSubaccountUpdate(final int input) {
-        getGAService().cfgEdit("main").putInt("curSubaccount", input).apply();
+        final GaService service = mService;
+        service.cfgEdit("main").putInt("curSubaccount", input).apply();
 
         final Intent data = new Intent("fragmentupdater");
         data.putExtra("sub", input);
@@ -196,6 +200,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
     private void launch(boolean isBitcoinURL) {
+        final GaService service = mService;
+
         setContentView(R.layout.activity_tabbed_main);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -209,8 +215,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-        final GaService gs = getGAService();
-        if (gs == null) {
+        if (service == null) {
+            // FIXME: Check if this is possible
             shortToast(R.string.err_send_not_connected_will_resume);
             return;
         }
@@ -219,7 +225,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         final Handler handler = new Handler();
 
-        gs.getTwoFacConfigObservable().addObserver(new Observer() {
+        service.getTwoFacConfigObservable().addObserver(new Observer() {
             @Override
             public void update(final Observable observable, final Object data) {
                 handler.post(new Runnable() {
@@ -231,7 +237,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             }
         });
 
-        final int curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
+        final int curSubaccount = service.cfg("main").getInt("curSubaccount", 0);
         configureSubaccountsFooter(curSubaccount);
 
         if (isBitcoinURL) {
@@ -284,6 +290,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        final GaService service = mService;
+
         super.onActivityResult(requestCode, resultCode, data);
 
         final TabbedMainActivity caller = TabbedMainActivity.this;
@@ -291,8 +299,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         switch (requestCode) {
             case REQUEST_TX_DETAILS:
             case REQUEST_SETTINGS:
-                final int curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
-                getGAService().updateBalance(curSubaccount);
+                final int curSubaccount = service.cfg("main").getInt("curSubaccount", 0);
+                service.updateBalance(curSubaccount);
                 startActivity(new Intent(this, TabbedMainActivity.class));
                 finish();
                 break;
@@ -349,7 +357,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                             txNonBip38 = new Transaction(Network.NETWORK,
                                     Hex.decode((String) result.get("tx")));
                             final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(
-                                    (String) getGAService().getUserConfig("unit"));
+                                    (String) service.getUserConfig("unit"));
                             Coin outputsValue = Coin.ZERO;
                             for (final TransactionOutput output : txNonBip38.getOutputs()) {
                                 outputsValue = outputsValue.add(output.getValue());
@@ -379,7 +387,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                 private void doSweep() {
                                     final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
                                     final Integer outPointer = (Integer) result.get("out_pointer");
-                                    CB.after(getGAService().verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
+                                    CB.after(service.verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
                                              new CB.Toast<Boolean>(caller) {
                                         @Override
                                         public void onSuccess(final @Nullable Boolean isSpendable) {
@@ -389,7 +397,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                                 for (int i = 0; i < size; ++i) {
                                                     signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
                                                 }
-                                                CB.after(getGAService().sendTransaction(signatures),
+                                                CB.after(service.sendTransaction(signatures),
                                                          new CB.Toast<String>(caller) { });
                                             } else
                                                 caller.toast(R.string.err_tabbed_sweep_failed);
@@ -411,7 +419,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                         final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS, null);
                                         key = ECKey.fromPrivate(decryptedPKey);
 
-                                        CB.after(getGAService().prepareSweepSocial(key.getPubKey(), true),
+                                        CB.after(service.prepareSweepSocial(key.getPubKey(), true),
                                                  new CB.Toast<Map<?, ?>>(caller) {
                                             @Override
                                             public void onSuccess(@Nullable final Map<?, ?> result) {
@@ -427,8 +435,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     }
                 };
                 if (keyNonBip38 != null) {
-                    CB.after(getGAService().prepareSweepSocial(keyNonBip38.getPubKey(), false),
-                             callback);
+                    CB.after(service.prepareSweepSocial(keyNonBip38.getPubKey(), false), callback);
                 } else {
                     callback.onSuccess(null);
                 }
@@ -446,6 +453,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        final GaService service = mService;
+
         final TabbedMainActivity caller = TabbedMainActivity.this;
 
         switch (item.getItemId()) {
@@ -467,7 +476,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 toast(getGAApp().getConnectionObservable().getState().mState.toString());
                 return true;
             case R.id.action_logout:
-                getGAService().disconnect(false);
+                service.disconnect(false);
                 finish();
                 return true;
             case R.id.action_network:

@@ -32,6 +32,8 @@ public class PinSaveActivity extends GaActivity {
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
     private void setPin(@NonNull final String pinText) {
+        final GaService service = mService;
+
         if (pinText.length() < 4) {
             shortToast(R.string.err_pin_save_wrong_length);
             return;
@@ -47,17 +49,16 @@ public class PinSaveActivity extends GaActivity {
         pinSaveButton.setProgress(50);
         pinSaveText.setEnabled(false);
         pinSkipButton.setVisibility(View.GONE);
-        final GaService gaService = getGAService();
-        Futures.addCallback(gaService.setPin(CryptoHelper.mnemonic_to_seed(mnemonic_str), mnemonic_str,
+        Futures.addCallback(service.setPin(CryptoHelper.mnemonic_to_seed(mnemonic_str), mnemonic_str,
                         pinText, "default"),
                 new FutureCallback<PinData>() {
                     @Override
                     public void onSuccess(@Nullable final PinData result) {
-                        gaService.cfgEdit("pin")
-                                 .putString("ident", result.ident)
-                                 .putInt("counter", 0)
-                                 .putString("encrypted", result.encrypted)
-                                 .apply();
+                        service.cfgEdit("pin")
+                               .putString("ident", result.ident)
+                               .putInt("counter", 0)
+                               .putString("encrypted", result.encrypted)
+                               .apply();
                         setResult(RESULT_OK);
                         finish();
                     }
@@ -73,16 +74,18 @@ public class PinSaveActivity extends GaActivity {
                             }
                         });
                     }
-                }, gaService.es);
+                }, service.es);
     }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        final GaService service = mService;
+
         // Challenge completed, proceed with using cipher
         if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
-                setPin(KeyStoreAES.tryEncrypt(getGAService()));
+                setPin(KeyStoreAES.tryEncrypt(service));
             } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
                 KeyStoreAES.showAuthenticationScreen(this);
             } catch (final KeyStoreAES.KeyInvalidated e) {
@@ -98,6 +101,8 @@ public class PinSaveActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState,
                                        final ConnectivityObservable.ConnectionState cs) {
 
+        final GaService service = mService;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             try {
@@ -111,7 +116,7 @@ public class PinSaveActivity extends GaActivity {
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                         if (isChecked) {
                             try {
-                                setPin(KeyStoreAES.tryEncrypt(PinSaveActivity.this.getGAService()));
+                                setPin(KeyStoreAES.tryEncrypt(service));
                             } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
                                 KeyStoreAES.showAuthenticationScreen(PinSaveActivity.this);
                             } catch (final KeyStoreAES.KeyInvalidated e) {

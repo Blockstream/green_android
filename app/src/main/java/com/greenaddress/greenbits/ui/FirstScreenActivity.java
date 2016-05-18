@@ -56,6 +56,8 @@ public class FirstScreenActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState,
                                        final ConnectivityObservable.ConnectionState cs) {
 
+        final GaService service = mService;
+
         mapClick(R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
         mapClick(R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));
         final Uri homepage = Uri.parse("https://greenaddress.it");
@@ -67,7 +69,7 @@ public class FirstScreenActivity extends GaActivity {
         }
 
         // Check if a TEE is supported
-        getGAService().es.submit(new Callable<Object>() {
+        service.es.submit(new Callable<Object>() {
             @Nullable
             @Override
             public Object call() {
@@ -149,8 +151,9 @@ public class FirstScreenActivity extends GaActivity {
     }
 
     private void proceedTEE(@NonNull final LedgerTransportTEEProxy transport, @NonNull final BTChipDongle dongle, final boolean setup) {
-        final GaService gaService = getGAService();
-        gaService.es.submit(new Callable<Object>() {
+        final GaService service = mService;
+
+        service.es.submit(new Callable<Object>() {
             @Nullable
             @Override
             public Object call() {
@@ -233,16 +236,16 @@ public class FirstScreenActivity extends GaActivity {
                 final BTChipPublicKey masterPublicKeyFixed = masterPublicKey;
                 final BTChipPublicKey loginPublicKeyFixed = loginPublicKey;
 
-                Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+                Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
                     @NonNull
                     @Override
                     public ListenableFuture<LoginData> apply(@NonNull final Void input) throws Exception {
                         if (!setup) {
                             Log.d(TAG, "TEE login");
-                            return gaService.login(new BTChipHWWallet(dongle));
+                            return service.login(new BTChipHWWallet(dongle));
                         } else {
                             Log.d(TAG, "TEE signup");
-                            return gaService.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
+                            return service.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
                         }
                     }
                 }), new FutureCallback<LoginData>() {
@@ -296,12 +299,14 @@ public class FirstScreenActivity extends GaActivity {
 
     @Override
     public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
+        final GaService service = mService;
+
         //FIXME : recheck state, properly handle TEE link anyway
         if (cs.mState.equals(ConnectivityObservable.State.LOGGEDIN)) {
             // already logged in, could be from different app via intent
             startNewActivity(TabbedMainActivity.class);
             finish();
-        } else if (getGAService().cfg("pin").getString("ident", null) != null) {
+        } else if (service.cfg("pin").getString("ident", null) != null) {
             startNewActivity(PinActivity.class);
             finish();
         }

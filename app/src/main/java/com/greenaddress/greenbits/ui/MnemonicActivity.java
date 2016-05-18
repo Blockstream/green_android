@@ -112,7 +112,7 @@ public class MnemonicActivity extends GaActivity {
     }
 
     private void login() {
-        final GaService gaService = getGAService();
+        final GaService service = mService;
         
         final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
         if (cs.mState == ConnectivityObservable.State.LOGGEDIN) {
@@ -161,25 +161,25 @@ public class MnemonicActivity extends GaActivity {
                         @Nullable
                         @Override
                         public ListenableFuture<LoginData> apply(final @Nullable String passphrase) {
-                            return gaService.login(
+                            return service.login(
                                     CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
 
                         }
                     });
                 } else {
-                    return gaService.login(edit.getText().toString().trim());
+                    return service.login(edit.getText().toString().trim());
                 }
             }
         };
 
-        final ListenableFuture<LoginData> loginFuture = Futures.transform(gaService.onConnected, connectToLogin, gaService.es);
+        final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
             public void onSuccess(@Nullable final LoginData result) {
                 if (getCallingActivity() == null) {
                     final Intent pinSaveActivity = new Intent(MnemonicActivity.this, PinSaveActivity.class);
-                    pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", gaService.getMnemonics());
+                    pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", service.getMnemonics());
                     startActivityForResult(pinSaveActivity, PINSAVE);
                 } else {
                     setResult(RESULT_OK);
@@ -201,7 +201,7 @@ public class MnemonicActivity extends GaActivity {
                     }
                 });
             }
-        }, gaService.es);
+        }, service.es);
     }
 
 
@@ -341,6 +341,8 @@ public class MnemonicActivity extends GaActivity {
     }
 
     private void NFCIntentMnemonicLogin() {
+        final GaService service = mService;
+
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
 
         final Intent intent = getIntent();
@@ -353,12 +355,11 @@ public class MnemonicActivity extends GaActivity {
                 final String mnemonics = CryptoHelper.mnemonic_from_bytes(
                         ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload());
 
-                final GaService gaService = getGAService();
                 edit.setText(mnemonics);
 
-                if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
+                if (service != null && service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
                     //Auxillary Future to make sure we are connected.
-                    Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
+                    Futures.addCallback(service.triggerOnFullyConnected, new FutureCallback<Void>() {
                         @Override
                         public void onSuccess(@Nullable final Void result) {
                             login();
@@ -378,10 +379,9 @@ public class MnemonicActivity extends GaActivity {
                     @Override
                     public void onSuccess(final @Nullable String passphrase) {
                         final String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(array, passphrase);
-                        final GaService gaService = getGAService();
                         edit.setText(mnemonics);
-                        if (gaService != null && gaService.onConnected != null && !mnemonics.equals(gaService.getMnemonics())) {
-                            Futures.addCallback(gaService.onConnected, new FutureCallback<Void>() {
+                        if (service != null && service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
+                            Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
                                 @Override
                                 public void onSuccess(@Nullable final Void result) {
                                     login();

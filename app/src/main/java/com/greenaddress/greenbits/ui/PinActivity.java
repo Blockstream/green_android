@@ -59,6 +59,8 @@ public class PinActivity extends GaActivity implements Observer {
 
 
     private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
+        final GaService service = mService;
+
         if (pinText.length() < 4) {
             shortToast("PIN has to be between 4 and 15 long");
             return;
@@ -70,9 +72,7 @@ public class PinActivity extends GaActivity implements Observer {
             return;
         }
 
-        final GaService gaService = getGAService();
-
-        final PinData pinData = new PinData(ident, gaService.cfg("pin").getString("encrypted", null));
+        final PinData pinData = new PinData(ident, service.cfg("pin").getString("encrypted", null));
 
         pinLoginButton.setIndeterminateProgressMode(true);
         pinLoginButton.setProgress(50);
@@ -85,16 +85,16 @@ public class PinActivity extends GaActivity implements Observer {
             @NonNull
             @Override
             public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                return gaService.login(pinData, pinText.getText().toString());
+                return service.login(pinData, pinText.getText().toString());
             }
         };
 
-        final ListenableFuture<LoginData> loginFuture = Futures.transform(gaService.onConnected, connectToLogin, gaService.es);
+        final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
             public void onSuccess(@Nullable final LoginData result) {
-                gaService.cfgEdit("pin").putInt("counter", 0).apply();
+                service.cfgEdit("pin").putInt("counter", 0).apply();
                 if (getCallingActivity() == null) {
                     final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
                     startActivity(mainActivity);
@@ -107,7 +107,7 @@ public class PinActivity extends GaActivity implements Observer {
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 String message = t.getMessage();
-                final SharedPreferences prefs = gaService.cfg("pin");
+                final SharedPreferences prefs = service.cfg("pin");
                 final int counter = prefs.getInt("counter", 0) + 1;
                 if (t instanceof GAException) {
                     final SharedPreferences.Editor editor = prefs.edit();
@@ -142,7 +142,7 @@ public class PinActivity extends GaActivity implements Observer {
                     }
                 });
             }
-        }, gaService.es);
+        }, service.es);
     }
 
     @Override
@@ -200,6 +200,7 @@ public class PinActivity extends GaActivity implements Observer {
     @TargetApi(Build.VERSION_CODES.M)
     private void tryDecrypt() {
 
+        final GaService service = mService;
         final SharedPreferences prefs = getSharedPreferences("pin", MODE_PRIVATE);
         final String androidLogin = prefs.getString("native", null);
         final String aesiv = prefs.getString("nativeiv", null);
@@ -216,10 +217,9 @@ public class PinActivity extends GaActivity implements Observer {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(aesiv, Base64.NO_WRAP)));
             final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
 
-            final GaService gaService = getGAApp().mService;
-            if (gaService != null && gaService.onConnected != null) {
+            if (service != null && service.onConnected != null) {
                 //Auxillary Future to make sure we are connected.
-                Futures.addCallback(gaService.triggerOnFullyConnected, new FutureCallback<Void>() {
+                Futures.addCallback(service.triggerOnFullyConnected, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(@Nullable final Void result) {
 
@@ -235,11 +235,11 @@ public class PinActivity extends GaActivity implements Observer {
                             @NonNull
                             @Override
                             public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                                return gaService.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
+                                return service.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
                             }
                         };
 
-                        final ListenableFuture<LoginData> loginFuture = Futures.transform(gaService.onConnected, connectToLogin, gaService.es);
+                        final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
 
                         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
                             @Override
@@ -287,7 +287,7 @@ public class PinActivity extends GaActivity implements Observer {
                                     }
                                 });
                             }
-                        }, gaService.es);
+                        }, service.es);
                     }
 
                     @Override

@@ -73,6 +73,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     protected void onCreateWithService(final Bundle savedInstanceState,
                                        final ConnectivityObservable.ConnectionState cs) {
 
+        final GaService service = mService;
         tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
         tagDispatcher = TagDispatcher.get(this, this);
 
@@ -173,11 +174,11 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     return;
                 }
 
-                Futures.addCallback(Futures.transform(getGAService().onConnected, new AsyncFunction<Void, LoginData>() {
+                Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
                     @NonNull
                     @Override
                     public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
-                        return getGAService().login(new TrezorHWWallet(t));
+                        return service.login(new TrezorHWWallet(t));
                     }
                 }), new FutureCallback<LoginData>() {
                     @Override
@@ -221,7 +222,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             return;
         }
 
-        if (getGAService().cfg("pin").getString("ident", null) != null) {
+        if (service.cfg("pin").getString("ident", null) != null) {
             final Intent pin = new Intent(this, PinActivity.class);
             startActivityForResult(pin, 0);
         } else {
@@ -235,6 +236,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     }
 
     private void showPinDialog(@Nullable final UsbDevice device) {
+        final GaService service = mService;
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
             @Override
@@ -288,8 +290,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 btchipDialog.show();
             }
         });
-        final GaService gaService = getGAService();
-        Futures.addCallback(Futures.transform(gaService.onConnected, new AsyncFunction<Void, LoginData>() {
+        Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
             @NonNull
             @Override
             public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
@@ -330,7 +331,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
                                         if (remainingAttempts == -1) {
                                             // -1 means success
-                                            return gaService.login(hwWallet);
+                                            return service.login(hwWallet);
                                         } else {
                                             final String msg = new Formatter().format(getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString();
                                             RequestLoginActivity.this.runOnUiThread(new Runnable() {
@@ -371,7 +372,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     try {
                         final BTChipPublicKey masterPublicKey = hwWallet.getDongle().getWalletPublicKey("");
                         final BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");
-                        Futures.addCallback(gaService.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
+                        Futures.addCallback(service.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
                                 new FutureCallback<LoginData>() {
 
                                     @Override
