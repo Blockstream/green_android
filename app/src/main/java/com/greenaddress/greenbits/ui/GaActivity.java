@@ -140,13 +140,13 @@ public abstract class GaActivity extends AppCompatActivity {
 
     private void toastImpl(final int id, final int len) {
         runOnUiThread(new Runnable() {
-            public void run() { Toast.makeText(GaActivity.this, id, len); }
+            public void run() { Toast.makeText(GaActivity.this, id, len).show(); }
         });
     }
 
     private void toastImpl(final String s, final int len) {
         runOnUiThread(new Runnable() {
-            public void run() { Toast.makeText(GaActivity.this, s, len); }
+            public void run() { Toast.makeText(GaActivity.this, s, len).show(); }
         });
     }
 
@@ -156,7 +156,7 @@ public abstract class GaActivity extends AppCompatActivity {
                 if (reenable != null)
                     reenable.setEnabled(true);
                 t.printStackTrace();
-                Toast.makeText(GaActivity.this, t.getMessage(), Toast.LENGTH_LONG);
+                Toast.makeText(GaActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
