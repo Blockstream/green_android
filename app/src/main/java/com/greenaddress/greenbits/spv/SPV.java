@@ -501,9 +501,8 @@ public class SPV {
             System.setProperty("user.home", gaService.getFilesDir().toString());
             final String trustedAddr = gaService.cfg("TRUSTED").getString("address", "");
 
-            final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(gaService);
-            final String proxyHost = sharedPref.getString("proxy_host", null);
-            final String proxyPort = sharedPref.getString("proxy_port", null);
+            final String proxyHost = gaService.getProxyHost();
+            final String proxyPort = gaService.getProxyPort();
 
             if (proxyHost != null && proxyPort != null) {
                 System.setProperty("http.proxyHost", proxyHost);

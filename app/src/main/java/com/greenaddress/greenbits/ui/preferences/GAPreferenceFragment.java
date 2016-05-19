@@ -29,13 +29,12 @@ public class GAPreferenceFragment extends PreferenceFragment {
         }
     };
 
-    static void bindPreferenceSummaryToValue(final Preference preference) {
+    protected void bindPreferenceSummaryToValue(final Preference preference) {
         preference.setOnPreferenceChangeListener(onPreferenceChanged);
         // Trigger the listener immediately with the preference's
         // current value.
-        onPreferenceChanged.onPreferenceChange(preference, PreferenceManager
-                .getDefaultSharedPreferences(preference.getContext())
-                .getString(preference.getKey(), ""));
+        final String currentVal = gaService.cfg().getString(preference.getKey(), "");
+        onPreferenceChanged.onPreferenceChange(preference, currentVal);
     }
 
     @Override

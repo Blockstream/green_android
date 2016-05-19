@@ -241,6 +241,7 @@ public class GaService extends Service {
     }
 
     // Sugar for fetching/editing preferences
+    public SharedPreferences cfg() { return PreferenceManager.getDefaultSharedPreferences(this); }
     public SharedPreferences cfg(final String name) { return getSharedPreferences(name, MODE_PRIVATE); }
     public SharedPreferences.Editor cfgEdit(final String name) { return cfg(name).edit(); }
     public SharedPreferences cfgIn(final String name) { return cfg(name + getReceivingId()); }
@@ -250,6 +251,9 @@ public class GaService extends Service {
     public Object getUserConfig(@NonNull final String key) {
         return client.getUserConfig(key);
     }
+
+    public String getProxyHost() { return cfg().getString("proxy_host", null); }
+    public String getProxyPort() { return cfg().getString("proxy_port", null); }
 
     @Override
     public void onCreate() {
@@ -315,10 +319,8 @@ public class GaService extends Service {
             }
         }, es);
 
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        final String proxyHost = sharedPref.getString("proxy_host", null);
-        final String proxyPort = sharedPref.getString("proxy_port", null);
-
+        final String proxyHost = getProxyHost();
+        final String proxyPort = getProxyPort();
         if (proxyHost != null && proxyPort != null) {
             client.setProxy(proxyHost, proxyPort);
         }

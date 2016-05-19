@@ -100,8 +100,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private void configureNoTwoFacFooter() {
         final GaService service = mService;
 
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        final boolean twoFacWarning = sharedPref.getBoolean("twoFacWarning", false);
+        final boolean twoFacWarning = service.cfg().getBoolean("twoFacWarning", false);
 
         final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
         if (twoFacConfig == null) {

@@ -27,7 +27,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
-        GAPreferenceFragment.bindPreferenceSummaryToValue(findPreference("trusted_peer"));
+        bindPreferenceSummaryToValue(findPreference("trusted_peer"));
 
         final Preference reset_spv = getPreferenceManager().findPreference("reset_spv");
         reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -116,12 +116,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                     if (newString.isEmpty() || newLower.contains(".onion")) {
 
                         final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-                        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                        final String proxyHost = sharedPref.getString("proxy_host", null);
-                        final String proxyPort = sharedPref.getString("proxy_port", null);
 
-                        if (currentapiVersion >= 23 &&
-                                (newLower.contains(".onion")) && (proxyHost == null || proxyPort == null)) {
+                        if (currentapiVersion >= 23 && newLower.contains(".onion") &&
+                            (gaService.getProxyHost() == null || gaService.getProxyPort() == null)) {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
                             // and HS connectivity.
                             // but work with Orbot socks if set
