@@ -50,4 +50,9 @@ public final class CB {
            mActivity.toast(t, mEnabler);
        }
     }
+
+    /** A runnable that takes 1 argument */
+    public interface Runnable1T<T> {
+        abstract public void run(final T arg);
+    }
 }

@@ -31,6 +31,7 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.ConnectivityObservable;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
@@ -647,6 +648,7 @@ public class TransactionActivity extends GaActivity {
             CB.after(signed, new CB.Toast<List<String>>(gaActivity) {
                 @Override
                 public void onSuccess(final @javax.annotation.Nullable List<String> signatures) {
+                    final GaService service = getGAService();
 
                     int i = 0;
                     for (final String sig : signatures) {
@@ -669,59 +671,45 @@ public class TransactionActivity extends GaActivity {
                     }
                     final Map<String, Object> twoFacData = new HashMap<>();
                     twoFacData.put("try_under_limits_bump", tx.getFee().subtract(oldFee).longValue());
-                    final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(tx, twoFacData, true);
+                    final ListenableFuture<Map<String,Object>> sendFuture = service.getClient().sendRawTransaction(tx, twoFacData, true);
                     Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
                         @Override
                         public void onSuccess(@Nullable final Map result) {
-                            getActivity().runOnUiThread(new Runnable() {
+                            gaActivity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     // FIXME: Add notification with "Transaction sent"?
-                                    getActivity().finish();
+                                    gaActivity.finish();
                                 }
                             });
                         }
 
                         @Override
                         public void onFailure(@NonNull final Throwable t) {
-                            if (t instanceof GAException && t.getMessage().equals("http://greenaddressit.com/error#auth")) {
-                                // 2FA required
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        final List<String> enabledTwoFac =
-                                                getGAService().getEnabledTwoFacNames(true);
-                                        if (enabledTwoFac.size() > 1) {
-                                            show2FAChoices(oldFee, tx.getFee(), tx);
-                                        } else {
-                                            showIncreaseSummary(enabledTwoFac.get(0), oldFee, tx.getFee(), tx);
-                                        }
-                                    }
-                                });
-                            } else {
+                            if (!(t instanceof GAException) || !t.getMessage().equals("http://greenaddressit.com/error#auth")) {
                                 gaActivity.toast(t);
+                                return;
                             }
-
+                            // 2FA is required, prompt the user
+                            gaActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final boolean skipChoice = false;
+                                    mTwoFactor = GaActivity.popupTwoFactorChoice(gaActivity, service, skipChoice,
+                                                                                 new CB.Runnable1T<String>() {
+                                        @Override
+                                        public void run(final String method) {
+                                            showIncreaseSummary(method, oldFee, tx.getFee(), tx);
+                                        }
+                                    });
+                                    if (mTwoFactor != null)
+                                        mTwoFactor.show();
+                                }
+                            });
                         }
-                    }, getGAService().es);
+                    }, service.es);
                 }
             });
-        }
-
-        private void show2FAChoices(final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
-            Log.i(TAG, "params " + oldFee + " " + newFee);
-            final String[] enabledTwoFacNames = new String[]{};
-            final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
-            mTwoFactor = Popup(getActivity(), getString(R.string.twoFactorChoicesTitle), R.string.choose, R.string.cancel)
-                             .items(getGAService().getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
-                             .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
-                                 @Override
-                                 public boolean onSelection(MaterialDialog dlg, View view, int which, CharSequence text) {
-                                     showIncreaseSummary(enabledTwoFacNamesSystem.get(which), oldFee, newFee, signedTx);
-                                     return true;
-                                 }
-                             }).build();
-            mTwoFactor.show();
         }
 
         private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {

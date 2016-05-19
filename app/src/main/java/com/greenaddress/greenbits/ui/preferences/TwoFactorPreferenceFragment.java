@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -16,6 +17,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
@@ -65,29 +67,23 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private void change2FA(@NonNull final String method, final Boolean newValue) {
         if (newValue) {
-            final Intent intent = new Intent(this.getActivity(), TwoFactorActivity.class);
+            final Intent intent = new Intent(getActivity(), TwoFactorActivity.class);
             intent.putExtra("method", method.toLowerCase());
             twoFacMethod = method;
             startActivityForResult(intent, REQUEST_ENABLE_2FA);
             return;
         }
 
-        final String[] enabledTwoFacNames = new String[]{};
-        final List<String> enabledTwoFacNamesSystem = gaService.getEnabledTwoFacNames(true);
-        if (enabledTwoFacNamesSystem.size() <= 1) {
-            disable2FA(method, enabledTwoFacNamesSystem.get(0));
-            return;
-        }
-        GaActivity.Popup(this.getActivity(), getString(R.string.twoFactorChoicesTitle),
-                         R.string.choose, R.string.cancel)
-                  .items(gaService.getEnabledTwoFacNames(false).toArray(enabledTwoFacNames))
-                  .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
-                      @Override
-                      public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                          disable2FA(method, enabledTwoFacNamesSystem.get(which));
-                          return true;
-                      }
-                  }).build().show();
+        final boolean skipChoice = false;
+        Dialog dlg = GaActivity.popupTwoFactorChoice(getActivity(), gaService, skipChoice,
+                                                     new CB.Runnable1T<String>() {
+            @Override
+            public void run(final String whichMethod) {
+                disable2FA(method, whichMethod);
+            }
+        });
+        if (dlg != null)
+            dlg.show();
     }
 
     private void disable2FA(@NonNull final String method, @NonNull final String withMethod) {

@@ -19,6 +19,8 @@ import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
+import java.util.List;
+
 /**
  * Base class for activities within the application.
  *
@@ -188,5 +190,35 @@ public abstract class GaActivity extends AppCompatActivity {
 
     public static MaterialDialog.Builder Popup(Activity a, final String title) {
         return Popup(a, title, android.R.string.ok, android.R.string.cancel);
+    }
+
+    public static MaterialDialog popupTwoFactorChoice(final Activity a, final GaService service,
+                                                      final boolean skip, final CB.Runnable1T<String> callback) {
+        final List<String> names = service.getEnabledTwoFacNames(false);
+
+        if (skip || names.size() <= 1) {
+           // Caller elected to skip, or no choices are available: don't prompt
+           a.runOnUiThread(new Runnable() {
+               @Override
+               public void run() {
+                   callback.run(names.isEmpty() ? null : service.getEnabledTwoFacNames(true).get(0));
+               }
+           });
+           return null;
+        }
+
+        // Return a pop up dialog to let the user choose.
+        String[] namesArray = new String[names.size()];
+        namesArray = names.toArray(namesArray);
+        return Popup(a, a.getString(R.string.twoFactorChoicesTitle), R.string.choose, R.string.cancel)
+                   .items(namesArray)
+                   .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                       @Override
+                       public boolean onSelection(MaterialDialog dlg, View v, int which, CharSequence text) {
+                           final List<String> systemNames = service.getEnabledTwoFacNames(true);
+                           callback.run(systemNames.get(which));
+                           return true;
+                       }
+                   }).build();
     }
 }

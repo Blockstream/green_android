@@ -179,21 +179,6 @@ public class SendFragment extends SubaccountFragment {
         mSummary.show();
     }
 
-    private void show2FAChoices(final Coin fee, final Coin amount, @NonNull final String recipient, @NonNull final PreparedTransaction prepared) {
-        Log.i(TAG, "params " + fee + " " + amount + " " + recipient);
-        final List<String> enabledTwoFacNamesSystem = getGAService().getEnabledTwoFacNames(true);
-        mTwoFactor = GaActivity.Popup(getActivity(), getString(R.string.twoFactorChoicesTitle), R.string.choose, R.string.cancel)
-                .items(getGAService().getEnabledTwoFacNames(false).toArray(new String[4]))
-                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
-                    @Override
-                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                        showTransactionSummary(enabledTwoFacNamesSystem.get(which), fee, amount, recipient, prepared);
-                        return true;
-                    }
-                }).build();
-        mTwoFactor.show();
-    }
-
     private void processBitcoinURI(@NonNull final BitcoinURI URI) {
         final GaActivity gaActivity = getGaActivity();
 
@@ -269,6 +254,8 @@ public class SendFragment extends SubaccountFragment {
     @Override
     public View onCreateView(@Nullable final LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
+        final GaService service = getGAService();
+
         registerReceiver();
         final GaActivity gaActivity = getGaActivity();
 
@@ -277,7 +264,7 @@ public class SendFragment extends SubaccountFragment {
 
         rootView = inflater.inflate(R.layout.fragment_send, container, false);
 
-        curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
+        curSubaccount = service.cfg("main").getInt("curSubaccount", 0);
 
         sendButton = (Button) rootView.findViewById(R.id.sendSendButton);
         maxButton = (Switch) rootView.findViewById(R.id.sendMaxButton);
@@ -295,7 +282,7 @@ public class SendFragment extends SubaccountFragment {
         recipientEdit = (EditText) rootView.findViewById(R.id.sendToEditText);
         scanIcon = (TextView) rootView.findViewById(R.id.sendScanIcon);
 
-        final String btcUnit = (String) getGAService().getUserConfig("unit");
+        final String btcUnit = (String) service.getUserConfig("unit");
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = (TextView) rootView.findViewById(R.id.sendBitcoinUnitText);
         bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
@@ -386,15 +373,15 @@ public class SendFragment extends SubaccountFragment {
                             // safer. If we attempted to send the calculated amount
                             // instead with 'sender' fee algorithm, the transaction
                             // could fail due to differences in calculations.
-                            prepared = getGAService().prepareSweepAll(curSubaccount, recipient, privData);
+                            prepared = service.prepareSweepAll(curSubaccount, recipient, privData);
                         } else {
-                            prepared = getGAService().prepareTx(amount, recipient, privData);
+                            prepared = service.prepareTx(amount, recipient, privData);
                         }
                     } else {
                         prepared = null;
                     }
                 } else {
-                    prepared = getGAService().preparePayreq(amount, payreqData, privData);
+                    prepared = service.preparePayreq(amount, payreqData, privData);
                 }
 
                 if (prepared != null) {
@@ -404,11 +391,11 @@ public class SendFragment extends SubaccountFragment {
                                 @Override
                                 public void onSuccess(@Nullable final PreparedTransaction result) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    CB.after(getGAService().spv.validateTxAndCalculateFeeOrAmount(result, recipient, maxButton.isChecked() ? null : amount),
+                                    CB.after(service.spv.validateTxAndCalculateFeeOrAmount(result, recipient, maxButton.isChecked() ? null : amount),
                                             new CB.Toast<Coin>(gaActivity, sendButton) {
                                                 @Override
                                                 public void onSuccess(@Nullable final Coin fee) {
-                                                    final Map<?, ?> twoFacConfig = getGAService().getTwoFacConfig();
+                                                    final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
                                                     // can be non-UI because validation talks to USB if hw wallet is used
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         @Override
@@ -418,22 +405,22 @@ public class SendFragment extends SubaccountFragment {
                                                             if (maxButton.isChecked()) {
                                                                 // 'fee' in reality is the sent amount in case passed amount=null
                                                                 dialogAmount = fee;
-                                                                dialogFee = getGAService().getBalanceCoin(curSubaccount).subtract(fee);
+                                                                dialogFee = service.getBalanceCoin(curSubaccount).subtract(fee);
                                                             } else {
                                                                 dialogAmount = amount;
                                                                 dialogFee = fee;
                                                             }
-                                                            if (result.requires_2factor && twoFacConfig != null && ((Boolean) twoFacConfig.get("any"))) {
-                                                                final List<String> enabledTwoFac =
-                                                                        getGAService().getEnabledTwoFacNames(true);
-                                                                if (enabledTwoFac.size() > 1) {
-                                                                    show2FAChoices(dialogFee, dialogAmount, recipient, result);
-                                                                } else {
-                                                                    showTransactionSummary(enabledTwoFac.get(0), dialogFee, dialogAmount, recipient, result);
+                                                            final boolean skipChoice = !result.requires_2factor ||
+                                                                                        twoFacConfig == null || !((Boolean) twoFacConfig.get("any"));
+                                                            mTwoFactor = GaActivity.popupTwoFactorChoice(gaActivity, service, skipChoice,
+                                                                                                         new CB.Runnable1T<String>() {
+                                                                @Override
+                                                                public void run(final String method) {
+                                                                    showTransactionSummary(method, dialogFee, dialogAmount, recipient, result);
                                                                 }
-                                                            } else {
-                                                                showTransactionSummary(null, dialogFee, dialogAmount, recipient, result);
-                                                            }
+                                                            });
+                                                            if (mTwoFactor != null)
+                                                                mTwoFactor.show();
                                                         }
                                                     });
                                                 }
@@ -464,9 +451,9 @@ public class SendFragment extends SubaccountFragment {
         });
 
         curBalanceObserver = makeBalanceObserver();
-        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        service.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
 
-        if (getGAService().getBalanceCoin(curSubaccount) != null) {
+        if (service.getBalanceCoin(curSubaccount) != null) {
             updateBalance();
         }
 
@@ -490,7 +477,7 @@ public class SendFragment extends SubaccountFragment {
 
 
         changeFiatIcon((FontAwesomeTextView) rootView.findViewById(R.id.sendFiatIcon),
-                getGAService().getFiatCurrency());
+                service.getFiatCurrency());
 
         amountFiatEdit.addTextChangedListener(new TextWatcher() {
             @Override
