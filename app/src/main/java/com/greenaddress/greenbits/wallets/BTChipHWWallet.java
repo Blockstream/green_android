@@ -160,17 +160,13 @@ public class BTChipHWWallet implements ISigningWallet {
         return true;
     }
 
-
-    @NonNull
     @Override
-    public ListenableFuture<DeterministicKey> getPubKey() {
-        return es.submit(new Callable<DeterministicKey>() {
-            @android.support.annotation.Nullable
-            @Override
-            public DeterministicKey call() throws Exception {
-                return internalGetPubKey();
-            }
-        });
+    public DeterministicKey getPubKey() {
+        try {
+            return internalGetPubKey();
+        } catch (BTChipException e) {
+            return null;
+        }
     }
 
     @android.support.annotation.Nullable
@@ -214,16 +210,9 @@ public class BTChipHWWallet implements ISigningWallet {
         return Futures.immediateFuture(null);
     }
 
-    @NonNull
     @Override
-    public ListenableFuture<byte[]> getIdentifier() {
-        return Futures.transform(getPubKey(), new Function<ECKey, byte[]>() {
-            @Nullable
-            @Override
-            public byte[] apply(final @Nullable ECKey input) {
-                return input.toAddress(Network.NETWORK).getHash160();
-            }
-        });
+    public byte[] getIdentifier() {
+        return getPubKey().toAddress(Network.NETWORK).getHash160();
     }
 
     private String getPath() {

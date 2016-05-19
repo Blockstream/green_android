@@ -24,8 +24,8 @@ public class DeterministicSigningKey implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<byte[]> getIdentifier() {
-        return Futures.immediateFuture(hdWallet.getIdentifier());
+    public byte[] getIdentifier() {
+        return hdWallet.getIdentifier();
     }
 
     @Override
@@ -44,8 +44,8 @@ public class DeterministicSigningKey implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<DeterministicKey> getPubKey() {
-        return Futures.immediateFuture(hdWallet);
+    public DeterministicKey getPubKey() {
+        return hdWallet;
     }
 
     @Override

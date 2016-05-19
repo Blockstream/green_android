@@ -49,16 +49,9 @@ public class TrezorHWWallet implements ISigningWallet {
         return new TrezorHWWallet(this, childNumber.getI());
     }
 
-    @NonNull
     @Override
-    public ListenableFuture<byte[]> getIdentifier() {
-        return Futures.transform(getPubKey(), new Function<ECKey, byte[]>() {
-            @Nullable
-            @Override
-            public byte[] apply(final @Nullable ECKey input) {
-                return input.toAddress(Network.NETWORK).getHash160();
-            }
-        });
+    public byte[] getIdentifier() {
+        return getPubKey().toAddress(Network.NETWORK).getHash160();
     }
 
     @Override
@@ -84,26 +77,15 @@ public class TrezorHWWallet implements ISigningWallet {
         });
     }
 
-    @NonNull
     @Override
-    public ListenableFuture<DeterministicKey> getPubKey() {
-        return es.submit(new Callable<DeterministicKey>() {
-            @android.support.annotation.Nullable
-            @Override
-            public DeterministicKey call() throws Exception {
-                final Integer[] intArray = new Integer[addrn.size()];
-                final String[] xpub = trezor.MessageGetPublicKey(addrn.toArray(intArray)).split("%", -1);
-                final String pkHex = xpub[xpub.length - 2];
-                final String chainCodeHex = xpub[xpub.length - 4];
-                final ECKey pubKey = ECKey.fromPublicOnly(Hex.decode(pkHex));
-                return new DeterministicKey(
-                        new ImmutableList.Builder<ChildNumber>().build(),
-                        Hex.decode(chainCodeHex),
-                        pubKey.getPubKeyPoint(),
-                        null, null
-                );
-            }
-        });
+    public DeterministicKey getPubKey() {
+        final Integer[] intArray = new Integer[addrn.size()];
+        final String[] xpub = trezor.MessageGetPublicKey(addrn.toArray(intArray)).split("%", -1);
+        final String pkHex = xpub[xpub.length - 2];
+        final String chainCodeHex = xpub[xpub.length - 4];
+        final ECKey pubKey = ECKey.fromPublicOnly(Hex.decode(pkHex));
+        return new DeterministicKey(new ImmutableList.Builder<ChildNumber>().build(),
+                                    Hex.decode(chainCodeHex), pubKey.getPubKeyPoint(), null, null);
     }
 
     @NonNull

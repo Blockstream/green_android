@@ -616,30 +616,18 @@ public class WalletClient {
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message), null);
             signature = childKey.signMessage(message);
-            signature_arg = Futures.transform(signature, new AsyncFunction<ECKey.ECDSASignature, String[]>() {
+            final ECKey master = childKey.getPubKey();
+            signature_arg = Futures.transform(signature, new Function<ECKey.ECDSASignature, String[]>() {
                 @Nullable
                 @Override
-                public ListenableFuture<String[]> apply(final @Nullable ECKey.ECDSASignature signature) {
-                    final SettableFuture<String[]> res = SettableFuture.create();
-                    Futures.addCallback(childKey.getPubKey(), new FutureCallback<ECKey>() {
-                        @Override
-                        public void onSuccess(final @Nullable ECKey result) {
-                            int recId;
-                            for (recId = 0; recId < 4; ++recId) {
-                                final ECKey recovered = ECKey.recoverFromSignature(recId, signature, Sha256Hash.wrap(challenge_sha), true);
-                                if (recovered != null && recovered.equals(result)) {
-                                    break;
-                                }
-                            }
-                            res.set(new String[]{signature.r.toString(), signature.s.toString(), String.valueOf(recId)});
-                        }
-
-                        @Override
-                        public void onFailure(final Throwable t) {
-                            res.setException(t);
-                        }
-                    });
-                    return res;
+                public String[] apply(final @Nullable ECKey.ECDSASignature signature) {
+                    int recId;
+                    for (recId = 0; recId < 4; ++recId) {
+                        final ECKey recovered = ECKey.recoverFromSignature(recId, signature, Sha256Hash.wrap(challenge_sha), true);
+                        if (recovered != null && recovered.equals(master))
+                            break;
+                    }
+                    return new String[]{signature.r.toString(), signature.s.toString(), String.valueOf(recId)};
                 }
             });
         }
@@ -684,19 +672,14 @@ public class WalletClient {
 
     public ListenableFuture<LoginData> login(final ISigningWallet key, final String device_id) {
         final boolean canSignHashes = key.canSignHashes();
+        final String address = new Address(Network.NETWORK, key.getIdentifier()).toString();
         final ListenableFuture<String> challenge;
 
-        challenge = Futures.transform(key.getIdentifier(),
-            new AsyncFunction<byte[], String>() {
-                @Override
-                public ListenableFuture<String> apply(final byte[] addr) throws Exception {
-                    final String address = new Address(Network.NETWORK, addr).toString();
-                    if (canSignHashes)
-                        return simpleCall("login.get_challenge", null, address);
-                    return simpleCall("login.get_trezor_challenge", null, address,
-                                      !(key instanceof TrezorHWWallet));
-                }
-            });
+        if (canSignHashes)
+            challenge = simpleCall("login.get_challenge", null, address);
+        else
+            challenge = simpleCall("login.get_trezor_challenge", null, address,
+                                   !(key instanceof TrezorHWWallet));
 
         return Futures.transform(challenge,
             new AsyncFunction<String, LoginData>() {

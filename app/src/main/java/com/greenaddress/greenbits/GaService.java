@@ -335,11 +335,10 @@ public class GaService extends Service {
             userWallet = userWallet.deriveChildKey(new ChildNumber(3, true));
             userWallet = userWallet.deriveChildKey(new ChildNumber(subaccount, true));
         }
+        final DeterministicKey master = userWallet.getPubKey();
 
-        return Futures.transform(userWallet.getPubKey(), new Function<DeterministicKey, byte[]>() {
-            @NonNull
-            @Override
-            public byte[] apply(final @Nullable DeterministicKey master) {
+        return es.submit(new Callable<byte[]>() {
+            public byte[] call() {
                 final DeterministicKey derivedRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
                 final DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer));
                 pubkeys.add(derivedPointer);

@@ -11,7 +11,7 @@ import java.util.List;
 public interface ISigningWallet {
     ISigningWallet deriveChildKey(ChildNumber childNumber);
 
-    ListenableFuture<byte[]> getIdentifier();
+    byte[] getIdentifier();
 
     ListenableFuture<ECKey.ECDSASignature> signHash(byte[] hash);
 
@@ -19,7 +19,7 @@ public interface ISigningWallet {
 
     boolean canSignHashes();
 
-    ListenableFuture<DeterministicKey> getPubKey();
+    DeterministicKey getPubKey();
 
     ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(PreparedTransaction tx, byte[] gait_path);
 
