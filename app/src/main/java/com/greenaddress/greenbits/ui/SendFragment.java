@@ -132,7 +132,7 @@ public class SendFragment extends SubaccountFragment {
             twoFacData = new HashMap<>();
             twoFacData.put("method", method);
             if (!method.equals("gauth")) {
-                getGAService().requestTwoFacCode(method, "send_tx");
+                getGAService().requestTwoFacCode(method, "send_tx", null);
             }
         }
 

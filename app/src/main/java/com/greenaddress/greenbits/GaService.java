@@ -784,10 +784,6 @@ public class GaService extends Service {
     }
 
 
-    public void requestTwoFacCode(@NonNull final String method, @NonNull final String action) {
-        client.requestTwoFacCode(method, action, null);
-    }
-
     @NonNull
     public ListenableFuture<Object> requestTwoFacCode(@NonNull final String method, @NonNull final String action, @NonNull final Object data) {
         return client.requestTwoFacCode(method, action, data);

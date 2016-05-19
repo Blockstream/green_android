@@ -763,9 +763,7 @@ public class TransactionActivity extends GaActivity {
                 if (!method.equals("gauth")) {
                     Map<String, Long> amount = new HashMap<>();
                     amount.put("amount", newFee.subtract(oldFee).longValue());
-                    getGAService().requestTwoFacCode(
-                            method, "bump_fee", amount
-                    );
+                    getGAService().requestTwoFacCode(method, "bump_fee", amount);
                 }
             }
 

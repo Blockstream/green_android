@@ -204,6 +204,28 @@ public class WalletClient {
         return rpc;
     }
 
+    private <T> T SyncCall(final String procedure, final Class result,
+                           final CallHandler handler, Object... args) throws Exception {
+
+        if (mConnection == null)
+            throw new GAException("not connected");
+
+        final ObjectMapper mapper = new ObjectMapper();
+        final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
+
+        try {
+            final EnumSet<CallFlags> flags = EnumSet.of(CallFlags.DiscloseMe);
+            final String callName = "com.greenaddress." + procedure;
+            final Reply reply;
+            reply = mConnection.call(callName, flags, argsNode, null)
+                               .observeOn(mScheduler).toBlocking().single();
+            final JsonNode node = reply.arguments().get(0);
+            return (T)mapper.convertValue(node, result);
+        } catch (final RejectedExecutionException e) {
+            throw new GAException("rejected");
+        }
+    }
+
     private void clientSubscribe(final String s, final Class mapClass, final EventHandler eventHandler) {
         final String topic = "com.greenaddress." + s;
         mConnection.makeSubscription(topic)
