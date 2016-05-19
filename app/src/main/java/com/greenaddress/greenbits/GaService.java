@@ -119,7 +119,6 @@ public class GaService extends Service {
 
     public final SPV spv = new SPV(this);
 
-    private int background_color;
     @Nullable
     private WalletClient client;
     @Nullable
@@ -263,7 +262,6 @@ public class GaService extends Service {
         // Uncomment to test slow service creation
         // android.os.SystemClock.sleep(10000);
 
-        this.background_color = 0; // transparent
         connectionObservable = ((GreenAddressApplication) getApplication()).getConnectionObservable();
 
 
@@ -663,7 +661,7 @@ public class GaService extends Service {
             @NonNull
             @Override
             public ListenableFuture<QrBitmap> apply(@NonNull final String input) {
-                return es.submit(new QrBitmap(input, background_color));
+                return es.submit(new QrBitmap(input, 0 /* transparent background */));
             }
         };
         final ListenableFuture<String> verifiedAddress = Futures.transform(client.getNewAddress(subaccount), verifyAddress, es);
