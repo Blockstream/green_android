@@ -525,18 +525,13 @@ public class SPV {
             }
             peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
 
-            if (trustedAddr.contains(",")) {
-                final String[] addresses = trustedAddr.split(",");
-                for (final String s: addresses) {
-                    setupPeerGroup(peerGroup, s);
-                }
+            final String[] addresses = trustedAddr.split(",");
+            for (final String s: addresses)
+                setupPeerGroup(peerGroup, s);
+            if (addresses.length > 0)
                 peerGroup.setMaxConnections(addresses.length);
-            } else if (!trustedAddr.isEmpty()) {
-                setupPeerGroup(peerGroup, trustedAddr);
-                peerGroup.setMaxConnections(1);
-            } else {
-                setupPeerGroup(peerGroup, trustedAddr);
-            }
+            else
+                setupPeerGroup(peerGroup, "");
         } catch (@NonNull final BlockStoreException e) {
             e.printStackTrace();
         }
