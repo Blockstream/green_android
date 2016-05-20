@@ -90,13 +90,9 @@ public class TrezorHWWallet implements ISigningWallet {
 
     @NonNull
     @Override
-    public ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(final PreparedTransaction tx, final byte[] gait_path) {
-        return es.submit(new Callable<List<ECKey.ECDSASignature>>() {
-            @Override
-            public List<ECKey.ECDSASignature> call() throws Exception {
-                return trezor.MessageSignTx(tx, Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET) ? "Bitcoin": "Testnet", gait_path);
-            }
-        });
+    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction tx, final byte[] gait_path) {
+        final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
+        return trezor.MessageSignTx(tx, isMainnet ? "Bitcoin": "Testnet", gait_path);
     }
 
     @Override

@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionException;
 
 import javax.annotation.Nullable;
@@ -868,91 +869,91 @@ public class WalletClient {
         return rpc;
     }
 
+    private ListenableFuture<List<String>> signTransactionNoHashes(final PreparedTransaction tx) {
+        return mExecutor.submit(new Callable<List<String>>() {
+            @Override
+            public List<String> call() {
+                final List<ECKey.ECDSASignature> sigs;
+                sigs = mHDParent.signTransaction(tx, Hex.decode(mLoginData.gait_path));
+
+                final List<String> result = new LinkedList<>();
+                for (final ECKey.ECDSASignature sig : sigs) {
+                    final TransactionSignature txSig;
+                    txSig = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
+                    result.add(Hex.toHexString(txSig.encodeToBitcoin()));
+                }
+                return result;
+            }
+        });
+    }
+
     public ListenableFuture<List<String>> signTransaction(final PreparedTransaction tx, final boolean privateDerivation) {
-        final SettableFuture<List<String>> rpc = SettableFuture.create();
+        if (!mHDParent.canSignHashes())
+            return signTransactionNoHashes(tx);
 
         final Transaction t = tx.decoded;
         final List<TransactionInput> txInputs = t.getInputs();
         final List<Output> prevOuts = tx.prev_outputs;
         final List<String> signatures = new ArrayList<>(txInputs.size());
-        if (mHDParent.canSignHashes()) {
-            ListenableFuture<ECKey.ECDSASignature> lastSignature = Futures.immediateFuture(null);
+        final SettableFuture<List<String>> rpc = SettableFuture.create();
 
-            for (int i = 0; i < txInputs.size(); ++i) {
-                final int ii = i;
-                lastSignature = Futures.transform(lastSignature, new AsyncFunction<ECKey.ECDSASignature, ECKey.ECDSASignature>() {
-                    @Override
-                    public ListenableFuture<ECKey.ECDSASignature> apply(ECKey.ECDSASignature input) throws Exception {
-                        final Output prevOut = prevOuts.get(ii);
+        ListenableFuture<ECKey.ECDSASignature> lastSignature = Futures.immediateFuture(null);
 
-                        final ISigningWallet account;
-                        if (prevOut.subaccount == null || prevOut.subaccount == 0) {
-                            account = mHDParent;
-                        } else {
-                            account = mHDParent
-                                    .deriveChildKey(new ChildNumber(3, true))
-                                    .deriveChildKey(new ChildNumber(prevOut.subaccount, true));
-                        }
-
-                        final ISigningWallet branchKey = account.deriveChildKey(new ChildNumber(prevOut.branch, privateDerivation));
-                        final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.pointer, privateDerivation));
-
-                        final Script script = new Script(Hex.decode(prevOut.script));
-                        final Sha256Hash hash;
-                        if (prevOut.scriptType.equals(14)) {
-                            hash = t.hashForSignatureV2(
-                                    ii,
-                                    script.getProgram(),
-                                    Coin.valueOf(prevOut.value),
-                                    Transaction.SigHash.ALL, false);
-                        } else {
-                            hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
-                        }
-                        return pointerKey.signHash(hash.getBytes());
-                    }
-                });
-                lastSignature = Futures.transform(lastSignature, new Function<ECKey.ECDSASignature, ECKey.ECDSASignature>() {
-                    @Nullable
-                    @Override
-                    public ECKey.ECDSASignature apply(@Nullable ECKey.ECDSASignature input) {
-                        final TransactionSignature signature = new TransactionSignature(input, Transaction.SigHash.ALL, false);
-                        signatures.add(Hex.toHexString(signature.encodeToBitcoin()));
-                        return null;
-                    }
-                });
-            }
-            Futures.addCallback(lastSignature, new FutureCallback<ECKey.ECDSASignature>() {
+        for (int i = 0; i < txInputs.size(); ++i) {
+            final int ii = i;
+            lastSignature = Futures.transform(lastSignature, new AsyncFunction<ECKey.ECDSASignature, ECKey.ECDSASignature>() {
                 @Override
-                public void onSuccess(final @Nullable ECKey.ECDSASignature result) {
-                    rpc.set(signatures);
-                }
+                public ListenableFuture<ECKey.ECDSASignature> apply(ECKey.ECDSASignature input) throws Exception {
+                    final Output prevOut = prevOuts.get(ii);
 
-                @Override
-                public void onFailure(final Throwable t) {
-                    rpc.setException(t);
+                    final ISigningWallet account;
+                    if (prevOut.subaccount == null || prevOut.subaccount == 0) {
+                        account = mHDParent;
+                    } else {
+                        account = mHDParent
+                                .deriveChildKey(new ChildNumber(3, true))
+                                .deriveChildKey(new ChildNumber(prevOut.subaccount, true));
+                    }
+
+                    final ISigningWallet branchKey = account.deriveChildKey(new ChildNumber(prevOut.branch, privateDerivation));
+                    final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.pointer, privateDerivation));
+
+                    final Script script = new Script(Hex.decode(prevOut.script));
+                    final Sha256Hash hash;
+                    if (prevOut.scriptType.equals(14)) {
+                        hash = t.hashForSignatureV2(
+                                ii,
+                                script.getProgram(),
+                                Coin.valueOf(prevOut.value),
+                                Transaction.SigHash.ALL, false);
+                    } else {
+                        hash = t.hashForSignature(ii, script.getProgram(), Transaction.SigHash.ALL, false);
+                    }
+                    return pointerKey.signHash(hash.getBytes());
                 }
             });
-        } else {
-            Futures.addCallback(mHDParent.signTransaction(tx,
-                    Hex.decode(mLoginData.gait_path)), new FutureCallback<List<ECKey.ECDSASignature>>() {
+            lastSignature = Futures.transform(lastSignature, new Function<ECKey.ECDSASignature, ECKey.ECDSASignature>() {
+                @Nullable
                 @Override
-                public void onSuccess(final @Nullable List<ECKey.ECDSASignature> signatures) {
-                    final List<String> result = new LinkedList<>();
-                    for (final ECKey.ECDSASignature sig : signatures) {
-                        final TransactionSignature txSignature = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
-                        result.add(Hex.toHexString(txSignature.encodeToBitcoin()));
-                    }
-                    rpc.set(result);
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    rpc.setException(t);
+                public ECKey.ECDSASignature apply(@Nullable ECKey.ECDSASignature input) {
+                    final TransactionSignature signature = new TransactionSignature(input, Transaction.SigHash.ALL, false);
+                    signatures.add(Hex.toHexString(signature.encodeToBitcoin()));
+                    return null;
                 }
             });
         }
-        return rpc;
+        Futures.addCallback(lastSignature, new FutureCallback<ECKey.ECDSASignature>() {
+            @Override
+            public void onSuccess(final @Nullable ECKey.ECDSASignature result) {
+                rpc.set(signatures);
+            }
 
+            @Override
+            public void onFailure(final Throwable t) {
+                rpc.setException(t);
+            }
+        });
+        return rpc;
     }
 
     public Object getUserConfig(final String key) {

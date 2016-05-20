@@ -21,7 +21,7 @@ public interface ISigningWallet {
 
     DeterministicKey getPubKey();
 
-    ListenableFuture<List<ECKey.ECDSASignature>> signTransaction(PreparedTransaction tx, byte[] gait_path);
+    List<ECKey.ECDSASignature> signTransaction(PreparedTransaction tx, byte[] gait_path);
 
     boolean requiresPrevoutRawTxs();
 }
