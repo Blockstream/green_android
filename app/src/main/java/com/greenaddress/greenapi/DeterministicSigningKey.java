@@ -1,8 +1,5 @@
 package com.greenaddress.greenapi;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
@@ -29,13 +26,13 @@ public class DeterministicSigningKey implements ISigningWallet {
     }
 
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(final byte[] hash) {
-        return Futures.immediateFuture(ECKey.fromPrivate(hdWallet.getPrivKey()).sign(Sha256Hash.wrap(hash)));
+    public ECKey.ECDSASignature signHash(final byte[] hash) {
+        return ECKey.fromPrivate(hdWallet.getPrivKey()).sign(Sha256Hash.wrap(hash));
     }
 
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signMessage(final String message) {
-        return Futures.immediateFuture(null);
+    public ECKey.ECDSASignature signMessage(final String message) {
+        return null;
     }
 
     @Override

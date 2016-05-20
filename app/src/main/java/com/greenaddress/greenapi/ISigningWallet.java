@@ -13,9 +13,9 @@ public interface ISigningWallet {
 
     byte[] getIdentifier();
 
-    ListenableFuture<ECKey.ECDSASignature> signHash(byte[] hash);
+    ECKey.ECDSASignature signHash(byte[] hash);
 
-    ListenableFuture<ECKey.ECDSASignature> signMessage(String message);
+    ECKey.ECDSASignature signMessage(String message);
 
     boolean canSignHashes();
 

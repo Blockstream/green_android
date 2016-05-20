@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.wallets;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.btchip.BTChipDongle;
@@ -11,8 +10,6 @@ import com.btchip.utils.BufferUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
@@ -52,7 +49,7 @@ public class BTChipHWWallet implements ISigningWallet {
     private DeterministicKey cachedPubkey;
     private List<Integer> addrn = new LinkedList<>();
 
-    @NonNull private static final String TAG = BTChipHWWallet.class.getSimpleName();
+    private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
     private BTChipHWWallet(final BTChipDongle dongle, final RequestLoginActivity loginActivity, final String pin, final List<Integer> addrn) {
         this.dongle = dongle;
@@ -66,18 +63,17 @@ public class BTChipHWWallet implements ISigningWallet {
         this.pin = "0000";
     }
 
-    public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, @NonNull final SettableFuture<Integer> remainingAttemptsFuture) {
+    public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
         this.dongle = new BTChipDongle(transport);
         this.loginActivity = loginActivity;
         this.pin = pin;
         es.submit(new Callable<Object>() {
-            @android.support.annotation.Nullable
             @Override
             public Object call() {
                 try {
                     dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
                     remainingAttemptsFuture.set(-1);  // -1 means success
-                } catch (@NonNull final BTChipException e) {
+                } catch (final BTChipException e) {
                     if (e.toString().contains("63c")) {
                         remainingAttemptsFuture.set(
                                 Integer.valueOf(String.valueOf(e.toString().charAt(e.toString().indexOf("63c") + 3))));
@@ -94,8 +90,7 @@ public class BTChipHWWallet implements ISigningWallet {
         });
     }
 
-    @NonNull
-    private String outToPath(@NonNull final Output out) {
+    private String outToPath(final Output out) {
         if (out.subaccount != null && out.subaccount != 0) {
             return "3'/" + out.subaccount + "'/1/" + out.pointer;
         } else {
@@ -165,11 +160,9 @@ public class BTChipHWWallet implements ISigningWallet {
         }
     }
 
-    @android.support.annotation.Nullable
     private DeterministicKey internalGetPubKey() throws BTChipException {
-        if (cachedPubkey != null) {
+        if (cachedPubkey != null)
                 return cachedPubkey;
-        }
         final BTChipDongle.BTChipPublicKey pubKey = dongle.getWalletPublicKey(getPath());
         final ECKey uncompressed = ECKey.fromPublicOnly(pubKey.getPublicKey());
         final DeterministicKey retVal = new DeterministicKey(
@@ -187,23 +180,20 @@ public class BTChipHWWallet implements ISigningWallet {
         return false;
     }
 
-    @NonNull
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signMessage(@NonNull final String message) {
-        return es.submit(new Callable<ECKey.ECDSASignature>() {
-            @Override
-            public ECKey.ECDSASignature call() throws Exception {
-                dongle.signMessagePrepare(getPath(), message.getBytes());
-                final BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
-                return ECKey.ECDSASignature.decodeFromDER(sig.getSignature());
-            }
-        });
+    public ECKey.ECDSASignature signMessage(final String message) {
+        try {
+            dongle.signMessagePrepare(getPath(), message.getBytes());
+            final BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
+            return ECKey.ECDSASignature.decodeFromDER(sig.getSignature());
+        } catch (BTChipException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
-    @android.support.annotation.Nullable
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(final byte[] hash) {
-        return Futures.immediateFuture(null);
+    public ECKey.ECDSASignature signHash(final byte[] hash) {
+        return null;
     }
 
     @Override
@@ -223,9 +213,8 @@ public class BTChipHWWallet implements ISigningWallet {
         return Joiner.on("/").join(pathStr);
     }
 
-    @NonNull
     @Override
-    public ISigningWallet deriveChildKey(@NonNull final ChildNumber childNumber) {
+    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
         final LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
         addrn_child.add(childNumber.getI());
         return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
@@ -242,13 +231,13 @@ public class BTChipHWWallet implements ISigningWallet {
                 Log.d(TAG, "Connection ok");
                 return true;
         }
-        catch(@NonNull final Exception e) {
+        catch(final Exception e) {
                 Log.d(TAG, "Connection not connected");
                 try {
                         dongle.getTransport().close();
                         Log.d(TAG, "Connection closed");
                 }
-                catch(@NonNull final Exception e1) {
+                catch(final Exception e1) {
                 }
                 return false;
         }
@@ -259,7 +248,7 @@ public class BTChipHWWallet implements ISigningWallet {
         try {
                 dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
         }
-        catch(@NonNull final Exception e) {
+        catch(final Exception e) {
         }
     }
 }

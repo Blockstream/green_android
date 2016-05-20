@@ -1,13 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
-import android.support.annotation.NonNull;
-
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
@@ -21,14 +14,10 @@ import org.spongycastle.util.encoders.Hex;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 
-import javax.annotation.Nullable;
 
 public class TrezorHWWallet implements ISigningWallet {
 
-    private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final Trezor trezor;
     private final List<Integer> addrn;
 
@@ -43,9 +32,8 @@ public class TrezorHWWallet implements ISigningWallet {
         addrn.add(childNumber);
     }
 
-    @NonNull
     @Override
-    public ISigningWallet deriveChildKey(@NonNull final ChildNumber childNumber) {
+    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
         return new TrezorHWWallet(this, childNumber.getI());
     }
 
@@ -59,22 +47,15 @@ public class TrezorHWWallet implements ISigningWallet {
         return false;
     }
 
-    @NonNull
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signHash(final byte[] hash) {
-        return Futures.immediateFuture(null);
+    public ECKey.ECDSASignature signHash(final byte[] hash) {
+        return null;
     }
 
-    @NonNull
     @Override
-    public ListenableFuture<ECKey.ECDSASignature> signMessage(final String message) {
-        return es.submit(new Callable<ECKey.ECDSASignature>() {
-            @Override
-            public ECKey.ECDSASignature call() throws Exception {
-                final Integer[] intArray = new Integer[addrn.size()];
-                return trezor.MessageSignMessage(addrn.toArray(intArray), message);
-            }
-        });
+    public ECKey.ECDSASignature signMessage(final String message) {
+        final Integer[] intArray = new Integer[addrn.size()];
+        return trezor.MessageSignMessage(addrn.toArray(intArray), message);
     }
 
     @Override
@@ -88,7 +69,6 @@ public class TrezorHWWallet implements ISigningWallet {
                                     Hex.decode(chainCodeHex), pubKey.getPubKeyPoint(), null, null);
     }
 
-    @NonNull
     @Override
     public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction tx, final byte[] gait_path) {
         final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
