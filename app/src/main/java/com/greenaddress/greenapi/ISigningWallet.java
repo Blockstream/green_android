@@ -1,7 +1,5 @@
 package com.greenaddress.greenapi;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
