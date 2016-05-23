@@ -688,7 +688,6 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onSubaccountChanged(final int input) {
-        curSubaccount = input;
         getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
         curSubaccount = input;
         hideInstantIf2of3();
