@@ -348,7 +348,7 @@ public class TransactionActivity extends GaActivity {
             // FIXME: use a list instead of reusing a TextView to show all double spends to allow
             // for a warning to be shown before the browser is open
             // this is to prevent to accidentally leak to block explorers your addresses
-            if (t.doubleSpentBy != null || t.replaced_hashes.size() > 0) {
+            if (t.doubleSpentBy != null || t.replacedHashes.size() > 0) {
                 CharSequence res = "";
                 if (t.doubleSpentBy != null) {
                     if (t.doubleSpentBy.equals("malleability") || t.doubleSpentBy.equals("update")) {
@@ -356,17 +356,17 @@ public class TransactionActivity extends GaActivity {
                     } else {
                         res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + t.doubleSpentBy + "\">" + t.doubleSpentBy + "</a>");
                     }
-                    if (t.replaced_hashes.size() > 0) {
+                    if (t.replacedHashes.size() > 0) {
                         res = TextUtils.concat(res, "; ");
                     }
                 }
-                if (t.replaced_hashes.size() > 0) {
+                if (t.replacedHashes.size() > 0) {
                     res = TextUtils.concat(res, Html.fromHtml("replaces transactions:<br/>"));
-                    for (int i = 0; i < t.replaced_hashes.size(); ++i) {
+                    for (int i = 0; i < t.replacedHashes.size(); ++i) {
                         if (i > 0) {
                             res = TextUtils.concat(res, Html.fromHtml("<br/>"));
                         }
-                        String txhash = t.replaced_hashes.get(i);
+                        String txhash = t.replacedHashes.get(i);
                         res = TextUtils.concat(res, Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + txhash + "\">" + txhash + "</a>"));
                     }
                 }
@@ -570,7 +570,7 @@ public class TransactionActivity extends GaActivity {
                             (Integer) ep.get("subaccount"),
                             (Integer) ep.get("pointer"),
                             1,
-                            10,  // == P2SH_FORTIFIED_OUT
+                            TransactionItem.P2SH_FORTIFIED_OUT,
                             new String(Hex.encode(morePrevouts.get(i))),
                             Long.valueOf((String) ep.get("value"))
                     ));

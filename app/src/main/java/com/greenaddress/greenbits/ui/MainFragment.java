@@ -35,17 +35,14 @@ import org.codehaus.jackson.map.MappingJsonFactory;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.TimeZone;
 
 public class MainFragment extends SubaccountFragment implements Observer {
-    private static final int P2SH_FORTIFIED_OUT = 10;
     @Nullable
     private MaterialDialog mUnconfirmedDialog = null;
     private View rootView;
@@ -56,105 +53,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
     private int curSubaccount;
     @Nullable
     private Observer txVerifiedObservable;
-
-    @Nullable
-    private TransactionItem processGATransaction(@NonNull final Map<String, Object> txJSON, final int curBlock) throws ParseException {
-
-        final List eps = (List) txJSON.get("eps");
-        final String txhash = (String) txJSON.get("txhash");
-
-        final String memo = txJSON.containsKey("memo") ?
-                (String) txJSON.get("memo") : null;
-
-        final Integer blockHeight = txJSON.containsKey("block_height") && txJSON.get("block_height") != null ?
-                (int) txJSON.get("block_height") : null;
-
-        final int size = (int) txJSON.get("size");
-        final long fee = Long.valueOf((String)txJSON.get("fee"));
-
-        String counterparty = null;
-        long amount = 0;
-        TransactionItem.TYPE type;
-        boolean isSpent = true;
-        String receivedOn = null;
-        for (int i = 0; i < eps.size(); ++i) {
-            final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-            if (ep.get("social_destination") != null) {
-                Map<String, Object> social_destination = null;
-                try {
-                    social_destination = new MappingJsonFactory().getCodec().readValue(
-                            (String) ep.get("social_destination"), Map.class);
-                } catch (@NonNull final IOException e) {
-                    //e.printStackTrace();
-                }
-
-                if (social_destination != null) {
-                    counterparty = social_destination.get("type").equals("voucher") ?
-                            "Voucher" : (String) social_destination.get("name");
-                } else {
-                    counterparty = (String) ep.get("social_destination");
-                }
-            }
-            if (((Boolean) ep.get("is_relevant"))) {
-                if (((Boolean) ep.get("is_credit"))) {
-                    final boolean external_social = ep.get("social_destination") != null &&
-                            ((Integer) ep.get("script_type")) != P2SH_FORTIFIED_OUT;
-                    if (!external_social) {
-                        amount += Long.valueOf((String) ep.get("value"));
-                        if (!((Boolean) ep.get("is_spent"))) {
-                            isSpent = false;
-                        }
-                    }
-                    if (receivedOn == null) {
-                        receivedOn = (String) ep.get("ad");
-                    } else {
-                        receivedOn += ", " + ep.get("ad");
-                    }
-                } else {
-                    amount -= Long.valueOf((String) ep.get("value"));
-                }
-            }
-        }
-        if (amount >= 0) {
-            type = TransactionItem.TYPE.IN;
-            for (int i = 0; i < eps.size(); ++i) {
-                final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-                if (!((Boolean) ep.get("is_credit")) && ep.get("social_source") != null) {
-                    counterparty = (String) ep.get("social_source");
-                }
-            }
-        } else {
-            receivedOn = null; // don't show change addresses
-            final List<Map<String, Object>> recip_eps = new ArrayList<>();
-            for (int i = 0; i < eps.size(); ++i) {
-                final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-                if (((Boolean) ep.get("is_credit")) &&
-                        (!((Boolean) ep.get("is_relevant")) ||
-                                ep.get("social_destination") != null)) {
-                    recip_eps.add(ep);
-                }
-            }
-            if (recip_eps.size() > 0) {
-                type = TransactionItem.TYPE.OUT;
-                if (counterparty == null) {
-                    counterparty = (String) recip_eps.get(0).get("ad");
-                }
-                if (recip_eps.size() > 1) {
-                    counterparty += ", ...";
-                }
-            } else {
-                type = TransactionItem.TYPE.REDEPOSIT;
-            }
-        }
-        final boolean spvVerified = getGAService().cfgIn("verified_utxo_").getBoolean(txhash, false);
-        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return new TransactionItem(type, amount, counterparty,
-                df.parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
-                receivedOn, fee, size, (String) txJSON.get("double_spent_by"),
-                txJSON.get("rbf_optin") != null && (Boolean) txJSON.get("rbf_optin"),
-                (String) txJSON.get("data"), eps);
-    }
 
     private void updateBalance() {
         final GaService gaService = getGAService();
@@ -407,7 +305,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                                         replacedTxs.get(replaced_by).add((String) txMap.get("txhash"));
                                     }
                                 } else {
-                                    currentList.add(processGATransaction(txMap, (Integer) result.get("cur_block")));
+                                    currentList.add(new TransactionItem(getGAService(), txMap, curBlock));
                                 }
                             } catch (@NonNull final ParseException e) {
                                 e.printStackTrace();
@@ -418,7 +316,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                             String txhash = currentList.get(i).txhash;
                             if (replacedTxs.containsKey(txhash)) {
                                 for (int j = 0; j < replacedTxs.get(txhash).size(); ++j) {
-                                    currentList.get(i).replaced_hashes.add(
+                                    currentList.get(i).replacedHashes.add(
                                             replacedTxs.get(txhash).get(j)
                                     );
                                 }
