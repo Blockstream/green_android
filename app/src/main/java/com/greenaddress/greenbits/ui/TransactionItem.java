@@ -55,19 +55,30 @@ public class TransactionItem implements Serializable {
         return getConfirmations() >= 6;
     }
 
+    private Boolean boolVal(final Map<String, Object> m, final String k) { return (Boolean) m.get(k); }
+    private String strVal(final Map<String, Object> m, final String k) { return (String) m.get(k); }
+    private Map<String, Object> mapVal(final Map<String, Object> m, final String k) {
+        try {
+            return new MappingJsonFactory().getCodec().readValue(strVal(m, k), Map.class);
+        } catch (final IOException e) {
+            // e.printStackTrace();
+            return null;
+        }
+    }
+
     public TransactionItem(final GaService service, final Map<String, Object> txJSON, final int currentBlock) throws ParseException {
         replaceable = txJSON.get("rbf_optin") != null && (Boolean) txJSON.get("rbf_optin");
-        doubleSpentBy = (String) txJSON.get("double_spent_by");
+        doubleSpentBy = strVal(txJSON, "double_spent_by");
 
         curBlock = currentBlock;
-        fee = Long.valueOf((String)txJSON.get("fee"));
+        fee = Long.valueOf(strVal(txJSON, "fee"));
         size = (int) txJSON.get("size");
         replacedHashes = new ArrayList<>();
-        data = (String) txJSON.get("data");
+        data = strVal(txJSON, "data");
         eps = (List) txJSON.get("eps");
-        txhash = (String) txJSON.get("txhash");
+        txhash = strVal(txJSON, "txhash");
 
-        memo = txJSON.containsKey("memo") ? (String) txJSON.get("memo") : null;
+        memo = txJSON.containsKey("memo") ? strVal(txJSON, "memo") : null;
 
         blockHeight = txJSON.containsKey("block_height") && txJSON.get("block_height") != null ?
                 (int) txJSON.get("block_height") : null;
@@ -78,72 +89,56 @@ public class TransactionItem implements Serializable {
         String tmpReceivedOn = null;
         for (int i = 0; i < eps.size(); ++i) {
             final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-            if (ep.get("social_destination") != null) {
-                Map<String, Object> social_destination = null;
-                try {
-                    social_destination = new MappingJsonFactory().getCodec().readValue(
-                            (String) ep.get("social_destination"), Map.class);
-                } catch (final IOException e) {
-                    //e.printStackTrace();
-                }
-
-                if (social_destination != null) {
-                    tmpCounterparty = social_destination.get("type").equals("voucher") ?
-                            "Voucher" : (String) social_destination.get("name");
-                } else {
-                    tmpCounterparty = (String) ep.get("social_destination");
-                }
+            final boolean isSocial = ep.get("social_destination") != null;
+            if (isSocial) {
+                Map<String, Object> socialDestination = mapVal(ep, "social_destination");
+                if (socialDestination != null) {
+                    tmpCounterparty = socialDestination.get("type").equals("voucher") ?
+                            "Voucher" : (String) socialDestination.get("name");
+                } else
+                    tmpCounterparty = strVal(ep, "social_destination");
             }
-            if (((Boolean) ep.get("is_relevant"))) {
-                if (((Boolean) ep.get("is_credit"))) {
-                    final boolean external_social = ep.get("social_destination") != null &&
-                            ((Integer) ep.get("script_type")) != P2SH_FORTIFIED_OUT;
-                    if (!external_social) {
-                        tmpAmount += Long.valueOf((String) ep.get("value"));
-                        if (!((Boolean) ep.get("is_spent"))) {
+            if (boolVal(ep, "is_relevant")) {
+                if (boolVal(ep, "is_credit")) {
+                    final boolean externalSocial = isSocial && ((Integer) ep.get("script_type")) != P2SH_FORTIFIED_OUT;
+                    if (!externalSocial) {
+                        tmpAmount += Long.valueOf(strVal(ep, "value"));
+                        if (!boolVal(ep, "is_spent"))
                             tmpIsSpent = false;
-                        }
                     }
-                    if (tmpReceivedOn == null) {
-                        tmpReceivedOn = (String) ep.get("ad");
-                    } else {
-                        tmpReceivedOn += ", " + ep.get("ad");
-                    }
-                } else {
-                    tmpAmount -= Long.valueOf((String) ep.get("value"));
-                }
+                    if (tmpReceivedOn == null)
+                        tmpReceivedOn = strVal(ep, "ad");
+                    else
+                        tmpReceivedOn += ", " + strVal(ep, "ad");
+                } else
+                    tmpAmount -= Long.valueOf(strVal(ep, "value"));
             }
         }
         if (tmpAmount >= 0) {
             type = TransactionItem.TYPE.IN;
             for (int i = 0; i < eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-                if (!((Boolean) ep.get("is_credit")) && ep.get("social_source") != null) {
-                    tmpCounterparty = (String) ep.get("social_source");
-                }
+                if (!boolVal(ep, "is_credit") && ep.get("social_source") != null)
+                    tmpCounterparty = strVal(ep, "social_source");
             }
         } else {
             tmpReceivedOn = null; // don't show change addresses
             final List<Map<String, Object>> recip_eps = new ArrayList<>();
             for (int i = 0; i < eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
-                if (((Boolean) ep.get("is_credit")) &&
-                        (!((Boolean) ep.get("is_relevant")) ||
-                                ep.get("social_destination") != null)) {
+                if (boolVal(ep, "is_credit") &&
+                    (!boolVal(ep, "is_relevant") || ep.get("social_destination") != null)) {
                     recip_eps.add(ep);
                 }
             }
             if (recip_eps.size() > 0) {
                 type = TransactionItem.TYPE.OUT;
-                if (tmpCounterparty == null) {
+                if (tmpCounterparty == null)
                     tmpCounterparty = (String) recip_eps.get(0).get("ad");
-                }
-                if (recip_eps.size() > 1) {
+                if (recip_eps.size() > 1)
                     tmpCounterparty += ", ...";
-                }
-            } else {
+            } else
                 type = TransactionItem.TYPE.REDEPOSIT;
-            }
         }
         amount = tmpAmount;
         counterparty = tmpCounterparty;
@@ -152,6 +147,6 @@ public class TransactionItem implements Serializable {
         spvVerified = service.cfgIn("verified_utxo_").getBoolean(txhash, false);
         final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        date = df.parse((String) txJSON.get("created_at"));
+        date = df.parse(strVal(txJSON, "created_at"));
     }
 }
