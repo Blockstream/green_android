@@ -140,7 +140,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
+        curSubaccount = getGAService().getCurrentSubAccount();
 
         final TextView firstP = (TextView) rootView.findViewById(R.id.mainFirstParagraphText);
         final TextView secondP = (TextView) rootView.findViewById(R.id.mainSecondParagraphText);

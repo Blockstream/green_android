@@ -125,23 +125,21 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
     }
 
-    private void configureSubaccountsFooter(final int curSubaccount) {
+    private void configureSubaccountsFooter(final int subaccount) {
         final GaService service = mService;
 
-        final ArrayList subs = service.getSubaccounts();
-        if (subs == null || subs.isEmpty())
+        final ArrayList allSubaccounts = service.getSubaccounts();
+        if (allSubaccounts == null || allSubaccounts.isEmpty())
             return;
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
-
         String subaccountName = getResources().getText(R.string.main_account).toString();
-        for (Object subaccount : subs) {
-            final Map<String, ?> subaccountMap = (Map) subaccount;
-            final String name = (String) subaccountMap.get("name");
-            if (subaccountMap.get("pointer").equals(curSubaccount)) {
-                subaccountName = name;
+        for (Object s : allSubaccounts) {
+            final Map<String, ?> m = (Map) s;
+            if (m.get("pointer").equals(subaccount)) {
+                subaccountName = (String) m.get("name");
                 break;
             }
         }
@@ -164,17 +162,17 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     @Override
                     public void onSelection(final MaterialDialog dialog, final View view, final int which, final CharSequence text) {
 
-                        final int curSubaccount;
+                        final int subaccount;
                         if (which == 0) {
-                            curSubaccount = 0;
+                            subaccount = 0;
                         } else {
                             final ArrayList subaccounts = service.getSubaccounts();
-                            curSubaccount = ((Integer) ((Map<String, ?>) subaccounts.get(which - 1)).get("pointer"));
+                            subaccount = ((Integer) ((Map<String, ?>) subaccounts.get(which - 1)).get("pointer"));
                         }
 
-                        if (service.cfg("main").getInt("curSubaccount", 0) != curSubaccount) {
+                        if (subaccount != service.getCurrentSubAccount()) {
                             setTitle(String.format("%s %s", getResources().getText(R.string.app_name), text));
-                            onSubaccountUpdate(curSubaccount);
+                            onSubaccountUpdate(subaccount);
                         }
                     }
                 };
@@ -188,12 +186,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         });
     }
 
-    private void onSubaccountUpdate(final int input) {
+    private void onSubaccountUpdate(final int subaccount) {
         final GaService service = mService;
-        service.cfgEdit("main").putInt("curSubaccount", input).apply();
+        service.setCurrentSubAccount(subaccount);
 
         final Intent data = new Intent("fragmentupdater");
-        data.putExtra("sub", input);
+        data.putExtra("sub", subaccount);
         TabbedMainActivity.this.sendBroadcast(data);
     }
 
@@ -236,8 +234,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             }
         });
 
-        final int curSubaccount = service.cfg("main").getInt("curSubaccount", 0);
-        configureSubaccountsFooter(curSubaccount);
+        configureSubaccountsFooter(service.getCurrentSubAccount());
 
         if (isBitcoinURL) {
             if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
@@ -298,8 +295,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         switch (requestCode) {
             case REQUEST_TX_DETAILS:
             case REQUEST_SETTINGS:
-                final int curSubaccount = service.cfg("main").getInt("curSubaccount", 0);
-                service.updateBalance(curSubaccount);
+                service.updateBalance(service.getCurrentSubAccount());
                 startActivity(new Intent(this, TabbedMainActivity.class));
                 finish();
                 break;

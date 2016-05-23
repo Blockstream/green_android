@@ -264,7 +264,7 @@ public class SendFragment extends SubaccountFragment {
 
         rootView = inflater.inflate(R.layout.fragment_send, container, false);
 
-        curSubaccount = service.cfg("main").getInt("curSubaccount", 0);
+        curSubaccount = service.getCurrentSubAccount();
 
         sendButton = (Button) rootView.findViewById(R.id.sendSendButton);
         maxButton = (Switch) rootView.findViewById(R.id.sendMaxButton);

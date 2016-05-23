@@ -404,7 +404,7 @@ public class TransactionActivity extends GaActivity {
 
             final Transaction tx = new Transaction(Network.NETWORK, Hex.decode(txData.data));
             Integer change_pointer = null;
-            final Integer subaccount_pointer = getGAService().cfg("main").getInt("curSubaccount", 0);
+            final Integer subaccount = getGAService().getCurrentSubAccount();
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
             // by at most 4 bytes per input (signatures have variable lengths)
             if (txSize == null) {
@@ -444,8 +444,8 @@ public class TransactionActivity extends GaActivity {
                     // keep non-change/non-redeposit intact
                     tx.addOutput(origOuts.get((Integer)ep.get("pt_idx")));
                 } else {
-                    if ((ep.get("subaccount") == null && subaccount_pointer.equals(0)) ||
-                            ep.get("subaccount").equals(subaccount_pointer)) {
+                    if ((ep.get("subaccount") == null && subaccount.equals(0)) ||
+                            ep.get("subaccount").equals(subaccount)) {
                         change_pointer = (Integer) ep.get("pubkey_pointer");
                     }
                     // change/redeposit
@@ -466,10 +466,10 @@ public class TransactionActivity extends GaActivity {
             }
 
             if (remainingFeeDelta.compareTo(Coin.ZERO) <= 0)
-                doReplaceByFee(txData, feerate, tx, change_pointer, subaccount_pointer, oldFee, null, null, level);
+                doReplaceByFee(txData, feerate, tx, change_pointer, subaccount, oldFee, null, null, level);
             else {
                 final Coin finalRemaining = remainingFeeDelta;
-                CB.after(getGAService().getClient().getAllUnspentOutputs(1, subaccount_pointer),
+                CB.after(getGAService().getClient().getAllUnspentOutputs(1, subaccount),
                          new CB.Toast<ArrayList>(gaActivity) {
                     @Override
                     public void onSuccess(@javax.annotation.Nullable ArrayList result) {
@@ -491,7 +491,7 @@ public class TransactionActivity extends GaActivity {
                             if (remaining.compareTo(Coin.ZERO) < 0) {
                                 final Coin changeValue = remaining.multiply(-1);
                                 // we need to add a new change output
-                                CB.after(getGAService().getClient().getNewAddress(subaccount_pointer),
+                                CB.after(getGAService().getClient().getNewAddress(subaccount),
                                          new CB.Toast<Map>(gaActivity) {
                                     @Override
                                     public void onSuccess(final @javax.annotation.Nullable Map result) {
@@ -506,7 +506,7 @@ public class TransactionActivity extends GaActivity {
                                             @Override
                                             public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
                                                 doReplaceByFee(txData, feerate, tx, (Integer) result.get("pointer"),
-                                                        subaccount_pointer, oldFee, moreInputs, morePrevouts, level);
+                                                        subaccount, oldFee, moreInputs, morePrevouts, level);
                                             }
                                         });
                                     }
@@ -516,7 +516,7 @@ public class TransactionActivity extends GaActivity {
                                 CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
                                     @Override
                                     public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
-                                        doReplaceByFee(txData, feerate, tx, null, subaccount_pointer,
+                                        doReplaceByFee(txData, feerate, tx, null, subaccount,
                                                        oldFee, moreInputs, morePrevouts, level);
                                     }
                                 });
@@ -529,7 +529,7 @@ public class TransactionActivity extends GaActivity {
 
         private void doReplaceByFee(final TransactionItem txData, final Coin feerate,
                                     final Transaction tx,
-                                    final Integer change_pointer, final Integer subaccount_pointer,
+                                    final Integer change_pointer, final Integer subaccount,
                                     final Coin oldFee, final List<Map<String, Object>> moreInputs,
                                     final List<byte[]> morePrevouts, final int level) {
             final GaActivity gaActivity = getGaActivity();
@@ -537,7 +537,7 @@ public class TransactionActivity extends GaActivity {
 
             for (final Object subaccount_ : getGAService().getSubaccounts()) {
                 final Map<String, ?> subaccountMap = (Map) subaccount_;
-                if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount_pointer)) {
+                if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount)) {
                     twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
                     twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
                 }
@@ -546,7 +546,7 @@ public class TransactionActivity extends GaActivity {
             final Map<String, Transaction> prevoutRawTxs = new HashMap<>();
 
             final PreparedTransaction prepTx = new PreparedTransaction(
-                    change_pointer, subaccount_pointer, /*requires_2factor*/false,
+                    change_pointer, subaccount, /*requires_2factor*/false,
                     tx, twoOfThreeBackupChaincode, twoOfThreeBackupPubkey,
                     prevoutRawTxs
             );

@@ -155,9 +155,6 @@ public class GaService extends Service {
         }
     };
 
-
-    public boolean isSPVEnabled() { return cfg("SPV").getBoolean("enabled", true); }
-
     public int getAutoLogoutMinutes() {
         try {
             return (int)getUserConfig("altimeout");
@@ -251,8 +248,11 @@ public class GaService extends Service {
         return client.getUserConfig(key);
     }
 
+    public boolean isSPVEnabled() { return cfg("SPV").getBoolean("enabled", true); }
     public String getProxyHost() { return cfg().getString("proxy_host", null); }
     public String getProxyPort() { return cfg().getString("proxy_port", null); }
+    public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
+    public void setCurrentSubAccount(int subaccount) { cfgEdit("main").putInt("curSubaccount", subaccount).apply(); }
 
     @Override
     public void onCreate() {

@@ -134,7 +134,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         tagDispatcher = TagDispatcher.get(getActivity(), this);
         tagDispatcher.enableExclusiveNfc();
 
-        curSubaccount = getGAService().cfg("main").getInt("curSubaccount", 0);
+        curSubaccount = getGAService().getCurrentSubAccount();
 
         rootView = inflater.inflate(R.layout.fragment_receive, container, false);
         final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
