@@ -49,7 +49,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
     @Nullable
     private MaterialDialog mUnconfirmedDialog = null;
     private View rootView;
-    private List<Transaction> currentList;
+    private List<TransactionItem> currentList;
     private Map<String, List<String> > replacedTxs;
     @Nullable
     private Observer curBalanceObserver;
@@ -58,7 +58,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
     private Observer txVerifiedObservable;
 
     @Nullable
-    private Transaction processGATransaction(@NonNull final Map<String, Object> txJSON, final int curBlock) throws ParseException {
+    private TransactionItem processGATransaction(@NonNull final Map<String, Object> txJSON, final int curBlock) throws ParseException {
 
         final List eps = (List) txJSON.get("eps");
         final String txhash = (String) txJSON.get("txhash");
@@ -74,7 +74,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
         String counterparty = null;
         long amount = 0;
-        Transaction.TYPE type;
+        TransactionItem.TYPE type;
         boolean isSpent = true;
         String receivedOn = null;
         for (int i = 0; i < eps.size(); ++i) {
@@ -116,7 +116,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
             }
         }
         if (amount >= 0) {
-            type = Transaction.TYPE.IN;
+            type = TransactionItem.TYPE.IN;
             for (int i = 0; i < eps.size(); ++i) {
                 final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
                 if (!((Boolean) ep.get("is_credit")) && ep.get("social_source") != null) {
@@ -135,7 +135,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 }
             }
             if (recip_eps.size() > 0) {
-                type = Transaction.TYPE.OUT;
+                type = TransactionItem.TYPE.OUT;
                 if (counterparty == null) {
                     counterparty = (String) recip_eps.get(0).get("ad");
                 }
@@ -143,13 +143,13 @@ public class MainFragment extends SubaccountFragment implements Observer {
                     counterparty += ", ...";
                 }
             } else {
-                type = Transaction.TYPE.REDEPOSIT;
+                type = TransactionItem.TYPE.REDEPOSIT;
             }
         }
         final boolean spvVerified = getGAService().cfgIn("verified_utxo_").getBoolean(txhash, false);
         final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return new Transaction(type, amount, counterparty,
+        return new TransactionItem(type, amount, counterparty,
                 df.parse((String) txJSON.get("created_at")), txhash, memo, curBlock, blockHeight, spvVerified, isSpent,
                 receivedOn, fee, size, (String) txJSON.get("double_spent_by"),
                 txJSON.get("rbf_optin") != null && (Boolean) txJSON.get("rbf_optin"),
@@ -327,7 +327,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                     @Override
                     public void run() {
                         final SharedPreferences prefs = getGAService().cfgIn("verified_utxo_");
-                        for (final Transaction tx : currentList)
+                        for (final TransactionItem tx : currentList)
                             tx.spvVerified = prefs.getBoolean(tx.txhash, false);
 
                         final RecyclerView recycleView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);

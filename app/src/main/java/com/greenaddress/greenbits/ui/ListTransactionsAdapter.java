@@ -27,11 +27,11 @@ public class ListTransactionsAdapter extends
 
     private final static int REQUEST_TX_DETAILS = 4;
 
-    private final List<Transaction> transactions;
+    private final List<TransactionItem> transactions;
     private final String btcUnit;
     private final Activity context;
 
-    public ListTransactionsAdapter(final Activity context, final List<Transaction> transactions, final String btcUnit) {
+    public ListTransactionsAdapter(final Activity context, final List<TransactionItem> transactions, final String btcUnit) {
         this.transactions = transactions;
         this.btcUnit = btcUnit;
         this.context = context;
@@ -45,7 +45,7 @@ public class ListTransactionsAdapter extends
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final Transaction transaction = transactions.get(position);
+        final TransactionItem transaction = transactions.get(position);
 
 
         final long val = transaction.amount;
@@ -69,7 +69,7 @@ public class ListTransactionsAdapter extends
         }
 
         if (!context.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true) ||
-                transaction.spvVerified || transaction.isSpent || transaction.type.equals(Transaction.TYPE.OUT)) {
+                transaction.spvVerified || transaction.isSpent || transaction.type.equals(TransactionItem.TYPE.OUT)) {
             holder.textValueQuestionMark.setVisibility(View.GONE);
         } else {
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);
@@ -102,7 +102,7 @@ public class ListTransactionsAdapter extends
             holder.textReplaceable.setVisibility(View.VISIBLE);
         }
 
-        final boolean humanCpty = transaction.type.equals(Transaction.TYPE.OUT)
+        final boolean humanCpty = transaction.type.equals(TransactionItem.TYPE.OUT)
                 && transaction.counterparty != null && transaction.counterparty.length() > 0
                 && !GaService.isValidAddress(transaction.counterparty);
 
@@ -147,7 +147,7 @@ public class ListTransactionsAdapter extends
         });
     }
 
-    private String getTypeString(@NonNull final Transaction.TYPE type) {
+    private String getTypeString(@NonNull final TransactionItem.TYPE type) {
         switch (type) {
             case IN:
                 return context.getString(R.string.txTypeIn);

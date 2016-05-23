@@ -37,6 +37,7 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
@@ -87,7 +88,7 @@ public class TransactionActivity extends GaActivity {
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_share) {
-            final Transaction t = (Transaction) getIntent().getSerializableExtra("TRANSACTION");
+            final TransactionItem t = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
             final Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT, Network.BLOCKEXPLORER_TX + t.txhash);
@@ -172,7 +173,7 @@ public class TransactionActivity extends GaActivity {
             final TextView feeUnit = (TextView) rootView.findViewById(R.id.txFeeUnit);
             final TextView feeInfoText = (TextView) rootView.findViewById(R.id.txFeeInfoText);
 
-            final Transaction t = (Transaction) getActivity().getIntent().getSerializableExtra("TRANSACTION");
+            final TransactionItem t = (TransactionItem) getActivity().getIntent().getSerializableExtra("TRANSACTION");
             final GaActivity gaActivity = getGaActivity();
 
             openInBrowser(hashText, t.txhash, Network.BLOCKEXPLORER_TX);
@@ -233,14 +234,14 @@ public class TransactionActivity extends GaActivity {
                 feePerKb = Coin.valueOf(0);
             }
 
-            if (t.type.equals(Transaction.TYPE.OUT) || t.type.equals(Transaction.TYPE.REDEPOSIT) || t.isSpent) {
+            if (t.type.equals(TransactionItem.TYPE.OUT) || t.type.equals(TransactionItem.TYPE.REDEPOSIT) || t.isSpent) {
                 if (t.getConfirmations() > 0) {
                     // confirmed - hide unconfirmed widgets
                     rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
                     unconfirmedRecommendation.setVisibility(View.GONE);
                     unconfirmedIncreaseFee.setVisibility(View.GONE);
                     unconfirmedEstimatedBlocks.setVisibility(View.GONE);
-                } else if (t.type.equals(Transaction.TYPE.OUT) || t.type.equals(Transaction.TYPE.REDEPOSIT)) {
+                } else if (t.type.equals(TransactionItem.TYPE.OUT) || t.type.equals(TransactionItem.TYPE.REDEPOSIT)) {
                     // unconfirmed outgoing output/redeposit - can be RBF'd
                     int currentEstimate = 25, bestEstimate;
                     final Map<String, Object> feeEstimates = getGAService().getClient().getLoginData().feeEstimates;
@@ -395,13 +396,13 @@ public class TransactionActivity extends GaActivity {
             return rootView;
         }
 
-        private void replaceByFee(final Transaction txData, final Coin feerate, Integer txSize, final int level) {
+        private void replaceByFee(final TransactionItem txData, final Coin feerate, Integer txSize, final int level) {
             if (level > 10) {
                 throw new RuntimeException("Recursion limit exceeded");
             }
             final GaActivity gaActivity = getGaActivity();
 
-            final org.bitcoinj.core.Transaction tx = new org.bitcoinj.core.Transaction(Network.NETWORK, Hex.decode(txData.data));
+            final Transaction tx = new Transaction(Network.NETWORK, Hex.decode(txData.data));
             Integer change_pointer = null;
             final Integer subaccount_pointer = getGAService().cfg("main").getInt("curSubaccount", 0);
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
@@ -526,8 +527,8 @@ public class TransactionActivity extends GaActivity {
             }
         }
 
-        private void doReplaceByFee(final Transaction txData, final Coin feerate,
-                                    final org.bitcoinj.core.Transaction tx,
+        private void doReplaceByFee(final TransactionItem txData, final Coin feerate,
+                                    final Transaction tx,
                                     final Integer change_pointer, final Integer subaccount_pointer,
                                     final Coin oldFee, final List<Map<String, Object>> moreInputs,
                                     final List<byte[]> morePrevouts, final int level) {
@@ -542,7 +543,7 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            final Map<String, org.bitcoinj.core.Transaction> prevoutRawTxs = new HashMap<>();
+            final Map<String, Transaction> prevoutRawTxs = new HashMap<>();
 
             final PreparedTransaction prepTx = new PreparedTransaction(
                     change_pointer, subaccount_pointer, /*requires_2factor*/false,
@@ -625,9 +626,9 @@ public class TransactionActivity extends GaActivity {
                         public ListenableFuture<Void> apply(Void input) throws Exception {
                             return Futures.transform(
                                     getGAService().getClient().getRawOutput(inp.getOutpoint().getHash()),
-                                    new Function<org.bitcoinj.core.Transaction, Void>() {
+                                    new Function<Transaction, Void>() {
                                         @Override
-                                        public Void apply(org.bitcoinj.core.Transaction input) {
+                                        public Void apply(Transaction input) {
                                             prevoutRawTxs.put(new String(Hex.encode(inp.getOutpoint().getHash().getBytes())), input);
                                             return null;
                                         }
@@ -712,7 +713,7 @@ public class TransactionActivity extends GaActivity {
             });
         }
 
-        private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final org.bitcoinj.core.Transaction signedTx) {
+        private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final Transaction signedTx) {
             Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
             final GaActivity gaActivity = getGaActivity();
 

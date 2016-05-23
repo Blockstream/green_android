@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Transaction implements Serializable {
+public class TransactionItem implements Serializable {
 
     public enum TYPE {
         OUT,
@@ -32,7 +32,7 @@ public class Transaction implements Serializable {
     public final String data;
     public final List eps;
 
-    public Transaction(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn, final long fee, final int size, final String doubleSpentBy, final boolean replaceable, final String data, final List eps) {
+    public TransactionItem(final TYPE type, final long amount, final String counterparty, final Date date, final String txhash, final String memo, final int curBlock, final Integer blockHeight, final boolean spvVerified, final boolean isSpent, final String receivedOn, final long fee, final int size, final String doubleSpentBy, final boolean replaceable, final String data, final List eps) {
         this.type = type;
         this.amount = amount;
         this.counterparty = counterparty;
