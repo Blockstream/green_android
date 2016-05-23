@@ -1025,11 +1025,9 @@ public class WalletClient {
         return simpleCall("twofactor.init_enable_" + type, Boolean.class, details, twoFacData);
     }
 
-    public ListenableFuture<Boolean> enableTwoFac(final String type, final String code) {
-        return simpleCall("twofactor.enable_" + type, Boolean.class, code);
-    }
-
-    public ListenableFuture<Boolean> enableTwoFac(final String type, final String code, final Object twoFacData) {
+    public ListenableFuture<Boolean> enableTwoFactor(final String type, final String code, final Object twoFacData) {
+        if (twoFacData == null)
+            return simpleCall("twofactor.enable_" + type, Boolean.class, code);
         return simpleCall("twofactor.enable_" + type, Boolean.class, code, twoFacData);
     }
 

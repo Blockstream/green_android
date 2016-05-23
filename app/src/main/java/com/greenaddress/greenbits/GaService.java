@@ -813,22 +813,8 @@ public class GaService extends Service {
         return client.initEnableTwoFac(type, details, twoFacData);
     }
 
-    @NonNull
-    public ListenableFuture<Boolean> enableTwoFac(@NonNull final String type, @NonNull final String code) {
-        return Futures.transform(client.enableTwoFac(type, code), new Function<Boolean, Boolean>() {
-            @Nullable
-            @Override
-            public Boolean apply(final @Nullable Boolean input) {
-                getAvailableTwoFacMethods();
-                return input;
-            }
-        });
-    }
-
-    @NonNull
-    public ListenableFuture<Boolean> enableTwoFac(@NonNull final String code, @NonNull final Object twoFacData) {
-        return Futures.transform(client.enableTwoFac("gauth", code, twoFacData), new Function<Boolean, Boolean>() {
-            @Nullable
+    public ListenableFuture<Boolean> enableTwoFactor(final String type, final String code, final Object twoFacData) {
+        return Futures.transform(client.enableTwoFactor(type, code, twoFacData), new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(final @Nullable Boolean input) {
                 getAvailableTwoFacMethods();
