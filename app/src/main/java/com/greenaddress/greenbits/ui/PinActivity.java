@@ -217,9 +217,10 @@ public class PinActivity extends GaActivity implements Observer {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(aesiv, Base64.NO_WRAP)));
             final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
 
-            if (service.onConnected != null) {
-                //Auxillary Future to make sure we are connected.
-                Futures.addCallback(service.triggerOnFullyConnected, new FutureCallback<Void>() {
+            if (service.onConnected == null) {
+                finish();
+            } else {
+                Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(@Nullable final Void result) {
 
@@ -295,8 +296,6 @@ public class PinActivity extends GaActivity implements Observer {
                         finish();
                     }
                 });
-            } else {
-                finish();
             }
         } catch (@NonNull final KeyStoreException | InvalidKeyException e) {
             showAuthenticationScreen();

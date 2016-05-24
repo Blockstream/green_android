@@ -88,8 +88,6 @@ public class GaService extends Service {
     @NonNull final private GaObservable newTransactionsObservable = new GaObservable();
     @NonNull final private GaObservable newTxVerifiedObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
-    @NonNull
-    public SettableFuture<Void> triggerOnFullyConnected =  SettableFuture.create();
     private Handler uiHandler;
     private String mSignUpMnemonics = null;
     private QrBitmap mSignUpQRCode = null;
@@ -199,7 +197,6 @@ public class GaService extends Service {
             public void onSuccess(@Nullable final Void result) {
                 connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
                 Log.i(TAG, "Success CONNECTED callback");
-                triggerOnFullyConnected.set(null);
                 if (!connectionObservable.isForcedOff() && client.canLogin()) {
                     login();
                 }
@@ -498,7 +495,6 @@ public class GaService extends Service {
         for (final Integer key : balanceObservables.keySet())
             balanceObservables.get(key).deleteObservers();
         client.disconnect();
-        triggerOnFullyConnected =  SettableFuture.create();
         connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
     }
 
