@@ -119,8 +119,7 @@ public class GaService extends Service {
 
     public final SPV spv = new SPV(this);
 
-    @Nullable
-    private WalletClient client;
+    private WalletClient mClient;
     @Nullable
     private ConnectivityObservable connectionObservable = null;
     private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
@@ -174,7 +173,7 @@ public class GaService extends Service {
     }
 
     private void getAvailableTwoFacMethods() {
-        Futures.addCallback(client.getTwoFacConfig(), new FutureCallback<Map<?, ?>>() {
+        Futures.addCallback(mClient.getTwoFacConfig(), new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 twoFacConfig = result;
@@ -191,7 +190,7 @@ public class GaService extends Service {
 
     public void reconnect() {
         Log.i(TAG, "Submitting reconnect after " + mReconnectDelay);
-        onConnected = client.connect();
+        onConnected = mClient.connect();
         connectionObservable.setState(ConnectivityObservable.State.CONNECTING);
 
         Futures.addCallback(onConnected, new FutureCallback<Void>() {
@@ -199,7 +198,7 @@ public class GaService extends Service {
             public void onSuccess(@Nullable final Void result) {
                 connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
                 Log.i(TAG, "Success CONNECTED callback");
-                if (!connectionObservable.isForcedOff() && client.canLogin()) {
+                if (!connectionObservable.isForcedOff() && mClient.canLogin()) {
                     login();
                 }
             }
@@ -244,7 +243,7 @@ public class GaService extends Service {
 
     // User config is stored on the server (unlike preferences which are local)
     public Object getUserConfig(@NonNull final String key) {
-        return client.getUserConfig(key);
+        return mClient.getUserConfig(key);
     }
 
     public boolean isSPVEnabled() { return cfg("SPV").getBoolean("enabled", true); }
@@ -270,7 +269,7 @@ public class GaService extends Service {
             cfgEdit("service").putString("device_id", deviceId).apply();
         }
 
-        client = new WalletClient(new INotificationHandler() {
+        mClient = new WalletClient(new INotificationHandler() {
             @Override
             public void onNewBlock(final int count) {
                 Log.i(TAG, "onNewBlock");
@@ -319,7 +318,7 @@ public class GaService extends Service {
         final String proxyHost = getProxyHost();
         final String proxyPort = getProxyPort();
         if (proxyHost != null && proxyPort != null) {
-            client.setProxy(proxyHost, proxyPort);
+            mClient.setProxy(proxyHost, proxyPort);
         }
     }
 
@@ -329,7 +328,7 @@ public class GaService extends Service {
         final ECKey gaKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(pointer));
         pubkeys.add(gaKey);
 
-        ISigningWallet userWallet = client.getHdWallet();
+        ISigningWallet userWallet = mClient.getHdWallet();
         if (subaccount != 0) {
             userWallet = userWallet.deriveChildKey(new ChildNumber(3, true));
             userWallet = userWallet.deriveChildKey(new ChildNumber(subaccount, true));
@@ -432,7 +431,7 @@ public class GaService extends Service {
 
     private void login() {
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
-        final ListenableFuture<LoginData> future = client.login(deviceId);
+        final ListenableFuture<LoginData> future = mClient.login(deviceId);
         Futures.addCallback(future, handleLoginData, es);
     }
 
@@ -440,7 +439,7 @@ public class GaService extends Service {
     public ListenableFuture<LoginData> login(@NonNull final ISigningWallet signingWallet) {
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
-        final ListenableFuture<LoginData> future = client.login(signingWallet, deviceId);
+        final ListenableFuture<LoginData> future = mClient.login(signingWallet, deviceId);
         Futures.addCallback(future, handleLoginData, es);
         return future;
     }
@@ -449,7 +448,7 @@ public class GaService extends Service {
     public ListenableFuture<LoginData> login(@NonNull final String mnemonics) {
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
-        final ListenableFuture<LoginData> future = client.login(mnemonics, deviceId);
+        final ListenableFuture<LoginData> future = mClient.login(mnemonics, deviceId);
         Futures.addCallback(future, handleLoginData, es);
         return future;
     }
@@ -458,14 +457,14 @@ public class GaService extends Service {
     public ListenableFuture<LoginData> login(@NonNull final PinData pinData, final String pin) {
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
-        final ListenableFuture<LoginData> future = client.login(pinData, pin, deviceId);
+        final ListenableFuture<LoginData> future = mClient.login(pinData, pin, deviceId);
         Futures.addCallback(future, handleLoginData, es);
         return future;
     }
 
     @NonNull
     public ListenableFuture<LoginData> signup(@NonNull final String mnemonics) {
-        final ListenableFuture<LoginData> signupFuture = client.loginRegister(mnemonics, deviceId);
+        final ListenableFuture<LoginData> signupFuture = mClient.loginRegister(mnemonics, deviceId);
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
         Futures.addCallback(signupFuture, handleLoginData, es);
@@ -474,7 +473,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet, @NonNull final byte[] masterPublicKey, @NonNull final byte[] masterChaincode, @NonNull final byte[] pathPublicKey, @NonNull final byte[] pathChaincode) {
-        final ListenableFuture<LoginData> signupFuture = client.loginRegister(signingWallet, masterPublicKey, masterChaincode, pathPublicKey, pathChaincode, deviceId);
+        final ListenableFuture<LoginData> signupFuture = mClient.loginRegister(signingWallet, masterPublicKey, masterChaincode, pathPublicKey, pathChaincode, deviceId);
         connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
 
         Futures.addCallback(signupFuture, handleLoginData, es);
@@ -483,16 +482,11 @@ public class GaService extends Service {
 
     @Nullable
     public String getMnemonics() {
-        return client.getMnemonics();
+        return mClient.getMnemonics();
     }
 
     public LoginData getLoginData() {
-        return client.getLoginData();
-    }
-
-    @Nullable
-    public WalletClient getClient() {
-        return client;
+        return mClient.getLoginData();
     }
 
     public void disconnect(final boolean autoReconnect) {
@@ -500,13 +494,13 @@ public class GaService extends Service {
         spv.stopSPVSync();
         for (final Integer key : balanceObservables.keySet())
             balanceObservables.get(key).deleteObservers();
-        client.disconnect();
+        mClient.disconnect();
         connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
     }
 
     @NonNull
     public ListenableFuture<Map<?, ?>> updateBalance(final int subaccount) {
-        final ListenableFuture<Map<?, ?>> future = client.getSubaccountBalance(subaccount);
+        final ListenableFuture<Map<?, ?>> future = mClient.getSubaccountBalance(subaccount);
         Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
@@ -533,7 +527,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int pointer) {
-        return client.getSubaccountBalance(pointer);
+        return mClient.getSubaccountBalance(pointer);
     }
 
     public void fireBalanceChanged(final int subaccount) {
@@ -545,7 +539,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
-        return Futures.transform(client.setPricingSource(currency, exchange), new Function<Boolean, Boolean>() {
+        return Futures.transform(mClient.setPricingSource(currency, exchange), new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(final Boolean input) {
                 fiatCurrency = currency;
@@ -557,12 +551,12 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<Map<?, ?>> getMyTransactions(final int subaccount) {
-        return client.getMyTransactions(subaccount);
+        return mClient.getMyTransactions(subaccount);
     }
 
     @NonNull
     public ListenableFuture<PinData> setPin(@NonNull final byte[] seed, final String mnemonic, final String pin, final String device_name) {
-        return client.setPin(seed, mnemonic, pin, device_name);
+        return mClient.setPin(seed, mnemonic, pin, device_name);
     }
 
     private void preparePrivData(@NonNull final Map<String, Object> privateData) {
@@ -571,7 +565,7 @@ public class GaService extends Service {
         final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subaccount);
         if (!isSPVEnabled() ||
             verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) ||
-            client.getHdWallet().requiresPrevoutRawTxs()) {
+            mClient.getHdWallet().requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
             privateData.put("prevouts_mode", "skip");
@@ -583,19 +577,19 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<List<String>> signTransaction(final PreparedTransaction tx, final boolean isPrivate) {
-        return client.signTransaction(tx, isPrivate);
+        return mClient.signTransaction(tx, isPrivate);
     }
 
     @NonNull
     public ListenableFuture<PreparedTransaction> prepareTx(@NonNull final Coin coinValue, final String recipient, @NonNull final Map<String, Object> privateData) {
         preparePrivData(privateData);
-        return client.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
+        return mClient.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
     }
 
     @NonNull
     public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subaccount, final String recipient, @NonNull final Map<String, Object> privData) {
         preparePrivData(privData);
-        return client.prepareTx(
+        return mClient.prepareTx(
                 getBalanceCoin(subaccount).longValue(),
                 recipient, "receiver", privData
         );
@@ -607,29 +601,29 @@ public class GaService extends Service {
             @NonNull
             @Override
             public ListenableFuture<String> apply(@NonNull final List<String> input) throws Exception {
-                return client.sendTransaction(input, twoFacData);
+                return mClient.sendTransaction(input, twoFacData);
             }
         }, es);
     }
 
     public ListenableFuture<Map<String, Object>> sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
-        return client.sendRawTransaction(tx, twoFacData, returnErrorUri);
+        return mClient.sendRawTransaction(tx, twoFacData, returnErrorUri);
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
-        return client.getAllUnspentOutputs(confs, subaccount);
+        return mClient.getAllUnspentOutputs(confs, subaccount);
     }
 
     public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
-        return client.getRawUnspentOutput(txHash);
+        return mClient.getRawUnspentOutput(txHash);
     }
 
     public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
-        return client.getRawOutput(txHash);
+        return mClient.getRawOutput(txHash);
     }
 
     public ListenableFuture<Boolean> changeMemo(final String txHash, final String memo) {
-        return client.changeMemo(txHash, memo);
+        return mClient.changeMemo(txHash, memo);
     }
 
     @NonNull
@@ -638,7 +632,7 @@ public class GaService extends Service {
         for (final TransactionSignature sig : signatures) {
             signaturesStrings.add(new String(Hex.encode(sig.encodeToBitcoin())));
         }
-        return client.sendTransaction(signaturesStrings, null);
+        return mClient.sendTransaction(signaturesStrings, null);
     }
 
     private static byte[] getSegWitScript(final byte[] input) {
@@ -653,7 +647,7 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<Map> getNewAddress(final int subaccount) {
-        return client.getNewAddress(subaccount);
+        return mClient.getNewAddress(subaccount);
     }
 
     @NonNull
@@ -699,7 +693,7 @@ public class GaService extends Service {
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {
         if (currencyExchangePairs == null) {
-            currencyExchangePairs = Futures.transform(client.getAvailableCurrencies(), new Function<Map<?, ?>, List<List<String>>>() {
+            currencyExchangePairs = Futures.transform(mClient.getAvailableCurrencies(), new Function<Map<?, ?>, List<List<String>>>() {
                 @Override
                 public List<List<String>> apply(@Nullable final Map<?, ?> result) {
                     final Map<String, ArrayList<String>> per_exchange = (Map) result.get("per_exchange");
@@ -747,7 +741,7 @@ public class GaService extends Service {
     }
 
     public boolean isTrezorHWWallet() {
-        return client.getHdWallet() instanceof TrezorHWWallet;
+        return mClient.getHdWallet() instanceof TrezorHWWallet;
     }
 
     @NonNull
@@ -813,29 +807,29 @@ public class GaService extends Service {
      */
     @NonNull
     public ListenableFuture<Boolean> setUserConfig(@NonNull final String key, @NonNull final Object value, final boolean updateImmediately) {
-        return client.setUserConfig(key, value, updateImmediately);
+        return mClient.setUserConfig(key, value, updateImmediately);
     }
 
 
     @NonNull
     public ListenableFuture<Object> requestTwoFacCode(@NonNull final String method, @NonNull final String action, @NonNull final Object data) {
-        return client.requestTwoFacCode(method, action, data);
+        return mClient.requestTwoFacCode(method, action, data);
     }
 
     @NonNull
     public ListenableFuture<Map<?, ?>> prepareSweepSocial(@NonNull final byte[] pubKey, final boolean useElectrum) {
-        return client.prepareSweepSocial(pubKey, useElectrum);
+        return mClient.prepareSweepSocial(pubKey, useElectrum);
     }
 
     @NonNull
     public ListenableFuture<Map<?, ?>> processBip70URL(@NonNull final String url) {
-        return client.processBip70URL(url);
+        return mClient.processBip70URL(url);
     }
 
     @NonNull
     public ListenableFuture<PreparedTransaction> preparePayreq(@NonNull final Coin amount, @NonNull final Map<?, ?> data, @NonNull final Map<String, Object> privateData) {
         preparePrivData(privateData);
-        return client.preparePayreq(amount, data, privateData);
+        return mClient.preparePayreq(amount, data, privateData);
     }
 
     public String getReceivingId() {
@@ -844,11 +838,11 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<Boolean> initEnableTwoFac(@NonNull final String type, @NonNull final String details, @NonNull final Map<?, ?> twoFacData) {
-        return client.initEnableTwoFac(type, details, twoFacData);
+        return mClient.initEnableTwoFac(type, details, twoFacData);
     }
 
     public ListenableFuture<Boolean> enableTwoFactor(final String type, final String code, final Object twoFacData) {
-        return Futures.transform(client.enableTwoFactor(type, code, twoFacData), new Function<Boolean, Boolean>() {
+        return Futures.transform(mClient.enableTwoFactor(type, code, twoFacData), new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(final @Nullable Boolean input) {
                 getAvailableTwoFacMethods();
@@ -859,7 +853,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<Boolean> disableTwoFac(@NonNull final String type, @NonNull final Map<String, String> twoFacData) {
-        return Futures.transform(client.disableTwoFac(type, twoFacData), new Function<Boolean, Boolean>() {
+        return Futures.transform(mClient.disableTwoFac(type, twoFacData), new Function<Boolean, Boolean>() {
             @Nullable
             @Override
             public Boolean apply(final @Nullable Boolean input) {
