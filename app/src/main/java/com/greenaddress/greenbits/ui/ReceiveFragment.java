@@ -75,7 +75,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 // get a new address:
                 if (address == null && !setting_qrcode) {
                     setting_qrcode = true;
-                    final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+                    final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
                     Futures.addCallback(ft, onAddress, getGAService().es);
                     startNewAddressAnimation(rootView);
                 }
@@ -101,7 +101,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         super.onResume();
         if (onAddress != null && address == null && !setting_qrcode) {
             setting_qrcode = true;
-            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
             Futures.addCallback(ft, onAddress, getGAService().es);
         }
     }
@@ -263,7 +263,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                             startNewAddressAnimation(rootView);
 
-                            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddress(curSubaccount);
+                            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
                             Futures.addCallback(ft, onAddress, getGAService().es);
                         }
                     }
@@ -327,9 +327,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (!setting_qrcode) {
             setting_qrcode = true;
 
-            Futures.addCallback(
-                    getGAService().getNewAddress(curSubaccount),
-                    onAddress, getGAService().es);
+            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
+            Futures.addCallback(ft, onAddress, getGAService().es);
         }
     }
 

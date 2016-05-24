@@ -855,7 +855,7 @@ public class WalletClient {
         return simpleCall("vault.send_tx", null, signatures, TfaData);
     }
 
-    public ListenableFuture<Map<String, Object> > sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
         final SettableFuture<Map<String, Object>> rpc = SettableFuture.create();
         final ErrorHandler errHandler = new ErrorHandler() {
             public void onError(final String uri, final String err) {
@@ -984,10 +984,6 @@ public class WalletClient {
 
     public ISigningWallet getHdWallet() {
         return mHDParent;
-    }
-
-    public ListenableFuture<ArrayList> getAllUnspentOutputs() {
-        return getAllUnspentOutputs(0, null);
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {

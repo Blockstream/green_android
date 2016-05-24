@@ -34,12 +34,14 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.ChildNumber;
@@ -580,6 +582,10 @@ public class GaService extends Service {
             privateData.put("rbf_optin", rbf_optin);
     }
 
+    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction tx, final boolean isPrivate) {
+        return client.signTransaction(tx, isPrivate);
+    }
+
     @NonNull
     public ListenableFuture<PreparedTransaction> prepareTx(@NonNull final Coin coinValue, final String recipient, @NonNull final Map<String, Object> privateData) {
         preparePrivData(privateData);
@@ -597,13 +603,33 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<String> signAndSendTransaction(@NonNull final PreparedTransaction prepared, final Object twoFacData) {
-        return Futures.transform(client.signTransaction(prepared, false), new AsyncFunction<List<String>, String>() {
+        return Futures.transform(signTransaction(prepared, false), new AsyncFunction<List<String>, String>() {
             @NonNull
             @Override
             public ListenableFuture<String> apply(@NonNull final List<String> input) throws Exception {
                 return client.sendTransaction(input, twoFacData);
             }
         }, es);
+    }
+
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
+        return client.sendRawTransaction(tx, twoFacData, returnErrorUri);
+    }
+
+    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
+        return client.getAllUnspentOutputs(confs, subaccount);
+    }
+
+    public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
+        return client.getRawUnspentOutput(txHash);
+    }
+
+    public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
+        return client.getRawOutput(txHash);
+    }
+
+    public ListenableFuture<Boolean> changeMemo(final String txHash, final String memo) {
+        return client.changeMemo(txHash, memo);
     }
 
     @NonNull
@@ -626,8 +652,12 @@ public class GaService extends Service {
         return bits.toByteArray();
     }
 
+    public ListenableFuture<Map> getNewAddress(final int subaccount) {
+        return client.getNewAddress(subaccount);
+    }
+
     @NonNull
-    public ListenableFuture<QrBitmap> getNewAddress(final int subaccount) {
+    public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subaccount) {
         final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
             @NonNull
             @Override
@@ -663,7 +693,7 @@ public class GaService extends Service {
                 return es.submit(new QrBitmap(input, 0 /* transparent background */));
             }
         };
-        final ListenableFuture<String> verifiedAddress = Futures.transform(client.getNewAddress(subaccount), verifyAddress, es);
+        final ListenableFuture<String> verifiedAddress = Futures.transform(getNewAddress(subaccount), verifyAddress, es);
         return Futures.transform(verifiedAddress, addressToQr, es);
     }
 
@@ -714,6 +744,10 @@ public class GaService extends Service {
                 throw new RuntimeException(e);
             }
         return mSignUpQRCode.qrcode;
+    }
+
+    public boolean isTrezorHWWallet() {
+        return client.getHdWallet() instanceof TrezorHWWallet;
     }
 
     @NonNull

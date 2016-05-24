@@ -120,7 +120,7 @@ public class SPV {
         if (!gaService.isSPVEnabled())
             return;
 
-        Futures.addCallback(gaService.getClient().getAllUnspentOutputs(), new FutureCallback<ArrayList>() {
+        Futures.addCallback(gaService.getAllUnspentOutputs(0, null), new FutureCallback<ArrayList>() {
             @Override
             public void onSuccess(final @Nullable ArrayList result) {
                 final Set<TransactionOutPoint> newUtxos = new HashSet<>();
@@ -203,7 +203,7 @@ public class SPV {
             gaService.fireBalanceChanged(subaccount);
         }
         if (!missing) return;
-        Futures.addCallback(gaService.getClient().getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
+        Futures.addCallback(gaService.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
             @Override
             public void onSuccess(@Nullable final Transaction result) {
                 final List<Integer> changedSubaccounts = new ArrayList<>();

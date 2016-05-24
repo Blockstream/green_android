@@ -32,7 +32,6 @@ import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
@@ -213,7 +212,7 @@ public class TransactionActivity extends GaActivity {
                 public void onClick(final View view) {
                     final String edited = memoEditText.getText().toString();
                     if (!edited.equals(memoText.getText().toString())) {
-                        CB.after(getGAService().getClient().changeMemo(t.txhash, edited),
+                        CB.after(getGAService().changeMemo(t.txhash, edited),
                                  new CB.Toast<Boolean>(gaActivity) {
                             @Override
                             public void onSuccess(final Boolean result) {
@@ -469,7 +468,7 @@ public class TransactionActivity extends GaActivity {
                 doReplaceByFee(txData, feerate, tx, change_pointer, subaccount, oldFee, null, null, level);
             else {
                 final Coin finalRemaining = remainingFeeDelta;
-                CB.after(getGAService().getClient().getAllUnspentOutputs(1, subaccount),
+                CB.after(getGAService().getAllUnspentOutputs(1, subaccount),
                          new CB.Toast<ArrayList>(gaActivity) {
                     @Override
                     public void onSuccess(@javax.annotation.Nullable ArrayList result) {
@@ -491,7 +490,7 @@ public class TransactionActivity extends GaActivity {
                             if (remaining.compareTo(Coin.ZERO) < 0) {
                                 final Coin changeValue = remaining.multiply(-1);
                                 // we need to add a new change output
-                                CB.after(getGAService().getClient().getNewAddress(subaccount),
+                                CB.after(getGAService().getNewAddress(subaccount),
                                          new CB.Toast<Map>(gaActivity) {
                                     @Override
                                     public void onSuccess(final @javax.annotation.Nullable Map result) {
@@ -619,13 +618,13 @@ public class TransactionActivity extends GaActivity {
             }
 
             ListenableFuture<Void> prevouts = Futures.immediateFuture(null);
-            if (getGAService().getClient().getHdWallet() instanceof TrezorHWWallet) {
+            if (getGAService().isTrezorHWWallet()) {
                 for (final TransactionInput inp : tx.getInputs()) {
                     prevouts = Futures.transform(prevouts, new AsyncFunction<Void, Void>() {
                         @Override
                         public ListenableFuture<Void> apply(Void input) throws Exception {
                             return Futures.transform(
-                                    getGAService().getClient().getRawOutput(inp.getOutpoint().getHash()),
+                                    getGAService().getRawOutput(inp.getOutpoint().getHash()),
                                     new Function<Transaction, Void>() {
                                         @Override
                                         public Void apply(Transaction input) {
@@ -642,7 +641,8 @@ public class TransactionActivity extends GaActivity {
             final ListenableFuture<List<String>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<String>>() {
                 @Override
                 public ListenableFuture<List<String>> apply(Void input) throws Exception {
-                    return getGAService().getClient().signTransaction(prepTx, false);
+                    final boolean isPrivate = false;
+                    return getGAService().signTransaction(prepTx, isPrivate);
                 }
             });
 
@@ -672,7 +672,7 @@ public class TransactionActivity extends GaActivity {
                     }
                     final Map<String, Object> twoFacData = new HashMap<>();
                     twoFacData.put("try_under_limits_bump", tx.getFee().subtract(oldFee).longValue());
-                    final ListenableFuture<Map<String,Object>> sendFuture = service.getClient().sendRawTransaction(tx, twoFacData, true);
+                    final ListenableFuture<Map<String,Object>> sendFuture = service.sendRawTransaction(tx, twoFacData, true);
                     Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
                         @Override
                         public void onSuccess(@Nullable final Map result) {
@@ -776,7 +776,7 @@ public class TransactionActivity extends GaActivity {
                             if (twoFacData != null) {
                                 twoFacData.put("code", newTx2FACodeText.getText().toString());
                             }
-                            final ListenableFuture<Map<String,Object>> sendFuture = getGAService().getClient().sendRawTransaction(signedTx, twoFacData, false);
+                            final ListenableFuture<Map<String,Object>> sendFuture = getGAService().sendRawTransaction(signedTx, twoFacData, false);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity) {
                                 @Override
                                 public void onSuccess(@Nullable final Map result) {
