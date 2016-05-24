@@ -189,7 +189,7 @@ public class GaService extends Service {
         }, es);
     }
 
-    void reconnect() {
+    public void reconnect() {
         Log.i(TAG, "Submitting reconnect after " + mReconnectDelay);
         onConnected = client.connect();
         connectionObservable.setState(ConnectivityObservable.State.CONNECTING);
@@ -492,8 +492,8 @@ public class GaService extends Service {
         return client;
     }
 
-    public void disconnect(final boolean reconnect) {
-        mAutoReconnect = reconnect;
+    public void disconnect(final boolean autoReconnect) {
+        mAutoReconnect = autoReconnect;
         spv.stopSPVSync();
         for (final Integer key : balanceObservables.keySet())
             balanceObservables.get(key).deleteObservers();
