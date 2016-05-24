@@ -192,7 +192,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         final Intent data = new Intent("fragmentupdater");
         data.putExtra("sub", subaccount);
-        TabbedMainActivity.this.sendBroadcast(data);
+        sendBroadcast(data);
     }
 
     @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
