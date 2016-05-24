@@ -230,9 +230,7 @@ public class SendFragment extends SubaccountFragment {
         } else {
             recipientEdit.setText(URI.getAddress().toString());
             if (URI.getAmount() != null) {
-                final ListenableFuture<Map<?, ?>> future;
-                future = getGAService().getClient().getSubaccountBalance(curSubaccount);
-                Futures.addCallback(future, new CB.NoOp<Map<?, ?>>() {
+                Futures.addCallback(getGAService().getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
                     @Override
                     public void onSuccess(@Nullable final Map<?, ?> result) {
                         getActivity().runOnUiThread(new Runnable() {
