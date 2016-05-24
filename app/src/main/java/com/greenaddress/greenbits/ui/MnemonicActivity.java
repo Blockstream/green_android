@@ -357,7 +357,7 @@ public class MnemonicActivity extends GaActivity {
 
                 edit.setText(mnemonics);
 
-                if (service != null && service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
+                if (service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
                     //Auxillary Future to make sure we are connected.
                     CB.after(service.triggerOnFullyConnected, new CB.NoOp<Void>() {
                         @Override
@@ -375,7 +375,7 @@ public class MnemonicActivity extends GaActivity {
                     public void onSuccess(final @Nullable String passphrase) {
                         final String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(array, passphrase);
                         edit.setText(mnemonics);
-                        if (service != null && service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
+                        if (service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
                             CB.after(service.onConnected, new CB.NoOp<Void>() {
                                 @Override
                                 public void onSuccess(@Nullable final Void result) {

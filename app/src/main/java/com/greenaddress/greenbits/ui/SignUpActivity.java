@@ -121,7 +121,7 @@ public class SignUpActivity extends GaActivity {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                 if (onSignUp == null) {
-                    if (service != null && service.onConnected != null) {
+                    if (service.onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
                         onSignUp = Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {

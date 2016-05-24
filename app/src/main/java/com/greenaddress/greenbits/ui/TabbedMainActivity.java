@@ -212,11 +212,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-        if (service == null) {
-            // FIXME: Check if this is possible
-            shortToast(R.string.err_send_not_connected_will_resume);
-            return;
-        }
 
         configureNoTwoFacFooter();
 
