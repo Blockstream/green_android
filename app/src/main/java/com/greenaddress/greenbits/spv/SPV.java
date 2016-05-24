@@ -481,7 +481,7 @@ public class SPV {
                 InputStream is = null;
                 try {
                     is = gaService.getAssets().open("checkpoints");
-                    CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, gaService.getClient().getLoginData().earliest_key_creation_time);
+                    CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, gaService.getLoginData().earliest_key_creation_time);
                 } catch (@NonNull final IOException e) {
                     // couldn't load checkpoints, log & skip
                     e.printStackTrace();

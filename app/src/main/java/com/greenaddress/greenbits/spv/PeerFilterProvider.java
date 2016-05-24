@@ -19,7 +19,7 @@ class PeerFilterProvider implements org.bitcoinj.core.PeerFilterProvider {
 
     @Override
     public long getEarliestKeyCreationTime() {
-        return gaService.getClient().getLoginData().earliest_key_creation_time;
+        return gaService.getLoginData().earliest_key_creation_time;
     }
 
     @Override

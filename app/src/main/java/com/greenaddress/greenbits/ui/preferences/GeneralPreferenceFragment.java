@@ -151,7 +151,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 });
 
         // -- handle opt-in rbf
-        if (!gaService.getClient().getLoginData().rbf) {
+        if (!gaService.getLoginData().rbf) {
             getPreferenceScreen().removePreference(findPreference("optin_rbf"));
         } else {
             final CheckBoxPreference optin_rbf = (CheckBoxPreference) findPreference("optin_rbf");

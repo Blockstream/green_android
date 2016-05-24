@@ -244,7 +244,7 @@ public class TransactionActivity extends GaActivity {
                 } else if (t.type.equals(TransactionItem.TYPE.OUT) || t.type.equals(TransactionItem.TYPE.REDEPOSIT)) {
                     // unconfirmed outgoing output/redeposit - can be RBF'd
                     int currentEstimate = 25, bestEstimate;
-                    final Map<String, Object> feeEstimates = getGAService().getClient().getLoginData().feeEstimates;
+                    final Map<String, Object> feeEstimates = getGAService().getLoginData().feeEstimates;
                     final String checkValues[] = {"1", "3", "6"};
                     for (final String value : checkValues) {
                         final double feerate = Double.parseDouble(((Map)feeEstimates.get(value)).get("feerate").toString());

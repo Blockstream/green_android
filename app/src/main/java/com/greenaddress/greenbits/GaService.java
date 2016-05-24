@@ -375,7 +375,7 @@ public class GaService extends Service {
             @javax.annotation.Nullable
             @Override
             public Boolean apply(final @javax.annotation.Nullable byte[] multisig) {
-                if (client.getLoginData().segwit) {
+                if (getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     if (Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig)))) {
                         return true;
@@ -482,6 +482,10 @@ public class GaService extends Service {
     @Nullable
     public String getMnemonics() {
         return client.getMnemonics();
+    }
+
+    public LoginData getLoginData() {
+        return client.getLoginData();
     }
 
     @Nullable
@@ -631,7 +635,7 @@ public class GaService extends Service {
                 final Integer pointer = ((Integer) input.get("pointer"));
                 final byte[] script = Hex.decode((String) input.get("script")),
                              scriptHash;
-                if (client.getLoginData().segwit) {
+                if (getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     scriptHash = Utils.sha256hash160(getSegWitScript(script));
                 } else {
