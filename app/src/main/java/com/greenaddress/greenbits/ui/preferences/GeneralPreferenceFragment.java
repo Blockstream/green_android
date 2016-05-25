@@ -29,7 +29,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         setHasOptionsMenu(true);
 
         // -- handle timeout
-        int timeout = gaService.getAutoLogoutMinutes();
+        int timeout = mService.getAutoLogoutMinutes();
         getPreferenceManager().getSharedPreferences().edit()
                               .putString("altime", Integer.toString(timeout))
                               .apply();
@@ -40,7 +40,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 try {
                     final Integer altimeout = Integer.parseInt(newValue.toString());
-                    gaService.setUserConfig("altimeout", altimeout, true);
+                    mService.setUserConfig("altimeout", altimeout, true);
                     preference.setSummary(String.format("%d %s", altimeout, getResources().getString(R.string.autologout_time_default)));
                     return true;
                 } catch (@NonNull final Exception e) {
@@ -52,7 +52,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // -- handle mnemonics
 
-        final String mnemonic = gaService.getMnemonics();
+        final String mnemonic = mService.getMnemonics();
         if (mnemonic != null) {
             findPreference("mnemonic_passphrase").setSummary(getString(R.string.touch_to_display));
             findPreference("mnemonic_passphrase").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -94,12 +94,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         bitcoinDenomination.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
-                gaService.setUserConfig("unit", o.toString(), true);
+                mService.setUserConfig("unit", o.toString(), true);
                 bitcoinDenomination.setSummary(o.toString());
                 return true;
             }
         });
-        final String btcUnit = (String) gaService.getUserConfig("unit");
+        final String btcUnit = (String) mService.getUserConfig("unit");
         if (btcUnit == null || btcUnit.equals("bits")) {
             bitcoinDenomination.setSummary("bits");
         } else {
@@ -110,14 +110,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object o) {
                 final String[] split = o.toString().split(" ");
-                gaService.setPricingSource(split[0], split[1]);
+                mService.setPricingSource(split[0], split[1]);
                 fiatCurrency.setSummary(o.toString());
                 return true;
             }
         });
 
         Futures.addCallback(
-                gaService.getCurrencyExchangePairs(),
+                mService.getCurrencyExchangePairs(),
                 new FutureCallback<List<List<String>>>() {
                     @Override
                     public void onSuccess(@android.support.annotation.Nullable final List<List<String>> result) {
@@ -129,8 +129,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                     final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
 
                                     for (final List<String> currency_exchange : result) {
-                                        final boolean current = currency_exchange.get(0).equals(gaService.getFiatCurrency())
-                                                && currency_exchange.get(1).equals(gaService.getFiatExchange());
+                                        final boolean current = currency_exchange.get(0).equals(mService.getFiatCurrency())
+                                                && currency_exchange.get(1).equals(mService.getFiatExchange());
                                         final String pair = String.format("%s %s", currency_exchange.get(0), currency_exchange.get(1));
                                         if (current) {
                                             fiatCurrency.setSummary(pair);
@@ -151,7 +151,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 });
 
         // -- handle opt-in rbf
-        if (!gaService.getLoginData().rbf) {
+        if (!mService.getLoginData().rbf) {
             getPreferenceScreen().removePreference(findPreference("optin_rbf"));
         } else {
             final CheckBoxPreference optin_rbf = (CheckBoxPreference) findPreference("optin_rbf");
@@ -162,7 +162,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     optin_rbf.setEnabled(false);
 
                     Futures.addCallback(
-                            gaService.setUserConfig("replace_by_fee", newValue, false),
+                            mService.setUserConfig("replace_by_fee", newValue, false),
                             new FutureCallback<Boolean>() {
                                 @Override
                                 public void onSuccess(final @Nullable Boolean result) {
@@ -188,7 +188,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     return false;
                 }
             });
-            final Boolean replace_by_fee = (Boolean) gaService.getUserConfig("replace_by_fee");
+            final Boolean replace_by_fee = (Boolean) mService.getUserConfig("replace_by_fee");
             ((CheckBoxPreference) findPreference("optin_rbf")).setChecked(replace_by_fee);
         }
         getActivity().setResult(getActivity().RESULT_OK, null);

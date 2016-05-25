@@ -54,7 +54,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         addPreferencesFromResource(R.xml.preference_twofactor);
         setHasOptionsMenu(true);
 
-        final Map<?, ?> config = gaService.getTwoFacConfig();
+        final Map<?, ?> config = mService.getTwoFacConfig();
         if (config == null || config.isEmpty()) {
             Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
             getActivity().finish();
@@ -75,7 +75,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         }
 
         final boolean skipChoice = false;
-        Dialog dlg = GaActivity.popupTwoFactorChoice(getActivity(), gaService, skipChoice,
+        Dialog dlg = GaActivity.popupTwoFactorChoice(getActivity(), mService, skipChoice,
                                                      new CB.Runnable1T<String>() {
             @Override
             public void run(final String whichMethod) {
@@ -90,7 +90,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         if (!withMethod.equals("gauth")) {
             final Map<String, String> data = new HashMap<>();
             data.put("method", method.toLowerCase());
-            gaService.requestTwoFacCode(withMethod, "disable_2fa", data);
+            mService.requestTwoFacCode(withMethod, "disable_2fa", data);
         }
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
         final EditText twoFacValue = (EditText) inflatedLayout.findViewById(R.id.btchipPINValue);
@@ -118,7 +118,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                           final Map<String, String> twoFacData = new HashMap<>();
                           twoFacData.put("method", withMethod);
                           twoFacData.put("code", twoFacValue.getText().toString());
-                          Futures.addCallback(gaService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
+                          Futures.addCallback(mService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                               @Override
                               public void onSuccess(final @Nullable Boolean result) {
                                   final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);

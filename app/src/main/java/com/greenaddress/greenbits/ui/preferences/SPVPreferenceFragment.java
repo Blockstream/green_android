@@ -32,14 +32,14 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
         reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
-                gaService.spv.reset();
+                mService.spv.reset();
                 return false;
             }
         });
 
         final CheckBoxPreference spvEnabled = (CheckBoxPreference) findPreference("spvEnabled");
         final EditTextPreference trusted_peer = (EditTextPreference) getPreferenceManager().findPreference("trusted_peer");
-        final boolean enabled = gaService.isSPVEnabled();
+        final boolean enabled = mService.isSPVEnabled();
         trusted_peer.setEnabled(enabled);
         spvEnabled.setChecked(enabled);
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -50,7 +50,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 new AsyncTask<Object, Object, Object>() {
                     @Override
                     protected Object doInBackground(final Object[] params) {
-                        gaService.spv.setEnabled((Boolean) newValue);
+                        mService.spv.setEnabled((Boolean) newValue);
                         return null;
                     }
                 }.execute();
@@ -58,7 +58,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             }
         });
 
-        final String address = gaService.cfg("TRUSTED").getString("address", "");
+        final String address = mService.cfg("TRUSTED").getString("address", "");
 
         if (!address.isEmpty()) {
             trusted_peer.setText(address);
@@ -72,10 +72,10 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
 
                 @Override
                 protected Object doInBackground(Object[] params) {
-                    boolean alreadySyncing = gaService.spv.stopSPVSync();
-                    gaService.spv.setUpSPV();
+                    boolean alreadySyncing = mService.spv.stopSPVSync();
+                    mService.spv.setUpSPV();
                     if (alreadySyncing)
-                        gaService.spv.startSpvSync();
+                        mService.spv.startSpvSync();
                     return null;
                 }
             }
@@ -101,7 +101,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             @Override
             public boolean onPreferenceChange(final Preference preference, @NonNull final Object newValue) {
 
-                if (gaService.cfg("TRUSTED").getString("address", "").equals(newValue))
+                if (mService.cfg("TRUSTED").getString("address", "").equals(newValue))
                     return false;
 
                 try {
@@ -117,7 +117,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                         final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 
                         if (currentapiVersion >= 23 && newLower.contains(".onion") &&
-                            (gaService.getProxyHost() == null || gaService.getProxyPort() == null)) {
+                            (mService.getProxyHost() == null || mService.getProxyPort() == null)) {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
                             // and HS connectivity.
                             // but work with Orbot socks if set
@@ -127,9 +127,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                             return true;
                         }
 
-                        gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
+                        mService.cfgEdit("TRUSTED").putString("address", newString).apply();
 
-                        gaService.setUserConfig("trusted_peer_addr", newString, true);
+                        mService.setUserConfig("trusted_peer_addr", newString, true);
                         if (!newString.isEmpty())
                             trusted_peer.setSummary(newString);
                         else
@@ -145,8 +145,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                                       @Override
                                       public void onClick(final @NonNull MaterialDialog dlg, final @NonNull DialogAction which) {
                                           new SPVAsync().execute();
-                                          gaService.cfgEdit("TRUSTED").putString("address", newString).apply();
-                                          gaService.setUserConfig("trusted_peer_addr", newString, true);
+                                          mService.cfgEdit("TRUSTED").putString("address", newString).apply();
+                                          mService.setUserConfig("trusted_peer_addr", newString, true);
                                           trusted_peer.setSummary(newString);
                                       }
                                   }).build().show();

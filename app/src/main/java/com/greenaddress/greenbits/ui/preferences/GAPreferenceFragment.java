@@ -11,14 +11,14 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 public class GAPreferenceFragment extends PreferenceFragment {
-    protected GaService gaService = null;
-    GreenAddressApplication gApp = null;
+    protected GaService mService = null;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gApp = ((GreenAddressApplication)getActivity().getApplication());
-        gaService = gApp.mService;
+        final GreenAddressApplication app;
+        app = ((GreenAddressApplication) getActivity().getApplication());
+        mService = app.mService;
     }
 
     private static final Preference.OnPreferenceChangeListener onPreferenceChanged = new Preference.OnPreferenceChangeListener() {
@@ -33,7 +33,7 @@ public class GAPreferenceFragment extends PreferenceFragment {
         preference.setOnPreferenceChangeListener(onPreferenceChanged);
         // Trigger the listener immediately with the preference's
         // current value.
-        final String currentVal = gaService.cfg().getString(preference.getKey(), "");
+        final String currentVal = mService.cfg().getString(preference.getKey(), "");
         onPreferenceChanged.onPreferenceChange(preference, currentVal);
     }
 
