@@ -190,8 +190,7 @@ public class GaService extends Service {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 twoFacConfig = result;
-                twoFacConfigObservable.setChanged();
-                twoFacConfigObservable.notifyObservers();
+                twoFacConfigObservable.setChangedAndNotify();
             }
 
             @Override
@@ -201,7 +200,7 @@ public class GaService extends Service {
         }, es);
     }
 
-    public void reconnect() {
+    private void reconnect() {
         Log.i(TAG, "Submitting reconnect after " + mReconnectDelay);
         onConnected = mClient.connect();
         mState.transitionTo(ConnState.CONNECTING);
@@ -289,16 +288,14 @@ public class GaService extends Service {
                 if (isSPVEnabled())
                     spv.addToBloomFilter(count, null, -1, -1, -1);
 
-                newTransactionsObservable.setChanged();
-                newTransactionsObservable.notifyObservers();
+                newTransactionsObservable.setChangedAndNotify();
             }
 
             @Override
             public void onNewTransaction(final int wallet_id, @NonNull final int[] subaccounts, final long value, final String txhash) {
                 Log.i(TAG, "onNewTransactions");
                 spv.updateUnspentOutputs();
-                newTransactionsObservable.setChanged();
-                newTransactionsObservable.notifyObservers();
+                newTransactionsObservable.setChangedAndNotify();
                 for (final int subaccount : subaccounts) {
                     updateBalance(subaccount);
                 }
@@ -544,10 +541,11 @@ public class GaService extends Service {
     }
 
     public void fireBalanceChanged(final int subaccount) {
-        if (getBalanceCoin(subaccount) != null) {  // can be null if called from addUtxoToValues before balance is fetched
-            balanceObservables.get(subaccount).setChanged();
-            balanceObservables.get(subaccount).notifyObservers();
+        if (getBalanceCoin(subaccount) == null) {
+            // Called from addUtxoToValues before balance is fetched
+            return;
         }
+        balanceObservables.get(subaccount).setChangedAndNotify();
     }
 
     @NonNull
@@ -781,8 +779,7 @@ public class GaService extends Service {
         // FIXME: later spent outputs can be purged
         cfgInEdit("verified_utxo_").putBoolean(tx.toString(), true).apply();
         spv.addUtxoToValues(tx);
-        newTxVerifiedObservable.setChanged();
-        newTxVerifiedObservable.notifyObservers();
+        newTxVerifiedObservable.setChangedAndNotify();
     }
 
     public Coin getBalanceCoin(final int subaccount) {
@@ -895,9 +892,9 @@ public class GaService extends Service {
     }
 
     private static class GaObservable extends Observable {
-        @Override
-        public void setChanged() {
+        public void setChangedAndNotify() {
             super.setChanged();
+            super.notifyObservers();
         }
     }
 
