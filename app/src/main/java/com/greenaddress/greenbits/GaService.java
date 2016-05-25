@@ -315,7 +315,7 @@ public class GaService extends Service {
                 final boolean forcedLogout = code == 4000;
                 setDisconnected(forcedLogout);
 
-                if (!isNetworkUp()) {
+                if (getNetworkInfo() == null) {
                     mState.transitionTo(ConnState.OFFLINE);
                     return;
                 }
@@ -1003,7 +1003,8 @@ public class GaService extends Service {
 
     private void checkNetwork() {
         boolean changedState = false;
-        if (isNetworkUp()) {
+        final NetworkInfo ni = getNetworkInfo();
+        if (ni != null) {
             if (mState.isDisconnectedOrOffline()) {
                 mState.transitionTo(ConnState.DISCONNECTED);
                 changedState = true;
@@ -1014,21 +1015,16 @@ public class GaService extends Service {
             mState.transitionTo(ConnState.OFFLINE);
             changedState = true;
         }
-        if (!changedState && isWiFiUp())
+        if (!changedState &&
+            ni != null && ni.getType() == ConnectivityManager.TYPE_WIFI)
             mState.doNotify();
     }
 
-    public boolean isNetworkUp() {
-        final NetworkInfo activeNetworkInfo = ((ConnectivityManager)getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-    }
-
-    public boolean isWiFiUp() {
-        final NetworkInfo activeNetwork = ((ConnectivityManager)getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting()
-                && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+    private NetworkInfo getNetworkInfo() {
+        final Context ctx = getApplicationContext();
+        final ConnectivityManager cm;
+        cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo ni = cm.getActiveNetworkInfo();
+        return ni != null && ni.isConnectedOrConnecting() ? ni : null;
     }
 }
