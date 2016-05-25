@@ -1,11 +1,15 @@
 package com.greenaddress.greenbits;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Binder;
@@ -69,11 +73,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class GaService extends Service {
+    private enum ConnState {
+        OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
+    }
 
     class GaBinder extends Binder {
         GaService getService() { return GaService.this; }
@@ -83,6 +94,10 @@ public class GaService extends Service {
     @Override
     public IBinder onBind(final Intent intent) { return mBinder; }
 
+    public void onBound(GreenAddressApplication app) {
+        checkNetwork();
+        app.registerReceiver(mNetBroadReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
 
     @NonNull private static final String TAG = GaService.class.getSimpleName();
     @NonNull public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
@@ -120,8 +135,6 @@ public class GaService extends Service {
     public final SPV spv = new SPV(this);
 
     private WalletClient mClient;
-    @Nullable
-    private ConnectivityObservable connectionObservable = null;
     private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
         @Override
         public void onSuccess(@Nullable final LoginData result) {
@@ -144,13 +157,13 @@ public class GaService extends Service {
             gaDeterministicKeys.clear();
 
             spv.startIfEnabled();
-            connectionObservable.setState(ConnectivityObservable.State.LOGGEDIN);
+            mState.transitionTo(ConnState.LOGGEDIN);
         }
 
         @Override
         public void onFailure(@NonNull final Throwable t) {
             t.printStackTrace();
-            connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
+            mState.transitionTo(ConnState.CONNECTED);
         }
     };
 
@@ -191,14 +204,14 @@ public class GaService extends Service {
     public void reconnect() {
         Log.i(TAG, "Submitting reconnect after " + mReconnectDelay);
         onConnected = mClient.connect();
-        connectionObservable.setState(ConnectivityObservable.State.CONNECTING);
+        mState.transitionTo(ConnState.CONNECTING);
 
         Futures.addCallback(onConnected, new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable final Void result) {
-                connectionObservable.setState(ConnectivityObservable.State.CONNECTED);
+                mState.transitionTo(ConnState.CONNECTED);
                 Log.i(TAG, "Success CONNECTED callback");
-                if (!connectionObservable.isForcedOff() && mClient.canLogin()) {
+                if (!mState.isForcedOff() && mClient.canLogin()) {
                     login();
                 }
             }
@@ -206,13 +219,16 @@ public class GaService extends Service {
             @Override
             public void onFailure(@NonNull final Throwable t) {
                 Log.i(TAG, "Failure throwable callback " + t.toString());
-                connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
+                mState.transitionTo(ConnState.DISCONNECTED);
 
-                if (mReconnectDelay < ConnectivityObservable.RECONNECT_TIMEOUT_MAX)
+                final int RECONNECT_TIMEOUT = 6000;
+                final int RECONNECT_TIMEOUT_MAX = 50000;
+
+                if (mReconnectDelay < RECONNECT_TIMEOUT_MAX)
                     mReconnectDelay *= 1.2;
 
                 if (mReconnectDelay == 0)
-                    mReconnectDelay = ConnectivityObservable.RECONNECT_TIMEOUT;
+                    mReconnectDelay = RECONNECT_TIMEOUT;
 
                 // FIXME: handle delayed login
                 uiHandler.postDelayed(new Runnable() {
@@ -260,9 +276,6 @@ public class GaService extends Service {
         // Uncomment to test slow service creation
         // android.os.SystemClock.sleep(10000);
 
-        connectionObservable = ((GreenAddressApplication) getApplication()).getConnectionObservable();
-
-
         deviceId = cfg("service").getString("device_id", null);
         if (deviceId == null) {
             deviceId = UUID.randomUUID().toString();
@@ -300,10 +313,10 @@ public class GaService extends Service {
                 // 1000 NORMAL_CLOSE
                 // 1006 SERVER_RESTART
                 final boolean forcedLogout = code == 4000;
-                connectionObservable.setDisconnected(forcedLogout);
+                setDisconnected(forcedLogout);
 
-                if (!connectionObservable.isNetworkUp()) {
-                    connectionObservable.setState(ConnectivityObservable.State.OFFLINE);
+                if (!isNetworkUp()) {
+                    mState.transitionTo(ConnState.OFFLINE);
                     return;
                 }
 
@@ -430,14 +443,14 @@ public class GaService extends Service {
     }
 
     private void login() {
-        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+        mState.transitionTo(ConnState.LOGGINGIN);
         final ListenableFuture<LoginData> future = mClient.login(deviceId);
         Futures.addCallback(future, handleLoginData, es);
     }
 
     @NonNull
     public ListenableFuture<LoginData> login(@NonNull final ISigningWallet signingWallet) {
-        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+        mState.transitionTo(ConnState.LOGGINGIN);
 
         final ListenableFuture<LoginData> future = mClient.login(signingWallet, deviceId);
         Futures.addCallback(future, handleLoginData, es);
@@ -446,7 +459,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<LoginData> login(@NonNull final String mnemonics) {
-        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+        mState.transitionTo(ConnState.LOGGINGIN);
 
         final ListenableFuture<LoginData> future = mClient.login(mnemonics, deviceId);
         Futures.addCallback(future, handleLoginData, es);
@@ -455,7 +468,7 @@ public class GaService extends Service {
 
     @NonNull
     public ListenableFuture<LoginData> login(@NonNull final PinData pinData, final String pin) {
-        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+        mState.transitionTo(ConnState.LOGGINGIN);
 
         final ListenableFuture<LoginData> future = mClient.login(pinData, pin, deviceId);
         Futures.addCallback(future, handleLoginData, es);
@@ -465,7 +478,7 @@ public class GaService extends Service {
     @NonNull
     public ListenableFuture<LoginData> signup(@NonNull final String mnemonics) {
         final ListenableFuture<LoginData> signupFuture = mClient.loginRegister(mnemonics, deviceId);
-        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+        mState.transitionTo(ConnState.LOGGINGIN);
 
         Futures.addCallback(signupFuture, handleLoginData, es);
         return signupFuture;
@@ -474,7 +487,7 @@ public class GaService extends Service {
     @NonNull
     public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet, @NonNull final byte[] masterPublicKey, @NonNull final byte[] masterChaincode, @NonNull final byte[] pathPublicKey, @NonNull final byte[] pathChaincode) {
         final ListenableFuture<LoginData> signupFuture = mClient.loginRegister(signingWallet, masterPublicKey, masterChaincode, pathPublicKey, pathChaincode, deviceId);
-        connectionObservable.setState(ConnectivityObservable.State.LOGGINGIN);
+        mState.transitionTo(ConnState.LOGGINGIN);
 
         Futures.addCallback(signupFuture, handleLoginData, es);
         return signupFuture;
@@ -495,7 +508,7 @@ public class GaService extends Service {
         for (final Integer key : balanceObservables.keySet())
             balanceObservables.get(key).deleteObservers();
         mClient.disconnect();
-        connectionObservable.setState(ConnectivityObservable.State.DISCONNECTED);
+        mState.transitionTo(ConnState.DISCONNECTED);
     }
 
     @NonNull
@@ -898,5 +911,124 @@ public class GaService extends Service {
 
     public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
         return spv.unspentOutputsOutpoints;
+    }
+
+    // FIXME: Operations should be atomic
+    public static class State extends Observable {
+        private ConnState mConnState;
+        private boolean mForcedLogout;
+        private boolean mForcedTimeout;
+
+        public State() {
+            mConnState = ConnState.OFFLINE;
+            mForcedLogout = false;
+            mForcedTimeout = false;
+        }
+
+        public boolean isForcedOff() { return mForcedLogout || mForcedTimeout; }
+        public boolean isLoggedIn() { return mConnState == ConnState.LOGGEDIN; }
+        public boolean isLoggedOrLoggingIn() {
+            return mConnState == ConnState.LOGGEDIN || mConnState == ConnState.LOGGINGIN;
+        }
+        public boolean isConnected() { return mConnState == ConnState.CONNECTED; }
+        public boolean isDisconnected() { return mConnState == ConnState.DISCONNECTED; }
+        public boolean isDisconnectedOrOffline() {
+            return mConnState == ConnState.DISCONNECTED || mConnState == ConnState.OFFLINE;
+        }
+
+        private void transitionTo(final ConnState newState) {
+            mConnState = newState;
+            if (newState == ConnState.LOGGEDIN) {
+                mForcedLogout = false;
+                mForcedTimeout = false;
+            }
+            doNotify();
+        }
+
+        private void doNotify() {
+             setChanged();
+             // FIXME: Should pass a copy of ourselves
+             notifyObservers(this);
+        }
+    }
+
+    private final State mState = new State();
+
+    public boolean isForcedOff() { return mState.isForcedOff(); }
+    public boolean isLoggedIn() { return mState.isLoggedIn(); }
+    public boolean isLoggedOrLoggingIn() { return mState.isLoggedOrLoggingIn(); }
+    public boolean isConnected() { return mState.isConnected(); }
+
+    public void addConnectionObserver(Observer o) { mState.addObserver(o); }
+    public void deleteConnectionObserver(Observer o) { mState.deleteObserver(o); }
+
+    private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
+    private ScheduledFuture<Object> mDisconnectTimer = null;
+    private int mRefCount = 0; // Number of non-paused activities using us
+    private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
+        public void onReceive(final Context context, final Intent intent) {
+            checkNetwork();
+        }
+    };
+
+    public void incRef() {
+        ++mRefCount;
+        if (mDisconnectTimer != null && !mDisconnectTimer.isCancelled())
+            mDisconnectTimer.cancel(false);
+        if (mState.isDisconnected())
+            reconnect();
+    }
+
+    public void decRef() {
+        assert mRefCount > 0 : "Incorrect reference count";
+        if (--mRefCount == 0)
+            mDisconnectTimer = ex.schedule(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        setForcedTimeout();
+                        return null;
+                    }
+            }, getAutoLogoutMinutes(), TimeUnit.MINUTES);
+    }
+
+    private void setForcedTimeout() {
+        mState.mForcedTimeout = true;
+        disconnect(false); // Calls transitionTo(DISCONNECTED)
+    }
+
+    public void setDisconnected(final boolean forcedLogout) {
+        mState.mForcedLogout = forcedLogout;
+        mState.transitionTo(ConnState.DISCONNECTED);
+    }
+
+    private void checkNetwork() {
+        boolean changedState = false;
+        if (isNetworkUp()) {
+            if (mState.isDisconnectedOrOffline()) {
+                mState.transitionTo(ConnState.DISCONNECTED);
+                changedState = true;
+                reconnect();
+            }
+        } else {
+            mState.transitionTo(ConnState.DISCONNECTED);
+            mState.transitionTo(ConnState.OFFLINE);
+            changedState = true;
+        }
+        if (!changedState && isWiFiUp())
+            mState.doNotify();
+    }
+
+    public boolean isNetworkUp() {
+        final NetworkInfo activeNetworkInfo = ((ConnectivityManager)getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public boolean isWiFiUp() {
+        final NetworkInfo activeNetwork = ((ConnectivityManager)getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting()
+                && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
     }
 }

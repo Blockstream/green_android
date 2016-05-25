@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.zxing.WriterException;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
@@ -35,8 +34,7 @@ public class TwoFactorActivity extends GaActivity {
     private String twoFacType, twoFacTypeName;
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(Bundle savedInstanceState) {
 
         final GaService service = mService;
         final Map<?, ?> twoFacConfig = service.getTwoFacConfig();

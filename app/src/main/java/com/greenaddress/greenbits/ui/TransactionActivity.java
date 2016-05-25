@@ -30,7 +30,6 @@ import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Address;
@@ -62,8 +61,7 @@ public class TransactionActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_transaction; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         if (savedInstanceState == null)
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())

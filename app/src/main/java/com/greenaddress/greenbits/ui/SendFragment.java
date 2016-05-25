@@ -32,7 +32,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.PreparedTransaction;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
@@ -310,7 +309,7 @@ public class SendFragment extends SubaccountFragment {
             @Override
             public void onClick(final View view) {
                 // FIXME: Instead of checking the state here, enable/disable sendButton when state changes
-                if (!getGAApp().getConnectionObservable().getState().mState.equals(ConnectivityObservable.State.LOGGEDIN)) {
+                if (!service.isLoggedIn()) {
                     gaActivity.toast(R.string.err_send_not_connected_will_resume);
                     return;
                 }
@@ -538,9 +537,9 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void hideInstantIf2of3() {
-        final GaService gaService = getGAService();
+        final GaService service = getGAService();
         instantConfirmationCheckbox.setVisibility(View.VISIBLE);
-        for (Object subaccount_ : gaService.getSubaccounts()) {
+        for (Object subaccount_ : service.getSubaccounts()) {
             Map<String, ?> subaccountMap = (Map) subaccount_;
             if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(curSubaccount)) {
                 instantConfirmationCheckbox.setVisibility(View.GONE);

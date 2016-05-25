@@ -11,7 +11,7 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import com.greenaddress.greenbits.ConnectivityObservable;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
 
@@ -72,14 +72,16 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     @Override
     final public void onPause() {
         super.onPause();
-        getGAApp().getConnectionObservable().decRef();
+        final GaService service = getGAApp().mService;
+        service.decRef();
     }
 
     @Override
     final public void onResume() {
         super.onResume();
-        final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().incRef();
-        if (cs.mForcedLogout || cs.mForcedTimeout) {
+        final GaService service = getGAApp().mService;
+        service.incRef();
+        if (service.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             final Intent firstScreenActivity = new Intent(this, FirstScreenActivity.class);
             startActivity(firstScreenActivity);

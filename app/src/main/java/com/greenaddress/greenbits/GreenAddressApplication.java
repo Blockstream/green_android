@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
@@ -21,17 +19,9 @@ public class GreenAddressApplication extends MultiDexApplication {
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
 
     private String mErrorTitle, mErrorContent;
-    private ConnectivityObservable connectionObservable = new ConnectivityObservable();
     private ServiceConnection mConnection;
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
-
-    @Nullable
-    public ConnectivityObservable getConnectionObservable() {
-        if (mErrorTitle != null)
-            failHard(mErrorTitle, mErrorContent);
-        return connectionObservable;
-    }
 
     private void failHard(final String title, final String message) {
         mErrorTitle = title;
@@ -73,15 +63,14 @@ public class GreenAddressApplication extends MultiDexApplication {
                                            final IBinder service) {
                 Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
                 mService = ((GaService.GaBinder)service).getService();
-                connectionObservable.setService(mService);
+                mService.onBound(GreenAddressApplication.this);
                 onServiceAttached.set(null);
             }
 
             @Override
-            public void onServiceDisconnected(@NonNull final ComponentName arg0) {
+            public void onServiceDisconnected(final ComponentName name) {
                 Log.d(TAG, "onServiceDisconnected: dispatching onServiceAttached exception");
-                connectionObservable = null;
-                onServiceAttached.setException(new GAException(arg0.toString()));
+                onServiceAttached.setException(new GAException(name.toString()));
             }
         };
 

@@ -38,7 +38,6 @@ import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.Network;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.monitor.NetworkMonitorActivity;
 import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
@@ -76,22 +75,19 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private Menu mMenu;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
+        final GaService service = mService;
 
         boolean isBitcoinURL = getIntent().hasCategory(Intent.CATEGORY_BROWSABLE) ||
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()) ||
                 (getIntent().getData() != null && getIntent().getData().getScheme() != null
                         && getIntent().getData().getScheme().equals("bitcoin"));
 
-        if (isBitcoinURL) {
-            if (cs.mState.equals(ConnectivityObservable.State.LOGGEDIN) ||
-                cs.mState.equals(ConnectivityObservable.State.LOGGINGIN)) {
-                // already logged in, could be from different app via intent
-                final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
-                startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
-                return;
-            }
+        if (isBitcoinURL && service.isLoggedOrLoggingIn()) {
+            // already logged in, could be from different app via intent
+            final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
+            startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
+            return;
         }
 
         launch(isBitcoinURL);
@@ -257,23 +253,24 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
-        getGAApp().getConnectionObservable().addObserver(this);
+    public void onResumeWithService() {
+        final GaService service = mService;
+        service.addConnectionObserver(this);
 
-        if (cs.mForcedLogout || cs.mForcedTimeout) {
+        if (service.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
             finish();
             return;
         }
 
-        setMenuItemVisible(mMenu, R.id.action_share,
-                           cs.mState != ConnectivityObservable.State.LOGGEDIN);
+        setMenuItemVisible(mMenu, R.id.action_share, !service.isLoggedIn());
      }
 
     @Override
     public void onPauseWithService() {
-        getGAApp().getConnectionObservable().deleteObserver(this);
+        final GaService service = mService;
+        service.deleteConnectionObserver(this);
     }
 
     private final static int BIP38_FLAGS = (NetworkParameters.fromID(NetworkParameters.ID_MAINNET).equals(Network.NETWORK)
@@ -463,7 +460,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 }
                 return true;
             case R.id.network_unavailable:
-                toast(getGAApp().getConnectionObservable().getState().mState.toString());
                 return true;
             case R.id.action_logout:
                 service.disconnect(false);
@@ -491,13 +487,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     public void update(final Observable observable, final Object data) {
-        final ConnectivityObservable.ConnectionState cs = (ConnectivityObservable.ConnectionState) data;
-        if (cs.mForcedLogout || cs.mForcedTimeout) {
+        final GaService.State state = (GaService.State) data;
+        if (state.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
         }
-        setMenuItemVisible(mMenu, R.id.network_unavailable,
-                           cs.mState != ConnectivityObservable.State.LOGGEDIN);
+        setMenuItemVisible(mMenu, R.id.network_unavailable, !state.isLoggedIn());
     }
 
     private void handlePermissionResult(@NonNull final int[] granted, int action, int msgId) {

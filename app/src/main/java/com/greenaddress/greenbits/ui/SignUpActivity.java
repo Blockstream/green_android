@@ -39,7 +39,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 
 import java.io.IOException;
@@ -63,8 +62,7 @@ public class SignUpActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_sign_up; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         final GaService service = mService;
 
@@ -214,7 +212,7 @@ public class SignUpActivity extends GaActivity {
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
+    public void onResumeWithService() {
         if (mNfcAdapter != null) {
             final IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
             final IntentFilter[] filters = new IntentFilter[]{filter};

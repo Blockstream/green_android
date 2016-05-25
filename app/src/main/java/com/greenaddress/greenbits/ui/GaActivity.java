@@ -1,5 +1,4 @@
 package com.greenaddress.greenbits.ui;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
@@ -61,13 +60,13 @@ public abstract class GaActivity extends AppCompatActivity {
                         final GaActivity self = GaActivity.this;
                         Log.d(TAG, "onCreateWithService -> " + self.getClass().getSimpleName());
                         self.mService = getGAApp().mService;
-                        self.onCreateWithService(savedInstanceState,
-                                                 self.getGAApp().getConnectionObservable().getState());
+                        self.onCreateWithService(savedInstanceState);
                         if (self.mResumed) {
                             // We resumed before the service became available, and so
                             // did not call onResumeWithService() then - call it now.
                             Log.d(TAG, "(delayed)onResumeWithService -> " + self.getClass().getSimpleName());
-                            onResumeWithService(getGAApp().getConnectionObservable().incRef());
+                            self.mService.incRef();
+                            onResumeWithService();
                         }
                     }
                 });
@@ -87,7 +86,7 @@ public abstract class GaActivity extends AppCompatActivity {
         super.onPause();
         mResumed = false;
         if (mService != null) {
-            getGAApp().getConnectionObservable().decRef();
+            mService.decRef();
             onPauseWithService();
         }
     }
@@ -98,8 +97,10 @@ public abstract class GaActivity extends AppCompatActivity {
               (mService == null ? " (no attached service)" : ""));
         super.onResume();
         mResumed = true;
-        if (mService != null)
-            onResumeWithService(getGAApp().getConnectionObservable().incRef());
+        if (mService != null) {
+            mService.incRef();
+            onResumeWithService();
+        }
     }
 
     /** Override to provide the main view id */
@@ -107,10 +108,9 @@ public abstract class GaActivity extends AppCompatActivity {
 
     /** Override to provide onCreate/onResume/onPause processing.
       * When called, our service is guaranteed to be available. */
-    abstract protected void onCreateWithService(final Bundle savedInstanceState,
-                                                final ConnectivityObservable.ConnectionState cs);
+    abstract protected void onCreateWithService(final Bundle savedInstanceState);
     protected void onPauseWithService() { }
-    protected void onResumeWithService(final ConnectivityObservable.ConnectionState cs) { }
+    protected void onResumeWithService() { }
 
     // Utility methods
 

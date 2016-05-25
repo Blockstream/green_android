@@ -24,7 +24,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
@@ -55,12 +54,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
     private Observer txVerifiedObservable;
 
     private void updateBalance() {
-        final GaService gaService = getGAService();
-        final Monetary monetary = gaService.getBalanceCoin(curSubaccount);
+        final GaService service = getGAService();
+        final Monetary monetary = service.getBalanceCoin(curSubaccount);
         if (monetary == null)
             return;
 
-        final String btcUnit = (String) gaService.getUserConfig("unit");
+        final String btcUnit = (String) service.getUserConfig("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
         final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.mainBitcoinScaleText);
@@ -75,17 +74,17 @@ public class MainFragment extends SubaccountFragment implements Observer {
         final String btcBalance = bitcoinFormat.noCode().format(
                 monetary).toString();
         final String btcBalanceVerified;
-        if (gaService.spv.verifiedBalancesCoin.get(curSubaccount) != null) {
+        if (service.spv.verifiedBalancesCoin.get(curSubaccount) != null) {
             btcBalanceVerified = bitcoinFormat.noCode().format(
-                    gaService.spv.verifiedBalancesCoin.get(curSubaccount)).toString();
+                    service.spv.verifiedBalancesCoin.get(curSubaccount)).toString();
         } else {
             btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
         }
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
-                        gaService.getBalanceFiat(curSubaccount))
+                        service.getBalanceFiat(curSubaccount))
                         .toString();
-        final String fiatCurrency = gaService.getFiatCurrency();
+        final String fiatCurrency = service.getFiatCurrency();
         final String converted = CurrencyMapper.map(fiatCurrency);
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
@@ -274,10 +273,9 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
 
-                        final GaService gaService = getGAService();
-                        final ConnectivityObservable connObservable = getGAApp().getConnectionObservable();
-                        if (gaService.isSPVEnabled()) {
-                            gaService.spv.setUpSPV();
+                        final GaService service = getGAService();
+                        if (service.isSPVEnabled()) {
+                            service.spv.setUpSPV();
                             getGAService().spv.startSpvSync();
                         }
                         if (resultList != null && resultList.size() > 0) {

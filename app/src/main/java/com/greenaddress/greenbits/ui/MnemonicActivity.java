@@ -41,7 +41,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 
 import java.util.ArrayList;
@@ -114,13 +113,12 @@ public class MnemonicActivity extends GaActivity {
     private void login() {
         final GaService service = mService;
         
-        final ConnectivityObservable.ConnectionState cs = getGAApp().getConnectionObservable().getState();
-        if (cs.mState == ConnectivityObservable.State.LOGGEDIN) {
+        if (service.isLoggedIn()) {
             toast(R.string.err_mnemonic_activity_logout_required);
             return;
         }
 
-        if (cs.mState != ConnectivityObservable.State.CONNECTED) {
+        if (!service.isConnected()) {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
@@ -243,8 +241,7 @@ public class MnemonicActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_mnemonic; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.i(TAG, getIntent().getType() + "" + getIntent());
 
         mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {
@@ -391,8 +388,9 @@ public class MnemonicActivity extends GaActivity {
     }
 
     @Override
-    protected void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
-        if (cs.mState.equals(ConnectivityObservable.State.LOGGEDIN)) {
+    protected void onResumeWithService() {
+        final GaService service = mService;
+        if (service.isLoggedIn()) {
             // already logged in, could be from different app via intent
             final Intent mainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);
             startActivity(mainActivity);

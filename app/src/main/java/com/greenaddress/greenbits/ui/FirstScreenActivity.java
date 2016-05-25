@@ -27,7 +27,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
@@ -53,8 +52,7 @@ public class FirstScreenActivity extends GaActivity {
     protected int getMainViewId() { return R.layout.activity_first_screen; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         final GaService service = mService;
 
@@ -298,11 +296,11 @@ public class FirstScreenActivity extends GaActivity {
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
+    public void onResumeWithService() {
         final GaService service = mService;
 
         //FIXME : recheck state, properly handle TEE link anyway
-        if (cs.mState.equals(ConnectivityObservable.State.LOGGEDIN)) {
+        if (service.isLoggedIn()) {
             // already logged in, could be from different app via intent
             startNewActivity(TabbedMainActivity.class);
             finish();

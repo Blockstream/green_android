@@ -12,7 +12,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.greenaddress.greenapi.Network;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -38,10 +37,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     protected int getMainViewId() { return R.layout.activity_network; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         final ListView view = (ListView) findViewById(R.id.peerlistview);
-
         view.setEmptyView(findViewById(R.id.empty_list_view));
     }
 
@@ -60,12 +57,12 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
+    public void onResumeWithService() {
         final GaService service = mService;
 
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
-        if (getGAApp().getConnectionObservable().isForcedOff()) {
+        if (service.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();

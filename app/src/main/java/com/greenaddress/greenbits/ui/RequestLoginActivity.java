@@ -34,7 +34,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.greenbits.ConnectivityObservable;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenbits.GaService;
@@ -70,8 +69,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState,
-                                       final ConnectivityObservable.ConnectionState cs) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         final GaService service = mService;
         tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -415,7 +413,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     }
 
     @Override
-    public void onResumeWithService(final ConnectivityObservable.ConnectionState cs) {
+    public void onResumeWithService() {
         tagDispatcher.enableExclusiveNfc();
     }
 
