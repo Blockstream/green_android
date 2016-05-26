@@ -280,15 +280,20 @@ public class SPV {
             //
             // We do it using the special case in bitcoinj for VM crashed because of
             // a transaction received.
-            final Wallet fakeWallet = new Wallet(Network.NETWORK) {
-                @Override
-                public int getLastBlockSeenHeight() {
-                    return blockHeight - 1;
-                }
-            };
-            blockChain.addWallet(fakeWallet);
-            blockChain.removeWallet(fakeWallet);  // can be removed, because the call above
-            // should rollback already
+            try {
+                final Wallet fakeWallet = new Wallet(Network.NETWORK) {
+                    @Override
+                    public int getLastBlockSeenHeight() {
+                        return blockHeight - 1;
+                    }
+                };
+                blockChain.addWallet(fakeWallet);
+                blockChain.removeWallet(fakeWallet);  // can be removed, because the call above
+                // should rollback already
+            } catch (Exception e) {
+                // FIXME: Seems this often happens, at least on initial startup
+                Log.w(TAG, "fakeWallet exception: " + e.toString());
+            }
         }
     }
 
