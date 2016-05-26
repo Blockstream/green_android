@@ -179,6 +179,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void processBitcoinURI(@NonNull final BitcoinURI URI) {
+        final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
         if (URI.getPaymentRequestUrl() != null) {
@@ -186,7 +187,7 @@ public class SendFragment extends SubaccountFragment {
             recipientEdit.setEnabled(false);
             sendButton.setEnabled(false);
             noteIcon.setVisibility(View.GONE);
-            Futures.addCallback(getGAService().processBip70URL(URI.getPaymentRequestUrl()),
+            Futures.addCallback(service.processBip70URL(URI.getPaymentRequestUrl()),
                     new CB.Toast<Map<?, ?>>(gaActivity) {
                         @Override
                         public void onSuccess(@Nullable final Map<?, ?> result) {
@@ -229,7 +230,7 @@ public class SendFragment extends SubaccountFragment {
         } else {
             recipientEdit.setText(URI.getAddress().toString());
             if (URI.getAmount() != null) {
-                Futures.addCallback(getGAService().getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
+                Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
                     @Override
                     public void onSuccess(@Nullable final Map<?, ?> result) {
                         getActivity().runOnUiThread(new Runnable() {
@@ -243,7 +244,7 @@ public class SendFragment extends SubaccountFragment {
                                 }
                         });
                     }
-                }, getGAService().es);
+                }, service.es);
             }
         }
     }
@@ -684,11 +685,11 @@ public class SendFragment extends SubaccountFragment {
     }
 
     @Override
-    protected void onSubaccountChanged(final int input) {
+    protected void onSubaccountChanged(final int newSubAccount) {
         final GaService service = getGAService();
 
         service.deleteBalanceObserver(curSubaccount, curBalanceObserver);
-        curSubaccount = input;
+        curSubaccount = newSubAccount;
         hideInstantIf2of3();
         final GaActivity gaActivity = getGaActivity();
 
@@ -696,14 +697,14 @@ public class SendFragment extends SubaccountFragment {
         service.addBalanceObserver(curSubaccount, curBalanceObserver);
         CB.after(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
             @Override
-            public void onSuccess(final @Nullable Map<?, ?> result) {
-                final Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")));
+            public void onSuccess(final @Nullable Map<?, ?> balance) {
+                final Coin coin = Coin.valueOf(Long.valueOf((String) balance.get("satoshi")));
                 final String btcUnit = (String) service.getUserConfig("unit");
                 final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
                 final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                 final String btcBalance = format.noCode().format(coin).toString();
                 final DecimalFormat formatter = new DecimalFormat("#,###.########");
-                getActivity().runOnUiThread(new Runnable() {
+                gaActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         try {
