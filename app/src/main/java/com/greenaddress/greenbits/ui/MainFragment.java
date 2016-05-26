@@ -279,7 +279,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
 
-                        showTxnView(resultList != null && resultList.size() > 0);
+                        showTxnView(resultList.size() > 0);
 
                         final String oldFirstTxHash = currentList.size() > 0? currentList.get(0).txhash : null;
 
