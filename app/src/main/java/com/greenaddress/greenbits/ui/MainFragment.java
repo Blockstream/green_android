@@ -89,7 +89,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
-        if (!getGAService().isSPVEnabled() || btcBalance.equals(btcBalanceVerified))
+        if (!service.isSPVEnabled() || btcBalance.equals(btcBalanceVerified))
             balanceQuestionMark.setVisibility(View.GONE);
         else
             balanceQuestionMark.setVisibility(View.VISIBLE);
@@ -129,6 +129,8 @@ public class MainFragment extends SubaccountFragment implements Observer {
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        final GaService service = getGAService();
+
         registerReceiver();
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -139,7 +141,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         txView.setLayoutManager(layoutManager);
 
-        curSubaccount = getGAService().getCurrentSubAccount();
+        curSubaccount = service.getCurrentSubAccount();
 
         final TextView firstP = (TextView) rootView.findViewById(R.id.mainFirstParagraphText);
         final TextView secondP = (TextView) rootView.findViewById(R.id.mainSecondParagraphText);
@@ -172,9 +174,9 @@ public class MainFragment extends SubaccountFragment implements Observer {
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         curBalanceObserver = makeBalanceObserver();
-        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        service.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
 
-        if (getGAService().getBalanceCoin(curSubaccount) != null)
+        if (service.getBalanceCoin(curSubaccount) != null)
             updateBalance();
 
         reloadTransactions(getActivity());
@@ -203,15 +205,17 @@ public class MainFragment extends SubaccountFragment implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        getGAService().getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
-        getGAService().getNewTransactionsObservable().deleteObserver(this);
+        final GaService service = getGAService();
+        service.getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
+        service.getNewTransactionsObservable().deleteObserver(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getGAService().getNewTransactionsObservable().addObserver(this);
-        getGAService().getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
+        final GaService service = getGAService();
+        service.getNewTransactionsObservable().addObserver(this);
+        service.getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
     }
 
     @Nullable
