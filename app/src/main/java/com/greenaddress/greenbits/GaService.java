@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Binder;
 import android.preference.PreferenceManager;
@@ -82,6 +81,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class GaService extends Service {
+    private static final String TAG = GaService.class.getSimpleName();
+
     private enum ConnState {
         OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
     }
@@ -99,19 +100,16 @@ public class GaService extends Service {
         app.registerReceiver(mNetBroadReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
-    @NonNull private static final String TAG = GaService.class.getSimpleName();
     @NonNull public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
     @NonNull final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
     @NonNull final private GaObservable newTransactionsObservable = new GaObservable();
     @NonNull final private GaObservable newTxVerifiedObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
-    private Handler uiHandler;
     private String mSignUpMnemonics = null;
     private QrBitmap mSignUpQRCode = null;
     private int curBlock = 0;
 
     private boolean mAutoReconnect = true;
-    private int mReconnectDelay = 0;
     // cache
     private ListenableFuture<List<List<String>>> currencyExchangePairs;
 
@@ -219,23 +217,7 @@ public class GaService extends Service {
             public void onFailure(@NonNull final Throwable t) {
                 Log.i(TAG, "Failure throwable callback " + t.toString());
                 mState.transitionTo(ConnState.DISCONNECTED);
-
-                final int RECONNECT_TIMEOUT = 6000;
-                final int RECONNECT_TIMEOUT_MAX = 50000;
-
-                if (mReconnectDelay < RECONNECT_TIMEOUT_MAX)
-                    mReconnectDelay *= 1.2;
-
-                if (mReconnectDelay == 0)
-                    mReconnectDelay = RECONNECT_TIMEOUT;
-
-                // FIXME: handle delayed login
-                uiHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        reconnect();
-                    }
-                }, mReconnectDelay);
+                scheduleReconnect();
             }
         }, es);
     }
@@ -270,7 +252,6 @@ public class GaService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        uiHandler = new Handler();
 
         // Uncomment to test slow service creation
         // android.os.SystemClock.sleep(10000);
@@ -959,8 +940,10 @@ public class GaService extends Service {
     public void addConnectionObserver(Observer o) { mState.addObserver(o); }
     public void deleteConnectionObserver(Observer o) { mState.deleteObserver(o); }
 
-    private final ScheduledThreadPoolExecutor ex = new ScheduledThreadPoolExecutor(1);
-    private ScheduledFuture<Object> mDisconnectTimer = null;
+    private final ScheduledThreadPoolExecutor mTimerExecutor = new ScheduledThreadPoolExecutor(1);
+    private ScheduledFuture<?> mDisconnectTimer = null;
+    private ScheduledFuture<?> mReconnectTimer = null;
+    private int mReconnectDelay = 0;
     private int mRefCount = 0; // Number of non-paused activities using us
     private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
         public void onReceive(final Context context, final Intent intent) {
@@ -979,13 +962,38 @@ public class GaService extends Service {
     public void decRef() {
         assert mRefCount > 0 : "Incorrect reference count";
         if (--mRefCount == 0)
-            mDisconnectTimer = ex.schedule(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        setForcedTimeout();
-                        return null;
-                    }
-            }, getAutoLogoutMinutes(), TimeUnit.MINUTES);
+            scheduleDisconnect();
+    }
+
+    private void scheduleDisconnect() {
+        final int delayMins = getAutoLogoutMinutes();
+        Log.d(TAG, "scheduleDisconnect in " + Integer.toString(delayMins) + " mins");
+        mDisconnectTimer = mTimerExecutor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "scheduled disconnect");
+                setForcedTimeout();
+            }
+        }, delayMins, TimeUnit.MINUTES);
+    }
+
+    private void scheduleReconnect() {
+        final int RECONNECT_TIMEOUT = 6000;
+        final int RECONNECT_TIMEOUT_MAX = 50000;
+
+        if (mReconnectDelay < RECONNECT_TIMEOUT_MAX)
+            mReconnectDelay *= 1.2;
+        if (mReconnectDelay == 0)
+            mReconnectDelay = RECONNECT_TIMEOUT;
+
+        Log.d(TAG, "scheduleReconnect in " + Integer.toString(mReconnectDelay) + " ms");
+        mReconnectTimer = mTimerExecutor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "scheduled reconnect");
+                reconnect();
+            }
+        }, mReconnectDelay, TimeUnit.MILLISECONDS);
     }
 
     private void setForcedTimeout() {
