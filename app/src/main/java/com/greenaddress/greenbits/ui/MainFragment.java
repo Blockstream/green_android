@@ -259,7 +259,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
             txView.setAdapter(new ListTransactionsAdapter(activity, service, currentList));
             // FIXME, more efficient to use swap
             // txView.swapAdapter(lta, false);
-
         }
 
         if (replacedTxs == null || newAdapter)
@@ -269,66 +268,53 @@ public class MainFragment extends SubaccountFragment implements Observer {
             new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
-                final List resultList = (List) result.get("list");
+                final List txList = (List) result.get("list");
                 final int curBlock = ((Integer) result.get("cur_block"));
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        // "Make sure the content of your adapter is not modified from a background
-                        //  thread, but only from the UI thread. Make sure your adapter calls
-                        //  notifyDataSetChanged() when its content changes."
 
-                        showTxView(resultList.size() > 0);
+                        showTxView(txList.size() > 0);
 
-                        final String oldFirstTxHash = currentList.size() > 0? currentList.get(0).txhash : null;
-
+                        final String oldTop = currentList.size() > 0 ? currentList.get(0).txhash : null;
                         currentList.clear();
                         replacedTxs.clear();
-                        for (int i = 0; i < resultList.size(); ++i) {
+
+                        for (Object tx : txList) {
                             try {
-                                Map<String, Object> txMap = (Map<String, Object>) resultList.get(i);
-                                if (txMap.get("replaced_by") != null) {
-                                    ArrayList replaced_by_arr = (ArrayList) txMap.get("replaced_by");
-                                    for (int j = 0; j < replaced_by_arr.size(); ++j) {
-                                        String replaced_by = (String) replaced_by_arr.get(j);
-                                        if (!replacedTxs.containsKey(replaced_by)) {
-                                            replacedTxs.put(replaced_by, new ArrayList<String>());
-                                        }
-                                        replacedTxs.get(replaced_by).add((String) txMap.get("txhash"));
-                                    }
-                                } else {
-                                    currentList.add(new TransactionItem(service, txMap, curBlock));
+                                Map<String, Object> txJSON = (Map<String, Object>) tx;
+                                ArrayList<String> replacedList = (ArrayList<String>) txJSON.get("replaced_by");
+
+                                if (replacedList == null) {
+                                    currentList.add(new TransactionItem(service, txJSON, curBlock));
+                                    continue;
+                                }
+
+                                for (String replacedBy : replacedList) {
+                                    if (!replacedTxs.containsKey(replacedBy))
+                                        replacedTxs.put(replacedBy, new ArrayList<String>());
+                                    replacedTxs.get(replacedBy).add((String) txJSON.get("txhash"));
                                 }
                             } catch (@NonNull final ParseException e) {
                                 e.printStackTrace();
                             }
                         }
 
-                        for (int i = 0; i < currentList.size(); ++i) {
-                            String txhash = currentList.get(i).txhash;
-                            if (replacedTxs.containsKey(txhash)) {
-                                for (int j = 0; j < replacedTxs.get(txhash).size(); ++j) {
-                                    currentList.get(i).replacedHashes.add(
-                                            replacedTxs.get(txhash).get(j)
-                                    );
-                                }
-                            }
-                        }
-
-                        String newFirstTxHash = null;
-                        if (currentList.size() > 0) {
-                            newFirstTxHash = currentList.get(0).txhash;
+                        for (TransactionItem tx : currentList) {
+                            if (!replacedTxs.containsKey(tx.txhash))
+                                continue;
+                            for (String replaced : replacedTxs.get(tx.txhash))
+                                tx.replacedHashes.add(replaced);
                         }
 
                         txView.getAdapter().notifyDataSetChanged();
 
-                        // scroll to top when new tx comes in
-                        if (oldFirstTxHash != null && newFirstTxHash != null &&
-                                !oldFirstTxHash.equals(newFirstTxHash)) {
+                        final String newTop = currentList.size() > 0 ? currentList.get(0).txhash : null;
+                        if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
+                            // A new tx has arrived; scroll to the top to show it
                             txView.smoothScrollToPosition(0);
                         }
-
                     }
                 });
 
