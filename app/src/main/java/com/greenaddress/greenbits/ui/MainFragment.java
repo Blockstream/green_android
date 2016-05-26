@@ -132,12 +132,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
         registerReceiver();
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItem(getActivity()));
+        final RecyclerView txnView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        txnView.setHasFixedSize(true);
+        txnView.addItemDecoration(new DividerItem(getActivity()));
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
+        txnView.setLayoutManager(layoutManager);
 
         curSubaccount = getGAService().getCurrentSubAccount();
 
@@ -240,16 +240,25 @@ public class MainFragment extends SubaccountFragment implements Observer {
         reloadTransactions(activity, false);
     }
 
+    private void setVisibility(final int id, final int vis) {
+        rootView.findViewById(id).setVisibility(vis);
+    }
+
+    private void showTxnView(boolean doShow) {
+        setVisibility(R.id.mainTransactionList, doShow ? View.VISIBLE : View.GONE);
+        setVisibility(R.id.mainEmptyTransText, doShow ? View.GONE : View.VISIBLE);
+    }
+
     private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
         final GaService service = getGAService();
-        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        final RecyclerView txnView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
 
         if (currentList == null || newAdapter) {
             currentList = new ArrayList<>();
-            recyclerView.setAdapter(new ListTransactionsAdapter(activity, service, currentList));
+            txnView.setAdapter(new ListTransactionsAdapter(activity, service, currentList));
             // FIXME, more efficient to use swap
-            // recyclerView.swapAdapter(lta, false);
+            // txnView.swapAdapter(lta, false);
 
         }
 
@@ -270,13 +279,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
 
-                        if (resultList != null && resultList.size() > 0) {
-                            recyclerView.setVisibility(View.VISIBLE);
-                            mainEmptyTransText.setVisibility(View.GONE);
-                        } else {
-                            recyclerView.setVisibility(View.GONE);
-                            mainEmptyTransText.setVisibility(View.VISIBLE);
-                        }
+                        showTxnView(resultList != null && resultList.size() > 0);
 
                         final String oldFirstTxHash = currentList.size() > 0? currentList.get(0).txhash : null;
 
@@ -318,12 +321,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
                             newFirstTxHash = currentList.get(0).txhash;
                         }
 
-                        recyclerView.getAdapter().notifyDataSetChanged();
+                        txnView.getAdapter().notifyDataSetChanged();
 
                         // scroll to top when new tx comes in
                         if (oldFirstTxHash != null && newFirstTxHash != null &&
                                 !oldFirstTxHash.equals(newFirstTxHash)) {
-                            recyclerView.smoothScrollToPosition(0);
+                            txnView.smoothScrollToPosition(0);
                         }
 
                     }
@@ -336,8 +339,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        recyclerView.setVisibility(View.GONE);
-                        mainEmptyTransText.setVisibility(View.VISIBLE);
+                        showTxnView(false);
                     }
                 });
                 t.printStackTrace();
