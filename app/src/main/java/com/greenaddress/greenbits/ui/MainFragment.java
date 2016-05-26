@@ -132,12 +132,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
         registerReceiver();
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final RecyclerView txnView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
-        txnView.setHasFixedSize(true);
-        txnView.addItemDecoration(new DividerItem(getActivity()));
+        final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        txView.setHasFixedSize(true);
+        txView.addItemDecoration(new DividerItem(getActivity()));
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        txnView.setLayoutManager(layoutManager);
+        txView.setLayoutManager(layoutManager);
 
         curSubaccount = getGAService().getCurrentSubAccount();
 
@@ -244,21 +244,21 @@ public class MainFragment extends SubaccountFragment implements Observer {
         rootView.findViewById(id).setVisibility(vis);
     }
 
-    private void showTxnView(boolean doShow) {
+    private void showTxView(boolean doShow) {
         setVisibility(R.id.mainTransactionList, doShow ? View.VISIBLE : View.GONE);
         setVisibility(R.id.mainEmptyTransText, doShow ? View.GONE : View.VISIBLE);
     }
 
     private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
         final GaService service = getGAService();
-        final RecyclerView txnView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
 
         if (currentList == null || newAdapter) {
             currentList = new ArrayList<>();
-            txnView.setAdapter(new ListTransactionsAdapter(activity, service, currentList));
+            txView.setAdapter(new ListTransactionsAdapter(activity, service, currentList));
             // FIXME, more efficient to use swap
-            // txnView.swapAdapter(lta, false);
+            // txView.swapAdapter(lta, false);
 
         }
 
@@ -279,7 +279,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
 
-                        showTxnView(resultList.size() > 0);
+                        showTxView(resultList.size() > 0);
 
                         final String oldFirstTxHash = currentList.size() > 0? currentList.get(0).txhash : null;
 
@@ -321,12 +321,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
                             newFirstTxHash = currentList.get(0).txhash;
                         }
 
-                        txnView.getAdapter().notifyDataSetChanged();
+                        txView.getAdapter().notifyDataSetChanged();
 
                         // scroll to top when new tx comes in
                         if (oldFirstTxHash != null && newFirstTxHash != null &&
                                 !oldFirstTxHash.equals(newFirstTxHash)) {
-                            txnView.smoothScrollToPosition(0);
+                            txView.smoothScrollToPosition(0);
                         }
 
                     }
@@ -339,7 +339,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        showTxnView(false);
+                        showTxView(false);
                     }
                 });
                 t.printStackTrace();
