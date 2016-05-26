@@ -256,6 +256,14 @@ public class GaService extends Service {
         // Uncomment to test slow service creation
         // android.os.SystemClock.sleep(10000);
 
+        mTimerExecutor = new ScheduledThreadPoolExecutor(1);
+        mTimerExecutor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        mNetBroadReceiver = new BroadcastReceiver() {
+            public void onReceive(final Context context, final Intent intent) {
+                checkNetwork();
+            }
+        };
+
         deviceId = cfg("service").getString("device_id", null);
         if (deviceId == null) {
             deviceId = UUID.randomUUID().toString();
@@ -940,21 +948,16 @@ public class GaService extends Service {
     public void addConnectionObserver(Observer o) { mState.addObserver(o); }
     public void deleteConnectionObserver(Observer o) { mState.deleteObserver(o); }
 
-    private final ScheduledThreadPoolExecutor mTimerExecutor = new ScheduledThreadPoolExecutor(1);
+    private ScheduledThreadPoolExecutor mTimerExecutor = null;
+    private BroadcastReceiver mNetBroadReceiver;
     private ScheduledFuture<?> mDisconnectTimer = null;
     private ScheduledFuture<?> mReconnectTimer = null;
     private int mReconnectDelay = 0;
     private int mRefCount = 0; // Number of non-paused activities using us
-    private final BroadcastReceiver mNetBroadReceiver = new BroadcastReceiver() {
-        public void onReceive(final Context context, final Intent intent) {
-            checkNetwork();
-        }
-    };
 
     public void incRef() {
         ++mRefCount;
-        if (mDisconnectTimer != null && !mDisconnectTimer.isCancelled())
-            mDisconnectTimer.cancel(false);
+        cancelDisconnect();
         if (mState.isDisconnected())
             reconnect();
     }
@@ -965,11 +968,17 @@ public class GaService extends Service {
             scheduleDisconnect();
     }
 
+    private void cancelDisconnect() {
+        if (mDisconnectTimer != null && !mDisconnectTimer.isCancelled()) {
+            Log.d(TAG, "cancelDisconnect");
+            mDisconnectTimer.cancel(false);
+        }
+    }
+
     private void scheduleDisconnect() {
         final int delayMins = getAutoLogoutMinutes();
+        cancelDisconnect();
         Log.d(TAG, "scheduleDisconnect in " + Integer.toString(delayMins) + " mins");
-        if (mDisconnectTimer != null)
-            mDisconnectTimer.cancel(false);
         mDisconnectTimer = mTimerExecutor.schedule(new Runnable() {
             @Override
             public void run() {
