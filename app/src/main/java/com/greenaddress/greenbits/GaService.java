@@ -968,6 +968,8 @@ public class GaService extends Service {
     private void scheduleDisconnect() {
         final int delayMins = getAutoLogoutMinutes();
         Log.d(TAG, "scheduleDisconnect in " + Integer.toString(delayMins) + " mins");
+        if (mDisconnectTimer != null)
+            mDisconnectTimer.cancel(false);
         mDisconnectTimer = mTimerExecutor.schedule(new Runnable() {
             @Override
             public void run() {
@@ -987,6 +989,8 @@ public class GaService extends Service {
             mReconnectDelay = RECONNECT_TIMEOUT;
 
         Log.d(TAG, "scheduleReconnect in " + Integer.toString(mReconnectDelay) + " ms");
+        if (mReconnectTimer != null)
+            mReconnectTimer.cancel(false);
         mReconnectTimer = mTimerExecutor.schedule(new Runnable() {
             @Override
             public void run() {
