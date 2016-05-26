@@ -273,7 +273,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 final List txList = (List) result.get("list");
-                final int curBlock = ((Integer) result.get("cur_block"));
+                final int currentBlock = ((Integer) result.get("cur_block"));
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -291,7 +291,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                                 ArrayList<String> replacedList = (ArrayList<String>) txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
-                                    currentList.add(new TransactionItem(service, txJSON, curBlock));
+                                    currentList.add(new TransactionItem(service, txJSON, currentBlock));
                                     continue;
                                 }
 

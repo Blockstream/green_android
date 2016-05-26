@@ -83,10 +83,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         else
             bloominfo = getString(R.string.network_monitor_bloom_info);
 
-        final int curBlock = service.getCurBlock();
+        final int currentBlock = service.getCurrentBlock();
         final int spvHeight = service.spv.getSpvHeight();
         final TextView tv = (TextView) findViewById(R.id.bloominfo);
-        tv.setText(getString(R.string.network_monitor_banner, bloominfo, curBlock - spvHeight));
+        tv.setText(getString(R.string.network_monitor_banner, bloominfo, currentBlock - spvHeight));
 
         peerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peerList);
         final ListView view = (ListView) findViewById(R.id.peerlistview);

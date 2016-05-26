@@ -107,7 +107,7 @@ public class GaService extends Service {
     public ListenableFuture<Void> onConnected;
     private String mSignUpMnemonics = null;
     private QrBitmap mSignUpQRCode = null;
-    private int curBlock = 0;
+    private int mCurrentBlock = 0;
 
     private boolean mAutoReconnect = true;
     // cache
@@ -536,8 +536,7 @@ public class GaService extends Service {
             @Override
             public Map<?, ?> call() throws Exception {
                 Map<?, ?> result = mClient.getMyTransactions(subaccount);
-                final int curBlock = ((Integer) result.get("cur_block"));
-                setCurBlock(curBlock);
+                setCurrentBlock((Integer) result.get("cur_block"));
                 // FIXME: Does this really belong here?
                 if (isSPVEnabled()) {
                     spv.setUpSPV();
@@ -880,12 +879,12 @@ public class GaService extends Service {
         }
     }
 
-    public int getCurBlock(){
-        return curBlock;
+    public int getCurrentBlock(){
+        return mCurrentBlock;
     }
 
-    private void setCurBlock(final int newBlock){
-        curBlock = newBlock;
+    private void setCurrentBlock(final int newBlock){
+        mCurrentBlock = newBlock;
     }
 
     public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {

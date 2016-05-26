@@ -23,7 +23,7 @@ public class TransactionItem implements Serializable {
     }
 
     public final TYPE type;
-    private final int curBlock;
+    private final int currentBlock;
     private final Integer blockHeight;
     public final long amount;
     public final String counterparty;
@@ -47,7 +47,7 @@ public class TransactionItem implements Serializable {
 
     public int getConfirmations() {
         if (blockHeight != null)
-            return curBlock - blockHeight + 1;
+            return currentBlock - blockHeight + 1;
         return 0;
     }
 
@@ -70,7 +70,7 @@ public class TransactionItem implements Serializable {
         replaceable = txJSON.get("rbf_optin") != null && (Boolean) txJSON.get("rbf_optin");
         doubleSpentBy = strVal(txJSON, "double_spent_by");
 
-        curBlock = currentBlock;
+        this.currentBlock = currentBlock;
         fee = Long.valueOf(strVal(txJSON, "fee"));
         size = (int) txJSON.get("size");
         replacedHashes = new ArrayList<>();
