@@ -392,8 +392,7 @@ public class MnemonicActivity extends GaActivity {
         final GaService service = mService;
         if (service.isLoggedIn()) {
             // already logged in, could be from different app via intent
-            final Intent mainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);
-            startActivity(mainActivity);
+            startActivity(new Intent(this, TabbedMainActivity.class));
             finish();
         }
     }
@@ -452,8 +451,7 @@ public class MnemonicActivity extends GaActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PINSAVE:
-                final Intent tabbedMainActivity = new Intent(MnemonicActivity.this, TabbedMainActivity.class);
-                startActivity(tabbedMainActivity);
+                startActivity(new Intent(this, TabbedMainActivity.class));
                 finish();
                 break;
             case QRSCANNER:

@@ -250,8 +250,7 @@ public class FirstScreenActivity extends GaActivity {
                     @Override
                     public void onSuccess(@Nullable final LoginData result) {
                         Log.d(TAG, "Success");
-                        final Intent main = new Intent(FirstScreenActivity.this, TabbedMainActivity.class);
-                        startActivity(main);
+                        startActivity(new Intent(FirstScreenActivity.this, TabbedMainActivity.class));
                         FirstScreenActivity.this.finish();
                     }
 

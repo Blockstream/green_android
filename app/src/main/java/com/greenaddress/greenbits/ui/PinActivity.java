@@ -94,8 +94,7 @@ public class PinActivity extends GaActivity implements Observer {
             public void onSuccess(@Nullable final LoginData result) {
                 service.cfgEdit("pin").putInt("counter", 0).apply();
                 if (getCallingActivity() == null) {
-                    final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
-                    startActivity(mainActivity);
+                    startActivity(new Intent(PinActivity.this, TabbedMainActivity.class));
                 } else {
                     setResult(RESULT_OK);
                 }
@@ -127,8 +126,7 @@ public class PinActivity extends GaActivity implements Observer {
                         PinActivity.this.toast(tstMsg);
 
                         if (counter >= 3) {
-                            final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
-                            startActivity(firstScreenActivity);
+                            startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
                             finish();
                         } else {
                             pinText.setText("");
@@ -189,8 +187,7 @@ public class PinActivity extends GaActivity implements Observer {
         } else if (androidLogin != null && ident != null) {
             tryDecrypt();
         } else {
-            final Intent firstScreenActivity = new Intent(this, FirstScreenActivity.class);
-            startActivity(firstScreenActivity);
+            startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
         }
     }
@@ -246,8 +243,7 @@ public class PinActivity extends GaActivity implements Observer {
                                 editor.putInt("counter", 0);
                                 editor.apply();
                                 if (getCallingActivity() == null) {
-                                    final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
-                                    startActivity(mainActivity);
+                                    startActivity( new Intent(PinActivity.this, TabbedMainActivity.class));
                                     finish();
                                 } else {
                                     setResult(RESULT_OK);
@@ -278,8 +274,7 @@ public class PinActivity extends GaActivity implements Observer {
                                     public void run() {
                                         PinActivity.this.toast(tstMsg);
                                         if (counter >= 3) {
-                                            final Intent firstScreenActivity = new Intent(PinActivity.this, FirstScreenActivity.class);
-                                            startActivity(firstScreenActivity);
+                                            startActivity( new Intent(PinActivity.this, FirstScreenActivity.class));
                                             finish();
                                         }
                                     }
@@ -334,8 +329,7 @@ public class PinActivity extends GaActivity implements Observer {
 
         if (service.isLoggedOrLoggingIn()) {
             // already logged in, could be from different app via intent
-            final Intent mainActivity = new Intent(PinActivity.this, TabbedMainActivity.class);
-            startActivity(mainActivity);
+            startActivity(new Intent(this, TabbedMainActivity.class));
             finish();
         }
     }
@@ -363,7 +357,7 @@ public class PinActivity extends GaActivity implements Observer {
             case R.id.network_unavailable:
                 return true;
             case R.id.proxy_preferences:
-                startActivity(new Intent(PinActivity.this, ProxySettingsActivity.class));
+                startActivity(new Intent(this, ProxySettingsActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

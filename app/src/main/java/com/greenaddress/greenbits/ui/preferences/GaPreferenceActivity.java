@@ -83,8 +83,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
         service.incRef();
         if (service.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
-            final Intent firstScreenActivity = new Intent(this, FirstScreenActivity.class);
-            startActivity(firstScreenActivity);
+            startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
         }
     }

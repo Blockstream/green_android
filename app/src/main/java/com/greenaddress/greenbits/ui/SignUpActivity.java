@@ -311,8 +311,7 @@ public class SignUpActivity extends GaActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PINSAVE:
-                final Intent tabbedMainActivity = new Intent(SignUpActivity.this, TabbedMainActivity.class);
-                startActivity(tabbedMainActivity);
+                startActivity(new Intent(SignUpActivity.this, TabbedMainActivity.class));
                 finish();
                 break;
         }

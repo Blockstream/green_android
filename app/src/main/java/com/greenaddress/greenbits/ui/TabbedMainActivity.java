@@ -259,7 +259,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         if (service.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
-            startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
+            startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
             return;
         }
@@ -490,7 +490,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         final GaService.State state = (GaService.State) data;
         if (state.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
-            startActivity(new Intent(TabbedMainActivity.this, FirstScreenActivity.class));
+            startActivity(new Intent(this, FirstScreenActivity.class));
         }
         setMenuItemVisible(mMenu, R.id.network_unavailable, !state.isLoggedIn());
     }
