@@ -1,7 +1,5 @@
 package com.greenaddress.greenbits.spv;
 
-import android.support.annotation.NonNull;
-
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.BloomFilter;
@@ -11,30 +9,35 @@ import org.bitcoinj.core.Utils;
 import java.util.Set;
 
 class PeerFilterProvider implements org.bitcoinj.core.PeerFilterProvider {
-    private final GaService gaService;
+    private SPV mSPV;
 
-    public PeerFilterProvider(final GaService gaService) {
-        this.gaService = gaService;
-    }
+    public PeerFilterProvider(final SPV spv) { mSPV = spv; }
+
+    public void onDispose() { mSPV = null; }
 
     @Override
     public long getEarliestKeyCreationTime() {
-        return gaService.getLoginData().earliest_key_creation_time;
+        if (mSPV == null)
+            return 0;
+        return mSPV.gaService.getLoginData().earliest_key_creation_time;
     }
 
     @Override
     public int getBloomFilterElementCount() {
         // 1 to avoid downloading full blocks (empty bloom filters are ignored by bitcoinj)
-
-        return gaService.getUnspentOutputsOutpoints().isEmpty() ? 1: gaService.getUnspentOutputsOutpoints().size();
+        if (mSPV == null || mSPV.getUnspentOutputsOutpoints().isEmpty())
+            return 1;
+        return mSPV.getUnspentOutputsOutpoints().size();
     }
 
-    @NonNull
     @Override
     public BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
 
         final BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
-        final Set<Sha256Hash> set = gaService.getUnspentOutputsOutpoints().keySet();
+        if (mSPV == null)
+            return res;
+
+        final Set<Sha256Hash> set = mSPV.getUnspentOutputsOutpoints().keySet();
         for (final Sha256Hash hash : set) {
             res.insert(Utils.reverseBytes(hash.getBytes()));
         }

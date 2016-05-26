@@ -1,7 +1,5 @@
 package com.greenaddress.greenbits.spv;
 
-import android.support.annotation.NonNull;
-
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.AbstractBlockChain;
@@ -13,11 +11,11 @@ import org.bitcoinj.core.VerificationException;
 import java.util.List;
 
 class BlockChainListener implements org.bitcoinj.core.listeners.BlockChainListener {
-    private final GaService gaService;
+    private SPV mSPV;
 
-    public BlockChainListener(final GaService gaService) {
-        this.gaService = gaService;
-    }
+    public BlockChainListener(final SPV spv) { mSPV = spv; }
+
+    public void onDispose() { mSPV = null; }
 
     @Override
     public void notifyNewBestBlock(final StoredBlock block) throws VerificationException {
@@ -30,13 +28,16 @@ class BlockChainListener implements org.bitcoinj.core.listeners.BlockChainListen
     }
 
     @Override
-    public void receiveFromBlock(@NonNull final Transaction tx, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
-        gaService.notifyObservers(tx.getHash());
+    public void receiveFromBlock(final Transaction tx, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
+        if (mSPV != null)
+            mSPV.gaService.notifyObservers(tx.getHash());
     }
 
     @Override
-    public boolean notifyTransactionIsInBlock(@NonNull final Sha256Hash txHash, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
-        gaService.notifyObservers(txHash);
-        return gaService.getUnspentOutputsOutpoints().keySet().contains(txHash);
+    public boolean notifyTransactionIsInBlock(final Sha256Hash txHash, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
+        if (mSPV == null)
+            return false;
+        mSPV.gaService.notifyObservers(txHash);
+        return mSPV.getUnspentOutputsOutpoints().keySet().contains(txHash);
     }
 }

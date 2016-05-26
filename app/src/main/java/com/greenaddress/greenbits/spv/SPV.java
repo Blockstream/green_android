@@ -66,10 +66,10 @@ public class SPV {
     private final String SPENDABLE = "verified_utxo_spendable_value_";
 
     public final Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
-    public final Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints = new HashMap<>();
+    private final Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts = new HashMap<>();
     private final Map<TransactionOutPoint, Integer> unspentOutpointsPointers = new HashMap<>();
-    private final GaService gaService;
+    public final GaService gaService;
     private BlockChainListener blockChainListener;
     private int spvBlocksLeft = Integer.MAX_VALUE;
     private BlockStore blockStore;
@@ -114,6 +114,10 @@ public class SPV {
                     verifiedBalancesCoin.get(subaccount).add(addValue));
         }
 
+    }
+
+    public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
+        return unspentOutputsOutpoints;
     }
 
     public void updateUnspentOutputs() {
@@ -501,7 +505,10 @@ public class SPV {
                 }
             }
             blockChain = new BlockChain(Network.NETWORK, blockStore);
-            blockChain.addListener(blockChainListener = new BlockChainListener(gaService));
+            if (blockChainListener != null)
+                blockChainListener.onDispose();
+            blockChainListener = new BlockChainListener(this);
+            blockChain.addListener(blockChainListener);
 
             System.setProperty("user.home", gaService.getFilesDir().toString());
             final String trustedAddr = gaService.cfg("TRUSTED").getString("address", "");
@@ -528,7 +535,10 @@ public class SPV {
                     peerGroup = new PeerGroup(Network.NETWORK, blockChain);
                 }
             }
-            peerGroup.addPeerFilterProvider(pfProvider = new PeerFilterProvider(gaService));
+            if (pfProvider != null)
+                pfProvider.onDispose();
+            pfProvider = new PeerFilterProvider(this);
+            peerGroup.addPeerFilterProvider(pfProvider);
 
             final String[] addresses = trustedAddr.split(",");
             for (final String s: addresses)
@@ -559,12 +569,14 @@ public class SPV {
 
         if (blockChain != null && blockChainListener != null) {
             blockChain.removeListener(blockChainListener);
+            blockChainListener.onDispose();
             blockChainListener = null;
         }
 
         if (peerGroup != null) {
             if (pfProvider != null) {
                 peerGroup.removePeerFilterProvider(pfProvider);
+                pfProvider.onDispose();
                 pfProvider = null;
             }
             peerGroup = null;

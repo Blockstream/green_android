@@ -887,10 +887,6 @@ public class GaService extends Service {
         mCurrentBlock = newBlock;
     }
 
-    public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
-        return spv.unspentOutputsOutpoints;
-    }
-
     // FIXME: Operations should be atomic
     public static class State extends Observable {
         private ConnState mConnState;
