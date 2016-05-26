@@ -1014,7 +1014,7 @@ public class GaService extends Service {
         disconnect(false); // Calls transitionTo(DISCONNECTED)
     }
 
-    public void setDisconnected(final boolean forcedLogout) {
+    private void setDisconnected(final boolean forcedLogout) {
         mState.mForcedLogout = forcedLogout;
         mState.transitionTo(ConnState.DISCONNECTED);
     }
