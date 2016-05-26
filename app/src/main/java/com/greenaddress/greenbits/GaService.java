@@ -133,37 +133,6 @@ public class GaService extends Service {
     public final SPV spv = new SPV(this);
 
     private WalletClient mClient;
-    private final FutureCallback<LoginData> handleLoginData = new FutureCallback<LoginData>() {
-        @Override
-        public void onSuccess(@Nullable final LoginData result) {
-            fiatCurrency = result.currency;
-            fiatExchange = result.exchange;
-            subaccounts = result.subaccounts;
-            receivingId = result.receiving_id;
-            gaitPath = Hex.decode(result.gait_path);
-
-            balanceObservables.put(0, new GaObservable());
-            updateBalance(0);
-            for (final Object subaccount : result.subaccounts) {
-                final Map<?, ?> subaccountMap = (Map) subaccount;
-                final int pointer = ((Integer) subaccountMap.get("pointer"));
-                balanceObservables.put(pointer, new GaObservable());
-                updateBalance(pointer);
-            }
-            getAvailableTwoFacMethods();
-
-            gaDeterministicKeys.clear();
-
-            spv.startIfEnabled();
-            mState.transitionTo(ConnState.LOGGEDIN);
-        }
-
-        @Override
-        public void onFailure(@NonNull final Throwable t) {
-            t.printStackTrace();
-            mState.transitionTo(ConnState.CONNECTED);
-        }
-    };
 
     public int getAutoLogoutMinutes() {
         try {
@@ -428,56 +397,69 @@ public class GaService extends Service {
         return key;
     }
 
-    private void login() {
+    private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> f) {
         mState.transitionTo(ConnState.LOGGINGIN);
-        final ListenableFuture<LoginData> future = mClient.login(deviceId);
-        Futures.addCallback(future, handleLoginData, es);
+        Futures.addCallback(f, new FutureCallback<LoginData>() {
+            @Override
+            public void onSuccess(final LoginData result) {
+                // FIXME: Why are we copying these? If we need them when not logged in,
+                // we should just copy the whole loginData instance
+                fiatCurrency = result.currency;
+                fiatExchange = result.exchange;
+                subaccounts = result.subaccounts;
+                receivingId = result.receiving_id;
+                gaitPath = Hex.decode(result.gait_path);
+
+                balanceObservables.put(0, new GaObservable());
+                updateBalance(0);
+                for (final Object subaccount : result.subaccounts) {
+                    final Map<?, ?> subaccountMap = (Map) subaccount;
+                    final int pointer = ((Integer) subaccountMap.get("pointer"));
+                    balanceObservables.put(pointer, new GaObservable());
+                    updateBalance(pointer);
+                }
+                getAvailableTwoFacMethods();
+                gaDeterministicKeys.clear();
+                spv.startIfEnabled();
+                mState.transitionTo(ConnState.LOGGEDIN);
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                t.printStackTrace();
+                mState.transitionTo(ConnState.CONNECTED);
+            }
+        }, es);
+        return f;
+    }
+
+    private ListenableFuture<LoginData> login() {
+        return loginImpl(mClient.login(deviceId));
+    }
+
+    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
+        return loginImpl(mClient.login(signingWallet, deviceId));
+    }
+
+    public ListenableFuture<LoginData> login(final String mnemonics) {
+        return loginImpl(mClient.login(mnemonics, deviceId));
+    }
+
+    public ListenableFuture<LoginData> login(final PinData pinData, final String pin) {
+        return loginImpl(mClient.login(pinData, pin, deviceId));
+    }
+
+    public ListenableFuture<LoginData> signup(final String mnemonics) {
+        return loginImpl(mClient.loginRegister(mnemonics, deviceId));
     }
 
     @NonNull
-    public ListenableFuture<LoginData> login(@NonNull final ISigningWallet signingWallet) {
-        mState.transitionTo(ConnState.LOGGINGIN);
-
-        final ListenableFuture<LoginData> future = mClient.login(signingWallet, deviceId);
-        Futures.addCallback(future, handleLoginData, es);
-        return future;
+    public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
+                                              final byte[] masterPublicKey, final byte[] masterChaincode,
+                                              final byte[] pathPublicKey, final byte[] pathChaincode) {
+        return loginImpl(mClient.loginRegister(signingWallet, masterPublicKey, masterChaincode,
+                                               pathPublicKey, pathChaincode, deviceId));
     }
-
-    @NonNull
-    public ListenableFuture<LoginData> login(@NonNull final String mnemonics) {
-        mState.transitionTo(ConnState.LOGGINGIN);
-
-        final ListenableFuture<LoginData> future = mClient.login(mnemonics, deviceId);
-        Futures.addCallback(future, handleLoginData, es);
-        return future;
-    }
-
-    @NonNull
-    public ListenableFuture<LoginData> login(@NonNull final PinData pinData, final String pin) {
-        mState.transitionTo(ConnState.LOGGINGIN);
-
-        final ListenableFuture<LoginData> future = mClient.login(pinData, pin, deviceId);
-        Futures.addCallback(future, handleLoginData, es);
-        return future;
-    }
-
-    @NonNull
-    public ListenableFuture<LoginData> signup(@NonNull final String mnemonics) {
-        final ListenableFuture<LoginData> signupFuture = mClient.loginRegister(mnemonics, deviceId);
-        mState.transitionTo(ConnState.LOGGINGIN);
-
-        Futures.addCallback(signupFuture, handleLoginData, es);
-        return signupFuture;
-    }
-
-    @NonNull
-    public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet, @NonNull final byte[] masterPublicKey, @NonNull final byte[] masterChaincode, @NonNull final byte[] pathPublicKey, @NonNull final byte[] pathChaincode) {
-        final ListenableFuture<LoginData> signupFuture = mClient.loginRegister(signingWallet, masterPublicKey, masterChaincode, pathPublicKey, pathChaincode, deviceId);
-        mState.transitionTo(ConnState.LOGGINGIN);
-
-        Futures.addCallback(signupFuture, handleLoginData, es);
-        return signupFuture;
-    }    
 
     @Nullable
     public String getMnemonics() {
