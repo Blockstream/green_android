@@ -340,7 +340,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
     @Override
     public void update(final Observable observable, final Object data) {
-        getGAService().spv.startSpvSync();
         reloadTransactions(getActivity());
     }
 
