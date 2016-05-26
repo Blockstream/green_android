@@ -30,11 +30,14 @@ public class ListTransactionsAdapter extends
     private final List<TransactionItem> transactions;
     private final String btcUnit;
     private final Activity context;
+    private final GaService mService;
 
-    public ListTransactionsAdapter(final Activity context, final List<TransactionItem> transactions, final String btcUnit) {
+    public ListTransactionsAdapter(final Activity context, final GaService service,
+                                   final List<TransactionItem> transactions) {
         this.transactions = transactions;
-        this.btcUnit = btcUnit;
+        this.btcUnit = (String) service.getUserConfig("unit");
         this.context = context;
+        mService = service;
     }
 
     @Override
@@ -68,8 +71,8 @@ public class ListTransactionsAdapter extends
             holder.textValue.setText(btcBalance);
         }
 
-        if (!context.getSharedPreferences("SPV", Context.MODE_PRIVATE).getBoolean("enabled", true) ||
-                transaction.spvVerified || transaction.isSpent || transaction.type.equals(TransactionItem.TYPE.OUT)) {
+        if (!mService.isSPVEnabled() ||
+            transaction.spvVerified || transaction.isSpent || transaction.type.equals(TransactionItem.TYPE.OUT)) {
             holder.textValueQuestionMark.setVisibility(View.GONE);
         } else {
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);

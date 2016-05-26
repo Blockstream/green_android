@@ -241,30 +241,29 @@ public class MainFragment extends SubaccountFragment implements Observer {
     }
 
     private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
+        final GaService service = getGAService();
         final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
-        final String btcUnit = (String) getGAService().getUserConfig("unit");
 
         if (currentList == null || newAdapter) {
             currentList = new ArrayList<>();
-            recyclerView.setAdapter(new ListTransactionsAdapter(activity, currentList, btcUnit));
+            recyclerView.setAdapter(new ListTransactionsAdapter(activity, service, currentList));
             // FIXME, more efficient to use swap
             // recyclerView.swapAdapter(lta, false);
 
         }
 
-        if (replacedTxs == null || newAdapter) {
+        if (replacedTxs == null || newAdapter)
             replacedTxs = new HashMap<>();
-        }
 
-        final ListenableFuture<Map<?, ?>> txFuture = getGAService().getMyTransactions(curSubaccount);
+        final ListenableFuture<Map<?, ?>> txFuture = service.getMyTransactions(curSubaccount);
 
         Futures.addCallback(txFuture, new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 final List resultList = (List) result.get("list");
                 final int curBlock = ((Integer) result.get("cur_block"));
-                getGAService().setCurBlock(curBlock);
+                service.setCurBlock(curBlock);
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -276,7 +275,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         final GaService service = getGAService();
                         if (service.isSPVEnabled()) {
                             service.spv.setUpSPV();
-                            getGAService().spv.startSpvSync();
+                            service.spv.startSpvSync();
                         }
                         if (resultList != null && resultList.size() > 0) {
                             recyclerView.setVisibility(View.VISIBLE);
@@ -303,7 +302,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                                         replacedTxs.get(replaced_by).add((String) txMap.get("txhash"));
                                     }
                                 } else {
-                                    currentList.add(new TransactionItem(getGAService(), txMap, curBlock));
+                                    currentList.add(new TransactionItem(service, txMap, curBlock));
                                 }
                             } catch (@NonNull final ParseException e) {
                                 e.printStackTrace();
@@ -351,7 +350,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
                 t.printStackTrace();
 
             }
-        }, getGAService().es);
+        }, service.es);
     }
 
     @Override
