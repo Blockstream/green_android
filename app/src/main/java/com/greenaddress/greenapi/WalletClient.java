@@ -404,7 +404,7 @@ public class WalletClient {
     }
 
     private void subscribeToWallet() {
-        clientSubscribe("txs.wallet_" + mLoginData.receiving_id, Map.class, new EventHandler() {
+        clientSubscribe("txs.wallet_" + mLoginData.receivingId, Map.class, new EventHandler() {
             @Override
             public void onEvent(final String topicUri, final Object event) {
                 final Map<?, ?> res = (Map) event;
@@ -642,7 +642,7 @@ public class WalletClient {
                                 rpc.setException(new LoginFailed());
                             } else {
                                 mLoginData = new LoginData((Map) loginData);
-                                subscribeToWallet();  // requires receiving_id to be set
+                                subscribeToWallet();  // requires receivingId to be set
                                 mHDParent = deterministicKey;
 
                                 rpc.set(mLoginData);

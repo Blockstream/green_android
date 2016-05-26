@@ -122,7 +122,7 @@ public class GaService extends Service {
     private ArrayList subaccounts;
 
     private final Map<Integer, DeterministicKey> gaDeterministicKeys = new HashMap<>();
-    private String receivingId;
+    private String mReceivingId;
     private byte[] gaitPath;
     @Nullable
     private Map<?, ?> twoFacConfig;
@@ -143,7 +143,7 @@ public class GaService extends Service {
     }
 
     public File getSPVChainFile() {
-        final String dirName = "blockstore_" + getReceivingId();
+        final String dirName = "blockstore_" + mReceivingId;
         return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
     }
 
@@ -204,7 +204,7 @@ public class GaService extends Service {
     public SharedPreferences cfg() { return PreferenceManager.getDefaultSharedPreferences(this); }
     public SharedPreferences cfg(final String name) { return getSharedPreferences(name, MODE_PRIVATE); }
     public SharedPreferences.Editor cfgEdit(final String name) { return cfg(name).edit(); }
-    public SharedPreferences cfgIn(final String name) { return cfg(name + getReceivingId()); }
+    public SharedPreferences cfgIn(final String name) { return cfg(name + mReceivingId); }
     public SharedPreferences.Editor cfgInEdit(final String name) { return cfgIn(name).edit(); }
 
     // User config is stored on the server (unlike preferences which are local)
@@ -407,7 +407,7 @@ public class GaService extends Service {
                 fiatCurrency = result.currency;
                 fiatExchange = result.exchange;
                 subaccounts = result.subaccounts;
-                receivingId = result.receiving_id;
+                mReceivingId = result.receivingId;
                 gaitPath = Hex.decode(result.gait_path);
 
                 balanceObservables.put(0, new GaObservable());
@@ -821,10 +821,6 @@ public class GaService extends Service {
     public ListenableFuture<PreparedTransaction> preparePayreq(@NonNull final Coin amount, @NonNull final Map<?, ?> data, @NonNull final Map<String, Object> privateData) {
         preparePrivData(privateData);
         return mClient.preparePayreq(amount, data, privateData);
-    }
-
-    public String getReceivingId() {
-        return receivingId;
     }
 
     @NonNull
