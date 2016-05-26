@@ -206,7 +206,7 @@ public class WalletClient {
     }
 
     private <T> T SyncCall(final String procedure, final Class result,
-                           final CallHandler handler, Object... args) throws Exception {
+                           Object... args) throws Exception {
 
         if (mConnection == null)
             throw new GAException("not connected");
@@ -728,8 +728,8 @@ public class WalletClient {
         return Futures.transform(rpc, connectToLogin, mExecutor);
     }
 
-    public ListenableFuture<Map<?, ?>> getMyTransactions(final Integer subaccount) {
-        return simpleCall("txs.get_list_v2", Map.class, null, null, null, null, subaccount);
+    public Map<?, ?> getMyTransactions(final Integer subaccount) throws Exception {
+        return SyncCall("txs.get_list_v2", Map.class, subaccount);
     }
 
     public ListenableFuture<Map> getNewAddress(final int subaccount) {

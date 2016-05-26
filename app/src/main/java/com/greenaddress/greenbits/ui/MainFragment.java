@@ -256,14 +256,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
         if (replacedTxs == null || newAdapter)
             replacedTxs = new HashMap<>();
 
-        final ListenableFuture<Map<?, ?>> txFuture = service.getMyTransactions(curSubaccount);
-
-        Futures.addCallback(txFuture, new FutureCallback<Map<?, ?>>() {
+        Futures.addCallback(service.getMyTransactions(curSubaccount),
+            new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 final List resultList = (List) result.get("list");
                 final int curBlock = ((Integer) result.get("cur_block"));
-                service.setCurBlock(curBlock);
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -272,11 +270,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
                         //  thread, but only from the UI thread. Make sure your adapter calls
                         //  notifyDataSetChanged() when its content changes."
 
-                        final GaService service = getGAService();
-                        if (service.isSPVEnabled()) {
-                            service.spv.setUpSPV();
-                            service.spv.startSpvSync();
-                        }
                         if (resultList != null && resultList.size() > 0) {
                             recyclerView.setVisibility(View.VISIBLE);
                             mainEmptyTransText.setVisibility(View.GONE);

@@ -531,9 +531,21 @@ public class GaService extends Service {
         });
     }
 
-    @NonNull
     public ListenableFuture<Map<?, ?>> getMyTransactions(final int subaccount) {
-        return mClient.getMyTransactions(subaccount);
+        return es.submit(new Callable<Map<?, ?>>() {
+            @Override
+            public Map<?, ?> call() throws Exception {
+                Map<?, ?> result = mClient.getMyTransactions(subaccount);
+                final int curBlock = ((Integer) result.get("cur_block"));
+                setCurBlock(curBlock);
+                // FIXME: Does this really belong here?
+                if (isSPVEnabled()) {
+                    spv.setUpSPV();
+                    spv.startSpvSync();
+                }
+                return result;
+            }
+        });
     }
 
     @NonNull
@@ -873,7 +885,7 @@ public class GaService extends Service {
         return curBlock;
     }
 
-    public void setCurBlock(final int newBlock){
+    private void setCurBlock(final int newBlock){
         curBlock = newBlock;
     }
 
