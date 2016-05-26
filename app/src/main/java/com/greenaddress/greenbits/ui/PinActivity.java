@@ -145,8 +145,9 @@ public class PinActivity extends GaActivity implements Observer {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        final GaService service = mService;
 
-        final SharedPreferences prefs = getSharedPreferences("pin", MODE_PRIVATE);
+        final SharedPreferences prefs = service.cfg("pin");
         final String ident = prefs.getString("ident", null);
         final String androidLogin = prefs.getString("native", null);
 
@@ -198,7 +199,7 @@ public class PinActivity extends GaActivity implements Observer {
     private void tryDecrypt() {
 
         final GaService service = mService;
-        final SharedPreferences prefs = getSharedPreferences("pin", MODE_PRIVATE);
+        final SharedPreferences prefs = service.cfg("pin");
         final String androidLogin = prefs.getString("native", null);
         final String aesiv = prefs.getString("nativeiv", null);
         final String ident = prefs.getString("ident", null);
