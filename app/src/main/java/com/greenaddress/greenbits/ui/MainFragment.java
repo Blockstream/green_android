@@ -174,7 +174,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         curBalanceObserver = makeBalanceObserver();
-        service.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        service.addBalanceObserver(curSubaccount, curBalanceObserver);
 
         if (service.getBalanceCoin(curSubaccount) != null)
             updateBalance();
@@ -346,13 +346,16 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
     @Override
     protected void onSubaccountChanged(final int input) {
-        getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
+        final GaService service = getGAService();
+
+        service.deleteBalanceObserver(curSubaccount, curBalanceObserver);
         curSubaccount = input;
         curBalanceObserver = makeBalanceObserver();
-        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        service.addBalanceObserver(curSubaccount, curBalanceObserver);
         reloadTransactions(getActivity());
         updateBalance();
     }
+
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);

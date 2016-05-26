@@ -100,10 +100,10 @@ public class GaService extends Service {
         app.registerReceiver(mNetBroadReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
-    @NonNull public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
-    @NonNull final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
-    @NonNull final private GaObservable newTransactionsObservable = new GaObservable();
-    @NonNull final private GaObservable newTxVerifiedObservable = new GaObservable();
+    public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
+    final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
+    final private GaObservable newTransactionsObservable = new GaObservable();
+    final private GaObservable newTxVerifiedObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
     private String mSignUpMnemonics = null;
     private QrBitmap mSignUpQRCode = null;
@@ -738,13 +738,12 @@ public class GaService extends Service {
         return mClient.getHdWallet() instanceof TrezorHWWallet;
     }
 
-    @NonNull
-    public Map<Integer, Observable> getBalanceObservables() {
-        final Map<Integer, Observable> ret = new HashMap<>();
-        for (final Integer key : balanceObservables.keySet()) {
-            ret.put(key, balanceObservables.get(key));
-        }
-        return ret;
+    public void addBalanceObserver(final int subaccount, final Observer o) {
+        balanceObservables.get(subaccount).addObserver(o);
+    }
+
+    public void deleteBalanceObserver(final int subaccount, final Observer o) {
+        balanceObservables.get(subaccount).deleteObserver(o);
     }
 
     @NonNull

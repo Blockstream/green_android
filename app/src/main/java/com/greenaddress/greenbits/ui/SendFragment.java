@@ -448,7 +448,7 @@ public class SendFragment extends SubaccountFragment {
         });
 
         curBalanceObserver = makeBalanceObserver();
-        service.getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
+        service.addBalanceObserver(curSubaccount, curBalanceObserver);
 
         if (service.getBalanceCoin(curSubaccount) != null) {
             updateBalance();
@@ -685,18 +685,20 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onSubaccountChanged(final int input) {
-        getGAService().getBalanceObservables().get(curSubaccount).deleteObserver(curBalanceObserver);
+        final GaService service = getGAService();
+
+        service.deleteBalanceObserver(curSubaccount, curBalanceObserver);
         curSubaccount = input;
         hideInstantIf2of3();
         final GaActivity gaActivity = getGaActivity();
 
         curBalanceObserver = makeBalanceObserver();
-        getGAService().getBalanceObservables().get(curSubaccount).addObserver(curBalanceObserver);
-        CB.after(getGAService().getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
+        service.addBalanceObserver(curSubaccount, curBalanceObserver);
+        CB.after(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
             @Override
             public void onSuccess(final @Nullable Map<?, ?> result) {
                 final Coin coin = Coin.valueOf(Long.valueOf((String) result.get("satoshi")));
-                final String btcUnit = (String) getGAService().getUserConfig("unit");
+                final String btcUnit = (String) service.getUserConfig("unit");
                 final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);
                 final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                 final String btcBalance = format.noCode().format(coin).toString();
