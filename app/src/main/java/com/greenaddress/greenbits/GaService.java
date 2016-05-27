@@ -103,7 +103,7 @@ public class GaService extends Service {
     public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
     final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
     final private GaObservable newTransactionsObservable = new GaObservable();
-    final private GaObservable newTxVerifiedObservable = new GaObservable();
+    final private GaObservable verifiedTxObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
     private String mSignUpMnemonics = null;
     private QrBitmap mSignUpQRCode = null;
@@ -753,17 +753,19 @@ public class GaService extends Service {
         newTransactionsObservable.deleteObserver(o);
     }
 
-    @NonNull
-    public Observable getNewTxVerifiedObservable() {
-        return newTxVerifiedObservable;
+    public void addVerifiedTxObserver(final Observer o) {
+        verifiedTxObservable.addObserver(o);
     }
 
+    public void deleteVerifiedTxObserver(final Observer o) {
+        verifiedTxObservable.deleteObserver(o);
+    }
 
     public void notifyObservers(final Sha256Hash tx) {
         // FIXME: later spent outputs can be purged
         cfgInEdit("verified_utxo_").putBoolean(tx.toString(), true).apply();
         spv.addUtxoToValues(tx);
-        newTxVerifiedObservable.setChangedAndNotify();
+        verifiedTxObservable.setChangedAndNotify();
     }
 
     public Coin getBalanceCoin(final int subaccount) {

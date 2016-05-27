@@ -49,8 +49,8 @@ public class MainFragment extends SubaccountFragment {
     private Map<String, List<String> > replacedTxs;
     private Observer curBalanceObserver;
     private int curSubaccount;
-    private Observer mTxVerifiedObserver;
-    private Observer mNewTxObserver;
+    private Observer mVerifiedTxObserver = makeUiObserver(new Runnable() { public void run() { onVerifiedTx(); } });
+    private Observer mNewTxObserver = makeUiObserver(new Runnable() { public void run() { onNewTx(); } });
 
     private void updateBalance() {
         final GaService service = getGAService();
@@ -192,7 +192,7 @@ public class MainFragment extends SubaccountFragment {
     public void onPause() {
         super.onPause();
         final GaService service = getGAService();
-        service.getNewTxVerifiedObservable().deleteObserver(mTxVerifiedObserver);
+        service.deleteVerifiedTxObserver(mVerifiedTxObserver);
         service.deleteNewTxObserver(mNewTxObserver);
     }
 
@@ -200,31 +200,17 @@ public class MainFragment extends SubaccountFragment {
     public void onResume() {
         super.onResume();
         final GaService service = getGAService();
-        mNewTxObserver = makeNewTxObserver();
         service.addNewTxObserver(mNewTxObserver);
-        mTxVerifiedObserver = makeTxVerifiedObserver();
-        service.getNewTxVerifiedObservable().addObserver(mTxVerifiedObserver);
+        service.addVerifiedTxObserver(mVerifiedTxObserver);
     }
 
-    private Observer makeNewTxObserver() {
-        return makeUiObserver(new Runnable() {
-                                  @Override
-                                  public void run() { onNewTx(); }
-                              });
-    }
-
+    // Called when a new transaction is seen
     private void onNewTx() {
         reloadTransactions(getActivity());
     }
 
-    private Observer makeTxVerifiedObserver() {
-        return makeUiObserver(new Runnable() {
-                                  @Override
-                                  public void run() { onTxVerified(); }
-                              });
-    }
-
-    private void onTxVerified() {
+    // Called when a new verified transaction is seen
+    private void onVerifiedTx() {
         if (currentList == null)
           return;
 
