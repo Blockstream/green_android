@@ -56,14 +56,14 @@ public abstract class SubaccountFragment extends GAFragment {
             @Override
             public void update(final Observable observable, final Object o) {
                 final Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            onBalanceUpdated(activity);
-                        }
-                    });
-                }
+                if (activity == null)
+                    return;
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onBalanceUpdated(activity);
+                    }
+                });
             }
         };
     }

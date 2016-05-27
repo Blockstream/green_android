@@ -202,29 +202,38 @@ public class MainFragment extends SubaccountFragment implements Observer {
         super.onResume();
         final GaService service = getGAService();
         service.getNewTransactionsObservable().addObserver(this);
-        service.getNewTxVerifiedObservable().addObserver(makeTxVerifiedObservable());
+        txVerifiedObservable = makeTxVerifiedObservable();
+        service.getNewTxVerifiedObservable().addObserver(txVerifiedObservable);
     }
 
     @Nullable
     private Observer makeTxVerifiedObservable() {
-        txVerifiedObservable = new Observer() {
+        return new Observer() {
             @Override
             public void update(final Observable observable, final Object data) {
-                if (currentList == null) return;
-                getActivity().runOnUiThread(new Runnable() {
+                final Activity activity = getActivity();
+                if (activity == null)
+                    return;
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        final SharedPreferences prefs = getGAService().cfgIn("verified_utxo_");
-                        for (final TransactionItem tx : currentList)
-                            tx.spvVerified = prefs.getBoolean(tx.txhash, false);
-
-                        final RecyclerView recycleView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
-                        recycleView.getAdapter().notifyDataSetChanged();
+                        onTxVerified();
                     }
                 });
             }
         };
-        return txVerifiedObservable;
+    }
+
+    private void onTxVerified() {
+        if (currentList == null)
+          return;
+
+        final SharedPreferences prefs = getGAService().cfgIn("verified_utxo_");
+        for (final TransactionItem tx : currentList)
+            tx.spvVerified = prefs.getBoolean(tx.txhash, false);
+
+        final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        txView.getAdapter().notifyDataSetChanged();
     }
 
     private void reloadTransactions(@NonNull final Activity activity) {
