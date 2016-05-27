@@ -213,7 +213,7 @@ public class MnemonicActivity extends GaActivity {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.passphraseValue);
                 passphraseValue.requestFocus();
-                final MaterialDialog dialog = Popup(MnemonicActivity.this, "Encryption passphrase")
+                final MaterialDialog dialog = popup(MnemonicActivity.this, "Encryption passphrase")
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override

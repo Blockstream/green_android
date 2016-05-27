@@ -110,7 +110,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                 getResources().getString(R.string.twoFacProvideConfirmationCode),
                 withMethodName).toString());
 
-        GaActivity.Popup(this.getActivity(), "2FA")
+        GaActivity.popup(this.getActivity(), "2FA")
                   .customView(inflatedLayout, true)
                   .onPositive(new MaterialDialog.SingleButtonCallback() {
                       @Override

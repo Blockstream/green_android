@@ -89,7 +89,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                 if (s.isEmpty() || s.contains("."))
                     return false;
 
-                GaActivity.Popup(SPVPreferenceFragment.this.getActivity(),
+                GaActivity.popup(SPVPreferenceFragment.this.getActivity(),
                                  getString(R.string.enterValidAddressTitle), android.R.string.ok)
                           .content(R.string.enterValidAddressText).build().show();
                 return true;
@@ -118,7 +118,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                             // Certain ciphers have been deprecated in API 23+, breaking Orchid
                             // and HS connectivity.
                             // but work with Orbot socks if set
-                            GaActivity.Popup(SPVPreferenceFragment.this.getActivity(),
+                            GaActivity.popup(SPVPreferenceFragment.this.getActivity(),
                                              getString(R.string.enterValidAddressTitleTorDisabled), android.R.string.ok)
                                       .content(R.string.enterValidAddressTextTorDisabled).build().show();
                             return true;
@@ -135,7 +135,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                         new SPVAsync().execute();
                     }
                     else {
-                        GaActivity.Popup(SPVPreferenceFragment.this.getActivity(),
+                        GaActivity.popup(SPVPreferenceFragment.this.getActivity(),
                                          getString(R.string.changingWarnOnionTitle))
                                   .content(R.string.changingWarnOnionText)
                                   .onPositive(new MaterialDialog.SingleButtonCallback() {

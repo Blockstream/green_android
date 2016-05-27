@@ -113,7 +113,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                         }
                                     });
                                 }
-                                Popup(RequestLoginActivity.this, "Hardware Wallet PIN")
+                                popup(RequestLoginActivity.this, "Hardware Wallet PIN")
                                     .customView(inflatedLayout, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -139,7 +139,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             public void run() {
                                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
                                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.trezorPassphraseValue);
-                                Popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
+                                popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
                                     .customView(inflatedLayout, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -240,7 +240,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
                 final EditText pinValue = (EditText) inflatedLayout.findViewById(R.id.btchipPINValue);
-                btchipDialog = Popup(RequestLoginActivity.this, "BTChip PIN")
+                btchipDialog = popup(RequestLoginActivity.this, "BTChip PIN")
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
