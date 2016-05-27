@@ -550,7 +550,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     @Override
-    protected void onBalanceUpdated(final Activity activity) {
+    protected void onBalanceUpdated() {
         updateBalance();
     }
 

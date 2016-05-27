@@ -51,22 +51,23 @@ public abstract class SubaccountFragment extends GAFragment {
         }
     }
 
-    protected Observer makeBalanceObserver() {
+    protected Observer makeUiObserver(final Runnable r) {
         return new Observer() {
             @Override
             public void update(final Observable observable, final Object o) {
                 final Activity activity = getActivity();
-                if (activity == null)
-                    return;
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onBalanceUpdated(activity);
-                    }
-                });
+                if (activity != null)
+                    activity.runOnUiThread(r);
             }
         };
     }
 
-    protected void onBalanceUpdated(final Activity activity) { }
+    protected Observer makeBalanceObserver() {
+        return makeUiObserver(new Runnable() {
+                                  @Override
+                                  public void run() { onBalanceUpdated(); }
+                              });
+    }
+
+    protected void onBalanceUpdated() { }
 }

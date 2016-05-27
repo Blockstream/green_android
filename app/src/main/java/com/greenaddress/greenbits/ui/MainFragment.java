@@ -47,11 +47,9 @@ public class MainFragment extends SubaccountFragment implements Observer {
     private View rootView;
     private List<TransactionItem> currentList;
     private Map<String, List<String> > replacedTxs;
-    @Nullable
     private Observer curBalanceObserver;
     private int curSubaccount;
-    @Nullable
-    private Observer txVerifiedObservable;
+    private Observer mTxVerifiedObservable;
 
     private void updateBalance() {
         final GaService service = getGAService();
@@ -184,16 +182,16 @@ public class MainFragment extends SubaccountFragment implements Observer {
     }
 
     @Override
-    protected void onBalanceUpdated(final Activity activity) {
+    protected void onBalanceUpdated() {
         updateBalance();
-        reloadTransactions(activity, true); // newAdapter for unit change
+        reloadTransactions(getActivity(), true); // newAdapter for unit change
     }
 
     @Override
     public void onPause() {
         super.onPause();
         final GaService service = getGAService();
-        service.getNewTxVerifiedObservable().deleteObserver(txVerifiedObservable);
+        service.getNewTxVerifiedObservable().deleteObserver(mTxVerifiedObservable);
         service.getNewTransactionsObservable().deleteObserver(this);
     }
 
@@ -202,26 +200,16 @@ public class MainFragment extends SubaccountFragment implements Observer {
         super.onResume();
         final GaService service = getGAService();
         service.getNewTransactionsObservable().addObserver(this);
-        txVerifiedObservable = makeTxVerifiedObservable();
-        service.getNewTxVerifiedObservable().addObserver(txVerifiedObservable);
+        mTxVerifiedObservable = makeTxVerifiedObservable();
+        service.getNewTxVerifiedObservable().addObserver(mTxVerifiedObservable);
     }
 
     @Nullable
     private Observer makeTxVerifiedObservable() {
-        return new Observer() {
-            @Override
-            public void update(final Observable observable, final Object data) {
-                final Activity activity = getActivity();
-                if (activity == null)
-                    return;
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onTxVerified();
-                    }
-                });
-            }
-        };
+        return makeUiObserver(new Runnable() {
+                                  @Override
+                                  public void run() { onTxVerified(); }
+                              });
     }
 
     private void onTxVerified() {
