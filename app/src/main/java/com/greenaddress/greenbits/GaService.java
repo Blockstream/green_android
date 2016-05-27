@@ -382,7 +382,7 @@ public class GaService extends Service {
     }
 
     private DeterministicKey getGaDeterministicKey(final Integer subaccount) {
-        if (gaDeterministicKeys.keySet().contains(subaccount)) {
+        if (gaDeterministicKeys.containsKey(subaccount)) {
             return gaDeterministicKeys.get(subaccount);
         }
 
@@ -473,8 +473,8 @@ public class GaService extends Service {
     public void disconnect(final boolean autoReconnect) {
         mAutoReconnect = autoReconnect;
         spv.stopSPVSync();
-        for (final Integer key : balanceObservables.keySet())
-            balanceObservables.get(key).deleteObservers();
+        for (final GaObservable o : balanceObservables.values())
+            o.deleteObservers();
         mClient.disconnect();
         mState.transitionTo(ConnState.DISCONNECTED);
     }

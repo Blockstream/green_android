@@ -105,7 +105,8 @@ public class SPV {
     }
 
     private void addUtxoToValues(final TransactionOutPoint txOutpoint, final int subaccount, final Coin addValue) {
-        if (countedUtxoValues.keySet().contains(txOutpoint)) return;
+        if (countedUtxoValues.containsKey(txOutpoint))
+           return;
         countedUtxoValues.put(txOutpoint, addValue);
         if (verifiedBalancesCoin.get(subaccount) == null) {
             verifiedBalancesCoin.put(subaccount, addValue);
@@ -196,7 +197,7 @@ public class SPV {
             if (value != -1) {
                 final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
                 final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
-                if (!countedUtxoValues.keySet().contains(txOutpoint))
+                if (!countedUtxoValues.containsKey(txOutpoint))
                     changedSubaccounts.add(subaccount);
                 addUtxoToValues(txOutpoint, subaccount, Coin.valueOf(value));
             } else {
@@ -215,7 +216,7 @@ public class SPV {
                 if (result.getHash().equals(txHash)) {
                     for (final Integer outpoint : unspentOutputsOutpoints.get(txHash)) {
                         final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
-                        if (countedUtxoValues.keySet().contains(txOutpoint))
+                        if (countedUtxoValues.containsKey(txOutpoint))
                             continue;
                         final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
                         final Integer pointer = unspentOutpointsPointers.get(txOutpoint);
@@ -273,7 +274,7 @@ public class SPV {
             addToUtxo(txhash, pt_idx, subaccount, pointer);
         }
         if (blockHeight != null && blockHeight <= blockChain.getBestChainHeight() &&
-                (txhash == null || !unspentOutputsOutpoints.keySet().contains(txhash))) {
+                (txhash == null || !unspentOutputsOutpoints.containsKey(txhash))) {
             // new tx or block notification with blockHeight <= current blockHeight means we might've [1]
             // synced the height already while we haven't seen the tx, so we need to re-sync to be able
             // to verify it.
