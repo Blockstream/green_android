@@ -267,8 +267,8 @@ public class GaService extends Service {
                 // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
                 // 1000 NORMAL_CLOSE
                 // 1006 SERVER_RESTART
-                final boolean forcedLogout = code == 4000;
-                setDisconnected(forcedLogout);
+                mState.setForcedLogout(code == 4000);
+                mState.transitionTo(ConnState.DISCONNECTED);
 
                 if (getNetworkInfo() == null) {
                     mState.transitionTo(ConnState.OFFLINE);
@@ -896,10 +896,12 @@ public class GaService extends Service {
 
         public State() {
             mConnState = ConnState.OFFLINE;
-            mForcedLogout = false;
-            mForcedTimeout = false;
+            setForcedLogout(false);
+            setForcedTimeout(false);
         }
 
+        private void setForcedLogout(final boolean forcedLogout) { mForcedLogout = forcedLogout; }
+        private void setForcedTimeout(final boolean forcedTimeout) { mForcedTimeout = forcedTimeout; }
         public boolean isForcedOff() { return mForcedLogout || mForcedTimeout; }
         public boolean isLoggedIn() { return mConnState == ConnState.LOGGEDIN; }
         public boolean isLoggedOrLoggingIn() {
@@ -914,8 +916,8 @@ public class GaService extends Service {
         private void transitionTo(final ConnState newState) {
             mConnState = newState;
             if (newState == ConnState.LOGGEDIN) {
-                mForcedLogout = false;
-                mForcedTimeout = false;
+                setForcedLogout(false);
+                setForcedTimeout(false);
             }
             doNotify();
         }
@@ -972,7 +974,8 @@ public class GaService extends Service {
             @Override
             public void run() {
                 Log.d(TAG, "scheduled disconnect");
-                setForcedTimeout();
+                mState.setForcedTimeout(true);
+                disconnect(false); // Calls transitionTo(DISCONNECTED)
             }
         }, delayMins, TimeUnit.MINUTES);
     }
@@ -996,16 +999,6 @@ public class GaService extends Service {
                 reconnect();
             }
         }, mReconnectDelay, TimeUnit.MILLISECONDS);
-    }
-
-    private void setForcedTimeout() {
-        mState.mForcedTimeout = true;
-        disconnect(false); // Calls transitionTo(DISCONNECTED)
-    }
-
-    private void setDisconnected(final boolean forcedLogout) {
-        mState.mForcedLogout = forcedLogout;
-        mState.transitionTo(ConnState.DISCONNECTED);
     }
 
     private void checkNetwork() {
