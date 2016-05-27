@@ -914,6 +914,8 @@ public class GaService extends Service {
         }
 
         private void transitionTo(final ConnState newState) {
+            if (mConnState.equals(newState))
+                return;
             mConnState = newState;
             if (newState == ConnState.LOGGEDIN) {
                 setForcedLogout(false);
