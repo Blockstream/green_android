@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+
+import java.util.Observable;
+import java.util.Observer;
 
 public abstract class SubaccountFragment extends GAFragment {
 
@@ -46,4 +50,23 @@ public abstract class SubaccountFragment extends GAFragment {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
     }
+
+    protected Observer makeBalanceObserver() {
+        return new Observer() {
+            @Override
+            public void update(final Observable observable, final Object o) {
+                final Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            onBalanceUpdated(activity);
+                        }
+                    });
+                }
+            }
+        };
+    }
+
+    protected void onBalanceUpdated(final Activity activity) { }
 }

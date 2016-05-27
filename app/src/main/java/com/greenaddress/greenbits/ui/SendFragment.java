@@ -549,22 +549,9 @@ public class SendFragment extends SubaccountFragment {
         }
     }
 
-    @Nullable
-    private Observer makeBalanceObserver() {
-        return new Observer() {
-            @Override
-            public void update(final Observable observable, final Object o) {
-                final Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateBalance();
-                        }
-                    });
-                }
-            }
-        };
+    @Override
+    protected void onBalanceUpdated(final Activity activity) {
+        updateBalance();
     }
 
     private void updateBalance() {

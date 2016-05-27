@@ -183,23 +183,10 @@ public class MainFragment extends SubaccountFragment implements Observer {
         return rootView;
     }
 
-    @Nullable
-    private Observer makeBalanceObserver() {
-        return new Observer() {
-            @Override
-            public void update(final Observable observable, final Object o) {
-                final Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateBalance();
-                            reloadTransactions(activity, true);  // newAdapter for unit change
-                        }
-                    });
-                }
-            }
-        };
+    @Override
+    protected void onBalanceUpdated(final Activity activity) {
+        updateBalance();
+        reloadTransactions(activity, true); // newAdapter for unit change
     }
 
     @Override
