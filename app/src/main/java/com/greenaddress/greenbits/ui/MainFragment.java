@@ -49,7 +49,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
     private Map<String, List<String> > replacedTxs;
     private Observer curBalanceObserver;
     private int curSubaccount;
-    private Observer mTxVerifiedObservable;
+    private Observer mTxVerifiedObserver;
 
     private void updateBalance() {
         final GaService service = getGAService();
@@ -191,7 +191,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
     public void onPause() {
         super.onPause();
         final GaService service = getGAService();
-        service.getNewTxVerifiedObservable().deleteObserver(mTxVerifiedObservable);
+        service.getNewTxVerifiedObservable().deleteObserver(mTxVerifiedObserver);
         service.getNewTransactionsObservable().deleteObserver(this);
     }
 
@@ -200,12 +200,12 @@ public class MainFragment extends SubaccountFragment implements Observer {
         super.onResume();
         final GaService service = getGAService();
         service.getNewTransactionsObservable().addObserver(this);
-        mTxVerifiedObservable = makeTxVerifiedObservable();
-        service.getNewTxVerifiedObservable().addObserver(mTxVerifiedObservable);
+        mTxVerifiedObserver = makeTxVerifiedObserver();
+        service.getNewTxVerifiedObservable().addObserver(mTxVerifiedObserver);
     }
 
     @Nullable
-    private Observer makeTxVerifiedObservable() {
+    private Observer makeTxVerifiedObserver() {
         return makeUiObserver(new Runnable() {
                                   @Override
                                   public void run() { onTxVerified(); }

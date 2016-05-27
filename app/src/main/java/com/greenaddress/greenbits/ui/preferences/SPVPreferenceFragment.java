@@ -16,9 +16,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 
-import java.util.Observable;
-import java.util.Observer;
-
 public class SPVPreferenceFragment extends GAPreferenceFragment {
 
     @Override
