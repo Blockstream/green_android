@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MainFragment extends SubaccountFragment implements Observer {
+public class MainFragment extends SubaccountFragment {
     @Nullable
     private MaterialDialog mUnconfirmedDialog = null;
     private View rootView;
@@ -50,6 +50,7 @@ public class MainFragment extends SubaccountFragment implements Observer {
     private Observer curBalanceObserver;
     private int curSubaccount;
     private Observer mTxVerifiedObserver;
+    private Observer mNewTxObserver;
 
     private void updateBalance() {
         final GaService service = getGAService();
@@ -192,19 +193,30 @@ public class MainFragment extends SubaccountFragment implements Observer {
         super.onPause();
         final GaService service = getGAService();
         service.getNewTxVerifiedObservable().deleteObserver(mTxVerifiedObserver);
-        service.getNewTransactionsObservable().deleteObserver(this);
+        service.deleteNewTxObserver(mNewTxObserver);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         final GaService service = getGAService();
-        service.getNewTransactionsObservable().addObserver(this);
+        mNewTxObserver = makeNewTxObserver();
+        service.addNewTxObserver(mNewTxObserver);
         mTxVerifiedObserver = makeTxVerifiedObserver();
         service.getNewTxVerifiedObservable().addObserver(mTxVerifiedObserver);
     }
 
-    @Nullable
+    private Observer makeNewTxObserver() {
+        return makeUiObserver(new Runnable() {
+                                  @Override
+                                  public void run() { onNewTx(); }
+                              });
+    }
+
+    private void onNewTx() {
+        reloadTransactions(getActivity());
+    }
+
     private Observer makeTxVerifiedObserver() {
         return makeUiObserver(new Runnable() {
                                   @Override
@@ -320,11 +332,6 @@ public class MainFragment extends SubaccountFragment implements Observer {
 
             }
         }, service.es);
-    }
-
-    @Override
-    public void update(final Observable observable, final Object data) {
-        reloadTransactions(getActivity());
     }
 
     @Override

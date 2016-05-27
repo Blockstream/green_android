@@ -745,9 +745,12 @@ public class GaService extends Service {
         balanceObservables.get(subaccount).deleteObserver(o);
     }
 
-    @NonNull
-    public Observable getNewTransactionsObservable() {
-        return newTransactionsObservable;
+    public void addNewTxObserver(final Observer o) {
+        newTransactionsObservable.addObserver(o);
+    }
+
+    public void deleteNewTxObserver(final Observer o) {
+        newTransactionsObservable.deleteObserver(o);
     }
 
     @NonNull
