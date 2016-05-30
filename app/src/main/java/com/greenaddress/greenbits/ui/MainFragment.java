@@ -45,7 +45,7 @@ public class MainFragment extends SubaccountFragment {
     @Nullable
     private MaterialDialog mUnconfirmedDialog = null;
     private View rootView;
-    private List<TransactionItem> currentList;
+    private List<TransactionItem> mTxItems;
     private Map<String, List<String> > replacedTxs;
     private Observer curBalanceObserver;
     private int curSubaccount;
@@ -211,11 +211,11 @@ public class MainFragment extends SubaccountFragment {
 
     // Called when a new verified transaction is seen
     private void onVerifiedTx() {
-        if (currentList == null)
+        if (mTxItems == null)
           return;
 
         final SharedPreferences prefs = getGAService().cfgIn("verified_utxo_");
-        for (final TransactionItem txItem : currentList)
+        for (final TransactionItem txItem : mTxItems)
             txItem.spvVerified = prefs.getBoolean(txItem.txhash, false);
 
         final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
@@ -240,9 +240,9 @@ public class MainFragment extends SubaccountFragment {
         final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
 
-        if (currentList == null || newAdapter) {
-            currentList = new ArrayList<>();
-            txView.setAdapter(new ListTransactionsAdapter(activity, service, currentList));
+        if (mTxItems == null || newAdapter) {
+            mTxItems = new ArrayList<>();
+            txView.setAdapter(new ListTransactionsAdapter(activity, service, mTxItems));
             // FIXME, more efficient to use swap
             // txView.swapAdapter(lta, false);
         }
@@ -263,8 +263,8 @@ public class MainFragment extends SubaccountFragment {
 
                         showTxView(txList.size() > 0);
 
-                        final String oldTop = currentList.size() > 0 ? currentList.get(0).txhash : null;
-                        currentList.clear();
+                        final String oldTop = mTxItems.size() > 0 ? mTxItems.get(0).txhash : null;
+                        mTxItems.clear();
                         replacedTxs.clear();
 
                         for (Object tx : txList) {
@@ -273,7 +273,7 @@ public class MainFragment extends SubaccountFragment {
                                 ArrayList<String> replacedList = (ArrayList<String>) txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
-                                    currentList.add(new TransactionItem(service, txJSON, currentBlock));
+                                    mTxItems.add(new TransactionItem(service, txJSON, currentBlock));
                                     continue;
                                 }
 
@@ -287,7 +287,7 @@ public class MainFragment extends SubaccountFragment {
                             }
                         }
 
-                        for (TransactionItem txItem : currentList) {
+                        for (TransactionItem txItem : mTxItems) {
                             if (!replacedTxs.containsKey(txItem.txhash))
                                 continue;
                             for (String replaced : replacedTxs.get(txItem.txhash))
@@ -296,7 +296,7 @@ public class MainFragment extends SubaccountFragment {
 
                         txView.getAdapter().notifyDataSetChanged();
 
-                        final String newTop = currentList.size() > 0 ? currentList.get(0).txhash : null;
+                        final String newTop = mTxItems.size() > 0 ? mTxItems.get(0).txhash : null;
                         if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
                             // A new tx has arrived; scroll to the top to show it
                             txView.smoothScrollToPosition(0);

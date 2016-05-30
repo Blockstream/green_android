@@ -27,16 +27,16 @@ public class ListTransactionsAdapter extends
 
     private final static int REQUEST_TX_DETAILS = 4;
 
-    private final List<TransactionItem> transactions;
-    private final String btcUnit;
-    private final Activity context;
+    private final List<TransactionItem> mTxItems;
+    private final String mBtcUnit;
+    private final Activity mActivity;
     private final GaService mService;
 
-    public ListTransactionsAdapter(final Activity context, final GaService service,
-                                   final List<TransactionItem> transactions) {
-        this.transactions = transactions;
-        this.btcUnit = (String) service.getUserConfig("unit");
-        this.context = context;
+    public ListTransactionsAdapter(final Activity activity, final GaService service,
+                                   final List<TransactionItem> txItems) {
+        mTxItems = txItems;
+        mBtcUnit = (String) service.getUserConfig("unit");
+        mActivity = activity;
         mService = service;
     }
 
@@ -48,14 +48,13 @@ public class ListTransactionsAdapter extends
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final TransactionItem txItem = transactions.get(position);
+        final TransactionItem txItem = mTxItems.get(position);
 
 
-        final long val = txItem.amount;
-        final Coin coin = Coin.valueOf(val);
-        final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
-        if (btcUnit == null || btcUnit.equals("bits")) {
+        final Coin coin = Coin.valueOf(txItem.amount);
+        final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(mBtcUnit);
+        holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(mBtcUnit)));
+        if (mBtcUnit == null || mBtcUnit.equals("bits")) {
             holder.bitcoinIcon.setText("");
             holder.bitcoinScale.setText("bits ");
         } else {
@@ -78,32 +77,28 @@ public class ListTransactionsAdapter extends
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);
         }
 
-        final Resources res = context.getResources();
+        final Resources res = mActivity.getResources();
 
         if (txItem.doubleSpentBy == null) {
             holder.textWhen.setTextColor(res.getColor(R.color.tertiaryTextColor));
-            holder.textWhen.setText(TimeAgo.fromNow(txItem.date.getTime(), context));
+            holder.textWhen.setText(TimeAgo.fromNow(txItem.date.getTime(), mActivity));
         } else {
             switch (txItem.doubleSpentBy) {
                 case "malleability":
                     holder.textWhen.setTextColor(Color.parseColor("#FF8000"));
-                    holder.textWhen.setText(context.getResources().getText(R.string.malleated));
+                    holder.textWhen.setText(res.getText(R.string.malleated));
                     break;
                 case "update":
                     holder.textWhen.setTextColor(Color.parseColor("#FF8000"));
-                    holder.textWhen.setText(context.getResources().getText(R.string.updated));
+                    holder.textWhen.setText(res.getText(R.string.updated));
                     break;
                 default:
                     holder.textWhen.setTextColor(Color.RED);
-                    holder.textWhen.setText(context.getResources().getText(R.string.doubleSpend));
+                    holder.textWhen.setText(res.getText(R.string.doubleSpend));
             }
         }
 
-        if (!txItem.replaceable) {
-            holder.textReplaceable.setVisibility(View.GONE);
-        } else {
-            holder.textReplaceable.setVisibility(View.VISIBLE);
-        }
+        holder.textReplaceable.setVisibility(txItem.replaceable ? View.VISIBLE : View.GONE);
 
         final boolean humanCpty = txItem.type.equals(TransactionItem.TYPE.OUT)
                 && txItem.counterparty != null && txItem.counterparty.length() > 0
@@ -120,19 +115,14 @@ public class ListTransactionsAdapter extends
                         :
                         txItem.memo;
 
-
         holder.textWho.setText(message);
 
-        holder.mainLayout.setBackgroundColor(val > 0 ?
-                res.getColor(R.color.superLightGreen) :
-                res.getColor(R.color.superLightPink)
-        );
+        final int color = txItem.amount > 0 ? R.color.superLightGreen : R.color.superLightPink;
+        holder.mainLayout.setBackgroundColor(res.getColor(color));
 
         if (txItem.hasEnoughConfirmations()) {
-            holder.inOutIcon.setText(val > 0 ?
-                    Html.fromHtml("&#xf090;") :
-                    Html.fromHtml("&#xf08b;")
-            );
+            final String elem = txItem.amount > 0 ? "&#xf090;" : "&#xf08b;";
+            holder.inOutIcon.setText(Html.fromHtml(elem));
             holder.listNumberConfirmation.setVisibility(View.GONE);
         } else {
             holder.inOutIcon.setText(Html.fromHtml("&#xf017;"));
@@ -143,9 +133,9 @@ public class ListTransactionsAdapter extends
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Intent transactionActivity = new Intent(context, TransactionActivity.class);
+                final Intent transactionActivity = new Intent(mActivity, TransactionActivity.class);
                 transactionActivity.putExtra("TRANSACTION", txItem);
-                context.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
+                mActivity.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
             }
         });
     }
@@ -153,11 +143,11 @@ public class ListTransactionsAdapter extends
     private String getTypeString(@NonNull final TransactionItem.TYPE type) {
         switch (type) {
             case IN:
-                return context.getString(R.string.txTypeIn);
+                return mActivity.getString(R.string.txTypeIn);
             case OUT:
-                return context.getString(R.string.txTypeOut);
+                return mActivity.getString(R.string.txTypeOut);
             case REDEPOSIT:
-                return context.getString(R.string.txTypeRedeposit);
+                return mActivity.getString(R.string.txTypeRedeposit);
             default:
                 return "No type";
         }
@@ -165,7 +155,7 @@ public class ListTransactionsAdapter extends
 
     @Override
     public int getItemCount() {
-        return transactions == null ? 0 : transactions.size();
+        return mTxItems == null ? 0 : mTxItems.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
