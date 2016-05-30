@@ -625,7 +625,7 @@ public class GaService extends Service {
     public ListenableFuture<String> sendTransaction(@NonNull final List<TransactionSignature> signatures) {
         final List<String> signaturesStrings = new LinkedList<>();
         for (final TransactionSignature sig : signatures) {
-            signaturesStrings.add(new String(Hex.encode(sig.encodeToBitcoin())));
+            signaturesStrings.add(Wally.hex_from_bytes(sig.encodeToBitcoin()));
         }
         return mClient.sendTransaction(signaturesStrings, null);
     }

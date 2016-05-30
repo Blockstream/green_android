@@ -311,8 +311,8 @@ public class WalletClient {
         final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
         final byte[] mySeed = CryptoHelper.mnemonic_to_seed(mnemonics);
         final DeterministicKey deterministicKey = HDKeyDerivation.createMasterPrivateKey(mySeed);
-        final String hexMasterPublicKey = Hex.toHexString(deterministicKey.getPubKey());
-        final String hexChainCode = Hex.toHexString(deterministicKey.getChainCode());
+        final String hexMasterPublicKey = Wally.hex_from_bytes(deterministicKey.getPubKey());
+        final String hexChainCode = Wally.hex_from_bytes(deterministicKey.getChainCode());
         clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
             public void onResult(final Object result) {
                 rpc.set(deterministicKey);
@@ -343,8 +343,8 @@ public class WalletClient {
     public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode, final String device_id) {
 
         final SettableFuture<ISigningWallet> rpc = SettableFuture.create();
-        final String hexMasterPublicKey = Hex.toHexString(masterPublicKey);
-        final String hexChainCode = Hex.toHexString(masterChaincode);
+        final String hexMasterPublicKey = Wally.hex_from_bytes(masterPublicKey);
+        final String hexChainCode = Wally.hex_from_bytes(masterChaincode);
 
         clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
             public void onResult(final Object result) {
@@ -373,7 +373,7 @@ public class WalletClient {
 
     private ListenableFuture<LoginData> setupPathImpl(final byte[] bytes, final LoginData loginData) {
         final SettableFuture<LoginData> rpc = SettableFuture.create();
-        final String pathHex = Hex.toHexString(bytes);
+        final String pathHex = Wally.hex_from_bytes(bytes);
         clientCall(rpc, "login.set_gait_path", Void.class, new CallHandler() {
             public void onResult(final Object result) {
                 loginData.gait_path = pathHex;
@@ -768,8 +768,8 @@ public class WalletClient {
         mMnemonics = mnemonic;
         final Map<String, String> out = new HashMap<>();
         out.put("mnemonic", mnemonic);
-        out.put("seed", Hex.toHexString(seed));
-        out.put("path_seed", Hex.toHexString(mnemonicToPath(mnemonic)));
+        out.put("seed", Wally.hex_from_bytes(seed));
+        out.put("path_seed", Wally.hex_from_bytes(mnemonicToPath(mnemonic)));
 
         try {
             final byte[] info = serializeJSON(out).toByteArray();
@@ -862,7 +862,7 @@ public class WalletClient {
                 rpc.setException(new GAException(returnErrorUri ? uri : err));
             }
         };
-        final String txStr =  new String(Hex.encode(tx.bitcoinSerialize()));
+        final String txStr =  Wally.hex_from_bytes(tx.bitcoinSerialize());
         clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc), errHandler, txStr, twoFacData);
         return rpc;
     }
@@ -872,7 +872,7 @@ public class WalletClient {
         for (final ECKey.ECDSASignature sig : sigs) {
             final TransactionSignature txSig;
             txSig = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
-            result.add(Hex.toHexString(txSig.encodeToBitcoin()));
+            result.add(Wally.hex_from_bytes(txSig.encodeToBitcoin()));
         }
         return result;
     }

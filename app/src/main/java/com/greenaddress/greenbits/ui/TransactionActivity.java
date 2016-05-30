@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -555,7 +556,7 @@ public class TransactionActivity extends GaActivity {
                         (Integer) ep.get("pubkey_pointer"),
                         1,
                         (Integer) ep.get("script_type"),
-                        new String(Hex.encode(tx.getInput((Integer) ep.get("pt_idx")).getScriptSig().getChunks().get(3).data)),
+                        Wally.hex_from_bytes(tx.getInput((Integer) ep.get("pt_idx")).getScriptSig().getChunks().get(3).data),
                         tx.getInput((Integer) ep.get("pt_idx")).getValue().longValue()
                 ));
             }
@@ -568,7 +569,7 @@ public class TransactionActivity extends GaActivity {
                             (Integer) ep.get("pointer"),
                             1,
                             TransactionItem.P2SH_FORTIFIED_OUT,
-                            new String(Hex.encode(morePrevouts.get(i))),
+                            Wally.hex_from_bytes(morePrevouts.get(i)),
                             Long.valueOf((String) ep.get("value"))
                     ));
                     tx.addInput(
@@ -626,7 +627,7 @@ public class TransactionActivity extends GaActivity {
                                     new Function<Transaction, Void>() {
                                         @Override
                                         public Void apply(Transaction input) {
-                                            prevoutRawTxs.put(new String(Hex.encode(inp.getOutpoint().getHash().getBytes())), input);
+                                            prevoutRawTxs.put(Wally.hex_from_bytes(inp.getOutpoint().getHash().getBytes()), input);
                                             return null;
                                         }
                                     }
