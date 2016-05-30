@@ -96,8 +96,15 @@ public class GaService extends Service {
     public IBinder onBind(final Intent intent) { return mBinder; }
 
     public void onBound(GreenAddressApplication app) {
-        checkNetwork();
-        app.registerReceiver(mNetBroadReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        // Update our state when network connectivity changes.
+        mNetConnectivityReceiver = new BroadcastReceiver() {
+            public void onReceive(final Context context, final Intent intent) {
+                onNetConnectivityChanged();
+            }
+        };
+        app.registerReceiver(mNetConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        // Fire a fake connectivity change to kick start the state machine
+        mNetConnectivityReceiver.onReceive(null, null);
     }
 
     public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
@@ -157,7 +164,7 @@ public class GaService extends Service {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
                 twoFacConfig = result;
-                twoFacConfigObservable.setChangedAndNotify();
+                twoFacConfigObservable.doNotify();
             }
 
             @Override
@@ -227,11 +234,6 @@ public class GaService extends Service {
 
         mTimerExecutor = new ScheduledThreadPoolExecutor(1);
         mTimerExecutor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-        mNetBroadReceiver = new BroadcastReceiver() {
-            public void onReceive(final Context context, final Intent intent) {
-                checkNetwork();
-            }
-        };
 
         deviceId = cfg("service").getString("device_id", null);
         if (deviceId == null) {
@@ -246,14 +248,14 @@ public class GaService extends Service {
                 if (isSPVEnabled())
                     spv.addToBloomFilter(count, null, -1, -1, -1);
 
-                newTransactionsObservable.setChangedAndNotify();
+                newTransactionsObservable.doNotify();
             }
 
             @Override
             public void onNewTransaction(final int wallet_id, @NonNull final int[] subaccounts, final long value, final String txhash) {
                 Log.i(TAG, "onNewTransactions");
                 spv.updateUnspentOutputs();
-                newTransactionsObservable.setChangedAndNotify();
+                newTransactionsObservable.doNotify();
                 for (final int subaccount : subaccounts) {
                     updateBalance(subaccount);
                 }
@@ -516,7 +518,7 @@ public class GaService extends Service {
             // Called from addUtxoToValues before balance is fetched
             return;
         }
-        balanceObservables.get(subaccount).setChangedAndNotify();
+        balanceObservables.get(subaccount).doNotify();
     }
 
     @NonNull
@@ -765,7 +767,7 @@ public class GaService extends Service {
         // FIXME: later spent outputs can be purged
         cfgInEdit("verified_utxo_").putBoolean(tx.toString(), true).apply();
         spv.addUtxoToValues(tx);
-        verifiedTxObservable.setChangedAndNotify();
+        verifiedTxObservable.doNotify();
     }
 
     public Coin getBalanceCoin(final int subaccount) {
@@ -874,9 +876,9 @@ public class GaService extends Service {
     }
 
     private static class GaObservable extends Observable {
-        public void setChangedAndNotify() {
-            super.setChanged();
-            super.notifyObservers();
+        public void doNotify() {
+            setChanged();
+            notifyObservers();
         }
     }
 
@@ -915,7 +917,13 @@ public class GaService extends Service {
 
         private void transitionTo(final ConnState newState) {
             if (mConnState.equals(newState))
-                return;
+                return; // Nothing to do
+
+            if (newState == ConnState.OFFLINE) {
+                // Transition through disconnected before going offline
+                transitionTo(ConnState.DISCONNECTED);
+            }
+
             mConnState = newState;
             if (newState == ConnState.LOGGEDIN) {
                 setForcedLogout(false);
@@ -942,7 +950,7 @@ public class GaService extends Service {
     public void deleteConnectionObserver(Observer o) { mState.deleteObserver(o); }
 
     private ScheduledThreadPoolExecutor mTimerExecutor = null;
-    private BroadcastReceiver mNetBroadReceiver;
+    private BroadcastReceiver mNetConnectivityReceiver;
     private ScheduledFuture<?> mDisconnectTimer = null;
     private ScheduledFuture<?> mReconnectTimer = null;
     private int mReconnectDelay = 0;
@@ -992,8 +1000,10 @@ public class GaService extends Service {
             mReconnectDelay = RECONNECT_TIMEOUT;
 
         Log.d(TAG, "scheduleReconnect in " + Integer.toString(mReconnectDelay) + " ms");
-        if (mReconnectTimer != null)
+        if (mReconnectTimer != null && !mReconnectTimer.isCancelled()) {
+            Log.d(TAG, "cancelReconnect");
             mReconnectTimer.cancel(false);
+        }
         mReconnectTimer = mTimerExecutor.schedule(new Runnable() {
             @Override
             public void run() {
@@ -1003,23 +1013,16 @@ public class GaService extends Service {
         }, mReconnectDelay, TimeUnit.MILLISECONDS);
     }
 
-    private void checkNetwork() {
-        boolean changedState = false;
-        final NetworkInfo ni = getNetworkInfo();
-        if (ni != null) {
-            if (mState.isDisconnectedOrOffline()) {
-                mState.transitionTo(ConnState.DISCONNECTED);
-                changedState = true;
-                reconnect();
-            }
-        } else {
-            mState.transitionTo(ConnState.DISCONNECTED);
+    private void onNetConnectivityChanged() {
+        if (getNetworkInfo() == null) {
+            // No network connection, go offline until notified that its back
             mState.transitionTo(ConnState.OFFLINE);
-            changedState = true;
+        } else if (mState.isDisconnectedOrOffline()) {
+            // We have a network connection and are currently disconnected/offline:
+            // Move to disconnected and try to reconnect
+            mState.transitionTo(ConnState.DISCONNECTED);
+            reconnect();
         }
-        if (!changedState &&
-            ni != null && ni.getType() == ConnectivityManager.TYPE_WIFI)
-            mState.doNotify();
     }
 
     private NetworkInfo getNetworkInfo() {
