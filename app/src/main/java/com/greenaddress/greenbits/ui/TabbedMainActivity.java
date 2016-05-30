@@ -329,7 +329,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 final ECKey keyNonBip38 = keyNonFinal;
                 final FutureCallback<Map<?, ?>> callback = new CB.Toast<Map<?, ?>>(caller) {
                     @Override
-                    public void onSuccess(final @Nullable Map<?, ?> result) {
+                    public void onSuccess(final @Nullable Map<?, ?> sweepResult) {
                         final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
                         final TextView passwordPrompt = (TextView) inflatedLayout.findViewById(R.id.sweepAddressPasswordPromptText);
                         final TextView mainText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressMainText);
@@ -337,12 +337,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         final EditText passwordEdit = (EditText) inflatedLayout.findViewById(R.id.sweepAddressPasswordText);
                         final Transaction txNonBip38;
                         final String address;
+
                         if (keyNonBip38 != null) {
                             passwordPrompt.setVisibility(View.GONE);
                             passwordEdit.setVisibility(View.GONE);
-                            txNonBip38 = new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) result.get("tx")));
-                            final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(
-                                    (String) service.getUserConfig("unit"));
+                            txNonBip38 = getSweepTx(sweepResult);
+                            final MonetaryFormat format;
+                            format = CurrencyMapper.mapBtcUnitToFormat( (String) service.getUserConfig("unit"));
                             Coin outputsValue = Coin.ZERO;
                             for (final TransactionOutput output : txNonBip38.getOutputs()) {
                                 outputsValue = outputsValue.add(output.getValue());
@@ -370,8 +371,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                 ECKey key;
 
                                 private void doSweep() {
-                                    final ArrayList<String> scripts = (ArrayList<String>) result.get("prevout_scripts");
-                                    final Integer outPointer = (Integer) result.get("out_pointer");
+                                    final ArrayList<String> scripts = (ArrayList<String>) sweepResult.get("prevout_scripts");
+                                    final Integer outPointer = (Integer) sweepResult.get("out_pointer");
                                     CB.after(service.verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
                                              new CB.Toast<Boolean>(caller) {
                                         @Override
@@ -407,8 +408,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                         CB.after(service.prepareSweepSocial(key.getPubKey(), true),
                                                  new CB.Toast<Map<?, ?>>(caller) {
                                             @Override
-                                            public void onSuccess(@Nullable final Map<?, ?> result) {
-                                                tx = new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) result.get("tx")));
+                                            public void onSuccess(@Nullable final Map<?, ?> sweepResult) {
+                                                tx = getSweepTx(sweepResult);
                                                 doSweep();
                                             }
                                         });
@@ -426,6 +427,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 }
                 break;
         }
+    }
+
+    private Transaction getSweepTx(final Map<?, ?> sweepResult) {
+        return new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) sweepResult.get("tx")));
     }
 
     @Override
