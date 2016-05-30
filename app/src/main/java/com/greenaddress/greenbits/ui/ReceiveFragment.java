@@ -96,7 +96,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     public void onResume() {
-        Log.i(TAG, "onResume");
         super.onResume();
         if (onAddress != null && address == null && !setting_qrcode) {
             setting_qrcode = true;
