@@ -31,7 +31,6 @@ import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.codehaus.jackson.map.MappingJsonFactory;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -560,7 +559,7 @@ public class WalletClient {
     // derive private key for signing the challenge, using 8 bytes instead of 64
     private ISigningWallet createSubpathForLogin(final ISigningWallet parentKey, final String path_hex) {
         ISigningWallet key = parentKey;
-        final BigInteger path = new BigInteger(Hex.decode(path_hex));
+        final BigInteger path = new BigInteger(Wally.hex_to_bytes(path_hex));
         byte[] bytes = path.toByteArray();
         if (bytes.length < 8) {
             final byte[] bytes_pad = new byte[8];
@@ -710,7 +709,7 @@ public class WalletClient {
                             decrypted, Map.class);
 
                     mMnemonics = json.get("mnemonic");
-                    rpc.set(HDKeyDerivation.createMasterPrivateKey(Hex.decode(json.get("seed"))));
+                    rpc.set(HDKeyDerivation.createMasterPrivateKey(Wally.hex_to_bytes(json.get("seed"))));
                 } catch (final IOException e) {
                     rpc.setException(e);
                 }
@@ -899,7 +898,7 @@ public class WalletClient {
             final ISigningWallet branchKey = account.deriveChildKey(new ChildNumber(prevOut.branch, isPrivate));
             final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.pointer, isPrivate));
 
-            final Script script = new Script(Hex.decode(prevOut.script));
+            final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
             final Sha256Hash hash;
             if (prevOut.scriptType.equals(14)) {
                 hash = t.hashForSignatureV2(i, script.getProgram(), Coin.valueOf(prevOut.value), Transaction.SigHash.ALL, false);
@@ -919,7 +918,7 @@ public class WalletClient {
                 if (canSignHashes)
                     return signTransactionHashes(tx, isPrivate);
                 else
-                    return convertSigs(mHDParent.signTransaction(tx, Hex.decode(mLoginData.gait_path)));
+                    return convertSigs(mHDParent.signTransaction(tx, Wally.hex_to_bytes(mLoginData.gait_path)));
             }
         });
     }
@@ -994,7 +993,7 @@ public class WalletClient {
         final SettableFuture<Transaction> rpc = SettableFuture.create();
         final CallHandler handler = new CallHandler() {
             public void onResult(final Object tx) {
-                rpc.set(new Transaction(Network.NETWORK, Hex.decode((String) tx)));
+                rpc.set(new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) tx)));
             }
         };
         clientCall(rpc, procedure, String.class, handler, args);

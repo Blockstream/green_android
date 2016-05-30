@@ -55,7 +55,6 @@ import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.Fiat;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -323,8 +322,8 @@ public class GaService extends Service {
                 if (twoOfThreeBackupChaincode != null) {
                     final DeterministicKey backupWalletMaster = new DeterministicKey(
                             new ImmutableList.Builder<ChildNumber>().build(),
-                            Hex.decode(twoOfThreeBackupChaincode),
-                            ECKey.fromPublicOnly(Hex.decode(twoOfThreeBackupPubkey)).getPubKeyPoint(),
+                            Wally.hex_to_bytes(twoOfThreeBackupChaincode),
+                            ECKey.fromPublicOnly(Wally.hex_to_bytes(twoOfThreeBackupPubkey)).getPubKeyPoint(),
                             null, null);
                     final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(backupWalletMaster, new ChildNumber(1));
                     final DeterministicKey derivedBackupPointer = HDKeyDerivation.deriveChildKey(derivedBackupRoot, new ChildNumber(pointer));
@@ -390,8 +389,8 @@ public class GaService extends Service {
 
         final DeterministicKey nodePath = getKeyPath(HDKeyDerivation.deriveChildKey(new DeterministicKey(
                 new ImmutableList.Builder<ChildNumber>().build(),
-                Hex.decode(Network.depositChainCode),
-                ECKey.fromPublicOnly(Hex.decode(Network.depositPubkey)).getPubKeyPoint(),
+                Wally.hex_to_bytes(Network.depositChainCode),
+                ECKey.fromPublicOnly(Wally.hex_to_bytes(Network.depositPubkey)).getPubKeyPoint(),
                 null, null), new ChildNumber(subaccount != 0 ? 3 : 1)));
 
         final DeterministicKey key = subaccount == 0 ? nodePath : HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(subaccount, false));
@@ -410,7 +409,7 @@ public class GaService extends Service {
                 fiatExchange = result.exchange;
                 subaccounts = result.subaccounts;
                 mReceivingId = result.receivingId;
-                gaitPath = Hex.decode(result.gait_path);
+                gaitPath = Wally.hex_to_bytes(result.gait_path);
 
                 balanceObservables.put(0, new GaObservable());
                 updateBalance(0);
@@ -652,7 +651,7 @@ public class GaService extends Service {
             @Override
             public ListenableFuture<String> apply(@NonNull final Map input) throws Exception {
                 final Integer pointer = ((Integer) input.get("pointer"));
-                final byte[] script = Hex.decode((String) input.get("script")),
+                final byte[] script = Wally.hex_to_bytes((String) input.get("script")),
                              scriptHash;
                 if (getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled

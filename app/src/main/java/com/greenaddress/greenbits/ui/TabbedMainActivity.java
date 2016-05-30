@@ -51,7 +51,6 @@ import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.utils.MonetaryFormat;
-import org.spongycastle.util.encoders.Hex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -341,8 +340,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         if (keyNonBip38 != null) {
                             passwordPrompt.setVisibility(View.GONE);
                             passwordEdit.setVisibility(View.GONE);
-                            txNonBip38 = new Transaction(Network.NETWORK,
-                                    Hex.decode((String) result.get("tx")));
+                            txNonBip38 = new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) result.get("tx")));
                             final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(
                                     (String) service.getUserConfig("unit"));
                             Coin outputsValue = Coin.ZERO;
@@ -382,7 +380,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                                 final List<TransactionSignature> signatures = new ArrayList<>();
                                                 final int size = tx.getInputs().size();
                                                 for (int i = 0; i < size; ++i) {
-                                                    signatures.add(tx.calculateSignature(i, key, Hex.decode(scripts.get(i)), Transaction.SigHash.ALL, false));
+                                                    signatures.add(tx.calculateSignature(i, key, Wally.hex_to_bytes(scripts.get(i)), Transaction.SigHash.ALL, false));
                                                 }
                                                 CB.after(service.sendTransaction(signatures),
                                                          new CB.Toast<String>(caller) { });
@@ -410,7 +408,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                                  new CB.Toast<Map<?, ?>>(caller) {
                                             @Override
                                             public void onSuccess(@Nullable final Map<?, ?> result) {
-                                                tx = new Transaction(Network.NETWORK, Hex.decode((String) result.get("tx")));
+                                                tx = new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) result.get("tx")));
                                                 doSweep();
                                             }
                                         });

@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.wallets;
 
 import android.util.Log;
 
+import com.blockstream.libwally.Wally;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
 import com.btchip.BitcoinTransaction;
@@ -26,7 +27,6 @@ import org.bitcoinj.core.UnsafeByteArrayOutputStream;
 import org.bitcoinj.core.VarInt;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -130,7 +130,7 @@ public class BTChipHWWallet implements ISigningWallet {
                 }
             }
             for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                dongle.startUntrustedTransction(i == 0, i, inputs, Hex.decode(tx.prev_outputs.get(i).script));
+                dongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(tx.prev_outputs.get(i).script));
                 final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(tx.decoded.getMessageSize() < 32 ? 32 : tx.decoded.getMessageSize() + 32);
                 stream.write(new VarInt(tx.decoded.getOutputs().size()).encode());
                 for (final TransactionOutput out : tx.decoded.getOutputs())

@@ -2,13 +2,13 @@ package com.greenaddress.greenapi;
 
 import android.webkit.URLUtil;
 
+import com.blockstream.libwally.Wally;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
 import org.bitcoinj.core.Transaction;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class PreparedTransaction {
         }
 
         this.requires_2factor = (Boolean) pte.values.get("requires_2factor");
-        this.decoded = new Transaction(Network.NETWORK, Hex.decode(pte.values.get("tx").toString()));
+        this.decoded = new Transaction(Network.NETWORK, Wally.hex_to_bytes(pte.values.get("tx").toString()));
 
         // return early if no rawtxs url is given, assumes user asked for 'skip'
         try {
@@ -117,8 +117,7 @@ public class PreparedTransaction {
 
             while (keys.hasNext()) {
                 final String k = (String)keys.next();
-                prevoutRawTxs.put(k, new Transaction(Network.NETWORK,
-                        Hex.decode(prevout_rawtxs.getString(k))));
+                prevoutRawTxs.put(k, new Transaction(Network.NETWORK, Wally.hex_to_bytes(prevout_rawtxs.getString(k))));
             }
 
         } catch (final IOException | JSONException e) {

@@ -44,7 +44,6 @@ import org.bitcoinj.core.Utils;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.script.ScriptChunk;
 import org.bitcoinj.utils.MonetaryFormat;
-import org.spongycastle.util.encoders.Hex;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -400,7 +399,7 @@ public class TransactionActivity extends GaActivity {
             }
             final GaActivity gaActivity = getGaActivity();
 
-            final Transaction tx = new Transaction(Network.NETWORK, Hex.decode(txItem.data));
+            final Transaction tx = new Transaction(Network.NETWORK, Wally.hex_to_bytes(txItem.data));
             Integer change_pointer = null;
             final Integer subaccount = getGAService().getCurrentSubAccount();
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
@@ -497,7 +496,7 @@ public class TransactionActivity extends GaActivity {
                                                 changeValue,
                                                 Address.fromP2SHHash(
                                                         Network.NETWORK,
-                                                        Utils.sha256hash160(Hex.decode((String)result.get("script")))
+                                                        Utils.sha256hash160(Wally.hex_to_bytes((String)result.get("script")))
                                                 )
                                         );
                                         CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
@@ -592,7 +591,7 @@ public class TransactionActivity extends GaActivity {
                                     new TransactionOutPoint(
                                             Network.NETWORK,
                                             (Integer) ep.get("pt_idx"),
-                                            Sha256Hash.wrap(Hex.decode((String) ep.get("txhash")))
+                                            Sha256Hash.wrap(Wally.hex_to_bytes((String) ep.get("txhash")))
                                     ),
                                     Coin.valueOf(Long.valueOf((String) ep.get("value")))
                             )
@@ -662,7 +661,7 @@ public class TransactionActivity extends GaActivity {
                                         new byte[] {0}
                                 ).data(
                                         // our sig:
-                                        Hex.decode(sig)
+                                        Wally.hex_to_bytes(sig)
                                 ).addChunk(
                                         // the original outscript
                                         input.getScriptSig().getChunks().get(3)

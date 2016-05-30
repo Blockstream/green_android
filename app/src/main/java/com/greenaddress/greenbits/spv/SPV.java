@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -40,7 +41,6 @@ import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.File;
 import java.io.IOException;
@@ -136,7 +136,7 @@ public class SPV {
                     final String txhash = (String) utxo.get("txhash");
                     final Integer blockHeight = (Integer) utxo.get("block_height");
                     final Integer pt_idx = ((Integer) utxo.get("pt_idx"));
-                    final Sha256Hash sha256hash = Sha256Hash.wrap(Hex.decode(txhash));
+                    final Sha256Hash sha256hash = Sha256Hash.wrap(Wally.hex_to_bytes(txhash));
                     if (!gaService.cfgIn(VERIFIED).getBoolean(txhash, false)) {
                         recalculateBloom = true;
                         addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Integer) utxo.get("subaccount")),
