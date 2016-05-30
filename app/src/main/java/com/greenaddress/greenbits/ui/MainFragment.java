@@ -215,8 +215,8 @@ public class MainFragment extends SubaccountFragment {
           return;
 
         final SharedPreferences prefs = getGAService().cfgIn("verified_utxo_");
-        for (final TransactionItem tx : currentList)
-            tx.spvVerified = prefs.getBoolean(tx.txhash, false);
+        for (final TransactionItem txItem : currentList)
+            txItem.spvVerified = prefs.getBoolean(txItem.txhash, false);
 
         final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
@@ -287,11 +287,11 @@ public class MainFragment extends SubaccountFragment {
                             }
                         }
 
-                        for (TransactionItem tx : currentList) {
-                            if (!replacedTxs.containsKey(tx.txhash))
+                        for (TransactionItem txItem : currentList) {
+                            if (!replacedTxs.containsKey(txItem.txhash))
                                 continue;
-                            for (String replaced : replacedTxs.get(tx.txhash))
-                                tx.replacedHashes.add(replaced);
+                            for (String replaced : replacedTxs.get(txItem.txhash))
+                                txItem.replacedHashes.add(replaced);
                         }
 
                         txView.getAdapter().notifyDataSetChanged();

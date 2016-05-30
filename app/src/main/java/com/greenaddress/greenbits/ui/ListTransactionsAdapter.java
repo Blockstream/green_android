@@ -48,10 +48,10 @@ public class ListTransactionsAdapter extends
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final TransactionItem transaction = transactions.get(position);
+        final TransactionItem txItem = transactions.get(position);
 
 
-        final long val = transaction.amount;
+        final long val = txItem.amount;
         final Coin coin = Coin.valueOf(val);
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
@@ -72,7 +72,7 @@ public class ListTransactionsAdapter extends
         }
 
         if (!mService.isSPVEnabled() ||
-            transaction.spvVerified || transaction.isSpent || transaction.type.equals(TransactionItem.TYPE.OUT)) {
+            txItem.spvVerified || txItem.isSpent || txItem.type.equals(TransactionItem.TYPE.OUT)) {
             holder.textValueQuestionMark.setVisibility(View.GONE);
         } else {
             holder.textValueQuestionMark.setVisibility(View.VISIBLE);
@@ -80,11 +80,11 @@ public class ListTransactionsAdapter extends
 
         final Resources res = context.getResources();
 
-        if (transaction.doubleSpentBy == null) {
+        if (txItem.doubleSpentBy == null) {
             holder.textWhen.setTextColor(res.getColor(R.color.tertiaryTextColor));
-            holder.textWhen.setText(TimeAgo.fromNow(transaction.date.getTime(), context));
+            holder.textWhen.setText(TimeAgo.fromNow(txItem.date.getTime(), context));
         } else {
-            switch (transaction.doubleSpentBy) {
+            switch (txItem.doubleSpentBy) {
                 case "malleability":
                     holder.textWhen.setTextColor(Color.parseColor("#FF8000"));
                     holder.textWhen.setText(context.getResources().getText(R.string.malleated));
@@ -99,26 +99,26 @@ public class ListTransactionsAdapter extends
             }
         }
 
-        if (!transaction.replaceable) {
+        if (!txItem.replaceable) {
             holder.textReplaceable.setVisibility(View.GONE);
         } else {
             holder.textReplaceable.setVisibility(View.VISIBLE);
         }
 
-        final boolean humanCpty = transaction.type.equals(TransactionItem.TYPE.OUT)
-                && transaction.counterparty != null && transaction.counterparty.length() > 0
-                && !GaService.isValidAddress(transaction.counterparty);
+        final boolean humanCpty = txItem.type.equals(TransactionItem.TYPE.OUT)
+                && txItem.counterparty != null && txItem.counterparty.length() > 0
+                && !GaService.isValidAddress(txItem.counterparty);
 
-        final String message = transaction.memo == null || transaction.memo.isEmpty() ?
+        final String message = txItem.memo == null || txItem.memo.isEmpty() ?
                 humanCpty ?
-                        transaction.counterparty
+                        txItem.counterparty
                         :
-                        getTypeString(transaction.type)
+                        getTypeString(txItem.type)
                 :
                 humanCpty ?
-                        String.format("%s %s", transaction.counterparty, transaction.memo)
+                        String.format("%s %s", txItem.counterparty, txItem.memo)
                         :
-                        transaction.memo;
+                        txItem.memo;
 
 
         holder.textWho.setText(message);
@@ -128,7 +128,7 @@ public class ListTransactionsAdapter extends
                 res.getColor(R.color.superLightPink)
         );
 
-        if (transaction.hasEnoughConfirmations()) {
+        if (txItem.hasEnoughConfirmations()) {
             holder.inOutIcon.setText(val > 0 ?
                     Html.fromHtml("&#xf090;") :
                     Html.fromHtml("&#xf08b;")
@@ -137,14 +137,14 @@ public class ListTransactionsAdapter extends
         } else {
             holder.inOutIcon.setText(Html.fromHtml("&#xf017;"));
             holder.listNumberConfirmation.setVisibility(View.VISIBLE);
-            holder.listNumberConfirmation.setText(String.valueOf(transaction.getConfirmations()));
+            holder.listNumberConfirmation.setText(String.valueOf(txItem.getConfirmations()));
         }
 
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 final Intent transactionActivity = new Intent(context, TransactionActivity.class);
-                transactionActivity.putExtra("TRANSACTION", transaction);
+                transactionActivity.putExtra("TRANSACTION", txItem);
                 context.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
             }
         });
