@@ -12,7 +12,6 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -72,6 +71,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             REQUEST_TX_DETAILS = 4;
     private ViewPager mViewPager;
     private Menu mMenu;
+    private Observer mTwoFactorObserver;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -92,15 +92,14 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         launch(isBitcoinURL);
     }
 
-    private void configureNoTwoFacFooter() {
+    private void onTwoFactorConfigChange() {
         final GaService service = mService;
 
-        final boolean twoFacWarning = service.cfg().getBoolean("twoFacWarning", false);
-
         final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
-        if (twoFacConfig == null) {
+        if (twoFacConfig == null)
             return;
-        }
+
+        final boolean twoFacWarning = service.cfg().getBoolean("twoFacWarning", false);
         if (!((Boolean) twoFacConfig.get("any") || twoFacWarning)) {
             final Snackbar snackbar = Snackbar
                     .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
@@ -208,21 +207,20 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        configureNoTwoFacFooter();
-
-        final Handler handler = new Handler();
-
-        service.getTwoFacConfigObservable().addObserver(new Observer() {
+        // Re-show our 2FA warning if config is changed to remove all methods
+        mTwoFactorObserver = new Observer() {
             @Override
-            public void update(final Observable observable, final Object data) {
-                handler.post(new Runnable() {
+            public void update(final Observable o, final Object data) {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        configureNoTwoFacFooter();
+                        onTwoFactorConfigChange();
                     }
                 });
             }
-        });
+        };
+        // Fake a config change to show the warning if no current 2FA method
+        mTwoFactorObserver.update(null, null);
 
         configureSubaccountsFooter(service.getCurrentSubAccount());
 
@@ -255,6 +253,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     public void onResumeWithService() {
         final GaService service = mService;
         service.addConnectionObserver(this);
+        service.addTwoFactorObserver(mTwoFactorObserver);
 
         if (service.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
@@ -269,6 +268,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Override
     public void onPauseWithService() {
         final GaService service = mService;
+        service.deleteTwoFactorObserver(mTwoFactorObserver);
         service.deleteConnectionObserver(this);
     }
 

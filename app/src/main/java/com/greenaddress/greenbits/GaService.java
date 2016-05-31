@@ -153,11 +153,6 @@ public class GaService extends Service {
         return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
     }
 
-    @NonNull
-    public Observable getTwoFacConfigObservable() {
-        return twoFacConfigObservable;
-    }
-
     private void getAvailableTwoFacMethods() {
         Futures.addCallback(mClient.getTwoFacConfig(), new FutureCallback<Map<?, ?>>() {
             @Override
@@ -760,6 +755,14 @@ public class GaService extends Service {
 
     public void deleteVerifiedTxObserver(final Observer o) {
         verifiedTxObservable.deleteObserver(o);
+    }
+
+    public void addTwoFactorObserver(final Observer o) {
+        twoFacConfigObservable.addObserver(o);
+    }
+
+    public void deleteTwoFactorObserver(final Observer o) {
+        twoFacConfigObservable.deleteObserver(o);
     }
 
     public void notifyObservers(final Sha256Hash tx) {
