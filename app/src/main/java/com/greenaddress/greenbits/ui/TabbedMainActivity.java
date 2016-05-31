@@ -99,8 +99,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         if (twoFacConfig == null)
             return;
 
-        final boolean twoFacWarning = service.cfg().getBoolean("twoFacWarning", false);
-        if (!((Boolean) twoFacConfig.get("any") || twoFacWarning)) {
+        if (!((Boolean) twoFacConfig.get("any")) &&
+            !service.cfg().getBoolean("hideTwoFacWarning", false)) {
             final Snackbar snackbar = Snackbar
                     .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
                     .setActionTextColor(Color.RED)
