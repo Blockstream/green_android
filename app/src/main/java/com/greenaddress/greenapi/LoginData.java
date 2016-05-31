@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi;
 
+import com.blockstream.libwally.Wally;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class LoginData {
     public Map<String, Object> feeEstimates;
     public final ArrayList subaccounts;
     public final String receivingId;
-    public String gait_path;  // can change on first login (registration)
+    public byte[] gaitPath;  // can change on first login (registration)
     public final int earliest_key_creation_time;
     public final boolean segwit;
     public final boolean rbf;
@@ -27,7 +28,7 @@ public class LoginData {
         final String cfg = (String) map.get("appearance");
         this.userConfig = new MappingJsonFactory().getCodec().readValue(cfg, Map.class);
         this.subaccounts = (ArrayList) map.get("subaccounts");
-        this.gait_path = (String) map.get("gait_path");
+        this.gaitPath = Wally.hex_to_bytes((String) map.get("gait_path"));
         this.receivingId = (String) map.get("receiving_id");
         if (map.get("segwit") == null) {
             this.segwit = false;

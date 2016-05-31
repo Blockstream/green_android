@@ -404,7 +404,7 @@ public class GaService extends Service {
                 fiatExchange = result.exchange;
                 subaccounts = result.subaccounts;
                 mReceivingId = result.receivingId;
-                gaitPath = Wally.hex_to_bytes(result.gait_path);
+                gaitPath = result.gaitPath;
 
                 balanceObservables.put(0, new GaObservable());
                 updateBalance(0);

@@ -147,9 +147,10 @@ public class WalletClient {
             rpc.setException(new GAException(err));
     }
 
-    private void clientCall(final SettableFuture rpc, final String procedure, final Class result,
-                            final CallHandler handler, final ErrorHandler errHandler,
-                            Object... args) {
+    private SettableFuture clientCall(final SettableFuture rpc,
+                                      final String procedure, final Class result,
+                                      final CallHandler handler, final ErrorHandler errHandler,
+                                      Object... args) {
         final ObjectMapper mapper = new ObjectMapper();
         final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
 
@@ -183,25 +184,26 @@ public class WalletClient {
                 mConnection.call(callName, flags, argsNode, null)
                            .observeOn(mScheduler)
                            .subscribe(replyHandler, errorHandler);
-                return;
+                return rpc;
             }
         } catch (final RejectedExecutionException e) {
             // Fall through
         }
         onCallError(rpc, procedure, errHandler, "not connected", "not connected");
+        return rpc;
     }
 
-    private void clientCall(final SettableFuture rpc, final String procedure, final Class result,
-                            final CallHandler handler, Object... args) {
-        clientCall(rpc, procedure, result, handler, null, args);
+    private SettableFuture clientCall(final SettableFuture rpc,
+                                      final String procedure, final Class result,
+                                      final CallHandler handler, Object... args) {
+        return clientCall(rpc, procedure, result, handler, null, args);
     }
 
     private <V> ListenableFuture<V> simpleCall(final String procedure, final Class result, Object... args) {
         final SettableFuture<V> rpc = SettableFuture.create();
         final CallHandler handler = result == null ? stringHandler(rpc) : simpleHandler(rpc);
         final Class resultClass = result == null ? String.class : result;
-        clientCall(rpc, procedure, resultClass, handler, args);
-        return rpc;
+        return clientCall(rpc, procedure, resultClass, handler, args);
     }
 
     private <T> T SyncCall(final String procedure, final Class result,
@@ -370,16 +372,14 @@ public class WalletClient {
                                  loginToSetPathPostLogin, mExecutor);
     }
 
-    private ListenableFuture<LoginData> setupPathImpl(final byte[] bytes, final LoginData loginData) {
+    private ListenableFuture<LoginData> setupPathImpl(final byte[] path, final LoginData loginData) {
         final SettableFuture<LoginData> rpc = SettableFuture.create();
-        final String pathHex = Wally.hex_from_bytes(bytes);
-        clientCall(rpc, "login.set_gait_path", Void.class, new CallHandler() {
+        return clientCall(rpc, "login.set_gait_path", Void.class, new CallHandler() {
             public void onResult(final Object result) {
-                loginData.gait_path = pathHex;
+                loginData.gaitPath = path;
                 rpc.set(loginData);
             }
-        }, pathHex);
-        return rpc;
+        }, Wally.hex_from_bytes(path));
     }
 
     private ListenableFuture<LoginData> setupPath(final String mnemonics, final LoginData loginData) {
@@ -737,7 +737,7 @@ public class WalletClient {
 
     private ListenableFuture<PinData> getPinData(final String pin, final SetPinData setPinData) {
         final SettableFuture<PinData> rpc = SettableFuture.create();
-        clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
+        return clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
             public void onResult(final Object password) {
                 try {
                     final byte[] salt = CryptoHelper.randomBytes(16);
@@ -758,7 +758,6 @@ public class WalletClient {
                 }
             }
         }, pin, setPinData.ident);
-        return rpc;
     }
 
     private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final byte[] seed, final String pin, final String device_name) {
@@ -862,8 +861,7 @@ public class WalletClient {
             }
         };
         final String txStr =  Wally.hex_from_bytes(tx.bitcoinSerialize());
-        clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc), errHandler, txStr, twoFacData);
-        return rpc;
+        return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc), errHandler, txStr, twoFacData);
     }
 
     private List<String> convertSigs(final List<ECKey.ECDSASignature> sigs) {
@@ -918,7 +916,7 @@ public class WalletClient {
                 if (canSignHashes)
                     return signTransactionHashes(tx, isPrivate);
                 else
-                    return convertSigs(mHDParent.signTransaction(tx, Wally.hex_to_bytes(mLoginData.gait_path)));
+                    return convertSigs(mHDParent.signTransaction(tx, mLoginData.gaitPath));
             }
         });
     }
@@ -973,8 +971,7 @@ public class WalletClient {
                 rpc.setException(new GAException(err));
             }
         };
-        clientCall(rpc, "login.set_appearance", Map.class, handler, errHandler, newJSON);
-        return rpc;
+        return clientCall(rpc, "login.set_appearance", Map.class, handler, errHandler, newJSON);
     }
 
     public ListenableFuture<Object> requestTwoFacCode(final String type, final String action, final Object data) {
@@ -996,8 +993,7 @@ public class WalletClient {
                 rpc.set(new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) tx)));
             }
         };
-        clientCall(rpc, procedure, String.class, handler, args);
-        return rpc;
+        return clientCall(rpc, procedure, String.class, handler, args);
     }
 
     public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
