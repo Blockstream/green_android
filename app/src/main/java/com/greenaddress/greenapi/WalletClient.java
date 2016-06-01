@@ -309,16 +309,14 @@ public class WalletClient {
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String device_id) {
 
         final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
-        final byte[] mySeed = CryptoHelper.mnemonic_to_seed(mnemonics);
-        final DeterministicKey deterministicKey = HDKeyDerivation.createMasterPrivateKey(mySeed);
-        final String hexMasterPublicKey = Wally.hex_from_bytes(deterministicKey.getPubKey());
-        final String hexChainCode = Wally.hex_from_bytes(deterministicKey.getChainCode());
+        final DeterministicKey master = mnemonicToMasterKey(mnemonics);
+        final String hexMasterPublicKey = Wally.hex_from_bytes(master.getPubKey());
+        final String hexChainCode = Wally.hex_from_bytes(master.getChainCode());
         clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
             public void onResult(final Object result) {
-                rpc.set(deterministicKey);
+                rpc.set(master);
             }
         }, hexMasterPublicKey, hexChainCode, USER_AGENT);
-
 
         final AsyncFunction<DeterministicKey, LoginData> registrationToLogin = new AsyncFunction<DeterministicKey, LoginData>() {
             @Override
@@ -535,10 +533,14 @@ public class WalletClient {
         return rpc;
     }
 
+    private DeterministicKey mnemonicToMasterKey(final String mnemonic) {
+        final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonic);
+        return HDKeyDerivation.createMasterPrivateKey(seed);
+    }
+
     public ListenableFuture<LoginData> login(final String mnemonics, final String device_id) {
         mMnemonics = mnemonics;
-        final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonics);
-        final DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(seed);
+        final DeterministicKey master = mnemonicToMasterKey(mnemonics);
         return login(new DeterministicSigningKey(master), device_id);
     }
 
