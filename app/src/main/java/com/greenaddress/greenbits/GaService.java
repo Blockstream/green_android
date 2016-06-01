@@ -628,7 +628,7 @@ public class GaService extends Service {
         final ByteArrayOutputStream bits = new ByteArrayOutputStream();
         bits.write(0);
         try {
-            Script.writeBytes(bits, Wally.sha256(input, null));
+            Script.writeBytes(bits, Wally.sha256(input));
         } catch (final IOException e) {
             throw new RuntimeException(e);  // cannot happen
         }
@@ -646,8 +646,8 @@ public class GaService extends Service {
             @Override
             public ListenableFuture<String> apply(@NonNull final Map input) throws Exception {
                 final Integer pointer = ((Integer) input.get("pointer"));
-                final byte[] script = Wally.hex_to_bytes((String) input.get("script")),
-                             scriptHash;
+                final byte[] script = Wally.hex_to_bytes((String) input.get("script"));
+                final byte[] scriptHash;
                 if (getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     scriptHash = Utils.sha256hash160(getSegWitScript(script));

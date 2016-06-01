@@ -271,17 +271,16 @@ public class WalletClient {
     }
 
     private static byte[] mnemonicToPath(final String mnemonic) {
-        final byte[] pbkdf2_hmac_sha512;
-        pbkdf2_hmac_sha512 = Wally.pbkdf2_hmac_sha512(
-                mnemonic.getBytes(), GA_PATH.getBytes(), 0, 2048, null);
-        return Wally.hmac_sha512(GA_KEY.getBytes(), pbkdf2_hmac_sha512, null);
+        final byte[] bytes = mnemonic.getBytes();
+        final byte[] hashed = Wally.pbkdf2_hmac_sha512(bytes, GA_PATH.getBytes(), 0, 2048);
+        return Wally.hmac_sha512(GA_KEY.getBytes(), hashed);
     }
 
     private static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {
         final byte[] data = new byte[publicKey.length + chainCode.length];
         System.arraycopy(chainCode, 0, data, 0, chainCode.length);
         System.arraycopy(publicKey, 0, data, chainCode.length, publicKey.length);
-        return Wally.hmac_sha512(GA_KEY.getBytes(), data, null);
+        return Wally.hmac_sha512(GA_KEY.getBytes(), data);
     }
 
     public String getMnemonics() {
@@ -613,7 +612,7 @@ public class WalletClient {
             path_hex = "GA";
             childKey = deterministicKey.deriveChildKey(new ChildNumber(0x4741b11e));
             final String message = "greenaddress.it      login " + challengeString;
-            final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message), null);
+            final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message));
             final ECKey master = childKey.getPubKey();
             signature_arg = mExecutor.submit(new Callable<String[]>() {
                 @Override
@@ -695,12 +694,11 @@ public class WalletClient {
                 final String[] split = data.encrypted.split(";");
 
                 try {
+                    final byte[] passBytes = pass.toString().getBytes();
+                    final byte[] hashed;
+                    hashed = Wally.pbkdf2_hmac_sha512(passBytes, split[0].getBytes(), 0, 2048);
 
-                    final byte[] pbkdf2_hmac_sha512;
-                    pbkdf2_hmac_sha512 = Wally.pbkdf2_hmac_sha512(
-                            pass.toString().getBytes(), split[0].getBytes(), 0, 2048, null);
-
-                    final byte[] truncated = Arrays.copyOf(pbkdf2_hmac_sha512, 32);
+                    final byte[] truncated = Arrays.copyOf(hashed, 32);
 
                     final String decrypted = new String(CryptoHelper.decrypt_aes_cbc(
                             Base64.decode(split[1], Base64.NO_WRAP), truncated));
@@ -741,11 +739,10 @@ public class WalletClient {
             public void onResult(final Object password) {
                 try {
                     final byte[] salt = CryptoHelper.randomBytes(16);
-                    final byte[] pass = password.toString().getBytes();
-                    final byte[] pbkdf2_hmac_sha512;
-                    pbkdf2_hmac_sha512 = Wally.pbkdf2_hmac_sha512(
-                            pass, Base64.encode(salt, Base64.NO_WRAP), 0, 2048, null);
-                    final byte[] truncated = Arrays.copyOf(pbkdf2_hmac_sha512, 32);
+                    final byte[] passBytes = password.toString().getBytes();
+                    final byte[] hashed;
+                    hashed = Wally.pbkdf2_hmac_sha512(passBytes, Base64.encode(salt, Base64.NO_WRAP), 0, 2048);
+                    final byte[] truncated = Arrays.copyOf(hashed, 32);
                     final byte[] aes_cbc = CryptoHelper.encrypt_aes_cbc(setPinData.json, truncated);
                     final String clob = String.format("%s;%s", Base64.encodeToString(salt,
                             Base64.NO_WRAP), Base64.encodeToString(aes_cbc,

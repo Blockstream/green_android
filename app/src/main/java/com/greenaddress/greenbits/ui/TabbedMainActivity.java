@@ -320,7 +320,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                             qrText).getKey();
                 } catch (@NonNull final AddressFormatException e) {
                     try {
-                        Wally.bip38_to_private_key(qrText, null, Wally.BIP38_KEY_COMPRESSED | Wally.BIP38_KEY_QUICK_CHECK, null);
+                        Wally.bip38_to_private_key(qrText, null, Wally.BIP38_KEY_COMPRESSED | Wally.BIP38_KEY_QUICK_CHECK);
                     } catch (final IllegalArgumentException e2) {
                         toast(R.string.invalid_key);
                         return;
@@ -402,7 +402,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                     try {
                                         final String password = passwordEdit.getText().toString();
                                         final byte[] passbytes = password.getBytes();
-                                        final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS, null);
+                                        final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS);
                                         key = ECKey.fromPrivate(decryptedPKey);
 
                                         CB.after(service.prepareSweepSocial(key.getPubKey(), true),
