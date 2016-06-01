@@ -38,7 +38,6 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -548,15 +547,6 @@ public class WalletClient {
         return login(mHDParent, device_id);
     }
 
-    private String getRandomHexString(final int numchars) {
-        final SecureRandom r = new SecureRandom();
-        final StringBuilder sb = new StringBuilder();
-        while (sb.length() < numchars) {
-            sb.append(Integer.toHexString(r.nextInt()));
-        }
-        return sb.toString().substring(0, numchars);
-    }
-
     // derive private key for signing the challenge, using 8 bytes instead of 64
     private ISigningWallet createSubpathForLogin(final ISigningWallet parentKey, final String path_hex) {
         ISigningWallet key = parentKey;
@@ -587,7 +577,7 @@ public class WalletClient {
     private ListenableFuture<LoginData> authenticate(final String challengeString, final ISigningWallet deterministicKey, final String device_id) {
         final SettableFuture<LoginData> rpc = SettableFuture.create();
 
-        final String path_hex;
+        final String path;
         final ISigningWallet childKey;
         final ListenableFuture<String[]> signature_arg;
         if (deterministicKey.canSignHashes()) {
@@ -599,8 +589,8 @@ public class WalletClient {
             }
             final byte[] challengeFinal = challengeBytes;
             //Log.d(TAG, "Our address: " + address + " server challenge: " + challengeString);
-            path_hex = getRandomHexString(16);
-            childKey = createSubpathForLogin(deterministicKey, path_hex);
+            path = Wally.hex_from_bytes(CryptoHelper.randomBytes(8));
+            childKey = createSubpathForLogin(deterministicKey, path);
             signature_arg = mExecutor.submit(new Callable<String[]>() {
                 @Override
                 public String[] call() {
@@ -611,7 +601,7 @@ public class WalletClient {
         } else {
             // btchip requires 0xB11E to skip HID authentication
             // 0x4741 = 18241 = 256*G + A in ASCII
-            path_hex = "GA";
+            path = "GA";
             childKey = deterministicKey.deriveChildKey(new ChildNumber(0x4741b11e));
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message));
@@ -658,7 +648,7 @@ public class WalletClient {
                             rpc.setException(e);
                         }
                     }
-                }, result, true, path_hex, device_id, USER_AGENT);
+                }, result, true, path, device_id, USER_AGENT);
             }
 
             @Override
