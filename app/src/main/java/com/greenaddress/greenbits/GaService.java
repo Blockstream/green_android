@@ -124,7 +124,7 @@ public class GaService extends Service {
     private float fiatRate;
     private String fiatCurrency;
     private String fiatExchange;
-    private ArrayList subaccounts;
+    private ArrayList mSubaccounts;
 
     private final Map<Integer, DeterministicKey> gaDeterministicKeys = new HashMap<>();
     private String mReceivingId;
@@ -304,18 +304,11 @@ public class GaService extends Service {
                 final DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer));
                 pubkeys.add(derivedPointer);
 
-                String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
-                for (final Object subaccount_ : subaccounts) {
-                    final Map<String, ?> subaccountMap = (Map) subaccount_;
-                    if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount)) {
-                        twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
-                        twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
-                    }
-                }
-
-                if (twoOfThreeBackupChaincode != null) {
+                final Map<String, ?> m = findSubaccount("2of3", subaccount);
+                if (m != null) {
                     final DeterministicKey master;
-                    master = HDKey.createMasterKey(twoOfThreeBackupChaincode, twoOfThreeBackupPubkey);
+                    master = HDKey.createMasterKey((String) m.get("2of3_backup_chaincode"),
+                                                   (String) m.get("2of3_backup_pubkey"));
 
                     final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
                     final DeterministicKey derivedBackupPointer = HDKeyDerivation.deriveChildKey(derivedBackupRoot, new ChildNumber(pointer));
@@ -400,7 +393,7 @@ public class GaService extends Service {
                 // we should just copy the whole loginData instance
                 fiatCurrency = result.currency;
                 fiatExchange = result.exchange;
-                subaccounts = result.subaccounts;
+                mSubaccounts = result.subaccounts;
                 mReceivingId = result.receivingId;
                 gaitPath = result.gaitPath;
 
@@ -791,7 +784,18 @@ public class GaService extends Service {
     }
 
     public ArrayList getSubaccounts() {
-        return subaccounts;
+        return mSubaccounts;
+    }
+
+    public Map<String, ?> findSubaccount(final String type, final Integer subaccount) {
+        if (mSubaccounts != null) {
+            for (final Object s : mSubaccounts) {
+                final Map<String, ?> ret = (Map) s;
+                if (ret.get("type").equals(type) && ret.get("pointer").equals(subaccount))
+                    return ret;
+            }
+        }
+        return null;
     }
 
     @Nullable

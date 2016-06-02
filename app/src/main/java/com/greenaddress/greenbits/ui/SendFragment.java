@@ -537,15 +537,11 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void hideInstantIf2of3() {
-        final GaService service = getGAService();
-        instantConfirmationCheckbox.setVisibility(View.VISIBLE);
-        for (Object subaccount_ : service.getSubaccounts()) {
-            Map<String, ?> subaccountMap = (Map) subaccount_;
-            if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(curSubaccount)) {
-                instantConfirmationCheckbox.setVisibility(View.GONE);
-                instantConfirmationCheckbox.setChecked(false);
-            }
-        }
+        if (getGAService().findSubaccount("2of3", curSubaccount) != null) {
+            instantConfirmationCheckbox.setVisibility(View.GONE);
+            instantConfirmationCheckbox.setChecked(false);
+        } else
+            instantConfirmationCheckbox.setVisibility(View.VISIBLE);
     }
 
     @Override

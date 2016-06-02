@@ -530,15 +530,10 @@ public class TransactionActivity extends GaActivity {
                                     final Coin oldFee, final List<Map<String, Object>> moreInputs,
                                     final List<byte[]> morePrevouts, final int level) {
             final GaActivity gaActivity = getGaActivity();
-            String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
 
-            for (final Object subaccount_ : getGAService().getSubaccounts()) {
-                final Map<String, ?> subaccountMap = (Map) subaccount_;
-                if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(subaccount)) {
-                    twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
-                    twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
-                }
-            }
+            final Map<String, ?> m = getGAService().findSubaccount("2of3", subaccount);
+            String twoOfThreeBackupChaincode = m == null ? null : (String) m.get("2of3_backup_chaincode");
+            String twoOfThreeBackupPubkey = m == null ? null : (String) m.get("2of3_backup_pubkey");
 
             final Map<String, Transaction> prevoutRawTxs = new HashMap<>();
 
