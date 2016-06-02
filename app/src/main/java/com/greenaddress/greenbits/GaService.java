@@ -300,7 +300,7 @@ public class GaService extends Service {
 
         return es.submit(new Callable<byte[]>() {
             public byte[] call() {
-                final DeterministicKey derivedRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
+                final DeterministicKey derivedRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1, false));
                 final DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer));
                 pubkeys.add(derivedPointer);
 
@@ -310,7 +310,7 @@ public class GaService extends Service {
                     master = HDKey.createMasterKey((String) m.get("2of3_backup_chaincode"),
                                                    (String) m.get("2of3_backup_pubkey"));
 
-                    final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
+                    final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1, false));
                     final DeterministicKey derivedBackupPointer = HDKeyDerivation.deriveChildKey(derivedBackupRoot, new ChildNumber(pointer));
                     pubkeys.add(derivedBackupPointer);
                 }
@@ -362,7 +362,7 @@ public class GaService extends Service {
                 b2 = 256 + b2;
             }
             childNum = b1 * 256 + b2;
-            nodePath = HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(childNum));
+            nodePath = HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(childNum, false));
         }
         return nodePath;
     }
@@ -373,7 +373,7 @@ public class GaService extends Service {
 
         final DeterministicKey master;
         master = HDKey.createMasterKey(Network.depositChainCode, Network.depositPubkey);
-        final ChildNumber childNum = new ChildNumber(subaccount != 0 ? 3 : 1);
+        final ChildNumber childNum = new ChildNumber(subaccount != 0 ? 3 : 1, false);
         final DeterministicKey derived = HDKeyDerivation.deriveChildKey(master, childNum);
         final DeterministicKey nodePath = getKeyPath(derived);
 
