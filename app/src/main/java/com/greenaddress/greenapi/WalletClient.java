@@ -320,7 +320,7 @@ public class WalletClient {
         final AsyncFunction<DeterministicKey, LoginData> registrationToLogin = new AsyncFunction<DeterministicKey, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final DeterministicKey input) throws Exception {
-                return login(new DeterministicSigningKey(input), device_id);
+                return login(new Bip32Wallet(input), device_id);
             }
         };
 
@@ -540,7 +540,7 @@ public class WalletClient {
     public ListenableFuture<LoginData> login(final String mnemonics, final String device_id) {
         mMnemonics = mnemonics;
         final DeterministicKey master = mnemonicToMasterKey(mnemonics);
-        return login(new DeterministicSigningKey(master), device_id);
+        return login(new Bip32Wallet(master), device_id);
     }
 
     public ListenableFuture<LoginData> login(final String device_id) {
@@ -710,7 +710,7 @@ public class WalletClient {
         final AsyncFunction<DeterministicKey, LoginData> connectToLogin = new AsyncFunction<DeterministicKey, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final DeterministicKey input) {
-                return login(new DeterministicSigningKey(input), device_id);
+                return login(new Bip32Wallet(input), device_id);
             }
         };
 

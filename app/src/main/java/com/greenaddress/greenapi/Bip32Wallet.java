@@ -8,16 +8,16 @@ import org.bitcoinj.crypto.HDKeyDerivation;
 
 import java.util.List;
 
-public class DeterministicSigningKey implements ISigningWallet {
+public class Bip32Wallet implements ISigningWallet {
     private final DeterministicKey hdWallet;
 
-    public DeterministicSigningKey(final DeterministicKey masterPrivateKey) {
+    public Bip32Wallet(final DeterministicKey masterPrivateKey) {
         hdWallet = masterPrivateKey;
     }
 
     @Override
     public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
-        return new DeterministicSigningKey(HDKeyDerivation.deriveChildKey(hdWallet, childNumber));
+        return new Bip32Wallet(HDKeyDerivation.deriveChildKey(hdWallet, childNumber));
     }
 
     @Override
