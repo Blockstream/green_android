@@ -19,7 +19,6 @@ import android.util.Log;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -28,6 +27,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.CryptoHelper;
+import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.INotificationHandler;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.LoginData;
@@ -314,12 +314,10 @@ public class GaService extends Service {
                 }
 
                 if (twoOfThreeBackupChaincode != null) {
-                    final DeterministicKey backupWalletMaster = new DeterministicKey(
-                            new ImmutableList.Builder<ChildNumber>().build(),
-                            Wally.hex_to_bytes(twoOfThreeBackupChaincode),
-                            ECKey.fromPublicOnly(Wally.hex_to_bytes(twoOfThreeBackupPubkey)).getPubKeyPoint(),
-                            null, null);
-                    final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(backupWalletMaster, new ChildNumber(1));
+                    final DeterministicKey master;
+                    master = HDKey.createMasterKey(twoOfThreeBackupChaincode, twoOfThreeBackupPubkey);
+
+                    final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1));
                     final DeterministicKey derivedBackupPointer = HDKeyDerivation.deriveChildKey(derivedBackupRoot, new ChildNumber(pointer));
                     pubkeys.add(derivedBackupPointer);
                 }
@@ -377,17 +375,18 @@ public class GaService extends Service {
     }
 
     private DeterministicKey getGaDeterministicKey(final Integer subaccount) {
-        if (gaDeterministicKeys.containsKey(subaccount)) {
+        if (gaDeterministicKeys.containsKey(subaccount))
             return gaDeterministicKeys.get(subaccount);
-        }
 
-        final DeterministicKey nodePath = getKeyPath(HDKeyDerivation.deriveChildKey(new DeterministicKey(
-                new ImmutableList.Builder<ChildNumber>().build(),
-                Wally.hex_to_bytes(Network.depositChainCode),
-                ECKey.fromPublicOnly(Wally.hex_to_bytes(Network.depositPubkey)).getPubKeyPoint(),
-                null, null), new ChildNumber(subaccount != 0 ? 3 : 1)));
+        final DeterministicKey master;
+        master = HDKey.createMasterKey(Network.depositChainCode, Network.depositPubkey);
+        final ChildNumber childNum = new ChildNumber(subaccount != 0 ? 3 : 1);
+        final DeterministicKey derived = HDKeyDerivation.deriveChildKey(master, childNum);
+        final DeterministicKey nodePath = getKeyPath(derived);
 
-        final DeterministicKey key = subaccount == 0 ? nodePath : HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(subaccount, false));
+        DeterministicKey key = nodePath;
+        if (subaccount != 0)
+            key = HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(subaccount, false));
         gaDeterministicKeys.put(subaccount, key);
         return key;
     }

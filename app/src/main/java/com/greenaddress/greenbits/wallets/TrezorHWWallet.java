@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
-import com.blockstream.libwally.Wally;
-import com.google.common.collect.ImmutableList;
+import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
@@ -62,11 +61,7 @@ public class TrezorHWWallet implements ISigningWallet {
     public DeterministicKey getPubKey() {
         final Integer[] intArray = new Integer[addrn.size()];
         final String[] xpub = trezor.MessageGetPublicKey(addrn.toArray(intArray)).split("%", -1);
-        final String pkHex = xpub[xpub.length - 2];
-        final String chainCodeHex = xpub[xpub.length - 4];
-        final ECKey pubKey = ECKey.fromPublicOnly(Wally.hex_to_bytes(pkHex));
-        return new DeterministicKey(new ImmutableList.Builder<ChildNumber>().build(),
-                                    Wally.hex_to_bytes(chainCodeHex), pubKey.getPubKeyPoint(), null, null);
+        return HDKey.createMasterKey(xpub[xpub.length - 4], xpub[xpub.length - 2]);
     }
 
     @Override

@@ -10,10 +10,10 @@ import com.btchip.comm.BTChipTransport;
 import com.btchip.utils.BufferUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
@@ -161,18 +161,11 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
     private DeterministicKey internalGetPubKey() throws BTChipException {
-        if (cachedPubkey != null)
-                return cachedPubkey;
-        final BTChipDongle.BTChipPublicKey pubKey = dongle.getWalletPublicKey(getPath());
-        final ECKey uncompressed = ECKey.fromPublicOnly(pubKey.getPublicKey());
-        final DeterministicKey retVal = new DeterministicKey(
-                new ImmutableList.Builder<ChildNumber>().build(),
-                pubKey.getChainCode(),
-                uncompressed.getPubKeyPoint(),
-                null, null
-        );
-        cachedPubkey = retVal;
-        return retVal;
+        if (cachedPubkey == null) {
+            final BTChipDongle.BTChipPublicKey walletKey = dongle.getWalletPublicKey(getPath());
+            cachedPubkey = HDKey.createMasterKey(walletKey.getChainCode(), walletKey.getPublicKey());
+        }
+        return cachedPubkey;
     }
 
     @Override
