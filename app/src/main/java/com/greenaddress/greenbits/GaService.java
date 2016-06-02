@@ -787,11 +787,16 @@ public class GaService extends Service {
         return mSubaccounts;
     }
 
+    public boolean haveSubaccounts() {
+        return mSubaccounts != null && !mSubaccounts.isEmpty();
+    }
+
     public Map<String, ?> findSubaccount(final String type, final Integer subaccount) {
-        if (mSubaccounts != null) {
+        if (haveSubaccounts()) {
             for (final Object s : mSubaccounts) {
                 final Map<String, ?> ret = (Map) s;
-                if (ret.get("type").equals(type) && ret.get("pointer").equals(subaccount))
+                if (ret.get("pointer").equals(subaccount) &&
+                   (type == null || ret.get("type").equals(type)))
                     return ret;
             }
         }

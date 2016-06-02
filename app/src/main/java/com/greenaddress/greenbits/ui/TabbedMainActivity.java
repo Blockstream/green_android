@@ -122,48 +122,41 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private void configureSubaccountsFooter(final int subaccount) {
         final GaService service = mService;
 
-        final ArrayList allSubaccounts = service.getSubaccounts();
-        if (allSubaccounts == null || allSubaccounts.isEmpty())
+        if (!service.haveSubaccounts())
             return;
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
-        String subaccountName = getResources().getText(R.string.main_account).toString();
-        for (Object s : allSubaccounts) {
-            final Map<String, ?> m = (Map) s;
-            if (m.get("pointer").equals(subaccount)) {
-                subaccountName = (String) m.get("name");
-                break;
-            }
-        }
+        final String subaccountName;
+        final Map<String, ?> m = service.findSubaccount(null, subaccount);
+        if (m == null)
+            subaccountName = getResources().getText(R.string.main_account).toString();
+        else
+            subaccountName = (String) m.get("name");
         setTitle(String.format("%s %s", getResources().getText(R.string.app_name), subaccountName));
 
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                final ArrayList<String> subaccounts_list = new ArrayList<>();
+                final ArrayList<String> names = new ArrayList<>();
+                final ArrayList<Integer> pointers = new ArrayList<>();
 
-                subaccounts_list.add(getResources().getText(R.string.main_account).toString());
+                names.add(getResources().getText(R.string.main_account).toString());
+                pointers.add(0);
 
-                final ArrayList subs = service.getSubaccounts();
-                for (final Object subaccount : subs) {
-                    subaccounts_list.add(((Map) subaccount).get("name").toString());
+                for (final Object s : service.getSubaccounts()) {
+                    final Map<String, ?> m = (Map) s;
+                    names.add((String) m.get("name"));
+                    pointers.add((Integer) m.get("pointer"));
                 }
 
                 final MaterialDialog.ListCallback lcb = new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(final MaterialDialog dialog, final View view, final int which, final CharSequence text) {
 
-                        final int subaccount;
-                        if (which == 0) {
-                            subaccount = 0;
-                        } else {
-                            final ArrayList subaccounts = service.getSubaccounts();
-                            subaccount = ((Integer) ((Map<String, ?>) subaccounts.get(which - 1)).get("pointer"));
-                        }
-
+                        final int subaccount = pointers.get(which);
                         if (subaccount != service.getCurrentSubAccount()) {
                             setTitle(String.format("%s %s", getResources().getText(R.string.app_name), text));
                             onSubaccountUpdate(subaccount);
@@ -173,7 +166,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                 new MaterialDialog.Builder(TabbedMainActivity.this)
                         .title(R.string.footerAccount)
-                        .items(subaccounts_list)
+                        .items(names)
                         .autoDismiss(true)
                         .itemsCallback(lcb).show();
             }
