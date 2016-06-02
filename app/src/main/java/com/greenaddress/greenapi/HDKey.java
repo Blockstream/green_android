@@ -30,6 +30,10 @@ public class HDKey {
     }
 
     // Temporary methods for use while converting from DeterministicKey
+    static public DeterministicKey createMasterKeyFromSeed(final byte[] seed) {
+        return HDKeyDerivation.createMasterPrivateKey(seed);
+    }
+
     static public DeterministicKey createMasterKey(final byte[] chainCode, final byte[] publicKey) {
         final ECKey pub = ECKey.fromPublicOnly(publicKey);
         return new DeterministicKey(new ImmutableList.Builder<ChildNumber>().build(),

@@ -27,7 +27,6 @@ import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.codehaus.jackson.map.MappingJsonFactory;
@@ -534,7 +533,7 @@ public class WalletClient {
 
     private DeterministicKey mnemonicToMasterKey(final String mnemonic) {
         final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonic);
-        return HDKeyDerivation.createMasterPrivateKey(seed);
+        return HDKey.createMasterKeyFromSeed(seed);
     }
 
     public ListenableFuture<LoginData> login(final String mnemonics, final String device_id) {
@@ -699,7 +698,7 @@ public class WalletClient {
                             decrypted, Map.class);
 
                     mMnemonics = json.get("mnemonic");
-                    rpc.set(HDKeyDerivation.createMasterPrivateKey(Wally.hex_to_bytes(json.get("seed"))));
+                    rpc.set(HDKey.createMasterKeyFromSeed(Wally.hex_to_bytes(json.get("seed"))));
                 } catch (final IOException e) {
                     rpc.setException(e);
                 }
