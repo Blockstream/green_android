@@ -4,7 +4,6 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.HDKeyDerivation;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class Bip32Wallet implements ISigningWallet {
 
     @Override
     public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
-        return new Bip32Wallet(HDKeyDerivation.deriveChildKey(hdWallet, childNumber));
+        return new Bip32Wallet(HDKey.deriveChildKey(hdWallet, childNumber.getI()));
     }
 
     @Override

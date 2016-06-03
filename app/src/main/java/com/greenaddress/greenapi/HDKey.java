@@ -30,6 +30,10 @@ public class HDKey {
     }
 
     // Temporary methods for use while converting from DeterministicKey
+    static public DeterministicKey deriveChildKey(final DeterministicKey parent, final Integer childNum) {
+        return HDKeyDerivation.deriveChildKey(parent, new ChildNumber(childNum));
+    }
+
     static public DeterministicKey createMasterKeyFromSeed(final byte[] seed) {
         return HDKeyDerivation.createMasterPrivateKey(seed);
     }

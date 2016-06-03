@@ -49,7 +49,6 @@ import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.MnemonicException;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
@@ -288,7 +287,7 @@ public class GaService extends Service {
     public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
         final DeterministicKey gaWallet = getGaDeterministicKey(subaccount);
-        final ECKey gaKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(pointer));
+        final ECKey gaKey = HDKey.deriveChildKey(gaWallet, pointer);
         pubkeys.add(gaKey);
 
         ISigningWallet userWallet = mClient.getHdWallet();
@@ -300,8 +299,8 @@ public class GaService extends Service {
 
         return es.submit(new Callable<byte[]>() {
             public byte[] call() {
-                final DeterministicKey derivedRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1, false));
-                final DeterministicKey derivedPointer = HDKeyDerivation.deriveChildKey(derivedRoot, new ChildNumber(pointer));
+                final DeterministicKey derivedRoot = HDKey.deriveChildKey(master, 1);
+                final DeterministicKey derivedPointer = HDKey.deriveChildKey(derivedRoot, pointer);
                 pubkeys.add(derivedPointer);
 
                 final Map<String, ?> m = findSubaccount("2of3", subaccount);
@@ -310,8 +309,8 @@ public class GaService extends Service {
                     master = HDKey.createMasterKey((String) m.get("2of3_backup_chaincode"),
                                                    (String) m.get("2of3_backup_pubkey"));
 
-                    final DeterministicKey derivedBackupRoot = HDKeyDerivation.deriveChildKey(master, new ChildNumber(1, false));
-                    final DeterministicKey derivedBackupPointer = HDKeyDerivation.deriveChildKey(derivedBackupRoot, new ChildNumber(pointer));
+                    final DeterministicKey derivedBackupRoot = HDKey.deriveChildKey(master, 1);
+                    final DeterministicKey derivedBackupPointer = HDKey.deriveChildKey(derivedBackupRoot, pointer);
                     pubkeys.add(derivedBackupPointer);
                 }
 
@@ -350,7 +349,6 @@ public class GaService extends Service {
     }
 
     private DeterministicKey getKeyPath(final DeterministicKey node) {
-        int childNum;
         DeterministicKey nodePath = node;
         for (int i = 0; i < 32; ++i) {
             int b1 = gaitPath[i * 2];
@@ -361,8 +359,7 @@ public class GaService extends Service {
             if (b2 < 0) {
                 b2 = 256 + b2;
             }
-            childNum = b1 * 256 + b2;
-            nodePath = HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(childNum, false));
+            nodePath = HDKey.deriveChildKey(nodePath, b1 * 256 + b2);
         }
         return nodePath;
     }
@@ -373,15 +370,12 @@ public class GaService extends Service {
 
         final DeterministicKey master;
         master = HDKey.createMasterKey(Network.depositChainCode, Network.depositPubkey);
-        final ChildNumber childNum = new ChildNumber(subaccount != 0 ? 3 : 1, false);
-        final DeterministicKey derived = HDKeyDerivation.deriveChildKey(master, childNum);
-        final DeterministicKey nodePath = getKeyPath(derived);
-
-        DeterministicKey key = nodePath;
+        final DeterministicKey derived = HDKey.deriveChildKey(master, subaccount != 0 ? 3 : 1);
+        DeterministicKey nodePath = getKeyPath(derived);
         if (subaccount != 0)
-            key = HDKeyDerivation.deriveChildKey(nodePath, new ChildNumber(subaccount, false));
-        gaDeterministicKeys.put(subaccount, key);
-        return key;
+            nodePath = HDKey.deriveChildKey(nodePath, subaccount);
+        gaDeterministicKeys.put(subaccount, nodePath);
+        return nodePath;
     }
 
     private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> f) {
