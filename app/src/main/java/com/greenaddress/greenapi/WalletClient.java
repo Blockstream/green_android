@@ -546,7 +546,7 @@ public class WalletClient {
     }
 
     // Derive private key for signing the challenge, using 'len' bytes instead of 64
-    private ISigningWallet createSubpathForLogin(ISigningWallet key, final byte[] path, final int len) {
+    private ISigningWallet createSubpathForLogin(ISigningWallet parent, final byte[] path, final int len) {
         for (int i = 0; i < len / 2; ++i) {
             int b1 = path[i * 2];
             if (b1 < 0)
@@ -554,9 +554,9 @@ public class WalletClient {
             int b2 = path[i * 2 + 1];
             if (b2 < 0)
                 b2 = 256 + b2;
-            key = key.derive(b1 * 256 + b2);
+            parent = parent.derive(b1 * 256 + b2);
         }
-        return key;
+        return parent;
     }
 
     private byte[] convertChallengeString(final String challengeString) {
@@ -567,22 +567,22 @@ public class WalletClient {
         return bytes;
     }
 
-    private ListenableFuture<LoginData> authenticate(final String challengeString, final ISigningWallet deterministicKey, final String device_id) {
+    private ListenableFuture<LoginData> authenticate(final String challengeString, final ISigningWallet signingWallet, final String device_id) {
         final SettableFuture<LoginData> rpc = SettableFuture.create();
 
         final String pathStr;
-        final ISigningWallet childKey;
+        final ISigningWallet child;
         final ListenableFuture<String[]> signature_arg;
-        if (deterministicKey.canSignHashes()) {
+        if (signingWallet.canSignHashes()) {
             final byte[] path = CryptoHelper.randomBytes(8);
             pathStr = Wally.hex_from_bytes(path);
-            childKey = createSubpathForLogin(deterministicKey, path, 8);
+            child = createSubpathForLogin(signingWallet, path, 8);
 
             signature_arg = mExecutor.submit(new Callable<String[]>() {
                 @Override
                 public String[] call() {
                     final byte[] challenge = convertChallengeString(challengeString);
-                    final ECKey.ECDSASignature sig = childKey.signHash(challenge);
+                    final ECKey.ECDSASignature sig = child.signHash(challenge);
                     return new String[]{sig.r.toString(), sig.s.toString()};
                 }
             });
@@ -590,16 +590,16 @@ public class WalletClient {
             // btchip requires 0xB11E to skip HID authentication
             // 0x4741 = 18241 = 256*G + A in ASCII
             pathStr = "GA";
-            childKey = deterministicKey.derive(0x4741b11e);
+            child = signingWallet.derive(0x4741b11e);
 
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message));
-            final ECKey master = childKey.getPubKey();
+            final ECKey master = child.getPubKey();
 
             signature_arg = mExecutor.submit(new Callable<String[]>() {
                 @Override
                 public String[] call() {
-                    final ECKey.ECDSASignature sig = childKey.signMessage(message);
+                    final ECKey.ECDSASignature sig = child.signMessage(message);
                     int recId;
                     for (recId = 0; recId < 4; ++recId) {
                         final ECKey recovered = ECKey.recoverFromSignature(recId, sig, Sha256Hash.wrap(challenge_sha), true);
@@ -623,7 +623,7 @@ public class WalletClient {
                             } else {
                                 mLoginData = new LoginData((Map) loginData);
                                 subscribeToWallet();  // requires receivingId to be set
-                                mHDParent = deterministicKey;
+                                mHDParent = signingWallet;
 
                                 rpc.set(mLoginData);
 
@@ -649,22 +649,22 @@ public class WalletClient {
         return rpc;
     }
 
-    public ListenableFuture<LoginData> login(final ISigningWallet key, final String device_id) {
-        final boolean canSignHashes = key.canSignHashes();
-        final String address = new Address(Network.NETWORK, key.getIdentifier()).toString();
+    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String device_id) {
+        final boolean canSignHashes = signingWallet.canSignHashes();
+        final String address = new Address(Network.NETWORK, signingWallet.getIdentifier()).toString();
         final ListenableFuture<String> challenge;
 
         if (canSignHashes)
             challenge = simpleCall("login.get_challenge", null, address);
         else
             challenge = simpleCall("login.get_trezor_challenge", null, address,
-                                   !(key instanceof TrezorHWWallet));
+                                   !(signingWallet instanceof TrezorHWWallet));
 
         return Futures.transform(challenge,
             new AsyncFunction<String, LoginData>() {
                 @Override
                 public ListenableFuture<LoginData> apply(final String input) throws Exception {
-                    return authenticate(input, key, device_id);
+                    return authenticate(input, signingWallet, device_id);
                 }
             }, mExecutor);
     }
@@ -865,14 +865,14 @@ public class WalletClient {
         for (int i = 0; i < txInputs.size(); ++i) {
             final Output prevOut = prevOuts.get(i);
 
-            ISigningWallet account = mHDParent;
+            ISigningWallet parent = mHDParent;
             if (prevOut.subaccount != null && prevOut.subaccount != 0)
-                account = account.derive(ISigningWallet.HARDENED | 3)
-                                 .derive(ISigningWallet.HARDENED | prevOut.subaccount);
+                parent = parent.derive(ISigningWallet.HARDENED | 3)
+                               .derive(ISigningWallet.HARDENED | prevOut.subaccount);
 
             final int hardened = isPrivate ? ISigningWallet.HARDENED : 0;
-            final ISigningWallet pointerKey = account.derive(hardened | prevOut.branch)
-                                                     .derive(hardened | prevOut.pointer);
+            final ISigningWallet child = parent.derive(hardened | prevOut.branch)
+                                               .derive(hardened | prevOut.pointer);
 
             final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
             final Sha256Hash hash;
@@ -881,7 +881,7 @@ public class WalletClient {
             } else {
                 hash = t.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
             }
-            sigs.add(pointerKey.signHash(hash.getBytes()));
+            sigs.add(child.signHash(hash.getBytes()));
         }
         return convertSigs(sigs);
     }
