@@ -80,7 +80,7 @@ public class SendFragment extends SubaccountFragment {
     private Observer curBalanceObserver;
     private boolean pausing;
 
-    private void showTransactionSummary(@Nullable final String method, final Coin fee, final Coin amount, @NonNull final String recipient, @NonNull final PreparedTransaction prepared) {
+    private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
         final GaActivity gaActivity = getGaActivity();
 
@@ -142,7 +142,7 @@ public class SendFragment extends SubaccountFragment {
                         if (twoFacData != null) {
                             twoFacData.put("code", newTx2FACodeText.getText().toString());
                         }
-                        final ListenableFuture<String> sendFuture = getGAService().signAndSendTransaction(prepared, twoFacData);
+                        final ListenableFuture<String> sendFuture = getGAService().signAndSendTransaction(ptx, twoFacData);
                         Futures.addCallback(sendFuture, new CB.Toast<String>(gaActivity) {
                             @Override
                             public void onSuccess(@Nullable final String result) {
@@ -350,7 +350,7 @@ public class SendFragment extends SubaccountFragment {
                     privData.put("instant", true);
                 }
 
-                ListenableFuture<PreparedTransaction> prepared;
+                ListenableFuture<PreparedTransaction> ptxFn;
                 if (payreqData == null) {
                     if (!validAddress && !validAmount) {
                         message = getActivity().getString(R.string.invalidAmountAndAddress);
@@ -370,25 +370,25 @@ public class SendFragment extends SubaccountFragment {
                             // safer. If we attempted to send the calculated amount
                             // instead with 'sender' fee algorithm, the transaction
                             // could fail due to differences in calculations.
-                            prepared = service.prepareSweepAll(curSubaccount, recipient, privData);
+                            ptxFn = service.prepareSweepAll(curSubaccount, recipient, privData);
                         } else {
-                            prepared = service.prepareTx(amount, recipient, privData);
+                            ptxFn = service.prepareTx(amount, recipient, privData);
                         }
                     } else {
-                        prepared = null;
+                        ptxFn = null;
                     }
                 } else {
-                    prepared = service.preparePayreq(amount, payreqData, privData);
+                    ptxFn = service.preparePayreq(amount, payreqData, privData);
                 }
 
-                if (prepared != null) {
+                if (ptxFn != null) {
                     sendButton.setEnabled(false);
-                    CB.after(prepared,
+                    CB.after(ptxFn,
                             new CB.Toast<PreparedTransaction>(gaActivity, sendButton) {
                                 @Override
-                                public void onSuccess(@Nullable final PreparedTransaction result) {
+                                public void onSuccess(@Nullable final PreparedTransaction ptx) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    CB.after(service.spv.validateTxAndCalculateFeeOrAmount(result, recipient, maxButton.isChecked() ? null : amount),
+                                    CB.after(service.spv.validateTxAndCalculateFeeOrAmount(ptx, recipient, maxButton.isChecked() ? null : amount),
                                             new CB.Toast<Coin>(gaActivity, sendButton) {
                                                 @Override
                                                 public void onSuccess(@Nullable final Coin fee) {
@@ -407,13 +407,13 @@ public class SendFragment extends SubaccountFragment {
                                                                 dialogAmount = amount;
                                                                 dialogFee = fee;
                                                             }
-                                                            final boolean skipChoice = !result.requires_2factor ||
+                                                            final boolean skipChoice = !ptx.requires_2factor ||
                                                                                         twoFacConfig == null || !((Boolean) twoFacConfig.get("any"));
                                                             mTwoFactor = GaActivity.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                                                                          new CB.Runnable1T<String>() {
                                                                 @Override
                                                                 public void run(final String method) {
-                                                                    showTransactionSummary(method, dialogFee, dialogAmount, recipient, result);
+                                                                    showTransactionSummary(method, dialogFee, dialogAmount, recipient, ptx);
                                                                 }
                                                             });
                                                             if (mTwoFactor != null)

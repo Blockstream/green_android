@@ -98,16 +98,16 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction tx, final byte[] gaitPath) {
+    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx, final byte[] gaitPath) {
         final List<ECKey.ECDSASignature> sigs = new LinkedList<>();
 
         try {
-            final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[tx.decoded.getInputs().size()];
+            final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[ptx.decoded.getInputs().size()];
             if (!dongle.hasScreenSupport()) {
-                for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                    final byte[] inputHash = tx.decoded.getInputs().get(i).getOutpoint().getHash().getReversedBytes();
+                for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
+                    final byte[] inputHash = ptx.decoded.getInputs().get(i).getOutpoint().getHash().getReversedBytes();
                     final byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);
-                    long index = tx.decoded.getInputs().get(i).getOutpoint().getIndex();
+                    long index = ptx.decoded.getInputs().get(i).getOutpoint().getIndex();
                     input[input.length - 4] = (byte) (index % 256);
                     index /= 256;
                     input[input.length - 3] = (byte) (index % 256);
@@ -116,28 +116,28 @@ public class BTChipHWWallet implements ISigningWallet {
                     index /= 256;
                     input[input.length - 1] = (byte) (index % 256);
                     ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
-                    BufferUtils.writeUint32BE(sequenceBuf, tx.decoded.getInputs().get(i).getSequenceNumber());
+                    BufferUtils.writeUint32BE(sequenceBuf, ptx.decoded.getInputs().get(i).getSequenceNumber());
                     inputs[i] = dongle.createInput(input, sequenceBuf.toByteArray(), false);
                 }
             } else {
-                for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                    final TransactionOutPoint outpoint = tx.decoded.getInputs().get(i).getOutpoint();
+                for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
+                    final TransactionOutPoint outpoint = ptx.decoded.getInputs().get(i).getOutpoint();
                     final long index = outpoint.getIndex();
-                    final ByteArrayInputStream in = new ByteArrayInputStream(tx.prevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
+                    final ByteArrayInputStream in = new ByteArrayInputStream(ptx.prevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
                     final BitcoinTransaction encodedTx = new BitcoinTransaction(in);
-                    inputs[i] = dongle.getTrustedInput(encodedTx, index, tx.decoded.getInputs().get(i).getSequenceNumber());
+                    inputs[i] = dongle.getTrustedInput(encodedTx, index, ptx.decoded.getInputs().get(i).getSequenceNumber());
                 }
             }
-            for (int i = 0; i < tx.decoded.getInputs().size(); ++i) {
-                dongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(tx.prev_outputs.get(i).script));
-                final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(tx.decoded.getMessageSize() < 32 ? 32 : tx.decoded.getMessageSize() + 32);
-                stream.write(new VarInt(tx.decoded.getOutputs().size()).encode());
-                for (final TransactionOutput out : tx.decoded.getOutputs())
+            for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
+                dongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(ptx.prev_outputs.get(i).script));
+                final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(ptx.decoded.getMessageSize() < 32 ? 32 : ptx.decoded.getMessageSize() + 32);
+                stream.write(new VarInt(ptx.decoded.getOutputs().size()).encode());
+                for (final TransactionOutput out : ptx.decoded.getOutputs())
                     out.bitcoinSerialize(stream);
                 dongle.finalizeInputFull(stream.toByteArray());
                 sigs.add(ECKey.ECDSASignature.decodeFromDER(
-                        dongle.untrustedHashSign(outToPath(tx.prev_outputs.get(i)),
-                                "0", tx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */)));
+                        dongle.untrustedHashSign(outToPath(ptx.prev_outputs.get(i)),
+                                "0", ptx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */)));
             }
             return sigs;
         } catch (BTChipException | IOException e) {

@@ -537,7 +537,7 @@ public class TransactionActivity extends GaActivity {
 
             final Map<String, Transaction> prevoutRawTxs = new HashMap<>();
 
-            final PreparedTransaction prepTx = new PreparedTransaction(
+            final PreparedTransaction ptx = new PreparedTransaction(
                     change_pointer, subaccount, /*requires_2factor*/false,
                     tx, twoOfThreeBackupChaincode, twoOfThreeBackupPubkey,
                     prevoutRawTxs
@@ -545,7 +545,7 @@ public class TransactionActivity extends GaActivity {
 
             for (final Map<String, Object> ep : (List<Map<String, Object>>)txItem.eps) {
                 if (((Boolean) ep.get("is_credit"))) continue;
-                prepTx.prev_outputs.add(new Output(
+                ptx.prev_outputs.add(new Output(
                         (Integer) ep.get("subaccount"),
                         (Integer) ep.get("pubkey_pointer"),
                         1,
@@ -558,7 +558,7 @@ public class TransactionActivity extends GaActivity {
             int i = 0;
             if (moreInputs != null) {
                 for (final Map<String, Object> ep : moreInputs) {
-                    prepTx.prev_outputs.add(new Output(
+                    ptx.prev_outputs.add(new Output(
                             (Integer) ep.get("subaccount"),
                             (Integer) ep.get("pointer"),
                             1,
@@ -635,7 +635,7 @@ public class TransactionActivity extends GaActivity {
                 @Override
                 public ListenableFuture<List<String>> apply(Void input) throws Exception {
                     final boolean isPrivate = false;
-                    return getGAService().signTransaction(prepTx, isPrivate);
+                    return getGAService().signTransaction(ptx, isPrivate);
                 }
             });
 

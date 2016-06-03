@@ -44,7 +44,7 @@ public class Bip32Wallet implements ISigningWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction tx, final byte[] gaitPath) {
+    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx, final byte[] gaitPath) {
         return null;
     }
 

@@ -315,7 +315,7 @@ public class SPV {
     }
 
     @NonNull
-    public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(@NonNull final PreparedTransaction transaction, @NonNull final String recipientStr, @NonNull final Coin amount) {
+    public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(final PreparedTransaction ptx, final String recipientStr, final Coin amount) {
         Address recipientNonFinal = null;
         try {
             recipientNonFinal = new Address(Network.NETWORK, recipientStr);
@@ -325,15 +325,15 @@ public class SPV {
 
         // 1. Find the change output:
         ListenableFuture<List<Boolean>> changeFuture;
-        if (transaction.decoded.getOutputs().size() > 1) {
-            if (transaction.decoded.getOutputs().size() != 2) {
+        if (ptx.decoded.getOutputs().size() > 1) {
+            if (ptx.decoded.getOutputs().size() != 2) {
                 throw new IllegalArgumentException("Verification: Wrong number of transaction outputs.");
             }
             final List<ListenableFuture<Boolean>> changeVerifications = new ArrayList<>();
             changeVerifications.add(
-                    gaService.verifySpendableBy(transaction.decoded.getOutputs().get(0), transaction.subaccount_pointer, transaction.change_pointer));
+                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(0), ptx.subaccount_pointer, ptx.change_pointer));
             changeVerifications.add(
-                    gaService.verifySpendableBy(transaction.decoded.getOutputs().get(1), transaction.subaccount_pointer, transaction.change_pointer));
+                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(1), ptx.subaccount_pointer, ptx.change_pointer));
             changeFuture = Futures.allAsList(changeVerifications);
         } else {
             changeFuture = Futures.immediateFuture(null);
@@ -344,7 +344,7 @@ public class SPV {
             @Nullable
             @Override
             public Coin apply(final @Nullable List<Boolean> input) {
-                return Verifier.verify(countedUtxoValues, transaction, recipient, amount, input);
+                return Verifier.verify(countedUtxoValues, ptx, recipient, amount, input);
             }
         });
     }

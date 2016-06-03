@@ -781,11 +781,11 @@ public class WalletClient {
         return processPreparedTx(rpc);
     }
 
-    private ListenableFuture<PreparedTransaction> processPreparedTx(final ListenableFuture<PreparedTransaction.PreparedData> pt) {
-        return Futures.transform(pt, new Function<PreparedTransaction.PreparedData, PreparedTransaction>() {
+    private ListenableFuture<PreparedTransaction> processPreparedTx(final ListenableFuture<PreparedTransaction.PreparedData> rpc) {
+        return Futures.transform(rpc, new Function<PreparedTransaction.PreparedData, PreparedTransaction>() {
             @Override
-            public PreparedTransaction apply(final PreparedTransaction.PreparedData input) {
-                return new PreparedTransaction(input);
+            public PreparedTransaction apply(final PreparedTransaction.PreparedData ptxData) {
+                return new PreparedTransaction(ptxData);
             }
         }, mExecutor);
     }
@@ -853,10 +853,10 @@ public class WalletClient {
         return result;
     }
 
-    private List<String> signTransactionHashes(final PreparedTransaction tx, final boolean isPrivate) {
-        final Transaction t = tx.decoded;
+    private List<String> signTransactionHashes(final PreparedTransaction ptx, final boolean isPrivate) {
+        final Transaction t = ptx.decoded;
         final List<TransactionInput> txInputs = t.getInputs();
-        final List<Output> prevOuts = tx.prev_outputs;
+        final List<Output> prevOuts = ptx.prev_outputs;
         final List<String> signatures = new ArrayList<>(txInputs.size());
         final SettableFuture<List<String>> rpc = SettableFuture.create();
 
@@ -886,14 +886,14 @@ public class WalletClient {
         return convertSigs(sigs);
     }
 
-    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction tx, final boolean isPrivate) {
+    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx, final boolean isPrivate) {
         final boolean canSignHashes = mHDParent.canSignHashes();
         return mExecutor.submit(new Callable<List<String>>() {
             @Override
             public List<String> call() {
                 if (canSignHashes)
-                    return signTransactionHashes(tx, isPrivate);
-                return convertSigs(mHDParent.signTransaction(tx, mLoginData.gaitPath));
+                    return signTransactionHashes(ptx, isPrivate);
+                return convertSigs(mHDParent.signTransaction(ptx, mLoginData.gaitPath));
             }
         });
     }
