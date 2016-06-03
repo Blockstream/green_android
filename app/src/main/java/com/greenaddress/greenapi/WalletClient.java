@@ -545,64 +545,57 @@ public class WalletClient {
         return login(mHDParent, device_id);
     }
 
-    // derive private key for signing the challenge, using 8 bytes instead of 64
-    private ISigningWallet createSubpathForLogin(final ISigningWallet parentKey, final String path_hex) {
-        ISigningWallet key = parentKey;
-        final BigInteger path = new BigInteger(Wally.hex_to_bytes(path_hex));
-        byte[] bytes = path.toByteArray();
-        if (bytes.length < 8) {
-            final byte[] bytes_pad = new byte[8];
-            for (int i = 0; i < bytes.length; ++i) {
-                bytes_pad[7 - i] = bytes[bytes.length - 1 - i];
-            }
-            bytes = bytes_pad;
-        }
-        for (int i = 0; i < 4; ++i) {
-            int b1 = bytes[i * 2];
-            if (b1 < 0) {
+    // Derive private key for signing the challenge, using 'len' bytes instead of 64
+    private ISigningWallet createSubpathForLogin(ISigningWallet key, final byte[] path, final int len) {
+        for (int i = 0; i < len / 2; ++i) {
+            int b1 = path[i * 2];
+            if (b1 < 0)
                 b1 = 256 + b1;
-            }
-            int b2 = bytes[i * 2 + 1];
-            if (b2 < 0) {
+            int b2 = path[i * 2 + 1];
+            if (b2 < 0)
                 b2 = 256 + b2;
-            }
             key = key.derive(b1 * 256 + b2);
         }
         return key;
     }
 
+    private byte[] convertChallengeString(final String challengeString) {
+        byte[] bytes = new BigInteger(challengeString).toByteArray();
+            // Get rid of initial 0 byte if challenge > 2^31
+            if (bytes.length == 33 && bytes[0] == 0)
+                bytes = Arrays.copyOfRange(bytes, 1, 33);
+        return bytes;
+    }
+
     private ListenableFuture<LoginData> authenticate(final String challengeString, final ISigningWallet deterministicKey, final String device_id) {
         final SettableFuture<LoginData> rpc = SettableFuture.create();
 
-        final String path;
+        final String pathStr;
         final ISigningWallet childKey;
         final ListenableFuture<String[]> signature_arg;
         if (deterministicKey.canSignHashes()) {
-            final BigInteger challenge = new BigInteger(challengeString);
-            byte[] challengeBytes = challenge.toByteArray();
-            // get rid of initial 0 byte if challenge > 2^31
-            if (challengeBytes.length == 33 && challengeBytes[0] == 0) {
-                challengeBytes = Arrays.copyOfRange(challengeBytes, 1, 33);
-            }
-            final byte[] challengeFinal = challengeBytes;
-            //Log.d(TAG, "Our address: " + address + " server challenge: " + challengeString);
-            path = Wally.hex_from_bytes(CryptoHelper.randomBytes(8));
-            childKey = createSubpathForLogin(deterministicKey, path);
+            final byte[] path = CryptoHelper.randomBytes(8);
+            pathStr = Wally.hex_from_bytes(path);
+            childKey = createSubpathForLogin(deterministicKey, path, 8);
+
             signature_arg = mExecutor.submit(new Callable<String[]>() {
                 @Override
                 public String[] call() {
-                    final ECKey.ECDSASignature sig = childKey.signHash(challengeFinal);
+                    final byte[] challenge = convertChallengeString(challengeString);
+                    final ECKey.ECDSASignature sig = childKey.signHash(challenge);
                     return new String[]{sig.r.toString(), sig.s.toString()};
                 }
             });
         } else {
             // btchip requires 0xB11E to skip HID authentication
             // 0x4741 = 18241 = 256*G + A in ASCII
-            path = "GA";
+            pathStr = "GA";
             childKey = deterministicKey.derive(0x4741b11e);
+
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message));
             final ECKey master = childKey.getPubKey();
+
             signature_arg = mExecutor.submit(new Callable<String[]>() {
                 @Override
                 public String[] call() {
@@ -645,7 +638,7 @@ public class WalletClient {
                             rpc.setException(e);
                         }
                     }
-                }, result, true, path, device_id, USER_AGENT);
+                }, result, true, pathStr, device_id, USER_AGENT);
             }
 
             @Override
