@@ -25,7 +25,6 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.Utils;
-import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
@@ -567,8 +566,7 @@ public class WalletClient {
             if (b2 < 0) {
                 b2 = 256 + b2;
             }
-            final int childNum = b1 * 256 + b2;
-            key = key.deriveChildKey(new ChildNumber(childNum, false));
+            key = key.derive(b1 * 256 + b2);
         }
         return key;
     }
@@ -601,7 +599,7 @@ public class WalletClient {
             // btchip requires 0xB11E to skip HID authentication
             // 0x4741 = 18241 = 256*G + A in ASCII
             path = "GA";
-            childKey = deterministicKey.deriveChildKey(new ChildNumber(0x4741b11e));
+            childKey = deterministicKey.derive(0x4741b11e);
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message));
             final ECKey master = childKey.getPubKey();
@@ -874,15 +872,14 @@ public class WalletClient {
         for (int i = 0; i < txInputs.size(); ++i) {
             final Output prevOut = prevOuts.get(i);
 
-            final ISigningWallet account;
-            if (prevOut.subaccount == null || prevOut.subaccount == 0)
-                account = mHDParent;
-            else
-                account = mHDParent.deriveChildKey(new ChildNumber(3, true))
-                                   .deriveChildKey(new ChildNumber(prevOut.subaccount, true));
+            ISigningWallet account = mHDParent;
+            if (prevOut.subaccount != null && prevOut.subaccount != 0)
+                account = account.derive(ISigningWallet.HARDENED | 3)
+                                 .derive(ISigningWallet.HARDENED | prevOut.subaccount);
 
-            final ISigningWallet branchKey = account.deriveChildKey(new ChildNumber(prevOut.branch, isPrivate));
-            final ISigningWallet pointerKey = branchKey.deriveChildKey(new ChildNumber(prevOut.pointer, isPrivate));
+            final int hardened = isPrivate ? ISigningWallet.HARDENED : 0;
+            final ISigningWallet pointerKey = account.derive(hardened | prevOut.branch)
+                                                     .derive(hardened | prevOut.pointer);
 
             final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
             final Sha256Hash hash;

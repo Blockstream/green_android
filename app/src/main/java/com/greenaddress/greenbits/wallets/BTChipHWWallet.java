@@ -25,7 +25,6 @@ import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.UnsafeByteArrayOutputStream;
 import org.bitcoinj.core.VarInt;
-import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 
 import java.io.ByteArrayInputStream;
@@ -207,9 +206,9 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
     @Override
-    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
+    public ISigningWallet derive(final Integer childNumber) {
         final LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
-        addrn_child.add(childNumber.getI());
+        addrn_child.add(childNumber);
         return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
     }
 

@@ -47,7 +47,6 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
-import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.MnemonicException;
 import org.bitcoinj.crypto.TransactionSignature;
@@ -291,10 +290,9 @@ public class GaService extends Service {
         pubkeys.add(gaKey);
 
         ISigningWallet userWallet = mClient.getHdWallet();
-        if (subaccount != 0) {
-            userWallet = userWallet.deriveChildKey(new ChildNumber(3, true));
-            userWallet = userWallet.deriveChildKey(new ChildNumber(subaccount, true));
-        }
+        if (subaccount != 0)
+            userWallet = userWallet.derive(ISigningWallet.HARDENED | 3)
+                                   .derive(ISigningWallet.HARDENED | subaccount);
         final DeterministicKey master = userWallet.getPubKey();
 
         return es.submit(new Callable<byte[]>() {

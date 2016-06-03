@@ -7,7 +7,6 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.satoshilabs.trezor.Trezor;
 
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
 
@@ -32,8 +31,8 @@ public class TrezorHWWallet implements ISigningWallet {
     }
 
     @Override
-    public ISigningWallet deriveChildKey(final ChildNumber childNumber) {
-        return new TrezorHWWallet(this, childNumber.getI());
+    public ISigningWallet derive(final Integer childNumber) {
+        return new TrezorHWWallet(this, childNumber);
     }
 
     @Override
