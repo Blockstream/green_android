@@ -893,8 +893,7 @@ public class WalletClient {
             public List<String> call() {
                 if (canSignHashes)
                     return signTransactionHashes(tx, isPrivate);
-                else
-                    return convertSigs(mHDParent.signTransaction(tx, mLoginData.gaitPath));
+                return convertSigs(mHDParent.signTransaction(tx, mLoginData.gaitPath));
             }
         });
     }
