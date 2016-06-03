@@ -37,7 +37,6 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
@@ -289,11 +288,7 @@ public class GaService extends Service {
         final ECKey gaKey = HDKey.deriveChildKey(gaWallet, pointer);
         pubkeys.add(gaKey);
 
-        ISigningWallet userWallet = mClient.getHdWallet();
-        if (subaccount != 0)
-            userWallet = userWallet.derive(ISigningWallet.HARDENED | 3)
-                                   .derive(ISigningWallet.HARDENED | subaccount);
-        final DeterministicKey master = userWallet.getPubKey();
+        final DeterministicKey master = mClient.getMasterPubKey(subaccount);
 
         return es.submit(new Callable<byte[]>() {
             public byte[] call() {
@@ -537,7 +532,7 @@ public class GaService extends Service {
         final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subaccount);
         if (!isSPVEnabled() ||
             verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) ||
-            mClient.getHdWallet().requiresPrevoutRawTxs()) {
+            mClient.requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
             privateData.put("prevouts_mode", "skip");
@@ -713,7 +708,7 @@ public class GaService extends Service {
     }
 
     public boolean isTrezorHWWallet() {
-        return mClient.getHdWallet() instanceof TrezorHWWallet;
+        return mClient.isTrezorHWWallet();
     }
 
     public void addBalanceObserver(final int subaccount, final Observer o) {

@@ -963,8 +963,20 @@ public class WalletClient {
         return simpleCall("twofactor.request_" + type, Object.class, action, data);
     }
 
-    public ISigningWallet getHdWallet() {
-        return mHDParent;
+    public boolean requiresPrevoutRawTxs() {
+        return mHDParent.requiresPrevoutRawTxs();
+    }
+
+    public boolean isTrezorHWWallet() {
+        return mHDParent instanceof TrezorHWWallet;
+    }
+
+    public DeterministicKey getMasterPubKey(final Integer subaccount) {
+        ISigningWallet parent = mHDParent;
+        if (subaccount != 0)
+            parent = parent.derive(ISigningWallet.HARDENED | 3)
+                           .derive(ISigningWallet.HARDENED | subaccount);
+        return parent.getPubKey();
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
