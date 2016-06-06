@@ -125,7 +125,7 @@ public class GaService extends Service {
 
     private final Map<Integer, DeterministicKey> gaDeterministicKeys = new HashMap<>();
     private String mReceivingId;
-    private byte[] gaitPath;
+    private int[] mGaitPath;
     @Nullable
     private Map<?, ?> twoFacConfig;
     private final GaObservable twoFacConfigObservable = new GaObservable();
@@ -342,7 +342,7 @@ public class GaService extends Service {
 
     private DeterministicKey getGaDeterministicKey(final Integer subaccount) {
         if (!gaDeterministicKeys.containsKey(subaccount))
-            gaDeterministicKeys.put(subaccount, HDKey.getServerSubaccountKey(gaitPath, subaccount));
+            gaDeterministicKeys.put(subaccount, HDKey.getServerSubaccountKey(mGaitPath, subaccount));
         return gaDeterministicKeys.get(subaccount);
     }
 
@@ -357,7 +357,7 @@ public class GaService extends Service {
                 fiatExchange = result.exchange;
                 mSubaccounts = result.subaccounts;
                 mReceivingId = result.receivingId;
-                gaitPath = result.gaitPath;
+                mGaitPath = result.gaitPath;
 
                 balanceObservables.put(0, new GaObservable());
                 updateBalance(0);

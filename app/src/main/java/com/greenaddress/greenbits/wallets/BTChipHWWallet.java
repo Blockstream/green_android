@@ -98,7 +98,7 @@ public class BTChipHWWallet implements ISigningWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx, final byte[] gaitPath) {
+    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx, final int[] gaitPath) {
         final List<ECKey.ECDSASignature> sigs = new LinkedList<>();
 
         try {

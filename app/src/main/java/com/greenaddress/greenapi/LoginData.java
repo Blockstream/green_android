@@ -16,7 +16,7 @@ public class LoginData {
     public Map<String, Object> feeEstimates;
     public final ArrayList subaccounts;
     public final String receivingId;
-    public byte[] gaitPath;  // can change on first login (registration)
+    public int[] gaitPath;  // can change on first login (registration)
     public final int earliest_key_creation_time;
     public final boolean segwit;
     public final boolean rbf;
@@ -28,7 +28,7 @@ public class LoginData {
         final String cfg = (String) map.get("appearance");
         this.userConfig = new MappingJsonFactory().getCodec().readValue(cfg, Map.class);
         this.subaccounts = (ArrayList) map.get("subaccounts");
-        this.gaitPath = Wally.hex_to_bytes((String) map.get("gait_path"));
+        setGaitPath(Wally.hex_to_bytes((String) map.get("gait_path")));
         this.receivingId = (String) map.get("receiving_id");
         if (map.get("segwit") == null) {
             this.segwit = false;
@@ -52,5 +52,13 @@ public class LoginData {
             // server doesn't provide it yet, set it to EPOCH
             this.earliest_key_creation_time = EPOCH_START;
         }
+    }
+
+    private int u8(int i) { return i < 0 ? 256 + i : i; }
+
+    public void setGaitPath(final byte[] path) {
+        gaitPath = new int[32];
+        for (int i = 0; i < 32; ++i)
+            gaitPath[i] = u8(path[i * 2]) * 256 + u8(path[i * 2 + 1]);
     }
 }

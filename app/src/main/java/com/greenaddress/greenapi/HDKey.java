@@ -48,21 +48,15 @@ public class HDKey {
         return createMasterKey(Wally.hex_to_bytes(chainCode), Wally.hex_to_bytes(publicKey));
     }
 
-    static private int u8(int i) { return i < 0 ? 256 + i : i; }
-
-    static private DeterministicKey getKeyPath(final byte[] path, DeterministicKey node) {
-        for (int i = 0; i < 32; ++i)
-            node = deriveChildKey(node, u8(path[i * 2]) * 256 + u8(path[i * 2 + 1]));
-        return node;
-    }
-
     // Get the key derived from the servers public key/chaincode plus the users path.
     // This is the key used on the servers side of 2-of-2 transactions.
-    static public DeterministicKey getServerSubaccountKey(final byte[] path, final Integer subaccount) {
-        DeterministicKey node = createMasterKey(Network.depositChainCode, Network.depositPubkey);
-        node = getKeyPath(path, deriveChildKey(node, subaccount == 0 ? 1 : 3));
+    static public DeterministicKey getServerSubaccountKey(final int[] path, final Integer subaccount) {
+        DeterministicKey k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
+        k = deriveChildKey(k, subaccount == 0 ? 1 : 3);
+        for (int i : path)
+            k = deriveChildKey(k, i);
         if (subaccount != 0)
-            node = deriveChildKey(node, subaccount);
-        return node;
+            k = deriveChildKey(k, subaccount);
+        return k;
     }
 }
