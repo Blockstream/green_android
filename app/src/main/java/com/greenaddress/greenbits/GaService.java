@@ -522,19 +522,14 @@ public class GaService extends Service {
         return mClient.signTransaction(ptx, isPrivate);
     }
 
-    @NonNull
-    public ListenableFuture<PreparedTransaction> prepareTx(@NonNull final Coin coinValue, final String recipient, @NonNull final Map<String, Object> privateData) {
+    public ListenableFuture<PreparedTransaction> prepareTx(final Coin coinValue, final String recipient, final Map<String, Object> privateData) {
         preparePrivData(privateData);
         return mClient.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
     }
 
-    @NonNull
-    public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subaccount, final String recipient, @NonNull final Map<String, Object> privData) {
-        preparePrivData(privData);
-        return mClient.prepareTx(
-                getBalanceCoin(subaccount).longValue(),
-                recipient, "receiver", privData
-        );
+    public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subaccount, final String recipient, final Map<String, Object> privateData) {
+        preparePrivData(privateData);
+        return mClient.prepareTx(getBalanceCoin(subaccount).longValue(), recipient, "receiver", privateData);
     }
 
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {

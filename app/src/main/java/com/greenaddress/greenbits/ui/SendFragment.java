@@ -335,20 +335,17 @@ public class SendFragment extends SubaccountFragment {
                         maxButton.isChecked();
                 String message = null;
 
-                final Map<String, Object> privData = new HashMap<>();
+                final Map<String, Object> privateData = new HashMap<>();
 
 
-                if (!noteText.getText().toString().isEmpty()) {
-                    privData.put("memo", noteText.getText().toString());
-                }
+                if (!noteText.getText().toString().isEmpty())
+                    privateData.put("memo", noteText.getText().toString());
 
-                if (curSubaccount != 0) {
-                    privData.put("subaccount", curSubaccount);
-                }
+                if (curSubaccount != 0)
+                    privateData.put("subaccount", curSubaccount);
 
-                if (instantConfirmationCheckbox.isChecked()) {
-                    privData.put("instant", true);
-                }
+                if (instantConfirmationCheckbox.isChecked())
+                    privateData.put("instant", true);
 
                 ListenableFuture<PreparedTransaction> ptxFn;
                 if (payreqData == null) {
@@ -370,15 +367,15 @@ public class SendFragment extends SubaccountFragment {
                             // safer. If we attempted to send the calculated amount
                             // instead with 'sender' fee algorithm, the transaction
                             // could fail due to differences in calculations.
-                            ptxFn = service.prepareSweepAll(curSubaccount, recipient, privData);
+                            ptxFn = service.prepareSweepAll(curSubaccount, recipient, privateData);
                         } else {
-                            ptxFn = service.prepareTx(amount, recipient, privData);
+                            ptxFn = service.prepareTx(amount, recipient, privateData);
                         }
                     } else {
                         ptxFn = null;
                     }
                 } else {
-                    ptxFn = service.preparePayreq(amount, payreqData, privData);
+                    ptxFn = service.preparePayreq(amount, payreqData, privateData);
                 }
 
                 if (ptxFn != null) {
