@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
+import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
@@ -542,43 +543,35 @@ public class Trezor {
         curTx = tx;
         curSubaccount = tx.subaccount_pointer;
         final LinkedList<ECKey> keys = new LinkedList<>();
-        DeterministicKey gaWallet = new DeterministicKey(
-                new ImmutableList.Builder<ChildNumber>().build(),
-                Hex.decode(Network.depositChainCode),
-                ECKey.fromPublicOnly(Hex.decode(Network.depositPubkey)).getPubKeyPoint(),
-                null, null);
+        final DeterministicKey master;
+        master = HDKey.createMasterKey(Network.depositChainCode, Network.depositPubkey);
+        DeterministicKey derived = HDKey.deriveChildKey(master, tx.subaccount_pointer != 0 ? 3 : 1);
 
-        if (tx.subaccount_pointer != 0) {
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(3, false));
-        } else {
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(1, false));
-        }
         int childNum = 0;
         for (int i = 0; i < 32; ++i) {
             int b1 = gait_path[i * 2];
-            if (b1 < 0) {
+            if (b1 < 0)
                 b1 = 256 + b1;
-            }
             int b2 = gait_path[i * 2 + 1];
-            if (b2 < 0) {
+            if (b2 < 0)
                 b2 = 256 + b2;
-            }
+
             childNum = b1 * 256 + b2;
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(childNum, false));
+            derived = HDKey.deriveChildKey(derived, childNum);
         }
-        if (tx.subaccount_pointer != 0 ) {
-            gaWallet = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(tx.subaccount_pointer, false));
-        }
+        if (tx.subaccount_pointer != 0 )
+            derived = HDKey.deriveChildKey(derived, tx.subaccount_pointer);
+
         curGaNode = TrezorType.HDNodeType.newBuilder().
             setDepth(tx.subaccount_pointer == 0 ? 33 : 34).
             setFingerprint(0).
             setChildNum(tx.subaccount_pointer == 0 ? childNum : tx.subaccount_pointer).
-            setPublicKey(ByteString.copyFrom(gaWallet.getPubKey())).
-            setChainCode(ByteString.copyFrom(gaWallet.getChainCode())).
+            setPublicKey(ByteString.copyFrom(derived.getPubKey())).
+            setChainCode(ByteString.copyFrom(derived.getChainCode())).
             build();
 		final Script changeScript;
 		if (tx.change_pointer != null) {
-			final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(gaWallet, new ChildNumber(tx.change_pointer));
+			final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(derived, new ChildNumber(tx.change_pointer));
 			keys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
 
 			final Integer[] intArray;
