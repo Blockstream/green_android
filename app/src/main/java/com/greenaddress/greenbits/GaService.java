@@ -242,13 +242,12 @@ public class GaService extends Service {
             }
 
             @Override
-            public void onNewTransaction(final int wallet_id, @NonNull final int[] subaccounts, final long value, final String txhash) {
+            public void onNewTransaction(final List<Integer> subaccounts) {
                 Log.i(TAG, "onNewTransactions");
                 spv.updateUnspentOutputs();
                 newTransactionsObservable.doNotify();
-                for (final int subaccount : subaccounts) {
+                for (final Integer subaccount : subaccounts)
                     updateBalance(subaccount);
-                }
             }
 
             @Override

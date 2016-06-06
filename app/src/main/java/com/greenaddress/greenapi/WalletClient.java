@@ -400,28 +400,20 @@ public class WalletClient {
         clientSubscribe("txs.wallet_" + mLoginData.receivingId, Map.class, new EventHandler() {
             @Override
             public void onEvent(final String topicUri, final Object event) {
+
                 final Map<?, ?> res = (Map) event;
-                final String txhash = (String) res.get("txhash"),
-                        value = (String) res.get("value"),
-                        wallet_id = (String) res.get("wallet_id");
-                final int[] subaccounts_int;
-                if (res.get("subaccounts") instanceof Number) {
-                    subaccounts_int = new int[1];
-                    subaccounts_int[0] = ((Number) res.get("subaccounts")).intValue();
-                } else {
-                    final ArrayList subaccounts = (ArrayList) res.get("subaccounts");
-                    int size = subaccounts == null ? 0 : subaccounts.size();
-                    subaccounts_int = new int[size];
-                    for (int i = 0; i < size; ++i) {
-                        if (subaccounts.get(i) == null) {
-                            subaccounts_int[i] = 0;
-                        } else {
-                            subaccounts_int[i] = ((Integer) subaccounts.get(i));
-                        }
-                    }
+                final Object subaccounts = res.get("subaccounts");
+
+                final List<Integer> subaccountsList = new ArrayList<>();
+                if (subaccounts instanceof Number)
+                    subaccountsList.add(((Number) subaccounts).intValue());
+                else {
+                    final ArrayList values = (ArrayList) subaccounts;
+                    if (values != null)
+                        for (final Object v: values)
+                            subaccountsList.add(v == null ? 0 : (Integer) v);
                 }
-                mNotificationHandler.onNewTransaction(Integer.valueOf(wallet_id),
-                        subaccounts_int, Long.valueOf(value), txhash);
+                mNotificationHandler.onNewTransaction(subaccountsList);
             }
         });
     }
