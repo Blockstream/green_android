@@ -340,34 +340,10 @@ public class GaService extends Service {
         return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subaccount, pointer);
     }
 
-    private DeterministicKey getKeyPath(final DeterministicKey node) {
-        DeterministicKey nodePath = node;
-        for (int i = 0; i < 32; ++i) {
-            int b1 = gaitPath[i * 2];
-            if (b1 < 0) {
-                b1 = 256 + b1;
-            }
-            int b2 = gaitPath[i * 2 + 1];
-            if (b2 < 0) {
-                b2 = 256 + b2;
-            }
-            nodePath = HDKey.deriveChildKey(nodePath, b1 * 256 + b2);
-        }
-        return nodePath;
-    }
-
     private DeterministicKey getGaDeterministicKey(final Integer subaccount) {
-        if (gaDeterministicKeys.containsKey(subaccount))
-            return gaDeterministicKeys.get(subaccount);
-
-        final DeterministicKey master;
-        master = HDKey.createMasterKey(Network.depositChainCode, Network.depositPubkey);
-        final DeterministicKey derived = HDKey.deriveChildKey(master, subaccount != 0 ? 3 : 1);
-        DeterministicKey nodePath = getKeyPath(derived);
-        if (subaccount != 0)
-            nodePath = HDKey.deriveChildKey(nodePath, subaccount);
-        gaDeterministicKeys.put(subaccount, nodePath);
-        return nodePath;
+        if (!gaDeterministicKeys.containsKey(subaccount))
+            gaDeterministicKeys.put(subaccount, HDKey.getServerSubaccountKey(gaitPath, subaccount));
+        return gaDeterministicKeys.get(subaccount);
     }
 
     private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> f) {
