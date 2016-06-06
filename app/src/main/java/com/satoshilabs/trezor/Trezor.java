@@ -539,21 +539,17 @@ public class Trezor {
         return versionInts;
     }
 
-    public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction tx, final String coinName, final byte[] gaitPath) {
+    public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction tx, final String coinName,
+                                                    final DeterministicKey derived,
+                                                    final int childNumber, final int depth) {
         curTx = tx;
         curSubaccount = tx.subaccount_pointer;
         final LinkedList<ECKey> keys = new LinkedList<>();
 
-        final DeterministicKey derived = HDKey.getServerSubaccountKey(gaitPath, tx.subaccount_pointer);
-
-        int childNum = tx.subaccount_pointer;
-        if (tx.subaccount_pointer == 0)
-            childNum = gaitPath[62] * 256 + gaitPath[63];
-
         curGaNode = TrezorType.HDNodeType.newBuilder().
-            setDepth(tx.subaccount_pointer == 0 ? 33 : 34).
+            setDepth(depth).
             setFingerprint(0).
-            setChildNum(childNum).
+            setChildNum(childNumber).
             setPublicKey(ByteString.copyFrom(derived.getPubKey())).
             setChainCode(ByteString.copyFrom(derived.getChainCode())).
             build();
