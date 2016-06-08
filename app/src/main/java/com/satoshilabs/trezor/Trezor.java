@@ -544,7 +544,6 @@ public class Trezor {
                                                     final int childNumber, final int depth) {
         curTx = tx;
         curSubaccount = tx.subaccount_pointer;
-        final LinkedList<ECKey> keys = new LinkedList<>();
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
             setDepth(depth).
@@ -556,8 +555,9 @@ public class Trezor {
 
         curChangeAddr = null;
         if (tx.change_pointer != null) {
+            final List<ECKey> pubkeys = new ArrayList<>();
             final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(derived, new ChildNumber(tx.change_pointer));
-            keys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
+            pubkeys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
 
             final Integer[] intArray;
             if (tx.subaccount_pointer != 0) {
@@ -567,30 +567,26 @@ public class Trezor {
             }
             final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
             final String pkHex = xpub[xpub.length - 2];
-            keys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
+            pubkeys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
 
             curRecoveryNode = null;
             if (tx.twoOfThreeBackupChaincode != null) {
-                DeterministicKey backupWallet = new DeterministicKey(
-                        new ImmutableList.Builder<ChildNumber>().build(),
-                        Hex.decode(tx.twoOfThreeBackupChaincode),
-                        ECKey.fromPublicOnly(Hex.decode(tx.twoOfThreeBackupPubkey)).getPubKeyPoint(),
-                        null, null);
-                backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(1, false));
+                final DeterministicKey keys[];
+                keys = HDKey.getBackupKeys(tx.twoOfThreeBackupChaincode, tx.twoOfThreeBackupPubkey,
+                                           tx.change_pointer);
 
                 curRecoveryNode = TrezorType.HDNodeType.newBuilder().
-                        setDepth(1).
+                        setDepth(keys[0].getDepth()).
                         setFingerprint(0).
-                        setChildNum(1).
-                        setPublicKey(ByteString.copyFrom(backupWallet.getPubKey())).
-                        setChainCode(ByteString.copyFrom(backupWallet.getChainCode())).
+                        setChildNum(keys[0].getChildNumber().getI()).
+                        setChainCode(ByteString.copyFrom(keys[0].getChainCode())).
+                        setPublicKey(ByteString.copyFrom(keys[0].getPubKey())).
                         build();
 
-                backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(tx.change_pointer));
-                keys.add(ECKey.fromPublicOnly(backupWallet.getPubKeyPoint()));
+                pubkeys.add(ECKey.fromPublicOnly(keys[1].getPubKeyPoint()));
             }
 
-            final Script changeScript = new Script(Script.createMultiSigOutputScript(2, keys));
+            final Script changeScript = new Script(Script.createMultiSigOutputScript(2, pubkeys));
             try {
                 curChangeAddr = new org.bitcoinj.core.Address(Network.NETWORK,
                         Network.NETWORK.getP2SHHeader(),

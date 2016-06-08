@@ -80,6 +80,18 @@ public class HDKey {
         return createMasterKey(h(chainCode), h(publicKey));
     }
 
+    // Get the 2of3 backup key (along with its parent)
+    public static DeterministicKey[] getBackupKeys(final byte[] chainCode, final byte[] publicKey, final int pointer) {
+        DeterministicKey[] ret = new DeterministicKey[2];
+        ret[0] = deriveChildKey(createMasterKey(chainCode, publicKey), 1); // Parent
+        ret[1] = deriveChildKey(ret[0], pointer); // Child
+        return ret;
+    }
+
+    public static DeterministicKey[] getBackupKeys(final String chainCode, final String publicKey, final int pointer) {
+        return getBackupKeys(h(chainCode), h(publicKey), pointer);
+    }
+
     // Get the key derived from the servers public key/chaincode plus the users path.
     // This is the key used on the servers side of 2-of-2 transactions.
     public static DeterministicKey getServerSubaccountKey(final int[] path, final Integer subaccount) {

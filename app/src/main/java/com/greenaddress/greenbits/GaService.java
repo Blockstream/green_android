@@ -296,15 +296,9 @@ public class GaService extends Service {
                 pubkeys.add(derivedPointer);
 
                 final Map<String, ?> m = findSubaccount("2of3", subaccount);
-                if (m != null) {
-                    final DeterministicKey master;
-                    master = HDKey.createMasterKey((String) m.get("2of3_backup_chaincode"),
-                                                   (String) m.get("2of3_backup_pubkey"));
-
-                    final DeterministicKey derivedBackupRoot = HDKey.deriveChildKey(master, 1);
-                    final DeterministicKey derivedBackupPointer = HDKey.deriveChildKey(derivedBackupRoot, pointer);
-                    pubkeys.add(derivedBackupPointer);
-                }
+                if (m != null)
+                    pubkeys.add(HDKey.getBackupKeys((String) m.get("2of3_backup_chaincode"),
+                                                    (String) m.get("2of3_backup_pubkey"), pointer)[1]);
 
                 return Script.createMultiSigOutputScript(2, pubkeys);
             }
