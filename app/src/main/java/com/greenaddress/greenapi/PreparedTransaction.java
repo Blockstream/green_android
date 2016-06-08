@@ -25,8 +25,12 @@ public class PreparedTransaction {
     public final List<Output> prev_outputs = new ArrayList<>();
     public final Transaction decoded;
     public final Map<String, Transaction> prevoutRawTxs;
-    public final String twoOfThreeBackupChaincode;
-    public final String twoOfThreeBackupPubkey;
+    public final byte[] twoOfThreeBackupChaincode;
+    public final byte[] twoOfThreeBackupPubkey;
+
+    private static byte[] getBytes(final Map<String, ?> map, final String key) {
+        return map == null ? null : Wally.hex_to_bytes((String) map.get(key));
+    }
 
     public PreparedTransaction(final Integer change_pointer, final Integer subaccount_pointer, final Transaction decoded, final Map<String, ?> twoOfThree) {
         this.change_pointer = change_pointer;
@@ -34,8 +38,8 @@ public class PreparedTransaction {
         this.requires_2factor = false;
         this.decoded = decoded;
         this.prevoutRawTxs = new HashMap<>();
-        this.twoOfThreeBackupChaincode = twoOfThree == null ? null : (String) twoOfThree.get("2of3_backup_chaincode");
-        this.twoOfThreeBackupPubkey = twoOfThree == null ? null : (String) twoOfThree.get("2of3_backup_pubkey");
+        this.twoOfThreeBackupChaincode = getBytes(twoOfThree, "2of3_backup_chaincode");
+        this.twoOfThreeBackupPubkey = getBytes(twoOfThree, "2of3_backup_pubkey");
     }
 
     public static class PreparedData {
@@ -63,35 +67,35 @@ public class PreparedTransaction {
 
         this.prevoutRawTxs = new HashMap<>();
 
-        String twoOfThreeBackupChaincode = null, twoOfThreeBackupPubkey = null;
-        if (pte.privateData != null && pte.privateData.get("subaccount") != null && !pte.privateData.get("subaccount").equals(0)) {
-            for (final Object subaccount : pte.subaccounts) {
-                final Map<String, ?> subaccountMap = (Map) subaccount;
-                if (subaccountMap.get("type").equals("2of3") && subaccountMap.get("pointer").equals(pte.privateData.get("subaccount"))) {
-                    twoOfThreeBackupChaincode = (String) subaccountMap.get("2of3_backup_chaincode");
-                    twoOfThreeBackupPubkey = (String) subaccountMap.get("2of3_backup_pubkey");
-                    break;
+        if (pte.privateData == null || pte.privateData.get("subaccount") == null) {
+            this.subaccount_pointer = 0;
+            this.twoOfThreeBackupChaincode = null;
+            this.twoOfThreeBackupPubkey = null;
+        } else {
+            this.subaccount_pointer = (Integer) pte.privateData.get("subaccount");
+            byte[] chaincode = null, pubkey = null;
+            if (this.subaccount_pointer != 0) {
+                // Check if the subaccount is 2of3 and if so store its chaincode/public key
+                for (final Object subaccount : pte.subaccounts) {
+                    final Map<String, ?> map = (Map) subaccount;
+                    if (map.get("type").equals("2of3") && map.get("pointer").equals(this.subaccount_pointer)) {
+                        chaincode = getBytes(map, "2of3_backup_chaincode");
+                        pubkey = getBytes(map, "2of3_backup_pubkey");
+                        break;
+                    }
                 }
             }
+            this.twoOfThreeBackupChaincode = chaincode;
+            this.twoOfThreeBackupPubkey = pubkey;
         }
 
-        this.subaccount_pointer = (pte.privateData == null || pte.privateData.get("subaccount") == null) ?
-                0 : (Integer) pte.privateData.get("subaccount");
-
-        this.twoOfThreeBackupChaincode = twoOfThreeBackupChaincode;
-        this.twoOfThreeBackupPubkey = twoOfThreeBackupPubkey;
-
-        final List tmp = (List) pte.values.get("prev_outputs");
-
-        for (final Object obj : tmp) {
+        for (final Object obj : (List) pte.values.get("prev_outputs"))
             this.prev_outputs.add(new Output((Map<?, ?>) obj));
-        }
 
-        if (pte.values.get("change_pointer") != null) {
+        if (pte.values.get("change_pointer") != null)
             this.change_pointer = Integer.parseInt(pte.values.get("change_pointer").toString());
-        } else {
+        else
             this.change_pointer = null;
-        }
 
         this.requires_2factor = (Boolean) pte.values.get("requires_2factor");
         this.decoded = new Transaction(Network.NETWORK, Wally.hex_to_bytes(pte.values.get("tx").toString()));
