@@ -28,14 +28,14 @@ public class PreparedTransaction {
     public final String twoOfThreeBackupChaincode;
     public final String twoOfThreeBackupPubkey;
 
-    public PreparedTransaction(final Integer change_pointer, final Integer subaccount_pointer, final Boolean requires_2factor, final Transaction decoded, final String twoOfThreeBackupChaincode, final String twoOfThreeBackupPubkey, final Map<String, Transaction> prevoutRawTxs) {
+    public PreparedTransaction(final Integer change_pointer, final Integer subaccount_pointer, final Transaction decoded, final Map<String, ?> twoOfThree) {
         this.change_pointer = change_pointer;
         this.subaccount_pointer = subaccount_pointer;
-        this.requires_2factor = requires_2factor;
+        this.requires_2factor = false;
         this.decoded = decoded;
-        this.twoOfThreeBackupChaincode = twoOfThreeBackupChaincode;
-        this.twoOfThreeBackupPubkey = twoOfThreeBackupPubkey;
-        this.prevoutRawTxs = prevoutRawTxs;
+        this.prevoutRawTxs = new HashMap<>();
+        this.twoOfThreeBackupChaincode = twoOfThree == null ? null : (String) twoOfThree.get("2of3_backup_chaincode");
+        this.twoOfThreeBackupPubkey = twoOfThree == null ? null : (String) twoOfThree.get("2of3_backup_pubkey");
     }
 
     public static class PreparedData {

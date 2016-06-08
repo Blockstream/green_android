@@ -531,17 +531,9 @@ public class TransactionActivity extends GaActivity {
                                     final List<byte[]> morePrevouts, final int level) {
             final GaActivity gaActivity = getGaActivity();
 
-            final Map<String, ?> m = getGAService().findSubaccount("2of3", subaccount);
-            String twoOfThreeBackupChaincode = m == null ? null : (String) m.get("2of3_backup_chaincode");
-            String twoOfThreeBackupPubkey = m == null ? null : (String) m.get("2of3_backup_pubkey");
-
-            final Map<String, Transaction> prevoutRawTxs = new HashMap<>();
-
-            final PreparedTransaction ptx = new PreparedTransaction(
-                    change_pointer, subaccount, /*requires_2factor*/false,
-                    tx, twoOfThreeBackupChaincode, twoOfThreeBackupPubkey,
-                    prevoutRawTxs
-            );
+            final PreparedTransaction ptx;
+            ptx = new PreparedTransaction(change_pointer, subaccount, tx,
+                                          getGAService().findSubaccount("2of3", subaccount));
 
             for (final Map<String, Object> ep : (List<Map<String, Object>>)txItem.eps) {
                 if (((Boolean) ep.get("is_credit"))) continue;
@@ -621,7 +613,7 @@ public class TransactionActivity extends GaActivity {
                                     new Function<Transaction, Void>() {
                                         @Override
                                         public Void apply(Transaction input) {
-                                            prevoutRawTxs.put(Wally.hex_from_bytes(inp.getOutpoint().getHash().getBytes()), input);
+                                            ptx.prevoutRawTxs.put(Wally.hex_from_bytes(inp.getOutpoint().getHash().getBytes()), input);
                                             return null;
                                         }
                                     }
