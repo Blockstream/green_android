@@ -15,9 +15,14 @@ import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PUBLIC;
 import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PRIVATE;
 import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PRIVATE;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class HDKey {
     private final static int VER_PUBLIC = isMain() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
     private final static int VER_PRIVATE = isMain() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
+
+    private static final Map<Integer, DeterministicKey> mServerKeys = new HashMap<>();
 
     private Object mImpl;
 
@@ -93,8 +98,22 @@ public class HDKey {
     }
 
     // Get the key derived from the servers public key/chaincode plus the users path.
-    // This is the key used on the servers side of 2-of-2 transactions.
-    public static DeterministicKey getServerSubaccountKey(final int[] path, final Integer subaccount) {
+    // This is the key used on the servers side of 2of2/2of3 transactions.
+    public static DeterministicKey getServerKey(final int[] path, final Integer subaccount) {
+        synchronized (mServerKeys) {
+            if (!mServerKeys.containsKey(subaccount))
+                mServerKeys.put(subaccount, getServerKeyImpl(path, subaccount));
+            return mServerKeys.get(subaccount);
+        }
+    }
+
+    public static void resetCache() {
+        synchronized (mServerKeys) {
+            mServerKeys.clear();
+        }
+    }
+
+    private static DeterministicKey getServerKeyImpl(final int[] path, final Integer subaccount) {
         DeterministicKey k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
         k = deriveChildKey(k, subaccount == 0 ? 1 : 3);
         for (int i : path)

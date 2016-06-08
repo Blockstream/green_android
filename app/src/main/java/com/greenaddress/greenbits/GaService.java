@@ -122,8 +122,6 @@ public class GaService extends Service {
     private String fiatCurrency;
     private String fiatExchange;
     private ArrayList mSubaccounts;
-
-    private final Map<Integer, DeterministicKey> gaDeterministicKeys = new HashMap<>();
     private String mReceivingId;
     private int[] mGaitPath;
     @Nullable
@@ -252,7 +250,7 @@ public class GaService extends Service {
 
             @Override
             public void onConnectionClosed(final int code) {
-                gaDeterministicKeys.clear();
+                HDKey.resetCache();
 
                 // Server error codes FIXME: These should be in a class somewhere
                 // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
@@ -283,7 +281,7 @@ public class GaService extends Service {
 
     public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
-        final DeterministicKey gaWallet = getGaDeterministicKey(subaccount);
+        final DeterministicKey gaWallet = HDKey.getServerKey(mGaitPath, subaccount);
         final ECKey gaKey = HDKey.deriveChildKey(gaWallet, pointer);
         pubkeys.add(gaKey);
 
@@ -334,12 +332,6 @@ public class GaService extends Service {
         return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subaccount, pointer);
     }
 
-    private DeterministicKey getGaDeterministicKey(final Integer subaccount) {
-        if (!gaDeterministicKeys.containsKey(subaccount))
-            gaDeterministicKeys.put(subaccount, HDKey.getServerSubaccountKey(mGaitPath, subaccount));
-        return gaDeterministicKeys.get(subaccount);
-    }
-
     private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> f) {
         mState.transitionTo(ConnState.LOGGINGIN);
         Futures.addCallback(f, new FutureCallback<LoginData>() {
@@ -362,7 +354,7 @@ public class GaService extends Service {
                     updateBalance(pointer);
                 }
                 getAvailableTwoFacMethods();
-                gaDeterministicKeys.clear();
+                HDKey.resetCache();
                 spv.startIfEnabled();
                 mState.transitionTo(ConnState.LOGGEDIN);
             }
