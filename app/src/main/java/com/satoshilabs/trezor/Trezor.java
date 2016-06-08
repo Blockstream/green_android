@@ -553,7 +553,8 @@ public class Trezor {
             setPublicKey(ByteString.copyFrom(derived.getPubKey())).
             setChainCode(ByteString.copyFrom(derived.getChainCode())).
             build();
-        final Script changeScript;
+
+        curChangeAddr = null;
         if (tx.change_pointer != null) {
             final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(derived, new ChildNumber(tx.change_pointer));
             keys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
@@ -568,6 +569,7 @@ public class Trezor {
             final String pkHex = xpub[xpub.length - 2];
             keys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
 
+            curRecoveryNode = null;
             if (tx.twoOfThreeBackupChaincode != null) {
                 DeterministicKey backupWallet = new DeterministicKey(
                         new ImmutableList.Builder<ChildNumber>().build(),
@@ -586,26 +588,16 @@ public class Trezor {
 
                 backupWallet = HDKeyDerivation.deriveChildKey(backupWallet, new ChildNumber(tx.change_pointer));
                 keys.add(ECKey.fromPublicOnly(backupWallet.getPubKeyPoint()));
-            } else {
-                curRecoveryNode = null;
             }
 
-            changeScript = new Script(Script.createMultiSigOutputScript(2, keys));
-        } else {
-            changeScript = null;
-        }
-        if (changeScript != null) {
+            final Script changeScript = new Script(Script.createMultiSigOutputScript(2, keys));
             try {
                 curChangeAddr = new org.bitcoinj.core.Address(Network.NETWORK,
                         Network.NETWORK.getP2SHHeader(),
                         Utils.sha256hash160(changeScript.getProgram()));
             } catch (WrongNetworkException e) {
-                curChangeAddr = null;
             }
-        } else {
-            curChangeAddr = null;
         }
-
 
         final Integer[] intArray2;
         if (tx.subaccount_pointer != 0) {
