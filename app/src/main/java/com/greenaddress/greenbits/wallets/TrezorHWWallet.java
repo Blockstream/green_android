@@ -64,13 +64,10 @@ public class TrezorHWWallet implements ISigningWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx, final int[] gaitPath) {
-        final DeterministicKey derived = HDKey.getServerKey(gaitPath, ptx.subaccount_pointer);
-        // FIXME: Verify these match and use getChildNumber/getDepth from 'derived' instead
-        final int childNumber = ptx.subaccount_pointer == 0 ? gaitPath[gaitPath.length - 1] : ptx.subaccount_pointer;
-        final int depth = ptx.subaccount_pointer == 0 ? 33 : 34;
+    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx, final int[] path) {
         final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
-        return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet", derived, childNumber, depth);
+        return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet",
+                                    HDKey.getServerKey(path, ptx.subaccount_pointer));
     }
 
     @Override

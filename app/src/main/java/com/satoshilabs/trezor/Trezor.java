@@ -540,23 +540,22 @@ public class Trezor {
     }
 
     public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction tx, final String coinName,
-                                                    final DeterministicKey derived,
-                                                    final int childNumber, final int depth) {
+                                                    final DeterministicKey key) {
         curTx = tx;
         curSubaccount = tx.subaccount_pointer;
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
-            setDepth(depth).
+            setDepth(key.getDepth()).
             setFingerprint(0).
-            setChildNum(childNumber).
-            setPublicKey(ByteString.copyFrom(derived.getPubKey())).
-            setChainCode(ByteString.copyFrom(derived.getChainCode())).
+            setChildNum(key.getChildNumber().getI()).
+            setPublicKey(ByteString.copyFrom(key.getPubKey())).
+            setChainCode(ByteString.copyFrom(key.getChainCode())).
             build();
 
         curChangeAddr = null;
         if (tx.change_pointer != null) {
             final List<ECKey> pubkeys = new ArrayList<>();
-            final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(derived, new ChildNumber(tx.change_pointer));
+            final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(key, new ChildNumber(tx.change_pointer));
             pubkeys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
 
             final Integer[] intArray;
