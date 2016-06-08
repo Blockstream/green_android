@@ -281,9 +281,7 @@ public class GaService extends Service {
 
     public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
-        final DeterministicKey gaWallet = HDKey.getServerKey(mGaitPath, subaccount);
-        final ECKey gaKey = HDKey.deriveChildKey(gaWallet, pointer);
-        pubkeys.add(gaKey);
+        pubkeys.add(HDKey.getServerKeys(mGaitPath, subaccount, pointer)[1]);
 
         final DeterministicKey master = mClient.getMasterPubKey(subaccount);
 

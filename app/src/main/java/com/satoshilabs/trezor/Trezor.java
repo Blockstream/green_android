@@ -46,7 +46,6 @@ import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.WrongNetworkException;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.script.Script;
 import org.spongycastle.util.encoders.Hex;
 
@@ -539,40 +538,42 @@ public class Trezor {
         return versionInts;
     }
 
-    public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction tx, final String coinName,
-                                                    final DeterministicKey key) {
-        curTx = tx;
-        curSubaccount = tx.subaccount_pointer;
+    public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction ptx, final String coinName,
+                                                    final int[] path) {
+        curTx = ptx;
+        curSubaccount = ptx.subaccount_pointer;
+
+        final DeterministicKey[] serverKeys = HDKey.getServerKeys(path, ptx.subaccount_pointer, ptx.change_pointer);
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
-            setDepth(key.getDepth()).
+            setDepth(serverKeys[0].getDepth()).
             setFingerprint(0).
-            setChildNum(key.getChildNumber().getI()).
-            setPublicKey(ByteString.copyFrom(key.getPubKey())).
-            setChainCode(ByteString.copyFrom(key.getChainCode())).
+            setChildNum(serverKeys[0].getChildNumber().getI()).
+            setPublicKey(ByteString.copyFrom(serverKeys[0].getPubKey())).
+            setChainCode(ByteString.copyFrom(serverKeys[0].getChainCode())).
             build();
 
         curChangeAddr = null;
-        if (tx.change_pointer != null) {
+        if (serverKeys[1] != null) {
+            // We have a change pointer
             final List<ECKey> pubkeys = new ArrayList<>();
-            final DeterministicKey changeKey = HDKeyDerivation.deriveChildKey(key, new ChildNumber(tx.change_pointer));
-            pubkeys.add(ECKey.fromPublicOnly(changeKey.getPubKeyPoint()));
+            pubkeys.add(ECKey.fromPublicOnly(serverKeys[1].getPubKeyPoint()));
 
             final Integer[] intArray;
-            if (tx.subaccount_pointer != 0) {
-                intArray = new Integer[]{3 + 0x80000000, tx.subaccount_pointer + 0x80000000, 1, tx.change_pointer};
+            if (ptx.subaccount_pointer != 0) {
+                intArray = new Integer[]{3 + 0x80000000, ptx.subaccount_pointer + 0x80000000, 1, ptx.change_pointer};
             } else {
-                intArray = new Integer[]{1, tx.change_pointer};
+                intArray = new Integer[]{1, ptx.change_pointer};
             }
             final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
             final String pkHex = xpub[xpub.length - 2];
             pubkeys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
 
             curRecoveryNode = null;
-            if (tx.twoOfThreeBackupChaincode != null) {
+            if (ptx.twoOfThreeBackupChaincode != null) {
                 final DeterministicKey keys[];
-                keys = HDKey.getBackupKeys(tx.twoOfThreeBackupChaincode, tx.twoOfThreeBackupPubkey,
-                                           tx.change_pointer);
+                keys = HDKey.getBackupKeys(ptx.twoOfThreeBackupChaincode, ptx.twoOfThreeBackupPubkey,
+                                           ptx.change_pointer);
 
                 curRecoveryNode = TrezorType.HDNodeType.newBuilder().
                         setDepth(keys[0].getDepth()).
@@ -595,8 +596,8 @@ public class Trezor {
         }
 
         final Integer[] intArray2;
-        if (tx.subaccount_pointer != 0) {
-            intArray2 = new Integer[]{3 + 0x80000000, tx.subaccount_pointer + 0x80000000, 1};
+        if (ptx.subaccount_pointer != 0) {
+            intArray2 = new Integer[]{3 + 0x80000000, ptx.subaccount_pointer + 0x80000000, 1};
         } else {
             intArray2 = new Integer[]{1};
         }
@@ -620,8 +621,8 @@ public class Trezor {
         final LinkedList<ECKey.ECDSASignature> signaturesList = new LinkedList<>();
         final String[] signatures = _get(this.send(
                 SignTx.newBuilder().
-                        setInputsCount(tx.decoded.getInputs().size()).
-                        setOutputsCount(tx.decoded.getOutputs().size()).
+                        setInputsCount(ptx.decoded.getInputs().size()).
+                        setOutputsCount(ptx.decoded.getOutputs().size()).
                         setCoinName(coinName).
                         build())).split(";");
         for (final String sig: signatures) {

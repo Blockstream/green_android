@@ -66,8 +66,7 @@ public class TrezorHWWallet implements ISigningWallet {
     @Override
     public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx, final int[] path) {
         final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
-        return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet",
-                                    HDKey.getServerKey(path, ptx.subaccount_pointer));
+        return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet", path);
     }
 
     @Override

@@ -85,26 +85,34 @@ public class HDKey {
         return createMasterKey(h(chainCode), h(publicKey));
     }
 
-    // Get the 2of3 backup key (along with its parent)
-    public static DeterministicKey[] getBackupKeys(final byte[] chainCode, final byte[] publicKey, final int pointer) {
+    // Get the 2of3 backup key (plus parent)
+    // This is the users key to reedeem 2of3 funds in the event that GA becomes unavailable
+    public static DeterministicKey[] getBackupKeys(final byte[] chainCode, final byte[] publicKey, final Integer pointer) {
         DeterministicKey[] ret = new DeterministicKey[2];
         ret[0] = deriveChildKey(createMasterKey(chainCode, publicKey), 1); // Parent
         ret[1] = deriveChildKey(ret[0], pointer); // Child
         return ret;
     }
 
-    public static DeterministicKey[] getBackupKeys(final String chainCode, final String publicKey, final int pointer) {
+    public static DeterministicKey[] getBackupKeys(final String chainCode, final String publicKey, final Integer pointer) {
         return getBackupKeys(h(chainCode), h(publicKey), pointer);
     }
 
-    // Get the key derived from the servers public key/chaincode plus the users path.
+    // Get the key derived from the servers public key/chaincode plus the users path (plus parent).
     // This is the key used on the servers side of 2of2/2of3 transactions.
-    public static DeterministicKey getServerKey(final int[] path, final Integer subaccount) {
+    public static DeterministicKey[] getServerKeys(final int[] path, final Integer subaccount, final Integer pointer) {
+        DeterministicKey[] ret = new DeterministicKey[2];
         synchronized (mServerKeys) {
+            // Fetch the parent key. This is expensive so we cache it
             if (!mServerKeys.containsKey(subaccount))
-                mServerKeys.put(subaccount, getServerKeyImpl(path, subaccount));
-            return mServerKeys.get(subaccount);
+                mServerKeys.put(subaccount, ret[0] = getServerKeyImpl(path, subaccount));
+            else
+                ret[0] = mServerKeys.get(subaccount);
         }
+        // Compute the child key if we were asked for it
+        if (pointer != null)
+            ret[1] = deriveChildKey(ret[0], pointer); // Child
+        return ret;
     }
 
     public static void resetCache() {
