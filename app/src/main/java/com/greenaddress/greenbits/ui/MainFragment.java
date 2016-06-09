@@ -175,17 +175,17 @@ public class MainFragment extends SubaccountFragment {
         curBalanceObserver = makeBalanceObserver();
         service.addBalanceObserver(curSubaccount, curBalanceObserver);
 
-        if (service.getBalanceCoin(curSubaccount) != null)
+        if (service.getBalanceCoin(curSubaccount) != null) {
             updateBalance();
-
-        reloadTransactions(getActivity());
+            reloadTransactions(false);
+        }
         return rootView;
     }
 
     @Override
     protected void onBalanceUpdated() {
         updateBalance();
-        reloadTransactions(getActivity(), true); // newAdapter for unit change
+        reloadTransactions(true); // newAdapter for unit change
     }
 
     @Override
@@ -206,7 +206,7 @@ public class MainFragment extends SubaccountFragment {
 
     // Called when a new transaction is seen
     private void onNewTx() {
-        reloadTransactions(getActivity());
+        reloadTransactions(false);
     }
 
     // Called when a new verified transaction is seen
@@ -222,10 +222,6 @@ public class MainFragment extends SubaccountFragment {
         txView.getAdapter().notifyDataSetChanged();
     }
 
-    private void reloadTransactions(@NonNull final Activity activity) {
-        reloadTransactions(activity, false);
-    }
-
     private void setVisibility(final int id, final int vis) {
         rootView.findViewById(id).setVisibility(vis);
     }
@@ -235,7 +231,8 @@ public class MainFragment extends SubaccountFragment {
         setVisibility(R.id.mainEmptyTransText, doShow ? View.GONE : View.VISIBLE);
     }
 
-    private void reloadTransactions(@NonNull final Activity activity, boolean newAdapter) {
+    private void reloadTransactions(boolean newAdapter) {
+        final Activity activity = getActivity();
         final GaService service = getGAService();
         final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
         final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
@@ -328,7 +325,7 @@ public class MainFragment extends SubaccountFragment {
         curSubaccount = input;
         curBalanceObserver = makeBalanceObserver();
         service.addBalanceObserver(curSubaccount, curBalanceObserver);
-        reloadTransactions(getActivity());
+        reloadTransactions(false);
         updateBalance();
     }
 
