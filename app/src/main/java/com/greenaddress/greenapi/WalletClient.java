@@ -538,20 +538,6 @@ public class WalletClient {
         return login(mHDParent, device_id);
     }
 
-    // Derive private key for signing the challenge, using 'len' bytes instead of 64
-    private ISigningWallet createSubpathForLogin(ISigningWallet parent, final byte[] path, final int len) {
-        for (int i = 0; i < len / 2; ++i) {
-            int b1 = path[i * 2];
-            if (b1 < 0)
-                b1 = 256 + b1;
-            int b2 = path[i * 2 + 1];
-            if (b2 < 0)
-                b2 = 256 + b2;
-            parent = parent.derive(b1 * 256 + b2);
-        }
-        return parent;
-    }
-
     private byte[] convertChallengeString(final String challengeString) {
         byte[] bytes = new BigInteger(challengeString).toByteArray();
             // Get rid of initial 0 byte if challenge > 2^31
@@ -564,13 +550,22 @@ public class WalletClient {
         final SettableFuture<LoginData> rpc = SettableFuture.create();
 
         final String pathStr;
-        final ISigningWallet child;
         final ListenableFuture<String[]> signature_arg;
         if (signingWallet.canSignHashes()) {
             final byte[] path = CryptoHelper.randomBytes(8);
             pathStr = Wally.hex_from_bytes(path);
-            child = createSubpathForLogin(signingWallet, path, 8);
-
+            // Derive private key for signing the challenge
+            ISigningWallet parent = signingWallet;
+            for (int i = 0; i < 8 / 2; ++i) {
+                int b1 = path[i * 2];
+                if (b1 < 0)
+                    b1 = 256 + b1;
+                int b2 = path[i * 2 + 1];
+                if (b2 < 0)
+                    b2 = 256 + b2;
+                parent = parent.derive(b1 * 256 + b2);
+            }
+            final ISigningWallet child = parent;
             signature_arg = mExecutor.submit(new Callable<String[]>() {
                 @Override
                 public String[] call() {
@@ -583,8 +578,7 @@ public class WalletClient {
             // btchip requires 0xB11E to skip HID authentication
             // 0x4741 = 18241 = 256*G + A in ASCII
             pathStr = "GA";
-            child = signingWallet.derive(0x4741b11e);
-
+            final ISigningWallet child = signingWallet.derive(0x4741b11e);
             final String message = "greenaddress.it      login " + challengeString;
             final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message));
             final ECKey master = child.getPubKey();
