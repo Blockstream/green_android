@@ -5,22 +5,22 @@ import org.bitcoinj.crypto.DeterministicKey;
 
 import java.util.List;
 
-public interface ISigningWallet {
+public abstract class ISigningWallet {
     public static final int HARDENED = 0x80000000;
 
-    ISigningWallet derive(Integer childNumber);
+    public abstract ISigningWallet derive(Integer childNumber);
 
-    byte[] getIdentifier();
+    public abstract byte[] getIdentifier();
 
-    ECKey.ECDSASignature signHash(byte[] hash);
+    public abstract ECKey.ECDSASignature signHash(byte[] hash);
 
-    ECKey.ECDSASignature signMessage(String message);
+    public abstract ECKey.ECDSASignature signMessage(String message);
 
-    boolean canSignHashes();
+    public abstract boolean canSignHashes();
 
-    DeterministicKey getPubKey();
+    public abstract DeterministicKey getPubKey();
 
-    List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx);
+    public abstract List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx);
 
-    boolean requiresPrevoutRawTxs();
+    public abstract boolean requiresPrevoutRawTxs();
 }

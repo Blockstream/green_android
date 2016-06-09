@@ -6,7 +6,7 @@ import org.bitcoinj.crypto.DeterministicKey;
 
 import java.util.List;
 
-public class Bip32Wallet implements ISigningWallet {
+public class Bip32Wallet extends ISigningWallet {
     private final DeterministicKey hdWallet;
 
     public Bip32Wallet(final DeterministicKey masterPrivateKey) {

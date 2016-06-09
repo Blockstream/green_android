@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
 
 
-public class BTChipHWWallet implements ISigningWallet {
+public class BTChipHWWallet extends ISigningWallet {
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final BTChipDongle dongle;
     private RequestLoginActivity loginActivity;

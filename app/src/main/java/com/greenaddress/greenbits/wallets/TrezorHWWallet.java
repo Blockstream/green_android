@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class TrezorHWWallet implements ISigningWallet {
+public class TrezorHWWallet extends ISigningWallet {
 
     private final Trezor trezor;
     private final List<Integer> addrn;
