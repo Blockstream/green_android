@@ -123,7 +123,6 @@ public class GaService extends Service {
     private String fiatExchange;
     private ArrayList mSubaccounts;
     private String mReceivingId;
-    private int[] mGaitPath;
     @Nullable
     private Map<?, ?> twoFacConfig;
     private final GaObservable twoFacConfigObservable = new GaObservable();
@@ -250,7 +249,7 @@ public class GaService extends Service {
 
             @Override
             public void onConnectionClosed(final int code) {
-                HDKey.resetCache();
+                HDKey.resetCache(null);
 
                 // Server error codes FIXME: These should be in a class somewhere
                 // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
@@ -281,7 +280,7 @@ public class GaService extends Service {
 
     public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
-        pubkeys.add(HDKey.getServerKeys(mGaitPath, subaccount, pointer)[1]);
+        pubkeys.add(HDKey.getServerKeys(subaccount, pointer)[1]);
 
         final DeterministicKey master = mClient.getMasterPubKey(subaccount);
 
@@ -341,7 +340,7 @@ public class GaService extends Service {
                 fiatExchange = result.exchange;
                 mSubaccounts = result.subaccounts;
                 mReceivingId = result.receivingId;
-                mGaitPath = result.gaitPath;
+                HDKey.resetCache(result.gaitPath);
 
                 balanceObservables.put(0, new GaObservable());
                 updateBalance(0);
@@ -352,7 +351,6 @@ public class GaService extends Service {
                     updateBalance(pointer);
                 }
                 getAvailableTwoFacMethods();
-                HDKey.resetCache();
                 spv.startIfEnabled();
                 mState.transitionTo(ConnState.LOGGEDIN);
             }

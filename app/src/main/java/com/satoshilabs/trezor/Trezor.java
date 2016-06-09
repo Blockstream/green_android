@@ -538,12 +538,11 @@ public class Trezor {
         return versionInts;
     }
 
-    public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction ptx, final String coinName,
-                                                    final int[] path) {
+    public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction ptx, final String coinName) {
         curTx = ptx;
         curSubaccount = ptx.subaccount_pointer;
 
-        final DeterministicKey[] serverKeys = HDKey.getServerKeys(path, ptx.subaccount_pointer, ptx.change_pointer);
+        final DeterministicKey[] serverKeys = HDKey.getServerKeys(ptx.subaccount_pointer, ptx.change_pointer);
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
             setDepth(serverKeys[0].getDepth()).

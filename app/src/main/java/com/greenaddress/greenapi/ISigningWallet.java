@@ -20,7 +20,7 @@ public interface ISigningWallet {
 
     DeterministicKey getPubKey();
 
-    List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx, int[] gaitPath);
+    List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx);
 
     boolean requiresPrevoutRawTxs();
 }

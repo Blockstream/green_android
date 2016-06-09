@@ -371,6 +371,7 @@ public class WalletClient {
         return clientCall(rpc, "login.set_gait_path", Void.class, new CallHandler() {
             public void onResult(final Object result) {
                 loginData.setGaitPath(path);
+                HDKey.resetCache(loginData.gaitPath);
                 rpc.set(loginData);
             }
         }, Wally.hex_from_bytes(path));
@@ -885,7 +886,7 @@ public class WalletClient {
             public List<String> call() {
                 if (canSignHashes)
                     return signTransactionHashes(ptx, isPrivate);
-                return convertSigs(mHDParent.signTransaction(ptx, mLoginData.gaitPath));
+                return convertSigs(mHDParent.signTransaction(ptx));
             }
         });
     }
