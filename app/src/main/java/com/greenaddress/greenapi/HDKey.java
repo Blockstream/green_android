@@ -119,7 +119,7 @@ public class HDKey {
     public static void resetCache(final int[] path) {
         synchronized (mServerKeys) {
             mServerKeys.clear();
-            mPath = path;
+            mPath = path == null ? null : path.clone();
         }
     }
 
