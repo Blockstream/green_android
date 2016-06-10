@@ -149,9 +149,7 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     @Override
-    public boolean requiresPrevoutRawTxs() {
-        return true;
-    }
+    public boolean requiresPrevoutRawTxs() { return true; }
 
     @Override
     public DeterministicKey getPubKey() {
@@ -171,9 +169,7 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     @Override
-    public boolean canSignHashes() {
-        return false;
-    }
+    public boolean canSignHashes() { return false; }
 
     @Override
     public ECKey.ECDSASignature signMessage(final String message) {

@@ -43,9 +43,7 @@ public class TrezorHWWallet extends ISigningWallet {
     }
 
     @Override
-    public boolean canSignHashes() {
-        return false;
-    }
+    public boolean canSignHashes() { return false; }
 
     @Override
     public ECKey.ECDSASignature signHash(final byte[] hash) {
@@ -72,7 +70,5 @@ public class TrezorHWWallet extends ISigningWallet {
     }
 
     @Override
-    public boolean requiresPrevoutRawTxs() {
-        return true;
-    }
+    public boolean requiresPrevoutRawTxs() { return true; }
 }

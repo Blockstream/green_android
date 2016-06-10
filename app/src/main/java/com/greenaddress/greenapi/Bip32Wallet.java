@@ -33,11 +33,6 @@ public class Bip32Wallet extends ISigningWallet {
     }
 
     @Override
-    public boolean canSignHashes() {
-        return true;
-    }
-
-    @Override
     public DeterministicKey getPubKey() {
         return mRootKey;
     }
@@ -48,7 +43,5 @@ public class Bip32Wallet extends ISigningWallet {
     }
 
     @Override
-    public boolean requiresPrevoutRawTxs() {
-        return false;
-    }
+    public boolean requiresPrevoutRawTxs() { return false; }
 }

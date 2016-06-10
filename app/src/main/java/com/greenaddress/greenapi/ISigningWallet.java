@@ -26,13 +26,13 @@ public abstract class ISigningWallet {
 
     public abstract ECKey.ECDSASignature signMessage(String message);
 
-    public abstract boolean canSignHashes();
+    // FIXME: Get rid of these along with checking the object type by callers
+    public boolean canSignHashes() { return true; }
+    public boolean requiresPrevoutRawTxs() { return false; }
 
     public abstract DeterministicKey getPubKey();
 
     public abstract List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx);
-
-    public abstract boolean requiresPrevoutRawTxs();
 
     String[] signChallenge(final String challengeString, final String[] challengePath) {
 
