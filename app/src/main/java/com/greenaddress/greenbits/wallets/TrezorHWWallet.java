@@ -20,11 +20,13 @@ public class TrezorHWWallet extends ISigningWallet {
     private final List<Integer> addrn;
 
     public TrezorHWWallet(final Trezor t) {
+        super(null);
         trezor = t;
         addrn = new LinkedList<>();
     }
 
     private TrezorHWWallet(final TrezorHWWallet parent, final Integer childNumber) {
+        super(null);
         trezor = parent.trezor;
         addrn = new LinkedList<>(parent.addrn);
         addrn.add(childNumber);

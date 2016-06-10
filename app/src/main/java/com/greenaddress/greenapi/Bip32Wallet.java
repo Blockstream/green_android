@@ -7,25 +7,24 @@ import org.bitcoinj.crypto.DeterministicKey;
 import java.util.List;
 
 public class Bip32Wallet extends ISigningWallet {
-    private final DeterministicKey hdWallet;
 
-    public Bip32Wallet(final DeterministicKey masterPrivateKey) {
-        hdWallet = masterPrivateKey;
+    public Bip32Wallet(final DeterministicKey key) {
+        super(key);
     }
 
     @Override
     public ISigningWallet derive(final Integer childNumber) {
-        return new Bip32Wallet(HDKey.deriveChildKey(hdWallet, childNumber));
+        return new Bip32Wallet(HDKey.deriveChildKey(mRootKey, childNumber));
     }
 
     @Override
     public byte[] getIdentifier() {
-        return hdWallet.getIdentifier();
+        return mRootKey.getIdentifier();
     }
 
     @Override
     public ECKey.ECDSASignature signHash(final byte[] hash) {
-        return ECKey.fromPrivate(hdWallet.getPrivKey()).sign(Sha256Hash.wrap(hash));
+        return ECKey.fromPrivate(mRootKey.getPrivKey()).sign(Sha256Hash.wrap(hash));
     }
 
     @Override
@@ -40,7 +39,7 @@ public class Bip32Wallet extends ISigningWallet {
 
     @Override
     public DeterministicKey getPubKey() {
-        return hdWallet;
+        return mRootKey;
     }
 
     @Override

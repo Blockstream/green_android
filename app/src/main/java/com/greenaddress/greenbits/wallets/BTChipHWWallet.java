@@ -51,6 +51,7 @@ public class BTChipHWWallet extends ISigningWallet {
     private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
     private BTChipHWWallet(final BTChipDongle dongle, final RequestLoginActivity loginActivity, final String pin, final List<Integer> addrn) {
+        super(null);
         this.dongle = dongle;
         this.loginActivity = loginActivity;
         this.pin = pin;
@@ -58,11 +59,13 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     public BTChipHWWallet(final BTChipDongle dongle) {
+        super(null);
         this.dongle = dongle;
         this.pin = "0000";
     }
 
     public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
+        super(null);
         this.dongle = new BTChipDongle(transport);
         this.loginActivity = loginActivity;
         this.pin = pin;
