@@ -211,6 +211,11 @@ public class BTChipHWWallet extends ISigningWallet {
         return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
     }
 
+    @Override
+    public String[] signChallenge(final String challengeString, final String[] challengePath) {
+        return signChallengeHW(challengeString, challengePath);
+    }
+
     public BTChipDongle getDongle() {
         return dongle;
     }

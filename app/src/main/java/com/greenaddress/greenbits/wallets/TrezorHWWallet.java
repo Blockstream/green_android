@@ -33,6 +33,11 @@ public class TrezorHWWallet extends ISigningWallet {
     }
 
     @Override
+    public String[] signChallenge(final String challengeString, final String[] challengePath) {
+        return signChallengeHW(challengeString, challengePath);
+    }
+
+    @Override
     public ISigningWallet derive(final Integer childNumber) {
         return new TrezorHWWallet(this, childNumber);
     }
