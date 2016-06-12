@@ -878,12 +878,14 @@ public class WalletClient {
         return mHDParent instanceof TrezorHWWallet;
     }
 
-    public DeterministicKey getMasterPubKey(final Integer subaccount) {
+    public DeterministicKey getMyPubKey(final Integer subaccount, final Integer pointer) {
         ISigningWallet parent = mHDParent;
-        if (subaccount != 0)
+        if (subaccount != null && subaccount != 0)
             parent = parent.derive(ISigningWallet.HARDENED | 3)
                            .derive(ISigningWallet.HARDENED | subaccount);
-        return parent.getPubKey();
+
+        DeterministicKey k = HDKey.deriveChildKey(parent.getPubKey(), 1);
+        return HDKey.deriveChildKey(k, pointer);
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {

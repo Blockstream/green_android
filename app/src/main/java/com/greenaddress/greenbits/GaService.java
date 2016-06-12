@@ -281,14 +281,10 @@ public class GaService extends Service {
     public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
         pubkeys.add(HDKey.getServerKeys(subaccount, pointer)[1]);
-
-        final DeterministicKey master = mClient.getMasterPubKey(subaccount);
+        pubkeys.add(mClient.getMyPubKey(subaccount, pointer));
 
         return es.submit(new Callable<byte[]>() {
             public byte[] call() {
-                final DeterministicKey derivedRoot = HDKey.deriveChildKey(master, 1);
-                final DeterministicKey derivedPointer = HDKey.deriveChildKey(derivedRoot, pointer);
-                pubkeys.add(derivedPointer);
 
                 final Map<String, ?> m = findSubaccount("2of3", subaccount);
                 if (m != null)
