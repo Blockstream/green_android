@@ -304,7 +304,7 @@ public class WalletClient {
 
     private final OkHttpClient httpClient = new OkHttpClient();
 
-    public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String device_id) {
+    public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String deviceId) {
 
         final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
         final DeterministicKey master = mnemonicToMasterKey(mnemonics);
@@ -319,7 +319,7 @@ public class WalletClient {
         final AsyncFunction<DeterministicKey, LoginData> registrationToLogin = new AsyncFunction<DeterministicKey, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final DeterministicKey input) throws Exception {
-                return login(new Bip32Wallet(input), device_id);
+                return login(new Bip32Wallet(input), deviceId);
             }
         };
 
@@ -336,7 +336,7 @@ public class WalletClient {
     }
 
 
-    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode, final String device_id) {
+    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode, final String deviceId) {
 
         final SettableFuture<ISigningWallet> rpc = SettableFuture.create();
         final String hexMasterPublicKey = Wally.hex_from_bytes(masterPublicKey);
@@ -352,7 +352,7 @@ public class WalletClient {
         final AsyncFunction<ISigningWallet, LoginData> registrationToLogin = new AsyncFunction<ISigningWallet, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final ISigningWallet input) throws Exception {
-                return login(input, device_id);
+                return login(input, deviceId);
             }
         };
 
@@ -529,17 +529,17 @@ public class WalletClient {
         return HDKey.createMasterKeyFromSeed(seed);
     }
 
-    public ListenableFuture<LoginData> login(final String mnemonics, final String device_id) {
+    public ListenableFuture<LoginData> login(final String mnemonics, final String deviceId) {
         mMnemonics = mnemonics;
         final DeterministicKey master = mnemonicToMasterKey(mnemonics);
-        return login(new Bip32Wallet(master), device_id);
+        return login(new Bip32Wallet(master), deviceId);
     }
 
-    public ListenableFuture<LoginData> login(final String device_id) {
-        return login(mHDParent, device_id);
+    public ListenableFuture<LoginData> login(final String deviceId) {
+        return login(mHDParent, deviceId);
     }
 
-    private LoginData loginImpl(final ISigningWallet signingWallet, final String device_id) throws Exception, LoginFailed {
+    private LoginData loginImpl(final ISigningWallet signingWallet, final String deviceId) throws Exception, LoginFailed {
 
         final String address = new Address(Network.NETWORK, signingWallet.getIdentifier()).toString();
         final String challengeString;
@@ -553,7 +553,7 @@ public class WalletClient {
         final String[] signatures = signingWallet.signChallenge(challengeString, challengePath);
 
         final Object ret = syncCall("login.authenticate", Object.class, signatures,
-                                    true, challengePath[0], device_id, USER_AGENT);
+                                    true, challengePath[0], deviceId, USER_AGENT);
 
         if (ret instanceof Boolean) {
             // FIXME: One RPC call should not have multiple return types
@@ -571,12 +571,12 @@ public class WalletClient {
         return mLoginData;
     }
 
-    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String device_id) {
+    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String deviceId) {
         return mExecutor.submit(new Callable<LoginData>() {
             @Override
             public LoginData call() {
                 try {
-                    return loginImpl(signingWallet, device_id);
+                    return loginImpl(signingWallet, deviceId);
                 } catch (Throwable t) {
                     throw Throwables.propagate(t);
                 }
@@ -584,7 +584,7 @@ public class WalletClient {
         });
     }
 
-    public ListenableFuture<LoginData> login(final PinData data, final String pin, final String device_id) {
+    public ListenableFuture<LoginData> login(final PinData data, final String pin, final String deviceId) {
         final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
         clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
             public void onResult(final Object pass) {
@@ -615,7 +615,7 @@ public class WalletClient {
         final AsyncFunction<DeterministicKey, LoginData> connectToLogin = new AsyncFunction<DeterministicKey, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final DeterministicKey input) {
-                return login(new Bip32Wallet(input), device_id);
+                return login(new Bip32Wallet(input), deviceId);
             }
         };
 
