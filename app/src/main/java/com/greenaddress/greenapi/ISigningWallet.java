@@ -48,7 +48,7 @@ public abstract class ISigningWallet {
 
         // Derive the private key for signing the challenge from the path
         DeterministicKey key = mRootKey;
-        for (int i = 0; i < path.length; ++i) {
+        for (int i = 0; i < path.length / 2; ++i) {
             int step = u8(path[i * 2]) * 256 + u8(path[i * 2 + 1]);
             key = HDKey.deriveChildKey(key, step);
         }
