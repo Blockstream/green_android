@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.base.Function;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -538,122 +539,49 @@ public class WalletClient {
         return login(mHDParent, device_id);
     }
 
-    private byte[] convertChallengeString(final String challengeString) {
-        byte[] bytes = new BigInteger(challengeString).toByteArray();
-            // Get rid of initial 0 byte if challenge > 2^31
-            if (bytes.length == 33 && bytes[0] == 0)
-                bytes = Arrays.copyOfRange(bytes, 1, 33);
-        return bytes;
-    }
+    private LoginData loginImpl(final ISigningWallet signingWallet, final String device_id) throws Exception, LoginFailed {
 
-    private ListenableFuture<LoginData> authenticate(final String challengeString, final ISigningWallet signingWallet, final String device_id) {
-        final SettableFuture<LoginData> rpc = SettableFuture.create();
+        final String address = new Address(Network.NETWORK, signingWallet.getIdentifier()).toString();
+        final String challengeString;
+        if (signingWallet.canSignHashes())
+            challengeString = SyncCall("login.get_challenge", String.class, address);
+        else
+            challengeString = SyncCall("login.get_trezor_challenge", String.class, address,
+                                       !(signingWallet instanceof TrezorHWWallet));
 
-        final String pathStr;
-        final ListenableFuture<String[]> signature_arg;
-        if (signingWallet.canSignHashes()) {
-            final byte[] path = CryptoHelper.randomBytes(8);
-            pathStr = Wally.hex_from_bytes(path);
-            // Derive private key for signing the challenge
-            ISigningWallet parent = signingWallet;
-            for (int i = 0; i < 8 / 2; ++i) {
-                int b1 = path[i * 2];
-                if (b1 < 0)
-                    b1 = 256 + b1;
-                int b2 = path[i * 2 + 1];
-                if (b2 < 0)
-                    b2 = 256 + b2;
-                parent = parent.derive(b1 * 256 + b2);
-            }
-            final ISigningWallet child = parent;
-            signature_arg = mExecutor.submit(new Callable<String[]>() {
-                @Override
-                public String[] call() {
-                    final byte[] challenge = convertChallengeString(challengeString);
-                    final ECKey.ECDSASignature sig = child.signHash(challenge);
-                    return new String[]{sig.r.toString(), sig.s.toString()};
-                }
-            });
-        } else {
-            // btchip requires 0xB11E to skip HID authentication
-            // 0x4741 = 18241 = 256*G + A in ASCII
-            pathStr = "GA";
-            final ISigningWallet child = signingWallet.derive(0x4741b11e);
-            final String message = "greenaddress.it      login " + challengeString;
-            final byte[] challenge_sha = Wally.sha256d(Utils.formatMessageForSigning(message));
-            final ECKey master = child.getPubKey();
+        final String[] challengePath = new String[1];
+        final String[] signatures = signingWallet.signChallenge(challengeString, challengePath);
 
-            signature_arg = mExecutor.submit(new Callable<String[]>() {
-                @Override
-                public String[] call() {
-                    final ECKey.ECDSASignature sig = child.signMessage(message);
-                    int recId;
-                    for (recId = 0; recId < 4; ++recId) {
-                        final ECKey recovered = ECKey.recoverFromSignature(recId, sig, Sha256Hash.wrap(challenge_sha), true);
-                        if (recovered != null && recovered.equals(master))
-                            break;
-                    }
-                    return new String[]{sig.r.toString(), sig.s.toString(), String.valueOf(recId)};
-                }
-            });
+        final Object ret = SyncCall("login.authenticate", Object.class, signatures,
+                                    true, challengePath[0], device_id, USER_AGENT);
+
+        if (ret instanceof Boolean) {
+            // FIXME: One RPC call should not have multiple return types
+            throw new LoginFailed();
         }
 
-        Futures.addCallback(signature_arg, new FutureCallback<String[]>() {
-            @Override
-            public void onSuccess(final @Nullable String[] result) {
-                clientCall(rpc, "login.authenticate", Object.class, new CallHandler() {
-                    public void onResult(final Object loginData) {
-                        try {
-                            if (loginData instanceof Boolean) {
-                                // login failed
-                                rpc.setException(new LoginFailed());
-                            } else {
-                                mLoginData = new LoginData((Map) loginData);
-                                subscribeToWallet();  // requires receivingId to be set
-                                mHDParent = signingWallet;
+        mLoginData = new LoginData((Map) ret);
+        subscribeToWallet();  // requires receivingId to be set
+        mHDParent = signingWallet;
 
-                                rpc.set(mLoginData);
-
-                                if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
-                                    // enable rbf if server supports it and not disabled
-                                    // by user explicitly
-                                    setUserConfig("replace_by_fee", Boolean.TRUE, false);
-                                }
-                            }
-                        } catch (final ClassCastException | IOException e) {
-
-                            rpc.setException(e);
-                        }
-                    }
-                }, result, true, pathStr, device_id, USER_AGENT);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                rpc.setException(t);
-            }
-        });
-        return rpc;
+        if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
+            // Enable rbf if server supports it and not disabled by user explicitly
+            setUserConfig("replace_by_fee", Boolean.TRUE, false);
+        }
+        return mLoginData;
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String device_id) {
-        final boolean canSignHashes = signingWallet.canSignHashes();
-        final String address = new Address(Network.NETWORK, signingWallet.getIdentifier()).toString();
-        final ListenableFuture<String> challenge;
-
-        if (canSignHashes)
-            challenge = simpleCall("login.get_challenge", null, address);
-        else
-            challenge = simpleCall("login.get_trezor_challenge", null, address,
-                                   !(signingWallet instanceof TrezorHWWallet));
-
-        return Futures.transform(challenge,
-            new AsyncFunction<String, LoginData>() {
-                @Override
-                public ListenableFuture<LoginData> apply(final String input) throws Exception {
-                    return authenticate(input, signingWallet, device_id);
+        return mExecutor.submit(new Callable<LoginData>() {
+            @Override
+            public LoginData call() {
+                try {
+                    return loginImpl(signingWallet, device_id);
+                } catch (Throwable t) {
+                    throw Throwables.propagate(t);
                 }
-            }, mExecutor);
+            }
+        });
     }
 
     public ListenableFuture<LoginData> login(final PinData data, final String pin, final String device_id) {
