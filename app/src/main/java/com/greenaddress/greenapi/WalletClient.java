@@ -204,7 +204,7 @@ public class WalletClient {
         return clientCall(rpc, procedure, resultClass, handler, args);
     }
 
-    private <T> T SyncCall(final String procedure, final Class result,
+    private <T> T syncCall(final String procedure, final Class result,
                            Object... args) throws Exception {
 
         if (mConnection == null)
@@ -544,15 +544,15 @@ public class WalletClient {
         final String address = new Address(Network.NETWORK, signingWallet.getIdentifier()).toString();
         final String challengeString;
         if (signingWallet.canSignHashes())
-            challengeString = SyncCall("login.get_challenge", String.class, address);
+            challengeString = syncCall("login.get_challenge", String.class, address);
         else
-            challengeString = SyncCall("login.get_trezor_challenge", String.class, address,
+            challengeString = syncCall("login.get_trezor_challenge", String.class, address,
                                        !(signingWallet instanceof TrezorHWWallet));
 
         final String[] challengePath = new String[1];
         final String[] signatures = signingWallet.signChallenge(challengeString, challengePath);
 
-        final Object ret = SyncCall("login.authenticate", Object.class, signatures,
+        final Object ret = syncCall("login.authenticate", Object.class, signatures,
                                     true, challengePath[0], device_id, USER_AGENT);
 
         if (ret instanceof Boolean) {
@@ -623,7 +623,7 @@ public class WalletClient {
     }
 
     public Map<?, ?> getMyTransactions(final Integer subaccount) throws Exception {
-        return SyncCall("txs.get_list_v2", Map.class, subaccount);
+        return syncCall("txs.get_list_v2", Map.class, subaccount);
     }
 
     public ListenableFuture<Map> getNewAddress(final int subaccount) {
