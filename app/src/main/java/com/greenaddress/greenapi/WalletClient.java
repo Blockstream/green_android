@@ -623,7 +623,7 @@ public class WalletClient {
     }
 
     public Map<?, ?> getMyTransactions(final Integer subaccount) throws Exception {
-        return syncCall("txs.get_list_v2", Map.class, subaccount);
+        return syncCall("txs.get_list_v2", Map.class, null, null, null, null, subaccount);
     }
 
     public ListenableFuture<Map> getNewAddress(final int subaccount) {
