@@ -281,7 +281,7 @@ public class GaService extends Service {
     public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
         pubkeys.add(HDKey.getServerKeys(subaccount, pointer)[1]);
-        pubkeys.add(mClient.getMyPubKey(subaccount, pointer));
+        pubkeys.add(mClient.getMyPublicKey(subaccount, pointer));
 
         return es.submit(new Callable<byte[]>() {
             public byte[] call() {

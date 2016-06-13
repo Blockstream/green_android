@@ -769,8 +769,8 @@ public class WalletClient {
     }
 
     private List<String> signTransactionHashes(final PreparedTransaction ptx) {
-        final Transaction t = ptx.decoded;
-        final List<TransactionInput> txInputs = t.getInputs();
+        final Transaction tx = ptx.decoded;
+        final List<TransactionInput> txInputs = tx.getInputs();
         final List<Output> prevOuts = ptx.prev_outputs;
         final List<String> signatures = new ArrayList<>(txInputs.size());
         final SettableFuture<List<String>> rpc = SettableFuture.create();
@@ -780,22 +780,15 @@ public class WalletClient {
         for (int i = 0; i < txInputs.size(); ++i) {
             final Output prevOut = prevOuts.get(i);
 
-            ISigningWallet parent = mHDParent;
-            if (prevOut.subaccount != null && prevOut.subaccount != 0)
-                parent = parent.derive(ISigningWallet.HARDENED | 3)
-                               .derive(ISigningWallet.HARDENED | prevOut.subaccount);
-
-            final ISigningWallet child = parent.derive(prevOut.branch)
-                                               .derive(prevOut.pointer);
-
             final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
             final Sha256Hash hash;
-            if (prevOut.scriptType.equals(14)) {
-                hash = t.hashForSignatureV2(i, script.getProgram(), Coin.valueOf(prevOut.value), Transaction.SigHash.ALL, false);
-            } else {
-                hash = t.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
-            }
-            sigs.add(child.signHash(hash.getBytes()));
+            if (prevOut.scriptType.equals(14))
+                hash = tx.hashForSignatureV2(i, script.getProgram(), Coin.valueOf(prevOut.value), Transaction.SigHash.ALL, false);
+            else
+                hash = tx.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
+
+            final ISigningWallet key = getMyPrivateKey(prevOut.subaccount, prevOut.branch, prevOut.pointer);
+            sigs.add(key.signHash(hash.getBytes()));
         }
         return convertSigs(sigs);
     }
@@ -877,14 +870,22 @@ public class WalletClient {
         return mHDParent instanceof TrezorHWWallet;
     }
 
-    public DeterministicKey getMyPubKey(final Integer subaccount, final Integer pointer) {
+    private ISigningWallet getMyKey(final Integer subaccount) {
         ISigningWallet parent = mHDParent;
         if (subaccount != null && subaccount != 0)
             parent = parent.derive(ISigningWallet.HARDENED | 3)
                            .derive(ISigningWallet.HARDENED | subaccount);
+        return parent;
+    }
 
-        DeterministicKey k = HDKey.deriveChildKey(parent.getPubKey(), 1);
+    public DeterministicKey getMyPublicKey(final Integer subaccount, final Integer pointer) {
+        DeterministicKey k = getMyKey(subaccount).getPubKey();
+        k = HDKey.deriveChildKey(k, 1);
         return HDKey.deriveChildKey(k, pointer);
+    }
+
+    public ISigningWallet getMyPrivateKey(final Integer subaccount, final Integer branch, final Integer pointer) {
+        return getMyKey(subaccount).derive(branch).derive(pointer);
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
