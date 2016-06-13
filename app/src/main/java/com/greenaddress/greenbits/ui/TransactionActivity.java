@@ -626,8 +626,7 @@ public class TransactionActivity extends GaActivity {
             final ListenableFuture<List<String>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<String>>() {
                 @Override
                 public ListenableFuture<List<String>> apply(Void input) throws Exception {
-                    final boolean isPrivate = false;
-                    return getGAService().signTransaction(ptx, isPrivate);
+                    return getGAService().signTransaction(ptx);
                 }
             });
 

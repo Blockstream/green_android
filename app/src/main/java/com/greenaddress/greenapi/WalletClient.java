@@ -768,7 +768,7 @@ public class WalletClient {
         return result;
     }
 
-    private List<String> signTransactionHashes(final PreparedTransaction ptx, final boolean isPrivate) {
+    private List<String> signTransactionHashes(final PreparedTransaction ptx) {
         final Transaction t = ptx.decoded;
         final List<TransactionInput> txInputs = t.getInputs();
         final List<Output> prevOuts = ptx.prev_outputs;
@@ -785,9 +785,8 @@ public class WalletClient {
                 parent = parent.derive(ISigningWallet.HARDENED | 3)
                                .derive(ISigningWallet.HARDENED | prevOut.subaccount);
 
-            final int hardened = isPrivate ? ISigningWallet.HARDENED : 0;
-            final ISigningWallet child = parent.derive(hardened | prevOut.branch)
-                                               .derive(hardened | prevOut.pointer);
+            final ISigningWallet child = parent.derive(prevOut.branch)
+                                               .derive(prevOut.pointer);
 
             final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
             final Sha256Hash hash;
@@ -801,13 +800,13 @@ public class WalletClient {
         return convertSigs(sigs);
     }
 
-    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx, final boolean isPrivate) {
+    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx) {
         final boolean canSignHashes = mHDParent.canSignHashes();
         return mExecutor.submit(new Callable<List<String>>() {
             @Override
             public List<String> call() {
                 if (canSignHashes)
-                    return signTransactionHashes(ptx, isPrivate);
+                    return signTransactionHashes(ptx);
                 return convertSigs(mHDParent.signTransaction(ptx));
             }
         });

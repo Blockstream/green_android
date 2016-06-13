@@ -496,8 +496,8 @@ public class GaService extends Service {
             privateData.put("rbf_optin", rbf_optin);
     }
 
-    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx, final boolean isPrivate) {
-        return mClient.signTransaction(ptx, isPrivate);
+    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx) {
+        return mClient.signTransaction(ptx);
     }
 
     public ListenableFuture<PreparedTransaction> prepareTx(final Coin coinValue, final String recipient, final Map<String, Object> privateData) {
@@ -511,7 +511,7 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
-        return Futures.transform(signTransaction(ptx, false), new AsyncFunction<List<String>, String>() {
+        return Futures.transform(signTransaction(ptx), new AsyncFunction<List<String>, String>() {
             @Override
             public ListenableFuture<String> apply(final List<String> input) throws Exception {
                 return mClient.sendTransaction(input, twoFacData);
