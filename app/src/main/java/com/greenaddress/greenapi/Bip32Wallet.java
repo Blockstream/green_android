@@ -38,10 +38,5 @@ public class Bip32Wallet extends ISigningWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx) {
-        return null;
-    }
-
-    @Override
     public boolean requiresPrevoutRawTxs() { return false; }
 }

@@ -2,13 +2,18 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
 
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.script.Script;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ISigningWallet {
@@ -34,7 +39,45 @@ public abstract class ISigningWallet {
 
     public abstract DeterministicKey getPubKey();
 
-    public abstract List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx);
+    public List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx) {
+        final Transaction tx = ptx.decoded;
+        final List<TransactionInput> txInputs = tx.getInputs();
+        final List<Output> prevOuts = ptx.prev_outputs;
+        final List<ECKey.ECDSASignature> sigs = new ArrayList<>(txInputs.size());
+
+        for (int i = 0; i < txInputs.size(); ++i) {
+            final Output prevOut = prevOuts.get(i);
+
+            final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
+            final Sha256Hash hash;
+            if (prevOut.scriptType.equals(14))
+                hash = tx.hashForSignatureV2(i, script.getProgram(), Coin.valueOf(prevOut.value), Transaction.SigHash.ALL, false);
+            else
+                hash = tx.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
+
+            final ISigningWallet key = getMyPrivateKey(prevOut.subaccount, prevOut.branch, prevOut.pointer);
+            sigs.add(key.signHash(hash.getBytes()));
+        }
+        return sigs;
+    }
+
+    private ISigningWallet getMyKey(final Integer subaccount) {
+        ISigningWallet parent = this;
+        if (subaccount != null && subaccount != 0)
+            parent = parent.derive(ISigningWallet.HARDENED | 3)
+                           .derive(ISigningWallet.HARDENED | subaccount);
+        return parent;
+    }
+
+    public DeterministicKey getMyPublicKey(final Integer subaccount, final Integer pointer) {
+        DeterministicKey k = getMyKey(subaccount).getPubKey();
+        k = HDKey.deriveChildKey(k, 1);
+        return HDKey.deriveChildKey(k, pointer);
+    }
+
+    private ISigningWallet getMyPrivateKey(final Integer subaccount, final Integer branch, final Integer pointer) {
+        return getMyKey(subaccount).derive(branch).derive(pointer);
+    }
 
     public String[] signChallenge(final String challengeString, final String[] challengePath) {
 

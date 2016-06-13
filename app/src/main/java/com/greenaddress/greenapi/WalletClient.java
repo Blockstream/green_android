@@ -24,7 +24,6 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.TransactionSignature;
@@ -758,50 +757,18 @@ public class WalletClient {
         return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc), errHandler, txStr, twoFacData);
     }
 
-    private List<String> convertSigs(final List<ECKey.ECDSASignature> sigs) {
-        final List<String> result = new LinkedList<>();
-        for (final ECKey.ECDSASignature sig : sigs) {
-            final TransactionSignature txSig;
-            txSig = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
-            result.add(Wally.hex_from_bytes(txSig.encodeToBitcoin()));
-        }
-        return result;
-    }
-
-    private List<String> signTransactionHashes(final PreparedTransaction ptx) {
-        final Transaction tx = ptx.decoded;
-        final List<TransactionInput> txInputs = tx.getInputs();
-        final List<Output> prevOuts = ptx.prev_outputs;
-        final List<String> signatures = new ArrayList<>(txInputs.size());
-        final SettableFuture<List<String>> rpc = SettableFuture.create();
-
-        final List<ECKey.ECDSASignature> sigs = new LinkedList<>();
-
-        for (int i = 0; i < txInputs.size(); ++i) {
-            final Output prevOut = prevOuts.get(i);
-
-            final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
-            final Sha256Hash hash;
-            if (prevOut.scriptType.equals(14))
-                hash = tx.hashForSignatureV2(i, script.getProgram(), Coin.valueOf(prevOut.value), Transaction.SigHash.ALL, false);
-            else
-                hash = tx.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
-
-            final ISigningWallet key = getMyPrivateKey(prevOut.subaccount, prevOut.branch, prevOut.pointer);
-            sigs.add(key.signHash(hash.getBytes()));
-        }
-        return convertSigs(sigs);
-    }
-
     public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx) {
-        final boolean canSignHashes = mHDParent.canSignHashes();
         return mExecutor.submit(new Callable<List<String>>() {
             @Override
             public List<String> call() {
-                if (canSignHashes)
-                    return signTransactionHashes(ptx);
-                return convertSigs(mHDParent.signTransaction(ptx));
-            }
+                final List<String> result = new LinkedList<>();
+                for (final ECKey.ECDSASignature sig : mHDParent.signTransaction(ptx)) {
+                    final TransactionSignature txSig;
+                    txSig = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
+                    result.add(Wally.hex_from_bytes(txSig.encodeToBitcoin()));
+                }
+                return result;
+             }
         });
     }
 
@@ -870,22 +837,8 @@ public class WalletClient {
         return mHDParent instanceof TrezorHWWallet;
     }
 
-    private ISigningWallet getMyKey(final Integer subaccount) {
-        ISigningWallet parent = mHDParent;
-        if (subaccount != null && subaccount != 0)
-            parent = parent.derive(ISigningWallet.HARDENED | 3)
-                           .derive(ISigningWallet.HARDENED | subaccount);
-        return parent;
-    }
-
     public DeterministicKey getMyPublicKey(final Integer subaccount, final Integer pointer) {
-        DeterministicKey k = getMyKey(subaccount).getPubKey();
-        k = HDKey.deriveChildKey(k, 1);
-        return HDKey.deriveChildKey(k, pointer);
-    }
-
-    public ISigningWallet getMyPrivateKey(final Integer subaccount, final Integer branch, final Integer pointer) {
-        return getMyKey(subaccount).derive(branch).derive(pointer);
+        return mHDParent.getMyPublicKey(subaccount, pointer);
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
