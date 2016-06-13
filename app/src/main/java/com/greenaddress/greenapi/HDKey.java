@@ -23,7 +23,7 @@ public class HDKey {
     private final static int VER_PRIVATE = isMain() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
 
     private static final Map<Integer, DeterministicKey> mServerKeys = new HashMap<>();
-    private static int[] mPath = null;
+    private static int[] mGaUserPath = null;
 
     private Object mImpl;
 
@@ -88,20 +88,20 @@ public class HDKey {
 
     // Get the 2of3 backup key (plus parent)
     // This is the users key to reedeem 2of3 funds in the event that GA becomes unavailable
-    public static DeterministicKey[] getBackupKeys(final byte[] chainCode, final byte[] publicKey, final Integer pointer) {
+    public static DeterministicKey[] getRecoveryKeys(final byte[] chainCode, final byte[] publicKey, final Integer pointer) {
         DeterministicKey[] ret = new DeterministicKey[2];
         ret[0] = deriveChildKey(createMasterKey(chainCode, publicKey), 1); // Parent
         ret[1] = deriveChildKey(ret[0], pointer); // Child
         return ret;
     }
 
-    public static DeterministicKey[] getBackupKeys(final String chainCode, final String publicKey, final Integer pointer) {
-        return getBackupKeys(h(chainCode), h(publicKey), pointer);
+    public static DeterministicKey[] getRecoveryKeys(final String chainCode, final String publicKey, final Integer pointer) {
+        return getRecoveryKeys(h(chainCode), h(publicKey), pointer);
     }
 
     // Get the key derived from the servers public key/chaincode plus the users path (plus parent).
     // This is the key used on the servers side of 2of2/2of3 transactions.
-    public static DeterministicKey[] getServerKeys(final Integer subaccount, final Integer pointer) {
+    public static DeterministicKey[] getGAPublicKeys(final Integer subaccount, final Integer pointer) {
         DeterministicKey[] ret = new DeterministicKey[2];
         synchronized (mServerKeys) {
             // Fetch the parent key. This is expensive so we cache it
@@ -116,17 +116,17 @@ public class HDKey {
         return ret;
     }
 
-    public static void resetCache(final int[] path) {
+    public static void resetCache(final int[] gaUserPath) {
         synchronized (mServerKeys) {
             mServerKeys.clear();
-            mPath = path == null ? null : path.clone();
+            mGaUserPath = gaUserPath == null ? null : gaUserPath.clone();
         }
     }
 
     private static DeterministicKey getServerKeyImpl(final Integer subaccount) {
         DeterministicKey k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
         k = deriveChildKey(k, subaccount == 0 ? 1 : 3);
-        for (int i : mPath)
+        for (int i : mGaUserPath)
             k = deriveChildKey(k, i);
         if (subaccount != 0)
             k = deriveChildKey(k, subaccount);
@@ -134,7 +134,7 @@ public class HDKey {
         // Reconcile against wally
         HDKey hd = new HDKey(h(Network.depositChainCode), h(Network.depositPubkey));
         hd.derivePublic(subaccount == 0 ? 1 : 3);
-        for (int i : mPath)
+        for (int i : mGaUserPath)
             hd.derivePublic(i);
         if (subaccount != 0)
             hd.derivePublic(subaccount);

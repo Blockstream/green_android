@@ -370,8 +370,8 @@ public class WalletClient {
         final SettableFuture<LoginData> rpc = SettableFuture.create();
         return clientCall(rpc, "login.set_gait_path", Void.class, new CallHandler() {
             public void onResult(final Object result) {
-                loginData.setGaitPath(path);
-                HDKey.resetCache(loginData.gaitPath);
+                loginData.setGaUserPath(path);
+                HDKey.resetCache(loginData.gaUserPath);
                 rpc.set(loginData);
             }
         }, Wally.hex_from_bytes(path));

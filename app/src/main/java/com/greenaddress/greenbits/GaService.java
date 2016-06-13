@@ -280,7 +280,7 @@ public class GaService extends Service {
 
     public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
-        pubkeys.add(HDKey.getServerKeys(subaccount, pointer)[1]);
+        pubkeys.add(HDKey.getGAPublicKeys(subaccount, pointer)[1]);
         pubkeys.add(mClient.getMyPublicKey(subaccount, pointer));
 
         return es.submit(new Callable<byte[]>() {
@@ -288,8 +288,8 @@ public class GaService extends Service {
 
                 final Map<String, ?> m = findSubaccount("2of3", subaccount);
                 if (m != null)
-                    pubkeys.add(HDKey.getBackupKeys((String) m.get("2of3_backup_chaincode"),
-                                                    (String) m.get("2of3_backup_pubkey"), pointer)[1]);
+                    pubkeys.add(HDKey.getRecoveryKeys((String) m.get("2of3_backup_chaincode"),
+                                                      (String) m.get("2of3_backup_pubkey"), pointer)[1]);
 
                 return Script.createMultiSigOutputScript(2, pubkeys);
             }
@@ -336,7 +336,7 @@ public class GaService extends Service {
                 fiatExchange = result.exchange;
                 mSubaccounts = result.subaccounts;
                 mReceivingId = result.receivingId;
-                HDKey.resetCache(result.gaitPath);
+                HDKey.resetCache(result.gaUserPath);
 
                 balanceObservables.put(0, new GaObservable());
                 updateBalance(0);

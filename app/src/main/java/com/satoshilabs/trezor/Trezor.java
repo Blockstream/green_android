@@ -542,7 +542,7 @@ public class Trezor {
         curTx = ptx;
         curSubaccount = ptx.subaccount_pointer;
 
-        final DeterministicKey[] serverKeys = HDKey.getServerKeys(ptx.subaccount_pointer, ptx.change_pointer);
+        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.subaccount_pointer, ptx.change_pointer);
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
             setDepth(serverKeys[0].getDepth()).
@@ -571,8 +571,8 @@ public class Trezor {
             curRecoveryNode = null;
             if (ptx.twoOfThreeBackupChaincode != null) {
                 final DeterministicKey keys[];
-                keys = HDKey.getBackupKeys(ptx.twoOfThreeBackupChaincode, ptx.twoOfThreeBackupPubkey,
-                                           ptx.change_pointer);
+                keys = HDKey.getRecoveryKeys(ptx.twoOfThreeBackupChaincode, ptx.twoOfThreeBackupPubkey,
+                                             ptx.change_pointer);
 
                 curRecoveryNode = TrezorType.HDNodeType.newBuilder().
                         setDepth(keys[0].getDepth()).
