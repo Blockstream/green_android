@@ -183,11 +183,6 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     @Override
-    public ECKey.ECDSASignature signHash(final byte[] hash) {
-        return null;
-    }
-
-    @Override
     public byte[] getIdentifier() {
         return getPubKey().toAddress(Network.NETWORK).getHash160();
     }

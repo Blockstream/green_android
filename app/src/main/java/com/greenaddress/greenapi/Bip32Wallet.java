@@ -23,11 +23,6 @@ public class Bip32Wallet extends ISigningWallet {
     }
 
     @Override
-    public ECKey.ECDSASignature signHash(final byte[] hash) {
-        return ECKey.fromPrivate(mRootKey.getPrivKey()).sign(Sha256Hash.wrap(hash));
-    }
-
-    @Override
     public ECKey.ECDSASignature signMessage(final String message) {
         return null;
     }

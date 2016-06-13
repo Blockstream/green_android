@@ -51,11 +51,6 @@ public class TrezorHWWallet extends ISigningWallet {
     public boolean canSignHashes() { return false; }
 
     @Override
-    public ECKey.ECDSASignature signHash(final byte[] hash) {
-        return null;
-    }
-
-    @Override
     public ECKey.ECDSASignature signMessage(final String message) {
         final Integer[] intArray = new Integer[addrn.size()];
         return trezor.MessageSignMessage(addrn.toArray(intArray), message);

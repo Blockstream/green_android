@@ -29,8 +29,6 @@ public abstract class ISigningWallet {
 
     public abstract byte[] getIdentifier();
 
-    public abstract ECKey.ECDSASignature signHash(byte[] hash);
-
     public abstract ECKey.ECDSASignature signMessage(String message);
 
     // FIXME: Get rid of these along with checking the object type by callers
@@ -55,8 +53,8 @@ public abstract class ISigningWallet {
             else
                 hash = tx.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
 
-            final ISigningWallet key = getMyPrivateKey(prevOut.subaccount, prevOut.branch, prevOut.pointer);
-            sigs.add(key.signHash(hash.getBytes()));
+            final ISigningWallet key = getMyKey(prevOut.subaccount).derive(prevOut.branch).derive(prevOut.pointer);
+            sigs.add(ECKey.fromPrivate(key.mRootKey.getPrivKey()).sign(Sha256Hash.wrap(hash.getBytes())));
         }
         return sigs;
     }
@@ -73,10 +71,6 @@ public abstract class ISigningWallet {
         DeterministicKey k = getMyKey(subaccount).getPubKey();
         k = HDKey.deriveChildKey(k, 1);
         return HDKey.deriveChildKey(k, pointer);
-    }
-
-    private ISigningWallet getMyPrivateKey(final Integer subaccount, final Integer branch, final Integer pointer) {
-        return getMyKey(subaccount).derive(branch).derive(pointer);
     }
 
     public String[] signChallenge(final String challengeString, final String[] challengePath) {
