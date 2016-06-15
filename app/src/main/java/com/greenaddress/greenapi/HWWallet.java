@@ -2,6 +2,7 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
 
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Utils;
@@ -9,12 +10,6 @@ import org.bitcoinj.crypto.DeterministicKey;
 
 public abstract class HWWallet extends ISigningWallet {
 
-    @Override
-    public byte[] getIdentifier() {
-        return getPubKey().toAddress(Network.NETWORK).getHash160();
-    }
-    @Override
-    public boolean canSignHashes() { return false; }
     @Override
     public boolean requiresPrevoutRawTxs() { return true; }
 
@@ -57,6 +52,12 @@ public abstract class HWWallet extends ISigningWallet {
             parent = parent.derive(ISigningWallet.HARDENED | 3)
                            .derive(ISigningWallet.HARDENED | subAccount);
         return parent;
+    }
+
+    protected Object[] getChallengeArguments(boolean isTrezor) {
+        final byte[] id = getPubKey().toAddress(Network.NETWORK).getHash160();
+        final Address addr = new Address(Network.NETWORK, id);
+        return new Object[]{ "login.get_trezor_challenge", addr.toString(), isTrezor };
     }
 
     protected abstract DeterministicKey getPubKey();

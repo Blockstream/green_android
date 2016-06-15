@@ -223,4 +223,9 @@ public class BTChipHWWallet extends HWWallet {
         catch(final Exception e) {
         }
     }
+
+    @Override
+    public Object[] getChallengeArguments() {
+        return getChallengeArguments(false);
+    }
 }

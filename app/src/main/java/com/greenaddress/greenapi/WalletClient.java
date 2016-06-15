@@ -547,17 +547,16 @@ public class WalletClient {
 
     private LoginData loginImpl(final ISigningWallet signingWallet, final String deviceId) throws Exception, LoginFailed {
 
-        final String address = new Address(Network.NETWORK, signingWallet.getIdentifier()).toString();
+        // FIXME: Unify this RPC call, this is ugly
+        final Object[] args = signingWallet.getChallengeArguments();
         final String challengeString;
-        if (signingWallet.canSignHashes())
-            challengeString = syncCall("login.get_challenge", String.class, address);
+        if (args.length == 2)
+            challengeString = syncCall((String) args[0], String.class, args[1]);
         else
-            challengeString = syncCall("login.get_trezor_challenge", String.class, address,
-                                       !(signingWallet instanceof TrezorHWWallet));
+            challengeString = syncCall((String) args[0], String.class, args[1], args[2]);
 
         final String[] challengePath = new String[1];
         final String[] signatures = signingWallet.signChallenge(challengeString, challengePath);
-
         final Object ret = syncCall("login.authenticate", Object.class, signatures,
                                     true, challengePath[0], deviceId, USER_AGENT);
 

@@ -54,4 +54,9 @@ public class TrezorHWWallet extends HWWallet {
         final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
         return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet");
     }
+
+    @Override
+    public Object[] getChallengeArguments() {
+        return getChallengeArguments(true);
+    }
 }

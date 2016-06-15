@@ -2,6 +2,7 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
 
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
@@ -24,10 +25,6 @@ public class SWWallet extends ISigningWallet {
         mRootKey = key;
     }
 
-    @Override
-    public byte[] getIdentifier() { return mRootKey.getIdentifier(); }
-    @Override
-    public boolean canSignHashes() { return true; }
     @Override
     public boolean requiresPrevoutRawTxs() { return false; }
 
@@ -64,6 +61,12 @@ public class SWWallet extends ISigningWallet {
             sigs.add(ECKey.fromPrivate(key.mRootKey.getPrivKey()).sign(Sha256Hash.wrap(hash.getBytes())));
         }
         return sigs;
+    }
+
+    @Override
+    public Object[] getChallengeArguments() {
+        final Address addr = new Address(Network.NETWORK, mRootKey.getIdentifier());
+        return new Object[]{ "login.get_challenge", addr.toString() };
     }
 
     @Override

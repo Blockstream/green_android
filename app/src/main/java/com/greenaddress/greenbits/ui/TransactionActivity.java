@@ -604,6 +604,7 @@ public class TransactionActivity extends GaActivity {
             }
 
             ListenableFuture<Void> prevouts = Futures.immediateFuture(null);
+            // FIXME: Find another way to do this
             if (getGAService().isTrezorHWWallet()) {
                 for (final TransactionInput inp : tx.getInputs()) {
                     prevouts = Futures.transform(prevouts, new AsyncFunction<Void, Void>() {
