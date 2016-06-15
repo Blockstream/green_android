@@ -10,7 +10,6 @@ public abstract class ISigningWallet {
 
     // FIXME: Get rid of these along with checking the object type by callers
     public abstract byte[] getIdentifier();
-    public abstract DeterministicKey getPubKey();
     public boolean canSignHashes() { return true; }
     public boolean requiresPrevoutRawTxs() { return false; }
 

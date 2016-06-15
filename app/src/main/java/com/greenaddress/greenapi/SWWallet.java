@@ -27,8 +27,6 @@ public class SWWallet extends ISigningWallet {
     @Override
     public byte[] getIdentifier() { return mRootKey.getIdentifier(); }
     @Override
-    public DeterministicKey getPubKey() { return mRootKey; }
-    @Override
     public boolean canSignHashes() { return true; }
     @Override
     public boolean requiresPrevoutRawTxs() { return false; }
@@ -39,7 +37,7 @@ public class SWWallet extends ISigningWallet {
 
     @Override
     public DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
-        DeterministicKey k = getMyKey(subAccount).getPubKey();
+        DeterministicKey k = getMyKey(subAccount).mRootKey;
         // Currently only regular transactions are supported
         k = HDKey.deriveChildKey(k, HDKey.BRANCH_REGULAR);
         return HDKey.deriveChildKey(k, pointer);

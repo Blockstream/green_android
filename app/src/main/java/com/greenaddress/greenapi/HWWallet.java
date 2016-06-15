@@ -59,6 +59,7 @@ public abstract class HWWallet extends ISigningWallet {
         return parent;
     }
 
+    protected abstract DeterministicKey getPubKey();
     protected abstract HWWallet derive(Integer childNumber);
     protected abstract ECKey.ECDSASignature signMessage(String message);
 }
