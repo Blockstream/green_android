@@ -560,9 +560,9 @@ public class Trezor {
 
             final Integer[] intArray;
             if (ptx.subAccount != 0) {
-                intArray = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, 1, ptx.change_pointer};
+                intArray = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, HDKey.BRANCH_REGULAR, ptx.change_pointer};
             } else {
-                intArray = new Integer[]{1, ptx.change_pointer};
+                intArray = new Integer[]{HDKey.BRANCH_REGULAR, ptx.change_pointer};
             }
             final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
             final String pkHex = xpub[xpub.length - 2];
@@ -596,9 +596,9 @@ public class Trezor {
 
         final Integer[] intArray2;
         if (ptx.subAccount != 0) {
-            intArray2 = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, 1};
+            intArray2 = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, HDKey.BRANCH_REGULAR};
         } else {
-            intArray2 = new Integer[]{1};
+            intArray2 = new Integer[]{HDKey.BRANCH_REGULAR};
         }
         final String[] xpub2 = MessageGetPublicKey(intArray2).split("%", -1);
         final String pkHex2 = xpub2[xpub2.length-2];

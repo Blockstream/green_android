@@ -22,6 +22,8 @@ public class HDKey {
     private final static int VER_PUBLIC = isMain() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
     private final static int VER_PRIVATE = isMain() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
 
+    public static final int BRANCH_REGULAR = 1;
+
     private static final Map<Integer, DeterministicKey> mServerKeys = new HashMap<>();
     private static int[] mGaUserPath = null;
 

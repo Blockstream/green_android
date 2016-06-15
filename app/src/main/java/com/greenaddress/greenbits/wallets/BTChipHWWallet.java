@@ -93,9 +93,10 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     private String outToPath(final Output out) {
+        final String BRANCH = Integer.toString(HDKey.BRANCH_REGULAR) + "/";
         if (out.subAccount != 0)
-            return "3'/" + out.subAccount + "'/1/" + out.pointer;
-        return "1/" + out.pointer;
+            return "3'/" + out.subAccount + "'/" + BRANCH + out.pointer;
+        return BRANCH + out.pointer;
     }
 
     @Override

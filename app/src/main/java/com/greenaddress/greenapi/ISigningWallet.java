@@ -69,7 +69,8 @@ public abstract class ISigningWallet {
 
     public DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
         DeterministicKey k = getMyKey(subAccount).getPubKey();
-        k = HDKey.deriveChildKey(k, 1);
+        // Currently only regular transactions are supported
+        k = HDKey.deriveChildKey(k, HDKey.BRANCH_REGULAR);
         return HDKey.deriveChildKey(k, pointer);
     }
 
