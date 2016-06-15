@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.HDKey;
+import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
@@ -39,7 +40,7 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
 
 
-public class BTChipHWWallet extends ISigningWallet {
+public class BTChipHWWallet extends HWWallet {
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final BTChipDongle dongle;
     private RequestLoginActivity loginActivity;
@@ -51,7 +52,6 @@ public class BTChipHWWallet extends ISigningWallet {
     private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
     private BTChipHWWallet(final BTChipDongle dongle, final RequestLoginActivity loginActivity, final String pin, final List<Integer> addrn) {
-        super(null);
         this.dongle = dongle;
         this.loginActivity = loginActivity;
         this.pin = pin;
@@ -59,13 +59,11 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     public BTChipHWWallet(final BTChipDongle dongle) {
-        super(null);
         this.dongle = dongle;
         this.pin = "0000";
     }
 
     public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
-        super(null);
         this.dongle = new BTChipDongle(transport);
         this.loginActivity = loginActivity;
         this.pin = pin;
@@ -148,9 +146,6 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     @Override
-    public boolean requiresPrevoutRawTxs() { return true; }
-
-    @Override
     public DeterministicKey getPubKey() {
         try {
             return internalGetPubKey();
@@ -168,10 +163,7 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     @Override
-    public boolean canSignHashes() { return false; }
-
-    @Override
-    public ECKey.ECDSASignature signMessage(final String message) {
+    protected ECKey.ECDSASignature signMessage(final String message) {
         try {
             dongle.signMessagePrepare(getPath(), message.getBytes());
             final BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
@@ -179,11 +171,6 @@ public class BTChipHWWallet extends ISigningWallet {
         } catch (BTChipException e) {
             throw new RuntimeException(e.getMessage());
         }
-    }
-
-    @Override
-    public byte[] getIdentifier() {
-        return getPubKey().toAddress(Network.NETWORK).getHash160();
     }
 
     private String getPath() {
@@ -199,15 +186,10 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     @Override
-    public ISigningWallet derive(final Integer childNumber) {
+    protected HWWallet derive(final Integer childNumber) {
         final LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
         addrn_child.add(childNumber);
         return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
-    }
-
-    @Override
-    public String[] signChallenge(final String challengeString, final String[] challengePath) {
-        return signChallengeHW(challengeString, challengePath);
     }
 
     public BTChipDongle getDongle() {

@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.wallets;
 
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.ISigningWallet;
+import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.satoshilabs.trezor.Trezor;
@@ -14,44 +15,29 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class TrezorHWWallet extends ISigningWallet {
+public class TrezorHWWallet extends HWWallet {
 
     private final Trezor trezor;
     private final List<Integer> addrn;
 
     public TrezorHWWallet(final Trezor t) {
-        super(null);
         trezor = t;
         addrn = new LinkedList<>();
     }
 
     private TrezorHWWallet(final TrezorHWWallet parent, final Integer childNumber) {
-        super(null);
         trezor = parent.trezor;
         addrn = new LinkedList<>(parent.addrn);
         addrn.add(childNumber);
     }
 
     @Override
-    public String[] signChallenge(final String challengeString, final String[] challengePath) {
-        return signChallengeHW(challengeString, challengePath);
-    }
-
-    @Override
-    public ISigningWallet derive(final Integer childNumber) {
+    protected HWWallet derive(final Integer childNumber) {
         return new TrezorHWWallet(this, childNumber);
     }
 
     @Override
-    public byte[] getIdentifier() {
-        return getPubKey().toAddress(Network.NETWORK).getHash160();
-    }
-
-    @Override
-    public boolean canSignHashes() { return false; }
-
-    @Override
-    public ECKey.ECDSASignature signMessage(final String message) {
+    protected ECKey.ECDSASignature signMessage(final String message) {
         final Integer[] intArray = new Integer[addrn.size()];
         return trezor.MessageSignMessage(addrn.toArray(intArray), message);
     }
@@ -68,7 +54,4 @@ public class TrezorHWWallet extends ISigningWallet {
         final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
         return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet");
     }
-
-    @Override
-    public boolean requiresPrevoutRawTxs() { return true; }
 }
