@@ -462,66 +462,67 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            if (remainingFeeDelta.compareTo(Coin.ZERO) <= 0)
+            if (remainingFeeDelta.compareTo(Coin.ZERO) <= 0) {
                 doReplaceByFee(txItem, feerate, tx, change_pointer, subAccount, oldFee, null, null, level);
-            else {
-                final Coin finalRemaining = remainingFeeDelta;
-                CB.after(getGAService().getAllUnspentOutputs(1, subAccount),
-                         new CB.Toast<ArrayList>(gaActivity) {
-                    @Override
-                    public void onSuccess(@javax.annotation.Nullable ArrayList result) {
-                        Coin remaining = finalRemaining;
-                        final List<ListenableFuture<byte[]>> scripts = new ArrayList<>();
-                        final List<Map<String, Object>> moreInputs = new ArrayList<>();
-                        for (Object utxo_ : result) {
-                            Map<String, Object> utxo = (Map<String, Object>) utxo_;
-                            remaining = remaining.subtract(Coin.valueOf(Long.valueOf((String)utxo.get("value"))));
-                            scripts.add(getGAService().createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
-                            moreInputs.add(utxo);
-                            if (remaining.compareTo(Coin.ZERO) <= 0) {
-                                break;
-                            }
-                        }
-                        if (remaining.compareTo(Coin.ZERO) > 0) {
-                            gaActivity.toast(R.string.insufficientFundsText);
-                        } else {
-                            if (remaining.compareTo(Coin.ZERO) < 0) {
-                                final Coin changeValue = remaining.multiply(-1);
-                                // we need to add a new change output
-                                CB.after(getGAService().getNewAddress(subAccount),
-                                         new CB.Toast<Map>(gaActivity) {
-                                    @Override
-                                    public void onSuccess(final @javax.annotation.Nullable Map result) {
-                                        tx.addOutput(
-                                                changeValue,
-                                                Address.fromP2SHHash(
-                                                        Network.NETWORK,
-                                                        Utils.sha256hash160(Wally.hex_to_bytes((String)result.get("script")))
-                                                )
-                                        );
-                                        CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
-                                            @Override
-                                            public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
-                                                doReplaceByFee(txItem, feerate, tx, (Integer) result.get("pointer"),
-                                                        subAccount, oldFee, moreInputs, morePrevouts, level);
-                                            }
-                                        });
-                                    }
-                                });
-                            } else {
-                                // we were lucky enough to match the required value
-                                CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
-                                    @Override
-                                    public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
-                                        doReplaceByFee(txItem, feerate, tx, null, subAccount,
-                                                       oldFee, moreInputs, morePrevouts, level);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
+                return;
             }
+
+            final Coin finalRemaining = remainingFeeDelta;
+            CB.after(getGAService().getAllUnspentOutputs(1, subAccount),
+                     new CB.Toast<ArrayList>(gaActivity) {
+                @Override
+                public void onSuccess(ArrayList result) {
+                    Coin remaining = finalRemaining;
+                    final List<ListenableFuture<byte[]>> scripts = new ArrayList<>();
+                    final List<Map<String, Object>> moreInputs = new ArrayList<>();
+                    for (Object utxo_ : result) {
+                        Map<String, Object> utxo = (Map<String, Object>) utxo_;
+                        remaining = remaining.subtract(Coin.valueOf(Long.valueOf((String)utxo.get("value"))));
+                        scripts.add(getGAService().createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
+                        moreInputs.add(utxo);
+                        if (remaining.compareTo(Coin.ZERO) <= 0)
+                            break;
+                    }
+
+                    final int remainingCmp = remaining.compareTo(Coin.ZERO);
+                    if (remainingCmp == 0) {
+                        // Funds available exactly match the required value
+                        CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
+                            @Override
+                            public void onSuccess(List<byte[]> morePrevouts) {
+                                doReplaceByFee(txItem, feerate, tx, null, subAccount,
+                                               oldFee, moreInputs, morePrevouts, level);
+                            }
+                        });
+                        return;
+                    }
+
+                    if (remainingCmp > 0) {
+                        // Not enough funds
+                        gaActivity.toast(R.string.insufficientFundsText);
+                        return;
+                    }
+
+                    // Funds left over - add a new change output
+                    final Coin changeValue = remaining.multiply(-1);
+                    CB.after(getGAService().getNewAddress(subAccount),
+                             new CB.Toast<Map>(gaActivity) {
+                        @Override
+                        public void onSuccess(final Map result) {
+                            byte[] script = Wally.hex_to_bytes((String) result.get("script"));
+                            tx.addOutput(changeValue,
+                                         Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script)));
+                            CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
+                                @Override
+                                public void onSuccess(List<byte[]> morePrevouts) {
+                                    doReplaceByFee(txItem, feerate, tx, (Integer) result.get("pointer"),
+                                                   subAccount, oldFee, moreInputs, morePrevouts, level);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
 
         private void doReplaceByFee(final TransactionItem txItem, final Coin feerate,
