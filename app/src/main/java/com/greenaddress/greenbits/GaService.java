@@ -210,7 +210,7 @@ public class GaService extends Service {
     public String getProxyHost() { return cfg().getString("proxy_host", null); }
     public String getProxyPort() { return cfg().getString("proxy_port", null); }
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
-    public void setCurrentSubAccount(int subaccount) { cfgEdit("main").putInt("curSubaccount", subaccount).apply(); }
+    public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
 
     @Override
     public void onCreate() {
@@ -239,12 +239,12 @@ public class GaService extends Service {
             }
 
             @Override
-            public void onNewTransaction(final List<Integer> subaccounts) {
+            public void onNewTransaction(final int[] affectedSubAccounts) {
                 Log.i(TAG, "onNewTransactions");
                 spv.updateUnspentOutputs();
                 newTransactionsObservable.doNotify();
-                for (final Integer subaccount : subaccounts)
-                    updateBalance(subaccount);
+                for (final int subAccount : affectedSubAccounts)
+                    updateBalance(subAccount);
             }
 
             @Override
@@ -278,15 +278,15 @@ public class GaService extends Service {
         }
     }
 
-    public ListenableFuture<byte[]> createOutScript(final Integer subaccount, final Integer pointer) {
+    public ListenableFuture<byte[]> createOutScript(final int subAccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
-        pubkeys.add(HDKey.getGAPublicKeys(subaccount, pointer)[1]);
-        pubkeys.add(mClient.getMyPublicKey(subaccount, pointer));
+        pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
+        pubkeys.add(mClient.getMyPublicKey(subAccount, pointer));
 
         return es.submit(new Callable<byte[]>() {
             public byte[] call() {
 
-                final Map<String, ?> m = findSubaccount("2of3", subaccount);
+                final Map<String, ?> m = findSubaccount("2of3", subAccount);
                 if (m != null)
                     pubkeys.add(HDKey.getRecoveryKeys((String) m.get("2of3_backup_chaincode"),
                                                       (String) m.get("2of3_backup_pubkey"), pointer)[1]);
@@ -297,12 +297,12 @@ public class GaService extends Service {
     }
 
     @NonNull
-    private ListenableFuture<Boolean> verifyP2SHSpendableBy(@NonNull final Script scriptHash, final Integer subaccount, final Integer pointer) {
+    private ListenableFuture<Boolean> verifyP2SHSpendableBy(@NonNull final Script scriptHash, final int subAccount, final Integer pointer) {
         if (!scriptHash.isPayToScriptHash())
             return Futures.immediateFuture(false);
         final byte[] gotP2SH = scriptHash.getPubKeyHash();
 
-        return Futures.transform(createOutScript(subaccount, pointer), new Function<byte[], Boolean>() {
+        return Futures.transform(createOutScript(subAccount, pointer), new Function<byte[], Boolean>() {
             @javax.annotation.Nullable
             @Override
             public Boolean apply(final @javax.annotation.Nullable byte[] multisig) {
@@ -321,8 +321,8 @@ public class GaService extends Service {
     }
 
     @NonNull
-    public ListenableFuture<Boolean> verifySpendableBy(@NonNull final TransactionOutput txOutput, final Integer subaccount, final Integer pointer) {
-        return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subaccount, pointer);
+    public ListenableFuture<Boolean> verifySpendableBy(@NonNull final TransactionOutput txOutput, final int subAccount, final Integer pointer) {
+        return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subAccount, pointer);
     }
 
     private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> f) {
@@ -334,15 +334,15 @@ public class GaService extends Service {
                 // we should just copy the whole loginData instance
                 fiatCurrency = result.currency;
                 fiatExchange = result.exchange;
-                mSubaccounts = result.subaccounts;
+                mSubaccounts = result.subAccounts;
                 mReceivingId = result.receivingId;
                 HDKey.resetCache(result.gaUserPath);
 
                 balanceObservables.put(0, new GaObservable());
                 updateBalance(0);
-                for (final Object subaccount : result.subaccounts) {
-                    final Map<?, ?> subaccountMap = (Map) subaccount;
-                    final int pointer = ((Integer) subaccountMap.get("pointer"));
+                for (final Object s : result.subAccounts) {
+                    final Map<?, ?> m = (Map) s;
+                    final int pointer = ((Integer) m.get("pointer"));
                     balanceObservables.put(pointer, new GaObservable());
                     updateBalance(pointer);
                 }
@@ -407,12 +407,12 @@ public class GaService extends Service {
     }
 
     @NonNull
-    public ListenableFuture<Map<?, ?>> updateBalance(final int subaccount) {
-        final ListenableFuture<Map<?, ?>> future = mClient.getSubaccountBalance(subaccount);
+    public ListenableFuture<Map<?, ?>> updateBalance(final int subAccount) {
+        final ListenableFuture<Map<?, ?>> future = mClient.getSubaccountBalance(subAccount);
         Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(@Nullable final Map<?, ?> result) {
-                balancesCoin.put(subaccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
+                balancesCoin.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
                 fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                 // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
                 // while the server can return more, hence toBigInteger instead here:
@@ -420,9 +420,9 @@ public class GaService extends Service {
                         .movePointRight(Fiat.SMALLEST_UNIT_EXPONENT).toBigInteger();
                 // also strip extra decimals (over 2 places) because that's what the old JS client does
                 final BigInteger fiatValue = tmpValue.subtract(tmpValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
-                balancesFiat.put(subaccount, Fiat.valueOf((String) result.get("fiat_currency"), fiatValue.longValue()));
+                balancesFiat.put(subAccount, Fiat.valueOf((String) result.get("fiat_currency"), fiatValue.longValue()));
 
-                fireBalanceChanged(subaccount);
+                fireBalanceChanged(subAccount);
             }
 
             @Override
@@ -438,12 +438,12 @@ public class GaService extends Service {
         return mClient.getSubaccountBalance(pointer);
     }
 
-    public void fireBalanceChanged(final int subaccount) {
-        if (getBalanceCoin(subaccount) == null) {
+    public void fireBalanceChanged(final int subAccount) {
+        if (getBalanceCoin(subAccount) == null) {
             // Called from addUtxoToValues before balance is fetched
             return;
         }
-        balanceObservables.get(subaccount).doNotify();
+        balanceObservables.get(subAccount).doNotify();
     }
 
     @NonNull
@@ -458,11 +458,11 @@ public class GaService extends Service {
         });
     }
 
-    public ListenableFuture<Map<?, ?>> getMyTransactions(final int subaccount) {
+    public ListenableFuture<Map<?, ?>> getMyTransactions(final int subAccount) {
         return es.submit(new Callable<Map<?, ?>>() {
             @Override
             public Map<?, ?> call() throws Exception {
-                Map<?, ?> result = mClient.getMyTransactions(subaccount);
+                Map<?, ?> result = mClient.getMyTransactions(subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
                 // FIXME: Does this really belong here?
                 if (isSPVEnabled()) {
@@ -480,11 +480,11 @@ public class GaService extends Service {
     }
 
     private void preparePrivData(@NonNull final Map<String, Object> privateData) {
-        final int subaccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
+        final int subAccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
-        final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subaccount);
+        final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subAccount);
         if (!isSPVEnabled() ||
-            verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subaccount)) ||
+            verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subAccount)) ||
             mClient.requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
@@ -505,9 +505,9 @@ public class GaService extends Service {
         return mClient.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
     }
 
-    public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subaccount, final String recipient, final Map<String, Object> privateData) {
+    public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subAccount, final String recipient, final Map<String, Object> privateData) {
         preparePrivData(privateData);
-        return mClient.prepareTx(getBalanceCoin(subaccount).longValue(), recipient, "receiver", privateData);
+        return mClient.prepareTx(getBalanceCoin(subAccount).longValue(), recipient, "receiver", privateData);
     }
 
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
@@ -523,8 +523,8 @@ public class GaService extends Service {
         return mClient.sendRawTransaction(tx, twoFacData, returnErrorUri);
     }
 
-    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
-        return mClient.getAllUnspentOutputs(confs, subaccount);
+    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, final Integer subAccount) {
+        return mClient.getAllUnspentOutputs(confs, subAccount);
     }
 
     public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {
@@ -559,12 +559,12 @@ public class GaService extends Service {
         return bits.toByteArray();
     }
 
-    public ListenableFuture<Map> getNewAddress(final int subaccount) {
-        return mClient.getNewAddress(subaccount);
+    public ListenableFuture<Map> getNewAddress(final int subAccount) {
+        return mClient.getNewAddress(subAccount);
     }
 
     @NonNull
-    public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subaccount) {
+    public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {
         final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
             @NonNull
             @Override
@@ -580,7 +580,7 @@ public class GaService extends Service {
                 }
                 return Futures.transform(verifyP2SHSpendableBy(
                         ScriptBuilder.createP2SHOutputScript(scriptHash),
-                        subaccount, pointer), new Function<Boolean, String>() {
+                        subAccount, pointer), new Function<Boolean, String>() {
                     @Nullable
                     @Override
                     public String apply(final @Nullable Boolean input) {
@@ -600,7 +600,7 @@ public class GaService extends Service {
                 return es.submit(new QrBitmap(input, 0 /* transparent background */));
             }
         };
-        final ListenableFuture<String> verifiedAddress = Futures.transform(getNewAddress(subaccount), verifyAddress, es);
+        final ListenableFuture<String> verifiedAddress = Futures.transform(getNewAddress(subAccount), verifyAddress, es);
         return Futures.transform(verifiedAddress, addressToQr, es);
     }
 
@@ -657,12 +657,12 @@ public class GaService extends Service {
         return mClient.isTrezorHWWallet();
     }
 
-    public void addBalanceObserver(final int subaccount, final Observer o) {
-        balanceObservables.get(subaccount).addObserver(o);
+    public void addBalanceObserver(final int subAccount, final Observer o) {
+        balanceObservables.get(subAccount).addObserver(o);
     }
 
-    public void deleteBalanceObserver(final int subaccount, final Observer o) {
-        balanceObservables.get(subaccount).deleteObserver(o);
+    public void deleteBalanceObserver(final int subAccount, final Observer o) {
+        balanceObservables.get(subAccount).deleteObserver(o);
     }
 
     public void addNewTxObserver(final Observer o) {
@@ -696,12 +696,12 @@ public class GaService extends Service {
         verifiedTxObservable.doNotify();
     }
 
-    public Coin getBalanceCoin(final int subaccount) {
-        return balancesCoin.get(subaccount);
+    public Coin getBalanceCoin(final int subAccount) {
+        return balancesCoin.get(subAccount);
     }
 
-    public Fiat getBalanceFiat(final int subaccount) {
-        return balancesFiat.get(subaccount);
+    public Fiat getBalanceFiat(final int subAccount) {
+        return balancesFiat.get(subAccount);
     }
 
     public float getFiatRate() {
@@ -724,11 +724,11 @@ public class GaService extends Service {
         return mSubaccounts != null && !mSubaccounts.isEmpty();
     }
 
-    public Map<String, ?> findSubaccount(final String type, final Integer subaccount) {
+    public Map<String, ?> findSubaccount(final String type, final Integer subAccount) {
         if (haveSubaccounts()) {
             for (final Object s : mSubaccounts) {
                 final Map<String, ?> ret = (Map) s;
-                if (ret.get("pointer").equals(subaccount) &&
+                if (ret.get("pointer").equals(subAccount) &&
                    (type == null || ret.get("type").equals(type)))
                     return ret;
             }

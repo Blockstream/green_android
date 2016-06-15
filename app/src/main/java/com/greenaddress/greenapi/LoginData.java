@@ -14,7 +14,7 @@ public class LoginData {
     public final String currency;
     public final Map<String, Object> userConfig;
     public Map<String, Object> feeEstimates;
-    public final ArrayList subaccounts;
+    public final ArrayList subAccounts;
     public final String receivingId;
     public int[] gaUserPath;  // can change on first login (registration)
     public final int earliest_key_creation_time;
@@ -27,7 +27,7 @@ public class LoginData {
         // The name 'appearance' for user config is historical
         final String cfg = (String) map.get("appearance");
         this.userConfig = new MappingJsonFactory().getCodec().readValue(cfg, Map.class);
-        this.subaccounts = (ArrayList) map.get("subaccounts");
+        this.subAccounts = (ArrayList) map.get("subaccounts");
         setGaUserPath(Wally.hex_to_bytes((String) map.get("gait_path")));
         this.receivingId = (String) map.get("receiving_id");
         if (map.get("segwit") == null) {

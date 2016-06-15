@@ -119,7 +119,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
     }
 
-    private void configureSubaccountsFooter(final int subaccount) {
+    private void configureSubaccountsFooter(final int subAccount) {
         final GaService service = mService;
 
         if (!service.haveSubaccounts())
@@ -128,13 +128,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
-        final String subaccountName;
-        final Map<String, ?> m = service.findSubaccount(null, subaccount);
+        final String subAccountName;
+        final Map<String, ?> m = service.findSubaccount(null, subAccount);
         if (m == null)
-            subaccountName = getResources().getText(R.string.main_account).toString();
+            subAccountName = getResources().getText(R.string.main_account).toString();
         else
-            subaccountName = (String) m.get("name");
-        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), subaccountName));
+            subAccountName = (String) m.get("name");
+        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), subAccountName));
 
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -156,10 +156,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     @Override
                     public void onSelection(final MaterialDialog dialog, final View view, final int which, final CharSequence text) {
 
-                        final int subaccount = pointers.get(which);
-                        if (subaccount != service.getCurrentSubAccount()) {
+                        final int subAccount = pointers.get(which);
+                        if (subAccount != service.getCurrentSubAccount()) {
                             setTitle(String.format("%s %s", getResources().getText(R.string.app_name), text));
-                            onSubaccountUpdate(subaccount);
+                            onSubaccountUpdate(subAccount);
                         }
                     }
                 };
@@ -173,12 +173,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         });
     }
 
-    private void onSubaccountUpdate(final int subaccount) {
+    private void onSubaccountUpdate(final int subAccount) {
         final GaService service = mService;
-        service.setCurrentSubAccount(subaccount);
+        service.setCurrentSubAccount(subAccount);
 
         final Intent data = new Intent("fragmentupdater");
-        data.putExtra("sub", subaccount);
+        data.putExtra("sub", subAccount);
         sendBroadcast(data);
     }
 

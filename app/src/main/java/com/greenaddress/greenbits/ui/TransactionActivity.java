@@ -401,7 +401,7 @@ public class TransactionActivity extends GaActivity {
 
             final Transaction tx = new Transaction(Network.NETWORK, Wally.hex_to_bytes(txItem.data));
             Integer change_pointer = null;
-            final Integer subaccount = getGAService().getCurrentSubAccount();
+            final int subAccount = getGAService().getCurrentSubAccount();
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
             // by at most 4 bytes per input (signatures have variable lengths)
             if (txSize == null) {
@@ -441,8 +441,8 @@ public class TransactionActivity extends GaActivity {
                     // keep non-change/non-redeposit intact
                     tx.addOutput(origOuts.get((Integer)ep.get("pt_idx")));
                 } else {
-                    if ((ep.get("subaccount") == null && subaccount.equals(0)) ||
-                            ep.get("subaccount").equals(subaccount)) {
+                    if ((ep.get("subaccount") == null && subAccount == 0) ||
+                            ep.get("subaccount").equals(subAccount)) {
                         change_pointer = (Integer) ep.get("pubkey_pointer");
                     }
                     // change/redeposit
@@ -463,10 +463,10 @@ public class TransactionActivity extends GaActivity {
             }
 
             if (remainingFeeDelta.compareTo(Coin.ZERO) <= 0)
-                doReplaceByFee(txItem, feerate, tx, change_pointer, subaccount, oldFee, null, null, level);
+                doReplaceByFee(txItem, feerate, tx, change_pointer, subAccount, oldFee, null, null, level);
             else {
                 final Coin finalRemaining = remainingFeeDelta;
-                CB.after(getGAService().getAllUnspentOutputs(1, subaccount),
+                CB.after(getGAService().getAllUnspentOutputs(1, subAccount),
                          new CB.Toast<ArrayList>(gaActivity) {
                     @Override
                     public void onSuccess(@javax.annotation.Nullable ArrayList result) {
@@ -488,7 +488,7 @@ public class TransactionActivity extends GaActivity {
                             if (remaining.compareTo(Coin.ZERO) < 0) {
                                 final Coin changeValue = remaining.multiply(-1);
                                 // we need to add a new change output
-                                CB.after(getGAService().getNewAddress(subaccount),
+                                CB.after(getGAService().getNewAddress(subAccount),
                                          new CB.Toast<Map>(gaActivity) {
                                     @Override
                                     public void onSuccess(final @javax.annotation.Nullable Map result) {
@@ -503,7 +503,7 @@ public class TransactionActivity extends GaActivity {
                                             @Override
                                             public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
                                                 doReplaceByFee(txItem, feerate, tx, (Integer) result.get("pointer"),
-                                                        subaccount, oldFee, moreInputs, morePrevouts, level);
+                                                        subAccount, oldFee, moreInputs, morePrevouts, level);
                                             }
                                         });
                                     }
@@ -513,7 +513,7 @@ public class TransactionActivity extends GaActivity {
                                 CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
                                     @Override
                                     public void onSuccess(@javax.annotation.Nullable List<byte[]> morePrevouts) {
-                                        doReplaceByFee(txItem, feerate, tx, null, subaccount,
+                                        doReplaceByFee(txItem, feerate, tx, null, subAccount,
                                                        oldFee, moreInputs, morePrevouts, level);
                                     }
                                 });
@@ -526,14 +526,14 @@ public class TransactionActivity extends GaActivity {
 
         private void doReplaceByFee(final TransactionItem txItem, final Coin feerate,
                                     final Transaction tx,
-                                    final Integer change_pointer, final Integer subaccount,
+                                    final Integer change_pointer, final int subAccount,
                                     final Coin oldFee, final List<Map<String, Object>> moreInputs,
                                     final List<byte[]> morePrevouts, final int level) {
             final GaActivity gaActivity = getGaActivity();
 
             final PreparedTransaction ptx;
-            ptx = new PreparedTransaction(change_pointer, subaccount, tx,
-                                          getGAService().findSubaccount("2of3", subaccount));
+            ptx = new PreparedTransaction(change_pointer, subAccount, tx,
+                                          getGAService().findSubaccount("2of3", subAccount));
 
             for (final Map<String, Object> ep : (List<Map<String, Object>>)txItem.eps) {
                 if (((Boolean) ep.get("is_credit"))) continue;

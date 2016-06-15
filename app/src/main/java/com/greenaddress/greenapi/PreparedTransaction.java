@@ -20,7 +20,7 @@ import java.util.Map;
 public class PreparedTransaction {
 
     public final Integer change_pointer;
-    public final Integer subaccount_pointer;
+    public final int subAccount;
     public final Boolean requires_2factor;
     public final List<Output> prev_outputs = new ArrayList<>();
     public final Transaction decoded;
@@ -32,9 +32,9 @@ public class PreparedTransaction {
         return map == null ? null : Wally.hex_to_bytes((String) map.get(key));
     }
 
-    public PreparedTransaction(final Integer change_pointer, final Integer subaccount_pointer, final Transaction decoded, final Map<String, ?> twoOfThree) {
+    public PreparedTransaction(final Integer change_pointer, final int subAccount, final Transaction decoded, final Map<String, ?> twoOfThree) {
         this.change_pointer = change_pointer;
-        this.subaccount_pointer = subaccount_pointer;
+        this.subAccount = subAccount;
         this.requires_2factor = false;
         this.decoded = decoded;
         this.prevoutRawTxs = new HashMap<>();
@@ -46,19 +46,19 @@ public class PreparedTransaction {
 
         public PreparedData(final Map<?, ?> values,
                             final Map<String, ?> privateData,
-                            final ArrayList subaccounts,
+                            final ArrayList subAccounts,
                             final OkHttpClient client)
 
         {
             this.values = values;
             this.privateData = privateData;
-            this.subaccounts = subaccounts;
+            this.subAccounts = subAccounts;
             this.client = client;
 
         }
         final Map<?, ?> values;
         final Map<String, ?> privateData;
-        final ArrayList subaccounts;
+        final ArrayList subAccounts;
         final OkHttpClient client;
 
     }
@@ -68,19 +68,19 @@ public class PreparedTransaction {
         this.prevoutRawTxs = new HashMap<>();
 
         if (pte.privateData == null || pte.privateData.get("subaccount") == null) {
-            this.subaccount_pointer = 0;
+            this.subAccount = 0;
             this.twoOfThreeBackupChaincode = null;
             this.twoOfThreeBackupPubkey = null;
         } else {
-            this.subaccount_pointer = (Integer) pte.privateData.get("subaccount");
+            this.subAccount = (Integer) pte.privateData.get("subaccount");
             byte[] chaincode = null, pubkey = null;
-            if (this.subaccount_pointer != 0) {
-                // Check if the subaccount is 2of3 and if so store its chaincode/public key
-                for (final Object subaccount : pte.subaccounts) {
-                    final Map<String, ?> map = (Map) subaccount;
-                    if (map.get("type").equals("2of3") && map.get("pointer").equals(this.subaccount_pointer)) {
-                        chaincode = getBytes(map, "2of3_backup_chaincode");
-                        pubkey = getBytes(map, "2of3_backup_pubkey");
+            if (this.subAccount != 0) {
+                // Check if the sub-account is 2of3 and if so store its chaincode/public key
+                for (final Object s : pte.subAccounts) {
+                    final Map<String, ?> m = (Map) s;
+                    if (m.get("type").equals("2of3") && m.get("pointer").equals(this.subAccount)) {
+                        chaincode = getBytes(m, "2of3_backup_chaincode");
+                        pubkey = getBytes(m, "2of3_backup_pubkey");
                         break;
                     }
                 }

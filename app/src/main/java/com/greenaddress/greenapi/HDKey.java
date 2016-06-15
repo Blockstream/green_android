@@ -101,14 +101,14 @@ public class HDKey {
 
     // Get the key derived from the servers public key/chaincode plus the users path (plus parent).
     // This is the key used on the servers side of 2of2/2of3 transactions.
-    public static DeterministicKey[] getGAPublicKeys(final Integer subaccount, final Integer pointer) {
+    public static DeterministicKey[] getGAPublicKeys(final int subAccount, final Integer pointer) {
         DeterministicKey[] ret = new DeterministicKey[2];
         synchronized (mServerKeys) {
             // Fetch the parent key. This is expensive so we cache it
-            if (!mServerKeys.containsKey(subaccount))
-                mServerKeys.put(subaccount, ret[0] = getServerKeyImpl(subaccount));
+            if (!mServerKeys.containsKey(subAccount))
+                mServerKeys.put(subAccount, ret[0] = getServerKeyImpl(subAccount));
             else
-                ret[0] = mServerKeys.get(subaccount);
+                ret[0] = mServerKeys.get(subAccount);
         }
         // Compute the child key if we were asked for it
         if (pointer != null)
@@ -123,21 +123,21 @@ public class HDKey {
         }
     }
 
-    private static DeterministicKey getServerKeyImpl(final Integer subaccount) {
+    private static DeterministicKey getServerKeyImpl(final int subAccount) {
         DeterministicKey k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
-        k = deriveChildKey(k, subaccount == 0 ? 1 : 3);
+        k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
         for (int i : mGaUserPath)
             k = deriveChildKey(k, i);
-        if (subaccount != 0)
-            k = deriveChildKey(k, subaccount);
+        if (subAccount != 0)
+            k = deriveChildKey(k, subAccount);
 
         // Reconcile against wally
         HDKey hd = new HDKey(h(Network.depositChainCode), h(Network.depositPubkey));
-        hd.derivePublic(subaccount == 0 ? 1 : 3);
+        hd.derivePublic(subAccount == 0 ? 1 : 3);
         for (int i : mGaUserPath)
             hd.derivePublic(i);
-        if (subaccount != 0)
-            hd.derivePublic(subaccount);
+        if (subAccount != 0)
+            hd.derivePublic(subAccount);
 
         if (!h(k.getChainCode()).equals(h(hd.getChainCode())))
             throw new RuntimeException("Chain code mismatch");

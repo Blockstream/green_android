@@ -93,11 +93,9 @@ public class BTChipHWWallet extends ISigningWallet {
     }
 
     private String outToPath(final Output out) {
-        if (out.subaccount != null && out.subaccount != 0) {
-            return "3'/" + out.subaccount + "'/1/" + out.pointer;
-        } else {
-            return "1/" + out.pointer;
-        }
+        if (out.subAccount != 0)
+            return "3'/" + out.subAccount + "'/1/" + out.pointer;
+        return "1/" + out.pointer;
     }
 
     @Override

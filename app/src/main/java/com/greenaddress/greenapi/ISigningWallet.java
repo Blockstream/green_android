@@ -53,22 +53,22 @@ public abstract class ISigningWallet {
             else
                 hash = tx.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
 
-            final ISigningWallet key = getMyKey(prevOut.subaccount).derive(prevOut.branch).derive(prevOut.pointer);
+            final ISigningWallet key = getMyKey(prevOut.subAccount).derive(prevOut.branch).derive(prevOut.pointer);
             sigs.add(ECKey.fromPrivate(key.mRootKey.getPrivKey()).sign(Sha256Hash.wrap(hash.getBytes())));
         }
         return sigs;
     }
 
-    private ISigningWallet getMyKey(final Integer subaccount) {
+    private ISigningWallet getMyKey(final int subAccount) {
         ISigningWallet parent = this;
-        if (subaccount != null && subaccount != 0)
+        if (subAccount != 0)
             parent = parent.derive(ISigningWallet.HARDENED | 3)
-                           .derive(ISigningWallet.HARDENED | subaccount);
+                           .derive(ISigningWallet.HARDENED | subAccount);
         return parent;
     }
 
-    public DeterministicKey getMyPublicKey(final Integer subaccount, final Integer pointer) {
-        DeterministicKey k = getMyKey(subaccount).getPubKey();
+    public DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
+        DeterministicKey k = getMyKey(subAccount).getPubKey();
         k = HDKey.deriveChildKey(k, 1);
         return HDKey.deriveChildKey(k, pointer);
     }

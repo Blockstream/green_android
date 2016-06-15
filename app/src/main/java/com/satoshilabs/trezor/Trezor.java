@@ -540,9 +540,9 @@ public class Trezor {
 
     public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction ptx, final String coinName) {
         curTx = ptx;
-        curSubaccount = ptx.subaccount_pointer;
+        curSubaccount = ptx.subAccount;
 
-        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.subaccount_pointer, ptx.change_pointer);
+        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.subAccount, ptx.change_pointer);
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
             setDepth(serverKeys[0].getDepth()).
@@ -559,8 +559,8 @@ public class Trezor {
             pubkeys.add(ECKey.fromPublicOnly(serverKeys[1].getPubKeyPoint()));
 
             final Integer[] intArray;
-            if (ptx.subaccount_pointer != 0) {
-                intArray = new Integer[]{3 + 0x80000000, ptx.subaccount_pointer + 0x80000000, 1, ptx.change_pointer};
+            if (ptx.subAccount != 0) {
+                intArray = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, 1, ptx.change_pointer};
             } else {
                 intArray = new Integer[]{1, ptx.change_pointer};
             }
@@ -595,8 +595,8 @@ public class Trezor {
         }
 
         final Integer[] intArray2;
-        if (ptx.subaccount_pointer != 0) {
-            intArray2 = new Integer[]{3 + 0x80000000, ptx.subaccount_pointer + 0x80000000, 1};
+        if (ptx.subAccount != 0) {
+            intArray2 = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, 1};
         } else {
             intArray2 = new Integer[]{1};
         }

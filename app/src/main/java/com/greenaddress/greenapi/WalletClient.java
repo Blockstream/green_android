@@ -403,18 +403,25 @@ public class WalletClient {
             public void onEvent(final String topicUri, final Object event) {
 
                 final Map<?, ?> res = (Map) event;
-                final Object subaccounts = res.get("subaccounts");
+                final Object subAccounts = res.get("subaccounts");
 
-                final List<Integer> subaccountsList = new ArrayList<>();
-                if (subaccounts instanceof Number)
-                    subaccountsList.add(((Number) subaccounts).intValue());
-                else {
-                    final ArrayList values = (ArrayList) subaccounts;
-                    if (values != null)
-                        for (final Object v: values)
-                            subaccountsList.add(v == null ? 0 : (Integer) v);
+                final int affectedSubAccounts[];
+                if (subAccounts instanceof Number) {
+                    affectedSubAccounts = new int[1];
+                    affectedSubAccounts[0] = ((Number) subAccounts).intValue();
+                } else {
+                    final ArrayList values = (ArrayList) subAccounts;
+                    if (values == null)
+                        affectedSubAccounts = new int[0];
+                    else {
+                        affectedSubAccounts = new int[values.size()];
+                        for (int i = 0; i < values.size(); ++i) {
+                            final int v = (values.get(i) == null ? 0 : (Integer) values.get(i));
+                            affectedSubAccounts[i] = v;
+                        }
+                    }
                 }
-                mNotificationHandler.onNewTransaction(subaccountsList);
+                mNotificationHandler.onNewTransaction(affectedSubAccounts);
             }
         });
     }
@@ -621,12 +628,12 @@ public class WalletClient {
         return Futures.transform(rpc, connectToLogin, mExecutor);
     }
 
-    public Map<?, ?> getMyTransactions(final Integer subaccount) throws Exception {
-        return syncCall("txs.get_list_v2", Map.class, null, null, null, null, subaccount);
+    public Map<?, ?> getMyTransactions(final int subAccount) throws Exception {
+        return syncCall("txs.get_list_v2", Map.class, null, null, null, null, subAccount);
     }
 
-    public ListenableFuture<Map> getNewAddress(final int subaccount) {
-        return simpleCall("vault.fund", Map.class, subaccount, true);
+    public ListenableFuture<Map> getNewAddress(final int subAccount) {
+        return simpleCall("vault.fund", Map.class, subAccount, true);
     }
 
     private ListenableFuture<PinData> getPinData(final String pin, final SetPinData setPinData) {
@@ -688,7 +695,7 @@ public class WalletClient {
         final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
         clientCall(rpc, "vault.prepare_tx", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.subaccounts, httpClient));
+                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.subAccounts, httpClient));
             }
         }, satoshis, destAddress, feesMode, privateData);
 
@@ -714,19 +721,15 @@ public class WalletClient {
 
 
         final Map dataClone = new HashMap<>();
+        for (final Object k : data.keySet())
+            dataClone.put(k, data.get(k));
 
-        for (final Object tempKey : data.keySet()) {
-            dataClone.put(tempKey, data.get(tempKey));
-        }
-        final Object key = "subaccount";
-
-        if (privateData != null && privateData.containsKey(key)) {
-            dataClone.put(key, privateData.get(key));
-        }
+        if (privateData != null && privateData.containsKey("subaccount"))
+            dataClone.put("subaccount", privateData.get("subaccount"));
 
         clientCall(rpc, "vault.prepare_payreq", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.subaccounts, httpClient));
+                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.subAccounts, httpClient));
             }
         }, amount.longValue(), dataClone, privateData);
 
@@ -837,12 +840,12 @@ public class WalletClient {
         return mHDParent instanceof TrezorHWWallet;
     }
 
-    public DeterministicKey getMyPublicKey(final Integer subaccount, final Integer pointer) {
-        return mHDParent.getMyPublicKey(subaccount, pointer);
+    public DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
+        return mHDParent.getMyPublicKey(subAccount, pointer);
     }
 
-    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subaccount) {
-        return simpleCall("txs.get_all_unspent_outputs", ArrayList.class, confs, subaccount);
+    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subAccount) {
+        return simpleCall("txs.get_all_unspent_outputs", ArrayList.class, confs, subAccount);
     }
 
     private ListenableFuture<Transaction> transactionCall(final String procedure, Object... args) {

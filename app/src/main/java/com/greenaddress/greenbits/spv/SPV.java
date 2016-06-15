@@ -104,17 +104,16 @@ public class SPV {
         updateUnspentOutputs();
     }
 
-    private void addUtxoToValues(final TransactionOutPoint txOutpoint, final int subaccount, final Coin addValue) {
+    private void addUtxoToValues(final TransactionOutPoint txOutpoint, final int subAccount, final Coin addValue) {
         if (countedUtxoValues.containsKey(txOutpoint))
            return;
         countedUtxoValues.put(txOutpoint, addValue);
-        if (verifiedBalancesCoin.get(subaccount) == null) {
-            verifiedBalancesCoin.put(subaccount, addValue);
+        if (verifiedBalancesCoin.get(subAccount) == null) {
+            verifiedBalancesCoin.put(subAccount, addValue);
         } else {
-            verifiedBalancesCoin.put(subaccount,
-                    verifiedBalancesCoin.get(subaccount).add(addValue));
+            verifiedBalancesCoin.put(subAccount,
+                    verifiedBalancesCoin.get(subAccount).add(addValue));
         }
-
     }
 
     public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
@@ -154,10 +153,10 @@ public class SPV {
                 for (final TransactionOutPoint oldUtxo : new HashSet<>(countedUtxoValues.keySet())) {
                     if (!newUtxos.contains(oldUtxo)) {
                         recalculateBloom = true;
-                        final Integer subaccount = unspentOutpointsSubaccounts.get(oldUtxo);
-                        verifiedBalancesCoin.put(subaccount,
-                                verifiedBalancesCoin.get(subaccount).subtract(countedUtxoValues.get(oldUtxo)));
-                        changedSubaccounts.add(subaccount);
+                        final int subAccount = unspentOutpointsSubaccounts.get(oldUtxo);
+                        verifiedBalancesCoin.put(subAccount,
+                                verifiedBalancesCoin.get(subAccount).subtract(countedUtxoValues.get(oldUtxo)));
+                        changedSubaccounts.add(subAccount);
                         countedUtxoValues.remove(oldUtxo);
                         unspentOutpointsSubaccounts.remove(oldUtxo);
                         unspentOutpointsPointers.remove(oldUtxo);
@@ -167,9 +166,8 @@ public class SPV {
 
                 recalculate(recalculateBloom);
 
-                for (final Integer subaccount : changedSubaccounts) {
-                    gaService.fireBalanceChanged(subaccount);
-                }
+                for (final int subAccount : changedSubaccounts)
+                    gaService.fireBalanceChanged(subAccount);
             }
 
             @Override
@@ -196,17 +194,17 @@ public class SPV {
             final long value = gaService.cfgIn(SPENDABLE).getLong(key, -1);
             if (value != -1) {
                 final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
-                final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
+                final int subAccount = unspentOutpointsSubaccounts.get(txOutpoint);
                 if (!countedUtxoValues.containsKey(txOutpoint))
-                    changedSubaccounts.add(subaccount);
-                addUtxoToValues(txOutpoint, subaccount, Coin.valueOf(value));
+                    changedSubaccounts.add(subAccount);
+                addUtxoToValues(txOutpoint, subAccount, Coin.valueOf(value));
             } else {
                 missing = true;
             }
         }
-        for (final Integer subaccount : changedSubaccounts) {
-            gaService.fireBalanceChanged(subaccount);
-        }
+        for (final int subAccount : changedSubaccounts)
+            gaService.fireBalanceChanged(subAccount);
+
         if (!missing) return;
         Futures.addCallback(gaService.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
             @Override
@@ -218,17 +216,17 @@ public class SPV {
                         final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
                         if (countedUtxoValues.containsKey(txOutpoint))
                             continue;
-                        final Integer subaccount = unspentOutpointsSubaccounts.get(txOutpoint);
+                        final int subAccount = unspentOutpointsSubaccounts.get(txOutpoint);
                         final Integer pointer = unspentOutpointsPointers.get(txOutpoint);
 
-                        futuresList.add(Futures.transform(gaService.verifySpendableBy(result.getOutput(outpoint), subaccount, pointer), new Function<Boolean, Boolean>() {
+                        futuresList.add(Futures.transform(gaService.verifySpendableBy(result.getOutput(outpoint), subAccount, pointer), new Function<Boolean, Boolean>() {
                             @Nullable
                             @Override
                             public Boolean apply(final @Nullable Boolean input) {
                                 if (input) {
                                     final Coin value = result.getOutput(outpoint).getValue();
-                                    addUtxoToValues(txOutpoint, subaccount, value);
-                                    changedSubaccounts.add(subaccount);
+                                    addUtxoToValues(txOutpoint, subAccount, value);
+                                    changedSubaccounts.add(subAccount);
                                     final String key = txHashStr + ":" + outpoint;
                                     gaService.cfgInEdit(SPENDABLE).putLong(key, value.longValue()).apply();
                                 } else {
@@ -248,9 +246,8 @@ public class SPV {
                 Futures.addCallback(Futures.allAsList(futuresList), new FutureCallback<List<Boolean>>() {
                     @Override
                     public void onSuccess(final @Nullable List<Boolean> result) {
-                        for (final Integer subaccount : changedSubaccounts) {
-                            gaService.fireBalanceChanged(subaccount);
-                        }
+                        for (final int subAccount : changedSubaccounts)
+                            gaService.fireBalanceChanged(subAccount);
                     }
 
                     @Override
@@ -268,10 +265,10 @@ public class SPV {
     }
 
 
-    public void addToBloomFilter(@Nullable final Integer blockHeight, @Nullable final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
+    public void addToBloomFilter(@Nullable final Integer blockHeight, @Nullable final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
         if (blockChain == null) return; // can happen before login (onNewBlock)
         if (txhash != null) {
-            addToUtxo(txhash, pt_idx, subaccount, pointer);
+            addToUtxo(txhash, pt_idx, subAccount, pointer);
         }
         if (blockHeight != null && blockHeight <= blockChain.getBestChainHeight() &&
                 (txhash == null || !unspentOutputsOutpoints.containsKey(txhash))) {
@@ -302,8 +299,8 @@ public class SPV {
         }
     }
 
-    private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subaccount, final int pointer) {
-        unspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subaccount);
+    private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
+        unspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subAccount);
         unspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
         if (unspentOutputsOutpoints.get(txhash) == null) {
             final ArrayList<Integer> newList = new ArrayList<>();
@@ -331,9 +328,9 @@ public class SPV {
             }
             final List<ListenableFuture<Boolean>> changeVerifications = new ArrayList<>();
             changeVerifications.add(
-                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(0), ptx.subaccount_pointer, ptx.change_pointer));
+                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(0), ptx.subAccount, ptx.change_pointer));
             changeVerifications.add(
-                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(1), ptx.subaccount_pointer, ptx.change_pointer));
+                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(1), ptx.subAccount, ptx.change_pointer));
             changeFuture = Futures.allAsList(changeVerifications);
         } else {
             changeFuture = Futures.immediateFuture(null);
