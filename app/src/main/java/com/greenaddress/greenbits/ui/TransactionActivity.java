@@ -32,6 +32,7 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
@@ -605,7 +606,7 @@ public class TransactionActivity extends GaActivity {
 
             ListenableFuture<Void> prevouts = Futures.immediateFuture(null);
             // FIXME: Find another way to do this
-            if (getGAService().isTrezorHWWallet()) {
+            if (getGAService().getSigningWallet() instanceof TrezorHWWallet) {
                 for (final TransactionInput inp : tx.getInputs()) {
                     prevouts = Futures.transform(prevouts, new AsyncFunction<Void, Void>() {
                         @Override

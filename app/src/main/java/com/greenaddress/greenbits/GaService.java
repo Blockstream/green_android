@@ -133,6 +133,10 @@ public class GaService extends Service {
 
     private WalletClient mClient;
 
+    public ISigningWallet getSigningWallet() {
+        return mClient.getSigningWallet();
+    }
+
     public int getAutoLogoutMinutes() {
         try {
             return (int)getUserConfig("altimeout");
@@ -281,7 +285,7 @@ public class GaService extends Service {
     public ListenableFuture<byte[]> createOutScript(final int subAccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
         pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
-        pubkeys.add(mClient.getMyPublicKey(subAccount, pointer));
+        pubkeys.add(mClient.getSigningWallet().getMyPublicKey(subAccount, pointer));
 
         return es.submit(new Callable<byte[]>() {
             public byte[] call() {
@@ -485,7 +489,7 @@ public class GaService extends Service {
         final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subAccount);
         if (!isSPVEnabled() ||
             verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subAccount)) ||
-            mClient.requiresPrevoutRawTxs()) {
+            mClient.getSigningWallet().requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
             privateData.put("prevouts_mode", "skip");
@@ -651,10 +655,6 @@ public class GaService extends Service {
                 throw new RuntimeException(e);
             }
         return mSignUpQRCode.qrcode;
-    }
-
-    public boolean isTrezorHWWallet() {
-        return mClient.isTrezorHWWallet();
     }
 
     public void addBalanceObserver(final int subAccount, final Observer o) {

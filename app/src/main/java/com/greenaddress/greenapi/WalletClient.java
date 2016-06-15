@@ -16,7 +16,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.bitcoinj.core.Address;
@@ -831,16 +830,8 @@ public class WalletClient {
         return simpleCall("twofactor.request_" + type, Object.class, action, data);
     }
 
-    public boolean requiresPrevoutRawTxs() {
-        return mHDParent.requiresPrevoutRawTxs();
-    }
-
-    public boolean isTrezorHWWallet() {
-        return mHDParent instanceof TrezorHWWallet;
-    }
-
-    public DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
-        return mHDParent.getMyPublicKey(subAccount, pointer);
+    public ISigningWallet getSigningWallet() {
+        return mHDParent;
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subAccount) {
