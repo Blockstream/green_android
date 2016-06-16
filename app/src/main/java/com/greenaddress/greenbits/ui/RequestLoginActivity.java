@@ -160,8 +160,8 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             }
             if (t != null) {
                 final List<Integer> version = t.getFirmwareVersion();
-                if (t.getVendorId() == 21324 && (version.get(0) < 1 ||
-                        (version.get(0) == 1) && (version.get(1) < 3))) {
+                if (t.getVendorId() == 21324 &&
+                    (version.get(0) < 1 || (version.get(0) == 1 && version.get(1) < 3))) {
                     final TextView instructions = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
                     instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
                     return;
