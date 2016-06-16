@@ -233,9 +233,7 @@ public class TwoFactorActivity extends GaActivity {
             e.printStackTrace();
         }
         final String gauthCode = gauth_url.split("=")[1];
-        textCode.setText(new Formatter().format(
-                getResources().getString(R.string.twoFacGauthTextCode),
-                gauthCode).toString());
+        textCode.setText(getString(R.string.twoFacGauthTextCode, gauthCode));
 
         textCode.setOnClickListener(
                 new View.OnClickListener() {

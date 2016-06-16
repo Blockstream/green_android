@@ -22,7 +22,6 @@ import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
 
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,9 +105,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             }
             i++;
         }
-        prompt.setText(new Formatter().format(
-                getResources().getString(R.string.twoFacProvideConfirmationCode),
-                withMethodName).toString());
+        prompt.setText(getString(R.string.twoFacProvideConfirmationCode, withMethodName));
 
         GaActivity.popup(this.getActivity(), "2FA")
                   .customView(inflatedLayout, true)
