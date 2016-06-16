@@ -296,10 +296,6 @@ public class WalletClient {
         }
     }
 
-    public boolean canLogin() {
-        return mHDParent != null;
-    }
-
     private final OkHttpClient httpClient = new OkHttpClient();
 
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String deviceId) {
@@ -538,10 +534,6 @@ public class WalletClient {
         mMnemonics = mnemonics;
         final DeterministicKey master = mnemonicToMasterKey(mnemonics);
         return login(new SWWallet(master), deviceId);
-    }
-
-    public ListenableFuture<LoginData> login(final String deviceId) {
-        return login(mHDParent, deviceId);
     }
 
     private LoginData loginImpl(final ISigningWallet signingWallet, final String deviceId) throws Exception, LoginFailed {

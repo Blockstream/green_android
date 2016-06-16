@@ -175,8 +175,8 @@ public class GaService extends Service {
             public void onSuccess(@Nullable final Void result) {
                 mState.transitionTo(ConnState.CONNECTED);
                 Log.i(TAG, "Success CONNECTED callback");
-                if (!mState.isForcedOff() && mClient.canLogin()) {
-                    login();
+                if (!mState.isForcedOff() && mClient.getSigningWallet() != null) {
+                    loginImpl(mClient.login(mClient.getSigningWallet(), deviceId));
                 }
             }
 
@@ -362,10 +362,6 @@ public class GaService extends Service {
             }
         }, es);
         return f;
-    }
-
-    private ListenableFuture<LoginData> login() {
-        return loginImpl(mClient.login(deviceId));
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
