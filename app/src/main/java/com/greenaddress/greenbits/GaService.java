@@ -34,6 +34,7 @@ import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenapi.PreparedTransaction;
+import com.greenaddress.greenapi.SWWallet;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.R;
@@ -377,7 +378,11 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> signup(final String mnemonics) {
-        return loginImpl(mClient.loginRegister(mnemonics, deviceId));
+        final SWWallet signingWallet = new SWWallet(mnemonics);
+        return loginImpl(mClient.loginRegister(signingWallet,
+                                               signingWallet.getMasterKey().getPubKey(),
+                                               signingWallet.getMasterKey().getChainCode(),
+                                               mnemonics, deviceId));
     }
 
     @NonNull

@@ -297,14 +297,11 @@ public class WalletClient {
         }
     }
 
-    public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String deviceId) {
-
+    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet,
+                                                     final byte[] masterPublicKey, final byte[] masterChaincode,
+                                                     final String mnemonics, final String deviceId) {
         mMnemonics = mnemonics;
-        final SWWallet signingWallet = new SWWallet(mnemonics);
-
-        return loginRegisterImpl(signingWallet,
-                                 signingWallet.getMasterKey().getPubKey(),
-                                 signingWallet.getMasterKey().getChainCode(),
+        return loginRegisterImpl(signingWallet, masterPublicKey, masterChaincode,
                                  mnemonicToPath(mnemonics), USER_AGENT, deviceId);
     }
 
@@ -312,8 +309,7 @@ public class WalletClient {
                                                      final byte[] masterPublicKey, final byte[] masterChaincode,
                                                      final byte[] pathPublicKey, final byte[] pathChaincode,
                                                      final String deviceId) {
-        return loginRegisterImpl(signingWallet,
-                                 masterPublicKey, masterChaincode,
+        return loginRegisterImpl(signingWallet, masterPublicKey, masterChaincode,
                                  extendedKeyToPath(pathPublicKey, pathChaincode),
                                  String.format("%s HW", USER_AGENT), deviceId);
     }
