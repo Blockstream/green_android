@@ -758,12 +758,12 @@ public class WalletClient {
         return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc), errHandler, txStr, twoFacData);
     }
 
-    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx) {
+    public ListenableFuture<List<String>> signTransaction(final ISigningWallet signingWallet, final PreparedTransaction ptx) {
         return mExecutor.submit(new Callable<List<String>>() {
             @Override
             public List<String> call() {
                 final List<String> result = new LinkedList<>();
-                for (final ECKey.ECDSASignature sig : mHDParent.signTransaction(ptx)) {
+                for (final ECKey.ECDSASignature sig : signingWallet.signTransaction(ptx)) {
                     final TransactionSignature txSig;
                     txSig = new TransactionSignature(sig, Transaction.SigHash.ALL, false);
                     result.add(Wally.hex_from_bytes(txSig.encodeToBitcoin()));

@@ -501,7 +501,7 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx) {
-        return mClient.signTransaction(ptx);
+        return mClient.signTransaction(mClient.getSigningWallet(), ptx);
     }
 
     public ListenableFuture<PreparedTransaction> prepareTx(final Coin coinValue, final String recipient, final Map<String, Object> privateData) {
