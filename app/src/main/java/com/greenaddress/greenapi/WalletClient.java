@@ -77,6 +77,7 @@ public class WalletClient {
     private LoginData mLoginData;
     private ISigningWallet mHDParent;
     private String mMnemonics = null;
+    private final OkHttpClient httpClient = new OkHttpClient();
 
     /**
      * Call handler.
@@ -296,77 +297,59 @@ public class WalletClient {
         }
     }
 
-    private final OkHttpClient httpClient = new OkHttpClient();
-
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String deviceId) {
 
         final DeterministicKey master = mnemonicToMasterKey(mnemonics);
-        final ISigningWallet signingWallet = new SWWallet(master);
-        final byte[] path = mnemonicToPath(mnemonics);
-        final String agent = USER_AGENT;
 
-        final String hexMasterPublicKey = Wally.hex_from_bytes(master.getPubKey());
-        final String hexChainCode = Wally.hex_from_bytes(master.getChainCode());
+        ListenableFuture<LoginData> fn;
+        fn = loginRegisterImpl(new SWWallet(master), master.getPubKey(), master.getChainCode(),
+                               mnemonicToPath(mnemonics), USER_AGENT, deviceId);
 
-        final SettableFuture<ISigningWallet> rpc = SettableFuture.create();
-        clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
-            public void onResult(final Object result) {
-                rpc.set(signingWallet);
-            }
-        }, hexMasterPublicKey, hexChainCode, agent);
-
-        final AsyncFunction<ISigningWallet, LoginData> registrationToLogin = new AsyncFunction<ISigningWallet, LoginData>() {
+        final Function<LoginData, LoginData> postFn = new Function<LoginData, LoginData>() {
             @Override
-            public ListenableFuture<LoginData> apply(final ISigningWallet signingWallet) throws Exception {
-                return login(signingWallet, deviceId);
-            }
-        };
-
-        final AsyncFunction<LoginData, LoginData> loginToSetPathPostLogin = new AsyncFunction<LoginData, LoginData>() {
-            @Override
-            public ListenableFuture<LoginData> apply(final LoginData loginData) throws Exception {
+            public LoginData apply(LoginData loginData) {
                 mMnemonics = mnemonics;
-                return setupPathImpl(path, loginData);
+                return loginData;
             }
         };
-
-        return Futures.transform(Futures.transform(rpc, registrationToLogin, mExecutor),
-                                 loginToSetPathPostLogin, mExecutor);
+        return Futures.transform(fn, postFn, mExecutor);
     }
 
+    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet,
+                                                     final byte[] masterPublicKey, final byte[] masterChaincode,
+                                                     final byte[] pathPublicKey, final byte[] pathChaincode,
+                                                     final String deviceId) {
+        return loginRegisterImpl(signingWallet, masterPublicKey, masterChaincode,
+                                 extendedKeyToPath(pathPublicKey, pathChaincode),
+                                 String.format("%s HW", USER_AGENT), deviceId);
+    }
 
-    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet, final byte[] masterPublicKey, final byte[] masterChaincode, final byte[] pathPublicKey, final byte[] pathChaincode, final String deviceId) {
-
-        final byte[] path = extendedKeyToPath(pathPublicKey, pathChaincode);
-        final String agent = String.format("%s HW", USER_AGENT);
-
-        final String hexMasterPublicKey = Wally.hex_from_bytes(masterPublicKey);
-        final String hexChainCode = Wally.hex_from_bytes(masterChaincode);
+    public ListenableFuture<LoginData> loginRegisterImpl(final ISigningWallet signingWallet,
+                                                         final byte[] masterPublicKey, final byte[] masterChaincode,
+                                                         final byte[] path,final String agent,  final String deviceId) {
 
         final SettableFuture<ISigningWallet> rpc = SettableFuture.create();
         clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
             public void onResult(final Object result) {
                 rpc.set(signingWallet);
             }
-        }, hexMasterPublicKey, hexChainCode, agent);
+        }, Wally.hex_from_bytes(masterPublicKey), Wally.hex_from_bytes(masterChaincode), agent);
 
-
-        final AsyncFunction<ISigningWallet, LoginData> registrationToLogin = new AsyncFunction<ISigningWallet, LoginData>() {
+        final AsyncFunction<ISigningWallet, LoginData> fn = new AsyncFunction<ISigningWallet, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final ISigningWallet signingWallet) throws Exception {
                 return login(signingWallet, deviceId);
             }
         };
 
-        final AsyncFunction<LoginData, LoginData> loginToSetPathPostLogin = new AsyncFunction<LoginData, LoginData>() {
+        final AsyncFunction<LoginData, LoginData> postFn = new AsyncFunction<LoginData, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final LoginData loginData) throws Exception {
                 return setupPathImpl(path, loginData);
             }
         };
 
-        return Futures.transform(Futures.transform(rpc, registrationToLogin, mExecutor),
-                                 loginToSetPathPostLogin, mExecutor);
+        return Futures.transform(Futures.transform(rpc, fn, mExecutor), postFn, mExecutor);
     }
 
     private ListenableFuture<LoginData> setupPathImpl(final byte[] path, final LoginData loginData) {
