@@ -43,7 +43,6 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.TrezorGUICallback;
 
-import java.util.Formatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -315,35 +314,31 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             }
                         }
                         return Futures.transform(transportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
-                            @Nullable
                             @Override
-                            public ListenableFuture<LoginData> apply(final @Nullable BTChipTransport transport) {
+                            public ListenableFuture<LoginData> apply(final BTChipTransport transport) {
                                 final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
                                 hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
                                 return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
-                                    @Nullable
                                     @Override
-                                    public ListenableFuture<LoginData> apply(final @Nullable Integer input) {
-                                        final int remainingAttempts = input;
+                                    public ListenableFuture<LoginData> apply(final Integer remainingAttempts) {
 
-                                        if (remainingAttempts == -1) {
-                                            // -1 means success
-                                            return service.login(hwWallet);
-                                        } else {
-                                            final String msg = new Formatter().format(getResources().getString(R.string.btchipInvalidPIN), remainingAttempts).toString();
-                                            RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    if (remainingAttempts > 0)
-                                                        RequestLoginActivity.this.toast(msg);
-                                                    else
-                                                        RequestLoginActivity.this.toast(R.string.btchipNotSetup);
+                                        if (remainingAttempts == -1)
+                                            return service.login(hwWallet); // -1 means success, so login
 
-                                                    RequestLoginActivity.this.finish();
-                                                }
-                                            });
-                                            return Futures.immediateFuture(null);
-                                        }
+                                        final String msg;
+                                        if (remainingAttempts > 0)
+                                            msg = getString(R.string.btchipInvalidPIN, remainingAttempts);
+                                        else
+                                            msg = getString(R.string.btchipNotSetup);
+
+                                        RequestLoginActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                RequestLoginActivity.this.toast(msg);
+                                                RequestLoginActivity.this.finish();
+                                            }
+                                        });
+                                        return Futures.immediateFuture(null);
                                     }
                                 });
                             }
