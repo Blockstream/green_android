@@ -370,7 +370,8 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> login(final String mnemonics) {
-        return loginImpl(mClient.login(mnemonics, deviceId));
+        final SWWallet signingWallet = new SWWallet(mnemonics);
+        return loginImpl(mClient.login(signingWallet, mnemonics, deviceId));
     }
 
     public ListenableFuture<LoginData> login(final PinData pinData, final String pin) {

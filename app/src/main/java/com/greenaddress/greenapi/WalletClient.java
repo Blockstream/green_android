@@ -494,9 +494,8 @@ public class WalletClient {
         return rpc;
     }
 
-    public ListenableFuture<LoginData> login(final String mnemonics, final String deviceId) {
+    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics, final String deviceId) {
         mMnemonics = mnemonics;
-        final SWWallet signingWallet = new SWWallet(mnemonics);
         return login(signingWallet, deviceId);
     }
 
