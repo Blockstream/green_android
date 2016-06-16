@@ -342,25 +342,21 @@ public class WalletClient {
             }
         };
 
-        final AsyncFunction<LoginData, LoginData> postFn = new AsyncFunction<LoginData, LoginData>() {
+        final Function<LoginData, LoginData> postFn = new Function<LoginData, LoginData>() {
             @Override
-            public ListenableFuture<LoginData> apply(final LoginData loginData) throws Exception {
-                return setupPathImpl(path, loginData);
+            public LoginData apply(LoginData loginData) {
+                try {
+                    syncCall("login.set_gait_path", Void.class, Wally.hex_from_bytes(path));
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+                loginData.setGaUserPath(path);
+                HDKey.resetCache(loginData.gaUserPath);
+                return loginData;
             }
         };
 
         return Futures.transform(Futures.transform(rpc, fn, mExecutor), postFn, mExecutor);
-    }
-
-    private ListenableFuture<LoginData> setupPathImpl(final byte[] path, final LoginData loginData) {
-        final SettableFuture<LoginData> rpc = SettableFuture.create();
-        return clientCall(rpc, "login.set_gait_path", Void.class, new CallHandler() {
-            public void onResult(final Object result) {
-                loginData.setGaUserPath(path);
-                HDKey.resetCache(loginData.gaUserPath);
-                rpc.set(loginData);
-            }
-        }, Wally.hex_from_bytes(path));
     }
 
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int subAccount) {
