@@ -21,6 +21,11 @@ public class SWWallet extends ISigningWallet {
 
     private final DeterministicKey mRootKey;
 
+    public SWWallet(final String mnemonic) {
+        final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonic);
+        mRootKey = HDKey.createMasterKeyFromSeed(seed);
+    }
+
     public SWWallet(final DeterministicKey key) {
         mRootKey = key;
     }
@@ -97,6 +102,10 @@ public class SWWallet extends ISigningWallet {
         final ECKey.ECDSASignature signature;
         signature = ECKey.fromPrivate(key.getPrivKey()).sign(Sha256Hash.wrap(challenge));
         return new String[]{signature.r.toString(), signature.s.toString()};
+    }
+
+    public DeterministicKey getMasterKey() {
+        return mRootKey;
     }
 
     private SWWallet getMyKey(final int subAccount) {

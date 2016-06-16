@@ -299,10 +299,11 @@ public class WalletClient {
 
     public ListenableFuture<LoginData> loginRegister(final String mnemonics, final String deviceId) {
 
-        final DeterministicKey master = mnemonicToMasterKey(mnemonics);
+        final SWWallet signingWallet = new SWWallet(mnemonics);
 
         ListenableFuture<LoginData> fn;
-        fn = loginRegisterImpl(new SWWallet(master), master.getPubKey(), master.getChainCode(),
+        fn = loginRegisterImpl(signingWallet, signingWallet.getMasterKey().getPubKey(),
+                               signingWallet.getMasterKey().getChainCode(),
                                mnemonicToPath(mnemonics), USER_AGENT, deviceId);
 
         final Function<LoginData, LoginData> postFn = new Function<LoginData, LoginData>() {
@@ -504,15 +505,10 @@ public class WalletClient {
         return rpc;
     }
 
-    private DeterministicKey mnemonicToMasterKey(final String mnemonic) {
-        final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonic);
-        return HDKey.createMasterKeyFromSeed(seed);
-    }
-
     public ListenableFuture<LoginData> login(final String mnemonics, final String deviceId) {
         mMnemonics = mnemonics;
-        final DeterministicKey master = mnemonicToMasterKey(mnemonics);
-        return login(new SWWallet(master), deviceId);
+        final SWWallet signingWallet = new SWWallet(mnemonics);
+        return login(signingWallet, deviceId);
     }
 
     private LoginData loginImpl(final ISigningWallet signingWallet, final String deviceId) throws Exception, LoginFailed {
