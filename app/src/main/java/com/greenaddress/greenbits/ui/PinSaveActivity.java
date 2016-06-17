@@ -38,7 +38,7 @@ public class PinSaveActivity extends GaActivity {
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
         imm.hideSoftInputFromWindow(pinSaveText.getWindowToken(), 0);
-        final String mnemonic_str = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
+        final String mnemonic = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
         final Button pinSkipButton = (Button) findViewById(R.id.pinSkipButton);
         final CircularProgressButton pinSaveButton = (CircularProgressButton) findViewById(R.id.pinSaveButton);
 
@@ -46,8 +46,7 @@ public class PinSaveActivity extends GaActivity {
         pinSaveButton.setProgress(50);
         pinSaveText.setEnabled(false);
         pinSkipButton.setVisibility(View.GONE);
-        Futures.addCallback(service.setPin(CryptoHelper.mnemonic_to_seed(mnemonic_str), mnemonic_str,
-                        pinText, "default"),
+        Futures.addCallback(service.setPin(mnemonic, pinText, "default"),
                 new FutureCallback<PinData>() {
                     @Override
                     public void onSuccess(final PinData result) {

@@ -578,13 +578,13 @@ public class WalletClient {
         }, pin, setPinData.ident);
     }
 
-    private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final byte[] seed, final String pin, final String device_name) {
+    private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final String pin, final String device_name) {
         final SettableFuture<SetPinData> rpc = SettableFuture.create();
 
         mMnemonics = mnemonic;
         final Map<String, String> out = new HashMap<>();
         out.put("mnemonic", mnemonic);
-        out.put("seed", Wally.hex_from_bytes(seed));
+        out.put("seed", Wally.hex_from_bytes(CryptoHelper.mnemonic_to_seed(mnemonic)));
         out.put("path_seed", Wally.hex_from_bytes(mnemonicToPath(mnemonic)));
 
         try {
@@ -600,8 +600,8 @@ public class WalletClient {
         return rpc;
     }
 
-    public ListenableFuture<PinData> setPin(final byte[] seed, final String mnemonic, final String pin, final String device_name) {
-        return Futures.transform(setPinLogin(mnemonic, seed, pin, device_name), new AsyncFunction<SetPinData, PinData>() {
+    public ListenableFuture<PinData> setPin(final String mnemonic, final String pin, final String device_name) {
+        return Futures.transform(setPinLogin(mnemonic, pin, device_name), new AsyncFunction<SetPinData, PinData>() {
             @Override
             public ListenableFuture<PinData> apply(final SetPinData pinData) throws Exception {
                 return getPinData(pin, pinData);

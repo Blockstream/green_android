@@ -467,8 +467,8 @@ public class GaService extends Service {
         });
     }
 
-    public ListenableFuture<PinData> setPin(final byte[] seed, final String mnemonic, final String pin, final String device_name) {
-        return mClient.setPin(seed, mnemonic, pin, device_name);
+    public ListenableFuture<PinData> setPin(final String mnemonic, final String pin, final String device_name) {
+        return mClient.setPin(mnemonic, pin, device_name);
     }
 
     public void decryptPinData(final PinData pinData, final String pin) throws Exception {
