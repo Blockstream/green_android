@@ -244,6 +244,7 @@ public class PinActivity extends GaActivity implements Observer {
                     if (!service.isConnected()) {
                         PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
                         finish();
+                        return;
                     }
 
                     final PinData pinData = new PinData(ident, prefs.getString("encrypted", null));
