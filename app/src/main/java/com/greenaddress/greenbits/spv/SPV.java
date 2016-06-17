@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -170,7 +169,7 @@ public class SPV {
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -184,7 +183,7 @@ public class SPV {
         verifiedBalancesCoin.clear();
     }
 
-    public void addUtxoToValues(@NonNull final Sha256Hash txHash) {
+    public void addUtxoToValues(final Sha256Hash txHash) {
         final String txHashStr = txHash.toString();
         final List<Integer> changedSubaccounts = new ArrayList<>();
         boolean missing = false;
@@ -249,14 +248,14 @@ public class SPV {
                     }
 
                     @Override
-                    public void onFailure(@NonNull final Throwable t) {
+                    public void onFailure(final Throwable t) {
                         t.printStackTrace();
                     }
                 });
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -309,12 +308,11 @@ public class SPV {
         }
     }
 
-    @NonNull
     public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(final PreparedTransaction ptx, final String recipientStr, final Coin amount) {
         Address recipientNonFinal = null;
         try {
             recipientNonFinal = new Address(Network.NETWORK, recipientStr);
-        } catch (@NonNull final AddressFormatException e) {
+        } catch (final AddressFormatException e) {
         }
         final Address recipient = recipientNonFinal;
 
@@ -344,11 +342,10 @@ public class SPV {
     }
 
     class Node {
-        @NonNull
         final String addr;
         final int port;
 
-        Node(@NonNull final String trustedAddr) {
+        Node(final String trustedAddr) {
             final int index_port = trustedAddr.indexOf(":");
             if (index_port != -1) {
                 addr = trustedAddr.substring(0, index_port);
@@ -419,7 +416,7 @@ public class SPV {
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -449,13 +446,12 @@ public class SPV {
                 final Node n = new Node(trustedAddr);
 
                 final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
-                    @NonNull
                     public InetSocketAddress toSocketAddress() {
                         return InetSocketAddress.createUnresolved(n.addr, n.port);
                     }
                 };
                 peerGroup.addAddress(OnionAddr);
-            } catch (@NonNull final Exception e){
+            } catch (final Exception e){
                 e.printStackTrace();
             }
         }
@@ -463,7 +459,7 @@ public class SPV {
             final Node n = new Node(trustedAddr);
             try {
                 peerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
-            } catch (@NonNull final UnknownHostException e) {
+            } catch (final UnknownHostException e) {
                 e.printStackTrace();
             }
         }
@@ -485,7 +481,7 @@ public class SPV {
                 try {
                     is = gaService.getAssets().open("checkpoints");
                     CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, gaService.getLoginData().earliest_key_creation_time);
-                } catch (@NonNull final IOException e) {
+                } catch (final IOException e) {
                     // couldn't load checkpoints, log & skip
                     e.printStackTrace();
                 } finally {
@@ -493,7 +489,7 @@ public class SPV {
                         if (is != null) {
                             is.close();
                         }
-                    } catch (@NonNull final IOException e) {
+                    } catch (final IOException e) {
                         // do nothing
                     }
                 }
@@ -522,7 +518,7 @@ public class SPV {
                     try {
                         final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
                         peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
-                    } catch (@NonNull final Exception e) {
+                    } catch (final Exception e) {
                         e.printStackTrace();
                     }
                 } else {
@@ -541,7 +537,7 @@ public class SPV {
                 peerGroup.setMaxConnections(addresses.length);
             else
                 setupPeerGroup(peerGroup, "");
-        } catch (@NonNull final BlockStoreException e) {
+        } catch (final BlockStoreException e) {
             e.printStackTrace();
         }
     }
@@ -580,7 +576,7 @@ public class SPV {
             try {
                 blockStore.close();
                 blockStore = null;
-            } catch (@NonNull final BlockStoreException x) {
+            } catch (final BlockStoreException x) {
                 throw new RuntimeException(x);
             }
         }

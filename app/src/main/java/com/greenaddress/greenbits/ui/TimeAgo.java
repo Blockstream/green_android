@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 class TimeAgo {
-    @NonNull
     private static final List<Long> TIMES = Arrays.asList(
             TimeUnit.DAYS.toMillis(365),
             TimeUnit.DAYS.toMillis(30),
@@ -19,8 +17,7 @@ class TimeAgo {
             TimeUnit.MINUTES.toMillis(1),
             TimeUnit.SECONDS.toMillis(1));
 
-    @NonNull
-    public static String fromNow(final long date, @NonNull final Context ctx) {
+    public static String fromNow(final long date, final Context ctx) {
         final long timeDiff = (new Date()).getTime() - date;
         for (int i = 0; i < TIMES.size(); ++i) {
             final long timeSince = timeDiff / TIMES.get(i);

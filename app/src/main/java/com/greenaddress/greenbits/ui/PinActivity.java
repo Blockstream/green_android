@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProperties;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -58,11 +57,11 @@ import javax.crypto.spec.IvParameterSpec;
 public class PinActivity extends GaActivity implements Observer {
 
     private Menu mMenu;
-    @NonNull private static final String KEYSTORE_KEY = "NativeAndroidAuth";
+    private static final String KEYSTORE_KEY = "NativeAndroidAuth";
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
 
-    private void login(@NonNull final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, @NonNull final TextView pinError) {
+    private void login(final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, final TextView pinError) {
         final GaService service = mService;
 
         if (pinText.length() < 4) {
@@ -106,7 +105,7 @@ public class PinActivity extends GaActivity implements Observer {
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 String message = t.getMessage();
                 final SharedPreferences prefs = service.cfg("pin");
                 final int counter = prefs.getInt("counter", 0) + 1;
@@ -274,7 +273,7 @@ public class PinActivity extends GaActivity implements Observer {
                         }
 
                         @Override
-                        public void onFailure(@NonNull final Throwable t) {
+                        public void onFailure(final Throwable t) {
                             String message = t.getMessage();
                             final int counter = prefs.getInt("counter", 0) + 1;
                             if (t instanceof GAException) {
@@ -306,7 +305,7 @@ public class PinActivity extends GaActivity implements Observer {
                 }
 
                 @Override
-                public void onFailure(@NonNull final Throwable t) {
+                public void onFailure(final Throwable t) {
                     finish();
                 }
             });
@@ -373,7 +372,7 @@ public class PinActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch(item.getItemId()) {
             case R.id.network_unavailable:
                 return true;

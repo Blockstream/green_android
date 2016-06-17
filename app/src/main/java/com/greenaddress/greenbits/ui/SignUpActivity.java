@@ -15,7 +15,6 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -43,7 +42,7 @@ import com.greenaddress.greenbits.GaService;
 import java.io.IOException;
 
 public class SignUpActivity extends GaActivity {
-    @NonNull private static final String TAG = SignUpActivity.class.getSimpleName();
+    private static final String TAG = SignUpActivity.class.getSimpleName();
     private static final int PINSAVE = 1337;
 
     private boolean mWriteMode = false;
@@ -121,7 +120,6 @@ public class SignUpActivity extends GaActivity {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
                         onSignUp = Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
-                            @NonNull
                             @Override
                             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                                 return service.signup(mnemonicText.getText().toString());
@@ -162,7 +160,7 @@ public class SignUpActivity extends GaActivity {
                         }
 
                         @Override
-                        public void onFailure(@NonNull final Throwable t) {
+                        public void onFailure(final Throwable t) {
                             t.printStackTrace();
                             SignUpActivity.this.runOnUiThread(new Runnable() {
                                 @Override
@@ -227,7 +225,7 @@ public class SignUpActivity extends GaActivity {
 
     @Override
     @SuppressLint("NewApi") // signupNfcIcon is hidden for API < 16
-    protected void onNewIntent(@NonNull final Intent intent) {
+    protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
         if (mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 
@@ -257,11 +255,11 @@ public class SignUpActivity extends GaActivity {
                             format.connect();
                             format.format(message);
                             nfcTagsWritten.setText(String.valueOf(Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
-                        } catch (@NonNull final IOException e) {
+                        } catch (final IOException e) {
                         }
                     }
                 }
-            } catch (@NonNull final Exception e) {
+            } catch (final Exception e) {
             }
         }
     }
@@ -297,7 +295,7 @@ public class SignUpActivity extends GaActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

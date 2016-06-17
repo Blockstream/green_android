@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
@@ -16,36 +15,32 @@ import java.util.concurrent.Callable;
 
 
 public class QrBitmap implements Callable<QrBitmap>, Parcelable {
-    @NonNull
     public static final Parcelable.Creator<QrBitmap> CREATOR
             = new Parcelable.Creator<QrBitmap>() {
-        @NonNull
-        public QrBitmap createFromParcel(@NonNull final Parcel in) {
+        public QrBitmap createFromParcel(final Parcel in) {
             return new QrBitmap(in);
         }
 
-        @NonNull
         public QrBitmap[] newArray(final int size) {
             return new QrBitmap[size];
         }
     };
-    public @NonNull final String data;
+    public final String data;
     private final int background_color;
     public Bitmap qrcode;
 
-    private QrBitmap(@NonNull final Parcel in) {
+    private QrBitmap(final Parcel in) {
         data = in.readString();
         background_color = in.readInt();
         qrcode = in.readParcelable(getClass().getClassLoader());
     }
 
-    public QrBitmap(@NonNull final String data, final int background_color) {
+    public QrBitmap(final String data, final int background_color) {
         this.data = data;
         this.background_color = background_color;
     }
 
-    @NonNull
-    private static Bitmap toBitmap(@NonNull final QRCode code, final int background_color) {
+    private static Bitmap toBitmap(final QRCode code, final int background_color) {
         final ByteMatrix matrix = code.getMatrix();
         final int SCALE = 4;
         final int height = matrix.getHeight() * SCALE;
@@ -59,7 +54,6 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
         return bmp;
     }
 
-    @NonNull
     public QrBitmap call() throws WriterException {
         QRCode code = Encoder.encode(data, ErrorCorrectionLevel.M);
         this.qrcode = toBitmap(code, background_color);
@@ -67,7 +61,7 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(data);
         dest.writeInt(background_color);
         dest.writeParcelable(qrcode, 0);

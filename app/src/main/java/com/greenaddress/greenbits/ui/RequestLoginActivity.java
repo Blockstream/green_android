@@ -9,7 +9,6 @@ import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -51,8 +50,8 @@ import nordpol.android.TagDispatcher;
 
 public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagListener {
 
-    @NonNull private static final String TAG = RequestLoginActivity.class.getSimpleName();
-    @NonNull private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
+    private static final String TAG = RequestLoginActivity.class.getSimpleName();
+    private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
     private Dialog btchipDialog = null;
     private BTChipHWWallet hwWallet = null;
@@ -113,7 +112,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     .customView(inflatedLayout, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
-                                        public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                        public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                             ret.set(pinValue.getText().toString());
                                         }
                                     }).build().show();
@@ -121,7 +120,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         });
                         try {
                             return ret.get();
-                        } catch (@NonNull final InterruptedException | ExecutionException e) {
+                        } catch (final InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                             return "";
                         }
@@ -139,7 +138,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     .customView(inflatedLayout, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
-                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        public void onClick(MaterialDialog dialog, DialogAction which) {
                                             ret.set(passphraseValue.getText().toString());
                                         }
                                     }).build().show();
@@ -147,7 +146,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         });
                         try {
                             return ret.get();
-                        } catch (@NonNull InterruptedException | ExecutionException e) {
+                        } catch (InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                             return "";
                         }
@@ -169,7 +168,6 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 }
 
                 Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
-                    @NonNull
                     @Override
                     public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         return service.login(new TrezorHWWallet(t));
@@ -182,7 +180,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     }
 
                     @Override
-                    public void onFailure(@NonNull final Throwable t) {
+                    public void onFailure(final Throwable t) {
                         if (t instanceof LoginFailed) {
                             // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
                             runOnUiThread(new Runnable() {
@@ -240,7 +238,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                            public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                 final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
                                 prog.setVisibility(View.VISIBLE);
                                 pinFuture.set(pinValue.getText().toString());
@@ -248,7 +246,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                            public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                 RequestLoginActivity.this.toast(R.string.err_request_login_no_pin);
                                 RequestLoginActivity.this.finish();
                             }
@@ -284,13 +282,11 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             }
         });
         Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
-            @NonNull
             @Override
             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                 return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
-                    @NonNull
                     @Override
-                    public ListenableFuture<LoginData> apply(@NonNull final String pin) throws Exception {
+                    public ListenableFuture<LoginData> apply(final String pin) throws Exception {
 
                         transportFuture = SettableFuture.create();
                         if (device != null) {
@@ -353,7 +349,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
                 if (t instanceof LoginFailed) {
                     // Attempt auto register
@@ -370,12 +366,12 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     }
 
                                     @Override
-                                    public void onFailure(@NonNull final Throwable t) {
+                                    public void onFailure(final Throwable t) {
                                         t.printStackTrace();
                                         RequestLoginActivity.this.finish();
                                     }
                                 });
-                    } catch (@NonNull final Exception e) {
+                    } catch (final Exception e) {
                         e.printStackTrace();
                         RequestLoginActivity.this.finish();
                     }
@@ -429,7 +425,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     try {
                         transport.close();
                     }
-                    catch(@NonNull final Exception e1) {
+                    catch(final Exception e1) {
                     }
                     transport = null;
                 }

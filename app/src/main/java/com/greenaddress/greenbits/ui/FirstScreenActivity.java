@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,9 +36,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class FirstScreenActivity extends GaActivity {
-    @NonNull
     private static final String NVM_PATH = "nvm.bin";
-    @NonNull
     private static final String TAG = FirstScreenActivity.class.getSimpleName();
     private static boolean tuiCall;
     private BTChipTransportFactory transportFactory;
@@ -83,7 +80,7 @@ public class FirstScreenActivity extends GaActivity {
                     public void onConnected(final boolean success) {
                         try {
                             waitConnected.put(success);
-                        } catch (@NonNull final InterruptedException e) {
+                        } catch (final InterruptedException e) {
                         }
                     }
 
@@ -91,7 +88,7 @@ public class FirstScreenActivity extends GaActivity {
                 if (result) {
                     try {
                         initialized = waitConnected.poll(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
-                    } catch (@NonNull final InterruptedException e) {
+                    } catch (final InterruptedException e) {
                     }
                     if (initialized) {
                         initialized = teeTransport.init();
@@ -107,7 +104,7 @@ public class FirstScreenActivity extends GaActivity {
                         try {
                             final int attempts = dongle.getVerifyPinRemainingAttempts();
                             teeReady = (attempts != 0);
-                        } catch (@NonNull final Exception e) {
+                        } catch (final Exception e) {
                         }
                     }
                     Log.d(TAG, "TEE ready " + teeReady);
@@ -119,16 +116,16 @@ public class FirstScreenActivity extends GaActivity {
                                         .content("Ledger Wallet Trustlet is available - do you want to use it to register ?")
                                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                                             @Override
-                                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                            public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                                 proceedTEE(teeTransport, dongle, true);
                                             }
                                         })
                                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                                             @Override
-                                            public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                            public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                                 try {
                                                     teeTransport.close();
-                                                } catch (@NonNull final Exception e) {
+                                                } catch (final Exception e) {
                                                 }
                                             }
                                         }).build().show();
@@ -144,7 +141,7 @@ public class FirstScreenActivity extends GaActivity {
         });
     }
 
-    private void proceedTEE(@NonNull final LedgerTransportTEEProxy transport, @NonNull final BTChipDongle dongle, final boolean setup) {
+    private void proceedTEE(final LedgerTransportTEEProxy transport, final BTChipDongle dongle, final boolean setup) {
         final GaService service = mService;
 
         service.es.submit(new Callable<Object>() {
@@ -165,11 +162,11 @@ public class FirstScreenActivity extends GaActivity {
                                 null, null);
                         // Save the encrypted image
                         transport.writeNVM(NVM_PATH, transport.requestNVM().get());
-                    } catch (@NonNull final Exception e) {
+                    } catch (final Exception e) {
                         Log.d(TAG, "Setup exception", e);
                         try {
                             transport.close();
-                        } catch (@NonNull final Exception e1) {
+                        } catch (final Exception e1) {
                         }
                         FirstScreenActivity.this.toast("Trustlet setup failed");
                         tuiCall = false;
@@ -198,15 +195,15 @@ public class FirstScreenActivity extends GaActivity {
                     dongle.verifyPin(new byte[4]);
                     Log.d(TAG, "write NVM after verify pin");
                     transport.writeNVM(NVM_PATH, transport.requestNVM().get());
-                } catch (@NonNull final Exception e) {
+                } catch (final Exception e) {
                     Log.d(TAG, "PIN exception", e);
                     try {
                         transport.writeNVM(NVM_PATH, transport.requestNVM().get());
-                    } catch (@NonNull final Exception e1) {
+                    } catch (final Exception e1) {
                     }
                     try {
                         transport.close();
-                    } catch (@NonNull final Exception e1) {
+                    } catch (final Exception e1) {
                     }
                     FirstScreenActivity.this.toast("Trustlet PIN validation failed");
                     tuiCall = false;
@@ -230,9 +227,8 @@ public class FirstScreenActivity extends GaActivity {
                 final BTChipPublicKey loginPublicKeyFixed = loginPublicKey;
 
                 Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
-                    @NonNull
                     @Override
-                    public ListenableFuture<LoginData> apply(@NonNull final Void input) throws Exception {
+                    public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         if (!setup) {
                             Log.d(TAG, "TEE login");
                             return service.login(new BTChipHWWallet(dongle));
@@ -250,7 +246,7 @@ public class FirstScreenActivity extends GaActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull final Throwable t) {
+                    public void onFailure(final Throwable t) {
                         Log.d(TAG, "login failed", t);
                         if (!(t instanceof LoginFailed)) {
                             FirstScreenActivity.this.finish();
@@ -277,7 +273,7 @@ public class FirstScreenActivity extends GaActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

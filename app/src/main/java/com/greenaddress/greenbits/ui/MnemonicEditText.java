@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -21,7 +20,7 @@ public class MnemonicEditText extends EditText {
     }
 
     @Override
-    public InputConnection onCreateInputConnection(@NonNull final EditorInfo outAttrs) {
+    public InputConnection onCreateInputConnection(final EditorInfo outAttrs) {
         final InputConnection conn = super.onCreateInputConnection(outAttrs);
         outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
         return conn;

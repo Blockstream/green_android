@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.support.annotation.NonNull;
 import android.text.Html;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -41,7 +40,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     mService.setUserConfig("altimeout", altimeout, true);
                     preference.setSummary(String.format("%d %s", altimeout, getResources().getString(R.string.autologout_time_default)));
                     return true;
-                } catch (@NonNull final Exception e) {
+                } catch (final Exception e) {
                     // not set
                 }
                 return false;
@@ -143,7 +142,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     }
 
                     @Override
-                    public void onFailure(@NonNull final Throwable t) {
+                    public void onFailure(final Throwable t) {
                         t.printStackTrace();
                     }
                 });

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -66,7 +65,7 @@ public class ListTransactionsAdapter extends
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
             holder.textValue.setText(formatter.format(Double.valueOf(btcBalance)));
-        } catch (@NonNull final NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             holder.textValue.setText(btcBalance);
         }
 
@@ -140,7 +139,7 @@ public class ListTransactionsAdapter extends
         });
     }
 
-    private String getTypeString(@NonNull final TransactionItem.TYPE type) {
+    private String getTypeString(final TransactionItem.TYPE type) {
         switch (type) {
             case IN:
                 return mActivity.getString(R.string.txTypeIn);

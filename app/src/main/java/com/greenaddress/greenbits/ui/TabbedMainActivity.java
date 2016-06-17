@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -310,7 +309,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 try {
                     keyNonFinal = new DumpedPrivateKey(Network.NETWORK,
                             qrText).getKey();
-                } catch (@NonNull final AddressFormatException e) {
+                } catch (final AddressFormatException e) {
                     try {
                         Wally.bip38_to_private_key(qrText, null, Wally.BIP38_KEY_COMPRESSED | Wally.BIP38_KEY_QUICK_CHECK);
                     } catch (final IllegalArgumentException e2) {
@@ -382,7 +381,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                 }
 
                                 @Override
-                                public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                                public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                     if (keyNonBip38 != null) {
                                         tx = txNonBip38;
                                         key = keyNonBip38;
@@ -403,7 +402,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                                 doSweep();
                                             }
                                         });
-                                    } catch (@NonNull final IllegalArgumentException e) {
+                                    } catch (final IllegalArgumentException e) {
                                         caller.toast(R.string.invalid_passphrase);
                                     }
                                 }
@@ -432,7 +431,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         final GaService service = mService;
 
         final TabbedMainActivity caller = TabbedMainActivity.this;
@@ -488,7 +487,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         setMenuItemVisible(mMenu, R.id.network_unavailable, !state.isLoggedIn());
     }
 
-    private void handlePermissionResult(@NonNull final int[] granted, int action, int msgId) {
+    private void handlePermissionResult(final int[] granted, int action, int msgId) {
         if (granted[0] == PackageManager.PERMISSION_GRANTED)
             startActivityForResult(new Intent(this, ScanActivity.class), action);
         else
@@ -496,7 +495,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] granted) {
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] granted) {
         if (requestCode == 200)
                 handlePermissionResult(granted, REQUEST_SWEEP_PRIVKEY,
                                        R.string.err_tabbed_sweep_requires_camera_permissions);

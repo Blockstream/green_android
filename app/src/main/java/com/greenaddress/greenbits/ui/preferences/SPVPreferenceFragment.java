@@ -8,7 +8,6 @@ import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -81,7 +80,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                     final int idx = s.indexOf(":");
                     if (idx != -1)
                         Integer.parseInt(s.substring(idx + 1));
-                } catch (@NonNull final NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     return true;
                 }
 
@@ -95,7 +94,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             }
 
             @Override
-            public boolean onPreferenceChange(final Preference preference, @NonNull final Object newValue) {
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
 
                 if (mService.cfg("TRUSTED").getString("address", "").equals(newValue))
                     return false;
@@ -139,7 +138,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                                   .content(R.string.changingWarnOnionText)
                                   .onPositive(new MaterialDialog.SingleButtonCallback() {
                                       @Override
-                                      public void onClick(final @NonNull MaterialDialog dlg, final @NonNull DialogAction which) {
+                                      public void onClick(final MaterialDialog dlg, final DialogAction which) {
                                           new SPVAsync().execute();
                                           mService.cfgEdit("TRUSTED").putString("address", newString).apply();
                                           mService.setUserConfig("trusted_peer_addr", newString, true);
@@ -149,7 +148,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                     }
 
                     return true;
-                } catch (@NonNull final Exception e) {
+                } catch (final Exception e) {
                     // not set
                 }
                 return false;

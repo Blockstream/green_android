@@ -12,7 +12,6 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.UserNotAuthenticatedException;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 
 import java.io.IOException;
@@ -61,7 +60,7 @@ public class KeyStoreAES {
             keyGenerator.generateKey();
 
 
-        } catch (@NonNull final NoSuchAlgorithmException | NoSuchProviderException
+        } catch (final NoSuchAlgorithmException | NoSuchProviderException
                 | InvalidAlgorithmParameterException | KeyStoreException
                 | CertificateException | IOException e) {
             throw new RuntimeException(e);
@@ -69,7 +68,7 @@ public class KeyStoreAES {
             if (deleteImmediately && keyStore != null) {
                 try {
                     keyStore.deleteEntry(KEYSTORE_KEY);
-                } catch (@NonNull final KeyStoreException e) {
+                } catch (final KeyStoreException e) {
                 }
             }
         }
@@ -80,7 +79,6 @@ public class KeyStoreAES {
     public static class  KeyInvalidated extends RuntimeException {}
 
     @TargetApi(Build.VERSION_CODES.M)
-    @NonNull
     public static String tryEncrypt(final GaService gaService) {
         createKey(false);
         final byte[] fakePin = CryptoHelper.randomBytes(32);
@@ -102,11 +100,11 @@ public class KeyStoreAES {
                      .putString("nativeiv", Base64.encodeToString(iv, Base64.NO_WRAP))
                      .apply();
             return Base64.encodeToString(fakePin, Base64.NO_WRAP).substring(0, 15);
-        } catch (@NonNull final UserNotAuthenticatedException e) {
+        } catch (final UserNotAuthenticatedException e) {
             throw new RequiresAuthenticationScreen();
-        } catch (@NonNull final KeyPermanentlyInvalidatedException e) {
+        } catch (final KeyPermanentlyInvalidatedException e) {
             throw new KeyInvalidated();
-        } catch (@NonNull final InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException | KeyStoreException |
+        } catch (final InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException | KeyStoreException |
                 CertificateException | UnrecoverableKeyException | IOException
                 | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);

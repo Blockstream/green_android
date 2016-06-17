@@ -10,7 +10,6 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.Spannable;
@@ -58,7 +57,7 @@ public class MnemonicActivity extends GaActivity {
     private static final int CAMERA_PERMISSION = 150;
 
 
-    @NonNull private static final String TAG = MnemonicActivity.class.getSimpleName();
+    private static final String TAG = MnemonicActivity.class.getSimpleName();
 
     private Set<String> words = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
 
@@ -91,7 +90,7 @@ public class MnemonicActivity extends GaActivity {
         snackbar.show();
     }
 
-    private boolean validateMnemonic(@NonNull final String mnemonic) {
+    private boolean validateMnemonic(final String mnemonic) {
         try {
             Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
             return true;
@@ -147,7 +146,6 @@ public class MnemonicActivity extends GaActivity {
         });
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
-            @NonNull
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
                 final String mnemonics = edit.getText().toString().trim();
@@ -183,7 +181,7 @@ public class MnemonicActivity extends GaActivity {
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 final boolean accountDoesntExist = t instanceof ClassCastException;
                 final String message = accountDoesntExist ? "Account doesn't exist" : "Login failed";
                 t.printStackTrace();
@@ -199,9 +197,6 @@ public class MnemonicActivity extends GaActivity {
         }, service.es);
     }
 
-
-
-    @NonNull
     private ListenableFuture<String> askForPassphrase() {
         final SettableFuture<String> passphraseFuture = SettableFuture.create();
         runOnUiThread(new Runnable() {
@@ -214,13 +209,13 @@ public class MnemonicActivity extends GaActivity {
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(final @NonNull MaterialDialog dlg, final @NonNull DialogAction which) {
+                            public void onClick(final MaterialDialog dlg, final DialogAction which) {
                                 passphraseFuture.set(passphraseValue.getText().toString());
                             }
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onClick(@NonNull final MaterialDialog dlg, @NonNull final DialogAction which) {
+                            public void onClick(final MaterialDialog dlg, final DialogAction which) {
                                 final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
                                 okButton.setProgress(0);
                                 okButton.setEnabled(true);
@@ -469,7 +464,7 @@ public class MnemonicActivity extends GaActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -477,7 +472,7 @@ public class MnemonicActivity extends GaActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(final int permsRequestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int permsRequestCode, final String[] permissions, final int[] grantResults) {
         switch (permsRequestCode) {
 
             case CAMERA_PERMISSION:

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -96,7 +95,7 @@ public class MainFragment extends SubaccountFragment {
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
             balanceText.setText(formatter.format(Double.valueOf(btcBalance)));
-        } catch (@NonNull final NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             balanceText.setText(btcBalance);
         }
 
@@ -108,7 +107,7 @@ public class MainFragment extends SubaccountFragment {
 
         try {
             balanceFiatText.setText(formatter.format(Double.valueOf(fiatBalance)));
-        } catch (@NonNull final NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             balanceFiatText.setText(fiatBalance);
         }
 
@@ -124,7 +123,7 @@ public class MainFragment extends SubaccountFragment {
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         final GaService service = getGAService();
 
@@ -277,7 +276,7 @@ public class MainFragment extends SubaccountFragment {
                                         replacedTxs.put(replacedBy, new ArrayList<String>());
                                     replacedTxs.get(replacedBy).add((String) txJSON.get("txhash"));
                                 }
-                            } catch (@NonNull final ParseException e) {
+                            } catch (final ParseException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -302,7 +301,7 @@ public class MainFragment extends SubaccountFragment {
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

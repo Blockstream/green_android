@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,7 +26,6 @@ import java.util.Iterator;
 
 public final class NetworkMonitorActivity extends GaActivity implements PeerConnectedEventListener, PeerDisconnectedEventListener
 {
-    @NonNull
     private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> peerListAdapter;
     private String bloominfo = "";
@@ -96,7 +94,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     }
 
     @Override
-    public synchronized void onPeerConnected(@NonNull final Peer peer, final int peerCount) {
+    public synchronized void onPeerConnected(final Peer peer, final int peerCount) {
         final PrettyPeer new_ppeer = new PrettyPeer(peer);
 
 
@@ -132,7 +130,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     private final BroadcastReceiver uiUpdated = new BroadcastReceiver() {
         @Override
-        public void onReceive(final Context context, @NonNull final Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
 
             final String peerGroupIntent = intent.getExtras().getString("peergroup");
             if (peerGroupIntent != null && peerGroupIntent.equals("stopSPVSync")) {
@@ -148,7 +146,6 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             this.peer = peer;
         }
 
-        @NonNull
         public String toString(){
             final GaService service = mService;
             String ipAddr = peer.toString();
@@ -165,11 +162,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     }
 
     class Node {
-        @NonNull
         final String addr;
         final int port;
 
-        Node(@NonNull final String trusted_addr) {
+        Node(final String trusted_addr) {
             final int index_port = trusted_addr.indexOf(":");
             if (index_port != -1) {
                 addr = trusted_addr.substring(0, index_port);

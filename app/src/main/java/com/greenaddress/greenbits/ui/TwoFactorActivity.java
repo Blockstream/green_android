@@ -5,7 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -164,7 +163,7 @@ public class TwoFactorActivity extends GaActivity {
         });
     }
 
-    private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, @NonNull final String newMethod) {
+    private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, final String newMethod) {
         final GaService service = mService;
         final LayoutInflater inflater = getLayoutInflater();
         final View view = inflater.inflate(R.layout.activity_two_factor_2_4_provide_code, null, false);

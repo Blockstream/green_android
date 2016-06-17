@@ -1,7 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.support.annotation.NonNull;
-
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Charsets;
 
@@ -11,7 +9,7 @@ import java.util.List;
 
 public class MnemonicHelper {
 
-    private static int levenshteinDistance(@NonNull final String sA, @NonNull final String sB) {
+    private static int levenshteinDistance(final String sA, final String sB) {
         final int s1 = sA.length() + 1;
         final int s2 = sB.length() + 1;
 
@@ -40,7 +38,7 @@ public class MnemonicHelper {
         return true;
     }
 
-    public static byte[] decryptMnemonic(@NonNull final byte[] entropy, @NonNull final String normalizedPassphrase) {
+    public static byte[] decryptMnemonic(final byte[] entropy, final String normalizedPassphrase) {
         final byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
         final byte[] encrypted = Arrays.copyOf(entropy, 32);
         final byte[] derived = new byte[64];
@@ -57,7 +55,7 @@ public class MnemonicHelper {
         return decrypted;
     }
 
-    static String getClosestWord(@NonNull final String[] words, @NonNull final String word) {
+    static String getClosestWord(final String[] words, final String word) {
 
         final List<Integer> scores = new ArrayList<>(words.length);
         for (int i = 0; i < words.length; ++i) {

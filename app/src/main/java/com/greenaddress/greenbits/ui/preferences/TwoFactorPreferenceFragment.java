@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -63,7 +62,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         setupCheckbox(config, "Phone");
     }
 
-    private void change2FA(@NonNull final String method, final Boolean newValue) {
+    private void change2FA(final String method, final Boolean newValue) {
         if (newValue) {
             final Intent intent = new Intent(getActivity(), TwoFactorActivity.class);
             intent.putExtra("method", method.toLowerCase());
@@ -84,7 +83,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             dlg.show();
     }
 
-    private void disable2FA(@NonNull final String method, @NonNull final String withMethod) {
+    private void disable2FA(final String method, final String withMethod) {
         if (!withMethod.equals("gauth")) {
             final Map<String, String> data = new HashMap<>();
             data.put("method", method.toLowerCase());
@@ -110,7 +109,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                   .customView(inflatedLayout, true)
                   .onPositive(new MaterialDialog.SingleButtonCallback() {
                       @Override
-                      public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                      public void onClick(final MaterialDialog dialog, final DialogAction which) {
                           final Map<String, String> twoFacData = new HashMap<>();
                           twoFacData.put("method", withMethod);
                           twoFacData.put("code", twoFacValue.getText().toString());
@@ -122,7 +121,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                               }
 
                               @Override
-                              public void onFailure(@NonNull final Throwable t) {
+                              public void onFailure(final Throwable t) {
                                   t.printStackTrace();
                                   Toast.makeText(TwoFactorPreferenceFragment.this.getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                               }

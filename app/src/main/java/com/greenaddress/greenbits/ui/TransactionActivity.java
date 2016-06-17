@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -78,7 +77,7 @@ public class TransactionActivity extends GaActivity {
 
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
 
         final int id = item.getItemId();
 
@@ -102,7 +101,7 @@ public class TransactionActivity extends GaActivity {
      */
     public static class PlaceholderFragment extends GAFragment {
 
-        @NonNull private static final String TAG = PlaceholderFragment.class.getSimpleName();
+        private static final String TAG = PlaceholderFragment.class.getSimpleName();
         private Dialog mSummary;
         private Dialog mTwoFactor;
 
@@ -135,7 +134,7 @@ public class TransactionActivity extends GaActivity {
         }
 
         @Override
-        public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+        public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                                  final Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_transaction, container, false);
 
@@ -314,7 +313,7 @@ public class TransactionActivity extends GaActivity {
 
             try {
                 amount.setText(formatter.format(Double.valueOf(btcBalance)));
-            } catch (@NonNull final NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 amount.setText(btcBalance);
             }
 
@@ -324,13 +323,13 @@ public class TransactionActivity extends GaActivity {
             String feeInfoTextStr = "";
             try {
                 feeInfoTextStr += formatter.format(Double.valueOf(btcFee));
-            } catch (@NonNull final NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 feeInfoTextStr += btcFee;
             }
             feeInfoTextStr += " / " + String.valueOf(txItem.size) + " / ";
             try {
                 feeInfoTextStr += formatter.format(Double.valueOf(btcFeePerKb));
-            } catch (@NonNull final NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 feeInfoTextStr += btcFeePerKb;
             }
             feeInfoText.setText(feeInfoTextStr);
@@ -672,7 +671,7 @@ public class TransactionActivity extends GaActivity {
                         }
 
                         @Override
-                        public void onFailure(@NonNull final Throwable t) {
+                        public void onFailure(final Throwable t) {
                             if (!(t instanceof GAException) || !t.getMessage().equals("http://greenaddressit.com/error#auth")) {
                                 gaActivity.toast(t);
                                 return;
@@ -699,7 +698,7 @@ public class TransactionActivity extends GaActivity {
             });
         }
 
-        private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee, @NonNull final Transaction signedTx) {
+        private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee, final Transaction signedTx) {
             Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
             final GaActivity gaActivity = getGaActivity();
 
@@ -758,7 +757,7 @@ public class TransactionActivity extends GaActivity {
                     .customView(inflatedLayout, true)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
-                        public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                        public void onClick(final MaterialDialog dialog, final DialogAction which) {
                             if (twoFacData != null) {
                                 twoFacData.put("code", newTx2FACodeText.getText().toString());
                             }
@@ -779,7 +778,7 @@ public class TransactionActivity extends GaActivity {
                     })
                     .onNegative(new MaterialDialog.SingleButtonCallback() {
                         @Override
-                        public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                        public void onClick(final MaterialDialog dialog, final DialogAction which) {
                             Log.i(TAG, "SHOWN ON CLOSE!");
                         }
                     })

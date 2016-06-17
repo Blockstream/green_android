@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -40,7 +39,7 @@ import nordpol.android.TagDispatcher;
 
 
 public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredTagListener {
-    @NonNull private static final String TAG = ReceiveFragment.class.getSimpleName();
+    private static final String TAG = ReceiveFragment.class.getSimpleName();
 
     private FutureCallback<QrBitmap> onAddress = null;
     private QrBitmap address = null;
@@ -50,7 +49,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private TagDispatcher tagDispatcher;
 
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("pausing", pausing);
@@ -115,7 +114,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private View rootView;
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         final GaActivity gaActivity = getGaActivity();
 
@@ -224,7 +223,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             }
 
             @Override
-            public void onFailure(@NonNull final Throwable t) {
+            public void onFailure(final Throwable t) {
                 t.printStackTrace();
                 final Activity activity = getActivity();
                 if (activity != null) {
@@ -268,7 +267,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         return rootView;
     }
 
-    private void stopNewAddressAnimation(@NonNull final View rootView) {
+    private void stopNewAddressAnimation(final View rootView) {
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         newAddressIcon.clearAnimation();
         newAddressIcon.setText(Html.fromHtml("&#xf067;"));
@@ -278,7 +277,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         copyText.setVisibility(View.VISIBLE);
     }
 
-    private void startNewAddressAnimation(@NonNull final View rootView) {
+    private void startNewAddressAnimation(final View rootView) {
         if (getActivity() == null) return;
 
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
@@ -328,7 +327,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

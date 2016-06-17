@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +28,7 @@ public class PinSaveActivity extends GaActivity {
 
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
-    private void setPin(@NonNull final String pinText) {
+    private void setPin(final String pinText) {
         final GaService service = mService;
 
         if (pinText.length() < 4) {
@@ -62,7 +61,7 @@ public class PinSaveActivity extends GaActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull final Throwable t) {
+                    public void onFailure(final Throwable t) {
                         PinSaveActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -123,7 +122,7 @@ public class PinSaveActivity extends GaActivity {
                     }
                 });
 
-            } catch (@NonNull final RuntimeException e) {
+            } catch (final RuntimeException e) {
                 // lock not set, simply don't show native options
             }
         }
@@ -173,7 +172,7 @@ public class PinSaveActivity extends GaActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

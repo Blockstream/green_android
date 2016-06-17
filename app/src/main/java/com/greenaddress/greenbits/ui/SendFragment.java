@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
@@ -52,7 +51,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class SendFragment extends SubaccountFragment {
 
-    @NonNull private static final String TAG = SendFragment.class.getSimpleName();
+    private static final String TAG = SendFragment.class.getSimpleName();
     private static final int REQUEST_SEND_QR_SCAN = 0;
     private Dialog mSummary;
     private Dialog mTwoFactor;
@@ -135,7 +134,7 @@ public class SendFragment extends SubaccountFragment {
                 .customView(inflatedLayout, true)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onClick(final @NonNull MaterialDialog dialog, final @NonNull DialogAction which) {
+                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
                         if (twoFacData != null) {
                             twoFacData.put("code", newTx2FACodeText.getText().toString());
                         }
@@ -174,7 +173,7 @@ public class SendFragment extends SubaccountFragment {
         mSummary.show();
     }
 
-    private void processBitcoinURI(@NonNull final BitcoinURI URI) {
+    private void processBitcoinURI(final BitcoinURI URI) {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
@@ -315,7 +314,7 @@ public class SendFragment extends SubaccountFragment {
                 Coin nonFinalAmount;
                 try {
                     nonFinalAmount = bitcoinFormat.parse(amountEdit.getText().toString());
-                } catch (@NonNull final IllegalArgumentException e) {
+                } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
                 amount = nonFinalAmount;
@@ -562,7 +561,7 @@ public class SendFragment extends SubaccountFragment {
 
         try {
             sendSubAccountBalance.setText(formatter.format(Double.valueOf(btcBalance)));
-        } catch (@NonNull final NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             sendSubAccountBalance.setText(btcBalance);
         }
 
@@ -573,7 +572,7 @@ public class SendFragment extends SubaccountFragment {
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
     }
 
-    private void changeFiatIcon(@NonNull final FontAwesomeTextView fiatIcon, final String currency) {
+    private void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
 
         final String converted = CurrencyMapper.map(currency);
         if (converted != null) {
@@ -606,7 +605,7 @@ public class SendFragment extends SubaccountFragment {
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             amountFiatEdit.setText(fiatValue.toPlainString());
-        } catch (@NonNull final ArithmeticException | IllegalArgumentException e) {
+        } catch (final ArithmeticException | IllegalArgumentException e) {
             if (amountEdit.getText().toString().equals(getString(R.string.send_max_amount))) {
                 amountFiatEdit.setText(getString(R.string.send_max_amount));
             } else {
@@ -628,7 +627,7 @@ public class SendFragment extends SubaccountFragment {
         try {
             final Fiat fiatValue = Fiat.parseFiat("???", amountFiatEdit.getText().toString());
             amountEdit.setText(bitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
-        } catch (@NonNull final ArithmeticException | IllegalArgumentException e) {
+        } catch (final ArithmeticException | IllegalArgumentException e) {
             amountEdit.setText("");
         }
         converting = false;
@@ -647,7 +646,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("pausing", pausing);
     }
@@ -685,7 +684,7 @@ public class SendFragment extends SubaccountFragment {
                     public void run() {
                         try {
                             sendSubAccountBalance.setText(formatter.format(Double.valueOf(btcBalance)));
-                        } catch (@NonNull final NumberFormatException e) {
+                        } catch (final NumberFormatException e) {
                             sendSubAccountBalance.setText(btcBalance);
                         }
                     }

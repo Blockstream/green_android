@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,7 @@ abstract class GAFragment extends Fragment {
     private GreenAddressApplication gaApp;
 
     @Override
-    public void onAttach(@NonNull final Activity activity) {
+    public void onAttach(final Activity activity) {
         super.onAttach(activity);
 
         gaApp = (GreenAddressApplication) activity.getApplication();
