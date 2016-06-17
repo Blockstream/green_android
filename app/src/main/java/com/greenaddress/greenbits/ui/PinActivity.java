@@ -131,13 +131,13 @@ public class PinActivity extends GaActivity implements Observer {
                         if (counter >= 3) {
                             startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
                             finish();
-                        } else {
-                            pinText.setText("");
-                            pinLoginButton.setProgress(0);
-                            pinText.setEnabled(true);
-                            pinError.setVisibility(View.VISIBLE);
-                            pinError.setText(getString(R.string.attemptsLeft, 3 - counter));
+                            return;
                         }
+                        pinText.setText("");
+                        pinLoginButton.setProgress(0);
+                        pinText.setEnabled(true);
+                        pinError.setVisibility(View.VISIBLE);
+                        pinError.setText(getString(R.string.attemptsLeft, 3 - counter));
                     }
                 });
             }
