@@ -46,7 +46,7 @@ public class PinSaveActivity extends GaActivity {
         pinSaveButton.setProgress(50);
         pinSaveText.setEnabled(false);
         pinSkipButton.setVisibility(View.GONE);
-        Futures.addCallback(service.setPin(mnemonic, pinText, "default"),
+        Futures.addCallback(service.setPin(mnemonic, pinText),
                 new FutureCallback<PinData>() {
                     @Override
                     public void onSuccess(final PinData result) {

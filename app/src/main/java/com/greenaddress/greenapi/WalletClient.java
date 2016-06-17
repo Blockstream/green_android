@@ -578,7 +578,7 @@ public class WalletClient {
         }, pin, setPinData.ident);
     }
 
-    private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final String pin, final String device_name) {
+    private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final String pin, final String deviceName) {
         final SettableFuture<SetPinData> rpc = SettableFuture.create();
 
         mMnemonics = mnemonic;
@@ -593,15 +593,15 @@ public class WalletClient {
                 public void onResult(final Object ident) {
                     rpc.set(new SetPinData(info, ident.toString()));
                 }
-            }, pin, device_name);
+            }, pin, deviceName);
         } catch (final GAException e) {
             rpc.setException(e);
         }
         return rpc;
     }
 
-    public ListenableFuture<PinData> setPin(final String mnemonic, final String pin, final String device_name) {
-        return Futures.transform(setPinLogin(mnemonic, pin, device_name), new AsyncFunction<SetPinData, PinData>() {
+    public ListenableFuture<PinData> setPin(final String mnemonic, final String pin, final String deviceName) {
+        return Futures.transform(setPinLogin(mnemonic, pin, deviceName), new AsyncFunction<SetPinData, PinData>() {
             @Override
             public ListenableFuture<PinData> apply(final SetPinData pinData) throws Exception {
                 return getPinData(pin, pinData);
