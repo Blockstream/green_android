@@ -206,12 +206,12 @@ public class PinActivity extends GaActivity implements Observer {
         final GaService service = mService;
         final Map<String, String> json;
         try {
-            json = service.decryptPinData(pinData, pin);
+            service.decryptPinData(pinData, pin);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        final DeterministicKey master = HDKey.createMasterKeyFromSeed(Wally.hex_to_bytes(json.get("seed")));
-        return service.login(new SWWallet(master), json.get("mnemonic"));
+        final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
+        return service.login(new SWWallet(master), pinData.mMnemonic);
     }
 
     @TargetApi(Build.VERSION_CODES.M)

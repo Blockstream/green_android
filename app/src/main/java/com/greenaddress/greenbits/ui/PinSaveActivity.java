@@ -52,9 +52,9 @@ public class PinSaveActivity extends GaActivity {
                     @Override
                     public void onSuccess(final PinData result) {
                         service.cfgEdit("pin")
-                               .putString("ident", result.ident)
+                               .putString("ident", result.mPinIdentifier)
                                .putInt("counter", 0)
-                               .putString("encrypted", result.encrypted)
+                               .putString("encrypted", result.mEncryptedData)
                                .apply();
                         setResult(RESULT_OK);
                         finish();

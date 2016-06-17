@@ -13,7 +13,6 @@ import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.os.Binder;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -52,7 +51,6 @@ import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.Fiat;
-import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -473,17 +471,8 @@ public class GaService extends Service {
         return mClient.setPin(seed, mnemonic, pin, device_name);
     }
 
-    public Map<String, String> decryptPinData(final PinData data, final String pin) throws Exception {
-        final byte[] password = mClient.getPinPassword(data, pin, deviceId);
-
-        final String[] split = data.encrypted.split(";");
-        final byte[] encrypted = Base64.decode(split[1], Base64.NO_WRAP);
-
-        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, split[0].getBytes(), 0, 2048);
-        final byte[] key = Arrays.copyOf(hash, 32);
-
-        final byte[] decrypted = CryptoHelper.decrypt_aes_cbc(encrypted, key);
-        return new MappingJsonFactory().getCodec().readValue(new String(decrypted), Map.class);
+    public void decryptPinData(final PinData pinData, final String pin) throws Exception {
+        pinData.decrypt(mClient.getPinPassword(pinData, pin));
     }
 
     private void preparePrivData(final Map<String, Object> privateData) {

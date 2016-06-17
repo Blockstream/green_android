@@ -541,8 +541,8 @@ public class WalletClient {
         });
     }
 
-    public byte[] getPinPassword(final PinData data, final String pin, final String deviceId) throws Exception {
-        final String password = syncCall("pin.get_password", String.class, pin, data.ident);
+    public byte[] getPinPassword(final PinData pinData, final String pin) throws Exception {
+        final String password = syncCall("pin.get_password", String.class, pin, pinData.mPinIdentifier);
         return password.getBytes();
     }
 
