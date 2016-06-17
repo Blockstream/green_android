@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -121,7 +120,7 @@ public class TwoFactorActivity extends GaActivity {
         }
     }
 
-    private void showProvideDetails(final int stepNum, final int numSteps, @Nullable final String proxyCode) {
+    private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
         final GaService service = mService;
         setContentView(R.layout.activity_two_factor_3_provide_details);
         final Button continueButton = (Button) findViewById(R.id.continueButton);
@@ -152,7 +151,7 @@ public class TwoFactorActivity extends GaActivity {
                 CB.after(service.initEnableTwoFac(twoFacType, details.getText().toString(), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
-                    public void onSuccess(final @Nullable Boolean result) {
+                    public void onSuccess(final Boolean result) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -192,7 +191,7 @@ public class TwoFactorActivity extends GaActivity {
                 CB.after(service.requestTwoFacCode("proxy", newMethod, data),
                          new CB.Toast<Object>(TwoFactorActivity.this, continueButton) {
                     @Override
-                    public void onSuccess(@Nullable final Object proxyCode) {
+                    public void onSuccess(final Object proxyCode) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -209,7 +208,7 @@ public class TwoFactorActivity extends GaActivity {
         });
     }
 
-    private void showGauthDetails(final int stepNum, final int numSteps, @Nullable final String proxyCode) {
+    private void showGauthDetails(final int stepNum, final int numSteps, final String proxyCode) {
         final GaService service = mService;
         final LayoutInflater inflater = getLayoutInflater();
         final View view = inflater.inflate(R.layout.activity_two_factor_3_gauth_details, null, false);
@@ -261,7 +260,7 @@ public class TwoFactorActivity extends GaActivity {
                 CB.after(service.enableTwoFactor("gauth", code.getText().toString().trim(), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
-                    public void onSuccess(final @Nullable Boolean result) {
+                    public void onSuccess(final Boolean result) {
                         setResult(RESULT_OK);
                         finish();
                     }
@@ -295,7 +294,7 @@ public class TwoFactorActivity extends GaActivity {
                 CB.after(service.enableTwoFactor(twoFacType, enteredCode, null),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
-                    public void onSuccess(@Nullable Boolean result) {
+                    public void onSuccess(Boolean result) {
                         setResult(RESULT_OK);
                         finish();
                     }

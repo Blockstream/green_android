@@ -14,7 +14,6 @@ import android.os.IBinder;
 import android.os.Binder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.Log;
 
@@ -126,10 +125,8 @@ public class GaService extends Service {
     private String fiatExchange;
     private ArrayList mSubaccounts;
     private String mReceivingId;
-    @Nullable
     private Map<?, ?> twoFacConfig;
     private final GaObservable twoFacConfigObservable = new GaObservable();
-    @Nullable
     private String deviceId;
 
     public final SPV spv = new SPV(this);
@@ -156,7 +153,7 @@ public class GaService extends Service {
     private void getAvailableTwoFacMethods() {
         Futures.addCallback(mClient.getTwoFacConfig(), new FutureCallback<Map<?, ?>>() {
             @Override
-            public void onSuccess(@Nullable final Map<?, ?> result) {
+            public void onSuccess(final Map<?, ?> result) {
                 twoFacConfig = result;
                 twoFacConfigObservable.doNotify();
             }
@@ -175,7 +172,7 @@ public class GaService extends Service {
 
         Futures.addCallback(onConnected, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(@Nullable final Void result) {
+            public void onSuccess(final Void result) {
                 mState.transitionTo(ConnState.CONNECTED);
                 Log.i(TAG, "Success CONNECTED callback");
                 if (!mState.isForcedOff() && mClient.getSigningWallet() != null) {
@@ -310,9 +307,8 @@ public class GaService extends Service {
         final byte[] gotP2SH = scriptHash.getPubKeyHash();
 
         return Futures.transform(createOutScript(subAccount, pointer), new Function<byte[], Boolean>() {
-            @javax.annotation.Nullable
             @Override
-            public Boolean apply(final @javax.annotation.Nullable byte[] multisig) {
+            public Boolean apply(final byte[] multisig) {
                 if (getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     if (Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig)))) {
@@ -395,7 +391,6 @@ public class GaService extends Service {
                                                pathPublicKey, pathChaincode, deviceId));
     }
 
-    @Nullable
     public String getMnemonics() {
         return mClient.getMnemonics();
     }
@@ -418,7 +413,7 @@ public class GaService extends Service {
         final ListenableFuture<Map<?, ?>> future = mClient.getSubaccountBalance(subAccount);
         Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
             @Override
-            public void onSuccess(@Nullable final Map<?, ?> result) {
+            public void onSuccess(final Map<?, ?> result) {
                 balancesCoin.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
                 fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                 // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
@@ -600,9 +595,8 @@ public class GaService extends Service {
                 return Futures.transform(verifyP2SHSpendableBy(
                         ScriptBuilder.createP2SHOutputScript(scriptHash),
                         subAccount, pointer), new Function<Boolean, String>() {
-                    @Nullable
                     @Override
-                    public String apply(final @Nullable Boolean input) {
+                    public String apply(final Boolean input) {
                         if (input) {
                             return Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
                         } else {
@@ -627,7 +621,7 @@ public class GaService extends Service {
         if (currencyExchangePairs == null) {
             currencyExchangePairs = Futures.transform(mClient.getAvailableCurrencies(), new Function<Map<?, ?>, List<List<String>>>() {
                 @Override
-                public List<List<String>> apply(@Nullable final Map<?, ?> result) {
+                public List<List<String>> apply(final Map<?, ?> result) {
                     final Map<String, ArrayList<String>> per_exchange = (Map) result.get("per_exchange");
                     final List<List<String>> ret = new LinkedList<>();
                     for (final String exchange : per_exchange.keySet()) {
@@ -751,7 +745,6 @@ public class GaService extends Service {
         return null;
     }
 
-    @Nullable
     public Map<?, ?> getTwoFacConfig() {
         return twoFacConfig;
     }
@@ -795,7 +788,7 @@ public class GaService extends Service {
     public ListenableFuture<Boolean> enableTwoFactor(final String type, final String code, final Object twoFacData) {
         return Futures.transform(mClient.enableTwoFactor(type, code, twoFacData), new Function<Boolean, Boolean>() {
             @Override
-            public Boolean apply(final @Nullable Boolean input) {
+            public Boolean apply(final Boolean input) {
                 getAvailableTwoFacMethods();
                 return input;
             }
@@ -805,16 +798,14 @@ public class GaService extends Service {
     @NonNull
     public ListenableFuture<Boolean> disableTwoFac(@NonNull final String type, @NonNull final Map<String, String> twoFacData) {
         return Futures.transform(mClient.disableTwoFac(type, twoFacData), new Function<Boolean, Boolean>() {
-            @Nullable
             @Override
-            public Boolean apply(final @Nullable Boolean input) {
+            public Boolean apply(final Boolean input) {
                 getAvailableTwoFacMethods();
                 return input;
             }
         });
     }
 
-    @Nullable
     public List<String> getEnabledTwoFacNames(final boolean useSystemNames) {
         if (twoFacConfig == null) return null;
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);

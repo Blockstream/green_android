@@ -10,7 +10,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -55,9 +54,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     @NonNull private static final String TAG = RequestLoginActivity.class.getSimpleName();
     @NonNull private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
-    @Nullable
     private Dialog btchipDialog = null;
-    @Nullable
     private BTChipHWWallet hwWallet = null;
     private TagDispatcher tagDispatcher;
     private Tag tag;
@@ -174,12 +171,12 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
                     @NonNull
                     @Override
-                    public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
+                    public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         return service.login(new TrezorHWWallet(t));
                     }
                 }), new FutureCallback<LoginData>() {
                     @Override
-                    public void onSuccess(@Nullable final LoginData result) {
+                    public void onSuccess(final LoginData result) {
                         startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
                         RequestLoginActivity.this.finish();
                     }
@@ -231,7 +228,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         showPinDialog(null);
     }
 
-    private void showPinDialog(@Nullable final UsbDevice device) {
+    private void showPinDialog(final UsbDevice device) {
         final GaService service = mService;
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
@@ -265,7 +262,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 pinValue.setOnEditorActionListener(
                         new EditText.OnEditorActionListener() {
                             @Override
-                            public boolean onEditorAction(final TextView v, final int actionId, @Nullable final KeyEvent event) {
+                            public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
                                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                         actionId == EditorInfo.IME_ACTION_DONE ||
                                         (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
@@ -289,7 +286,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
             @NonNull
             @Override
-            public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
+            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                 return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
                     @NonNull
                     @Override
@@ -348,7 +345,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             }
         }), new FutureCallback<LoginData>() {
             @Override
-            public void onSuccess(@Nullable final LoginData result) {
+            public void onSuccess(final LoginData result) {
                 if (result != null) {
                     startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
                     RequestLoginActivity.this.finish();
@@ -367,7 +364,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                 new FutureCallback<LoginData>() {
 
                                     @Override
-                                    public void onSuccess(@Nullable final LoginData result) {
+                                    public void onSuccess(final LoginData result) {
                                         startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
                                         RequestLoginActivity.this.finish();
                                     }
@@ -414,8 +411,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         tagDispatcher.disableExclusiveNfc();
     }
 
-    @Nullable
-    private BTChipTransport getTransport(@Nullable final Tag t) {
+    private BTChipTransport getTransport(final Tag t) {
         BTChipTransport transport = null;
         if (t != null) {
             AndroidCard card = null;

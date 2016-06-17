@@ -48,8 +48,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import de.schildbach.wallet.ui.ScanActivity;
 
 
@@ -151,14 +149,13 @@ public class MnemonicActivity extends GaActivity {
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @NonNull
             @Override
-            public ListenableFuture<LoginData> apply(@Nullable final Void input) {
+            public ListenableFuture<LoginData> apply(final Void input) {
                 final String mnemonics = edit.getText().toString().trim();
                 if (mnemonics.split(" ").length == 27) {
                     // encrypted mnemonic
                     return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
-                        @Nullable
                         @Override
-                        public ListenableFuture<LoginData> apply(final @Nullable String passphrase) {
+                        public ListenableFuture<LoginData> apply(final String passphrase) {
                             return service.login(
                                     CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
 
@@ -174,7 +171,7 @@ public class MnemonicActivity extends GaActivity {
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
-            public void onSuccess(@Nullable final LoginData result) {
+            public void onSuccess(final LoginData result) {
                 if (getCallingActivity() == null) {
                     final Intent pinSaveActivity = new Intent(MnemonicActivity.this, PinSaveActivity.class);
                     pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", service.getMnemonics());
@@ -447,7 +444,7 @@ public class MnemonicActivity extends GaActivity {
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, @android.support.annotation.Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PINSAVE:

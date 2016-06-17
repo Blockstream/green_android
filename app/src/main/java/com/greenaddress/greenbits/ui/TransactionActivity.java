@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -635,7 +634,7 @@ public class TransactionActivity extends GaActivity {
 
             CB.after(signed, new CB.Toast<List<String>>(gaActivity) {
                 @Override
-                public void onSuccess(final @javax.annotation.Nullable List<String> signatures) {
+                public void onSuccess(final List<String> signatures) {
                     final GaService service = getGAService();
 
                     int i = 0;
@@ -662,7 +661,7 @@ public class TransactionActivity extends GaActivity {
                     final ListenableFuture<Map<String,Object>> sendFuture = service.sendRawTransaction(tx, twoFacData, true);
                     Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
                         @Override
-                        public void onSuccess(@Nullable final Map result) {
+                        public void onSuccess(final Map result) {
                             gaActivity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -700,7 +699,7 @@ public class TransactionActivity extends GaActivity {
             });
         }
 
-        private void showIncreaseSummary(@Nullable final String method, final Coin oldFee, final Coin newFee, @NonNull final Transaction signedTx) {
+        private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee, @NonNull final Transaction signedTx) {
             Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
             final GaActivity gaActivity = getGaActivity();
 
@@ -766,7 +765,7 @@ public class TransactionActivity extends GaActivity {
                             final ListenableFuture<Map<String,Object>> sendFuture = getGAService().sendRawTransaction(signedTx, twoFacData, false);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity) {
                                 @Override
-                                public void onSuccess(@Nullable final Map result) {
+                                public void onSuccess(final Map result) {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {

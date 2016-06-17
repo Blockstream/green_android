@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.annotation.Nullable;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -96,7 +95,7 @@ public class PinActivity extends GaActivity implements Observer {
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
-            public void onSuccess(@Nullable final LoginData result) {
+            public void onSuccess(final LoginData result) {
                 service.cfgEdit("pin").putInt("counter", 0).apply();
                 if (getCallingActivity() == null) {
                     startActivity(new Intent(PinActivity.this, TabbedMainActivity.class));
@@ -164,7 +163,7 @@ public class PinActivity extends GaActivity implements Observer {
             pinText.setOnEditorActionListener(
                     new EditText.OnEditorActionListener() {
                         @Override
-                        public boolean onEditorAction(final TextView v, final int actionId, @Nullable final KeyEvent event) {
+                        public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
                             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                     actionId == EditorInfo.IME_ACTION_DONE ||
                                     (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
@@ -241,7 +240,7 @@ public class PinActivity extends GaActivity implements Observer {
 
             Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
                 @Override
-                public void onSuccess(@Nullable final Void result) {
+                public void onSuccess(final Void result) {
 
                     if (!service.isConnected()) {
                         PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
@@ -261,7 +260,7 @@ public class PinActivity extends GaActivity implements Observer {
 
                     Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
                         @Override
-                        public void onSuccess(@Nullable final LoginData result) {
+                        public void onSuccess(final LoginData result) {
                             final SharedPreferences.Editor editor = prefs.edit();
                             editor.putInt("counter", 0);
                             editor.apply();

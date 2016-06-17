@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,7 +41,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class MainFragment extends SubaccountFragment {
-    @Nullable
     private MaterialDialog mUnconfirmedDialog = null;
     private View rootView;
     private List<TransactionItem> mTxItems;
@@ -250,7 +248,7 @@ public class MainFragment extends SubaccountFragment {
         Futures.addCallback(service.getMyTransactions(curSubaccount),
             new FutureCallback<Map<?, ?>>() {
             @Override
-            public void onSuccess(@Nullable final Map<?, ?> result) {
+            public void onSuccess(final Map<?, ?> result) {
                 final List txList = (List) result.get("list");
                 final int currentBlock = ((Integer) result.get("cur_block"));
 

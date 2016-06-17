@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -269,7 +268,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             ? Wally.BIP38_KEY_MAINNET : Wally.BIP38_KEY_TESTNET) | Wally.BIP38_KEY_COMPRESSED;
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         final GaService service = mService;
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -322,7 +321,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 final ECKey keyNonBip38 = keyNonFinal;
                 final FutureCallback<Map<?, ?>> callback = new CB.Toast<Map<?, ?>>(caller) {
                     @Override
-                    public void onSuccess(final @Nullable Map<?, ?> sweepResult) {
+                    public void onSuccess(final Map<?, ?> sweepResult) {
                         final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
                         final TextView passwordPrompt = (TextView) inflatedLayout.findViewById(R.id.sweepAddressPasswordPromptText);
                         final TextView mainText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressMainText);
@@ -358,9 +357,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         popup(caller, getString(R.string.sweepAddressTitle), R.string.sweep, R.string.cancel)
                             .customView(inflatedLayout, true)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Nullable
                                 Transaction tx;
-                                @Nullable
                                 ECKey key;
 
                                 private void doSweep() {
@@ -369,7 +366,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                     CB.after(service.verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
                                              new CB.Toast<Boolean>(caller) {
                                         @Override
-                                        public void onSuccess(final @Nullable Boolean isSpendable) {
+                                        public void onSuccess(final Boolean isSpendable) {
                                             if (isSpendable) {
                                                 final List<TransactionSignature> signatures = new ArrayList<>();
                                                 final int size = tx.getInputs().size();
@@ -401,7 +398,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                         CB.after(service.prepareSweepSocial(key.getPubKey(), true),
                                                  new CB.Toast<Map<?, ?>>(caller) {
                                             @Override
-                                            public void onSuccess(@Nullable final Map<?, ?> sweepResult) {
+                                            public void onSuccess(final Map<?, ?> sweepResult) {
                                                 tx = getSweepTx(sweepResult);
                                                 doSweep();
                                             }
@@ -518,7 +515,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             super(fm);
         }
 
-        @Nullable
         @Override
         public Fragment getItem(final int index) {
 
@@ -540,7 +536,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             return 3;
         }
 
-        @Nullable
         @Override
         public CharSequence getPageTitle(final int position) {
             final Locale l = Locale.getDefault();

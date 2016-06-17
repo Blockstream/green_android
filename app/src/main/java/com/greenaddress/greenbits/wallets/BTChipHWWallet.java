@@ -37,15 +37,11 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
-import javax.annotation.Nullable;
-
-
 public class BTChipHWWallet extends HWWallet {
     private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     private final BTChipDongle dongle;
     private RequestLoginActivity loginActivity;
     private final String pin;
-    @android.support.annotation.Nullable
     private DeterministicKey cachedPubkey;
     private List<Integer> addrn = new LinkedList<>();
 

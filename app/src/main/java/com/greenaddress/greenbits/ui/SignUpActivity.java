@@ -16,7 +16,6 @@ import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -55,7 +54,6 @@ public class SignUpActivity extends GaActivity {
     private TextView nfcTagsWritten;
     private ImageView signupNfcIcon;
     private TextView mnemonicText;
-    @Nullable
     private ListenableFuture<LoginData> onSignUp;
 
     @Override
@@ -125,7 +123,7 @@ public class SignUpActivity extends GaActivity {
                         onSignUp = Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
                             @NonNull
                             @Override
-                            public ListenableFuture<LoginData> apply(@Nullable final Void input) throws Exception {
+                            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                                 return service.signup(mnemonicText.getText().toString());
                             }
                         }, service.es);
@@ -147,7 +145,7 @@ public class SignUpActivity extends GaActivity {
                     Futures.addCallback(onSignUp, new FutureCallback<LoginData>() {
 
                         @Override
-                        public void onSuccess(@Nullable final LoginData result) {
+                        public void onSuccess(final LoginData result) {
                             SignUpActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -307,7 +305,7 @@ public class SignUpActivity extends GaActivity {
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, @android.support.annotation.Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PINSAVE:

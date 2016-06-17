@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -126,7 +125,7 @@ public class SPV {
 
         Futures.addCallback(gaService.getAllUnspentOutputs(0, null), new FutureCallback<ArrayList>() {
             @Override
-            public void onSuccess(final @Nullable ArrayList result) {
+            public void onSuccess(final ArrayList result) {
                 final Set<TransactionOutPoint> newUtxos = new HashSet<>();
                 boolean recalculateBloom = false;
 
@@ -208,7 +207,7 @@ public class SPV {
         if (!missing) return;
         Futures.addCallback(gaService.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
             @Override
-            public void onSuccess(@Nullable final Transaction result) {
+            public void onSuccess(final Transaction result) {
                 final List<Integer> changedSubaccounts = new ArrayList<>();
                 final List<ListenableFuture<Boolean>> futuresList = new ArrayList<>();
                 if (result.getHash().equals(txHash)) {
@@ -220,9 +219,8 @@ public class SPV {
                         final Integer pointer = unspentOutpointsPointers.get(txOutpoint);
 
                         futuresList.add(Futures.transform(gaService.verifySpendableBy(result.getOutput(outpoint), subAccount, pointer), new Function<Boolean, Boolean>() {
-                            @Nullable
                             @Override
-                            public Boolean apply(final @Nullable Boolean input) {
+                            public Boolean apply(final Boolean input) {
                                 if (input) {
                                     final Coin value = result.getOutput(outpoint).getValue();
                                     addUtxoToValues(txOutpoint, subAccount, value);
@@ -245,7 +243,7 @@ public class SPV {
                 }
                 Futures.addCallback(Futures.allAsList(futuresList), new FutureCallback<List<Boolean>>() {
                     @Override
-                    public void onSuccess(final @Nullable List<Boolean> result) {
+                    public void onSuccess(final List<Boolean> result) {
                         for (final int subAccount : changedSubaccounts)
                             gaService.fireBalanceChanged(subAccount);
                     }
@@ -265,7 +263,7 @@ public class SPV {
     }
 
 
-    public void addToBloomFilter(@Nullable final Integer blockHeight, @Nullable final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
+    public void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
         if (blockChain == null) return; // can happen before login (onNewBlock)
         if (txhash != null) {
             addToUtxo(txhash, pt_idx, subAccount, pointer);
@@ -338,9 +336,8 @@ public class SPV {
 
         // 2. Verify the main output value and address, if available:
         return Futures.transform(changeFuture, new Function<List<Boolean>, Coin>() {
-            @Nullable
             @Override
-            public Coin apply(final @Nullable List<Boolean> input) {
+            public Coin apply(final List<Boolean> input) {
                 return Verifier.verify(countedUtxoValues, ptx, recipient, amount, input);
             }
         });
@@ -372,7 +369,6 @@ public class SPV {
         return 0;
     }
 
-    @Nullable
     public PeerGroup getPeerGroup(){
         return peerGroup;
     }
@@ -407,7 +403,7 @@ public class SPV {
 
         Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
-            public void onSuccess(final @Nullable Object result) {
+            public void onSuccess(final Object result) {
                 peerGroup.startBlockChainDownload(new DownloadProgressTracker() {
                     @Override
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
@@ -416,7 +412,7 @@ public class SPV {
                     }
 
                     @Override
-                    public void onBlocksDownloaded(final Peer peer, final Block block, final @Nullable FilteredBlock filteredBlock, final int blocksLeft) {
+                    public void onBlocksDownloaded(final Peer peer, final Block block, final FilteredBlock filteredBlock, final int blocksLeft) {
                         spvBlocksLeft = blocksLeft;
                     }
                 });

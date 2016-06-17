@@ -11,7 +11,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -43,9 +42,7 @@ import nordpol.android.TagDispatcher;
 public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredTagListener {
     @NonNull private static final String TAG = ReceiveFragment.class.getSimpleName();
 
-    @Nullable
     private FutureCallback<QrBitmap> onAddress = null;
-    @Nullable
     private QrBitmap address = null;
     private int curSubaccount;
     private boolean pausing = false;
@@ -119,7 +116,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
         final GaActivity gaActivity = getGaActivity();
 
         registerReceiver();
@@ -163,7 +160,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final ImageView qrcodeInDialog = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
         onAddress = new FutureCallback<QrBitmap>() {
 
-            private void onUiThread(@Nullable final QrBitmap result) {
+            private void onUiThread(final QrBitmap result) {
                 address = result;
 
                 final Activity activity = getActivity();
@@ -222,7 +219,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 }
             }
             @Override
-            public void onSuccess(@Nullable final QrBitmap result) {
+            public void onSuccess(final QrBitmap result) {
                 onUiThread(result);
             }
 

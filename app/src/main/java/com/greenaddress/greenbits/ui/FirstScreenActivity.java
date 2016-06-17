@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,7 +65,6 @@ public class FirstScreenActivity extends GaActivity {
 
         // Check if a TEE is supported
         service.es.submit(new Callable<Object>() {
-            @Nullable
             @Override
             public Object call() {
                 transportFactory = new LedgerTransportTEEProxyFactory(getApplicationContext());
@@ -150,7 +148,6 @@ public class FirstScreenActivity extends GaActivity {
         final GaService service = mService;
 
         service.es.submit(new Callable<Object>() {
-            @Nullable
             @Override
             public Object call() {
                 tuiCall = true;
@@ -246,7 +243,7 @@ public class FirstScreenActivity extends GaActivity {
                     }
                 }), new FutureCallback<LoginData>() {
                     @Override
-                    public void onSuccess(@Nullable final LoginData result) {
+                    public void onSuccess(final LoginData result) {
                         Log.d(TAG, "Success");
                         startActivity(new Intent(FirstScreenActivity.this, TabbedMainActivity.class));
                         FirstScreenActivity.this.finish();

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -117,7 +116,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                           twoFacData.put("code", twoFacValue.getText().toString());
                           Futures.addCallback(mService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                               @Override
-                              public void onSuccess(final @Nullable Boolean result) {
+                              public void onSuccess(final Boolean result) {
                                   final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
                                   c.setChecked(false);
                               }

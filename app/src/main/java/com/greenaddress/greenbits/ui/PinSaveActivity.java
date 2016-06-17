@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +51,7 @@ public class PinSaveActivity extends GaActivity {
                         pinText, "default"),
                 new FutureCallback<PinData>() {
                     @Override
-                    public void onSuccess(@Nullable final PinData result) {
+                    public void onSuccess(final PinData result) {
                         service.cfgEdit("pin")
                                .putString("ident", result.ident)
                                .putInt("counter", 0)
@@ -135,7 +134,7 @@ public class PinSaveActivity extends GaActivity {
         pinSaveText.setOnEditorActionListener(
                 new EditText.OnEditorActionListener() {
                     @Override
-                    public boolean onEditorAction(final TextView v, final int actionId, @Nullable final KeyEvent event) {
+                    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                                 actionId == EditorInfo.IME_ACTION_DONE ||
                                 (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&

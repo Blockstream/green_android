@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Html;
 
 import org.bitcoinj.utils.MonetaryFormat;
@@ -30,7 +29,7 @@ class CurrencyMapper {
         return map.get(currency);
     }
 
-    public static String mapBtcUnitToPrefix(@Nullable final String btcUnit) {
+    public static String mapBtcUnitToPrefix(final String btcUnit) {
         if (btcUnit != null) {
             if (btcUnit.equals("BTC")) {
                 return "";
@@ -46,7 +45,7 @@ class CurrencyMapper {
         }
     }
 
-    public static MonetaryFormat mapBtcUnitToFormat(@Nullable final String btcUnit) {
+    public static MonetaryFormat mapBtcUnitToFormat(final String btcUnit) {
         if (btcUnit != null) {
             if (btcUnit.equals("BTC")) {
                 return MonetaryFormat.BTC;

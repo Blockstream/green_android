@@ -45,8 +45,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionException;
 
-import javax.annotation.Nullable;
-
 import rx.Scheduler;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -465,7 +463,7 @@ public class WalletClient {
 
         Futures.addCallback(rpc, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(@Nullable final Void result) {
+            public void onSuccess(final Void result) {
                 clientSubscribe("blocks", Map.class, new EventHandler() {
                     @Override
                     public void onEvent(final String topicUri, final Object event) {

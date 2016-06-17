@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
@@ -66,7 +65,6 @@ public class SendFragment extends SubaccountFragment {
     private Button sendButton;
     private Switch maxButton;
     private TextView scanIcon;
-    @Nullable
     private Map<?, ?> payreqData = null;
     private boolean fromIntentURI = false;
 
@@ -76,7 +74,6 @@ public class SendFragment extends SubaccountFragment {
     // any better way to do it
     private View rootView;
     private int curSubaccount;
-    @Nullable
     private Observer curBalanceObserver;
     private boolean pausing;
 
@@ -145,7 +142,7 @@ public class SendFragment extends SubaccountFragment {
                         final ListenableFuture<String> sendFuture = getGAService().signAndSendTransaction(ptx, twoFacData);
                         Futures.addCallback(sendFuture, new CB.Toast<String>(gaActivity) {
                             @Override
-                            public void onSuccess(@Nullable final String result) {
+                            public void onSuccess(final String result) {
                                 if (fromIntentURI) {
                                     // FIXME If coming back from the Trusted UI, there can be a race condition
                                     if (getActivity() != null) {
@@ -189,7 +186,7 @@ public class SendFragment extends SubaccountFragment {
             Futures.addCallback(service.processBip70URL(URI.getPaymentRequestUrl()),
                     new CB.Toast<Map<?, ?>>(gaActivity) {
                         @Override
-                        public void onSuccess(@Nullable final Map<?, ?> result) {
+                        public void onSuccess(final Map<?, ?> result) {
                             payreqData = result;
 
                             final String name;
@@ -231,7 +228,7 @@ public class SendFragment extends SubaccountFragment {
             if (URI.getAmount() != null) {
                 Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
                     @Override
-                    public void onSuccess(@Nullable final Map<?, ?> result) {
+                    public void onSuccess(final Map<?, ?> result) {
                         getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -249,8 +246,8 @@ public class SendFragment extends SubaccountFragment {
     }
 
     @Override
-    public View onCreateView(@Nullable final LayoutInflater inflater, @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         final GaService service = getGAService();
 
         registerReceiver();
@@ -383,12 +380,12 @@ public class SendFragment extends SubaccountFragment {
                     CB.after(ptxFn,
                             new CB.Toast<PreparedTransaction>(gaActivity, sendButton) {
                                 @Override
-                                public void onSuccess(@Nullable final PreparedTransaction ptx) {
+                                public void onSuccess(final PreparedTransaction ptx) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
                                     CB.after(service.spv.validateTxAndCalculateFeeOrAmount(ptx, recipient, maxButton.isChecked() ? null : amount),
                                             new CB.Toast<Coin>(gaActivity, sendButton) {
                                                 @Override
-                                                public void onSuccess(@Nullable final Coin fee) {
+                                                public void onSuccess(final Coin fee) {
                                                     final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
                                                     // can be non-UI because validation talks to USB if hw wallet is used
                                                     getActivity().runOnUiThread(new Runnable() {
@@ -528,7 +525,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     @Override
-    public void onViewStateRestored(final @Nullable Bundle savedInstanceState) {
+    public void onViewStateRestored(final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         pausing = false;
     }
@@ -676,7 +673,7 @@ public class SendFragment extends SubaccountFragment {
         service.addBalanceObserver(curSubaccount, curBalanceObserver);
         CB.after(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
             @Override
-            public void onSuccess(final @Nullable Map<?, ?> balance) {
+            public void onSuccess(final Map<?, ?> balance) {
                 final Coin coin = Coin.valueOf(Long.valueOf((String) balance.get("satoshi")));
                 final String btcUnit = (String) service.getUserConfig("unit");
                 final TextView sendSubAccountBalance = (TextView) rootView.findViewById(R.id.sendSubAccountBalance);

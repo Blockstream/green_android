@@ -18,8 +18,6 @@ import com.greenaddress.greenbits.ui.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private static final int PINSAVE = 1337;
     @Override
@@ -120,7 +118,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 mService.getCurrencyExchangePairs(),
                 new FutureCallback<List<List<String>>>() {
                     @Override
-                    public void onSuccess(@android.support.annotation.Nullable final List<List<String>> result) {
+                    public void onSuccess(final List<List<String>> result) {
                         final Activity activity = getActivity();
                         if (activity != null && result != null) {
                             activity.runOnUiThread(new Runnable() {
@@ -165,7 +163,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                             mService.setUserConfig("replace_by_fee", newValue, false),
                             new FutureCallback<Boolean>() {
                                 @Override
-                                public void onSuccess(final @Nullable Boolean result) {
+                                public void onSuccess(final Boolean result) {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
