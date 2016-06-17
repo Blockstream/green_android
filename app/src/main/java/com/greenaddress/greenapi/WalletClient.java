@@ -543,42 +543,9 @@ public class WalletClient {
         });
     }
 
-    public ListenableFuture<LoginData> login(final PinData data, final String pin, final String deviceId) {
-        final SettableFuture<DeterministicKey> rpc = SettableFuture.create();
-        clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
-            public void onResult(final Object pass) {
-                final String[] split = data.encrypted.split(";");
-
-                try {
-                    final byte[] passBytes = pass.toString().getBytes();
-                    final byte[] hashed;
-                    hashed = Wally.pbkdf2_hmac_sha512(passBytes, split[0].getBytes(), 0, 2048);
-
-                    final byte[] truncated = Arrays.copyOf(hashed, 32);
-
-                    final String decrypted = new String(CryptoHelper.decrypt_aes_cbc(
-                            Base64.decode(split[1], Base64.NO_WRAP), truncated));
-
-                    final Map<String, String> json = new MappingJsonFactory().getCodec().readValue(
-                            decrypted, Map.class);
-
-                    mMnemonics = json.get("mnemonic");
-                    rpc.set(HDKey.createMasterKeyFromSeed(Wally.hex_to_bytes(json.get("seed"))));
-                } catch (final IOException e) {
-                    rpc.setException(e);
-                }
-            }
-        }, pin, data.ident);
-
-
-        final AsyncFunction<DeterministicKey, LoginData> connectToLogin = new AsyncFunction<DeterministicKey, LoginData>() {
-            @Override
-            public ListenableFuture<LoginData> apply(final DeterministicKey input) {
-                return login(new SWWallet(input), deviceId);
-            }
-        };
-
-        return Futures.transform(rpc, connectToLogin, mExecutor);
+    public byte[] getPinPassword(final PinData data, final String pin, final String deviceId) throws Exception {
+        final String password = syncCall("pin.get_password", String.class, pin, data.ident);
+        return password.getBytes();
     }
 
     public Map<?, ?> getMyTransactions(final int subAccount) throws Exception {

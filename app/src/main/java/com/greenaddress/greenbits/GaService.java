@@ -15,6 +15,7 @@ import android.os.Binder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -53,6 +54,7 @@ import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.Fiat;
+import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -370,12 +372,11 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> login(final String mnemonics) {
-        final SWWallet signingWallet = new SWWallet(mnemonics);
-        return loginImpl(mClient.login(signingWallet, mnemonics, deviceId));
+        return login(new SWWallet(mnemonics), mnemonics);
     }
 
-    public ListenableFuture<LoginData> login(final PinData pinData, final String pin) {
-        return loginImpl(mClient.login(pinData, pin, deviceId));
+    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics) {
+        return loginImpl(mClient.login(signingWallet, mnemonics, deviceId));
     }
 
     public ListenableFuture<LoginData> signup(final String mnemonics) {
@@ -480,9 +481,21 @@ public class GaService extends Service {
         });
     }
 
-    @NonNull
-    public ListenableFuture<PinData> setPin(@NonNull final byte[] seed, final String mnemonic, final String pin, final String device_name) {
+    public ListenableFuture<PinData> setPin(final byte[] seed, final String mnemonic, final String pin, final String device_name) {
         return mClient.setPin(seed, mnemonic, pin, device_name);
+    }
+
+    public Map<String, String> decryptPinData(final PinData data, final String pin) throws Exception {
+        final byte[] password = mClient.getPinPassword(data, pin, deviceId);
+
+        final String[] split = data.encrypted.split(";");
+        final byte[] encrypted = Base64.decode(split[1], Base64.NO_WRAP);
+
+        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, split[0].getBytes(), 0, 2048);
+        final byte[] key = Arrays.copyOf(hash, 32);
+
+        final byte[] decrypted = CryptoHelper.decrypt_aes_cbc(encrypted, key);
+        return new MappingJsonFactory().getCodec().readValue(new String(decrypted), Map.class);
     }
 
     private void preparePrivData(@NonNull final Map<String, Object> privateData) {

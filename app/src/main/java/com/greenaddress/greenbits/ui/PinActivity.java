@@ -1,5 +1,8 @@
 package com.greenaddress.greenbits.ui;
 
+import com.blockstream.libwally.Wally;
+import org.bitcoinj.crypto.DeterministicKey;
+
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -25,8 +28,10 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.GAException;
+import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.PinData;
+import com.greenaddress.greenapi.SWWallet;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
 
@@ -38,6 +43,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -80,10 +86,9 @@ public class PinActivity extends GaActivity implements Observer {
         imm.hideSoftInputFromWindow(pinText.getWindowToken(), 0);
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
-            @NonNull
             @Override
-            public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                return service.login(pinData, pinText.getText().toString());
+            public ListenableFuture<LoginData> apply(final Void input) {
+                return doPinLogin(pinData, pinText.getText().toString());
             }
         };
 
@@ -199,6 +204,18 @@ public class PinActivity extends GaActivity implements Observer {
         return Cipher.getInstance(name);
     }
 
+    private ListenableFuture<LoginData> doPinLogin(final PinData pinData, final String pin) {
+        final GaService service = mService;
+        final Map<String, String> json;
+        try {
+            json = service.decryptPinData(pinData, pin);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        final DeterministicKey master = HDKey.createMasterKeyFromSeed(Wally.hex_to_bytes(json.get("seed")));
+        return service.login(new SWWallet(master), json.get("mnemonic"));
+    }
+
     @TargetApi(Build.VERSION_CODES.M)
     private void tryDecrypt() {
 
@@ -220,6 +237,7 @@ public class PinActivity extends GaActivity implements Observer {
             final Cipher cipher = getAESCipher();
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(aesiv, Base64.NO_WRAP)));
             final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
+            final String pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15);
 
             Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
                 @Override
@@ -233,10 +251,9 @@ public class PinActivity extends GaActivity implements Observer {
                     final PinData pinData = new PinData(ident, prefs.getString("encrypted", null));
 
                     final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
-                        @NonNull
                         @Override
-                        public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                            return service.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
+                        public ListenableFuture<LoginData> apply(final Void input) {
+                            return doPinLogin(pinData, pin);
                         }
                     };
 
