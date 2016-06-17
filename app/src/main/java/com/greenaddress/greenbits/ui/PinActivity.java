@@ -192,10 +192,22 @@ public class PinActivity extends GaActivity implements Observer {
         }
     }
 
+    private Cipher getAESCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {
+        final String name = KeyProperties.KEY_ALGORITHM_AES + "/" +
+                            KeyProperties.BLOCK_MODE_CBC + "/" +
+                            KeyProperties.ENCRYPTION_PADDING_PKCS7;
+        return Cipher.getInstance(name);
+    }
+
     @TargetApi(Build.VERSION_CODES.M)
     private void tryDecrypt() {
 
         final GaService service = mService;
+        if (service.onConnected == null) {
+            finish();
+            return;
+        }
+
         final SharedPreferences prefs = service.cfg("pin");
         final String androidLogin = prefs.getString("native", null);
         final String aesiv = prefs.getString("nativeiv", null);
@@ -205,95 +217,88 @@ public class PinActivity extends GaActivity implements Observer {
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
             final SecretKey secretKey = (SecretKey) keyStore.getKey(KEYSTORE_KEY, null);
-            final Cipher cipher = Cipher.getInstance(
-                    KeyProperties.KEY_ALGORITHM_AES + "/" + KeyProperties.BLOCK_MODE_CBC + "/"
-                            + KeyProperties.ENCRYPTION_PADDING_PKCS7);
-
+            final Cipher cipher = getAESCipher();
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(aesiv, Base64.NO_WRAP)));
             final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
 
-            if (service.onConnected == null) {
-                finish();
-            } else {
-                Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
-                    @Override
-                    public void onSuccess(@Nullable final Void result) {
+            Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
+                @Override
+                public void onSuccess(@Nullable final Void result) {
 
-                        if (!service.isConnected()) {
-                            PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
+                    if (!service.isConnected()) {
+                        PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
+                        finish();
+                    }
+
+                    final PinData pinData = new PinData(ident, prefs.getString("encrypted", null));
+
+                    final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
+                        @NonNull
+                        @Override
+                        public ListenableFuture<LoginData> apply(@Nullable final Void input) {
+                            return service.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
+                        }
+                    };
+
+                    final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
+
+                    Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
+                        @Override
+                        public void onSuccess(@Nullable final LoginData result) {
+                            final SharedPreferences.Editor editor = prefs.edit();
+                            editor.putInt("counter", 0);
+                            editor.apply();
+                            if (getCallingActivity() == null) {
+                                startActivity( new Intent(PinActivity.this, TabbedMainActivity.class));
+                                finish();
+                                return;
+                            }
+                            setResult(RESULT_OK);
                             finish();
                         }
 
-                        final PinData pinData = new PinData(ident, prefs.getString("encrypted", null));
-
-                        final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
-                            @NonNull
-                            @Override
-                            public ListenableFuture<LoginData> apply(@Nullable final Void input) {
-                                return service.login(pinData, Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15));
-                            }
-                        };
-
-                        final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
-
-                        Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
-                            @Override
-                            public void onSuccess(@Nullable final LoginData result) {
+                        @Override
+                        public void onFailure(@NonNull final Throwable t) {
+                            String message = t.getMessage();
+                            final int counter = prefs.getInt("counter", 0) + 1;
+                            if (t instanceof GAException) {
                                 final SharedPreferences.Editor editor = prefs.edit();
-                                editor.putInt("counter", 0);
-                                editor.apply();
-                                if (getCallingActivity() == null) {
-                                    startActivity( new Intent(PinActivity.this, TabbedMainActivity.class));
-                                    finish();
+                                if (counter < 3) {
+                                    editor.putInt("counter", counter);
+                                    message = getString(R.string.attemptsLeftLong, 3 - counter);
                                 } else {
-                                    setResult(RESULT_OK);
-                                    finish();
+                                    message = getString(R.string.attemptsFinished);
+                                    editor.clear();
                                 }
+
+                                editor.apply();
                             }
+                            final String toastMsg = message;
 
-                            @Override
-                            public void onFailure(@NonNull final Throwable t) {
-                                String message = t.getMessage();
-                                final int counter = prefs.getInt("counter", 0) + 1;
-                                if (t instanceof GAException) {
-                                    final SharedPreferences.Editor editor = prefs.edit();
-                                    if (counter < 3) {
-                                        editor.putInt("counter", counter);
-                                        message = getString(R.string.attemptsLeftLong, 3 - counter);
-                                    } else {
-                                        message = getString(R.string.attemptsFinished);
-                                        editor.clear();
+                            PinActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    PinActivity.this.toast(toastMsg);
+                                    if (counter >= 3) {
+                                        startActivity( new Intent(PinActivity.this, FirstScreenActivity.class));
+                                        finish();
                                     }
-
-                                    editor.apply();
                                 }
-                                final String tstMsg = message;
+                            });
+                        }
+                    }, service.es);
+                }
 
-                                PinActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        PinActivity.this.toast(tstMsg);
-                                        if (counter >= 3) {
-                                            startActivity( new Intent(PinActivity.this, FirstScreenActivity.class));
-                                            finish();
-                                        }
-                                    }
-                                });
-                            }
-                        }, service.es);
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull final Throwable t) {
-                        finish();
-                    }
-                });
-            }
-        } catch (@NonNull final KeyStoreException | InvalidKeyException e) {
+                @Override
+                public void onFailure(@NonNull final Throwable t) {
+                    finish();
+                }
+            });
+        } catch (final KeyStoreException | InvalidKeyException e) {
             showAuthenticationScreen();
-        } catch (@NonNull final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException  |
-                CertificateException | UnrecoverableKeyException | IOException
-                | NoSuchPaddingException | NoSuchAlgorithmException e) {
+        } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException  |
+                 CertificateException | UnrecoverableKeyException | IOException |
+                 NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new RuntimeException(e);
         }
     }
