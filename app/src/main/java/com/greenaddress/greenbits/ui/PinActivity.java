@@ -211,7 +211,6 @@ public class PinActivity extends GaActivity implements Observer {
         final SharedPreferences prefs = service.cfg("pin");
         final String androidLogin = prefs.getString("native", null);
         final String aesiv = prefs.getString("nativeiv", null);
-        final String ident = prefs.getString("ident", null);
 
         try {
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
