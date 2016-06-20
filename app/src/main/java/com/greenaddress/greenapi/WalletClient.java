@@ -541,8 +541,8 @@ public class WalletClient {
         });
     }
 
-    public byte[] getPinPassword(final PinData pinData, final String pin) throws Exception {
-        final String password = syncCall("pin.get_password", String.class, pin, pinData.mPinIdentifier);
+    public byte[] getPinPassword(final String pinIdentifier, final String pin) throws Exception {
+        final String password = syncCall("pin.get_password", String.class, pin, pinIdentifier);
         return password.getBytes();
     }
 
@@ -554,59 +554,26 @@ public class WalletClient {
         return simpleCall("vault.fund", Map.class, subAccount, true);
     }
 
-    private ListenableFuture<PinData> getPinData(final String pin, final SetPinData setPinData) {
-        final SettableFuture<PinData> rpc = SettableFuture.create();
-        return clientCall(rpc, "pin.get_password", String.class, new CallHandler() {
-            public void onResult(final Object password) {
-                try {
-                    final byte[] salt = CryptoHelper.randomBytes(16);
-                    final byte[] passBytes = password.toString().getBytes();
-                    final byte[] hashed;
-                    hashed = Wally.pbkdf2_hmac_sha512(passBytes, Base64.encode(salt, Base64.NO_WRAP), 0, 2048);
-                    final byte[] truncated = Arrays.copyOf(hashed, 32);
-                    final byte[] aes_cbc = CryptoHelper.encrypt_aes_cbc(setPinData.json, truncated);
-                    final String clob = String.format("%s;%s", Base64.encodeToString(salt,
-                            Base64.NO_WRAP), Base64.encodeToString(aes_cbc,
-                            Base64.NO_WRAP));
-
-                    rpc.set(new PinData(setPinData.ident, clob));
-
-                } catch (final IllegalArgumentException e) {
-                    rpc.setException(e);
-                }
-            }
-        }, pin, setPinData.ident);
-    }
-
-    private ListenableFuture<SetPinData> setPinLogin(final String mnemonic, final String pin, final String deviceName) {
-        final SettableFuture<SetPinData> rpc = SettableFuture.create();
-
+    public PinData setPin(final String mnemonic, final String pin, final String deviceName) throws Exception {
         mMnemonics = mnemonic;
+
+        // FIXME: set_pin_login could return the password as well, saving a
+        // round-trip vs calling getPinPassword() below.
+        final String pinIdentifier = syncCall("pin.set_pin_login", String.class, pin, deviceName);
+        final byte[] password = getPinPassword(pinIdentifier, pin);
+
+        PinData pinData = new PinData(pinIdentifier);
+        pinData.mSeed = CryptoHelper.mnemonic_to_seed(mnemonic);
+        pinData.mMnemonic = mnemonic;
+
         final Map<String, String> out = new HashMap<>();
         out.put("mnemonic", mnemonic);
         out.put("seed", Wally.hex_from_bytes(CryptoHelper.mnemonic_to_seed(mnemonic)));
         out.put("path_seed", Wally.hex_from_bytes(mnemonicToPath(mnemonic)));
+        final byte[] json = serializeJSON(out).toByteArray();
 
-        try {
-            final byte[] info = serializeJSON(out).toByteArray();
-            clientCall(rpc, "pin.set_pin_login", String.class, new CallHandler() {
-                public void onResult(final Object ident) {
-                    rpc.set(new SetPinData(info, ident.toString()));
-                }
-            }, pin, deviceName);
-        } catch (final GAException e) {
-            rpc.setException(e);
-        }
-        return rpc;
-    }
-
-    public ListenableFuture<PinData> setPin(final String mnemonic, final String pin, final String deviceName) {
-        return Futures.transform(setPinLogin(mnemonic, pin, deviceName), new AsyncFunction<SetPinData, PinData>() {
-            @Override
-            public ListenableFuture<PinData> apply(final SetPinData pinData) throws Exception {
-                return getPinData(pin, pinData);
-            }
-        }, mExecutor);
+        pinData.encrypt(json, password);
+        return pinData;
     }
 
     public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {

@@ -23,6 +23,14 @@ public class PinData {
         mMnemonic = null;
     }
 
+    public PinData(final String pinIdentifier) {
+        mPinIdentifier = pinIdentifier;
+        mSalt = null;
+        mEncryptedData = null;
+        mSeed = null;
+        mMnemonic = null;
+    }
+
     public void decrypt(final byte[] password) {
 
         final byte[] hash = Wally.pbkdf2_hmac_sha512(password, mSalt, 0, 2048);

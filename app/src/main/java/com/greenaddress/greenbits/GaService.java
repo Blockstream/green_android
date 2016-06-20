@@ -468,11 +468,16 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<PinData> setPin(final String mnemonic, final String pin) {
-        return mClient.setPin(mnemonic, pin, "default");
+        return es.submit(new Callable<PinData>() {
+            @Override
+            public PinData call() throws Exception {
+                return mClient.setPin(mnemonic, pin, "default");
+            }
+        });
     }
 
     public void decryptPinData(final PinData pinData, final String pin) throws Exception {
-        pinData.decrypt(mClient.getPinPassword(pinData, pin));
+        pinData.decrypt(mClient.getPinPassword(pinData.mPinIdentifier, pin));
     }
 
     private void preparePrivData(final Map<String, Object> privateData) {
