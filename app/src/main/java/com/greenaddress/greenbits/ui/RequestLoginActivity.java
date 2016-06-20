@@ -176,7 +176,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     @Override
                     public void onSuccess(final LoginData result) {
                         startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
-                        RequestLoginActivity.this.finish();
+                        finishOnUiThread();
                     }
 
                     @Override
@@ -193,7 +193,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                 }
                             });
                         } else {
-                            RequestLoginActivity.this.finish();
+                            finishOnUiThread();
                         }
                     }
                 });
@@ -344,7 +344,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             public void onSuccess(final LoginData result) {
                 if (result != null) {
                     startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
-                    RequestLoginActivity.this.finish();
+                    finishOnUiThread();
                 }
             }
 
@@ -358,25 +358,24 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         final BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");
                         Futures.addCallback(service.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
                                 new FutureCallback<LoginData>() {
-
                                     @Override
                                     public void onSuccess(final LoginData result) {
                                         startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
-                                        RequestLoginActivity.this.finish();
+                                        finishOnUiThread();
                                     }
 
                                     @Override
                                     public void onFailure(final Throwable t) {
                                         t.printStackTrace();
-                                        RequestLoginActivity.this.finish();
+                                        finishOnUiThread();
                                     }
                                 });
                     } catch (final Exception e) {
                         e.printStackTrace();
-                        RequestLoginActivity.this.finish();
+                        finishOnUiThread();
                     }
                 } else {
-                    RequestLoginActivity.this.finish();
+                    finishOnUiThread();
                 }
             }
         });

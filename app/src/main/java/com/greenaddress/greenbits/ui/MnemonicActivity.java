@@ -175,7 +175,7 @@ public class MnemonicActivity extends GaActivity {
                     startActivityForResult(savePin, PINSAVE);
                 } else {
                     setResult(RESULT_OK);
-                    MnemonicActivity.this.finish();
+                    finishOnUiThread();
                 }
             }
 

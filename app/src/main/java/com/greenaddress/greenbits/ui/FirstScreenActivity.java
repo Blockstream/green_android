@@ -242,14 +242,14 @@ public class FirstScreenActivity extends GaActivity {
                     public void onSuccess(final LoginData result) {
                         Log.d(TAG, "Success");
                         startActivity(new Intent(FirstScreenActivity.this, TabbedMainActivity.class));
-                        FirstScreenActivity.this.finish();
+                        finishOnUiThread();
                     }
 
                     @Override
                     public void onFailure(final Throwable t) {
                         Log.d(TAG, "login failed", t);
                         if (!(t instanceof LoginFailed)) {
-                            FirstScreenActivity.this.finish();
+                            finishOnUiThread();
                         }
                     }
                 });

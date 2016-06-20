@@ -61,7 +61,7 @@ public class PinSaveActivity extends GaActivity {
                     @Override
                     public void onSuccess(final Void result) {
                         setResult(RESULT_OK);
-                        finish();
+                        finishOnUiThread();
                     }
 
                     @Override
@@ -159,7 +159,6 @@ public class PinSaveActivity extends GaActivity {
                 finish();
             }
         });
-
     }
 
     @Override

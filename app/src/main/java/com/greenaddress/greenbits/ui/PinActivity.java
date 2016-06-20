@@ -113,7 +113,7 @@ public class PinActivity extends GaActivity implements Observer {
                     startActivity(new Intent(PinActivity.this, TabbedMainActivity.class));
                 else
                     setResult(RESULT_OK);
-                finish();
+                finishOnUiThread();
             }
 
             @Override
@@ -243,12 +243,12 @@ public class PinActivity extends GaActivity implements Observer {
                     }
 
                     PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
-                    finish();
+                    finishOnUiThread();
                 }
 
                 @Override
                 public void onFailure(final Throwable t) {
-                    finish();
+                    finishOnUiThread();
                 }
             });
         } catch (final KeyStoreException | InvalidKeyException e) {

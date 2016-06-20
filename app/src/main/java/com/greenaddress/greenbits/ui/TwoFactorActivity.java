@@ -261,7 +261,7 @@ public class TwoFactorActivity extends GaActivity {
                     @Override
                     public void onSuccess(final Boolean result) {
                         setResult(RESULT_OK);
-                        finish();
+                        finishOnUiThread();
                     }
                 });
             }
@@ -295,7 +295,7 @@ public class TwoFactorActivity extends GaActivity {
                     @Override
                     public void onSuccess(Boolean result) {
                         setResult(RESULT_OK);
-                        finish();
+                        finishOnUiThread();
                     }
                 });
             }
