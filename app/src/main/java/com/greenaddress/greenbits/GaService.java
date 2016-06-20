@@ -13,6 +13,7 @@ import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.os.Binder;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -467,11 +468,19 @@ public class GaService extends Service {
         });
     }
 
-    public ListenableFuture<PinData> setPin(final String mnemonic, final String pin) {
-        return es.submit(new Callable<PinData>() {
+    public ListenableFuture<Void> setPin(final String mnemonic, final String pin) {
+        return es.submit(new Callable<Void>() {
             @Override
-            public PinData call() throws Exception {
-                return mClient.setPin(mnemonic, pin, "default");
+            public Void call() throws Exception {
+                final PinData pinData = mClient.setPin(mnemonic, pin, "default");
+                // As this is a new PIN, save it to config
+                final String encrypted = Base64.encodeToString(pinData.mSalt, Base64.NO_WRAP) + ";" +
+                                         Base64.encodeToString(pinData.mEncryptedData, Base64.NO_WRAP);
+                cfgEdit("pin").putString("ident", pinData.mPinIdentifier)
+                              .putInt("counter", 0)
+                              .putString("encrypted", encrypted)
+                              .apply();
+               return null;
             }
         });
     }
