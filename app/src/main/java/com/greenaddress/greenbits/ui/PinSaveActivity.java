@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 import com.greenaddress.greenbits.GaService;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -79,18 +80,22 @@ public class PinSaveActivity extends GaActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        final GaService service = mService;
 
-        // Challenge completed, proceed with using cipher
-        if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                setPin(KeyStoreAES.tryEncrypt(service));
-            } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
-                KeyStoreAES.showAuthenticationScreen(this);
-            } catch (final KeyStoreAES.KeyInvalidated e) {
-                toast("Problem with key " + e.getMessage());
-            }
+        if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Challenge completed, proceed with using cipher
+            tryEncrypt();
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    void tryEncrypt() {
+        try {
+            setPin(KeyStoreAES.tryEncrypt(mService));
+        } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
+            KeyStoreAES.showAuthenticationScreen(this);
+        } catch (final KeyStoreAES.KeyInvalidated e) {
+            toast("Problem with key " + e.getMessage());
         }
     }
 
@@ -113,15 +118,8 @@ public class PinSaveActivity extends GaActivity {
                 nativeAuth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
-                        if (isChecked) {
-                            try {
-                                setPin(KeyStoreAES.tryEncrypt(service));
-                            } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
-                                KeyStoreAES.showAuthenticationScreen(PinSaveActivity.this);
-                            } catch (final KeyStoreAES.KeyInvalidated e) {
-                                PinSaveActivity.this.toast("Problem with key " + e.getMessage());
-                            }
-                        }
+                        if (isChecked)
+                            tryEncrypt();
                     }
                 });
 
