@@ -103,7 +103,6 @@ public class PinSaveActivity extends GaActivity {
 
                 final CheckBox nativeAuth = (CheckBox) findViewById(R.id.useNativeAuthentication);
                 nativeAuth.setVisibility(View.VISIBLE);
-
                 nativeAuth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
@@ -116,10 +115,8 @@ public class PinSaveActivity extends GaActivity {
                 // lock not set, simply don't show native options
             }
         }
+
         final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
-
-        final CircularProgressButton pinSaveButton = (CircularProgressButton) findViewById(R.id.pinSaveButton);
-
         pinSaveText.setOnEditorActionListener(
                 new EditText.OnEditorActionListener() {
                     @Override
