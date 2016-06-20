@@ -80,10 +80,26 @@ public class PinActivity extends GaActivity implements Observer {
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(pinText.getWindowToken(), 0);
 
+         setUpLogin(pinText.getText().toString(), new Runnable() {
+             @Override
+             public void run() {
+                 pinText.setText("");
+                 pinLoginButton.setProgress(0);
+                 pinText.setEnabled(true);
+                 pinError.setVisibility(View.VISIBLE);
+                 final int counter = mService.cfg("pin").getInt("counter", 0) + 1;
+                 pinError.setText(getString(R.string.attemptsLeft, 3 - counter));
+              }
+         });
+     }
+
+    private void setUpLogin(final String pin, final Runnable onFailureFn) {
+        final GaService service = mService;
+
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
-                return service.pinLogin(pinText.getText().toString());
+                return service.pinLogin(pin);
             }
         };
 
@@ -93,17 +109,16 @@ public class PinActivity extends GaActivity implements Observer {
             @Override
             public void onSuccess(final LoginData result) {
                 service.cfgEdit("pin").putInt("counter", 0).apply();
-                if (getCallingActivity() == null) {
+                if (getCallingActivity() == null)
                     startActivity(new Intent(PinActivity.this, TabbedMainActivity.class));
-                } else {
+                else
                     setResult(RESULT_OK);
-                }
                 finish();
             }
 
             @Override
             public void onFailure(final Throwable t) {
-                String message = t.getMessage();
+                final String message;
                 final SharedPreferences prefs = service.cfg("pin");
                 final int counter = prefs.getInt("counter", 0) + 1;
                 if (t instanceof GAException) {
@@ -115,26 +130,23 @@ public class PinActivity extends GaActivity implements Observer {
                         message = getString(R.string.attemptsFinished);
                         editor.clear();
                     }
-
                     editor.apply();
                 }
-                final String tstMsg = message;
+                else
+                    message = t.getMessage();
 
                 PinActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        PinActivity.this.toast(tstMsg);
+                        PinActivity.this.toast(message);
 
                         if (counter >= 3) {
                             startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
                             finish();
                             return;
                         }
-                        pinText.setText("");
-                        pinLoginButton.setProgress(0);
-                        pinText.setEnabled(true);
-                        pinError.setVisibility(View.VISIBLE);
-                        pinError.setText(getString(R.string.attemptsLeft, 3 - counter));
+                        if (onFailureFn != null)
+                            onFailureFn.run();
                     }
                 });
             }
