@@ -87,7 +87,7 @@ public class PinActivity extends GaActivity implements Observer {
                  pinLoginButton.setProgress(0);
                  pinText.setEnabled(true);
                  pinError.setVisibility(View.VISIBLE);
-                 final int counter = mService.cfg("pin").getInt("counter", 0) + 1;
+                 final int counter = mService.cfg("pin").getInt("counter", 1);
                  pinError.setText(getString(R.string.attemptsLeft, 3 - counter));
               }
          });
@@ -98,7 +98,7 @@ public class PinActivity extends GaActivity implements Observer {
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
-            public ListenableFuture<LoginData> apply(final Void input) {
+            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                 return service.pinLogin(pin);
             }
         };

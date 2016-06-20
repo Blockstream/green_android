@@ -485,17 +485,13 @@ public class GaService extends Service {
         });
     }
 
-    public ListenableFuture<LoginData> pinLogin(final String pin) {
-        try {
-            final String pinIdentifier = cfg("pin").getString("ident", null);
-            final byte[] password = mClient.getPinPassword(pinIdentifier, pin);
-            final String encrypted = cfg("pin").getString("encrypted", null);
-            final PinData pinData = PinData.fromEncrypted(pinIdentifier, encrypted, password);
-            final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
-            return login(new SWWallet(master), pinData.mMnemonic);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public ListenableFuture<LoginData> pinLogin(final String pin) throws Exception {
+        final String pinIdentifier = cfg("pin").getString("ident", null);
+        final byte[] password = mClient.getPinPassword(pinIdentifier, pin);
+        final String encrypted = cfg("pin").getString("encrypted", null);
+        final PinData pinData = PinData.fromEncrypted(pinIdentifier, encrypted, password);
+        final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
+        return login(new SWWallet(master), pinData.mMnemonic);
     }
 
     private void preparePrivData(final Map<String, Object> privateData) {

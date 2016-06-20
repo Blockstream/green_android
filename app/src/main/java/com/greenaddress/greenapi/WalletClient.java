@@ -221,6 +221,17 @@ public class WalletClient {
         } catch (final RejectedExecutionException e) {
             throw new GAException("rejected");
         }
+        catch (final Exception e) {
+            Log.d(TAG, "Sync RPC exception: (" + procedure + ")->" + e.toString());
+            if (e instanceof ApplicationError) {
+                final ArrayNode a = ((ApplicationError) e).arguments();
+                if (a != null && a.size() >= 2) {
+                    // Throw the actual error message and ignore the URI
+                    throw new GAException(a.get(1).asText());
+                }
+            }
+            throw new GAException(e.toString());
+        }
     }
 
     private void clientSubscribe(final String s, final Class mapClass, final EventHandler eventHandler) {
