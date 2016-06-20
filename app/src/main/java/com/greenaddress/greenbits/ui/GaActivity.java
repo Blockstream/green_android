@@ -114,12 +114,14 @@ public abstract class GaActivity extends AppCompatActivity {
 
     // Utility methods
 
-    protected void mapClick(final int id, final View.OnClickListener fn) {
-        findViewById(id).setOnClickListener(fn);
+    protected View mapClick(final int id, final View.OnClickListener fn) {
+        View v = findViewById(id);
+        v.setOnClickListener(fn);
+        return v;
     }
 
-    protected void mapClick(final int id, final Intent activityIntent) {
-        mapClick(id, new View.OnClickListener() {
+    protected View mapClick(final int id, final Intent activityIntent) {
+        return mapClick(id, new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 startActivity(activityIntent);

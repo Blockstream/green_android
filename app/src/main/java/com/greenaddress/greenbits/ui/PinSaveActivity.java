@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.ui;
+
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.KeyStoreAES;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -21,31 +23,32 @@ import android.widget.TextView;
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.greenaddress.greenbits.KeyStoreAES;
 
 public class PinSaveActivity extends GaActivity {
 
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
-    private void setPin(final String pinText) {
+    private CheckBox mNativeAuthCB;
+    private EditText mPinText;
+    private Button mSkipButton;
+    private CircularProgressButton mSaveButton;
+
+    private void setPin(final String pin) {
         final GaService service = mService;
 
-        if (pinText.length() < 4) {
+        if (pin.length() < 4) {
             shortToast(R.string.err_pin_save_wrong_length);
             return;
         }
-        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
-        imm.hideSoftInputFromWindow(pinSaveText.getWindowToken(), 0);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mPinText.getWindowToken(), 0);
         final String mnemonic = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
-        final Button pinSkipButton = (Button) findViewById(R.id.pinSkipButton);
-        final CircularProgressButton pinSaveButton = (CircularProgressButton) findViewById(R.id.pinSaveButton);
 
-        pinSaveButton.setIndeterminateProgressMode(true);
-        pinSaveButton.setProgress(50);
-        pinSaveText.setEnabled(false);
-        pinSkipButton.setVisibility(View.GONE);
-        Futures.addCallback(service.setPin(mnemonic, pinText),
+        mSaveButton.setIndeterminateProgressMode(true);
+        mSaveButton.setProgress(50);
+        mPinText.setEnabled(false);
+        mSkipButton.setVisibility(View.GONE);
+        Futures.addCallback(service.setPin(mnemonic, pin),
                 new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(final Void result) {
@@ -58,9 +61,9 @@ public class PinSaveActivity extends GaActivity {
                         PinSaveActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                pinSaveButton.setProgress(0);
-                                pinSaveText.setEnabled(true);
-                                pinSkipButton.setVisibility(View.VISIBLE);
+                                mSaveButton.setProgress(0);
+                                mPinText.setEnabled(true);
+                                mSkipButton.setVisibility(View.VISIBLE);
                             }
                         });
                     }
@@ -96,14 +99,15 @@ public class PinSaveActivity extends GaActivity {
 
         final GaService service = mService;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        mPinText = (EditText) findViewById(R.id.pinSaveText);
+        mNativeAuthCB = (CheckBox) findViewById(R.id.useNativeAuthentication);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
                 KeyStoreAES.createKey(true);
 
-                final CheckBox nativeAuth = (CheckBox) findViewById(R.id.useNativeAuthentication);
-                nativeAuth.setVisibility(View.VISIBLE);
-                nativeAuth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                mNativeAuthCB.setVisibility(View.VISIBLE);
+                mNativeAuthCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                         if (isChecked)
@@ -116,8 +120,7 @@ public class PinSaveActivity extends GaActivity {
             }
         }
 
-        final EditText pinSaveText = (EditText) findViewById(R.id.pinSaveText);
-        pinSaveText.setOnEditorActionListener(
+        mPinText.setOnEditorActionListener(
                 new EditText.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
@@ -127,7 +130,7 @@ public class PinSaveActivity extends GaActivity {
                                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                             if (event == null || !event.isShiftPressed()) {
                                 // the user is done typing.
-                                setPin(pinSaveText.getText().toString());
+                                setPin(mPinText.getText().toString());
                                 return true; // consume.
                             }
                         }
@@ -136,13 +139,13 @@ public class PinSaveActivity extends GaActivity {
                 }
         );
 
-        mapClick(R.id.pinSaveButton, new View.OnClickListener() {
+        mSaveButton = (CircularProgressButton) mapClick(R.id.pinSaveButton, new View.OnClickListener() {
             public void onClick(final View view) {
-                setPin(pinSaveText.getText().toString());
+                setPin(mPinText.getText().toString());
             }
         });
 
-        mapClick(R.id.pinSkipButton, new View.OnClickListener() {
+        mSkipButton = (Button) mapClick(R.id.pinSkipButton, new View.OnClickListener() {
             public void onClick(final View view) {
                 setResult(RESULT_CANCELED); // Skip
                 finish();
