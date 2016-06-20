@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.util.Base64;
 
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
@@ -48,12 +49,15 @@ public class PinSaveActivity extends GaActivity {
         pinSkipButton.setVisibility(View.GONE);
         Futures.addCallback(service.setPin(mnemonic, pinText),
                 new FutureCallback<PinData>() {
+                    String b64(final byte[] in) { return Base64.encodeToString(in, Base64.NO_WRAP); }
+
                     @Override
                     public void onSuccess(final PinData result) {
+                        final String encrypted = b64(result.mSalt) + ";" + b64(result.mEncryptedData);
                         service.cfgEdit("pin")
                                .putString("ident", result.mPinIdentifier)
                                .putInt("counter", 0)
-                               .putString("encrypted", result.mEncryptedData)
+                               .putString("encrypted", encrypted)
                                .apply();
                         setResult(RESULT_OK);
                         finish();
