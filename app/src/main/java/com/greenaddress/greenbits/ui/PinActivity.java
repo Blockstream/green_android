@@ -237,66 +237,13 @@ public class PinActivity extends GaActivity implements Observer {
                 @Override
                 public void onSuccess(final Void result) {
 
-                    if (!service.isConnected()) {
-                        PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
-                        finish();
+                    if (service.isConnected()) {
+                        setUpLogin(pin, null);
                         return;
                     }
 
-                    final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
-                        @Override
-                        public ListenableFuture<LoginData> apply(final Void input) {
-                            return service.pinLogin(pin);
-                        }
-                    };
-
-                    final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
-
-                    Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
-                        @Override
-                        public void onSuccess(final LoginData result) {
-                            final SharedPreferences.Editor editor = prefs.edit();
-                            editor.putInt("counter", 0);
-                            editor.apply();
-                            if (getCallingActivity() == null) {
-                                startActivity( new Intent(PinActivity.this, TabbedMainActivity.class));
-                                finish();
-                                return;
-                            }
-                            setResult(RESULT_OK);
-                            finish();
-                        }
-
-                        @Override
-                        public void onFailure(final Throwable t) {
-                            String message = t.getMessage();
-                            final int counter = prefs.getInt("counter", 0) + 1;
-                            if (t instanceof GAException) {
-                                final SharedPreferences.Editor editor = prefs.edit();
-                                if (counter < 3) {
-                                    editor.putInt("counter", counter);
-                                    message = getString(R.string.attemptsLeftLong, 3 - counter);
-                                } else {
-                                    message = getString(R.string.attemptsFinished);
-                                    editor.clear();
-                                }
-
-                                editor.apply();
-                            }
-                            final String toastMsg = message;
-
-                            PinActivity.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    PinActivity.this.toast(toastMsg);
-                                    if (counter >= 3) {
-                                        startActivity( new Intent(PinActivity.this, FirstScreenActivity.class));
-                                        finish();
-                                    }
-                                }
-                            });
-                        }
-                    }, service.es);
+                    PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
+                    finish();
                 }
 
                 @Override
