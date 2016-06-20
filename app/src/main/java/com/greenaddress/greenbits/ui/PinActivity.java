@@ -29,7 +29,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenapi.SWWallet;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
@@ -61,7 +60,7 @@ public class PinActivity extends GaActivity implements Observer {
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
 
-    private void login(final CircularProgressButton pinLoginButton, final String ident, final EditText pinText, final TextView pinError) {
+    private void login(final CircularProgressButton pinLoginButton, final EditText pinText, final TextView pinError) {
         final GaService service = mService;
 
         if (pinText.length() < 4) {
@@ -74,8 +73,6 @@ public class PinActivity extends GaActivity implements Observer {
             return;
         }
 
-        final PinData pinData = new PinData(ident, service.cfg("pin").getString("encrypted", null));
-
         pinLoginButton.setIndeterminateProgressMode(true);
         pinLoginButton.setProgress(50);
         pinText.setEnabled(false);
@@ -86,7 +83,7 @@ public class PinActivity extends GaActivity implements Observer {
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
-                return doPinLogin(pinData, pinText.getText().toString());
+                return service.pinLogin(pinText.getText().toString());
             }
         };
 
@@ -170,7 +167,7 @@ public class PinActivity extends GaActivity implements Observer {
                                 if (event == null || !event.isShiftPressed()) {
                                     // the user is done typing.
                                     if (!pinText.getText().toString().isEmpty()) {
-                                        login(pinLoginButton, ident, pinText, pinError);
+                                        login(pinLoginButton, pinText, pinError);
                                         return true; // consume.
                                     }
                                 }
@@ -183,7 +180,7 @@ public class PinActivity extends GaActivity implements Observer {
             pinLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    login(pinLoginButton, ident, pinText, pinError);
+                    login(pinLoginButton, pinText, pinError);
                 }
             });
 
@@ -200,18 +197,6 @@ public class PinActivity extends GaActivity implements Observer {
                             KeyProperties.BLOCK_MODE_CBC + "/" +
                             KeyProperties.ENCRYPTION_PADDING_PKCS7;
         return Cipher.getInstance(name);
-    }
-
-    private ListenableFuture<LoginData> doPinLogin(final PinData pinData, final String pin) {
-        final GaService service = mService;
-        final Map<String, String> json;
-        try {
-            service.decryptPinData(pinData, pin);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
-        return service.login(new SWWallet(master), pinData.mMnemonic);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -247,12 +232,10 @@ public class PinActivity extends GaActivity implements Observer {
                         return;
                     }
 
-                    final PinData pinData = new PinData(ident, prefs.getString("encrypted", null));
-
                     final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
                         @Override
                         public ListenableFuture<LoginData> apply(final Void input) {
-                            return doPinLogin(pinData, pin);
+                            return service.pinLogin(pin);
                         }
                     };
 

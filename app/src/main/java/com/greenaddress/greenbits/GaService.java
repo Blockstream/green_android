@@ -476,8 +476,16 @@ public class GaService extends Service {
         });
     }
 
-    public void decryptPinData(final PinData pinData, final String pin) throws Exception {
-        pinData.decrypt(mClient.getPinPassword(pinData.mPinIdentifier, pin));
+    public ListenableFuture<LoginData> pinLogin(final String pin) {
+        final PinData pinData = new PinData(cfg("pin").getString("ident", null),
+                                            cfg("pin").getString("encrypted", null));
+        try {
+            pinData.decrypt(mClient.getPinPassword(pinData.mPinIdentifier, pin));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
+        return login(new SWWallet(master), pinData.mMnemonic);
     }
 
     private void preparePrivData(final Map<String, Object> privateData) {
