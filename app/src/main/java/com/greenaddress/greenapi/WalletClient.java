@@ -561,19 +561,7 @@ public class WalletClient {
         // round-trip vs calling getPinPassword() below.
         final String pinIdentifier = syncCall("pin.set_pin_login", String.class, pin, deviceName);
         final byte[] password = getPinPassword(pinIdentifier, pin);
-
-        PinData pinData = new PinData(pinIdentifier);
-        pinData.mSeed = CryptoHelper.mnemonic_to_seed(mnemonic);
-        pinData.mMnemonic = mnemonic;
-
-        final Map<String, String> out = new HashMap<>();
-        out.put("mnemonic", mnemonic);
-        out.put("seed", Wally.hex_from_bytes(CryptoHelper.mnemonic_to_seed(mnemonic)));
-        out.put("path_seed", Wally.hex_from_bytes(mnemonicToPath(mnemonic)));
-        final byte[] json = serializeJSON(out).toByteArray();
-
-        pinData.encrypt(json, password);
-        return pinData;
+        return PinData.fromMnemonic(pinIdentifier, mnemonic, password);
     }
 
     public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {

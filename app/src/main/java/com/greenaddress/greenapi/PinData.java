@@ -4,53 +4,72 @@ import android.util.Base64;
 import com.blockstream.libwally.Wally;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PinData {
     public final String mPinIdentifier;
-    public byte[] mSalt;
-    public byte[] mEncryptedData;
-    public byte[] mSeed;
-    public String mMnemonic;
+    public final byte[] mSalt;
+    public final byte[] mEncryptedData;
+    public final byte[] mSeed;
+    public final String mMnemonic;
 
-    public PinData(final String pinIdentifier, final String encryptedData, final byte[] password) {
+    private PinData(final String pinIdentifier, final byte[] salt, final byte[] encryptedData,
+                    final byte[] seed, final String mnemonic) {
         mPinIdentifier = pinIdentifier;
-        final String[] split = encryptedData.split(";");
-        mSalt = split[0].getBytes(); // Note: Not decoded from base64!
-        mEncryptedData = Base64.decode(split[1], Base64.NO_WRAP);
+        mSalt = salt;
+        mEncryptedData = encryptedData;
+        mSeed = seed;
+        mMnemonic = mnemonic;
+    }
 
-        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, mSalt, 0, 2048);
+    public static PinData fromEncrypted(final String pinIdentifier, final String encrypted, final byte[] password) {
+
+        final String[] split = encrypted.split(";");
+        final byte[] salt = split[0].getBytes(); // Note: Not decoded from base64!
+        final byte[] encryptedData = Base64.decode(split[1], Base64.NO_WRAP);
+
+        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, salt, 0, 2048);
         final byte[] key = Arrays.copyOf(hash, 32);
 
-        final byte[] decrypted = CryptoHelper.decrypt_aes_cbc(mEncryptedData, key);
+        final byte[] decrypted = CryptoHelper.decrypt_aes_cbc(encryptedData, key);
         final Map<String, String> json;
         try {
             json = new MappingJsonFactory().getCodec().readValue(new String(decrypted), Map.class);
         } catch (final java.io.IOException e) {
-            // Can only happen if the app is coded incorrectly, will be
-            // caught when attempting to use the seed/mnemonic.
-            return;
+            // Can only happen if the app is coded incorrectly
+            throw new RuntimeException(e);
         }
-        mSeed = Wally.hex_to_bytes(json.get("seed"));
-        mMnemonic = json.get("mnemonic");
+        final byte[] seed = Wally.hex_to_bytes(json.get("seed"));
+        final String mnemonic = json.get("mnemonic");
+
+        return new PinData(pinIdentifier, salt, encryptedData, seed, mnemonic);
     }
 
-    public PinData(final String pinIdentifier) {
-        mPinIdentifier = pinIdentifier;
-        mSalt = null;
-        mEncryptedData = null;
-        mSeed = null;
-        mMnemonic = null;
-    }
+    public static PinData fromMnemonic(final String pinIdentifier, final String mnemonic, final byte[] password) {
 
-    public void encrypt(final byte[] json, final byte[] password) {
+        final byte[] salt = Base64.encode(CryptoHelper.randomBytes(16), Base64.NO_WRAP);
+        final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonic);
 
-        mSalt = Base64.encode(CryptoHelper.randomBytes(16), Base64.NO_WRAP);
+        final Map<String, String> out = new HashMap<>();
+        out.put("mnemonic", mnemonic);
+        out.put("seed", Wally.hex_from_bytes(seed));
 
-        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, mSalt, 0, 2048);
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        try {
+            new MappingJsonFactory().getCodec().writeValue(b, out);
+        } catch (final IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        final byte[] json = b.toByteArray();
+
+        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, salt, 0, 2048);
         final byte[] key = Arrays.copyOf(hash, 32);
 
-        mEncryptedData = CryptoHelper.encrypt_aes_cbc(json, key);
+        final byte[] encryptedData = CryptoHelper.encrypt_aes_cbc(json, key);
+        return new PinData(pinIdentifier, salt, encryptedData, seed, mnemonic);
     }
 }
