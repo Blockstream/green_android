@@ -14,24 +14,11 @@ public class PinData {
     public byte[] mSeed;
     public String mMnemonic;
 
-    public PinData(final String pinIdentifier, final String encryptedData) {
+    public PinData(final String pinIdentifier, final String encryptedData, final byte[] password) {
         mPinIdentifier = pinIdentifier;
         final String[] split = encryptedData.split(";");
         mSalt = split[0].getBytes(); // Note: Not decoded from base64!
         mEncryptedData = Base64.decode(split[1], Base64.NO_WRAP);
-        mSeed = null;
-        mMnemonic = null;
-    }
-
-    public PinData(final String pinIdentifier) {
-        mPinIdentifier = pinIdentifier;
-        mSalt = null;
-        mEncryptedData = null;
-        mSeed = null;
-        mMnemonic = null;
-    }
-
-    public void decrypt(final byte[] password) {
 
         final byte[] hash = Wally.pbkdf2_hmac_sha512(password, mSalt, 0, 2048);
         final byte[] key = Arrays.copyOf(hash, 32);
@@ -47,6 +34,14 @@ public class PinData {
         }
         mSeed = Wally.hex_to_bytes(json.get("seed"));
         mMnemonic = json.get("mnemonic");
+    }
+
+    public PinData(final String pinIdentifier) {
+        mPinIdentifier = pinIdentifier;
+        mSalt = null;
+        mEncryptedData = null;
+        mSeed = null;
+        mMnemonic = null;
     }
 
     public void encrypt(final byte[] json, final byte[] password) {

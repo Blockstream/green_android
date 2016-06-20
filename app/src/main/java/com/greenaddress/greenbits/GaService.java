@@ -477,15 +477,16 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> pinLogin(final String pin) {
-        final PinData pinData = new PinData(cfg("pin").getString("ident", null),
-                                            cfg("pin").getString("encrypted", null));
         try {
-            pinData.decrypt(mClient.getPinPassword(pinData.mPinIdentifier, pin));
+            final String pinIdentifier = cfg("pin").getString("ident", null);
+            final byte[] password = mClient.getPinPassword(pinIdentifier, pin);
+            final PinData pinData;
+            pinData = new PinData(pinIdentifier, cfg("pin").getString("encrypted", null), password);
+            final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
+            return login(new SWWallet(master), pinData.mMnemonic);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
-        return login(new SWWallet(master), pinData.mMnemonic);
     }
 
     private void preparePrivData(final Map<String, Object> privateData) {
