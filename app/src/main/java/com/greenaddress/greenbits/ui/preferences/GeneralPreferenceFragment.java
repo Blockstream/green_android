@@ -66,9 +66,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             findPreference("reset_pin").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    final Intent pinSaveActivity = new Intent(getActivity(), PinSaveActivity.class);
-                    pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", mnemonic);
-                    startActivityForResult(pinSaveActivity, PINSAVE);
+                    final Intent savePin = PinSaveActivity.createIntent(getActivity(), mnemonic);
+                    startActivityForResult(savePin, PINSAVE);
                     return false;
                 }
             });

@@ -171,9 +171,8 @@ public class MnemonicActivity extends GaActivity {
             @Override
             public void onSuccess(final LoginData result) {
                 if (getCallingActivity() == null) {
-                    final Intent pinSaveActivity = new Intent(MnemonicActivity.this, PinSaveActivity.class);
-                    pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", service.getMnemonics());
-                    startActivityForResult(pinSaveActivity, PINSAVE);
+                    final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, service.getMnemonics());
+                    startActivityForResult(savePin, PINSAVE);
                 } else {
                     setResult(RESULT_OK);
                     MnemonicActivity.this.finish();

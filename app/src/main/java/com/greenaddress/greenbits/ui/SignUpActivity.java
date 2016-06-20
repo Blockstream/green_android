@@ -151,12 +151,10 @@ public class SignUpActivity extends GaActivity {
                                 }
                             });
 
-                            final Intent pinSaveActivity = new Intent(SignUpActivity.this, PinSaveActivity.class);
-
-                            pinSaveActivity.putExtra("com.greenaddress.greenbits.NewPinMnemonic", service.getMnemonics());
                             service.resetSignUp();
                             onSignUp = null;
-                            startActivityForResult(pinSaveActivity, PINSAVE);
+                            final Intent savePin = PinSaveActivity.createIntent(SignUpActivity.this, service.getMnemonics());
+                            startActivityForResult(savePin, PINSAVE);
                         }
 
                         @Override

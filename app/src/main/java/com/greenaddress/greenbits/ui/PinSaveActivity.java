@@ -27,11 +27,18 @@ import com.google.common.util.concurrent.Futures;
 public class PinSaveActivity extends GaActivity {
 
     private static final int ACTIVITY_REQUEST_CODE = 1;
+    private static final String NEW_PIN_MNEMONIC = "com.greenaddress.greenbits.NewPinMnemonic";
 
     private CheckBox mNativeAuthCB;
     private EditText mPinText;
     private Button mSkipButton;
     private CircularProgressButton mSaveButton;
+
+    static public Intent createIntent(Context ctx, final String mnemonic) {
+        final Intent intent = new Intent(ctx, PinSaveActivity.class);
+        intent.putExtra(NEW_PIN_MNEMONIC, mnemonic);
+        return intent;
+    }
 
     private void setPin(final String pin) {
         final GaService service = mService;
@@ -40,9 +47,10 @@ public class PinSaveActivity extends GaActivity {
             shortToast(R.string.err_pin_save_wrong_length);
             return;
         }
+
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mPinText.getWindowToken(), 0);
-        final String mnemonic = getIntent().getStringExtra("com.greenaddress.greenbits.NewPinMnemonic");
+        final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
 
         mSaveButton.setIndeterminateProgressMode(true);
         mSaveButton.setProgress(50);
