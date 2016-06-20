@@ -35,7 +35,12 @@ public class TwoFactorActivity extends GaActivity {
     protected void onCreateWithService(Bundle savedInstanceState) {
 
         final GaService service = mService;
-        final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
+
+        if (service.getTwoFacConfig() == null) {
+            finish();
+            return;
+        }
+
         twoFacType = getIntent().getStringExtra("method");
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
@@ -49,9 +54,6 @@ public class TwoFactorActivity extends GaActivity {
         }
         setTitle(new Formatter().format(getTitle().toString(), twoFacTypeName).toString());
 
-        if (twoFacConfig == null) {
-            finish();
-        }
         if (enabledTwoFacNames.size() > 1) {
             setContentView(R.layout.activity_two_factor_1_choose);
             final Button continueButton = (Button) findViewById(R.id.continueButton);
