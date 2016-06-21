@@ -182,7 +182,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                             bd.setFilterBitmap(false);
                             imageView.setImageDrawable(bd);
 
-                            receiveAddress.setText(String.format("%s\n%s\n%s", result.data.substring(0, 12), result.data.substring(12, 24), result.data.substring(24)));
+                            final String qrData = result.getData();
+                            receiveAddress.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
                             setting_qrcode = false;
 
 
@@ -334,11 +335,11 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         // as you specify a parent activity in AndroidManifest.xml.
         final int id = item.getItemId();
         if (id == R.id.action_share) {
-            if (address != null && !address.data.isEmpty()) {
+            if (address != null && !address.getData().isEmpty()) {
                 //SHARE intent
                 final Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, BitcoinURI.convertToBitcoinURI(Address.fromBase58(Network.NETWORK, address.data), null, null, null));
+                sendIntent.putExtra(Intent.EXTRA_TEXT, BitcoinURI.convertToBitcoinURI(Address.fromBase58(Network.NETWORK, address.getData()), null, null, null));
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
             }
