@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.zxing.WriterException;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.QrBitmap;
 
@@ -177,7 +178,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                             copyIcon.setVisibility(View.VISIBLE);
                             copyText.setVisibility(View.VISIBLE);
                             stopNewAddressAnimation(rootView);
-                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
                             bd.setFilterBitmap(false);
                             imageView.setImageDrawable(bd);
 
@@ -206,7 +207,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                                 qrDialog.setContentView(inflatedLayout);
                                             }
                                             qrDialog.show();
-                                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.qrcode);
+                                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
                                             bd.setFilterBitmap(false);
                                             qrcodeInDialog.setImageDrawable(bd);
                                         }

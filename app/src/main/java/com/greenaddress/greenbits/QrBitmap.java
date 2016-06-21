@@ -11,10 +11,7 @@ import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 
-import java.util.concurrent.Callable;
-
-
-public class QrBitmap implements Callable<QrBitmap>, Parcelable {
+public class QrBitmap implements Parcelable {
     public static final Parcelable.Creator<QrBitmap> CREATOR
             = new Parcelable.Creator<QrBitmap>() {
         public QrBitmap createFromParcel(final Parcel in) {
@@ -27,17 +24,18 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
     };
     public final String data;
     private final int background_color;
-    public Bitmap qrcode;
+    private Bitmap qrcode;
 
     private QrBitmap(final Parcel in) {
         data = in.readString();
         background_color = in.readInt();
-        qrcode = in.readParcelable(getClass().getClassLoader());
+        qrcode = null;
     }
 
     public QrBitmap(final String data, final int background_color) {
         this.data = data;
         this.background_color = background_color;
+        qrcode = null;
     }
 
     private static Bitmap toBitmap(final QRCode code, final int background_color) {
@@ -54,17 +52,22 @@ public class QrBitmap implements Callable<QrBitmap>, Parcelable {
         return bmp;
     }
 
-    public QrBitmap call() throws WriterException {
-        QRCode code = Encoder.encode(data, ErrorCorrectionLevel.M);
-        this.qrcode = toBitmap(code, background_color);
-        return this;
+    public Bitmap getQRCode() {
+        if (this.qrcode == null) {
+            try {
+                QRCode code = Encoder.encode(data, ErrorCorrectionLevel.M);
+                this.qrcode = toBitmap(code, background_color);
+            } catch (WriterException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return this.qrcode;
     }
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(data);
         dest.writeInt(background_color);
-        dest.writeParcelable(qrcode, 0);
     }
 
     @Override

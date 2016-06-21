@@ -225,13 +225,10 @@ public class TwoFactorActivity extends GaActivity {
         progressBar.setMax(numSteps);
 
         final String gauth_url = (String) service.getTwoFacConfig().get("gauth_url");
-        try {
-            final BitmapDrawable bd = new BitmapDrawable(getResources(), new QrBitmap(gauth_url, 0).call().qrcode);
-            bd.setFilterBitmap(false);
-            imageView.setImageDrawable(bd);
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
+        final BitmapDrawable bd = new BitmapDrawable(getResources(), new QrBitmap(gauth_url, 0).getQRCode());
+        bd.setFilterBitmap(false);
+        imageView.setImageDrawable(bd);
+
         final String gauthCode = gauth_url.split("=")[1];
         textCode.setText(getString(R.string.twoFacGauthTextCode, gauthCode));
 

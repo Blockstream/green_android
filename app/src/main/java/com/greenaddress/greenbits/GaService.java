@@ -108,7 +108,7 @@ public class GaService extends Service {
     final private GaObservable verifiedTxObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
     private String mSignUpMnemonics = null;
-    private QrBitmap mSignUpQRCode = null;
+    private Bitmap mSignUpQRCode = null;
     private int mCurrentBlock = 0;
 
     private boolean mAutoReconnect = true;
@@ -578,9 +578,9 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {
-        final AsyncFunction<Map, String> verifyAddress = new AsyncFunction<Map, String>() {
+        final AsyncFunction<Map, QrBitmap> verifyAddress = new AsyncFunction<Map, QrBitmap>() {
             @Override
-            public ListenableFuture<String> apply(final Map input) throws Exception {
+            public ListenableFuture<QrBitmap> apply(final Map input) throws Exception {
                 final Integer pointer = ((Integer) input.get("pointer"));
                 final byte[] script = Wally.hex_to_bytes((String) input.get("script"));
                 final byte[] scriptHash;
@@ -592,26 +592,18 @@ public class GaService extends Service {
                 }
                 return Futures.transform(verifyP2SHSpendableBy(
                         ScriptBuilder.createP2SHOutputScript(scriptHash),
-                        subAccount, pointer), new Function<Boolean, String>() {
+                        subAccount, pointer), new Function<Boolean, QrBitmap>() {
                     @Override
-                    public String apply(final Boolean input) {
-                        if (input) {
-                            return Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
-                        } else {
+                    public QrBitmap apply(final Boolean isValid) {
+                        if (!isValid)
                             throw new IllegalArgumentException("Address validation failed");
-                        }
+                        final String address = Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
+                        return new QrBitmap(address, 0 /* transparent background */);
                     }
                 });
             }
         };
-        final AsyncFunction<String, QrBitmap> addressToQr = new AsyncFunction<String, QrBitmap>() {
-            @Override
-            public ListenableFuture<QrBitmap> apply(final String input) {
-                return es.submit(new QrBitmap(input, 0 /* transparent background */));
-            }
-        };
-        final ListenableFuture<String> verifiedAddress = Futures.transform(getNewAddress(subAccount), verifyAddress, es);
-        return Futures.transform(verifiedAddress, addressToQr, es);
+        return Futures.transform(getNewAddress(subAccount), verifyAddress, es);
     }
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {
@@ -655,12 +647,8 @@ public class GaService extends Service {
 
     public Bitmap getSignUpQRCode() {
         if (mSignUpQRCode == null)
-            try {
-                mSignUpQRCode = new QrBitmap(getSignUpMnemonic(), Color.WHITE).call();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        return mSignUpQRCode.qrcode;
+            mSignUpQRCode = new QrBitmap(getSignUpMnemonic(), Color.WHITE).getQRCode();
+       return mSignUpQRCode;
     }
 
     public void addBalanceObserver(final int subAccount, final Observer o) {
