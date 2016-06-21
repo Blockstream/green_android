@@ -121,15 +121,15 @@ public class MnemonicActivity extends GaActivity {
             return;
         }
 
-        final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mMnemonicText.getWindowToken(), 0);
-
         if (!validateMnemonic(mMnemonicText.getText().toString())) {
-            MnemonicActivity.this.toast(R.string.err_mnemonic_activity_invalid_mnemonic);
+            toast(R.string.err_mnemonic_activity_invalid_mnemonic);
             return;
         }
 
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mMnemonicText.getWindowToken(), 0);
+
+        final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
         okButton.setIndeterminateProgressMode(true);
         okButton.setEnabled(false);
         okButton.setProgress(50);
@@ -232,7 +232,7 @@ public class MnemonicActivity extends GaActivity {
 
         mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {
             public void onClick(final View v) {
-                MnemonicActivity.this.login();
+                login();
             }
         });
         mapClick(R.id.mnemonicScanIcon, new View.OnClickListener() {
