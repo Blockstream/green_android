@@ -9,7 +9,6 @@ import android.preference.Preference;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -53,8 +52,9 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
         final Map<?, ?> config = mService.getTwoFacConfig();
         if (config == null || config.isEmpty()) {
-            Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
-            getActivity().finish();
+            final GaActivity activity = (GaActivity) getActivity();
+            activity.toast(R.string.err_send_not_connected_will_resume);
+            activity.finish();
             return;
         }
         setupCheckbox(config, "Email");
@@ -117,14 +117,20 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                           Futures.addCallback(mService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                               @Override
                               public void onSuccess(final Boolean result) {
-                                  final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
-                                  c.setChecked(false);
+                                  getActivity().runOnUiThread(new Runnable() {
+                                      @Override
+                                      public void run()
+                                      {
+                                          final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
+                                          c.setChecked(false);
+                                      }
+                                  });
                               }
 
                               @Override
                               public void onFailure(final Throwable t) {
                                   t.printStackTrace();
-                                  Toast.makeText(TwoFactorPreferenceFragment.this.getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+                                  ((GaActivity) getActivity()).toast(t.getMessage());
                               }
                           });
                       }
