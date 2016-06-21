@@ -161,10 +161,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            final Activity activity = getActivity();
-                            if (activity == null)
-                                return;
-
                             copyIcon.setVisibility(View.VISIBLE);
                             copyText.setVisibility(View.VISIBLE);
                             stopNewAddressAnimation(rootView);
@@ -176,33 +172,26 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                             receiveAddress.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
                             setting_qrcode = false;
 
-
                             imageView.setOnClickListener(new View.OnClickListener() {
                                 public void onClick(final View view) {
+                                    if (qrDialog == null) {
+                                        final DisplayMetrics displaymetrics = new DisplayMetrics();
+                                        activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                                        final int height = displaymetrics.heightPixels;
+                                        final int width = displaymetrics.widthPixels;
+                                        Log.i(TAG, height + "x" + width);
+                                        final int min = (int) (Math.min(height, width) * 0.8);
+                                        final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
+                                        qrcodeInDialog.setLayoutParams(layoutParams);
 
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (qrDialog == null) {
-                                                final DisplayMetrics displaymetrics = new DisplayMetrics();
-                                                getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                                                final int height = displaymetrics.heightPixels;
-                                                final int width = displaymetrics.widthPixels;
-                                                Log.i(TAG, height + "x" + width);
-                                                final int min = (int) (Math.min(height, width) * 0.8);
-                                                final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
-                                                qrcodeInDialog.setLayoutParams(layoutParams);
-
-                                                qrDialog = new Dialog(getActivity());
-                                                qrDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                                qrDialog.setContentView(inflatedLayout);
-                                            }
-                                            qrDialog.show();
-                                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
-                                            bd.setFilterBitmap(false);
-                                            qrcodeInDialog.setImageDrawable(bd);
-                                        }
-                                    });
+                                        qrDialog = new Dialog(activity);
+                                        qrDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                        qrDialog.setContentView(inflatedLayout);
+                                    }
+                                    qrDialog.show();
+                                    final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
+                                    bd.setFilterBitmap(false);
+                                    qrcodeInDialog.setImageDrawable(bd);
                                 }
                             });
                         }
