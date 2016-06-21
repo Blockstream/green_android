@@ -59,6 +59,7 @@ public class MnemonicActivity extends GaActivity {
     private static final int CAMERA_PERMISSION = 150;
 
     private Set<String> mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
+    private String[] mWordsArray = new String[Wally.BIP39_WORDLIST_LEN];
 
     private EditText mMnemonicText;
 
@@ -99,8 +100,7 @@ public class MnemonicActivity extends GaActivity {
             for (final String w : mnemonic.split(" ")) {
                 if (!mWords.contains(w)) {
                     setWord(w);
-                    showErrorCorrection(MnemonicHelper.getClosestWord(mWords.toArray(new String[Wally.BIP39_WORDLIST_LEN]), w), w);
-
+                    showErrorCorrection(MnemonicHelper.getClosestWord(mWordsArray, w), w);
                     break;
                 }
             }
@@ -222,6 +222,12 @@ public class MnemonicActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.i(TAG, getIntent().getType() + "" + getIntent());
 
+        final Object en = Wally.bip39_get_wordlist("en");
+        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i) {
+            mWordsArray[i] = Wally.bip39_get_word(en, i);
+            mWords.add(mWordsArray[i]);
+        }
+
         mMnemonicText = (EditText) findViewById(R.id.mnemonicText);
 
         mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {
@@ -283,13 +289,9 @@ public class MnemonicActivity extends GaActivity {
                     // check for equality
                     // not last or last but postponed by a space
                     // otherwise just that it's the start of a word
-                    if (MnemonicHelper.isInvalidWord(
-                            mWords.toArray(new String[Wally.BIP39_WORDLIST_LEN]), word,
-                            !(i == lastElement) || endsWithSpace)) {
-                        if (spans != null && word.equals(spans.word)) {
-                            return;
-                        }
-                        setWord(word);
+                    if (MnemonicHelper.isInvalidWord(mWordsArray, word, !(i == lastElement) || endsWithSpace)) {
+                        if (spans == null || !word.equals(spans.word))
+                            setWord(word);
                         return;
                     }
                 }
@@ -308,9 +310,6 @@ public class MnemonicActivity extends GaActivity {
                                       final int before, final int count) {
             }
         });
-        final Object en = Wally.bip39_get_wordlist("en");
-        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i)
-            mWords.add(Wally.bip39_get_word(en, i));
 
         NFCIntentMnemonicLogin();
     }
@@ -383,7 +382,7 @@ public class MnemonicActivity extends GaActivity {
         mMnemonicText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(final View view, final MotionEvent motionEvent) {
-                showErrorCorrection(MnemonicHelper.getClosestWord(mWords.toArray(new String[Wally.BIP39_WORDLIST_LEN]), badWord), badWord);
+                showErrorCorrection(MnemonicHelper.getClosestWord(mWordsArray, badWord), badWord);
                 return false;
             }
         });
