@@ -5,7 +5,6 @@ import com.greenaddress.greenbits.GreenAddressApplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -116,7 +115,7 @@ public abstract class GaActivity extends AppCompatActivity {
     // Utility methods
 
     void finishOnUiThread() {
-        (new Handler()).post(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 GaActivity.this.finish();
