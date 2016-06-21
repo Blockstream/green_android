@@ -288,7 +288,7 @@ public class SPV {
                 blockChain.addWallet(fakeWallet);
                 blockChain.removeWallet(fakeWallet);  // can be removed, because the call above
                 // should rollback already
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // FIXME: Seems this often happens, at least on initial startup
                 Log.w(TAG, "fakeWallet exception: " + e.toString());
             }
@@ -431,7 +431,7 @@ public class SPV {
         if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
             try {
                 peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
-            } catch (UnknownHostException e) {
+            } catch (final UnknownHostException e) {
                 e.printStackTrace();
             }
             peerGroup.setMaxConnections(1);

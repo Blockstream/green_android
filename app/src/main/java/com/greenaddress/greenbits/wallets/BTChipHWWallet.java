@@ -136,7 +136,7 @@ public class BTChipHWWallet extends HWWallet {
                                 "0", ptx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */)));
             }
             return sigs;
-        } catch (BTChipException | IOException e) {
+        } catch (final BTChipException | IOException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -145,7 +145,7 @@ public class BTChipHWWallet extends HWWallet {
     public DeterministicKey getPubKey() {
         try {
             return internalGetPubKey();
-        } catch (BTChipException e) {
+        } catch (final BTChipException e) {
             return null;
         }
     }
@@ -164,7 +164,7 @@ public class BTChipHWWallet extends HWWallet {
             dongle.signMessagePrepare(getPath(), message.getBytes());
             final BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
             return ECKey.ECDSASignature.decodeFromDER(sig.getSignature());
-        } catch (BTChipException e) {
+        } catch (final BTChipException e) {
             throw new RuntimeException(e.getMessage());
         }
     }

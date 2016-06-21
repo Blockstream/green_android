@@ -146,7 +146,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         });
                         try {
                             return ret.get();
-                        } catch (InterruptedException | ExecutionException e) {
+                        } catch (final InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                             return "";
                         }
@@ -418,13 +418,13 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 transport.exchange(DUMMY_COMMAND).get();
                 Log.d(TAG, "NFC transport checked");
             }
-            catch(Exception e) {
+            catch (final Exception e) {
                 Log.d(TAG, "Tag was lost", e);
                 if (card != null) {
                     try {
                         transport.close();
                     }
-                    catch(final Exception e1) {
+                    catch (final Exception e1) {
                     }
                     transport = null;
                 }

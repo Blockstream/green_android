@@ -175,18 +175,18 @@ public class FirstScreenActivity extends GaActivity {
                     // FIXME reopen transport - more stable
                     // (Should not be necessary anyway with the new transport API)
                     /*
-            		try {
-            			byte[] nvm = transport.requestNVM().get();
-            			transport.close();
-            			transport.setNVM(nvm);
-            			transport.init();
-            		}
-            		catch(Exception e) {
-            			Log.d(TAG, "Transport reinitialization failed", e);
-            			tuiCall = false;
-            			return null;
-            		}
-            		*/
+                    try {
+                        byte[] nvm = transport.requestNVM().get();
+                        transport.close();
+                        transport.setNVM(nvm);
+                        transport.init();
+                    }
+                    catch(final Exception e) {
+                        Log.d(TAG, "Transport reinitialization failed", e);
+                        tuiCall = false;
+                        return null;
+                    }
+                    */
                 }
                 // Verify the PIN
                 try {
@@ -216,7 +216,7 @@ public class FirstScreenActivity extends GaActivity {
                         loginPublicKey = dongle.getWalletPublicKey("18241'");
                         Log.d(TAG, "TEE derived MPK " + Dump.dump(masterPublicKey.getPublicKey()) + " " + Dump.dump(masterPublicKey.getChainCode()));
                         Log.d(TAG, "TEE derived LPK " + Dump.dump(loginPublicKey.getPublicKey()) + " " + Dump.dump(loginPublicKey.getChainCode()));
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         FirstScreenActivity.this.toast("Trustlet login failed");
                         tuiCall = false;
                         return null;

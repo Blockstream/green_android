@@ -89,7 +89,7 @@ final class PRNGFixes {
                         "Unexpected number of bytes read from Linux PRNG: "
                                 + bytesRead);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new SecurityException("Failed to seed OpenSSL PRNG", e);
         }
     }
@@ -133,7 +133,7 @@ final class PRNGFixes {
         SecureRandom rng2;
         try {
             rng2 = SecureRandom.getInstance("SHA1PRNG");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new SecurityException("SHA1PRNG not available", e);
         }
         if (!LinuxPRNGSecureRandomProvider.class.equals(
@@ -175,7 +175,7 @@ final class PRNGFixes {
         // since API Level 9 (Gingerbread, Android 2.3).
         try {
             return (String) Build.class.getField("SERIAL").get(null);
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
             return null;
         }
     }
@@ -192,7 +192,7 @@ final class PRNGFixes {
         }
         try {
             return result.toString().getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException("UTF-8 encoding not supported");
         }
     }
@@ -319,7 +319,7 @@ final class PRNGFixes {
                     try {
                         sUrandomIn = new DataInputStream(
                                 new FileInputStream(URANDOM_FILE));
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         throw new SecurityException("Failed to open "
                                 + URANDOM_FILE + " for reading", e);
                     }

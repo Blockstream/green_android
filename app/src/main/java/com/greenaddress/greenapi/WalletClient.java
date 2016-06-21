@@ -544,7 +544,7 @@ public class WalletClient {
             public LoginData call() {
                 try {
                     return loginImpl(signingWallet, deviceId);
-                } catch (Throwable t) {
+                } catch (final Throwable t) {
                     throw Throwables.propagate(t);
                 }
             }

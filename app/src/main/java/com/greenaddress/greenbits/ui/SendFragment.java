@@ -291,7 +291,7 @@ public class SendFragment extends SubaccountFragment {
             BitcoinURI bitcoinUri = null;
             try {
                 bitcoinUri = new BitcoinURI(uri.toString());
-            } catch (BitcoinURIParseException e) {
+            } catch (final BitcoinURIParseException e) {
                 gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
             }
             if (bitcoinUri != null) {

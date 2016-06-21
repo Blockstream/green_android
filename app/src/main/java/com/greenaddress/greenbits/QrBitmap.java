@@ -32,7 +32,7 @@ public class QrBitmap implements Parcelable {
             final ByteMatrix matrix;
             try {
                 matrix = Encoder.encode(mData, ErrorCorrectionLevel.M).getMatrix();
-            } catch (WriterException e) {
+            } catch (final WriterException e) {
                 throw new RuntimeException(e);
             }
             final int height = matrix.getHeight() * SCALE;
