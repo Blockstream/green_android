@@ -636,6 +636,8 @@ public class GaService extends Service {
 
     public void resetSignUp() {
         mSignUpMnemonics = null;
+        if (mSignUpQRCode != null)
+            mSignUpQRCode.recycle();
         mSignUpQRCode = null;
     }
 
