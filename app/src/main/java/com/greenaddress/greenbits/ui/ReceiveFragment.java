@@ -69,12 +69,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             if (isVisibleToUser) {
                 hideKeyboard();
                 // get a new address:
-                if (address == null && !setting_qrcode) {
-                    setting_qrcode = true;
-                    final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
-                    Futures.addCallback(ft, onAddress, getGAService().es);
-                    startNewAddressAnimation(rootView);
-                }
+                if (address == null && !setting_qrcode)
+                    getNewAddress(rootView);
             } else { // !isVisibleToUser
                 // hide to avoid showing old address when swiping
                 final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
@@ -94,11 +90,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public void onResume() {
         super.onResume();
-        if (onAddress != null && address == null && !setting_qrcode) {
-            setting_qrcode = true;
-            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
-            Futures.addCallback(ft, onAddress, getGAService().es);
-        }
+        if (onAddress != null && address == null && !setting_qrcode)
+            getNewAddress(null);
     }
 
     @Override
@@ -255,12 +248,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                 gaActivity.toast(R.string.err_send_not_connected_will_resume);
                                 return;
                             }
-                            setting_qrcode = true;
-
-                            startNewAddressAnimation(rootView);
-
-                            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
-                            Futures.addCallback(ft, onAddress, getGAService().es);
+                            getNewAddress(rootView);
                         }
                     }
                 }
@@ -269,7 +257,17 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         return rootView;
     }
 
-    private void stopNewAddressAnimation(final View rootView) {
+    private void getNewAddress(final View rootView) {
+        setting_qrcode = true;
+
+        if (rootView != null)
+            startNewAddressAnimation(rootView);
+
+        Futures.addCallback(getGAService().getNewAddressBitmap(curSubaccount),
+                            onAddress, getGAService().es);
+     }
+
+     private void stopNewAddressAnimation(final View rootView) {
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         newAddressIcon.clearAnimation();
         newAddressIcon.setText(Html.fromHtml("&#xf067;"));
@@ -321,10 +319,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             startNewAddressAnimation(rootView);
         }
         if (!setting_qrcode) {
-            setting_qrcode = true;
-
-            final ListenableFuture<QrBitmap> ft = getGAService().getNewAddressBitmap(curSubaccount);
-            Futures.addCallback(ft, onAddress, getGAService().es);
+            getNewAddress(null);
         }
     }
 
