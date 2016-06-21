@@ -52,30 +52,31 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class MnemonicActivity extends GaActivity {
 
+    private static final String TAG = MnemonicActivity.class.getSimpleName();
+
     private static final int PINSAVE = 1337;
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
 
+    private Set<String> mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
 
-    private static final String TAG = MnemonicActivity.class.getSimpleName();
-
-    private Set<String> words = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
+    private EditText mMnemonicText;
 
     private void showErrorCorrection(final String closeWord, final String badWord) {
         if (closeWord == null)
             return;
-        final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
+
         final Snackbar snackbar = Snackbar
-                .make(mnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
+                .make(mMnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
                 .setAction("Correct", new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        mnemonicText.setOnTouchListener(null);
-                        final String mnemonicStr = mnemonicText.getText().toString()
+                        mMnemonicText.setOnTouchListener(null);
+                        final String mnemonicStr = mMnemonicText.getText().toString()
                                 .replace(badWord, closeWord);
-                        mnemonicText.setText(mnemonicStr);
+                        mMnemonicText.setText(mnemonicStr);
                         final int textLength = mnemonicStr.length();
-                        mnemonicText.setSelection(textLength, textLength);
+                        mMnemonicText.setSelection(textLength, textLength);
 
                         final int words = mnemonicStr.split(" ").length;
                         if (validateMnemonic(mnemonicStr) && (words == 24 || words == 27))
@@ -96,9 +97,9 @@ public class MnemonicActivity extends GaActivity {
             return true;
         } catch (final IllegalArgumentException e) {
             for (final String w : mnemonic.split(" ")) {
-                if (!words.contains(w)) {
+                if (!mWords.contains(w)) {
                     setWord(w);
-                    showErrorCorrection(MnemonicHelper.getClosestWord(words.toArray(new String[Wally.BIP39_WORDLIST_LEN]), w), w);
+                    showErrorCorrection(MnemonicHelper.getClosestWord(mWords.toArray(new String[Wally.BIP39_WORDLIST_LEN]), w), w);
 
                     break;
                 }
@@ -119,12 +120,12 @@ public class MnemonicActivity extends GaActivity {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
-        final EditText edit = (EditText) findViewById(R.id.mnemonicText);
+
         final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(mMnemonicText.getWindowToken(), 0);
 
-        if (!validateMnemonic(edit.getText().toString())) {
+        if (!validateMnemonic(mMnemonicText.getText().toString())) {
             MnemonicActivity.this.toast(R.string.err_mnemonic_activity_invalid_mnemonic);
             return;
         }
@@ -136,7 +137,7 @@ public class MnemonicActivity extends GaActivity {
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
-                final String mnemonics = edit.getText().toString().trim();
+                final String mnemonics = mMnemonicText.getText().toString().trim();
                 if (mnemonics.split(" ").length != 27)
                     return service.login(mnemonics);
 
@@ -221,6 +222,8 @@ public class MnemonicActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.i(TAG, getIntent().getType() + "" + getIntent());
 
+        mMnemonicText = (EditText) findViewById(R.id.mnemonicText);
+
         mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {
             public void onClick(final View v) {
                 MnemonicActivity.this.login();
@@ -241,9 +244,8 @@ public class MnemonicActivity extends GaActivity {
                                     }
         );
 
-        final EditText edit = (EditText) findViewById(R.id.mnemonicText);
 
-        edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mMnemonicText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
                 if(event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode())
@@ -256,7 +258,7 @@ public class MnemonicActivity extends GaActivity {
             }
         });
 
-        edit.addTextChangedListener(new TextWatcher() {
+        mMnemonicText.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(final Editable s) {
                 final String mnemonic = s.toString();
                 if (mnemonic.startsWith(" ")) {
@@ -282,7 +284,7 @@ public class MnemonicActivity extends GaActivity {
                     // not last or last but postponed by a space
                     // otherwise just that it's the start of a word
                     if (MnemonicHelper.isInvalidWord(
-                            words.toArray(new String[Wally.BIP39_WORDLIST_LEN]), word,
+                            mWords.toArray(new String[Wally.BIP39_WORDLIST_LEN]), word,
                             !(i == lastElement) || endsWithSpace)) {
                         if (spans != null && word.equals(spans.word)) {
                             return;
@@ -291,7 +293,7 @@ public class MnemonicActivity extends GaActivity {
                         return;
                     }
                 }
-                edit.setOnTouchListener(null);
+                mMnemonicText.setOnTouchListener(null);
                 final Spans copy = spans;
                 spans = null;
                 if (copy != null) {
@@ -308,7 +310,7 @@ public class MnemonicActivity extends GaActivity {
         });
         final Object en = Wally.bip39_get_wordlist("en");
         for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i)
-            words.add(Wally.bip39_get_word(en, i));
+            mWords.add(Wally.bip39_get_word(en, i));
 
         NFCIntentMnemonicLogin();
     }
@@ -343,13 +345,12 @@ public class MnemonicActivity extends GaActivity {
         if (intent == null || !NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()))
             return;
 
-        final EditText edit = (EditText) findViewById(R.id.mnemonicText);
-        edit.setTextColor(Color.WHITE);
+        mMnemonicText.setTextColor(Color.WHITE);
 
         if (intent.getType().equals("x-gait/mnc")) {
             // Unencrypted NFC
             String mnemonics = CryptoHelper.mnemonic_from_bytes(getNFCPayload(intent));
-            edit.setText(mnemonics);
+            mMnemonicText.setText(mnemonics);
             loginOnUiThread(mnemonics);
 
         } else if (intent.getType().equals("x-ga/en")) {
@@ -358,7 +359,7 @@ public class MnemonicActivity extends GaActivity {
                 @Override
                 public void onSuccess(final String passphrase) {
                     String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(getNFCPayload(intent), passphrase);
-                    edit.setText(mnemonics);
+                    mMnemonicText.setText(mnemonics);
                     loginOnUiThread(mnemonics);
                 }
             });
@@ -379,17 +380,15 @@ public class MnemonicActivity extends GaActivity {
 
     private void setWord(final String badWord) {
 
-        final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
-
-        mnemonicText.setOnTouchListener(new View.OnTouchListener() {
+        mMnemonicText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(final View view, final MotionEvent motionEvent) {
-                showErrorCorrection(MnemonicHelper.getClosestWord(words.toArray(new String[Wally.BIP39_WORDLIST_LEN]), badWord), badWord);
+                showErrorCorrection(MnemonicHelper.getClosestWord(mWords.toArray(new String[Wally.BIP39_WORDLIST_LEN]), badWord), badWord);
                 return false;
             }
         });
 
-        final Spannable spannable = mnemonicText.getText();
+        final Spannable spannable = mMnemonicText.getText();
         final String mnemonics = spannable.toString();
 
         int start = 0;
@@ -433,9 +432,8 @@ public class MnemonicActivity extends GaActivity {
                 finish();
                 break;
             case QRSCANNER:
-                final EditText edit = (EditText) findViewById(R.id.mnemonicText);
                 if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
-                    edit.setText(data.getStringExtra("com.greenaddress.greenbits.QrText"));
+                    mMnemonicText.setText(data.getStringExtra("com.greenaddress.greenbits.QrText"));
                     login();
                 }
                 break;
