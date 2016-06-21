@@ -55,6 +55,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         if (config == null || config.isEmpty()) {
             Toast.makeText(getActivity(), getString(R.string.err_send_not_connected_will_resume), Toast.LENGTH_LONG).show();
             getActivity().finish();
+            return;
         }
         setupCheckbox(config, "Email");
         setupCheckbox(config, "Gauth");
