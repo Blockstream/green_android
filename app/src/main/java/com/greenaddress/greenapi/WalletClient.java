@@ -277,9 +277,8 @@ public class WalletClient {
     }
 
     private static byte[] mnemonicToPath(final String mnemonic) {
-        final byte[] bytes = mnemonic.getBytes();
-        final byte[] hashed = Wally.pbkdf2_hmac_sha512(bytes, GA_PATH.getBytes(), 0, 2048);
-        return Wally.hmac_sha512(GA_KEY.getBytes(), hashed);
+        final byte[] hash = CryptoHelper.pbkdf2_hmac_sha512(mnemonic.getBytes(), GA_PATH.getBytes());
+        return Wally.hmac_sha512(GA_KEY.getBytes(), hash);
     }
 
     private static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {

@@ -32,10 +32,7 @@ public class PinData {
         final byte[] salt = split[0].getBytes(); // Note: Not decoded from base64!
         final byte[] encryptedData = Base64.decode(split[1], Base64.NO_WRAP);
 
-        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, salt, 0, 2048);
-        final byte[] key = Arrays.copyOf(hash, 32);
-
-        final byte[] decrypted = CryptoHelper.decrypt_aes_cbc(encryptedData, key);
+        final byte[] decrypted = CryptoHelper.decrypt_aes_cbc(encryptedData, password, salt);
         final Map<String, String> json;
         try {
             json = new MappingJsonFactory().getCodec().readValue(new String(decrypted), Map.class);
@@ -66,10 +63,7 @@ public class PinData {
         }
         final byte[] json = b.toByteArray();
 
-        final byte[] hash = Wally.pbkdf2_hmac_sha512(password, salt, 0, 2048);
-        final byte[] key = Arrays.copyOf(hash, 32);
-
-        final byte[] encryptedData = CryptoHelper.encrypt_aes_cbc(json, key);
+        final byte[] encryptedData = CryptoHelper.encrypt_aes_cbc(json, password, salt);
         return new PinData(pinIdentifier, salt, encryptedData, seed, mnemonic);
     }
 }
