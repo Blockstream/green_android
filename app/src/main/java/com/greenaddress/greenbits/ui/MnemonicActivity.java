@@ -62,7 +62,8 @@ public class MnemonicActivity extends GaActivity {
     private Set<String> words = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
 
     private void showErrorCorrection(final String closeWord, final String badWord) {
-        if (closeWord == null) return;
+        if (closeWord == null)
+            return;
         final EditText mnemonicText = (EditText) findViewById(R.id.mnemonicText);
         final Snackbar snackbar = Snackbar
                 .make(mnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
@@ -77,9 +78,8 @@ public class MnemonicActivity extends GaActivity {
                         mnemonicText.setSelection(textLength, textLength);
 
                         final int words = mnemonicStr.split(" ").length;
-                        if (validateMnemonic(mnemonicStr) && (words == 24 || words == 27)) {
+                        if (validateMnemonic(mnemonicStr) && (words == 24 || words == 27))
                             login();
-                        }
                     }
                 });
 
@@ -121,47 +121,33 @@ public class MnemonicActivity extends GaActivity {
         }
         final EditText edit = (EditText) findViewById(R.id.mnemonicText);
         final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
-            }
-        });
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
+
         if (!validateMnemonic(edit.getText().toString())) {
             MnemonicActivity.this.toast(R.string.err_mnemonic_activity_invalid_mnemonic);
             return;
         }
 
         okButton.setIndeterminateProgressMode(true);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //This larger function is somehow being called in another
-                //non-main thread when cold-start NFC mnemonics login is
-                // prompted, causing this to fail.
-                okButton.setEnabled(false);
-                okButton.setProgress(50);
-            }
-        });
+        okButton.setEnabled(false);
+        okButton.setProgress(50);
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
                 final String mnemonics = edit.getText().toString().trim();
-                if (mnemonics.split(" ").length == 27) {
-                    // encrypted mnemonic
-                    return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
-                        @Override
-                        public ListenableFuture<LoginData> apply(final String passphrase) {
-                            return service.login(
-                                    CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
+                if (mnemonics.split(" ").length != 27)
+                    return service.login(mnemonics);
 
-                        }
-                    });
-                } else {
-                    return service.login(edit.getText().toString().trim());
-                }
+                // Encrypted mnemonic
+                return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
+                    @Override
+                    public ListenableFuture<LoginData> apply(final String passphrase) {
+                        return service.login(CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
+
+                    }
+                });
             }
         };
 
@@ -260,9 +246,8 @@ public class MnemonicActivity extends GaActivity {
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                if(event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode()) {
+                if(event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode())
                     return true;
-                }
                 if (actionId == EditorInfo.IME_ACTION_GO) {
                     login();
                     return true;
@@ -328,53 +313,55 @@ public class MnemonicActivity extends GaActivity {
         NFCIntentMnemonicLogin();
     }
 
-    private void NFCIntentMnemonicLogin() {
+    private void loginOnUiThread(final String mnemonics) {
         final GaService service = mService;
 
-        final EditText edit = (EditText) findViewById(R.id.mnemonicText);
+        if (service.onConnected == null || mnemonics.equals(service.getMnemonics()))
+            return;
 
-        final Intent intent = getIntent();
-        if (intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            edit.setTextColor(Color.WHITE);
-            if (intent.getType().equals("x-gait/mnc")) {
-                // not encrypted nfc
-                final Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-
-                final String mnemonics = CryptoHelper.mnemonic_from_bytes(
-                        ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload());
-
-                edit.setText(mnemonics);
-
-                if (service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
-                    //Auxillary Future to make sure we are connected.
-                    CB.after(service.onConnected, new CB.NoOp<Void>() {
-                        @Override
-                        public void onSuccess(final Void result) {
-                            login();
-                        }
-                    });
-                }
-            } else if (intent.getType().equals("x-ga/en")) {
-                // encrypted nfc
-                final Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                final byte[] array = ((NdefMessage) rawMessages[0]).getRecords()[0].getPayload();
-                CB.after(askForPassphrase(), new CB.NoOp<String>() {
+        CB.after(service.onConnected, new CB.NoOp<Void>() {
+            @Override
+            public void onSuccess(final Void result) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onSuccess(final String passphrase) {
-                        final String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(array, passphrase);
-                        edit.setText(mnemonics);
-                        if (service.onConnected != null && !mnemonics.equals(service.getMnemonics())) {
-                            CB.after(service.onConnected, new CB.NoOp<Void>() {
-                                @Override
-                                public void onSuccess(final Void result) {
-                                    login();
-                                }
-                            });
-                        }
+                    public void run() {
+                        login();
                     }
                 });
             }
+        });
+    }
 
+    private byte[] getNFCPayload(final Intent intent) {
+        final Parcelable[] extra = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        return ((NdefMessage) extra[0]).getRecords()[0].getPayload();
+    }
+
+     private void NFCIntentMnemonicLogin() {
+        final Intent intent = getIntent();
+
+        if (intent == null || !NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()))
+            return;
+
+        final EditText edit = (EditText) findViewById(R.id.mnemonicText);
+        edit.setTextColor(Color.WHITE);
+
+        if (intent.getType().equals("x-gait/mnc")) {
+            // Unencrypted NFC
+            String mnemonics = CryptoHelper.mnemonic_from_bytes(getNFCPayload(intent));
+            edit.setText(mnemonics);
+            loginOnUiThread(mnemonics);
+
+        } else if (intent.getType().equals("x-ga/en")) {
+            // Encrypted NFC
+            CB.after(askForPassphrase(), new CB.NoOp<String>() {
+                @Override
+                public void onSuccess(final String passphrase) {
+                    String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(getNFCPayload(intent), passphrase);
+                    edit.setText(mnemonics);
+                    loginOnUiThread(mnemonics);
+                }
+            });
         }
     }
 
@@ -487,3 +474,4 @@ public class MnemonicActivity extends GaActivity {
         }
     }
 }
+
