@@ -157,62 +157,64 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 address = result;
 
                 final Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            copyIcon.setVisibility(View.VISIBLE);
-                            copyText.setVisibility(View.VISIBLE);
-                            stopNewAddressAnimation(rootView);
-                            final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
-                            bd.setFilterBitmap(false);
-                            imageView.setImageDrawable(bd);
+                if (activity == null)
+                    return;
 
-                            final String qrData = result.getData();
-                            receiveAddress.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
-                            setting_qrcode = false;
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        copyIcon.setVisibility(View.VISIBLE);
+                        copyText.setVisibility(View.VISIBLE);
+                        stopNewAddressAnimation(rootView);
+                        final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
+                        bd.setFilterBitmap(false);
+                        imageView.setImageDrawable(bd);
 
-                            imageView.setOnClickListener(new View.OnClickListener() {
-                                public void onClick(final View view) {
-                                    if (qrDialog == null) {
-                                        final DisplayMetrics displaymetrics = new DisplayMetrics();
-                                        activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                                        final int height = displaymetrics.heightPixels;
-                                        final int width = displaymetrics.widthPixels;
-                                        Log.i(TAG, height + "x" + width);
-                                        final int min = (int) (Math.min(height, width) * 0.8);
-                                        final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
-                                        qrcodeInDialog.setLayoutParams(layoutParams);
+                        final String qrData = result.getData();
+                        receiveAddress.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
+                        setting_qrcode = false;
 
-                                        qrDialog = new Dialog(activity);
-                                        qrDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                        qrDialog.setContentView(inflatedLayout);
-                                    }
-                                    qrDialog.show();
-                                    final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
-                                    bd.setFilterBitmap(false);
-                                    qrcodeInDialog.setImageDrawable(bd);
+                        imageView.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(final View view) {
+                                if (qrDialog == null) {
+                                    final DisplayMetrics displaymetrics = new DisplayMetrics();
+                                    activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                                    final int height = displaymetrics.heightPixels;
+                                    final int width = displaymetrics.widthPixels;
+                                    Log.i(TAG, height + "x" + width);
+                                    final int min = (int) (Math.min(height, width) * 0.8);
+                                    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
+                                    qrcodeInDialog.setLayoutParams(layoutParams);
+
+                                    qrDialog = new Dialog(activity);
+                                    qrDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                    qrDialog.setContentView(inflatedLayout);
                                 }
-                            });
-                        }
-                    });
-                }
+                                qrDialog.show();
+                                final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
+                                bd.setFilterBitmap(false);
+                                qrcodeInDialog.setImageDrawable(bd);
+                            }
+                        });
+                    }
+                });
             }
 
             @Override
             public void onFailure(final Throwable t) {
                 t.printStackTrace();
                 final Activity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            stopNewAddressAnimation(rootView);
-                            copyIcon.setVisibility(View.VISIBLE);
-                            copyText.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+                if (activity == null)
+                    return;
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        stopNewAddressAnimation(rootView);
+                        copyIcon.setVisibility(View.VISIBLE);
+                        copyText.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         };
 
@@ -260,7 +262,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private void startNewAddressAnimation(final View rootView) {
-        if (getActivity() == null) return;
+        if (getActivity() == null)
+            return;
 
         final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         newAddressIcon.setText(Html.fromHtml("&#xf021;"));
