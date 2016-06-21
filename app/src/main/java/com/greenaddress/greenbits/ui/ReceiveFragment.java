@@ -152,8 +152,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         final ImageView qrcodeInDialog = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
         onAddress = new FutureCallback<QrBitmap>() {
-
-            private void onUiThread(final QrBitmap result) {
+            @Override
+            public void onSuccess(final QrBitmap result) {
                 address = result;
 
                 final Activity activity = getActivity();
@@ -161,12 +161,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
-
                             final Activity activity = getActivity();
-                            if (activity == null) {
+                            if (activity == null)
                                 return;
-                            }
 
                             copyIcon.setVisibility(View.VISIBLE);
                             copyText.setVisibility(View.VISIBLE);
@@ -211,10 +208,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         }
                     });
                 }
-            }
-            @Override
-            public void onSuccess(final QrBitmap result) {
-                onUiThread(result);
             }
 
             @Override
