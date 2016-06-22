@@ -66,8 +66,6 @@ public class HDKey {
         return this;
     }
 
-    private static byte[] h(final String hex) { return Wally.hex_to_bytes(hex); }
-
     //
     // Temporary methods for use while converting from DeterministicKey
     public static DeterministicKey deriveChildKey(final DeterministicKey parent, final Integer childNum) {
@@ -150,5 +148,5 @@ public class HDKey {
     }
     // FIXME: Remove
     private static String h(final byte[] bytes) { return Wally.hex_from_bytes(bytes); }
-
+    private static byte[] h(final String hex) { return Wally.hex_to_bytes(hex); }
 }
