@@ -14,6 +14,8 @@ import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PUBLIC;
 import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PUBLIC;
 import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PRIVATE;
 import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PRIVATE;
+import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PUBLIC;
+import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PRIVATE;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -54,13 +56,13 @@ public class HDKey {
     public final int getChildNumber() { return Wally.bip32_key_get_child_num(mImpl); }
 
     public HDKey derive(final Integer childNum) {
-        return derive(childNum, getPrivateKey() != null ? VER_PRIVATE : VER_PUBLIC);
+        return derive(childNum, getPrivateKey() != null ? BIP32_FLAG_KEY_PRIVATE : BIP32_FLAG_KEY_PUBLIC);
     }
-    public HDKey derivePublic(final Integer childNum) { return derive(childNum, VER_PUBLIC); }
-    public HDKey derivePrivate(final Integer childNum) { return derive(childNum, VER_PRIVATE); }
+    public HDKey derivePublic(final Integer childNum) { return derive(childNum, BIP32_FLAG_KEY_PUBLIC); }
+    public HDKey derivePrivate(final Integer childNum) { return derive(childNum, BIP32_FLAG_KEY_PRIVATE); }
 
-    private HDKey derive(final Integer childNum, int version) {
-        Object derived = Wally.bip32_key_from_parent(mImpl, childNum, version);
+    private HDKey derive(final Integer childNum, int flags) {
+        Object derived = Wally.bip32_key_from_parent(mImpl, childNum, flags);
         close();
         mImpl = derived;
         return this;
@@ -133,15 +135,22 @@ public class HDKey {
 
         // Reconcile against wally
         HDKey hd = new HDKey(h(Network.depositChainCode), h(Network.depositPubkey));
-        hd.derivePublic(subAccount == 0 ? 1 : 3);
-        for (int i : mGaUserPath)
-            hd.derivePublic(i);
+        final int[] path = new int[mGaUserPath.length + (subAccount == 0 ? 1 : 2)];
+        path[0] = subAccount == 0 ? 1 : 3;
+        System.arraycopy(mGaUserPath, 0, path, 1, mGaUserPath.length);
         if (subAccount != 0)
-            hd.derivePublic(subAccount);
+            path[mGaUserPath.length + 1] = subAccount;
 
-        if (!h(k.getChainCode()).equals(h(hd.getChainCode())))
+        Object derived = Wally.bip32_key_from_parent_path(hd.mImpl, path, BIP32_FLAG_KEY_PUBLIC);
+
+        final byte[] pub_key = Wally.bip32_key_get_pub_key(derived);
+        final byte[] chaincode = Wally.bip32_key_get_chain_code(derived);
+        Wally.bip32_key_free(derived);
+        hd.close();
+
+        if (!h(k.getChainCode()).equals(h(chaincode)))
             throw new RuntimeException("Chain code mismatch");
-        if (!h(k.getPubKey()).equals(h(hd.getPublicKey())))
+        if (!h(k.getPubKey()).equals(h(pub_key)))
             throw new RuntimeException("Public key mismatch");
 
         return k;
