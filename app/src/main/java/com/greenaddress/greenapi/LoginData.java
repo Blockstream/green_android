@@ -28,7 +28,10 @@ public class LoginData {
         final String cfg = (String) map.get("appearance");
         this.userConfig = new MappingJsonFactory().getCodec().readValue(cfg, Map.class);
         this.subAccounts = (ArrayList) map.get("subaccounts");
-        setGaUserPath(Wally.hex_to_bytes((String) map.get("gait_path")));
+        gaUserPath = null;
+        final String path = (String) map.get("gait_path");
+        if (path != null)
+            setGaUserPath(Wally.hex_to_bytes(path));
         this.receivingId = (String) map.get("receiving_id");
         if (map.get("segwit") == null) {
             this.segwit = false;
