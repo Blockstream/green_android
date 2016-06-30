@@ -488,8 +488,10 @@ public class GaService extends Service {
     public ListenableFuture<LoginData> pinLogin(final String pin) throws Exception {
         final String pinIdentifier = cfg("pin").getString("ident", null);
         final byte[] password = mClient.getPinPassword(pinIdentifier, pin);
-        final String encrypted = cfg("pin").getString("encrypted", null);
-        final PinData pinData = PinData.fromEncrypted(pinIdentifier, encrypted, password);
+        final String[] split = cfg("pin").getString("encrypted", null).split(";");
+        final byte[] salt = split[0].getBytes();
+        final byte[] encryptedData = Base64.decode(split[1], Base64.NO_WRAP);
+        final PinData pinData = PinData.fromEncrypted(pinIdentifier, salt, encryptedData, password);
         final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
         return login(new SWWallet(master), pinData.mMnemonic);
     }
