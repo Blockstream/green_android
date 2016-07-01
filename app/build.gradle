@@ -105,6 +105,10 @@ android {
             applicationId "com.greenaddress.greenbits_android_wallet.segwittest"
             versionName String.format("%s_segwittest", defaultConfig.getProperty("versionName"))
         }
+        alpha {
+            applicationId "com.greenaddress.greenbits_android_wallet.alpha"
+            versionName String.format("%s_alpha", defaultConfig.getProperty("versionName"))
+        }
     }
 
     sourceSets {
@@ -123,7 +127,11 @@ android {
         segwittest {
             res { srcDir 'src/btctestnet/res' }
         }
-    }
+        alpha {
+            java { srcDir 'src/alpha/java' }
+            assets { srcDir 'src/alpha/assets' }
+        }
+     }
 
     dexOptions {
         maxProcessCount 2

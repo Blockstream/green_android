@@ -99,9 +99,9 @@ public class SWWallet extends ISigningWallet {
             challenge = Arrays.copyOfRange(challenge, 1, 33);
 
         // Compute and return the challenge signatures
-        final ECKey.ECDSASignature signature;
-        signature = ECKey.fromPrivate(key.getPrivKey()).sign(Sha256Hash.wrap(challenge));
-        return new String[]{signature.r.toString(), signature.s.toString()};
+        final ECKey.ECDSASignature sig;
+        sig = ECKey.fromPrivate(key.getPrivKey()).sign(Sha256Hash.wrap(challenge));
+        return new String[]{ sig.r.toString(), sig.s.toString() };
     }
 
     public DeterministicKey getMasterKey() {
