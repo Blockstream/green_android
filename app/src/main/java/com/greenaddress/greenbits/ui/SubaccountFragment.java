@@ -42,12 +42,15 @@ public abstract class SubaccountFragment extends GAFragment {
     }
 
     protected void hideKeyboard() {
-        final InputMethodManager imm = (InputMethodManager)
-                getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (getActivity() == null)
+            return;
+
+        final InputMethodManager imm;
+        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
         final View v = getActivity().getCurrentFocus();
-        if (v != null) {
+        if (v != null)
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
     }
 
     protected Observer makeUiObserver(final Runnable r) {
