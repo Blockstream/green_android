@@ -366,16 +366,19 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                              new CB.Toast<Boolean>(caller) {
                                         @Override
                                         public void onSuccess(final Boolean isSpendable) {
-                                            if (isSpendable) {
-                                                final List<TransactionSignature> signatures = new ArrayList<>();
-                                                final int size = tx.getInputs().size();
-                                                for (int i = 0; i < size; ++i) {
-                                                    signatures.add(tx.calculateSignature(i, key, Wally.hex_to_bytes(scripts.get(i)), Transaction.SigHash.ALL, false));
-                                                }
-                                                CB.after(service.sendTransaction(signatures),
-                                                         new CB.Toast<String>(caller) { });
-                                            } else
+                                            if (!isSpendable) {
                                                 caller.toast(R.string.err_tabbed_sweep_failed);
+                                                return;
+                                            }
+                                            final List<byte[]> signatures = new ArrayList<>();
+                                            for (int i = 0; i < tx.getInputs().size(); ++i) {
+                                                final byte[] script = Wally.hex_to_bytes(scripts.get(i));
+                                                final TransactionSignature sig;
+                                                sig = tx.calculateSignature(i, key, script, Transaction.SigHash.ALL, false);
+                                                signatures.add(sig.encodeToBitcoin());
+                                            }
+                                            CB.after(service.sendTransaction(signatures),
+                                                     new CB.Toast<String>(caller) { });
                                         }
                                     });
                                 }

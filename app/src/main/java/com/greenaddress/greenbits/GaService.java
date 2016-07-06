@@ -513,7 +513,7 @@ public class GaService extends Service {
             privateData.put("rbf_optin", rbf_optin);
     }
 
-    public ListenableFuture<List<String>> signTransaction(final PreparedTransaction ptx) {
+    public ListenableFuture<List<byte[]>> signTransaction(final PreparedTransaction ptx) {
         return mClient.signTransaction(mClient.getSigningWallet(), ptx);
     }
 
@@ -528,10 +528,10 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
-        return Futures.transform(signTransaction(ptx), new AsyncFunction<List<String>, String>() {
+        return Futures.transform(signTransaction(ptx), new AsyncFunction<List<byte[]>, String>() {
             @Override
-            public ListenableFuture<String> apply(final List<String> input) throws Exception {
-                return mClient.sendTransaction(input, twoFacData);
+            public ListenableFuture<String> apply(final List<byte[]> txSigs) throws Exception {
+                return mClient.sendTransaction(txSigs, twoFacData);
             }
         }, es);
     }
@@ -556,12 +556,8 @@ public class GaService extends Service {
         return mClient.changeMemo(txHash, memo);
     }
 
-    public ListenableFuture<String> sendTransaction(final List<TransactionSignature> signatures) {
-        final List<String> signaturesStrings = new LinkedList<>();
-        for (final TransactionSignature sig : signatures) {
-            signaturesStrings.add(Wally.hex_from_bytes(sig.encodeToBitcoin()));
-        }
-        return mClient.sendTransaction(signaturesStrings, null);
+    public ListenableFuture<String> sendTransaction(final List<byte[]> txSigs) {
+        return mClient.sendTransaction(txSigs, null);
     }
 
     private static byte[] getSegWitScript(final byte[] input) {

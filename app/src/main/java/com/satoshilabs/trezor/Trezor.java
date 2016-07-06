@@ -17,6 +17,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.greenaddress.greenapi.HDKey;
+import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
@@ -538,7 +539,7 @@ public class Trezor {
         return versionInts;
     }
 
-    public List<ECKey.ECDSASignature> MessageSignTx(final PreparedTransaction ptx, final String coinName) {
+    public List<byte[]> MessageSignTx(final PreparedTransaction ptx, final String coinName) {
         curTx = ptx;
         curSubaccount = ptx.subAccount;
 
@@ -617,7 +618,7 @@ public class Trezor {
             curSignatures.add("");
         }
 
-        final LinkedList<ECKey.ECDSASignature> signaturesList = new LinkedList<>();
+        final LinkedList<byte[]> signaturesList = new LinkedList<>();
         final String[] signatures = _get(this.send(
                 SignTx.newBuilder().
                         setInputsCount(ptx.decoded.getInputs().size()).
@@ -625,7 +626,7 @@ public class Trezor {
                         setCoinName(coinName).
                         build())).split(";");
         for (final String sig: signatures) {
-            signaturesList.add(ECKey.ECDSASignature.decodeFromDER(Hex.decode(sig)));
+            signaturesList.add(ISigningWallet.getTxSignature(ECKey.ECDSASignature.decodeFromDER(Hex.decode(sig))));
         }
         return signaturesList;
     }

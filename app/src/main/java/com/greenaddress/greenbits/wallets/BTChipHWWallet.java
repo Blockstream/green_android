@@ -94,8 +94,8 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx) {
-        final List<ECKey.ECDSASignature> sigs = new LinkedList<>();
+    public List<byte[]> signTransaction(final PreparedTransaction ptx) {
+        final List<byte[]> sigs = new LinkedList<>();
 
         try {
             final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[ptx.decoded.getInputs().size()];
@@ -131,9 +131,10 @@ public class BTChipHWWallet extends HWWallet {
                 for (final TransactionOutput out : ptx.decoded.getOutputs())
                     out.bitcoinSerialize(stream);
                 dongle.finalizeInputFull(stream.toByteArray());
-                sigs.add(ECKey.ECDSASignature.decodeFromDER(
-                        dongle.untrustedHashSign(outToPath(ptx.prev_outputs.get(i)),
-                                "0", ptx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */)));
+                final ECKey.ECDSASignature sig;
+                sig = ECKey.ECDSASignature.decodeFromDER(dongle.untrustedHashSign(outToPath(ptx.prev_outputs.get(i)),
+                                                         "0", ptx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
+                sigs.add(ISigningWallet.getTxSignature(sig));
             }
             return sigs;
         } catch (final BTChipException | IOException e) {

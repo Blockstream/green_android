@@ -46,11 +46,11 @@ public class SWWallet extends ISigningWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(PreparedTransaction ptx) {
+    public List<byte[]> signTransaction(PreparedTransaction ptx) {
         final Transaction tx = ptx.decoded;
         final List<TransactionInput> txInputs = tx.getInputs();
         final List<Output> prevOuts = ptx.prev_outputs;
-        final List<ECKey.ECDSASignature> sigs = new ArrayList<>(txInputs.size());
+        final List<byte[]> sigs = new ArrayList<>(txInputs.size());
 
         for (int i = 0; i < txInputs.size(); ++i) {
             final Output prevOut = prevOuts.get(i);
@@ -63,7 +63,8 @@ public class SWWallet extends ISigningWallet {
                 hash = tx.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
 
             final SWWallet key = getMyKey(prevOut.subAccount).derive(prevOut.branch).derive(prevOut.pointer);
-            sigs.add(ECKey.fromPrivate(key.mRootKey.getPrivKey()).sign(Sha256Hash.wrap(hash.getBytes())));
+            final ECKey eckey = ECKey.fromPrivate(key.mRootKey.getPrivKey());
+            sigs.add(getTxSignature(eckey.sign(Sha256Hash.wrap(hash.getBytes()))));
         }
         return sigs;
     }

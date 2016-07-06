@@ -624,20 +624,20 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            final ListenableFuture<List<String>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<String>>() {
+            final ListenableFuture<List<byte[]>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<byte[]>>() {
                 @Override
-                public ListenableFuture<List<String>> apply(Void input) throws Exception {
+                public ListenableFuture<List<byte[]>> apply(Void input) throws Exception {
                     return getGAService().signTransaction(ptx);
                 }
             });
 
-            CB.after(signed, new CB.Toast<List<String>>(gaActivity) {
+            CB.after(signed, new CB.Toast<List<byte[]>>(gaActivity) {
                 @Override
-                public void onSuccess(final List<String> signatures) {
+                public void onSuccess(final List<byte[]> signatures) {
                     final GaService service = getGAService();
 
                     int i = 0;
-                    for (final String sig : signatures) {
+                    for (final byte[] sig : signatures) {
                         final TransactionInput input = tx.getInput(i++);
                         input.setScriptSig(
                                 new ScriptBuilder().addChunk(
@@ -648,7 +648,7 @@ public class TransactionActivity extends GaActivity {
                                         new byte[] {0}
                                 ).data(
                                         // our sig:
-                                        Wally.hex_to_bytes(sig)
+                                        sig
                                 ).addChunk(
                                         // the original outscript
                                         input.getScriptSig().getChunks().get(3)

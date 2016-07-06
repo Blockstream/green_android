@@ -50,7 +50,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public List<ECKey.ECDSASignature> signTransaction(final PreparedTransaction ptx) {
+    public List<byte[]> signTransaction(final PreparedTransaction ptx) {
         final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
         return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet");
     }
