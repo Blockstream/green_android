@@ -629,7 +629,10 @@ public class WalletClient {
     }
 
     public ListenableFuture<String> sendTransaction(final List<byte[]> signatures, final Object TfaData) {
-        return simpleCall("vault.send_tx", null, signatures, TfaData);
+        final List<String> args = new ArrayList<>();
+        for (final byte[] s : signatures)
+            args.add(Wally.hex_from_bytes(s));
+        return simpleCall("vault.send_tx", null, args, TfaData);
     }
 
     public ListenableFuture<Map<String, Object>> sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
