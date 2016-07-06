@@ -1,6 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources>
-  <string name="title_activity_mnemonic">Acceder (segwit testnet)</string>
-  <string name="title_activity_sign_up">Registrarse (segwit testnet)</string>
-  <string name="noBalanceSecondLine">Donde <a href="https://segwit.greenaddress.it/faucet">obtener</a> algunas monedas de prueba</string>
-</resources>

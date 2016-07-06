@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name" translatable="false">GreenBits (segwit testnet)</string>
-    <string name="title_activity_main" translatable="false">GreenBits (segwit testnet)</string>
-    <string name="title_activity_first_screen" translatable="false">GreenBits (segwit testnet)</string>
-    <string name="title_activity_mnemonic">Log in (segwit testnet)</string>
-    <string name="title_activity_sign_up">Sign up (segwit testnet)</string>
-    <string name="noBalanceSecondLine">Where to <a href="https://segwit.greenaddress.it/faucet">get</a> some segwit test coins</string>
-</resources>
