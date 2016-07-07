@@ -16,3 +16,5 @@ app/manifest-merger-*-report.txt
 *.apk
 app/src/main/jniLibs/*
 *.so
+GreenBits.iml
+app/app.iml
