@@ -94,8 +94,8 @@ public class WalletClient {
         /**
          * Fired on call failure.
          *
-         * @param errorUri   The URI or CURIE of the error that occurred.
-         * @param errorDesc  A human readable description of the error.
+         * @param uri   The URI or CURIE of the error that occurred.
+         * @param err  A human readable description of the error.
          */
         void onError(String uri, String err);
     }
