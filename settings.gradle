@@ -1,1 +1,1 @@
-include ':app', ':app:material-dialogs:core', ':app:PasswordEditText:library', ':bitcoinj:core', ':jawampa:jawampa-core', ':jawampa:jawampa-netty'
+include ':app', ':bitcoinj:core', ':jawampa:jawampa-core', ':jawampa:jawampa-netty'
