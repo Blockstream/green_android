@@ -1,8 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.KeyStoreAES;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +20,8 @@ import android.widget.TextView;
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.KeyStoreAES;
 
 public class PinSaveActivity extends GaActivity {
 
@@ -104,8 +103,6 @@ public class PinSaveActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-
-        final GaService service = mService;
 
         mPinText = (EditText) findViewById(R.id.pinSaveText);
         mNativeAuthCB = (CheckBox) findViewById(R.id.useNativeAuthentication);
