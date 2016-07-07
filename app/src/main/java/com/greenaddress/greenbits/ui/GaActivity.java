@@ -104,7 +104,7 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     /** Override to provide the main view id */
-    protected int getMainViewId() { return INVALID_RESOURCE_ID; };
+    protected int getMainViewId() { return INVALID_RESOURCE_ID; }
 
     /** Override to provide onCreate/onResume/onPause processing.
       * When called, our service is guaranteed to be available. */
