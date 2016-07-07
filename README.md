@@ -11,27 +11,25 @@ You need to have correctly installed the following
 - "Android Support Repository" version 17 recommended
 - "Android NDK" version r11c recommended
 
-## Clone the repo and init submodules
+## Clone the repo
 
 `git clone https://github.com/greenaddress/GreenBits.git`
 
 `cd GreenBits`
 
-`git submodule update --init --recursive`
-
 ## How to build
 
 #### Cross-compile the native libraries:
 
-This step requires the environment variables ANDROID_NDK and JAVA_HOME being set correctly
+This step requires the environment variables ANDROID_NDK and JAVA_HOME to be set correctly
 
-
-`pushd app && ./prepare_fdroid.sh && popd`
+`cd app && ./prepare_fdroid.sh`
 
 #### Build the Android app
-Simply run `./gradlew build`
 
-This would build both MAINNET and TESTNET builds
+`./gradlew build`
+
+This will build both MAINNET and TESTNET builds
 
 For TESTNET only run `./gradlew assembleBtctestnetDebug`
 
