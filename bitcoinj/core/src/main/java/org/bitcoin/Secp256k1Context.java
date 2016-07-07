@@ -33,7 +33,7 @@ public class Secp256k1Context {
         boolean isEnabled = true;
         long contextRef = -1;
         try {
-            System.loadLibrary("secp256k1");
+            System.loadLibrary("wallycore");
             contextRef = secp256k1_init_context();
         } catch (UnsatisfiedLinkError e) {
             log.info(e.toString());

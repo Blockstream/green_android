@@ -72,9 +72,6 @@ function build() {
 }
 
 if [ -d libwally-core ]; then
-    pushd ../bitcoinj
-    git apply ../bitcoinj.patch || true
-    popd
     pushd libwally-core
     need_popd=yes
 fi
