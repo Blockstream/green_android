@@ -12,7 +12,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -225,7 +224,6 @@ public class MainFragment extends SubaccountFragment {
         final Activity activity = getActivity();
         final GaService service = getGAService();
         final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
-        final LinearLayout mainEmptyTransText = (LinearLayout) rootView.findViewById(R.id.mainEmptyTransText);
 
         if (mTxItems == null || newAdapter) {
             mTxItems = new ArrayList<>();
