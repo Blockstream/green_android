@@ -26,7 +26,7 @@ public abstract class HWWallet extends ISigningWallet {
 
         // Generate a path for the challenge.
         // We use "GA" + 0xB11E as the child path as this allows btchip to skip HID auth.
-        final HWWallet child = (HWWallet) this.derive(0x4741b11e); // 0x4741 = Ascii G << 8 + A
+        final HWWallet child = this.derive(0x4741b11e); // 0x4741 = Ascii G << 8 + A
 
         // Generate a message to sign from the challenge
         final String challenge = "greenaddress.it      login " + challengeString;
