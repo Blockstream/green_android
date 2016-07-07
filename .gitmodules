@@ -1,6 +1,3 @@
 [submodule "jawampa"]
 	path = jawampa
 	url = https://github.com/greenaddress/jawampa.git
-[submodule "libwally-core"]
-	path = app/libwally-core
-	url = https://github.com/jgriffiths/libwally-core.git
