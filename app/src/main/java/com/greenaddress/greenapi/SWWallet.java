@@ -8,7 +8,6 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
-import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.script.Script;
 

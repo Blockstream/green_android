@@ -1,7 +1,6 @@
 package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
-
 import com.google.common.collect.ImmutableList;
 
 import org.bitcoinj.core.ECKey;
@@ -10,15 +9,14 @@ import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 
-import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PUBLIC;
-import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PUBLIC;
-import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PRIVATE;
-import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PRIVATE;
-import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PUBLIC;
-import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PRIVATE;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PUBLIC;
+import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PRIVATE;
+import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PUBLIC;
+import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PRIVATE;
+import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PUBLIC;
 
 public class HDKey {
     private final static int VER_PUBLIC = isMain() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;

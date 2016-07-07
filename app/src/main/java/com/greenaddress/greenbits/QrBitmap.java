@@ -9,7 +9,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
-import com.google.zxing.qrcode.encoder.QRCode;
 
 public class QrBitmap implements Parcelable {
     private static final int SCALE = 4;

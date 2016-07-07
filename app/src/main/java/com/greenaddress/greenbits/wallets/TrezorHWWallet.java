@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
 import com.greenaddress.greenapi.HDKey;
-import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;

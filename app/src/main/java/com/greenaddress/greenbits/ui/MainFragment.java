@@ -1,12 +1,9 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -21,22 +18,18 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Monetary;
 import org.bitcoinj.utils.MonetaryFormat;
-import org.codehaus.jackson.map.MappingJsonFactory;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 
 public class MainFragment extends SubaccountFragment {

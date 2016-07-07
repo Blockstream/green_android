@@ -20,7 +20,6 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TwoFactorPreferenceFragment extends GAPreferenceFragment {

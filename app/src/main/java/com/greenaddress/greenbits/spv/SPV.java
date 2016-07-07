@@ -1,9 +1,6 @@
 package com.greenaddress.greenbits.spv;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -22,7 +19,6 @@ import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
 import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.core.FilteredBlock;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
@@ -32,12 +28,13 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutPoint;
-import org.bitcoinj.wallet.Wallet;
+import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.net.BlockingClientManager;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
+import org.bitcoinj.wallet.Wallet;
 
 import java.io.File;
 import java.io.IOException;

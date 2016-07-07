@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +34,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.satoshilabs.trezor.Trezor;

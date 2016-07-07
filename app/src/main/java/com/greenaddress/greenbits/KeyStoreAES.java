@@ -1,6 +1,4 @@
 package com.greenaddress.greenbits;
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenapi.CryptoHelper;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -13,6 +11,8 @@ import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Base64;
+
+import com.greenaddress.greenapi.CryptoHelper;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;

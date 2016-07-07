@@ -16,9 +16,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.zxing.WriterException;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 

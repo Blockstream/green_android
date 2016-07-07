@@ -1,12 +1,13 @@
 package com.greenaddress.greenapi;
 
 import android.util.Base64;
+
 import com.blockstream.libwally.Wally;
+
 import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

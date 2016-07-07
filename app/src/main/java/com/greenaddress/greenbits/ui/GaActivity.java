@@ -1,6 +1,4 @@
 package com.greenaddress.greenbits.ui;
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +15,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.GreenAddressApplication;
 
 import java.util.List;
 

@@ -27,8 +27,6 @@ import android.widget.TextView;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.zxing.WriterException;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.QrBitmap;
 

@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;

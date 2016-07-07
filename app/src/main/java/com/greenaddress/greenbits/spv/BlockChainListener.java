@@ -1,7 +1,5 @@
 package com.greenaddress.greenbits.spv;
 
-import com.greenaddress.greenbits.GaService;
-
 import org.bitcoinj.core.AbstractBlockChain;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;

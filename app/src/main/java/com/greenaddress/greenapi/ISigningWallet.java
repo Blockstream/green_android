@@ -4,7 +4,6 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.TransactionSignature;
-import com.blockstream.libwally.Wally;
 
 import java.util.List;
 

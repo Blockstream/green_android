@@ -1,7 +1,5 @@
 package com.greenaddress.greenapi;
 
-import java.util.List;
-
 public interface INotificationHandler {
     void onNewBlock(final int count);
 

@@ -1,8 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import com.blockstream.libwally.Wally;
-import org.bitcoinj.crypto.DeterministicKey;
-
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -27,9 +24,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.GAException;
-import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenapi.SWWallet;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
 
@@ -41,7 +36,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 

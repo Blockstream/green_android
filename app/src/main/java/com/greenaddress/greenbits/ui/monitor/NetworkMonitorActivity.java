@@ -11,9 +11,8 @@ import android.widget.TextView;
 
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.spv.SPV;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.Peer;

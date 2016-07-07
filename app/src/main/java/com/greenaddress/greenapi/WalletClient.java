@@ -1,6 +1,5 @@
 package com.greenaddress.greenapi;
 
-import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -18,20 +17,13 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.squareup.okhttp.OkHttpClient;
 
-import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.Utils;
-import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.TransactionSignature;
-import org.bitcoinj.script.Script;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
@@ -39,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
