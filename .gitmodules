@@ -1,7 +1,3 @@
-[submodule "bitcoinj"]
-	path = bitcoinj
-	url = https://github.com/greenaddress/bitcoinj.git
-	branch = release-alpha-v0.14-ga
 [submodule "jawampa"]
 	path = jawampa
 	url = https://github.com/greenaddress/jawampa.git
