@@ -53,6 +53,6 @@ public final class CB {
 
     /** A runnable that takes 1 argument */
     public interface Runnable1T<T> {
-        abstract public void run(final T arg);
+        void run(final T arg);
     }
 }
