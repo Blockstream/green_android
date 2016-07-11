@@ -21,7 +21,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
-        bindPreferenceSummaryToValue(findPreference("trusted_peer"));
+
+        mTrustedPeer = (EditTextPreference) findPreference("trusted_peer");
+        bindPreferenceSummaryToValue(mTrustedPeer);
 
         final Preference reset_spv = findPreference("reset_spv");
         reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -33,7 +35,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         });
 
         final CheckBoxPreference spvEnabled = (CheckBoxPreference) findPreference("spvEnabled");
-        mTrustedPeer = (EditTextPreference) findPreference("trusted_peer");
         final boolean enabled = mService.isSPVEnabled();
         mTrustedPeer.setEnabled(enabled);
         spvEnabled.setChecked(enabled);
