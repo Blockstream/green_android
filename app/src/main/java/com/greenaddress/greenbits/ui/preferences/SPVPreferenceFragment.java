@@ -14,7 +14,7 @@ import com.greenaddress.greenbits.ui.R;
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener {
 
-    private EditTextPreference trusted_peer;
+    private EditTextPreference mTrustedPeer;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -33,14 +33,14 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         });
 
         final CheckBoxPreference spvEnabled = (CheckBoxPreference) findPreference("spvEnabled");
-        trusted_peer = (EditTextPreference) getPreferenceManager().findPreference("trusted_peer");
+        mTrustedPeer = (EditTextPreference) getPreferenceManager().findPreference("trusted_peer");
         final boolean enabled = mService.isSPVEnabled();
-        trusted_peer.setEnabled(enabled);
+        mTrustedPeer.setEnabled(enabled);
         spvEnabled.setChecked(enabled);
         spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                trusted_peer.setEnabled((Boolean) newValue);
+                mTrustedPeer.setEnabled((Boolean) newValue);
 
                 new AsyncTask<Object, Object, Object>() {
                     @Override
@@ -56,12 +56,12 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         final String address = mService.getTrustedPeers();
 
         if (!address.isEmpty()) {
-            trusted_peer.setText(address);
-            trusted_peer.setSummary(address);
+            mTrustedPeer.setText(address);
+            mTrustedPeer.setSummary(address);
         } else {
-            trusted_peer.setSummary(R.string.trustedspvExample);
+            mTrustedPeer.setSummary(R.string.trustedspvExample);
         }
-        trusted_peer.setOnPreferenceChangeListener(this);
+        mTrustedPeer.setOnPreferenceChangeListener(this);
         getActivity().setResult(getActivity().RESULT_OK, null);
     }
 
@@ -127,9 +127,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
                 mService.setUserConfig("trusted_peer_addr", newString, true);
                 if (!newString.isEmpty())
-                    trusted_peer.setSummary(newString);
+                    mTrustedPeer.setSummary(newString);
                 else
-                    trusted_peer.setSummary(R.string.trustedspvExample);
+                    mTrustedPeer.setSummary(R.string.trustedspvExample);
 
                 new SPVAsync().execute();
             }
@@ -143,7 +143,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                                   new SPVAsync().execute();
                                   mService.setTrustedPeers(newString);
                                   mService.setUserConfig("trusted_peer_addr", newString, true);
-                                  trusted_peer.setSummary(newString);
+                                  mTrustedPeer.setSummary(newString);
                               }
                           }).build().show();
             }
