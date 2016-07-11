@@ -112,42 +112,43 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         try {
             final String newString = newValue.toString().trim().replaceAll("\\s","");
+
+            if (newString.isEmpty()) {
+                setTrustedPeers(newString);
+                return true;
+            }
+
             for (final String s: newString.split(","))
                 if (isBadAddress(s))
                     return true;
 
-            final String newLower = newString.toLowerCase();
+            if (newString.toLowerCase().contains(".onion")) {
 
-            if (newString.isEmpty() || newLower.contains(".onion")) {
-
-                final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-
-                if (currentapiVersion >= 23 && newLower.contains(".onion") &&
+                if (android.os.Build.VERSION.SDK_INT >= 23 &&
                     (mService.getProxyHost() == null || mService.getProxyPort() == null)) {
                     // Certain ciphers have been deprecated in API 23+, breaking Orchid
-                    // and HS connectivity.
-                    // but work with Orbot socks if set
+                    // and HS connectivity (Works with Orbot socks proxy if set)
                     GaActivity.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
                               .content(R.string.enterValidAddressTextTorDisabled).build().show();
                     return true;
                 }
+
                 setTrustedPeers(newString);
-            }
-            else {
-                GaActivity.popup(getActivity(), R.string.changingWarnOnionTitle)
-                          .content(R.string.changingWarnOnionText)
-                          .onPositive(new MaterialDialog.SingleButtonCallback() {
-                              @Override
-                              public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                                  setTrustedPeers(newString);
-                              }
-                          }).build().show();
+                return true;
             }
 
+            // Force the user to confirm that they want to use a non-Tor host
+            GaActivity.popup(getActivity(), R.string.changingWarnOnionTitle)
+                      .content(R.string.changingWarnOnionText)
+                      .onPositive(new MaterialDialog.SingleButtonCallback() {
+                          @Override
+                          public void onClick(final MaterialDialog dlg, final DialogAction which) {
+                              setTrustedPeers(newString);
+                          }
+                      }).build().show();
             return true;
         } catch (final Exception e) {
-            // not set
+            return false; // not set
         }
-        return false;
     }
 }
