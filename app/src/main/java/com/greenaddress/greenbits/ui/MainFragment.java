@@ -146,7 +146,7 @@ public class MainFragment extends SubaccountFragment {
             public void onClick(final View v) {
                 if (mUnconfirmedDialog == null && balanceQuestionMark.getVisibility() == View.VISIBLE) {
                     // Question mark is visible and dialog not shown, so show it
-                    mUnconfirmedDialog = GaActivity.popup(getActivity(), getString(R.string.unconfirmedBalanceTitle), 0)
+                    mUnconfirmedDialog = GaActivity.popup(getActivity(), R.string.unconfirmedBalanceTitle, 0)
                             .content(R.string.unconfirmedBalanceText)
                             .cancelListener(new DialogInterface.OnCancelListener() {
                                 @Override

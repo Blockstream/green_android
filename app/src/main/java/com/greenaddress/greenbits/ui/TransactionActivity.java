@@ -119,7 +119,7 @@ public class TransactionActivity extends GaActivity {
 
                     final String stripped = domain.startsWith("www.") ? domain.substring(4) : domain;
 
-                    popup(getActivity(), getString(R.string.warning), R.string.continueText, R.string.cancel)
+                    popup(getActivity(), R.string.warning, R.string.continueText, R.string.cancel)
                         .content(getString(R.string.view_block_explorer, stripped))
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -752,7 +752,7 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            mSummary = popup(getActivity(), getString(R.string.feeIncreaseTitle), R.string.send, R.string.cancel)
+            mSummary = popup(getActivity(), R.string.feeIncreaseTitle, R.string.send, R.string.cancel)
                     .customView(inflatedLayout, true)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override

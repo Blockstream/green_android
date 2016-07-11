@@ -195,11 +195,23 @@ public abstract class GaActivity extends AppCompatActivity {
        return b;
     }
 
+    public static MaterialDialog.Builder popup(final Activity a, final int title, final int pos, final int neg) {
+        return popup(a, a.getString(title), pos, neg);
+    }
+
     public static MaterialDialog.Builder popup(final Activity a, final String title, final int pos) {
         return popup(a, title, pos, INVALID_RESOURCE_ID);
     }
 
+    public static MaterialDialog.Builder popup(final Activity a, final int title, final int pos) {
+        return popup(a, title, pos, INVALID_RESOURCE_ID);
+    }
+
     public static MaterialDialog.Builder popup(final Activity a, final String title) {
+        return popup(a, title, android.R.string.ok, android.R.string.cancel);
+    }
+
+    public static MaterialDialog.Builder popup(final Activity a, final int title) {
         return popup(a, title, android.R.string.ok, android.R.string.cancel);
     }
 
@@ -221,7 +233,7 @@ public abstract class GaActivity extends AppCompatActivity {
         // Return a pop up dialog to let the user choose.
         String[] namesArray = new String[names.size()];
         namesArray = names.toArray(namesArray);
-        return popup(a, a.getString(R.string.twoFactorChoicesTitle), R.string.choose, R.string.cancel)
+        return popup(a, R.string.twoFactorChoicesTitle, R.string.choose, R.string.cancel)
                    .items(namesArray)
                    .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                        @Override

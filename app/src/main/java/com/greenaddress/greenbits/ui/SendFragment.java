@@ -126,7 +126,7 @@ public class SendFragment extends SubaccountFragment {
             }
         }
 
-        mSummary = GaActivity.popup(getActivity(), getString(R.string.newTxTitle), R.string.send, R.string.cancel)
+        mSummary = GaActivity.popup(getActivity(), R.string.newTxTitle, R.string.send, R.string.cancel)
                 .customView(inflatedLayout, true)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
