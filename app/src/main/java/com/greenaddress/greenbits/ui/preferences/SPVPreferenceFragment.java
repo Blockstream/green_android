@@ -25,8 +25,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mTrustedPeer = (EditTextPreference) findPreference("trusted_peer");
         bindPreferenceSummaryToValue(mTrustedPeer);
 
-        final Preference reset_spv = findPreference("reset_spv");
-        reset_spv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final Preference resetSPV = findPreference("reset_spv");
+        resetSPV.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
                 mService.spv.reset();
