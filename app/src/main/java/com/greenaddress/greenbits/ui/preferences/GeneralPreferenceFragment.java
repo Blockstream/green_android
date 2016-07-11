@@ -54,7 +54,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             findPreference("mnemonic_passphrase").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(final Preference preference) {
-                    getPreferenceManager().findPreference("mnemonic_passphrase").setSummary(mnemonic);
+                    findPreference("mnemonic_passphrase").setSummary(mnemonic);
                     return false;
                 }
             });

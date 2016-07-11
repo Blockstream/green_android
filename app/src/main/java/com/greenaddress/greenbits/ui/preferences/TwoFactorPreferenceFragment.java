@@ -120,7 +120,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                                       @Override
                                       public void run()
                                       {
-                                          final CheckBoxPreference c = (CheckBoxPreference) getPreferenceManager().findPreference("twoFac" + method);
+                                          final CheckBoxPreference c = (CheckBoxPreference) findPreference("twoFac" + method);
                                           c.setChecked(false);
                                       }
                                   });
