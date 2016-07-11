@@ -211,6 +211,9 @@ public class GaService extends Service {
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
     public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
 
+    public String getTrustedPeers() { return cfg("TRUSTED").getString("address", ""); }
+    public void setTrustedPeers(final String peers) { cfgEdit("TRUSTED").putString("address", peers).apply(); }
+
     @Override
     public void onCreate() {
         super.onCreate();

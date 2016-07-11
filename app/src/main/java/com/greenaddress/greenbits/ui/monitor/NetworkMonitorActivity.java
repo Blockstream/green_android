@@ -149,8 +149,9 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             final GaService service = mService;
             String ipAddr = peer.toString();
             if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
-                ipAddr = service.cfg("TRUSTED").getString("address", null);
-                if (ipAddr != null)
+                // FIXME: This is obviously not right
+                ipAddr = service.getTrustedPeers();
+                if (!ipAddr.isEmpty())
                     ipAddr = new Node(ipAddr).toString();
             }
             return String.format("%s\n%s\n%s\n%s", getString(R.string.network_monitor_peer_addr, ipAddr),

@@ -50,7 +50,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             }
         });
 
-        final String address = mService.cfg("TRUSTED").getString("address", "");
+        final String address = mService.getTrustedPeers();
 
         if (!address.isEmpty()) {
             trusted_peer.setText(address);
@@ -93,7 +93,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
 
-                if (mService.cfg("TRUSTED").getString("address", "").equals(newValue))
+                if (mService.getTrustedPeers().equals(newValue))
                     return false;
 
                 try {
@@ -119,7 +119,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                             return true;
                         }
 
-                        mService.cfgEdit("TRUSTED").putString("address", newString).apply();
+                        mService.setTrustedPeers(newString);
 
                         mService.setUserConfig("trusted_peer_addr", newString, true);
                         if (!newString.isEmpty())
@@ -137,7 +137,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment {
                                       @Override
                                       public void onClick(final MaterialDialog dlg, final DialogAction which) {
                                           new SPVAsync().execute();
-                                          mService.cfgEdit("TRUSTED").putString("address", newString).apply();
+                                          mService.setTrustedPeers(newString);
                                           mService.setUserConfig("trusted_peer_addr", newString, true);
                                           trusted_peer.setSummary(newString);
                                       }

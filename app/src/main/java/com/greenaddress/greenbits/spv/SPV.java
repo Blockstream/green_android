@@ -497,7 +497,7 @@ public class SPV {
             blockChain.addListener(blockChainListener);
 
             System.setProperty("user.home", gaService.getFilesDir().toString());
-            final String trustedAddr = gaService.cfg("TRUSTED").getString("address", "");
+            final String peers = gaService.getTrustedPeers();
 
             final String proxyHost = gaService.getProxyHost();
             final String proxyPort = gaService.getProxyPort();
@@ -510,7 +510,7 @@ public class SPV {
             } else {
                 System.setProperty("http.proxyHost", "");
                 System.setProperty("http.proxyPort", "");
-                if (isOnion(trustedAddr)) {
+                if (isOnion(peers)) {
                     try {
                         final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
                         peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
@@ -526,7 +526,7 @@ public class SPV {
             pfProvider = new PeerFilterProvider(this);
             peerGroup.addPeerFilterProvider(pfProvider);
 
-            final String[] addresses = trustedAddr.split(",");
+            final String[] addresses = peers.split(",");
             for (final String s: addresses)
                 setupPeerGroup(peerGroup, s);
             if (addresses.length > 0)
