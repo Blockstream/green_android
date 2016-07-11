@@ -66,18 +66,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         getActivity().setResult(getActivity().RESULT_OK, null);
     }
 
-    class SPVAsync extends AsyncTask<Object, Object, Object>{
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-            boolean alreadySyncing = mService.spv.stopSPVSync();
-            mService.spv.setUpSPV();
-            if (alreadySyncing)
-                mService.spv.startSpvSync();
-            return null;
-        }
-    }
-
     private boolean isBadAddress(final String s) {
         try {
             final int idx = s.indexOf(":");
@@ -104,7 +92,16 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         else
             mTrustedPeer.setSummary(R.string.trustedspvExample);
 
-        new SPVAsync().execute();
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                boolean alreadySyncing = mService.spv.stopSPVSync();
+                mService.spv.setUpSPV();
+                if (alreadySyncing)
+                    mService.spv.startSpvSync();
+                return null;
+            }
+        }.execute();
     }
 
     @Override
