@@ -95,6 +95,18 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         return true;
     }
 
+    private void setTrustedPeers(final String peers) {
+
+        mService.setTrustedPeers(peers);
+        mService.setUserConfig("trusted_peer_addr", peers, true);
+        if (!peers.isEmpty())
+            mTrustedPeer.setSummary(peers);
+        else
+            mTrustedPeer.setSummary(R.string.trustedspvExample);
+
+        new SPVAsync().execute();
+    }
+
     @Override
     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
 
@@ -123,16 +135,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                               .content(R.string.enterValidAddressTextTorDisabled).build().show();
                     return true;
                 }
-
-                mService.setTrustedPeers(newString);
-
-                mService.setUserConfig("trusted_peer_addr", newString, true);
-                if (!newString.isEmpty())
-                    mTrustedPeer.setSummary(newString);
-                else
-                    mTrustedPeer.setSummary(R.string.trustedspvExample);
-
-                new SPVAsync().execute();
+                setTrustedPeers(newString);
             }
             else {
                 GaActivity.popup(SPVPreferenceFragment.this.getActivity(),
@@ -141,10 +144,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                           .onPositive(new MaterialDialog.SingleButtonCallback() {
                               @Override
                               public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                                  new SPVAsync().execute();
-                                  mService.setTrustedPeers(newString);
-                                  mService.setUserConfig("trusted_peer_addr", newString, true);
-                                  mTrustedPeer.setSummary(newString);
+                                  setTrustedPeers(newString);
                               }
                           }).build().show();
             }
