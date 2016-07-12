@@ -46,14 +46,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             }
         });
 
-        final String address = mService.getTrustedPeers();
-
-        if (!address.isEmpty()) {
-            mTrustedPeer.setText(address);
-            mTrustedPeer.setSummary(address);
-        } else {
-            mTrustedPeer.setSummary(R.string.trustedspvExample);
-        }
+        final boolean setTextValue = true;
+        setTrustedPeersPreference(mService.getTrustedPeers(), setTextValue);
         mTrustedPeer.setOnPreferenceChangeListener(this);
         getActivity().setResult(getActivity().RESULT_OK, null);
     }
@@ -75,13 +69,20 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         return true;
     }
 
-    private void setTrustedPeers(final String peers) {
+    private void setTrustedPeersPreference(final String peers, final boolean setTextValue) {
 
-        if (!peers.isEmpty())
-            mTrustedPeer.setSummary(peers);
-        else
+        if (peers.isEmpty()) {
             mTrustedPeer.setSummary(R.string.trustedspvExample);
+            return;
+        }
+        if (setTextValue)
+            mTrustedPeer.setText(peers);
+        mTrustedPeer.setSummary(peers);
+    }
 
+    private void setTrustedPeers(final String peers) {
+        final boolean setTextValue = false;
+        setTrustedPeersPreference(peers, setTextValue);
         mService.setTrustedPeers(peers);
     }
 
