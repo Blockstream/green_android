@@ -29,10 +29,14 @@
         android:ems="10"
         android:gravity="center"
         android:hint=""
-        android:inputType="numberPassword"
         android:maxLength="15"
         android:textColor="@color/secondaryTextColor"
-        android:textSize="34sp" />
+        android:textSize="34sp"
+        android:inputType="numberPassword">
+
+            <requestFocus />
+
+    </com.maksim88.passwordedittext.PasswordEditText>
 
     <TextView
         android:layout_width="fill_parent"
