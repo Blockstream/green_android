@@ -499,28 +499,29 @@ public class SPV {
             System.setProperty("user.home", gaService.getFilesDir().toString());
             final String peers = gaService.getTrustedPeers();
 
-            final String proxyHost = gaService.getProxyHost();
-            final String proxyPort = gaService.getProxyPort();
+            String proxyHost = gaService.getProxyHost();
+            String proxyPort = gaService.getProxyPort();
 
-            if (proxyHost != null && proxyPort != null) {
-                System.setProperty("http.proxyHost", proxyHost);
-                System.setProperty("http.proxyPort", proxyPort);
+            if (proxyHost == null || proxyPort == null)
+                proxyHost = proxyPort = "";
+
+            System.setProperty("http.proxyHost", proxyHost);
+            System.setProperty("http.proxyPort", proxyPort);
+
+            if (!proxyHost.isEmpty() && !proxyPort.isEmpty()) {
                 final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
                 peerGroup = new PeerGroup(context, blockChain, new BlockingClientManager());
-            } else {
-                System.setProperty("http.proxyHost", "");
-                System.setProperty("http.proxyPort", "");
-                if (isOnion(peers)) {
-                    try {
-                        final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
-                        peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    peerGroup = new PeerGroup(Network.NETWORK, blockChain);
+            } else if (isOnion(peers)) {
+                try {
+                    final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
+                    peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
+                } catch (final Exception e) {
+                    e.printStackTrace();
                 }
+            } else {
+                peerGroup = new PeerGroup(Network.NETWORK, blockChain);
             }
+
             if (pfProvider != null)
                 pfProvider.onDispose();
             pfProvider = new PeerFilterProvider(this);
