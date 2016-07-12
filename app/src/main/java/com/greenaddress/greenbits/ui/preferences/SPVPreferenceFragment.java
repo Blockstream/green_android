@@ -92,18 +92,18 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             return false;
 
         try {
-            final String newString = newValue.toString().trim().replaceAll("\\s","");
+            final String peers = newValue.toString().trim().replaceAll("\\s","");
 
-            if (newString.isEmpty()) {
-                setTrustedPeers(newString);
+            if (peers.isEmpty()) {
+                setTrustedPeers(peers);
                 return true;
             }
 
-            for (final String s: newString.split(","))
-                if (isBadAddress(s))
+            for (final String peer: peers.split(","))
+                if (isBadAddress(peer))
                     return true;
 
-            if (newString.toLowerCase().contains(".onion")) {
+            if (peers.toLowerCase().contains(".onion")) {
 
                 if (android.os.Build.VERSION.SDK_INT >= 23 &&
                     (mService.getProxyHost() == null || mService.getProxyPort() == null)) {
@@ -114,7 +114,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                     return true;
                 }
 
-                setTrustedPeers(newString);
+                setTrustedPeers(peers);
                 return true;
             }
 
@@ -124,7 +124,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                       .onPositive(new MaterialDialog.SingleButtonCallback() {
                           @Override
                           public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                              setTrustedPeers(newString);
+                              setTrustedPeers(peers);
                           }
                       }).build().show();
             return true;
