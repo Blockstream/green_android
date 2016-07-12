@@ -28,7 +28,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         resetSPV.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
-                mService.spv.reset();
+                mService.resetSPV();
                 return false;
             }
         });

@@ -241,6 +241,10 @@ public class GaService extends Service {
         }.execute();
     }
 
+    public void resetSPV() {
+        spv.reset();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
