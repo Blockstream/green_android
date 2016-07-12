@@ -104,6 +104,11 @@ android {
             applicationId "com.greenaddress.greenbits_android_wallet.alpha"
             versionName String.format("%s_alpha", defaultConfig.getProperty("versionName"))
         }
+        alpha_21 {
+            minSdkVersion 21
+            applicationId "com.greenaddress.greenbits_android_wallet.alpha"
+            versionName String.format("%s_alpha", defaultConfig.getProperty("versionName"))
+        }
     }
 
     sourceSets {
@@ -119,7 +124,7 @@ android {
             java { srcDir 'src/regtest/java' }
             assets { srcDir 'src/regtest/assets' }
         }
-        alpha {
+        alpha_21 {
             java { srcDir 'src/alpha/java' }
             assets { srcDir 'src/alpha/assets' }
         }
