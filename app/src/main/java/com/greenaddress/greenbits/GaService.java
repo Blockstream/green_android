@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -212,7 +213,33 @@ public class GaService extends Service {
     public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
 
     public String getTrustedPeers() { return cfg("TRUSTED").getString("address", ""); }
-    public void setTrustedPeers(final String peers) { cfgEdit("TRUSTED").putString("address", peers).apply(); }
+
+    public void setTrustedPeers(final String peers) {
+        cfgEdit("TRUSTED").putString("address", peers).apply();
+        setUserConfig("trusted_peer_addr", peers, true);
+
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                final boolean alreadySyncing = spv.stopSPVSync();
+                spv.setUpSPV();
+                if (alreadySyncing)
+                    spv.startSpvSync();
+                return null;
+            }
+        }.execute();
+    }
+
+    public void setSPVEnabled(final boolean enabled) {
+
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(final Object[] params) {
+                spv.setEnabled(enabled);
+                return null;
+            }
+        }.execute();
+    }
 
     @Override
     public void onCreate() {

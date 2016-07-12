@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.preferences;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -42,14 +41,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 mTrustedPeer.setEnabled((Boolean) newValue);
-
-                new AsyncTask<Object, Object, Object>() {
-                    @Override
-                    protected Object doInBackground(final Object[] params) {
-                        mService.spv.setEnabled((Boolean) newValue);
-                        return null;
-                    }
-                }.execute();
+                mService.setSPVEnabled((Boolean) newValue);
                 return true;
             }
         });
@@ -85,23 +77,12 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
     private void setTrustedPeers(final String peers) {
 
-        mService.setTrustedPeers(peers);
-        mService.setUserConfig("trusted_peer_addr", peers, true);
         if (!peers.isEmpty())
             mTrustedPeer.setSummary(peers);
         else
             mTrustedPeer.setSummary(R.string.trustedspvExample);
 
-        new AsyncTask<Object, Object, Object>() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                boolean alreadySyncing = mService.spv.stopSPVSync();
-                mService.spv.setUpSPV();
-                if (alreadySyncing)
-                    mService.spv.startSpvSync();
-                return null;
-            }
-        }.execute();
+        mService.setTrustedPeers(peers);
     }
 
     @Override
