@@ -124,7 +124,7 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     protected View mapClick(final int id, final View.OnClickListener fn) {
-        View v = findViewById(id);
+        final View v = findViewById(id);
         v.setOnClickListener(fn);
         return v;
     }
@@ -180,7 +180,7 @@ public abstract class GaActivity extends AppCompatActivity {
     public void shortToast(final String s) { toastImpl(s, Toast.LENGTH_SHORT); }
 
     public static MaterialDialog.Builder popup(final Activity a, final String title, final int pos, final int neg) {
-        MaterialDialog.Builder b;
+        final MaterialDialog.Builder b;
         b = new MaterialDialog.Builder(a)
                               .title(title)
                               .titleColorRes(R.color.white)
