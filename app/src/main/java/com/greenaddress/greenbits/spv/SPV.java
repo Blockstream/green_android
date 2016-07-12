@@ -528,12 +528,14 @@ public class SPV {
             peerGroup.addPeerFilterProvider(pfProvider);
 
             final String[] addresses = peers.split(",");
+            if (addresses.length == 0) {
+                setupPeerGroup(peerGroup, "");
+                return;
+            }
             for (final String s: addresses)
                 setupPeerGroup(peerGroup, s);
-            if (addresses.length > 0)
-                peerGroup.setMaxConnections(addresses.length);
-            else
-                setupPeerGroup(peerGroup, "");
+            peerGroup.setMaxConnections(addresses.length);
+
         } catch (final BlockStoreException e) {
             e.printStackTrace();
         }
