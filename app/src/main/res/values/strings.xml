@@ -70,7 +70,7 @@
     <string name="sendOptionalMemo">Optional memo</string>
     <string name="madeBy">by GreenAddress</string>
     <string name="welcomeGreenBits">Welcome to GreenBits</string>
-    <string name="attemptsFinished">Invalid PIN, you don\'t have any attempt left. Please login using your passphrase.</string>
+    <string name="attemptsFinished">Invalid PIN, you don\'t have any attempts left. Please login using your passphrase.</string>
     <string name="attemptsLeftLong">Invalid PIN, you have %1$d attempts left</string>
     <string name="warnOnPaste">Be aware, other apps can read or change the clipboard</string>
     <string name="toastOnCopyAddress">Address copied to clipboard.</string>
