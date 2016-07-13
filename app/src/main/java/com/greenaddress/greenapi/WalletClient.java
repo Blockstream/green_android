@@ -395,6 +395,7 @@ public class WalletClient {
             @Override
             public void call() {
                 final String wsuri = Network.GAIT_WAMP_URL;
+                Log.i(TAG, "Connecting to " + wsuri);
                 final WampClientBuilder builder = new WampClientBuilder();
                 final IWampConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
                 try {
@@ -404,6 +405,7 @@ public class WalletClient {
                             .withRealm("realm1")
                             .withNrReconnects(0);
                 } catch (final ApplicationError e) {
+                    e.printStackTrace();
                     rpc.setException(e);
                     return;
                 }
@@ -415,6 +417,7 @@ public class WalletClient {
                 try {
                     mConnection = builder.build();
                 } catch (final Exception e) {
+                    e.printStackTrace();
                     rpc.setException(new GAException(e.toString()));
                     return;
                 }
