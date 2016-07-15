@@ -119,14 +119,17 @@ android {
         btctestnet_21 {
             java { srcDir 'src/btctestnet/java' }
             assets { srcDir 'src/btctestnet/assets' }
+            res { srcDir 'src/btctestnet/res' }
         }
         regtest_21 {
             java { srcDir 'src/regtest/java' }
             assets { srcDir 'src/regtest/assets' }
+            res { srcDir 'src/regtest/res' }
         }
         alpha_21 {
             java { srcDir 'src/alpha/java' }
             assets { srcDir 'src/alpha/assets' }
+            res { srcDir 'src/alpha/res' }
         }
      }
 
