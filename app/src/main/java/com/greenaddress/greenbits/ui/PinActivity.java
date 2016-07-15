@@ -191,6 +191,12 @@ public class PinActivity extends GaActivity implements Observer {
             });
 
         } else if (androidLogin != null && ident != null) {
+            setContentView(R.layout.activity_pin);
+            final EditText pinText = (EditText) findViewById(R.id.pinText);
+            final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
+            pinText.setEnabled(false);
+            pinLoginButton.setIndeterminateProgressMode(true);
+            pinLoginButton.setProgress(50);
             tryDecrypt();
         } else {
             startActivity(new Intent(this, FirstScreenActivity.class));
@@ -198,6 +204,7 @@ public class PinActivity extends GaActivity implements Observer {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private Cipher getAESCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {
         final String name = KeyProperties.KEY_ALGORITHM_AES + "/" +
                             KeyProperties.BLOCK_MODE_CBC + "/" +
