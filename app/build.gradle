@@ -157,16 +157,16 @@ dependencies {
             files('libwally-core/src/swig_java/wallycore.jar')
     compile 'com.fasterxml.jackson:jackson-datatype-json-org:1.8.0'
     compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
-    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:design:24.0.0'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:support-v4:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support:recyclerview-v7:24.1.1'
     compile 'com.google.zxing:core:3.2.1'
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.okhttp:okhttp:2.7.4'
-    compile 'com.github.medyo:android-about-page:1.0.9'
-    compile 'com.afollestad.material-dialogs:core:0.8.6.1'
+    compile 'com.github.medyo:android-about-page:1.1.0'
+    compile 'com.afollestad.material-dialogs:core:0.9.0.0'
     compile 'com.maksim88:PasswordEditText:v0.8'
 }
 
