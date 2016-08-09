@@ -151,33 +151,33 @@ public abstract class GaActivity extends AppCompatActivity {
         });
     }
 
-    private void toastImpl(final int id, final int len) {
-        runOnUiThread(new Runnable() {
-            public void run() { Toast.makeText(GaActivity.this, id, len).show(); }
+    public static void toastImpl(final Activity activity, final int id, final int len) {
+        activity.runOnUiThread(new Runnable() {
+            public void run() { Toast.makeText(activity, id, len).show(); }
         });
     }
 
-    private void toastImpl(final String s, final int len) {
-        runOnUiThread(new Runnable() {
-            public void run() { Toast.makeText(GaActivity.this, s, len).show(); }
+    public static void toastImpl(final Activity activity, final String s, final int len) {
+        activity.runOnUiThread(new Runnable() {
+            public void run() { Toast.makeText(activity, s, len).show(); }
         });
     }
 
-    public void toast(final Throwable t, final Button reenable) {
-        runOnUiThread(new Runnable() {
+    public static void toast(final Activity activity, final Throwable t, final Button reenable) {
+        activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (reenable != null)
                     reenable.setEnabled(true);
                 t.printStackTrace();
-                Toast.makeText(GaActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
-    public void toast(final Throwable t) { toast(t, null); }
-    public void toast(final int id) { toastImpl(id, Toast.LENGTH_LONG); }
-    public void toast(final String s) { toastImpl(s, Toast.LENGTH_LONG); }
-    public void shortToast(final int id) { toastImpl(id, Toast.LENGTH_SHORT); }
-    public void shortToast(final String s) { toastImpl(s, Toast.LENGTH_SHORT); }
+    public void toast(final Throwable t) { toast(this, t, null); }
+    public void toast(final int id) { toastImpl(this, id, Toast.LENGTH_LONG); }
+    public void toast(final String s) { toastImpl(this, s, Toast.LENGTH_LONG); }
+    public void shortToast(final int id) { toastImpl(this, id, Toast.LENGTH_SHORT); }
+    public void shortToast(final String s) { toastImpl(this, s, Toast.LENGTH_SHORT); }
 
     public static MaterialDialog.Builder popup(final Activity a, final String title, final int pos, final int neg) {
         final MaterialDialog.Builder b;

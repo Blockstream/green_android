@@ -51,7 +51,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
         final Map<?, ?> config = mService.getTwoFacConfig();
         if (config == null || config.isEmpty()) {
-            final GaActivity activity = (GaActivity) getActivity();
+            final GaPreferenceActivity activity = (GaPreferenceActivity) getActivity();
             activity.toast(R.string.err_send_not_connected_will_resume);
             activity.finish();
             return;
@@ -72,7 +72,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         }
 
         final boolean skipChoice = false;
-        Dialog dlg = GaActivity.popupTwoFactorChoice(getActivity(), mService, skipChoice,
+        final Dialog dlg = GaActivity.popupTwoFactorChoice(getActivity(), mService, skipChoice,
                                                      new CB.Runnable1T<String>() {
             @Override
             public void run(final String whichMethod) {
@@ -129,7 +129,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                               @Override
                               public void onFailure(final Throwable t) {
                                   t.printStackTrace();
-                                  ((GaActivity) getActivity()).toast(t.getMessage());
+                                  ((GaPreferenceActivity) getActivity()).toast(t.getMessage());
                               }
                           });
                       }

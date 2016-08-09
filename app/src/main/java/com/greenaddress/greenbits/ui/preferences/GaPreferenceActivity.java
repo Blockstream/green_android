@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.GaActivity;
 
 
 // Our GaPreferenceActivity derived classes aren't exported publically, so the
@@ -82,5 +84,12 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
         }
+    }
+
+    public void toast(final String s) {
+        GaActivity.toastImpl(this, s, Toast.LENGTH_LONG);
+    }
+    public void toast(final int id) {
+        GaActivity.toastImpl(this, id, Toast.LENGTH_LONG);
     }
 }
