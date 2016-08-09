@@ -61,3 +61,6 @@
 -keepnames class ** { *; }
 -keepattributes SourceFile,LineNumberTable
 -keep class mehdi.sakout.aboutpage.** { *; }
+
+-keep class com.blockstream.libwally.** {*;}
+-keepattributes InnerClasses,EnclosingMethod
