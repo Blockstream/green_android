@@ -25,3 +25,8 @@ before_install:
    - export ANDROID_NDK=`pwd`/android-ndk-r11c
    - rm -fr app/src/main/jniLibs && pushd app && ./prepare_fdroid.sh && popd
    - find app/src/main/jniLibs | xargs ls -laht
+
+addons:
+    apt:
+        packages:
+           - swig
