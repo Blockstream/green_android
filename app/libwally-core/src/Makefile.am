@@ -62,7 +62,7 @@ $(sjs)/$(cblw)/Wally.class: $(sjs)/$(cblw)/Wally.java
 swig_java/wallycore.jar: $(sjs)/$(cblw)/Wally.class
 	$(AM_V_at)$(JAR) cf swig_java/wallycore.jar -C $(sjs) '$(cblw)/Wally$$Obj.class' -C $(sjs) '$(cblw)/Wally.class'
 
-$(sjs)/$(cbt)/%.class: $(sjs)/$(cbt)/%.java
+$(sjs)/$(cbt)/%.class: $(sjs)/$(cbt)/%.java | swig_java/wallycore.jar
 	$(AM_V_at)$(JAVAC) -source $(JAVAC_TARGET) -target $(JAVAC_TARGET) -sourcepath $(sjs) $^
 
 if HAVE_JAVAC
