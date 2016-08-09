@@ -68,7 +68,7 @@ function build() {
 
     mkdir -p $output_dir
     ${arch_name}-strip src/.libs/libwallycore.so
-    mv src/.libs/libwallycore.so $output_dir
+    cp src/.libs/libwallycore.so $output_dir
 }
 
 if [ -d libwally-core ]; then
