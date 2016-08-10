@@ -47,6 +47,9 @@ public class MainFragment extends SubaccountFragment {
         if (monetary == null)
             return;
 
+        if (service.getLoginData() == null)
+            return;
+
         final String btcUnit = (String) service.getUserConfig("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
