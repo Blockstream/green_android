@@ -52,9 +52,14 @@ public class PinActivity extends GaActivity implements Observer {
     private Menu mMenu;
     private static final String KEYSTORE_KEY = "NativeAndroidAuth";
     private static final int ACTIVITY_REQUEST_CODE = 1;
+    private CircularProgressButton mPinLoginButton;
 
 
-    private void login(final CircularProgressButton pinLoginButton, final EditText pinText, final TextView pinError) {
+    private void login(final EditText pinText, final TextView pinError) {
+
+        if (mPinLoginButton.getProgress() != 0)
+            return;
+
         final GaService service = mService;
 
         if (pinText.length() < 4) {
@@ -67,8 +72,7 @@ public class PinActivity extends GaActivity implements Observer {
             return;
         }
 
-        pinLoginButton.setIndeterminateProgressMode(true);
-        pinLoginButton.setProgress(50);
+        mPinLoginButton.setProgress(50);
         pinText.setEnabled(false);
 
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -78,7 +82,7 @@ public class PinActivity extends GaActivity implements Observer {
              @Override
              public void run() {
                  pinText.setText("");
-                 pinLoginButton.setProgress(0);
+                 mPinLoginButton.setProgress(0);
                  pinText.setEnabled(true);
                  pinError.setVisibility(View.VISIBLE);
                  final int counter = mService.cfg("pin").getInt("counter", 1);
@@ -147,6 +151,12 @@ public class PinActivity extends GaActivity implements Observer {
         }, service.es);
     }
 
+    private void setupUi() {
+        setContentView(R.layout.activity_pin);
+        mPinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
+        mPinLoginButton.setIndeterminateProgressMode(true);
+    }
+
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         final GaService service = mService;
@@ -156,10 +166,9 @@ public class PinActivity extends GaActivity implements Observer {
         final String androidLogin = prefs.getString("native", null);
 
         if (androidLogin == null && ident != null) {
-            setContentView(R.layout.activity_pin);
+            setupUi();
 
             final EditText pinText = (EditText) findViewById(R.id.pinText);
-            final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
             final TextView pinError = (TextView) findViewById(R.id.pinErrorText);
 
             pinText.setOnEditorActionListener(
@@ -173,7 +182,7 @@ public class PinActivity extends GaActivity implements Observer {
                                 if (event == null || !event.isShiftPressed()) {
                                     // the user is done typing.
                                     if (!pinText.getText().toString().isEmpty()) {
-                                        login(pinLoginButton, pinText, pinError);
+                                        login(pinText, pinError);
                                         return true; // consume.
                                     }
                                 }
@@ -183,20 +192,18 @@ public class PinActivity extends GaActivity implements Observer {
                     }
             );
 
-            pinLoginButton.setOnClickListener(new View.OnClickListener() {
+            mPinLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    login(pinLoginButton, pinText, pinError);
+                    login(pinText, pinError);
                 }
             });
 
         } else if (androidLogin != null && ident != null) {
-            setContentView(R.layout.activity_pin);
+            setupUi();
             final EditText pinText = (EditText) findViewById(R.id.pinText);
-            final CircularProgressButton pinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
             pinText.setEnabled(false);
-            pinLoginButton.setIndeterminateProgressMode(true);
-            pinLoginButton.setProgress(50);
+            mPinLoginButton.setProgress(50);
             tryDecrypt();
         } else {
             startActivity(new Intent(this, FirstScreenActivity.class));
