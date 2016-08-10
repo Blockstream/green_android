@@ -29,9 +29,9 @@ public class MnemonicHelper {
     }
 
     static boolean isInvalidWord(final String[] words, final String word, final boolean equals) {
-        for (int i = 0; i < words.length; ++i) {
-            if ((!equals && words[i].startsWith(word)) ||
-                    (equals && words[i].equals(word))) {
+        for (final String w : words) {
+            if ((!equals && w.startsWith(word)) ||
+                    (equals && w.equals(word))) {
                 return false;
             }
         }
@@ -58,8 +58,8 @@ public class MnemonicHelper {
     static String getClosestWord(final String[] words, final String word) {
 
         final List<Integer> scores = new ArrayList<>(words.length);
-        for (int i = 0; i < words.length; ++i) {
-            scores.add(levenshteinDistance(word, words[i]));
+        for (final String w : words) {
+            scores.add(levenshteinDistance(word, w));
         }
         Integer min = Integer.MAX_VALUE;
         final List<Integer> matches = new ArrayList<>();
