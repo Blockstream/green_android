@@ -38,8 +38,8 @@ public class MainFragment extends SubaccountFragment {
     private Map<String, List<String> > replacedTxs;
     private Observer curBalanceObserver;
     private int curSubaccount;
-    private Observer mVerifiedTxObserver = makeUiObserver(new Runnable() { public void run() { onVerifiedTx(); } });
-    private Observer mNewTxObserver = makeUiObserver(new Runnable() { public void run() { onNewTx(); } });
+    private final Observer mVerifiedTxObserver = makeUiObserver(new Runnable() { public void run() { onVerifiedTx(); } });
+    private final Observer mNewTxObserver = makeUiObserver(new Runnable() { public void run() { onNewTx(); } });
 
     private void updateBalance() {
         final GaService service = getGAService();

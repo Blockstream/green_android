@@ -58,8 +58,8 @@ public class MnemonicActivity extends GaActivity {
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
 
-    private Set<String> mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
-    private String[] mWordsArray = new String[Wally.BIP39_WORDLIST_LEN];
+    private final Set<String> mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
+    private final String[] mWordsArray = new String[Wally.BIP39_WORDLIST_LEN];
 
     private EditText mMnemonicText;
     private CircularProgressButton mOkButton;
