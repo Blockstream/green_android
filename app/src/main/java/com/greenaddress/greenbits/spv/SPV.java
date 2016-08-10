@@ -307,7 +307,7 @@ public class SPV {
     public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(final PreparedTransaction ptx, final String recipientStr, final Coin amount) {
         Address recipientNonFinal = null;
         try {
-            recipientNonFinal = new Address(Network.NETWORK, recipientStr);
+            recipientNonFinal = Address.fromBase58(Network.NETWORK, recipientStr);
         } catch (final AddressFormatException e) {
         }
         final Address recipient = recipientNonFinal;
