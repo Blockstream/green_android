@@ -18,14 +18,11 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
 
-    private String mErrorTitle, mErrorContent;
     private ServiceConnection mConnection;
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
 
     private void failHard(final String title, final String message) {
-        mErrorTitle = title;
-        mErrorContent = message;
         final Intent fail = new Intent(this, FailHardActivity.class);
         fail.putExtra("errorTitle", title);
         final String supportMessage = "Please contact info@greenaddress.it for support.";
