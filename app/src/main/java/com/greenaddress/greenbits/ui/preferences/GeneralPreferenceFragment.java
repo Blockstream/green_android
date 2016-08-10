@@ -64,7 +64,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         if (mnemonic != null) {
             findPreference("reset_pin").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
-                public boolean onPreferenceClick(Preference preference) {
+                public boolean onPreferenceClick(final Preference preference) {
                     final Intent savePin = PinSaveActivity.createIntent(getActivity(), mnemonic);
                     startActivityForResult(savePin, PINSAVE);
                     return false;
@@ -88,7 +88,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         bitcoinDenomination.setEntryValues(units.toArray(new String[4]));
         bitcoinDenomination.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object o) {
+            public boolean onPreferenceChange(final Preference preference, final Object o) {
                 mService.setUserConfig("unit", o.toString(), true);
                 bitcoinDenomination.setSummary(o.toString());
                 return true;
