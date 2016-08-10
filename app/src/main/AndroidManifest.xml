@@ -45,8 +45,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MnemonicActivity"
-            android:label="@string/title_activity_mnemonic">
-        </activity>
+            android:label="@string/title_activity_mnemonic"/>
 
         <activity-alias
             android:name=".NFC"
@@ -147,20 +146,15 @@
             android:label="@string/txSubTitle"/>
         <activity
             android:name=".TwoFactorActivity"
-            android:label="@string/twoFacSetupHeader">
-        </activity>
+            android:label="@string/twoFacSetupHeader"/>
         <activity
             android:name=".preferences.SettingsActivity"
-            android:label="@string/title_activity_settings">
-        </activity>
+            android:label="@string/title_activity_settings"/>
         <activity
             android:name=".preferences.ProxySettingsActivity"
-            android:label="@string/pref_header_proxy">
-        </activity>
-        <activity android:name=".FailHardActivity">
-        </activity>
-        <activity android:name=".AboutActivity">
-        </activity>
+            android:label="@string/pref_header_proxy"/>
+        <activity android:name=".FailHardActivity"/>
+        <activity android:name=".AboutActivity"/>
     </application>
 
 </manifest>
