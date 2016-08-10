@@ -62,6 +62,8 @@ public class MnemonicActivity extends GaActivity {
     private String[] mWordsArray = new String[Wally.BIP39_WORDLIST_LEN];
 
     private EditText mMnemonicText;
+    private CircularProgressButton mOkButton;
+
 
     private void showErrorCorrection(final String closeWord, final String badWord) {
         if (closeWord == null)
@@ -109,6 +111,9 @@ public class MnemonicActivity extends GaActivity {
     }
 
     private void login() {
+        if (mOkButton.getProgress() != 0)
+            return;
+        
         final GaService service = mService;
         
         if (service.isLoggedIn()) {
@@ -126,13 +131,10 @@ public class MnemonicActivity extends GaActivity {
             return;
         }
 
+        mOkButton.setProgress(50);
+
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mMnemonicText.getWindowToken(), 0);
-
-        final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
-        okButton.setIndeterminateProgressMode(true);
-        okButton.setEnabled(false);
-        okButton.setProgress(50);
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
@@ -146,7 +148,6 @@ public class MnemonicActivity extends GaActivity {
                     @Override
                     public ListenableFuture<LoginData> apply(final String passphrase) {
                         return service.login(CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
-
                     }
                 });
             }
@@ -175,8 +176,7 @@ public class MnemonicActivity extends GaActivity {
                     @Override
                     public void run() {
                         MnemonicActivity.this.toast(message);
-                        okButton.setProgress(0);
-                        okButton.setEnabled(true);
+                        mOkButton.setProgress(0);
                     }
                 });
             }
@@ -202,9 +202,7 @@ public class MnemonicActivity extends GaActivity {
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                                final CircularProgressButton okButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
-                                okButton.setProgress(0);
-                                okButton.setEnabled(true);
+                                mOkButton.setProgress(0);
                             }
                         }).build();
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
@@ -229,6 +227,9 @@ public class MnemonicActivity extends GaActivity {
         }
 
         mMnemonicText = (EditText) findViewById(R.id.mnemonicText);
+        mOkButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
+
+        mOkButton.setIndeterminateProgressMode(true);
 
         mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {
             public void onClick(final View v) {
