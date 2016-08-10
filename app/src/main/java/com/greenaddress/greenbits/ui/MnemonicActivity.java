@@ -110,10 +110,15 @@ public class MnemonicActivity extends GaActivity {
         }
     }
 
+    private void enableLogin() {
+        mOkButton.setProgress(0);
+        mMnemonicText.setEnabled(true);
+    }
+
     private void login() {
         if (mOkButton.getProgress() != 0)
             return;
-        
+
         final GaService service = mService;
         
         if (service.isLoggedIn()) {
@@ -132,6 +137,7 @@ public class MnemonicActivity extends GaActivity {
         }
 
         mOkButton.setProgress(50);
+        mMnemonicText.setEnabled(false);
 
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mMnemonicText.getWindowToken(), 0);
@@ -176,7 +182,7 @@ public class MnemonicActivity extends GaActivity {
                     @Override
                     public void run() {
                         MnemonicActivity.this.toast(message);
-                        mOkButton.setProgress(0);
+                        enableLogin();
                     }
                 });
             }
@@ -202,7 +208,7 @@ public class MnemonicActivity extends GaActivity {
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                                mOkButton.setProgress(0);
+                                enableLogin();
                             }
                         }).build();
                 // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
