@@ -4,8 +4,7 @@
     package="com.greenaddress.greenbits_android_wallet"
 -->
 <manifest package="com.greenaddress.greenbits.ui"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <supports-screens
         android:anyDensity="true"
