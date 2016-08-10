@@ -250,8 +250,8 @@ public class PinActivity extends GaActivity implements Observer {
                         return;
                     }
 
-                    PinActivity.this.toast("Failed to connect, please reopen the app to authenticate");
-                    finishOnUiThread();
+                    // try again
+                    tryDecrypt();
                 }
 
                 @Override
