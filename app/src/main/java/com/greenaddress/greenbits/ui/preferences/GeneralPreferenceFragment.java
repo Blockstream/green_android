@@ -186,6 +186,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             final Boolean replace_by_fee = (Boolean) mService.getUserConfig("replace_by_fee");
             ((CheckBoxPreference) findPreference("optin_rbf")).setChecked(replace_by_fee);
         }
-        getActivity().setResult(getActivity().RESULT_OK, null);
+        getActivity().setResult(Activity.RESULT_OK, null);
     }
 }

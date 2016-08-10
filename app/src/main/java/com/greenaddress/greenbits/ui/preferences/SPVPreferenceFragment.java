@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.preferences;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -49,7 +50,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         final boolean setTextValue = true;
         setTrustedPeersPreference(mService.getTrustedPeers(), setTextValue);
         mTrustedPeer.setOnPreferenceChangeListener(this);
-        getActivity().setResult(getActivity().RESULT_OK, null);
+        getActivity().setResult(Activity.RESULT_OK, null);
     }
 
     private boolean isBadAddress(final String s) {
