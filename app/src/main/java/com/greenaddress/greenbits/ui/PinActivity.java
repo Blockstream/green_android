@@ -53,16 +53,17 @@ public class PinActivity extends GaActivity implements Observer {
     private static final String KEYSTORE_KEY = "NativeAndroidAuth";
     private static final int ACTIVITY_REQUEST_CODE = 1;
     private CircularProgressButton mPinLoginButton;
+    private EditText mPinText;
+    private TextView mPinError;
 
-
-    private void login(final EditText pinText, final TextView pinError) {
+    private void login() {
 
         if (mPinLoginButton.getProgress() != 0)
             return;
 
         final GaService service = mService;
 
-        if (pinText.length() < 4) {
+        if (mPinText.length() < 4) {
             shortToast("PIN has to be between 4 and 15 long");
             return;
         }
@@ -73,20 +74,20 @@ public class PinActivity extends GaActivity implements Observer {
         }
 
         mPinLoginButton.setProgress(50);
-        pinText.setEnabled(false);
+        mPinText.setEnabled(false);
 
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(pinText.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(mPinText.getWindowToken(), 0);
 
-        setUpLogin(pinText.getText().toString(), new Runnable() {
+        setUpLogin(mPinText.getText().toString(), new Runnable() {
              @Override
              public void run() {
-                 pinText.setText("");
+                 mPinText.setText("");
                  mPinLoginButton.setProgress(0);
-                 pinText.setEnabled(true);
-                 pinError.setVisibility(View.VISIBLE);
+                 mPinText.setEnabled(true);
+                 mPinError.setVisibility(View.VISIBLE);
                  final int counter = mService.cfg("pin").getInt("counter", 1);
-                 pinError.setText(getString(R.string.attemptsLeft, 3 - counter));
+                 mPinError.setText(getString(R.string.attemptsLeft, 3 - counter));
               }
          });
      }
@@ -151,27 +152,30 @@ public class PinActivity extends GaActivity implements Observer {
         }, service.es);
     }
 
-    private void setupUi() {
-        setContentView(R.layout.activity_pin);
-        mPinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
-        mPinLoginButton.setIndeterminateProgressMode(true);
-    }
-
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         final GaService service = mService;
 
         final SharedPreferences prefs = service.cfg("pin");
         final String ident = prefs.getString("ident", null);
+
+        if (ident == null) {
+            startActivity(new Intent(this, FirstScreenActivity.class));
+            finish();
+            return;
+        }
+
+        setContentView(R.layout.activity_pin);
+        mPinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
+        mPinLoginButton.setIndeterminateProgressMode(true);
+        mPinText = (EditText) findViewById(R.id.pinText);
+        mPinError = (TextView) findViewById(R.id.pinErrorText);
+
         final String androidLogin = prefs.getString("native", null);
 
-        if (androidLogin == null && ident != null) {
-            setupUi();
+        if (androidLogin == null) {
 
-            final EditText pinText = (EditText) findViewById(R.id.pinText);
-            final TextView pinError = (TextView) findViewById(R.id.pinErrorText);
-
-            pinText.setOnEditorActionListener(
+            mPinText.setOnEditorActionListener(
                     new EditText.OnEditorActionListener() {
                         @Override
                         public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
@@ -181,8 +185,8 @@ public class PinActivity extends GaActivity implements Observer {
                                             event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                                 if (event == null || !event.isShiftPressed()) {
                                     // the user is done typing.
-                                    if (!pinText.getText().toString().isEmpty()) {
-                                        login(pinText, pinError);
+                                    if (!mPinText.getText().toString().isEmpty()) {
+                                        login();
                                         return true; // consume.
                                     }
                                 }
@@ -195,19 +199,14 @@ public class PinActivity extends GaActivity implements Observer {
             mPinLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    login(pinText, pinError);
+                    login();
                 }
             });
 
-        } else if (androidLogin != null && ident != null) {
-            setupUi();
-            final EditText pinText = (EditText) findViewById(R.id.pinText);
-            pinText.setEnabled(false);
+        } else  {
+            mPinText.setEnabled(false);
             mPinLoginButton.setProgress(50);
             tryDecrypt();
-        } else {
-            startActivity(new Intent(this, FirstScreenActivity.class));
-            finish();
         }
     }
 
