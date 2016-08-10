@@ -27,7 +27,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
     private static final int REQUEST_ENABLE_2FA = 0;
     private String twoFacMethod;
 
-    private final CheckBoxPreference getPref(final String method) {
+    private CheckBoxPreference getPref(final String method) {
         return (CheckBoxPreference) findPreference("twoFac" + method);
     }
 
