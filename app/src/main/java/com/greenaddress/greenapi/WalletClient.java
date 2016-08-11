@@ -363,7 +363,17 @@ public class WalletClient {
         return simpleCall("login.available_currencies", Map.class);
     }
 
-    private void subscribeToWallet() {
+    private void onAuthenticationComplete(final Map<?,?> loginData, final ISigningWallet wallet, final String username, final String password) throws IOException {
+        mLoginData = new LoginData(loginData);
+        mHDParent = wallet;
+        mWatchOnlyUsername = username;
+        mWatchOnlyPassword = password;
+
+        if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
+            // Enable rbf if server supports it and not disabled by user explicitly
+            setUserConfig("replace_by_fee", Boolean.TRUE, false);
+        }
+
         clientSubscribe("txs.wallet_" + mLoginData.receivingId, Map.class, new EventHandler() {
             @Override
             public void onEvent(final String topicUri, final Object event) {
@@ -511,11 +521,7 @@ public class WalletClient {
         final Object ret = syncCall("login.watch_only",  Object.class, "custom", credentials, false);
         final Map<?, ?> json;
         json = new MappingJsonFactory().getCodec().readValue((String)ret, Map.class);
-        mLoginData = new LoginData(json);
-        subscribeToWallet();  // requires receivingId to be set
-        mHDParent = null;
-        mWatchOnlyUsername = username;
-        mWatchOnlyPassword = password;
+        onAuthenticationComplete(json, null, username, password);  // requires receivingId to be set
         return mLoginData;
     }
 
@@ -569,16 +575,7 @@ public class WalletClient {
             throw new LoginFailed();
         }
 
-        mLoginData = new LoginData((Map) ret);
-        subscribeToWallet();  // requires receivingId to be set
-        mHDParent = signingWallet;
-        mWatchOnlyUsername = null;
-        mWatchOnlyPassword = null;
-
-        if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
-            // Enable rbf if server supports it and not disabled by user explicitly
-            setUserConfig("replace_by_fee", Boolean.TRUE, false);
-        }
+        onAuthenticationComplete((Map <?,?>) ret, signingWallet, null, null);  // requires receivingId to be set
         return mLoginData;
     }
 
