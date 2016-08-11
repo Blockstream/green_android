@@ -424,7 +424,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        if (mService.isWatchOnly())
+            getMenuInflater().inflate(R.menu.watchonly, menu);
+        else
+            getMenuInflater().inflate(R.menu.main, menu);
         mMenu = menu;
         return true;
     }
@@ -530,7 +533,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            if (mService.isWatchOnly())
+                return 2;
             return 3;
         }
 

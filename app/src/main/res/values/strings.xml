@@ -221,4 +221,14 @@
     <string name="no_peers_connected">No Peers Connected</string>
     <string name="settings_currency">Fiat exchange currency</string>
     <string name="settings_denomination">Bitcoin denomination</string>
+    <string name="watchOnlyLogin">Watch only login</string>
+    <string name="watchOnlyLoginStatus">Enabled: %1$s</string>
+    <string name="watchOnlyLoginSetup">Touch to setup</string>
+    <string name="watchOnlyLoginDisabled">Watch Only disabled</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="enter_valid_username">Please enter a valid username</string>
+    <string name="enter_valid_password">The password can\'t be empty</string>
+    <string name="error_username_not_found_or_wrong_password">User not found or invalid password</string>
+    <string name="error_username_not_available">Username not available</string>
 </resources>

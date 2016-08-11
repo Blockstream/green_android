@@ -146,6 +146,11 @@ public class GaService extends Service {
         return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
     }
 
+    private void setFiatCurrency(final String currency) {
+        getLoginData().currency = fiatCurrency;
+        fiatCurrency = currency;
+    }
+
     private void getAvailableTwoFacMethods() {
         Futures.addCallback(mClient.getTwoFacConfig(), new FutureCallback<Map<?, ?>>() {
             @Override
@@ -171,8 +176,16 @@ public class GaService extends Service {
             public void onSuccess(final Void result) {
                 mState.transitionTo(ConnState.CONNECTED);
                 Log.i(TAG, "Success CONNECTED callback");
-                if (!mState.isForcedOff() && mClient.getSigningWallet() != null) {
-                    loginImpl(mClient.login(mClient.getSigningWallet(), deviceId));
+                if (mState.isForcedOff())
+                    return;
+                try {
+                    if (mClient.isWatchOnly())
+                            loginImpl(mClient.watchOnlylogin(mClient.getWatchOnlyUsername(), mClient.getWatchOnlyPassword()));
+                    else if (mClient.getSigningWallet() != null)
+                        loginImpl(mClient.login(mClient.getSigningWallet(), deviceId));
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    this.onFailure(e);
                 }
             }
 
@@ -194,6 +207,10 @@ public class GaService extends Service {
         }
     }
 
+    public boolean isWatchOnly() {
+        return mClient.isWatchOnly();
+    }
+
     // Sugar for fetching/editing preferences
     public SharedPreferences cfg() { return PreferenceManager.getDefaultSharedPreferences(this); }
     public SharedPreferences cfg(final String name) { return getSharedPreferences(name, MODE_PRIVATE); }
@@ -206,7 +223,7 @@ public class GaService extends Service {
         return mClient.getUserConfig(key);
     }
 
-    public boolean isSPVEnabled() { return cfg("SPV").getBoolean("enabled", true); }
+    public boolean isSPVEnabled() { return !isWatchOnly() && cfg("SPV").getBoolean("enabled", true); }
     public String getProxyHost() { return cfg().getString("proxy_host", null); }
     public String getProxyPort() { return cfg().getString("proxy_port", null); }
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
@@ -355,6 +372,14 @@ public class GaService extends Service {
         return verifyP2SHSpendableBy(txOutput.getScriptPubKey(), subAccount, pointer);
     }
 
+    public String getWatchOnlyUsername() throws Exception {
+        return mClient.getWatchOnlyUsername();
+    }
+
+    public boolean registerWatchOnly(final String username, final String password) throws Exception {
+        return mClient.registerWatchOnly(username, password);
+    }
+
     private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> f) {
         mState.transitionTo(ConnState.LOGGINGIN);
         Futures.addCallback(f, new FutureCallback<LoginData>() {
@@ -376,7 +401,8 @@ public class GaService extends Service {
                     balanceObservables.put(pointer, new GaObservable());
                     updateBalance(pointer);
                 }
-                getAvailableTwoFacMethods();
+                if (!isWatchOnly())
+                    getAvailableTwoFacMethods();
                 spv.startIfEnabled();
                 mState.transitionTo(ConnState.LOGGEDIN);
             }
@@ -392,6 +418,14 @@ public class GaService extends Service {
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
         return loginImpl(mClient.login(signingWallet, deviceId));
+    }
+
+    public ListenableFuture<LoginData> watchOnlyLogin(final String username, final String password) {
+        return loginImpl(mClient.watchOnlylogin(username, password));
+    }
+
+    public void disableWatchOnly() throws Exception {
+        mClient.disableWatchOnly();
     }
 
     public ListenableFuture<LoginData> login(final String mnemonics) {
@@ -441,6 +475,8 @@ public class GaService extends Service {
             public void onSuccess(final Map<?, ?> result) {
                 balancesCoin.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
                 fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
+                if (mClient.isWatchOnly())
+                    setFiatCurrency((String) result.get("fiat_currency"));
                 // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
                 // while the server can return more, hence toBigInteger instead here:
                 final BigInteger tmpValue = new BigDecimal((String) result.get("fiat_value"))
@@ -619,9 +655,18 @@ public class GaService extends Service {
                 } else {
                     scriptHash = Utils.sha256hash160(script);
                 }
-                return Futures.transform(verifyP2SHSpendableBy(
-                        ScriptBuilder.createP2SHOutputScript(scriptHash),
-                        subAccount, pointer), new Function<Boolean, QrBitmap>() {
+
+                final ListenableFuture<Boolean> verify;
+                if (isWatchOnly()) {
+                    verify = Futures.immediateFuture(true);
+                } else {
+                    final Script sc;
+                    sc = ScriptBuilder.createP2SHOutputScript(scriptHash);
+                    verify = verifyP2SHSpendableBy(sc, subAccount, pointer);
+                }
+
+                return Futures.transform(verify,
+                        new Function<Boolean, QrBitmap>() {
                     @Override
                     public QrBitmap apply(final Boolean isValid) {
                         if (!isValid)

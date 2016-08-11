@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/proxy_preferences"
+        android:title="@string/pref_header_proxy"
+        android:visible="false" />
+    <item
+        android:id="@+id/watchonly_preference"
+        android:title="@string/watchOnlyLogin" />
+</menu>

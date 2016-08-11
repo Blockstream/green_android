@@ -7,9 +7,16 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.text.Html;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
 
@@ -108,6 +115,61 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 mService.setPricingSource(split[0], split[1]);
                 fiatCurrency.setSummary(o.toString());
                 return true;
+            }
+        });
+        final Preference watchOnlyLogin = findPreference("watch_only_login");
+        try {
+            final String username = mService.getWatchOnlyUsername();
+            if (username != null) {
+                watchOnlyLogin.setSummary(getString(R.string.watchOnlyLoginStatus, username));
+            } else {
+                watchOnlyLogin.setSummary(R.string.watchOnlyLoginSetup);
+            }
+        } catch (final Exception e ) {
+            e.printStackTrace();
+        }
+
+        watchOnlyLogin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_set_watchonly, null, false);
+                final EditText inputUser = (EditText) inflatedLayout.findViewById(R.id.input_user);
+                try {
+                    // refetch username
+                    inputUser.setText(mService.getWatchOnlyUsername());
+                } catch (final Exception e) {}
+                final EditText inputPassword = (EditText) inflatedLayout.findViewById(R.id.input_password);
+                final MaterialDialog dialog = GaActivity.popup(getActivity(), R.string.watchOnlyLogin)
+                        .customView(inflatedLayout, true)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(final MaterialDialog dlg, final DialogAction which) {
+                                final String username = inputUser.getText().toString();
+                                final String password = inputPassword.getText().toString();
+                                if (username.isEmpty() && password.isEmpty()) {
+                                    try {
+                                        mService.disableWatchOnly();
+                                        GaActivity.toastImpl(getActivity(), R.string.watchOnlyLoginDisabled, Toast.LENGTH_LONG);
+                                        watchOnlyLogin.setSummary(R.string.watchOnlyLoginSetup);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    return;
+                                }
+                                try {
+                                    mService.registerWatchOnly(username, password);
+                                    watchOnlyLogin.setSummary(getString(R.string.watchOnlyLoginStatus, username));
+
+                                } catch (final Exception e) {
+                                    GaActivity.toastImpl(getActivity(), R.string.error_username_not_available, Toast.LENGTH_LONG);
+                                }
+                            }
+                        }).build();
+                // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
+                dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                dialog.show();
+                return false;
             }
         });
 

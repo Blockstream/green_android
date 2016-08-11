@@ -260,8 +260,7 @@ public class FirstScreenActivity extends GaActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        // Disable proxy until fully working
-        // getMenuInflater().inflate(R.menu.proxy_menu, menu);
+        getMenuInflater().inflate(R.menu.preauth_menu, menu);
         return true;
     }
 
@@ -274,12 +273,18 @@ public class FirstScreenActivity extends GaActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        final int id = item.getItemId();
-        if (id == R.id.proxy_preferences) {
-            startNewActivity(ProxySettingsActivity.class);
-            return true;
+
+        switch (item.getItemId()) {
+            case R.id.watchonly_preference:
+                startActivity(new Intent(FirstScreenActivity.this, WatchOnlyLoginActivity.class));
+                return true;
+            case R.id.proxy_preferences:
+                startActivity(new Intent(FirstScreenActivity.this, ProxySettingsActivity.class));
+                return true;
+            case R.id.action_settings:
+                return true;
         }
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -154,6 +154,7 @@
             android:label="@string/pref_header_proxy"/>
         <activity android:name=".FailHardActivity"/>
         <activity android:name=".AboutActivity"/>
+        <activity android:name=".WatchOnlyLoginActivity"/>
     </application>
 
 </manifest>

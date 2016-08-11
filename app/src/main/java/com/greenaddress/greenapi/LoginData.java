@@ -11,7 +11,7 @@ public class LoginData {
     private final static int EPOCH_START = 1393628400;
 
     public final String exchange;
-    public final String currency;
+    public String currency;
     public final Map<String, Object> userConfig;
     public Map<String, Object> feeEstimates;
     public final ArrayList subAccounts;

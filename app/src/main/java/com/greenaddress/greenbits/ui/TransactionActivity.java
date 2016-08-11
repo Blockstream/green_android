@@ -173,53 +173,6 @@ public class TransactionActivity extends GaActivity {
 
             openInBrowser(hashText, txItem.txhash, Network.BLOCKEXPLORER_TX);
 
-            memoEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View view) {
-                        final boolean editVisible = memoEditText.getVisibility() == View.VISIBLE;
-                        memoEditText.setText(memoText.getText().toString());
-                        memoEditText.setVisibility(editVisible ? View.GONE : View.VISIBLE);
-                        saveMemo.setVisibility(editVisible ? View.GONE : View.VISIBLE);
-                        memoText.setVisibility(editVisible ? View.VISIBLE: View.GONE);
-                }
-            });
-
-            saveMemo.setOnClickListener(new View.OnClickListener() {
-
-                private void onDisableEdit() {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            memoText.setText(memoEditText.getText().toString());
-                            saveMemo.setVisibility(View.GONE);
-                            memoEditText.setVisibility(View.GONE);
-                            if (memoText.getText().toString().isEmpty()) {
-                                memoText.setVisibility(View.GONE);
-                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
-                            } else {
-                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.VISIBLE);
-                                memoText.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void onClick(final View view) {
-                    final String edited = memoEditText.getText().toString();
-                    if (!edited.equals(memoText.getText().toString())) {
-                        CB.after(getGAService().changeMemo(txItem.txhash, edited),
-                                 new CB.Toast<Boolean>(gaActivity) {
-                            @Override
-                            public void onSuccess(final Boolean result) {
-                                onDisableEdit();
-                            }
-                        });
-                    } else {
-                        onDisableEdit();
-                    }
-                }
-            });
             final Coin fee = Coin.valueOf(txItem.fee);
             final Coin feePerKb;
             if (txItem.size > 0) {
@@ -228,6 +181,8 @@ public class TransactionActivity extends GaActivity {
                 // shouldn't happen, but just in case let's avoid division by zero
                 feePerKb = Coin.valueOf(0);
             }
+
+            final boolean isWatchOnly = getGAService().isWatchOnly();
 
             if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT) || txItem.isSpent) {
                 if (txItem.getConfirmations() > 0) {
@@ -250,7 +205,7 @@ public class TransactionActivity extends GaActivity {
                     }
                     bestEstimate = (Integer)((Map)feeEstimates.get("1")).get("blocks");
                     unconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
-                    if (bestEstimate < currentEstimate && txItem.replaceable) {
+                    if (bestEstimate < currentEstimate && txItem.replaceable && !isWatchOnly) {
                         if (bestEstimate == 1) {
                             unconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
                         } else {
@@ -281,7 +236,7 @@ public class TransactionActivity extends GaActivity {
                 unconfirmedIncreaseFee.setVisibility(View.GONE);
                 unconfirmedEstimatedBlocks.setVisibility(View.GONE);
                 if (txItem.getConfirmations() > 0) {
-                    if (txItem.spvVerified) {
+                    if (isWatchOnly || txItem.spvVerified ) {
                         rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
                     } else {
                         if (getGAService().spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
@@ -336,9 +291,15 @@ public class TransactionActivity extends GaActivity {
             dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));
             if (txItem.memo != null && txItem.memo.length() > 0) {
                 memoText.setText(txItem.memo);
+                if (isWatchOnly)
+                    memoEdit.setVisibility(View.GONE);
             } else {
                 memoText.setVisibility(View.GONE);
                 rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
+                if (isWatchOnly) {
+                    rootView.findViewById(R.id.txMemoTitle).setVisibility(View.GONE);
+                    memoEdit.setVisibility(View.GONE);
+                }
             }
             // FIXME: use a list instead of reusing a TextView to show all double spends to allow
             // for a warning to be shown before the browser is open
@@ -387,6 +348,57 @@ public class TransactionActivity extends GaActivity {
                 receivedOnTitle.setVisibility(View.GONE);
                 rootView.findViewById(R.id.txReceivedOnMargin).setVisibility(View.GONE);
             }
+
+            if (isWatchOnly)
+                return rootView;
+
+            memoEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    final boolean editVisible = memoEditText.getVisibility() == View.VISIBLE;
+                    memoEditText.setText(memoText.getText().toString());
+                    memoEditText.setVisibility(editVisible ? View.GONE : View.VISIBLE);
+                    saveMemo.setVisibility(editVisible ? View.GONE : View.VISIBLE);
+                    memoText.setVisibility(editVisible ? View.VISIBLE : View.GONE);
+                }
+            });
+
+            saveMemo.setOnClickListener(new View.OnClickListener() {
+
+                private void onDisableEdit() {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            memoText.setText(memoEditText.getText().toString());
+                            saveMemo.setVisibility(View.GONE);
+                            memoEditText.setVisibility(View.GONE);
+                            if (memoText.getText().toString().isEmpty()) {
+                                memoText.setVisibility(View.GONE);
+                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
+                            } else {
+                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.VISIBLE);
+                                memoText.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onClick(final View view) {
+                    final String edited = memoEditText.getText().toString();
+                    if (!edited.equals(memoText.getText().toString())) {
+                        CB.after(getGAService().changeMemo(txItem.txhash, edited),
+                                new CB.Toast<Boolean>(gaActivity) {
+                                    @Override
+                                    public void onSuccess(final Boolean result) {
+                                        onDisableEdit();
+                                    }
+                                });
+                    } else {
+                        onDisableEdit();
+                    }
+                }
+            });
 
             return rootView;
         }

@@ -312,10 +312,7 @@ public class PinActivity extends GaActivity implements Observer {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.common_menu, menu);
-
-        // disable proxy until fully working
-        // getMenuInflater().inflate(R.menu.proxy_menu, menu);
-
+        getMenuInflater().inflate(R.menu.preauth_menu, menu);
         mMenu = menu;
         return true;
     }
@@ -327,6 +324,9 @@ public class PinActivity extends GaActivity implements Observer {
                 return true;
             case R.id.proxy_preferences:
                 startActivity(new Intent(this, ProxySettingsActivity.class));
+                return true;
+            case R.id.watchonly_preference:
+                startActivity(new Intent(PinActivity.this, WatchOnlyLoginActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);
