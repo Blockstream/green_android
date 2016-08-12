@@ -2,11 +2,8 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
@@ -40,23 +37,12 @@ public class WatchOnlyLoginActivity extends GaActivity {
         });
 
         mPasswordText.setOnEditorActionListener(
-                new EditText.OnEditorActionListener() {
+                UI.getListenerRunOnEnter(new Runnable() {
                     @Override
-                    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                                actionId == EditorInfo.IME_ACTION_DONE ||
-                                (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
-                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            if (event == null || !event.isShiftPressed()) {
-                                // the user is done typing.
-                                login();
-                                return true; // consume.
-
-                            }
-                        }
-                        return false; // pass on to other listeners.
+                    public void run() {
+                        login();
                     }
-                }
+                })
         );
     }
 

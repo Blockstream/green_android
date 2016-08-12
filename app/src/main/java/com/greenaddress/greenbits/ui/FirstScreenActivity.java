@@ -109,7 +109,7 @@ public class FirstScreenActivity extends GaActivity {
                         FirstScreenActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                popup(FirstScreenActivity.this, "Ledger Wallet Trustlet")
+                                UI.popup(FirstScreenActivity.this, "Ledger Wallet Trustlet")
                                         .content("Ledger Wallet Trustlet is available - do you want to use it to register ?")
                                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                                             @Override

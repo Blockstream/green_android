@@ -349,7 +349,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                         addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
-                        popup(caller, R.string.sweepAddressTitle, R.string.sweep, R.string.cancel)
+                        UI.popup(caller, R.string.sweepAddressTitle, R.string.sweep, R.string.cancel)
                             .customView(inflatedLayout, true)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
                                 Transaction tx;

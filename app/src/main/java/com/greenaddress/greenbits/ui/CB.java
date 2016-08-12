@@ -47,7 +47,7 @@ public final class CB {
 
        @Override
        final public void onFailure(final Throwable t) {
-           GaActivity.toast(mActivity, t, mEnabler);
+           UI.toast(mActivity, t, mEnabler);
        }
     }
 

@@ -119,7 +119,7 @@ public class TransactionActivity extends GaActivity {
 
                     final String stripped = domain.startsWith("www.") ? domain.substring(4) : domain;
 
-                    popup(getActivity(), R.string.warning, R.string.continueText, R.string.cancel)
+                    UI.popup(getActivity(), R.string.warning, R.string.continueText, R.string.cancel)
                         .content(getString(R.string.view_block_explorer, stripped))
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -692,7 +692,7 @@ public class TransactionActivity extends GaActivity {
                                 @Override
                                 public void run() {
                                     final boolean skipChoice = false;
-                                    mTwoFactor = GaActivity.popupTwoFactorChoice(gaActivity, service, skipChoice,
+                                    mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                                                  new CB.Runnable1T<String>() {
                                         @Override
                                         public void run(final String method) {
@@ -764,7 +764,7 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            mSummary = popup(getActivity(), R.string.feeIncreaseTitle, R.string.send, R.string.cancel)
+            mSummary = UI.popup(getActivity(), R.string.feeIncreaseTitle, R.string.send, R.string.cancel)
                     .customView(inflatedLayout, true)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override

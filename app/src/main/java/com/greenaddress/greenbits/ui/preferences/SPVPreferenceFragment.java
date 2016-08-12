@@ -8,7 +8,7 @@ import android.preference.Preference;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
 
 public class SPVPreferenceFragment extends GAPreferenceFragment
@@ -65,7 +65,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         if (s.isEmpty() || s.contains("."))
             return false;
 
-        GaActivity.popup(getActivity(), R.string.enterValidAddressTitle, android.R.string.ok)
+        UI.popup(getActivity(), R.string.enterValidAddressTitle, android.R.string.ok)
                   .content(R.string.enterValidAddressText).build().show();
         return true;
     }
@@ -111,7 +111,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                     (mService.getProxyHost() == null || mService.getProxyPort() == null)) {
                     // Certain ciphers have been deprecated in API 23+, breaking Orchid
                     // and HS connectivity (Works with Orbot socks proxy if set)
-                    GaActivity.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
+                    UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
                               .content(R.string.enterValidAddressTextTorDisabled).build().show();
                     return true;
                 }
@@ -121,7 +121,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             }
 
             // Force the user to confirm that they want to use a non-Tor host
-            GaActivity.popup(getActivity(), R.string.changingWarnOnionTitle)
+            UI.popup(getActivity(), R.string.changingWarnOnionTitle)
                       .content(R.string.changingWarnOnionText)
                       .onPositive(new MaterialDialog.SingleButtonCallback() {
                           @Override

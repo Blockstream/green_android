@@ -16,7 +16,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
 
@@ -139,7 +139,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                     inputUser.setText(mService.getWatchOnlyUsername());
                 } catch (final Exception e) {}
                 final EditText inputPassword = (EditText) inflatedLayout.findViewById(R.id.input_password);
-                final MaterialDialog dialog = GaActivity.popup(getActivity(), R.string.watchOnlyLogin)
+                final MaterialDialog dialog = UI.popup(getActivity(), R.string.watchOnlyLogin)
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -149,7 +149,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                 if (username.isEmpty() && password.isEmpty()) {
                                     try {
                                         mService.disableWatchOnly();
-                                        GaActivity.toastImpl(getActivity(), R.string.watchOnlyLoginDisabled, Toast.LENGTH_LONG);
+                                        UI.toast(getActivity(), R.string.watchOnlyLoginDisabled, Toast.LENGTH_LONG);
                                         watchOnlyLogin.setSummary(R.string.watchOnlyLoginSetup);
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -161,7 +161,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                     watchOnlyLogin.setSummary(getString(R.string.watchOnlyLoginStatus, username));
 
                                 } catch (final Exception e) {
-                                    GaActivity.toastImpl(getActivity(), R.string.error_username_not_available, Toast.LENGTH_LONG);
+                                    UI.toast(getActivity(), R.string.error_username_not_available, Toast.LENGTH_LONG);
                                 }
                             }
                         }).build();

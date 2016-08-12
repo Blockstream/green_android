@@ -23,7 +23,7 @@ public class FailHardActivity extends AppCompatActivity {
         final Intent i = getIntent();
         Log.e(TAG, i.getStringExtra("errorTitle") + ":" + i.getStringExtra("errorContent"));
 
-        GaActivity.popup(this, i.getStringExtra("errorTitle"))
+        UI.popup(this, i.getStringExtra("errorTitle"))
                   .content(i.getStringExtra("errorContent"))
                   .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override

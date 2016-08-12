@@ -15,7 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.ui.CB;
-import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
 
@@ -72,7 +72,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         }
 
         final boolean skipChoice = false;
-        final Dialog dlg = GaActivity.popupTwoFactorChoice(getActivity(), mService, skipChoice,
+        final Dialog dlg = UI.popupTwoFactorChoice(getActivity(), mService, skipChoice,
                                                      new CB.Runnable1T<String>() {
             @Override
             public void run(final String whichMethod) {
@@ -105,7 +105,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         }
         prompt.setText(getString(R.string.twoFacProvideConfirmationCode, withMethodName));
 
-        GaActivity.popup(this.getActivity(), "2FA")
+        UI.popup(this.getActivity(), "2FA")
                   .customView(inflatedLayout, true)
                   .onPositive(new MaterialDialog.SingleButtonCallback() {
                       @Override
