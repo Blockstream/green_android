@@ -126,7 +126,7 @@ public class SendFragment extends SubaccountFragment {
             }
         }
 
-        mSummary = GaActivity.popup(getActivity(), R.string.newTxTitle, R.string.send, R.string.cancel)
+        mSummary = UI.popup(getActivity(), R.string.newTxTitle, R.string.send, R.string.cancel)
                 .customView(inflatedLayout, true)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -398,7 +398,7 @@ public class SendFragment extends SubaccountFragment {
                                                             }
                                                             final boolean skipChoice = !ptx.requires_2factor ||
                                                                                         twoFacConfig == null || !((Boolean) twoFacConfig.get("any"));
-                                                            mTwoFactor = GaActivity.popupTwoFactorChoice(gaActivity, service, skipChoice,
+                                                            mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                                                                          new CB.Runnable1T<String>() {
                                                                 @Override
                                                                 public void run(final String method) {

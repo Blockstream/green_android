@@ -9,11 +9,9 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -106,7 +104,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                         }
                                     });
                                 }
-                                popup(RequestLoginActivity.this, "Hardware Wallet PIN")
+                                UI.popup(RequestLoginActivity.this, "Hardware Wallet PIN")
                                     .customView(inflatedLayout, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -132,7 +130,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             public void run() {
                                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
                                 final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.trezorPassphraseValue);
-                                popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
+                                UI.popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
                                     .customView(inflatedLayout, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -232,7 +230,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
                 final EditText pinValue = (EditText) inflatedLayout.findViewById(R.id.btchipPINValue);
-                btchipDialog = popup(RequestLoginActivity.this, "BTChip PIN")
+                btchipDialog = UI.popup(RequestLoginActivity.this, "BTChip PIN")
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -256,25 +254,15 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 btchipWindow.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
                 btchipWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 pinValue.setOnEditorActionListener(
-                        new EditText.OnEditorActionListener() {
+                        UI.getListenerRunOnEnter(new Runnable() {
                             @Override
-                            public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                                        actionId == EditorInfo.IME_ACTION_DONE ||
-                                        (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
-                                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                                    if (event == null || !event.isShiftPressed()) {
-                                        // the user is done typing.
-                                        final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
-                                        prog.setVisibility(View.VISIBLE);
-                                        btchipDialog.hide();
-                                        pinFuture.set(pinValue.getText().toString());
-                                        return true; // consume.
-                                    }
-                                }
-                                return false; // pass on to other listeners.
+                            public void run() {
+                                final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
+                                prog.setVisibility(View.VISIBLE);
+                                btchipDialog.hide();
+                                pinFuture.set(pinValue.getText().toString());
                             }
-                        }
+                        })
                 );
                 btchipDialog.show();
             }

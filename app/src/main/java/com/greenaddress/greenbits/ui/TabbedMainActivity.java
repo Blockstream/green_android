@@ -349,7 +349,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                         addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
-                        popup(caller, R.string.sweepAddressTitle, R.string.sweep, R.string.cancel)
+                        UI.popup(caller, R.string.sweepAddressTitle, R.string.sweep, R.string.cancel)
                             .customView(inflatedLayout, true)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
                                 Transaction tx;
@@ -424,7 +424,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        if (mService.isWatchOnly())
+            getMenuInflater().inflate(R.menu.watchonly, menu);
+        else
+            getMenuInflater().inflate(R.menu.main, menu);
         mMenu = menu;
         return true;
     }
@@ -530,7 +533,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            if (mService.isWatchOnly())
+                return 2;
             return 3;
         }
 

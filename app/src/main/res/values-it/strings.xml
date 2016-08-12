@@ -183,4 +183,11 @@
   <string name="trustedspvExample">Per esempio: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="view_block_explorer">Sei sicuro di voler mandare al block explorer %1$s i dettagli?</string>
   <string name="no_peers_connected">Nessun Nodo Connesso</string>
+  <string name="watchOnlyLoginStatus">Abilitato: %1$s</string>
+  <string name="watchOnlyLoginSetup">Tocca per configurare</string>
+  <string name="watchOnlyLoginDisabled">Watch Only disabilitato</string>
+  <string name="enter_valid_username">Per piacere inserisci un valido username</string>
+  <string name="enter_valid_password">La password non deve essere vuota</string>
+  <string name="error_username_not_found_or_wrong_password">Utente inesistente o password non corretta</string>
+  <string name="error_username_not_available">Username non disponibile</string>
 </resources>

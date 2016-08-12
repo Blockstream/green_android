@@ -65,6 +65,8 @@ public class WalletClient {
     private SocketAddress mProxy = null;
     private LoginData mLoginData;
     private ISigningWallet mHDParent;
+    private String mWatchOnlyUsername = null;
+    private String mWatchOnlyPassword = null;
     private String mMnemonics = null;
     private final OkHttpClient httpClient = new OkHttpClient();
 
@@ -287,6 +289,7 @@ public class WalletClient {
         // FIXME: Server should handle logout without having to disconnect
         mLoginData = null;
         mMnemonics = null;
+        mWatchOnlyUsername = null;
 
         mHDParent = null;
 
@@ -360,7 +363,17 @@ public class WalletClient {
         return simpleCall("login.available_currencies", Map.class);
     }
 
-    private void subscribeToWallet() {
+    private void onAuthenticationComplete(final Map<?,?> loginData, final ISigningWallet wallet, final String username, final String password) throws IOException {
+        mLoginData = new LoginData(loginData);
+        mHDParent = wallet;
+        mWatchOnlyUsername = username;
+        mWatchOnlyPassword = password;
+
+        if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
+            // Enable rbf if server supports it and not disabled by user explicitly
+            setUserConfig("replace_by_fee", Boolean.TRUE, false);
+        }
+
         clientSubscribe("txs.wallet_" + mLoginData.receivingId, Map.class, new EventHandler() {
             @Override
             public void onEvent(final String topicUri, final Object event) {
@@ -501,6 +514,47 @@ public class WalletClient {
         return login(signingWallet, deviceId);
     }
 
+    private LoginData watchOnlyLoginImpl(final String username, final String password) throws Exception {
+        final Map<String, String> credentials = new HashMap<>(2);
+        credentials.put("username", username);
+        credentials.put("password", password);
+        final Object ret = syncCall("login.watch_only",  Object.class, "custom", credentials, false);
+        final Map<?, ?> json;
+        json = new MappingJsonFactory().getCodec().readValue((String)ret, Map.class);
+        onAuthenticationComplete(json, null, username, password);  // requires receivingId to be set
+        return mLoginData;
+    }
+
+    public void disableWatchOnly() throws Exception {
+        syncCall("addressbook.disable_sync",  Void.class, "custom");
+        mWatchOnlyPassword = null;
+        mWatchOnlyUsername = null;
+    }
+
+    public boolean isWatchOnly() {
+        return mWatchOnlyUsername != null && !mWatchOnlyUsername.isEmpty() && mWatchOnlyPassword != null && !mWatchOnlyPassword.isEmpty();
+    }
+
+    public boolean registerWatchOnly(final String username, final String password) throws Exception {
+
+        final boolean res = syncCall("addressbook.sync_custom", Boolean.class, username , password);
+        if (res)
+            mWatchOnlyUsername = username;
+        return res;
+    }
+
+    public String getWatchOnlyUsername() throws Exception {
+        if (mWatchOnlyUsername == null) {
+            final Map<?, ?> sync_status = syncCall("addressbook.get_sync_status", Map.class);
+            mWatchOnlyUsername = (String) sync_status.get("username");
+        }
+        return mWatchOnlyUsername;
+    }
+
+    public String getWatchOnlyPassword() {
+        return mWatchOnlyPassword;
+    }
+
     private LoginData loginImpl(final ISigningWallet signingWallet, final String deviceId) throws Exception, LoginFailed {
 
         // FIXME: Unify this RPC call, this is ugly
@@ -521,15 +575,21 @@ public class WalletClient {
             throw new LoginFailed();
         }
 
-        mLoginData = new LoginData((Map) ret);
-        subscribeToWallet();  // requires receivingId to be set
-        mHDParent = signingWallet;
-
-        if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
-            // Enable rbf if server supports it and not disabled by user explicitly
-            setUserConfig("replace_by_fee", Boolean.TRUE, false);
-        }
+        onAuthenticationComplete((Map <?,?>) ret, signingWallet, null, null);  // requires receivingId to be set
         return mLoginData;
+    }
+
+    public ListenableFuture<LoginData> watchOnlylogin(final String username, final String password) {
+        return mExecutor.submit(new Callable<LoginData>() {
+            @Override
+            public LoginData call() {
+                try {
+                    return watchOnlyLoginImpl(username, password);
+                } catch (final Throwable t) {
+                    throw Throwables.propagate(t);
+                }
+            }
+        });
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String deviceId) {

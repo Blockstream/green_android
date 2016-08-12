@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,17 +7,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
-
-import java.util.List;
 
 /**
  * Base class for activities within the application.
@@ -29,7 +23,6 @@ import java.util.List;
 public abstract class GaActivity extends AppCompatActivity {
 
     private static final String TAG = GaActivity.class.getSimpleName();
-    private static final int INVALID_RESOURCE_ID = 0;
 
     // Both of these variables are only assigned in the UI thread.
     // mService is available to all derived classes as soon as
@@ -47,7 +40,7 @@ public abstract class GaActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
         super.onCreate(savedInstanceState);
         final int viewId = getMainViewId();
-        if (viewId != INVALID_RESOURCE_ID)
+        if (viewId != UI.INVALID_RESOURCE_ID)
             setContentView(viewId);
 
         // Call onCreateWithService() on the GUI thread once our service
@@ -104,7 +97,7 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     /** Override to provide the main view id */
-    protected int getMainViewId() { return INVALID_RESOURCE_ID; }
+    protected int getMainViewId() { return UI.INVALID_RESOURCE_ID; }
 
     /** Override to provide onCreate/onResume/onPause processing.
       * When called, our service is guaranteed to be available. */
@@ -151,97 +144,9 @@ public abstract class GaActivity extends AppCompatActivity {
         });
     }
 
-    public static void toastImpl(final Activity activity, final int id, final int len) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() { Toast.makeText(activity, id, len).show(); }
-        });
-    }
-
-    public static void toastImpl(final Activity activity, final String s, final int len) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() { Toast.makeText(activity, s, len).show(); }
-        });
-    }
-
-    public static void toast(final Activity activity, final Throwable t, final Button reenable) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                if (reenable != null)
-                    reenable.setEnabled(true);
-                t.printStackTrace();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-    public void toast(final Throwable t) { toast(this, t, null); }
-    public void toast(final int id) { toastImpl(this, id, Toast.LENGTH_LONG); }
-    public void toast(final String s) { toastImpl(this, s, Toast.LENGTH_LONG); }
-    public void shortToast(final int id) { toastImpl(this, id, Toast.LENGTH_SHORT); }
-    public void shortToast(final String s) { toastImpl(this, s, Toast.LENGTH_SHORT); }
-
-    public static MaterialDialog.Builder popup(final Activity a, final String title, final int pos, final int neg) {
-        final MaterialDialog.Builder b;
-        b = new MaterialDialog.Builder(a)
-                              .title(title)
-                              .titleColorRes(R.color.white)
-                              .positiveColorRes(R.color.accent)
-                              .negativeColorRes(R.color.accent)
-                              .contentColorRes(R.color.white)
-                              .theme(Theme.DARK);
-       if (pos != INVALID_RESOURCE_ID)
-           b.positiveText(pos);
-       if (neg != INVALID_RESOURCE_ID)
-           return b.negativeText(neg);
-       return b;
-    }
-
-    public static MaterialDialog.Builder popup(final Activity a, final int title, final int pos, final int neg) {
-        return popup(a, a.getString(title), pos, neg);
-    }
-
-    public static MaterialDialog.Builder popup(final Activity a, final String title, final int pos) {
-        return popup(a, title, pos, INVALID_RESOURCE_ID);
-    }
-
-    public static MaterialDialog.Builder popup(final Activity a, final int title, final int pos) {
-        return popup(a, title, pos, INVALID_RESOURCE_ID);
-    }
-
-    public static MaterialDialog.Builder popup(final Activity a, final String title) {
-        return popup(a, title, android.R.string.ok, android.R.string.cancel);
-    }
-
-    public static MaterialDialog.Builder popup(final Activity a, final int title) {
-        return popup(a, title, android.R.string.ok, android.R.string.cancel);
-    }
-
-    public static MaterialDialog popupTwoFactorChoice(final Activity a, final GaService service,
-                                                      final boolean skip, final CB.Runnable1T<String> callback) {
-        final List<String> names = service.getEnabledTwoFacNames(false);
-
-        if (skip || names.size() <= 1) {
-           // Caller elected to skip, or no choices are available: don't prompt
-           a.runOnUiThread(new Runnable() {
-               @Override
-               public void run() {
-                   callback.run(names.isEmpty() ? null : service.getEnabledTwoFacNames(true).get(0));
-               }
-           });
-           return null;
-        }
-
-        // Return a pop up dialog to let the user choose.
-        String[] namesArray = new String[names.size()];
-        namesArray = names.toArray(namesArray);
-        return popup(a, R.string.twoFactorChoicesTitle, R.string.choose, R.string.cancel)
-                   .items(namesArray)
-                   .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
-                       @Override
-                       public boolean onSelection(MaterialDialog dlg, View v, int which, CharSequence text) {
-                           final List<String> systemNames = service.getEnabledTwoFacNames(true);
-                           callback.run(systemNames.get(which));
-                           return true;
-                       }
-                   }).build();
-    }
+    public void toast(final Throwable t) { UI.toast(this, t, null); }
+    public void toast(final int id) { UI.toast(this, id, Toast.LENGTH_LONG); }
+    public void toast(final String s) { UI.toast(this, s, Toast.LENGTH_LONG); }
+    public void shortToast(final int id) { UI.toast(this, id, Toast.LENGTH_SHORT); }
+    public void shortToast(final String s) { UI.toast(this, s, Toast.LENGTH_SHORT); }
 }

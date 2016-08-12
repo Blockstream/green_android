@@ -9,11 +9,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -176,25 +174,12 @@ public class PinActivity extends GaActivity implements Observer {
         if (androidLogin == null) {
 
             mPinText.setOnEditorActionListener(
-                    new EditText.OnEditorActionListener() {
+                    UI.getListenerRunOnEnter(new Runnable() {
                         @Override
-                        public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                                    actionId == EditorInfo.IME_ACTION_DONE ||
-                                    (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
-                                            event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                                if (event == null || !event.isShiftPressed()) {
-                                    // the user is done typing.
-                                    if (!mPinText.getText().toString().isEmpty()) {
-                                        login();
-                                        return true; // consume.
-                                    }
-                                }
-                            }
-                            return false; // pass on to other listeners.
+                        public void run() {
+                            login();
                         }
-                    }
-            );
+                    }));
 
             mPinLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -312,10 +297,7 @@ public class PinActivity extends GaActivity implements Observer {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.common_menu, menu);
-
-        // disable proxy until fully working
-        // getMenuInflater().inflate(R.menu.proxy_menu, menu);
-
+        getMenuInflater().inflate(R.menu.preauth_menu, menu);
         mMenu = menu;
         return true;
     }
@@ -327,6 +309,9 @@ public class PinActivity extends GaActivity implements Observer {
                 return true;
             case R.id.proxy_preferences:
                 startActivity(new Intent(this, ProxySettingsActivity.class));
+                return true;
+            case R.id.watchonly_preference:
+                startActivity(new Intent(PinActivity.this, WatchOnlyLoginActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

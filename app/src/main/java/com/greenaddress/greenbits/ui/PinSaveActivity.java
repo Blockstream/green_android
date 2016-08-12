@@ -5,17 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
@@ -126,23 +123,12 @@ public class PinSaveActivity extends GaActivity {
         }
 
         mPinText.setOnEditorActionListener(
-                new EditText.OnEditorActionListener() {
+                UI.getListenerRunOnEnter(new Runnable() {
                     @Override
-                    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                                actionId == EditorInfo.IME_ACTION_DONE ||
-                                (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
-                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            if (event == null || !event.isShiftPressed()) {
-                                // the user is done typing.
-                                setPin(mPinText.getText().toString());
-                                return true; // consume.
-                            }
-                        }
-                        return false; // pass on to other listeners.
+                    public void run() {
+                        setPin(mPinText.getText().toString());
                     }
-                }
-        );
+                }));
 
         mSaveButton = (CircularProgressButton) mapClick(R.id.pinSaveButton, new View.OnClickListener() {
             public void onClick(final View view) {
