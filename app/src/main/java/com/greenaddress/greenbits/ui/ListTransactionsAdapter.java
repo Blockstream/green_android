@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,16 +103,18 @@ public class ListTransactionsAdapter extends
                 && txItem.counterparty != null && txItem.counterparty.length() > 0
                 && !GaService.isValidAddress(txItem.counterparty);
 
-        final String message = txItem.memo == null || txItem.memo.isEmpty() ?
-                humanCpty ?
-                        txItem.counterparty
-                        :
-                        getTypeString(txItem.type)
-                :
-                humanCpty ?
-                        String.format("%s %s", txItem.counterparty, txItem.memo)
-                        :
-                        txItem.memo;
+        final String message;
+        if (TextUtils.isEmpty(txItem.memo)) {
+            if (humanCpty)
+                message = txItem.counterparty;
+            else
+                message = getTypeString(txItem.type);
+        } else {
+            if (humanCpty)
+                message = String.format("%s %s", txItem.counterparty, txItem.memo);
+            else
+                message = txItem.memo;
+        }
 
         holder.textWho.setText(message);
 

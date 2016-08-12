@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
@@ -92,7 +93,7 @@ public class SendFragment extends SubaccountFragment {
 
         amountScale.setText(Html.fromHtml(prefix));
         feeScale.setText(Html.fromHtml(prefix));
-        if (prefix == null || prefix.isEmpty()) {
+        if (TextUtils.isEmpty(prefix)) {
             amountUnit.setText("bits ");
             feeUnit.setText("bits ");
         } else {

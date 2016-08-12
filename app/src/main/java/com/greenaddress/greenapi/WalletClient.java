@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -532,7 +533,7 @@ public class WalletClient {
     }
 
     public boolean isWatchOnly() {
-        return mWatchOnlyUsername != null && !mWatchOnlyUsername.isEmpty() && mWatchOnlyPassword != null && !mWatchOnlyPassword.isEmpty();
+        return !TextUtils.isEmpty(mWatchOnlyUsername) && !TextUtils.isEmpty(mWatchOnlyPassword);
     }
 
     public boolean registerWatchOnly(final String username, final String password) throws Exception {
