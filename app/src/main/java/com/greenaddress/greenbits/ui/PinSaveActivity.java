@@ -130,13 +130,13 @@ public class PinSaveActivity extends GaActivity {
                     }
                 }));
 
-        mSaveButton = (CircularProgressButton) mapClick(R.id.pinSaveButton, new View.OnClickListener() {
+        mSaveButton = (CircularProgressButton) UI.mapClick(this, R.id.pinSaveButton, new View.OnClickListener() {
             public void onClick(final View view) {
                 setPin(mPinText.getText().toString());
             }
         });
 
-        mSkipButton = (Button) mapClick(R.id.pinSkipButton, new View.OnClickListener() {
+        mSkipButton = (Button) UI.mapClick(this, R.id.pinSkipButton, new View.OnClickListener() {
             public void onClick(final View view) {
                 setResult(RESULT_CANCELED); // Skip
                 finish();

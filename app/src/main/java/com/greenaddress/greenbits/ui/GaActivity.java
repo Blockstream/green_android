@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -112,21 +111,6 @@ public abstract class GaActivity extends AppCompatActivity {
             @Override
             public void run() {
                 GaActivity.this.finish();
-            }
-        });
-    }
-
-    protected View mapClick(final int id, final View.OnClickListener fn) {
-        final View v = findViewById(id);
-        v.setOnClickListener(fn);
-        return v;
-    }
-
-    protected View mapClick(final int id, final Intent activityIntent) {
-        return mapClick(id, new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                startActivity(activityIntent);
             }
         });
     }

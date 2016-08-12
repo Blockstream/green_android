@@ -24,6 +24,7 @@ import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.ledger.tbase.comm.LedgerTransportTEEProxy;
 import com.ledger.tbase.comm.LedgerTransportTEEProxyFactory;
@@ -47,10 +48,10 @@ public class FirstScreenActivity extends GaActivity {
 
         final GaService service = mService;
 
-        mapClick(R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
-        mapClick(R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));
+        UI.mapClick(this, R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
+        UI.mapClick(this, R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));
         final Uri homepage = Uri.parse("https://greenaddress.it");
-        mapClick(R.id.firstMadeByText, new Intent(Intent.ACTION_VIEW, homepage));
+        UI.mapClick(this, R.id.firstMadeByText, new Intent(Intent.ACTION_VIEW, homepage));
 
         Log.d(TAG, "Create FirstScreenActivity : TUI " + tuiCall);
         if (tuiCall || (transportFactory != null)) {

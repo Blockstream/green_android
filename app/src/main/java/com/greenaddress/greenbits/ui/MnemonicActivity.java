@@ -237,12 +237,12 @@ public class MnemonicActivity extends GaActivity {
 
         mOkButton.setIndeterminateProgressMode(true);
 
-        mapClick(R.id.mnemonicOkButton, new View.OnClickListener() {
+        UI.mapClick(this, R.id.mnemonicOkButton, new View.OnClickListener() {
             public void onClick(final View v) {
                 login();
             }
         });
-        mapClick(R.id.mnemonicScanIcon, new View.OnClickListener() {
+        UI.mapClick(this, R.id.mnemonicScanIcon, new View.OnClickListener() {
                                         public void onClick(final View view) {
                                             //New Marshmallow permissions paradigm
                                             final String[] perms = {"android.permission.CAMERA"};

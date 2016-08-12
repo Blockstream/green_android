@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -129,4 +130,20 @@ public abstract class UI {
             }
         });
     }
+
+    public static View mapClick(final Activity activity, final int id, final View.OnClickListener fn) {
+        final View v = activity.findViewById(id);
+        v.setOnClickListener(fn);
+        return v;
+    }
+
+    public static View mapClick(final Activity activity, final int id, final Intent activityIntent) {
+        return mapClick(activity, id, new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                activity.startActivity(activityIntent);
+            }
+        });
+    }
+
 }
