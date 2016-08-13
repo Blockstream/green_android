@@ -132,7 +132,7 @@ public class SendFragment extends SubaccountFragment {
                     @Override
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
                         if (twoFacData != null) {
-                            twoFacData.put("code", newTx2FACodeText.getText().toString());
+                            twoFacData.put("code", UI.getText(newTx2FACodeText));
                         }
                         final ListenableFuture<String> sendFuture = getGAService().signAndSendTransaction(ptx, twoFacData);
                         Futures.addCallback(sendFuture, new CB.Toast<String>(gaActivity) {
@@ -305,11 +305,11 @@ public class SendFragment extends SubaccountFragment {
                     gaActivity.toast(R.string.err_send_not_connected_will_resume);
                     return;
                 }
-                final String recipient = recipientEdit.getText().toString();
+                final String recipient = UI.getText(recipientEdit);
                 final Coin amount;
                 Coin nonFinalAmount;
                 try {
-                    nonFinalAmount = bitcoinFormat.parse(amountEdit.getText().toString());
+                    nonFinalAmount = bitcoinFormat.parse(UI.getText(amountEdit));
                 } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
@@ -329,9 +329,9 @@ public class SendFragment extends SubaccountFragment {
 
                 final Map<String, Object> privateData = new HashMap<>();
 
-
-                if (!noteText.getText().toString().isEmpty())
-                    privateData.put("memo", noteText.getText().toString());
+                final String memo = UI.getText(noteText);
+                if (!memo.isEmpty())
+                    privateData.put("memo", memo);
 
                 if (curSubaccount != 0)
                     privateData.put("subaccount", curSubaccount);
@@ -596,13 +596,13 @@ public class SendFragment extends SubaccountFragment {
 
         try {
             final ExchangeRate rate = new ExchangeRate(exchangeFiat);
-            final Coin btcValue = bitcoinFormat.parse(amountEdit.getText().toString());
+            final Coin btcValue = bitcoinFormat.parse(UI.getText(amountEdit));
             Fiat fiatValue = rate.coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             amountFiatEdit.setText(fiatValue.toPlainString());
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            if (amountEdit.getText().toString().equals(getString(R.string.send_max_amount))) {
+            if (UI.getText(amountEdit).equals(getString(R.string.send_max_amount))) {
                 amountFiatEdit.setText(getString(R.string.send_max_amount));
             } else {
                 amountFiatEdit.setText("");
@@ -621,7 +621,7 @@ public class SendFragment extends SubaccountFragment {
                 .toBigInteger().longValue());
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);
         try {
-            final Fiat fiatValue = Fiat.parseFiat("???", amountFiatEdit.getText().toString());
+            final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(amountFiatEdit));
             amountEdit.setText(bitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
             amountEdit.setText("");

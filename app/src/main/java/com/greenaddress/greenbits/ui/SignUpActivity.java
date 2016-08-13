@@ -122,7 +122,7 @@ public class SignUpActivity extends GaActivity {
                         onSignUp = Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                                return service.signup(mnemonicText.getText().toString());
+                                return service.signup(UI.getText(mnemonicText));
                             }
                         }, service.es);
                     } else if (isChecked) {
@@ -231,7 +231,7 @@ public class SignUpActivity extends GaActivity {
             final NdefRecord[] record = new NdefRecord[1];
 
             record[0] = NdefRecord.createMime("x-gait/mnc",
-                    CryptoHelper.mnemonic_to_bytes(mnemonicText.getText().toString()));
+                    CryptoHelper.mnemonic_to_bytes(UI.getText(mnemonicText)));
 
             final NdefMessage message = new NdefMessage(record);
             final int size = message.toByteArray().length;
@@ -244,7 +244,7 @@ public class SignUpActivity extends GaActivity {
                     if (ndef.getMaxSize() < size)
                         shortToast(R.string.err_sign_up_nfc_too_small);
                     ndef.writeNdefMessage(message);
-                    nfcTagsWritten.setText(String.valueOf(Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
+                    nfcTagsWritten.setText(String.valueOf(Integer.parseInt(UI.getText(nfcTagsWritten)) + 1));
 
                 } else {
                     final NdefFormatable format = NdefFormatable.get(detectedTag);
@@ -252,7 +252,7 @@ public class SignUpActivity extends GaActivity {
                         try {
                             format.connect();
                             format.format(message);
-                            nfcTagsWritten.setText(String.valueOf(Integer.parseInt(nfcTagsWritten.getText().toString()) + 1));
+                            nfcTagsWritten.setText(String.valueOf(Integer.parseInt(UI.getText(nfcTagsWritten)) + 1));
                         } catch (final IOException e) {
                         }
                     }

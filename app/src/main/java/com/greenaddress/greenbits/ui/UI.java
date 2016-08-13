@@ -158,4 +158,8 @@ public abstract class UI {
     }
 
     public static void hide(final View... views) { showIf(false, views); }
+
+    public static String getText(TextView view) {
+        return view.getText().toString();
+    }
 }

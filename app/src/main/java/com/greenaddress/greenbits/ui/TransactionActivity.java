@@ -346,7 +346,7 @@ public class TransactionActivity extends GaActivity {
                 @Override
                 public void onClick(final View view) {
                     final boolean editVisible = memoEditText.getVisibility() == View.VISIBLE;
-                    memoEditText.setText(memoText.getText().toString());
+                    memoEditText.setText(UI.getText(memoText));
                     UI.hideIf(editVisible, memoEditText, saveMemo);
                     UI.showIf(editVisible, memoText);
                 }
@@ -358,9 +358,9 @@ public class TransactionActivity extends GaActivity {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            memoText.setText(memoEditText.getText().toString());
+                            memoText.setText(UI.getText(memoEditText));
                             UI.hide(saveMemo, memoEditText);
-                            if (memoText.getText().toString().isEmpty())
+                            if (UI.getText(memoText).isEmpty())
                                 UI.hide(memoText, rootView.findViewById(R.id.txMemoMargin));
                             else
                                 UI.show(rootView.findViewById(R.id.txMemoMargin), memoText);
@@ -370,8 +370,8 @@ public class TransactionActivity extends GaActivity {
 
                 @Override
                 public void onClick(final View view) {
-                    final String edited = memoEditText.getText().toString();
-                    if (!edited.equals(memoText.getText().toString())) {
+                    final String edited = UI.getText(memoEditText);
+                    if (!edited.equals(UI.getText(memoText))) {
                         CB.after(getGAService().changeMemo(txItem.txhash, edited),
                                 new CB.Toast<Boolean>(gaActivity) {
                                     @Override
@@ -754,7 +754,7 @@ public class TransactionActivity extends GaActivity {
                         @Override
                         public void onClick(final MaterialDialog dialog, final DialogAction which) {
                             if (twoFacData != null) {
-                                twoFacData.put("code", newTx2FACodeText.getText().toString());
+                                twoFacData.put("code", UI.getText(newTx2FACodeText));
                             }
                             final ListenableFuture<Map<String,Object>> sendFuture = getGAService().sendRawTransaction(signedTx, twoFacData, false);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity) {

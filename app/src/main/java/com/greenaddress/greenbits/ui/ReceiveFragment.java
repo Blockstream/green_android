@@ -137,7 +137,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         // Gets a handle to the clipboard service.
                         final ClipboardManager clipboard = (ClipboardManager)
                                 getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                        final ClipData clip = ClipData.newPlainText("data", receiveAddress.getText().toString().replace("\n", ""));
+                        final ClipData clip = ClipData.newPlainText("data", UI.getText(receiveAddress).replace("\n", ""));
                         clipboard.setPrimaryClip(clip);
 
                         final String text = gaActivity.getString(R.string.toastOnCopyAddress) + " " + gaActivity.getString(R.string.warnOnPaste);

@@ -144,8 +144,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                                final String username = inputUser.getText().toString();
-                                final String password = inputPassword.getText().toString();
+                                final String username = UI.getText(inputUser);
+                                final String password = UI.getText(inputPassword);
                                 if (username.isEmpty() && password.isEmpty()) {
                                     try {
                                         mService.disableWatchOnly();

@@ -75,8 +75,7 @@ public class MnemonicActivity extends GaActivity {
                     @Override
                     public void onClick(final View view) {
                         mMnemonicText.setOnTouchListener(null);
-                        final String mnemonicStr = mMnemonicText.getText().toString()
-                                .replace(badWord, closeWord);
+                        final String mnemonicStr = UI.getText(mMnemonicText).replace(badWord, closeWord);
                         mMnemonicText.setText(mnemonicStr);
                         final int textLength = mnemonicStr.length();
                         mMnemonicText.setSelection(textLength, textLength);
@@ -131,7 +130,7 @@ public class MnemonicActivity extends GaActivity {
             return;
         }
 
-        if (!validateMnemonic(mMnemonicText.getText().toString())) {
+        if (!validateMnemonic(UI.getText(mMnemonicText))) {
             toast(R.string.err_mnemonic_activity_invalid_mnemonic);
             return;
         }
@@ -145,7 +144,7 @@ public class MnemonicActivity extends GaActivity {
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
-                final String mnemonics = mMnemonicText.getText().toString().trim();
+                final String mnemonics = UI.getText(mMnemonicText).trim();
                 if (mnemonics.split(" ").length != 27)
                     return service.login(mnemonics);
 
@@ -202,7 +201,7 @@ public class MnemonicActivity extends GaActivity {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                                passphraseFuture.set(passphraseValue.getText().toString());
+                                passphraseFuture.set(UI.getText(passphraseValue));
                             }
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {

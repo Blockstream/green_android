@@ -99,8 +99,8 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     buttons[i].setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            pinValue.setText(pinValue.getText().toString() + (ii + 1));
-                                            pinValue.setSelection(pinValue.getText().toString().length());
+                                            pinValue.setText(UI.getText(pinValue) + (ii + 1));
+                                            pinValue.setSelection(UI.getText(pinValue).length());
                                         }
                                     });
                                 }
@@ -109,7 +109,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                                            ret.set(pinValue.getText().toString());
+                                            ret.set(UI.getText(pinValue));
                                         }
                                     }).build().show();
                             }
@@ -135,7 +135,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(MaterialDialog dialog, DialogAction which) {
-                                            ret.set(passphraseValue.getText().toString());
+                                            ret.set(UI.getText(passphraseValue));
                                         }
                                     }).build().show();
                             }
@@ -236,7 +236,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             @Override
                             public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                 UI.show(findViewById(R.id.signingLogin));
-                                pinFuture.set(pinValue.getText().toString());
+                                pinFuture.set(UI.getText(pinValue));
                             }
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -258,7 +258,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             public void run() {
                                 UI.show(findViewById(R.id.signingLogin));
                                 btchipDialog.hide();
-                                pinFuture.set(pinValue.getText().toString());
+                                pinFuture.set(UI.getText(pinValue));
                             }
                         })
                 );

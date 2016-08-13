@@ -125,7 +125,7 @@ public class TwoFactorActivity extends GaActivity {
         final TextView prompt = (TextView) findViewById(R.id.prompt);
         final TextView details = (TextView) findViewById(R.id.details);
         prompt.setText(new Formatter().format(
-                prompt.getText().toString(),
+                UI.getText(prompt),
                 twoFacType.equals("email") ?
                         getResources().getString(R.string.emailAddress) :
                         getResources().getString(R.string.phoneNumber)).toString());
@@ -139,14 +139,14 @@ public class TwoFactorActivity extends GaActivity {
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (details.getText().toString().trim().isEmpty()) return;
+                if (UI.getText(details).trim().isEmpty()) return;
                 continueButton.setEnabled(false);
                 final Map<String, String> twoFacData = new HashMap<>();
                 if (proxyCode != null) {  // two factor required
                     twoFacData.put("method", "proxy");
                     twoFacData.put("code", proxyCode);
                 }
-                CB.after(service.initEnableTwoFac(twoFacType, details.getText().toString(), twoFacData),
+                CB.after(service.initEnableTwoFac(twoFacType, UI.getText(details), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
@@ -173,7 +173,7 @@ public class TwoFactorActivity extends GaActivity {
         final TextView prompt = (TextView) findViewById(R.id.prompt);
         final EditText code = (EditText) findViewById(R.id.code);
         description.setText(R.string.twoFacProvideAuthCodeDescription);
-        prompt.setText(new Formatter().format(prompt.getText().toString(), oldMethodName).toString());
+        prompt.setText(new Formatter().format(UI.getText(prompt), oldMethodName).toString());
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
@@ -185,7 +185,7 @@ public class TwoFactorActivity extends GaActivity {
                 continueButton.setEnabled(false);
                 final Map<String, String> data = new HashMap<>();
                 data.put("method", oldMethod);
-                data.put("code", code.getText().toString());
+                data.put("code", UI.getText(code));
                 CB.after(service.requestTwoFacCode("proxy", newMethod, data),
                          new CB.Toast<Object>(TwoFactorActivity.this, continueButton) {
                     @Override
@@ -252,7 +252,7 @@ public class TwoFactorActivity extends GaActivity {
                     twoFacData.put("code", proxyCode);
                 }
                 continueButton.setEnabled(false);
-                CB.after(service.enableTwoFactor("gauth", code.getText().toString().trim(), twoFacData),
+                CB.after(service.enableTwoFactor("gauth", UI.getText(code).trim(), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
@@ -274,7 +274,7 @@ public class TwoFactorActivity extends GaActivity {
         final Button continueButton = (Button) findViewById(R.id.continueButton);
         final EditText code = (EditText) findViewById(R.id.code);
         final TextView prompt = (TextView) findViewById(R.id.prompt);
-        prompt.setText(new Formatter().format(prompt.getText().toString(), twoFacTypeName).toString());
+        prompt.setText(new Formatter().format(UI.getText(prompt), twoFacTypeName).toString());
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
@@ -282,7 +282,7 @@ public class TwoFactorActivity extends GaActivity {
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String enteredCode = code.getText().toString().trim();
+                final String enteredCode = UI.getText(code).trim();
                 if (enteredCode.length() != 6)
                     return;
                 continueButton.setEnabled(false);

@@ -387,7 +387,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                         return;
                                     }
                                     try {
-                                        final String password = passwordEdit.getText().toString();
+                                        final String password = UI.getText(passwordEdit);
                                         final byte[] passbytes = password.getBytes();
                                         final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS);
                                         key = ECKey.fromPrivate(decryptedPKey);

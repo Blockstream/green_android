@@ -77,7 +77,7 @@ public class PinActivity extends GaActivity implements Observer {
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mPinText.getWindowToken(), 0);
 
-        setUpLogin(mPinText.getText().toString(), new Runnable() {
+        setUpLogin(UI.getText(mPinText), new Runnable() {
              @Override
              public void run() {
                  mPinText.setText("");

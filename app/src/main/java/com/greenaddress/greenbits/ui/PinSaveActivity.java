@@ -126,13 +126,13 @@ public class PinSaveActivity extends GaActivity {
                 UI.getListenerRunOnEnter(new Runnable() {
                     @Override
                     public void run() {
-                        setPin(mPinText.getText().toString());
+                        setPin(UI.getText(mPinText));
                     }
                 }));
 
         mSaveButton = (CircularProgressButton) UI.mapClick(this, R.id.pinSaveButton, new View.OnClickListener() {
             public void onClick(final View view) {
-                setPin(mPinText.getText().toString());
+                setPin(UI.getText(mPinText));
             }
         });
 

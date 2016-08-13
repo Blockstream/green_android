@@ -55,13 +55,13 @@ public class WatchOnlyLoginActivity extends GaActivity {
             return;
         }
 
-        final String username = mUsernameText.getText().toString();
-        final String password = mPasswordText.getText().toString();
-
         if (!mService.isConnected()) {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
+
+        final String username = UI.getText(mUsernameText);
+        final String password = UI.getText(mPasswordText);
 
         onLoginBegin();
 

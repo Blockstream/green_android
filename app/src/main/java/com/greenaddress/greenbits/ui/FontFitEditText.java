@@ -57,7 +57,7 @@ public class FontFitEditText extends EditText {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int height = getMeasuredHeight();
-        refitText(this.getText().toString(), parentWidth);
+        refitText(UI.getText(this), parentWidth);
         this.setMeasuredDimension(parentWidth, height);
     }
 
@@ -68,8 +68,7 @@ public class FontFitEditText extends EditText {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        if (w != oldw) {
-            refitText(this.getText().toString(), w);
-        }
+        if (w != oldw)
+            refitText(UI.getText(this), w);
     }
 }

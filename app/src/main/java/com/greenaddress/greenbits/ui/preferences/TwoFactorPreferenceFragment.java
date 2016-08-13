@@ -112,7 +112,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                       public void onClick(final MaterialDialog dialog, final DialogAction which) {
                           final Map<String, String> twoFacData = new HashMap<>();
                           twoFacData.put("method", withMethod);
-                          twoFacData.put("code", twoFacValue.getText().toString());
+                          twoFacData.put("code", UI.getText(twoFacValue));
                           Futures.addCallback(mService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                               @Override
                               public void onSuccess(final Boolean result) {
