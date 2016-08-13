@@ -120,7 +120,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             return;
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
+        UI.show(fab);
 
         final String subAccountName;
         final Map<String, ?> m = service.findSubaccount(null, subAccount);
@@ -326,8 +326,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         final String address;
 
                         if (keyNonBip38 != null) {
-                            passwordPrompt.setVisibility(View.GONE);
-                            passwordEdit.setVisibility(View.GONE);
+                            UI.hide(passwordPrompt, passwordEdit);
                             txNonBip38 = getSweepTx(sweepResult);
                             final MonetaryFormat format;
                             format = CurrencyMapper.mapBtcUnitToFormat( (String) service.getUserConfig("unit"));

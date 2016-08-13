@@ -115,8 +115,7 @@ public class SendFragment extends SubaccountFragment {
         final Map<String, String> twoFacData;
 
         if (method == null) {
-            twoFAText.setVisibility(View.GONE);
-            newTx2FACodeText.setVisibility(View.GONE);
+            UI.hide(twoFAText, newTx2FACodeText);
             twoFacData = null;
         } else {
             twoFAText.setText(String.format("2FA %s code", method));
@@ -175,10 +174,10 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
 
         if (URI.getPaymentRequestUrl() != null) {
-            rootView.findViewById(R.id.sendBip70ProgressBar).setVisibility(View.VISIBLE);
+            UI.show(rootView.findViewById(R.id.sendBip70ProgressBar));
             recipientEdit.setEnabled(false);
             sendButton.setEnabled(false);
-            noteIcon.setVisibility(View.GONE);
+            UI.hide(noteIcon);
             Futures.addCallback(service.processBip70URL(URI.getPaymentRequestUrl()),
                     new CB.Toast<Map<?, ?>>(gaActivity) {
                         @Override
@@ -214,7 +213,7 @@ public class SendFragment extends SubaccountFragment {
                                         amountEdit.setEnabled(false);
                                         amountFiatEdit.setEnabled(false);
                                     }
-                                    rootView.findViewById(R.id.sendBip70ProgressBar).setVisibility(View.GONE);
+                                    UI.hide(rootView.findViewById(R.id.sendBip70ProgressBar));
                                 }
                             });
                         }
@@ -264,7 +263,7 @@ public class SendFragment extends SubaccountFragment {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // pre-Material Design the label was already a part of the switch
-            rootView.findViewById(R.id.sendMaxLabel).setVisibility(View.GONE);
+            UI.hide(rootView.findViewById(R.id.sendMaxLabel));
         }
 
         amountEdit = (EditText) rootView.findViewById(R.id.sendAmountEditText);
@@ -509,7 +508,7 @@ public class SendFragment extends SubaccountFragment {
                     noteText.setVisibility(View.INVISIBLE);
                 } else {
                     noteIcon.setText(Html.fromHtml("&#xf00d"));
-                    noteText.setVisibility(View.VISIBLE);
+                    UI.show(noteText);
                     noteText.requestFocus();
                 }
             }
@@ -528,10 +527,10 @@ public class SendFragment extends SubaccountFragment {
 
     private void hideInstantIf2of3() {
         if (getGAService().findSubaccount("2of3", curSubaccount) != null) {
-            instantConfirmationCheckbox.setVisibility(View.GONE);
+            UI.hide(instantConfirmationCheckbox);
             instantConfirmationCheckbox.setChecked(false);
         } else
-            instantConfirmationCheckbox.setVisibility(View.VISIBLE);
+            UI.show(instantConfirmationCheckbox);
     }
 
     @Override

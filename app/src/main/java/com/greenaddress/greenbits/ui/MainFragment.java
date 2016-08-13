@@ -81,9 +81,9 @@ public class MainFragment extends SubaccountFragment {
         final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
         final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
         if (!service.isSPVEnabled() || btcBalance.equals(btcBalanceVerified))
-            balanceQuestionMark.setVisibility(View.GONE);
+            UI.hide(balanceQuestionMark);
         else
-            balanceQuestionMark.setVisibility(View.VISIBLE);
+            UI.show(balanceQuestionMark);
 
         final TextView balanceFiatText = (TextView) rootView.findViewById(R.id.mainLocalBalanceText);
         final FontAwesomeTextView balanceFiatIcon = (FontAwesomeTextView) rootView.findViewById(R.id.mainLocalBalanceIcon);
@@ -214,13 +214,9 @@ public class MainFragment extends SubaccountFragment {
         txView.getAdapter().notifyDataSetChanged();
     }
 
-    private void setVisibility(final int id, final int vis) {
-        rootView.findViewById(id).setVisibility(vis);
-    }
-
     private void showTxView(boolean doShow) {
-        setVisibility(R.id.mainTransactionList, doShow ? View.VISIBLE : View.GONE);
-        setVisibility(R.id.mainEmptyTransText, doShow ? View.GONE : View.VISIBLE);
+        UI.showIf(doShow, rootView.findViewById(R.id.mainTransactionList));
+        UI.hideIf(doShow, rootView.findViewById(R.id.mainEmptyTransText));
     }
 
     private void reloadTransactions(boolean newAdapter) {

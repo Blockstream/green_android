@@ -130,7 +130,7 @@ public class TwoFactorActivity extends GaActivity {
                         getResources().getString(R.string.emailAddress) :
                         getResources().getString(R.string.phoneNumber)).toString());
         if (!twoFacType.equals("email")) {
-            findViewById(R.id.emailNotices).setVisibility(View.GONE);
+            UI.hide(findViewById(R.id.emailNotices));
         }
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setProgress(stepNum);

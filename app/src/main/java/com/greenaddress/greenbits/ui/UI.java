@@ -146,4 +146,16 @@ public abstract class UI {
         });
     }
 
+    public static void showIf(final boolean condition, final View... views) {
+        for (View v: views)
+            v.setVisibility(condition ? View.VISIBLE : View.GONE);
+    }
+
+    public static void show(final View... views) { showIf(true, views); }
+
+    public static void hideIf(final boolean condition, final View... views) {
+        showIf(!condition, views);
+    }
+
+    public static void hide(final View... views) { showIf(false, views); }
 }

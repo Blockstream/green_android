@@ -186,7 +186,7 @@ public class SignUpActivity extends GaActivity {
                 .theme(Theme.DARK).build();
 
         if (Build.VERSION.SDK_INT < 16) {
-            signupNfcIcon.setVisibility(View.GONE);
+            UI.hide(signupNfcIcon);
         } else {
             signupNfcIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -212,7 +212,7 @@ public class SignUpActivity extends GaActivity {
             final IntentFilter[] filters = new IntentFilter[]{filter};
             mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, filters, null);
         }
-        signupNfcIcon.setVisibility(mNfcAdapter != null && mNfcAdapter.isEnabled() ? View.VISIBLE : View.GONE);
+        UI.showIf(mNfcAdapter != null && mNfcAdapter.isEnabled(), signupNfcIcon);
     }
 
     @Override

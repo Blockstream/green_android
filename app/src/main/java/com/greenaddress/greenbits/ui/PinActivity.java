@@ -83,7 +83,7 @@ public class PinActivity extends GaActivity implements Observer {
                  mPinText.setText("");
                  mPinLoginButton.setProgress(0);
                  mPinText.setEnabled(true);
-                 mPinError.setVisibility(View.VISIBLE);
+                 UI.show(mPinError);
                  final int counter = mService.cfg("pin").getInt("counter", 1);
                  mPinError.setText(getString(R.string.attemptsLeft, 3 - counter));
               }

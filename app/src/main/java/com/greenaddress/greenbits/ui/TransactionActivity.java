@@ -187,10 +187,9 @@ public class TransactionActivity extends GaActivity {
             if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT) || txItem.isSpent) {
                 if (txItem.getConfirmations() > 0) {
                     // confirmed - hide unconfirmed widgets
-                    rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
-                    unconfirmedRecommendation.setVisibility(View.GONE);
-                    unconfirmedIncreaseFee.setVisibility(View.GONE);
-                    unconfirmedEstimatedBlocks.setVisibility(View.GONE);
+                    UI.hide(rootView.findViewById(R.id.txUnconfirmed),
+                            unconfirmedRecommendation, unconfirmedIncreaseFee,
+                            unconfirmedEstimatedBlocks);
                 } else if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT)) {
                     // unconfirmed outgoing output/redeposit - can be RBF'd
                     int currentEstimate = 25, bestEstimate;
@@ -220,24 +219,21 @@ public class TransactionActivity extends GaActivity {
                             }
                         });
                     } else {
-                        unconfirmedIncreaseFee.setVisibility(View.GONE);
-                        unconfirmedRecommendation.setVisibility(View.GONE);
+                        UI.hide(unconfirmedIncreaseFee, unconfirmedRecommendation);
                     }
                 } else {
                     // incoming spent - hide outgoing-only widgets
-                    unconfirmedRecommendation.setVisibility(View.GONE);
-                    unconfirmedIncreaseFee.setVisibility(View.GONE);
-                    unconfirmedEstimatedBlocks.setVisibility(View.GONE);
+                    UI.hide(unconfirmedRecommendation, unconfirmedIncreaseFee,
+                            unconfirmedEstimatedBlocks);
                 }
             } else {
                 // unspent incoming output
                 // incoming - hide outgoing-only widgets
-                unconfirmedRecommendation.setVisibility(View.GONE);
-                unconfirmedIncreaseFee.setVisibility(View.GONE);
-                unconfirmedEstimatedBlocks.setVisibility(View.GONE);
+                UI.hide(unconfirmedRecommendation, unconfirmedIncreaseFee,
+                        unconfirmedEstimatedBlocks);
                 if (txItem.getConfirmations() > 0) {
                     if (isWatchOnly || txItem.spvVerified ) {
-                        rootView.findViewById(R.id.txUnconfirmed).setVisibility(View.GONE);
+                        UI.hide(rootView.findViewById(R.id.txUnconfirmed));
                     } else {
                         if (getGAService().spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
                             unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),
@@ -292,14 +288,11 @@ public class TransactionActivity extends GaActivity {
             if (txItem.memo != null && txItem.memo.length() > 0) {
                 memoText.setText(txItem.memo);
                 if (isWatchOnly)
-                    memoEdit.setVisibility(View.GONE);
+                    UI.hide(memoEdit);
             } else {
-                memoText.setVisibility(View.GONE);
-                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
-                if (isWatchOnly) {
-                    rootView.findViewById(R.id.txMemoTitle).setVisibility(View.GONE);
-                    memoEdit.setVisibility(View.GONE);
-                }
+                UI.hide(memoText, rootView.findViewById(R.id.txMemoMargin));
+                if (isWatchOnly)
+                    UI.hide(rootView.findViewById(R.id.txMemoTitle), memoEdit);
             }
             // FIXME: use a list instead of reusing a TextView to show all double spends to allow
             // for a warning to be shown before the browser is open
@@ -328,25 +321,22 @@ public class TransactionActivity extends GaActivity {
                 }
                 doubleSpentByText.setText(res);
             } else {
-                doubleSpentByText.setVisibility(View.GONE);
-                doubleSpentByTitle.setVisibility(View.GONE);
-                rootView.findViewById(R.id.txDoubleSpentByMargin).setVisibility(View.GONE);
+                UI.hide(doubleSpentByText, doubleSpentByTitle,
+                        rootView.findViewById(R.id.txDoubleSpentByMargin));
             }
 
             if (txItem.counterparty != null && txItem.counterparty.length() > 0) {
                 recipientText.setText(txItem.counterparty);
             } else {
-                recipientText.setVisibility(View.GONE);
-                recipientTitle.setVisibility(View.GONE);
-                rootView.findViewById(R.id.txRecipientMargin).setVisibility(View.GONE);
+                UI.hide(recipientText, recipientTitle,
+                        rootView.findViewById(R.id.txRecipientMargin));
             }
 
             if (txItem.receivedOn != null && txItem.receivedOn.length() > 0) {
                 openInBrowser(receivedOnText, txItem.receivedOn, Network.BLOCKEXPLORER_ADDRESS);
             } else {
-                receivedOnText.setVisibility(View.GONE);
-                receivedOnTitle.setVisibility(View.GONE);
-                rootView.findViewById(R.id.txReceivedOnMargin).setVisibility(View.GONE);
+                UI.hide(receivedOnText, receivedOnTitle,
+                        rootView.findViewById(R.id.txReceivedOnMargin));
             }
 
             if (isWatchOnly)
@@ -357,9 +347,8 @@ public class TransactionActivity extends GaActivity {
                 public void onClick(final View view) {
                     final boolean editVisible = memoEditText.getVisibility() == View.VISIBLE;
                     memoEditText.setText(memoText.getText().toString());
-                    memoEditText.setVisibility(editVisible ? View.GONE : View.VISIBLE);
-                    saveMemo.setVisibility(editVisible ? View.GONE : View.VISIBLE);
-                    memoText.setVisibility(editVisible ? View.VISIBLE : View.GONE);
+                    UI.hideIf(editVisible, memoEditText, saveMemo);
+                    UI.showIf(editVisible, memoText);
                 }
             });
 
@@ -370,15 +359,11 @@ public class TransactionActivity extends GaActivity {
                         @Override
                         public void run() {
                             memoText.setText(memoEditText.getText().toString());
-                            saveMemo.setVisibility(View.GONE);
-                            memoEditText.setVisibility(View.GONE);
-                            if (memoText.getText().toString().isEmpty()) {
-                                memoText.setVisibility(View.GONE);
-                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.GONE);
-                            } else {
-                                rootView.findViewById(R.id.txMemoMargin).setVisibility(View.VISIBLE);
-                                memoText.setVisibility(View.VISIBLE);
-                            }
+                            UI.hide(saveMemo, memoEditText);
+                            if (memoText.getText().toString().isEmpty())
+                                UI.hide(memoText, rootView.findViewById(R.id.txMemoMargin));
+                            else
+                                UI.show(rootView.findViewById(R.id.txMemoMargin), memoText);
                         }
                     });
                 }
@@ -727,8 +712,8 @@ public class TransactionActivity extends GaActivity {
             final TextView feeScale = (TextView) inflatedLayout.findViewById(R.id.newTxFeeScale);
             final TextView feeUnit = (TextView) inflatedLayout.findViewById(R.id.newTxFeeUnit);
 
-            inflatedLayout.findViewById(R.id.newTxRecipientLabel).setVisibility(View.GONE);
-            inflatedLayout.findViewById(R.id.newTxRecipientText).setVisibility(View.GONE);
+            UI.hide(inflatedLayout.findViewById(R.id.newTxRecipientLabel),
+                    inflatedLayout.findViewById(R.id.newTxRecipientText));
             final TextView twoFAText = (TextView) inflatedLayout.findViewById(R.id.newTx2FATypeText);
             final EditText newTx2FACodeText = (EditText) inflatedLayout.findViewById(R.id.newTx2FACodeText);
             final String prefix = CurrencyMapper.mapBtcFormatToPrefix(bitcoinFormat);
@@ -749,8 +734,7 @@ public class TransactionActivity extends GaActivity {
             final Map<String, Object> twoFacData;
 
             if (method == null) {
-                twoFAText.setVisibility(View.GONE);
-                newTx2FACodeText.setVisibility(View.GONE);
+                UI.hide(twoFAText, newTx2FACodeText);
                 twoFacData = null;
             } else {
                 twoFAText.setText(String.format("2FA %s code", method));

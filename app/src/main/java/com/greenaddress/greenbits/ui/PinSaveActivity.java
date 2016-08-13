@@ -51,7 +51,7 @@ public class PinSaveActivity extends GaActivity {
         mSaveButton.setIndeterminateProgressMode(true);
         mSaveButton.setProgress(50);
         mPinText.setEnabled(false);
-        mSkipButton.setVisibility(View.GONE);
+        UI.hide(mSkipButton);
         Futures.addCallback(service.setPin(mnemonic, pin),
                 new FutureCallback<Void>() {
                     @Override
@@ -67,7 +67,7 @@ public class PinSaveActivity extends GaActivity {
                             public void run() {
                                 mSaveButton.setProgress(0);
                                 mPinText.setEnabled(true);
-                                mSkipButton.setVisibility(View.VISIBLE);
+                                UI.show(mSkipButton);
                             }
                         });
                     }
@@ -108,7 +108,7 @@ public class PinSaveActivity extends GaActivity {
             try {
                 KeyStoreAES.createKey(true);
 
-                mNativeAuthCB.setVisibility(View.VISIBLE);
+                UI.show(mNativeAuthCB);
                 mNativeAuthCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {

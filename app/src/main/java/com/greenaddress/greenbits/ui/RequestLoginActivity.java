@@ -195,7 +195,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 });
             } else {
                 final TextView edit = (TextView) findViewById(R.id.firstLoginRequestedInstructionsText);
-                edit.setVisibility(View.GONE);
+                UI.hide(edit);
                 // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
                 if (tag != null) {
                     showPinDialog();
@@ -235,8 +235,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                                final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
-                                prog.setVisibility(View.VISIBLE);
+                                UI.show(findViewById(R.id.signingLogin));
                                 pinFuture.set(pinValue.getText().toString());
                             }
                         })
@@ -257,8 +256,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         UI.getListenerRunOnEnter(new Runnable() {
                             @Override
                             public void run() {
-                                final ProgressBar prog = (ProgressBar) findViewById(R.id.signingLogin);
-                                prog.setVisibility(View.VISIBLE);
+                                UI.show(findViewById(R.id.signingLogin));
                                 btchipDialog.hide();
                                 pinFuture.set(pinValue.getText().toString());
                             }

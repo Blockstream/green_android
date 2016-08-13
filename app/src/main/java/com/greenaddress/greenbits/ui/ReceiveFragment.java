@@ -126,8 +126,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
         final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
-        copyIcon.setVisibility(View.GONE);
-        copyText.setVisibility(View.GONE);
+        UI.hide(copyIcon, copyText);
 
         final TextView newAddressIcon = (TextView) rootView.findViewById(R.id.receiveNewAddressIcon);
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
@@ -161,8 +160,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        copyIcon.setVisibility(View.VISIBLE);
-                        copyText.setVisibility(View.VISIBLE);
+                        UI.show(copyIcon, copyText);
                         stopNewAddressAnimation(rootView);
                         final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
                         bd.setFilterBitmap(false);
@@ -209,8 +207,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     @Override
                     public void run() {
                         stopNewAddressAnimation(rootView);
-                        copyIcon.setVisibility(View.VISIBLE);
-                        copyText.setVisibility(View.VISIBLE);
+                        UI.show(copyIcon, copyText);
                     }
                 });
             }
@@ -255,8 +252,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         newAddressIcon.setText(Html.fromHtml("&#xf067;"));
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
         final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
-        copyIcon.setVisibility(View.VISIBLE);
-        copyText.setVisibility(View.VISIBLE);
+        UI.show(copyIcon, copyText);
     }
 
     private void startNewAddressAnimation(final View rootView) {
@@ -272,8 +268,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
         final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
-        copyIcon.setVisibility(View.GONE);
-        copyText.setVisibility(View.GONE);
+        UI.hide(copyIcon, copyText);
         receiveAddress.setText("");
         imageView.setImageBitmap(null);
     }

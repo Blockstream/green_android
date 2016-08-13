@@ -71,9 +71,9 @@ public class ListTransactionsAdapter extends
 
         if (!mService.isSPVEnabled() ||
             txItem.spvVerified || txItem.isSpent || txItem.type.equals(TransactionItem.TYPE.OUT)) {
-            holder.textValueQuestionMark.setVisibility(View.GONE);
+            UI.hide(holder.textValueQuestionMark);
         } else {
-            holder.textValueQuestionMark.setVisibility(View.VISIBLE);
+            UI.show(holder.textValueQuestionMark);
         }
 
         final Resources res = mActivity.getResources();
@@ -97,7 +97,7 @@ public class ListTransactionsAdapter extends
             }
         }
 
-        holder.textReplaceable.setVisibility(txItem.replaceable ? View.VISIBLE : View.GONE);
+        UI.showIf(txItem.replaceable, holder.textReplaceable);
 
         final boolean humanCpty = txItem.type.equals(TransactionItem.TYPE.OUT)
                 && txItem.counterparty != null && txItem.counterparty.length() > 0
@@ -124,10 +124,10 @@ public class ListTransactionsAdapter extends
         if (txItem.hasEnoughConfirmations()) {
             final String elem = txItem.amount > 0 ? "&#xf090;" : "&#xf08b;";
             holder.inOutIcon.setText(Html.fromHtml(elem));
-            holder.listNumberConfirmation.setVisibility(View.GONE);
+            UI.hide(holder.listNumberConfirmation);
         } else {
             holder.inOutIcon.setText(Html.fromHtml("&#xf017;"));
-            holder.listNumberConfirmation.setVisibility(View.VISIBLE);
+            UI.show(holder.listNumberConfirmation);
             holder.listNumberConfirmation.setText(String.valueOf(txItem.getConfirmations()));
         }
 
