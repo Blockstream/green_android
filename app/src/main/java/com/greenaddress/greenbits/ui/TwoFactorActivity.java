@@ -53,8 +53,8 @@ public class TwoFactorActivity extends GaActivity {
 
         if (enabledTwoFacNames.size() > 1) {
             setContentView(R.layout.activity_two_factor_1_choose);
-            final Button continueButton = (Button) findViewById(R.id.continueButton);
-            final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+            final Button continueButton = UI.find(this, R.id.continueButton);
+            final RadioGroup radioGroup = UI.find(this, R.id.radioGroup);
             radioGroup.removeViews(0, radioGroup.getChildCount());
 
             for (int i = 0; i < enabledTwoFacNames.size(); ++i) {
@@ -121,18 +121,18 @@ public class TwoFactorActivity extends GaActivity {
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
         final GaService service = mService;
         setContentView(R.layout.activity_two_factor_3_provide_details);
-        final Button continueButton = (Button) findViewById(R.id.continueButton);
-        final TextView prompt = (TextView) findViewById(R.id.prompt);
-        final TextView details = (TextView) findViewById(R.id.details);
+        final Button continueButton = UI.find(this, R.id.continueButton);
+        final TextView prompt = UI.find(this, R.id.prompt);
+        final TextView details = UI.find(this, R.id.details);
         prompt.setText(new Formatter().format(
                 UI.getText(prompt),
                 twoFacType.equals("email") ?
                         getResources().getString(R.string.emailAddress) :
                         getResources().getString(R.string.phoneNumber)).toString());
-        if (!twoFacType.equals("email")) {
-            UI.hide(findViewById(R.id.emailNotices));
-        }
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        if (!twoFacType.equals("email"))
+            UI.hide((View) UI.find(this, R.id.emailNotices));
+
+        final ProgressBar progressBar = UI.find(this, R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
@@ -169,16 +169,16 @@ public class TwoFactorActivity extends GaActivity {
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
         setContentView(view);
 
-        final TextView description = (TextView) findViewById(R.id.description);
-        final TextView prompt = (TextView) findViewById(R.id.prompt);
-        final EditText code = (EditText) findViewById(R.id.code);
+        final TextView description = UI.find(this, R.id.description);
+        final TextView prompt = UI.find(this, R.id.prompt);
+        final EditText code = UI.find(this, R.id.code);
         description.setText(R.string.twoFacProvideAuthCodeDescription);
         prompt.setText(new Formatter().format(UI.getText(prompt), oldMethodName).toString());
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ProgressBar progressBar = UI.find(this, R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
-        final Button continueButton = (Button) findViewById(R.id.continueButton);
+        final Button continueButton = UI.find(this, R.id.continueButton);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -213,11 +213,11 @@ public class TwoFactorActivity extends GaActivity {
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
         setContentView(view);
 
-        final ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        final TextView textCode = (TextView) findViewById(R.id.textCode);
-        final Button continueButton = (Button) findViewById(R.id.continueButton);
-        final EditText code = (EditText) findViewById(R.id.code);
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ImageView imageView = UI.find(this, R.id.imageView);
+        final TextView textCode = UI.find(this, R.id.textCode);
+        final Button continueButton = UI.find(this, R.id.continueButton);
+        final EditText code = UI.find(this, R.id.code);
+        final ProgressBar progressBar = UI.find(this, R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
@@ -271,11 +271,11 @@ public class TwoFactorActivity extends GaActivity {
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
         setContentView(view);
 
-        final Button continueButton = (Button) findViewById(R.id.continueButton);
-        final EditText code = (EditText) findViewById(R.id.code);
-        final TextView prompt = (TextView) findViewById(R.id.prompt);
+        final Button continueButton = UI.find(this, R.id.continueButton);
+        final EditText code = UI.find(this, R.id.code);
+        final TextView prompt = UI.find(this, R.id.prompt);
         prompt.setText(new Formatter().format(UI.getText(prompt), twoFacTypeName).toString());
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ProgressBar progressBar = UI.find(this, R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 

@@ -176,16 +176,16 @@ public class ListTransactionsAdapter extends
 
             super(itemView);
 
-            textValue = (TextView) itemView.findViewById(R.id.listValueText);
-            textValueQuestionMark = (TextView) itemView.findViewById(R.id.listValueQuestionMark);
-            textWhen = (TextView) itemView.findViewById(R.id.listWhenText);
-            textReplaceable = (TextView) itemView.findViewById(R.id.listReplaceableText);
-            textWho = (TextView) itemView.findViewById(R.id.listWhoText);
-            inOutIcon = (TextView) itemView.findViewById(R.id.listInOutIcon);
-            mainLayout = (RelativeLayout) itemView.findViewById(R.id.list_item_layout);
-            bitcoinIcon = (TextView) itemView.findViewById(R.id.listBitcoinIcon);
-            bitcoinScale = (TextView) itemView.findViewById(R.id.listBitcoinScaleText);
-            listNumberConfirmation = (TextView) itemView.findViewById(R.id.listNumberConfirmation);
+            textValue = UI.find(itemView, R.id.listValueText);
+            textValueQuestionMark = UI.find(itemView, R.id.listValueQuestionMark);
+            textWhen = (TextView) UI.find(itemView, R.id.listWhenText);
+            textReplaceable = UI.find(itemView, R.id.listReplaceableText);
+            textWho = UI.find(itemView, R.id.listWhoText);
+            inOutIcon = UI.find(itemView, R.id.listInOutIcon);
+            mainLayout = UI.find(itemView, R.id.list_item_layout);
+            bitcoinIcon = UI.find(itemView, R.id.listBitcoinIcon);
+            bitcoinScale = UI.find(itemView, R.id.listBitcoinScaleText);
+            listNumberConfirmation = UI.find(itemView, R.id.listNumberConfirmation);
         }
     }
 }

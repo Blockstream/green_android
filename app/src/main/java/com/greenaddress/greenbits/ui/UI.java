@@ -162,4 +162,12 @@ public abstract class UI {
     public static String getText(TextView view) {
         return view.getText().toString();
     }
+
+    public static <T> T find(final Activity activity, int id) {
+        return (T) activity.findViewById(id);
+    }
+
+    public static <T> T find(final View view, int id) {
+        return (T) view.findViewById(id);
+    }
 }

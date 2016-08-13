@@ -90,8 +90,8 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             mService.requestTwoFacCode(withMethod, "disable_2fa", data);
         }
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
-        final EditText twoFacValue = (EditText) inflatedLayout.findViewById(R.id.btchipPINValue);
-        final TextView prompt = (TextView) inflatedLayout.findViewById(R.id.btchipPinPrompt);
+        final EditText twoFacValue = UI.find(inflatedLayout, R.id.btchipPINValue);
+        final TextView prompt = UI.find(inflatedLayout, R.id.btchipPinPrompt);
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
         String withMethodName = "";

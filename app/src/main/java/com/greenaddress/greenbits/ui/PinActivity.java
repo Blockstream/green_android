@@ -164,10 +164,10 @@ public class PinActivity extends GaActivity implements Observer {
         }
 
         setContentView(R.layout.activity_pin);
-        mPinLoginButton = (CircularProgressButton) findViewById(R.id.pinLoginButton);
+        mPinLoginButton = UI.find(this, R.id.pinLoginButton);
         mPinLoginButton.setIndeterminateProgressMode(true);
-        mPinText = (EditText) findViewById(R.id.pinText);
-        mPinError = (TextView) findViewById(R.id.pinErrorText);
+        mPinText = UI.find(this, R.id.pinText);
+        mPinError = UI.find(this, R.id.pinErrorText);
 
         final String androidLogin = prefs.getString("native", null);
 

@@ -14,6 +14,7 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
 import org.bitcoinj.core.Peer;
 import org.bitcoinj.core.PeerGroup;
@@ -27,15 +28,16 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 {
     private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> peerListAdapter;
-    private String bloominfo = "";
+    private String mBloomInfo = "";
 
     @Override
     protected int getMainViewId() { return R.layout.activity_network; }
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        final ListView view = (ListView) findViewById(R.id.peerlistview);
-        view.setEmptyView(findViewById(R.id.empty_list_view));
+        final ListView peerList = UI.find(this, R.id.peerlistview);
+        final TextView emptyText = UI.find(this, R.id.empty_list_view);
+        peerList.setEmptyView(emptyText);
     }
 
     @Override
@@ -75,18 +77,18 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             peerList.add(new PrettyPeer(peer));
 
         if (peerList.size() > 0)
-            bloominfo = peerList.get(0).peer.getBloomFilter().toString();
+            mBloomInfo = peerList.get(0).peer.getBloomFilter().toString();
         else
-            bloominfo = getString(R.string.network_monitor_bloom_info);
+            mBloomInfo = getString(R.string.network_monitor_bloom_info);
 
         final int currentBlock = service.getCurrentBlock();
         final int spvHeight = service.spv.getSpvHeight();
-        final TextView tv = (TextView) findViewById(R.id.bloominfo);
-        tv.setText(getString(R.string.network_monitor_banner, bloominfo, currentBlock - spvHeight));
+        final TextView bloomInfoText = UI.find(this, R.id.bloominfo);
+        bloomInfoText.setText(getString(R.string.network_monitor_banner, mBloomInfo, currentBlock - spvHeight));
 
         peerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peerList);
-        final ListView view = (ListView) findViewById(R.id.peerlistview);
-        view.setAdapter(peerListAdapter);
+        final ListView peerList = UI.find(this, R.id.peerlistview);
+        peerList.setAdapter(peerListAdapter);
 
         peerGroup.addConnectedEventListener(this);
         peerGroup.addDisconnectedEventListener(this);
@@ -95,7 +97,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     @Override
     public synchronized void onPeerConnected(final Peer peer, final int peerCount) {
         final PrettyPeer new_ppeer = new PrettyPeer(peer);
-
+        final TextView bloomInfoText = UI.find(this, R.id.bloominfo);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -103,9 +105,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
                 peerList.add(new_ppeer);
                 peerListAdapter.notifyDataSetChanged();
 
-                bloominfo = peer.getBloomFilter().toString();
-                final TextView tview = (TextView) findViewById(R.id.bloominfo);
-                tview.setText(bloominfo);
+                mBloomInfo = peer.getBloomFilter().toString();
+                bloomInfoText.setText(mBloomInfo);
             }
         });
     }

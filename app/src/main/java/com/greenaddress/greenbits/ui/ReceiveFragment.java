@@ -71,8 +71,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     getNewAddress(rootView);
             } else { // !isVisibleToUser
                 // hide to avoid showing old address when swiping
-                final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
-                final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
+                final TextView receiveAddress = UI.find(rootView, R.id.receiveAddressText);
+                final ImageView imageView = UI.find(rootView, R.id.receiveQrImageView);
                 address = null;
                 receiveAddress.setText("");
                 imageView.setImageBitmap(null);
@@ -123,13 +123,13 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         curSubaccount = getGAService().getCurrentSubAccount();
 
         rootView = inflater.inflate(R.layout.fragment_receive, container, false);
-        final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
-        final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
-        final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
+        final TextView receiveAddress = UI.find(rootView, R.id.receiveAddressText);
+        final TextView copyIcon = UI.find(rootView, R.id.receiveCopyIcon);
+        final TextView copyText = UI.find(rootView, R.id.receiveCopyText);
         UI.hide(copyIcon, copyText);
 
-        final TextView newAddressIcon = (TextView) rootView.findViewById(R.id.receiveNewAddressIcon);
-        final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
+        final TextView newAddressIcon = UI.find(rootView, R.id.receiveNewAddressIcon);
+        final ImageView imageView = UI.find(rootView, R.id.receiveQrImageView);
         copyIcon.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -147,7 +147,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         );
         final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
-        final ImageView qrcodeInDialog = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
+        final ImageView qrcodeInDialog = UI.find(inflatedLayout, R.id.qrInDialogImageView);
         onAddress = new FutureCallback<QrBitmap>() {
             @Override
             public void onSuccess(final QrBitmap result) {
@@ -247,11 +247,11 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
      }
 
      private void stopNewAddressAnimation(final View rootView) {
-        final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
+        final FontAwesomeTextView newAddressIcon = UI.find(rootView, R.id.receiveNewAddressIcon);
         newAddressIcon.clearAnimation();
         newAddressIcon.setText(Html.fromHtml("&#xf067;"));
-        final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
-        final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
+        final TextView copyIcon = UI.find(rootView, R.id.receiveCopyIcon);
+        final TextView copyText = UI.find(rootView, R.id.receiveCopyText);
         UI.show(copyIcon, copyText);
     }
 
@@ -259,15 +259,15 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (getActivity() == null)
             return;
 
-        final FontAwesomeTextView newAddressIcon = (FontAwesomeTextView) rootView.findViewById(R.id.receiveNewAddressIcon);
+        final FontAwesomeTextView newAddressIcon = UI.find(rootView, R.id.receiveNewAddressIcon);
         newAddressIcon.setText(Html.fromHtml("&#xf021;"));
         newAddressIcon.setAwesomeTypeface();
         newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
 
-        final TextView receiveAddress = (TextView) rootView.findViewById(R.id.receiveAddressText);
-        final TextView copyIcon = (TextView) rootView.findViewById(R.id.receiveCopyIcon);
-        final TextView copyText = (TextView) rootView.findViewById(R.id.receiveCopyText);
-        final ImageView imageView = (ImageView) rootView.findViewById(R.id.receiveQrImageView);
+        final TextView receiveAddress = UI.find(rootView, R.id.receiveAddressText);
+        final TextView copyIcon = UI.find(rootView, R.id.receiveCopyIcon);
+        final TextView copyText = UI.find(rootView, R.id.receiveCopyText);
+        final ImageView imageView = UI.find(rootView, R.id.receiveQrImageView);
         UI.hide(copyIcon, copyText);
         receiveAddress.setText("");
         imageView.setImageBitmap(null);

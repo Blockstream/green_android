@@ -52,8 +52,8 @@ public class MainFragment extends SubaccountFragment {
 
         final String btcUnit = (String) service.getUserConfig("unit");
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        final TextView balanceBitcoinIcon = (TextView) rootView.findViewById(R.id.mainBalanceBitcoinIcon);
-        final TextView bitcoinScale = (TextView) rootView.findViewById(R.id.mainBitcoinScaleText);
+        final TextView balanceBitcoinIcon = UI.find(rootView, R.id.mainBalanceBitcoinIcon);
+        final TextView bitcoinScale = UI.find(rootView, R.id.mainBitcoinScaleText);
         bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
         if (btcUnit == null || btcUnit.equals("bits")) {
             balanceBitcoinIcon.setText("");
@@ -78,15 +78,15 @@ public class MainFragment extends SubaccountFragment {
         final String fiatCurrency = service.getFiatCurrency();
         final String converted = CurrencyMapper.map(fiatCurrency);
 
-        final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
-        final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
+        final TextView balanceText = UI.find(rootView, R.id.mainBalanceText);
+        final TextView balanceQuestionMark = UI.find(rootView, R.id.mainBalanceQuestionMark);
         if (!service.isSPVEnabled() || btcBalance.equals(btcBalanceVerified))
             UI.hide(balanceQuestionMark);
         else
             UI.show(balanceQuestionMark);
 
-        final TextView balanceFiatText = (TextView) rootView.findViewById(R.id.mainLocalBalanceText);
-        final FontAwesomeTextView balanceFiatIcon = (FontAwesomeTextView) rootView.findViewById(R.id.mainLocalBalanceIcon);
+        final TextView balanceFiatText = UI.find(rootView, R.id.mainLocalBalanceText);
+        final FontAwesomeTextView balanceFiatIcon = UI.find(rootView, R.id.mainLocalBalanceIcon);
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
         try {
             balanceText.setText(formatter.format(Double.valueOf(btcBalance)));
@@ -125,7 +125,7 @@ public class MainFragment extends SubaccountFragment {
         registerReceiver();
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        final RecyclerView txView = UI.find(rootView, R.id.mainTransactionList);
         txView.setHasFixedSize(true);
         txView.addItemDecoration(new DividerItem(getActivity()));
 
@@ -134,16 +134,16 @@ public class MainFragment extends SubaccountFragment {
 
         curSubaccount = service.getCurrentSubAccount();
 
-        final TextView firstP = (TextView) rootView.findViewById(R.id.mainFirstParagraphText);
-        final TextView secondP = (TextView) rootView.findViewById(R.id.mainSecondParagraphText);
-        final TextView thirdP = (TextView) rootView.findViewById(R.id.mainThirdParagraphText);
+        final TextView firstP = UI.find(rootView, R.id.mainFirstParagraphText);
+        final TextView secondP = UI.find(rootView, R.id.mainSecondParagraphText);
+        final TextView thirdP = UI.find(rootView, R.id.mainThirdParagraphText);
 
         firstP.setMovementMethod(LinkMovementMethod.getInstance());
         secondP.setMovementMethod(LinkMovementMethod.getInstance());
         thirdP.setMovementMethod(LinkMovementMethod.getInstance());
 
-        final TextView balanceText = (TextView) rootView.findViewById(R.id.mainBalanceText);
-        final TextView balanceQuestionMark = (TextView) rootView.findViewById(R.id.mainBalanceQuestionMark);
+        final TextView balanceText = UI.find(rootView, R.id.mainBalanceText);
+        final TextView balanceQuestionMark = UI.find(rootView, R.id.mainBalanceQuestionMark);
         final View.OnClickListener unconfirmedClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -210,19 +210,19 @@ public class MainFragment extends SubaccountFragment {
         for (final TransactionItem txItem : mTxItems)
             txItem.spvVerified = prefs.getBoolean(txItem.txhash, false);
 
-        final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        final RecyclerView txView = UI.find(rootView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
     }
 
     private void showTxView(boolean doShow) {
-        UI.showIf(doShow, rootView.findViewById(R.id.mainTransactionList));
-        UI.hideIf(doShow, rootView.findViewById(R.id.mainEmptyTransText));
+        UI.showIf(doShow, (View) UI.find(rootView, R.id.mainTransactionList));
+        UI.hideIf(doShow, (View) UI.find(rootView, R.id.mainEmptyTransText));
     }
 
     private void reloadTransactions(boolean newAdapter) {
         final Activity activity = getActivity();
         final GaService service = getGAService();
-        final RecyclerView txView = (RecyclerView) rootView.findViewById(R.id.mainTransactionList);
+        final RecyclerView txView = UI.find(rootView, R.id.mainTransactionList);
 
         if (mTxItems == null || newAdapter) {
             mTxItems = new ArrayList<>();

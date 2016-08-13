@@ -133,12 +133,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
                 final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_set_watchonly, null, false);
-                final EditText inputUser = (EditText) inflatedLayout.findViewById(R.id.input_user);
+                final EditText inputUser = UI.find(inflatedLayout, R.id.input_user);
                 try {
                     // refetch username
                     inputUser.setText(mService.getWatchOnlyUsername());
                 } catch (final Exception e) {}
-                final EditText inputPassword = (EditText) inflatedLayout.findViewById(R.id.input_password);
+                final EditText inputPassword = UI.find(inflatedLayout, R.id.input_password);
                 final MaterialDialog dialog = UI.popup(getActivity(), R.string.watchOnlyLogin)
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {

@@ -23,9 +23,9 @@ public class WatchOnlyLoginActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_watchonly);
 
-        mUsernameText = (EditText) findViewById(R.id.input_user);
-        mPasswordText = (EditText) findViewById(R.id.input_password);
-        mLoginButton = (CircularProgressButton) findViewById(R.id.btn_login);
+        mUsernameText = UI.find(this, R.id.input_user);
+        mPasswordText = UI.find(this, R.id.input_password);
+        mLoginButton = UI.find(this, R.id.btn_login);
 
         mLoginButton.setIndeterminateProgressMode(true);
         mLoginButton.setOnClickListener(new View.OnClickListener() {

@@ -101,8 +101,8 @@ public class PinSaveActivity extends GaActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
-        mPinText = (EditText) findViewById(R.id.pinSaveText);
-        mNativeAuthCB = (CheckBox) findViewById(R.id.useNativeAuthentication);
+        mPinText = UI.find(this, R.id.pinSaveText);
+        mNativeAuthCB = UI.find(this, R.id.useNativeAuthentication);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {

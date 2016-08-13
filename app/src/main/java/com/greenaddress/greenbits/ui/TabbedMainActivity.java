@@ -107,7 +107,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
             final View snackbarView = snackbar.getView();
             snackbarView.setBackgroundColor(Color.DKGRAY);
-            final TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            final TextView textView = UI.find(snackbarView, android.support.design.R.id.snackbar_text);
             textView.setTextColor(Color.WHITE);
             snackbar.show();
         }
@@ -119,7 +119,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         if (!service.haveSubaccounts())
             return;
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = UI.find(this, R.id.fab);
         UI.show(fab);
 
         final String subAccountName;
@@ -181,17 +181,17 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         final GaService service = mService;
 
         setContentView(R.layout.activity_tabbed_main);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = UI.find(this, R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Set up the action bar.
         final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = UI.find(this, R.id.container);
         mViewPager.setAdapter(sectionsPagerAdapter);
 
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        final TabLayout tabLayout = UI.find(this, R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         // Re-show our 2FA warning if config is changed to remove all methods
@@ -318,10 +318,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     @Override
                     public void onSuccess(final Map<?, ?> sweepResult) {
                         final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
-                        final TextView passwordPrompt = (TextView) inflatedLayout.findViewById(R.id.sweepAddressPasswordPromptText);
-                        final TextView mainText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressMainText);
-                        final TextView addressText = (TextView) inflatedLayout.findViewById(R.id.sweepAddressAddressText);
-                        final EditText passwordEdit = (EditText) inflatedLayout.findViewById(R.id.sweepAddressPasswordText);
+                        final TextView passwordPrompt = UI.find(inflatedLayout, R.id.sweepAddressPasswordPromptText);
+                        final TextView mainText = UI.find(inflatedLayout, R.id.sweepAddressMainText);
+                        final TextView addressText = UI.find(inflatedLayout, R.id.sweepAddressAddressText);
+                        final EditText passwordEdit = UI.find(inflatedLayout, R.id.sweepAddressPasswordText);
                         final Transaction txNonBip38;
                         final String address;
 

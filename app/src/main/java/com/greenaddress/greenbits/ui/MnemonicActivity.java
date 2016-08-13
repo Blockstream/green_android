@@ -88,7 +88,7 @@ public class MnemonicActivity extends GaActivity {
 
         final View snackbarView = snackbar.getView();
         snackbarView.setBackgroundColor(Color.DKGRAY);
-        final TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        final TextView textView = UI.find(snackbarView, android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackbar.show();
     }
@@ -194,7 +194,7 @@ public class MnemonicActivity extends GaActivity {
             @Override
             public void run() {
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
-                final EditText passphraseValue = (EditText) inflatedLayout.findViewById(R.id.passphraseValue);
+                final EditText passphraseValue = UI.find(inflatedLayout, R.id.passphraseValue);
                 passphraseValue.requestFocus();
                 final MaterialDialog dialog = UI.popup(MnemonicActivity.this, "Encryption passphrase")
                         .customView(inflatedLayout, true)
@@ -231,8 +231,8 @@ public class MnemonicActivity extends GaActivity {
             mWords.add(mWordsArray[i]);
         }
 
-        mMnemonicText = (EditText) findViewById(R.id.mnemonicText);
-        mOkButton = (CircularProgressButton) findViewById(R.id.mnemonicOkButton);
+        mMnemonicText = UI.find(this, R.id.mnemonicText);
+        mOkButton = UI.find(this,R.id.mnemonicOkButton);
 
         mOkButton.setIndeterminateProgressMode(true);
 

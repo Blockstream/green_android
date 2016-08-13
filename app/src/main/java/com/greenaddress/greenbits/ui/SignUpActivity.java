@@ -63,11 +63,11 @@ public class SignUpActivity extends GaActivity {
 
         final GaService service = mService;
 
-        final CircularProgressButton signupContinueButton = (CircularProgressButton) findViewById(R.id.signupContinueButton);
-        final TextView tos = (TextView) findViewById(R.id.textTosLink);
-        final CheckBox checkBox = (CheckBox) findViewById(R.id.signupAcceptCheckBox);
+        final CircularProgressButton signupContinueButton = UI.find(this, R.id.signupContinueButton);
+        final TextView tos = UI.find(this, R.id.textTosLink);
+        final CheckBox checkBox = UI.find(this, R.id.signupAcceptCheckBox);
         final View nfcLayout = getLayoutInflater().inflate(R.layout.dialog_nfc_write, null, false);
-        nfcTagsWritten = (TextView) nfcLayout.findViewById(R.id.nfcTagsWrittenText);
+        nfcTagsWritten = UI.find(nfcLayout, R.id.nfcTagsWrittenText);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         mNfcPendingIntent = PendingIntent.getActivity(this, 0,
@@ -80,12 +80,12 @@ public class SignUpActivity extends GaActivity {
 
         tos.setMovementMethod(LinkMovementMethod.getInstance());
 
-        mnemonicText = (TextView) findViewById(R.id.signupMnemonicText);
+        mnemonicText = UI.find(this, R.id.signupMnemonicText);
 
-        final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+        final View qrLayout = getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
-        final TextView qrCodeIcon = (TextView) findViewById(R.id.signupQrCodeIcon);
-        final ImageView qrcodeMnemonic = (ImageView) inflatedLayout.findViewById(R.id.qrInDialogImageView);
+        final TextView qrCodeIcon = UI.find(this, R.id.signupQrCodeIcon);
+        final ImageView qrcodeMnemonic = UI.find(qrLayout, R.id.qrInDialogImageView);
         mnemonicText.setText(service.getSignUpMnemonic());
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +103,7 @@ public class SignUpActivity extends GaActivity {
 
                     mnemonicDialog = new Dialog(SignUpActivity.this);
                     mnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    mnemonicDialog.setContentView(inflatedLayout);
+                    mnemonicDialog.setContentView(qrLayout);
                 }
                 mnemonicDialog.show();
                 final BitmapDrawable bd = new BitmapDrawable(getResources(), service.getSignUpQRCode());
@@ -176,7 +176,7 @@ public class SignUpActivity extends GaActivity {
                 }
             }
         });
-        signupNfcIcon = (ImageView) findViewById(R.id.signupNfcIcon);
+        signupNfcIcon = UI.find(this, R.id.signupNfcIcon);
 
         nfcDialog = new MaterialDialog.Builder(SignUpActivity.this)
                 .title("Hold your NFC tag close to the device")
