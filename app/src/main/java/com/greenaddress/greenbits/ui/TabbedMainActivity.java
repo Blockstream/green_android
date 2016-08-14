@@ -317,11 +317,11 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 final FutureCallback<Map<?, ?>> callback = new CB.Toast<Map<?, ?>>(caller) {
                     @Override
                     public void onSuccess(final Map<?, ?> sweepResult) {
-                        final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
-                        final TextView passwordPrompt = UI.find(inflatedLayout, R.id.sweepAddressPasswordPromptText);
-                        final TextView mainText = UI.find(inflatedLayout, R.id.sweepAddressMainText);
-                        final TextView addressText = UI.find(inflatedLayout, R.id.sweepAddressAddressText);
-                        final EditText passwordEdit = UI.find(inflatedLayout, R.id.sweepAddressPasswordText);
+                        final View v = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
+                        final TextView passwordPrompt = UI.find(v, R.id.sweepAddressPasswordPromptText);
+                        final TextView mainText = UI.find(v, R.id.sweepAddressMainText);
+                        final TextView addressText = UI.find(v, R.id.sweepAddressAddressText);
+                        final EditText passwordEdit = UI.find(v, R.id.sweepAddressPasswordText);
                         final Transaction txNonBip38;
                         final String address;
 
@@ -349,7 +349,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
                         UI.popup(caller, R.string.sweepAddressTitle, R.string.sweep, R.string.cancel)
-                            .customView(inflatedLayout, true)
+                            .customView(v, true)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
                                 Transaction tx;
                                 ECKey key;

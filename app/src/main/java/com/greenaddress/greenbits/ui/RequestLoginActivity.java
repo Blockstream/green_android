@@ -80,20 +80,20 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         RequestLoginActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
+                                final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
                                 final Button[] buttons = new Button[]{
                                         // upside down
-                                        UI.find(inflatedLayout, R.id.trezorPinButton7),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton8),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton9),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton4),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton5),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton6),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton1),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton2),
-                                        UI.find(inflatedLayout, R.id.trezorPinButton3)
+                                        UI.find(v, R.id.trezorPinButton7),
+                                        UI.find(v, R.id.trezorPinButton8),
+                                        UI.find(v, R.id.trezorPinButton9),
+                                        UI.find(v, R.id.trezorPinButton4),
+                                        UI.find(v, R.id.trezorPinButton5),
+                                        UI.find(v, R.id.trezorPinButton6),
+                                        UI.find(v, R.id.trezorPinButton1),
+                                        UI.find(v, R.id.trezorPinButton2),
+                                        UI.find(v, R.id.trezorPinButton3)
                                 };
-                                final EditText pinValue = UI.find(inflatedLayout, R.id.trezorPinValue);
+                                final EditText pinValue = UI.find(v, R.id.trezorPinValue);
                                 for (int i = 0; i < 9; ++i) {
                                     final int ii = i;
                                     buttons[i].setOnClickListener(new View.OnClickListener() {
@@ -105,7 +105,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     });
                                 }
                                 UI.popup(RequestLoginActivity.this, "Hardware Wallet PIN")
-                                    .customView(inflatedLayout, true)
+                                    .customView(v, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(final MaterialDialog dialog, final DialogAction which) {
@@ -128,10 +128,10 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         RequestLoginActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
-                                final EditText passphraseValue = UI.find(inflatedLayout, R.id.trezorPassphraseValue);
+                                final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
+                                final EditText passphraseValue = UI.find(v, R.id.trezorPassphraseValue);
                                 UI.popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
-                                    .customView(inflatedLayout, true)
+                                    .customView(v, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(MaterialDialog dialog, DialogAction which) {
@@ -228,11 +228,11 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
-                final EditText pinValue = UI.find(inflatedLayout, R.id.btchipPINValue);
+                final View v = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
+                final EditText pinValue = UI.find(v, R.id.btchipPINValue);
                 final ProgressBar loginProgress = UI.find(RequestLoginActivity.this, R.id.signingLogin);
                 mBTChipDialog = UI.popup(RequestLoginActivity.this, "BTChip PIN")
-                        .customView(inflatedLayout, true)
+                        .customView(v, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final MaterialDialog dialog, final DialogAction which) {

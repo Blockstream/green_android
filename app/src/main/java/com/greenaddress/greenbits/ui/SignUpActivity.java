@@ -66,8 +66,8 @@ public class SignUpActivity extends GaActivity {
         final CircularProgressButton signupContinueButton = UI.find(this, R.id.signupContinueButton);
         final TextView tos = UI.find(this, R.id.textTosLink);
         final CheckBox checkBox = UI.find(this, R.id.signupAcceptCheckBox);
-        final View nfcLayout = getLayoutInflater().inflate(R.layout.dialog_nfc_write, null, false);
-        nfcTagsWritten = UI.find(nfcLayout, R.id.nfcTagsWrittenText);
+        final View nfcView = getLayoutInflater().inflate(R.layout.dialog_nfc_write, null, false);
+        nfcTagsWritten = UI.find(nfcView, R.id.nfcTagsWrittenText);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         mNfcPendingIntent = PendingIntent.getActivity(this, 0,
@@ -82,10 +82,10 @@ public class SignUpActivity extends GaActivity {
 
         mnemonicText = UI.find(this, R.id.signupMnemonicText);
 
-        final View qrLayout = getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+        final View qrView = getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
         final TextView qrCodeIcon = UI.find(this, R.id.signupQrCodeIcon);
-        final ImageView qrcodeMnemonic = UI.find(qrLayout, R.id.qrInDialogImageView);
+        final ImageView qrcodeMnemonic = UI.find(qrView, R.id.qrInDialogImageView);
         mnemonicText.setText(service.getSignUpMnemonic());
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +103,7 @@ public class SignUpActivity extends GaActivity {
 
                     mnemonicDialog = new Dialog(SignUpActivity.this);
                     mnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    mnemonicDialog.setContentView(qrLayout);
+                    mnemonicDialog.setContentView(qrView);
                 }
                 mnemonicDialog.show();
                 final BitmapDrawable bd = new BitmapDrawable(getResources(), service.getSignUpQRCode());
@@ -180,7 +180,7 @@ public class SignUpActivity extends GaActivity {
 
         nfcDialog = new MaterialDialog.Builder(SignUpActivity.this)
                 .title("Hold your NFC tag close to the device")
-                .customView(nfcLayout, true)
+                .customView(nfcView, true)
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK).build();

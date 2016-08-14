@@ -135,38 +135,39 @@ public class TransactionActivity extends GaActivity {
         @Override
         public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                                  final Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_transaction, container, false);
 
-            final TextView hashText = UI.find(rootView, R.id.txHashText);
+            final View v = inflater.inflate(R.layout.fragment_transaction, container, false);
 
-            final TextView amount = UI.find(rootView, R.id.txAmountText);
-            final TextView bitcoinScale = UI.find(rootView, R.id.txBitcoinScale);
-            final TextView bitcoinUnit = UI.find(rootView, R.id.txBitcoinUnit);
+            final TextView hashText = UI.find(v, R.id.txHashText);
 
-            final TextView dateText = UI.find(rootView, R.id.txDateText);
-            final TextView memoText = UI.find(rootView, R.id.txMemoText);
+            final TextView amount = UI.find(v, R.id.txAmountText);
+            final TextView bitcoinScale = UI.find(v, R.id.txBitcoinScale);
+            final TextView bitcoinUnit = UI.find(v, R.id.txBitcoinUnit);
 
-            final TextView memoEdit = UI.find(rootView, R.id.sendToNoteIcon);
-            final EditText memoEditText = UI.find(rootView, R.id.sendToNoteText);
+            final TextView dateText = UI.find(v, R.id.txDateText);
+            final TextView memoText = UI.find(v, R.id.txMemoText);
 
-            final TextView doubleSpentByText = UI.find(rootView, R.id.txDoubleSpentByText);
-            final TextView doubleSpentByTitle = UI.find(rootView, R.id.txDoubleSpentByTitle);
+            final TextView memoEdit = UI.find(v, R.id.sendToNoteIcon);
+            final EditText memoEditText = UI.find(v, R.id.sendToNoteText);
 
-            final TextView recipientText = UI.find(rootView, R.id.txRecipientText);
-            final TextView recipientTitle = UI.find(rootView, R.id.txRecipientTitle);
+            final TextView doubleSpentByText = UI.find(v, R.id.txDoubleSpentByText);
+            final TextView doubleSpentByTitle = UI.find(v, R.id.txDoubleSpentByTitle);
 
-            final TextView receivedOnText = UI.find(rootView, R.id.txReceivedOnText);
-            final TextView receivedOnTitle = UI.find(rootView, R.id.txReceivedOnTitle);
+            final TextView recipientText = UI.find(v, R.id.txRecipientText);
+            final TextView recipientTitle = UI.find(v, R.id.txRecipientTitle);
 
-            final TextView unconfirmedText = UI.find(rootView, R.id.txUnconfirmedText);
-            final TextView unconfirmedEstimatedBlocks = UI.find(rootView, R.id.txUnconfirmedEstimatedBlocks);
-            final TextView unconfirmedRecommendation = UI.find(rootView, R.id.txUnconfirmedRecommendation);
-            final Button unconfirmedIncreaseFee = UI.find(rootView, R.id.txUnconfirmedIncreaseFee);
-            final Button saveMemo = UI.find(rootView, R.id.saveMemo);
+            final TextView receivedOnText = UI.find(v, R.id.txReceivedOnText);
+            final TextView receivedOnTitle = UI.find(v, R.id.txReceivedOnTitle);
 
-            final TextView feeScale = UI.find(rootView, R.id.txFeeScale);
-            final TextView feeUnit = UI.find(rootView, R.id.txFeeUnit);
-            final TextView feeInfoText = UI.find(rootView, R.id.txFeeInfoText);
+            final TextView unconfirmedText = UI.find(v, R.id.txUnconfirmedText);
+            final TextView unconfirmedEstimatedBlocks = UI.find(v, R.id.txUnconfirmedEstimatedBlocks);
+            final TextView unconfirmedRecommendation = UI.find(v, R.id.txUnconfirmedRecommendation);
+            final Button unconfirmedIncreaseFee = UI.find(v, R.id.txUnconfirmedIncreaseFee);
+            final Button saveMemo = UI.find(v, R.id.saveMemo);
+
+            final TextView feeScale = UI.find(v, R.id.txFeeScale);
+            final TextView feeUnit = UI.find(v, R.id.txFeeUnit);
+            final TextView feeInfoText = UI.find(v, R.id.txFeeInfoText);
 
             final TransactionItem txItem = (TransactionItem) getActivity().getIntent().getSerializableExtra("TRANSACTION");
             final GaActivity gaActivity = getGaActivity();
@@ -187,7 +188,7 @@ public class TransactionActivity extends GaActivity {
             if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT) || txItem.isSpent) {
                 if (txItem.getConfirmations() > 0) {
                     // confirmed - hide unconfirmed widgets
-                    UI.hide((View) UI.find(rootView, R.id.txUnconfirmed),
+                    UI.hide((View) UI.find(v, R.id.txUnconfirmed),
                             unconfirmedRecommendation, unconfirmedIncreaseFee,
                             unconfirmedEstimatedBlocks);
                 } else if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT)) {
@@ -233,7 +234,7 @@ public class TransactionActivity extends GaActivity {
                         unconfirmedEstimatedBlocks);
                 if (txItem.getConfirmations() > 0) {
                     if (isWatchOnly || txItem.spvVerified ) {
-                        UI.hide((View) UI.find(rootView, R.id.txUnconfirmed));
+                        UI.hide((View) UI.find(v, R.id.txUnconfirmed));
                     } else {
                         if (getGAService().spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
                             unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),
@@ -290,9 +291,9 @@ public class TransactionActivity extends GaActivity {
                 if (isWatchOnly)
                     UI.hide(memoEdit);
             } else {
-                UI.hide(memoText, (View) UI.find(rootView, R.id.txMemoMargin));
+                UI.hide(memoText, (View) UI.find(v, R.id.txMemoMargin));
                 if (isWatchOnly)
-                    UI.hide((View) UI.find(rootView, R.id.txMemoTitle), memoEdit);
+                    UI.hide((View) UI.find(v, R.id.txMemoTitle), memoEdit);
             }
             // FIXME: use a list instead of reusing a TextView to show all double spends to allow
             // for a warning to be shown before the browser is open
@@ -322,25 +323,25 @@ public class TransactionActivity extends GaActivity {
                 doubleSpentByText.setText(res);
             } else {
                 UI.hide(doubleSpentByText, doubleSpentByTitle,
-                        (View) UI.find(rootView, R.id.txDoubleSpentByMargin));
+                        (View) UI.find(v, R.id.txDoubleSpentByMargin));
             }
 
             if (txItem.counterparty != null && txItem.counterparty.length() > 0) {
                 recipientText.setText(txItem.counterparty);
             } else {
                 UI.hide(recipientText, recipientTitle,
-                       (View) UI.find(rootView, R.id.txRecipientMargin));
+                       (View) UI.find(v, R.id.txRecipientMargin));
             }
 
             if (txItem.receivedOn != null && txItem.receivedOn.length() > 0) {
                 openInBrowser(receivedOnText, txItem.receivedOn, Network.BLOCKEXPLORER_ADDRESS);
             } else {
                 UI.hide(receivedOnText, receivedOnTitle,
-                        (View) UI.find(rootView, R.id.txReceivedOnMargin));
+                        (View) UI.find(v, R.id.txReceivedOnMargin));
             }
 
             if (isWatchOnly)
-                return rootView;
+                return v;
 
             memoEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -361,9 +362,9 @@ public class TransactionActivity extends GaActivity {
                             memoText.setText(UI.getText(memoEditText));
                             UI.hide(saveMemo, memoEditText);
                             if (UI.getText(memoText).isEmpty())
-                                UI.hide(memoText, (View) UI.find(rootView, R.id.txMemoMargin));
+                                UI.hide(memoText, (View) UI.find(v, R.id.txMemoMargin));
                             else
-                                UI.show((View) UI.find(rootView, R.id.txMemoMargin), memoText);
+                                UI.show((View) UI.find(v, R.id.txMemoMargin), memoText);
                         }
                     });
                 }
@@ -385,7 +386,7 @@ public class TransactionActivity extends GaActivity {
                 }
             });
 
-            return rootView;
+            return v;
         }
 
         private void replaceByFee(final TransactionItem txItem, final Coin feerate, Integer txSize, final int level) {
@@ -701,23 +702,23 @@ public class TransactionActivity extends GaActivity {
             final String btcUnit = (String) getGAService().getUserConfig("unit");
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
 
-            final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+            final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
-            final TextView amountLabel = UI.find(inflatedLayout, R.id.newTxAmountLabel);
+            final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);
             amountLabel.setText(R.string.newFeeText);
-            final TextView amountText = UI.find(inflatedLayout, R.id.newTxAmountText);
-            final TextView amountScale = UI.find(inflatedLayout, R.id.newTxAmountScaleText);
-            final TextView amountUnit = UI.find(inflatedLayout, R.id.newTxAmountUnitText);
-            final TextView feeLabel = UI.find(inflatedLayout, R.id.newTxFeeLabel);
+            final TextView amountText = UI.find(v, R.id.newTxAmountText);
+            final TextView amountScale = UI.find(v, R.id.newTxAmountScaleText);
+            final TextView amountUnit = UI.find(v, R.id.newTxAmountUnitText);
+            final TextView feeLabel = UI.find(v, R.id.newTxFeeLabel);
             feeLabel.setText(R.string.oldFeeText);
-            final TextView feeText = UI.find(inflatedLayout, R.id.newTxFeeText);
-            final TextView feeScale = UI.find(inflatedLayout, R.id.newTxFeeScale);
-            final TextView feeUnit = UI.find(inflatedLayout, R.id.newTxFeeUnit);
+            final TextView feeText = UI.find(v, R.id.newTxFeeText);
+            final TextView feeScale = UI.find(v, R.id.newTxFeeScale);
+            final TextView feeUnit = UI.find(v, R.id.newTxFeeUnit);
 
-            UI.hide((View) UI.find(inflatedLayout, R.id.newTxRecipientLabel),
-                    (View) UI.find(inflatedLayout, R.id.newTxRecipientText));
-            final TextView twoFAText = UI.find(inflatedLayout, R.id.newTx2FATypeText);
-            final EditText newTx2FACodeText = UI.find(inflatedLayout, R.id.newTx2FACodeText);
+            UI.hide((View) UI.find(v, R.id.newTxRecipientLabel),
+                    (View) UI.find(v, R.id.newTxRecipientText));
+            final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
+            final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
             final String prefix = CurrencyMapper.mapBtcFormatToPrefix(bitcoinFormat);
 
             amountScale.setText(Html.fromHtml(prefix));
@@ -751,7 +752,7 @@ public class TransactionActivity extends GaActivity {
             }
 
             mSummary = UI.popup(getActivity(), R.string.feeIncreaseTitle, R.string.send, R.string.cancel)
-                    .customView(inflatedLayout, true)
+                    .customView(v, true)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(final MaterialDialog dialog, final DialogAction which) {

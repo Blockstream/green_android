@@ -143,9 +143,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     }
                 }
         );
-        final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+        final View qrView = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
-        final ImageView qrcodeInDialog = UI.find(inflatedLayout, R.id.qrInDialogImageView);
+        final ImageView qrcodeInDialog = UI.find(qrView, R.id.qrInDialogImageView);
         onAddress = new FutureCallback<QrBitmap>() {
             @Override
             public void onSuccess(final QrBitmap result) {
@@ -182,7 +182,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                                     qrDialog = new Dialog(activity);
                                     qrDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                    qrDialog.setContentView(inflatedLayout);
+                                    qrDialog.setContentView(qrView);
                                 }
                                 qrDialog.show();
                                 final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());

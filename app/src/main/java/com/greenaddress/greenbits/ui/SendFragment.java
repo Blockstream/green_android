@@ -51,6 +51,7 @@ public class SendFragment extends SubaccountFragment {
 
     private static final String TAG = SendFragment.class.getSimpleName();
     private static final int REQUEST_SEND_QR_SCAN = 0;
+    private View mView;
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private EditText amountEdit;
@@ -68,8 +69,6 @@ public class SendFragment extends SubaccountFragment {
 
     private boolean converting = false;
     private MonetaryFormat bitcoinFormat;
-    // any better way to do it
-    private View rootView;
     private int curSubaccount;
     private Observer curBalanceObserver;
     private boolean pausing;
@@ -78,18 +77,18 @@ public class SendFragment extends SubaccountFragment {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
         final GaActivity gaActivity = getGaActivity();
 
-        final View inflatedLayout = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
-        final TextView amountText = UI.find(inflatedLayout, R.id.newTxAmountText);
-        final TextView amountScale = UI.find(inflatedLayout, R.id.newTxAmountScaleText);
-        final TextView amountUnit = UI.find(inflatedLayout, R.id.newTxAmountUnitText);
-        final TextView feeText = UI.find(inflatedLayout, R.id.newTxFeeText);
-        final TextView feeScale = UI.find(inflatedLayout, R.id.newTxFeeScale);
-        final TextView feeUnit = UI.find(inflatedLayout, R.id.newTxFeeUnit);
+        final TextView amountText = UI.find(v, R.id.newTxAmountText);
+        final TextView amountScale = UI.find(v, R.id.newTxAmountScaleText);
+        final TextView amountUnit = UI.find(v, R.id.newTxAmountUnitText);
+        final TextView feeText = UI.find(v, R.id.newTxFeeText);
+        final TextView feeScale = UI.find(v, R.id.newTxFeeScale);
+        final TextView feeUnit = UI.find(v, R.id.newTxFeeUnit);
 
-        final TextView recipientText = UI.find(inflatedLayout, R.id.newTxRecipientText);
-        final TextView twoFAText = UI.find(inflatedLayout, R.id.newTx2FATypeText);
-        final EditText newTx2FACodeText = UI.find(inflatedLayout, R.id.newTx2FACodeText);
+        final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
+        final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
+        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
         final String prefix = CurrencyMapper.mapBtcFormatToPrefix(bitcoinFormat);
 
         amountScale.setText(Html.fromHtml(prefix));
@@ -128,7 +127,7 @@ public class SendFragment extends SubaccountFragment {
         }
 
         mSummary = UI.popup(getActivity(), R.string.newTxTitle, R.string.send, R.string.cancel)
-                .customView(inflatedLayout, true)
+                .customView(v, true)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
@@ -175,7 +174,7 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
 
         if (URI.getPaymentRequestUrl() != null) {
-            final ProgressBar bip70Progress = UI.find(rootView, R.id.sendBip70ProgressBar);
+            final ProgressBar bip70Progress = UI.find(mView, R.id.sendBip70ProgressBar);
             UI.show(bip70Progress);
             recipientEdit.setEnabled(false);
             sendButton.setEnabled(false);
@@ -253,29 +252,29 @@ public class SendFragment extends SubaccountFragment {
         if (savedInstanceState != null)
             pausing = savedInstanceState.getBoolean("pausing");
 
-        rootView = inflater.inflate(R.layout.fragment_send, container, false);
+        mView = inflater.inflate(R.layout.fragment_send, container, false);
 
         curSubaccount = service.getCurrentSubAccount();
 
-        sendButton = UI.find(rootView, R.id.sendSendButton);
-        maxButton = UI.find(rootView, R.id.sendMaxButton);
-        noteText = UI.find(rootView, R.id.sendToNoteText);
-        noteIcon = UI.find(rootView, R.id.sendToNoteIcon);
-        instantConfirmationCheckbox = UI.find(rootView, R.id.instantConfirmationCheckBox);
+        sendButton = UI.find(mView, R.id.sendSendButton);
+        maxButton = UI.find(mView, R.id.sendMaxButton);
+        noteText = UI.find(mView, R.id.sendToNoteText);
+        noteIcon = UI.find(mView, R.id.sendToNoteIcon);
+        instantConfirmationCheckbox = UI.find(mView, R.id.instantConfirmationCheckBox);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // pre-Material Design the label was already a part of the switch
-            UI.hide((View) UI.find(rootView, R.id.sendMaxLabel));
+            UI.hide((View) UI.find(mView, R.id.sendMaxLabel));
         }
 
-        amountEdit = UI.find(rootView, R.id.sendAmountEditText);
-        amountFiatEdit = UI.find(rootView, R.id.sendAmountFiatEditText);
-        recipientEdit = UI.find(rootView, R.id.sendToEditText);
-        scanIcon = UI.find(rootView, R.id.sendScanIcon);
+        amountEdit = UI.find(mView, R.id.sendAmountEditText);
+        amountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
+        recipientEdit = UI.find(mView, R.id.sendToEditText);
+        scanIcon = UI.find(mView, R.id.sendScanIcon);
 
         final String btcUnit = (String) service.getUserConfig("unit");
-        final TextView bitcoinScale = UI.find(rootView, R.id.sendBitcoinScaleText);
-        final TextView bitcoinUnitText = UI.find(rootView, R.id.sendBitcoinUnitText);
+        final TextView bitcoinScale = UI.find(mView, R.id.sendBitcoinScaleText);
+        final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
         bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
         if (btcUnit == null || btcUnit.equals("bits")) {
@@ -464,7 +463,7 @@ public class SendFragment extends SubaccountFragment {
         );
 
 
-        final FontAwesomeTextView fiatView = UI.find(rootView, R.id.sendFiatIcon);
+        final FontAwesomeTextView fiatView = UI.find(mView, R.id.sendFiatIcon);
         changeFiatIcon(fiatView, service.getFiatCurrency());
 
         amountFiatEdit.addTextChangedListener(new TextWatcher() {
@@ -518,7 +517,7 @@ public class SendFragment extends SubaccountFragment {
 
         hideInstantIf2of3();
 
-        return rootView;
+        return mView;
     }
 
     @Override
@@ -542,9 +541,9 @@ public class SendFragment extends SubaccountFragment {
 
     private void updateBalance() {
         final String btcUnit = (String) getGAService().getUserConfig("unit");
-        final TextView sendSubAccountBalance = UI.find(rootView, R.id.sendSubAccountBalance);
-        final TextView sendSubAccountBalanceUnit = UI.find(rootView, R.id.sendSubAccountBalanceUnit);
-        final TextView sendSubAccountBitcoinScale = UI.find(rootView, R.id.sendSubAccountBitcoinScale);
+        final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
+        final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
+        final TextView sendSubAccountBitcoinScale = UI.find(mView, R.id.sendSubAccountBitcoinScale);
         sendSubAccountBitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
         if (btcUnit == null || btcUnit.equals("bits")) {
             sendSubAccountBalanceUnit.setText("");
@@ -673,7 +672,7 @@ public class SendFragment extends SubaccountFragment {
             public void onSuccess(final Map<?, ?> balance) {
                 final Coin coin = Coin.valueOf(Long.valueOf((String) balance.get("satoshi")));
                 final String btcUnit = (String) service.getUserConfig("unit");
-                final TextView sendSubAccountBalance = UI.find(rootView, R.id.sendSubAccountBalance);
+                final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
                 final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                 final String btcBalance = format.noCode().format(coin).toString();
                 final DecimalFormat formatter = new DecimalFormat("#,###.########");
