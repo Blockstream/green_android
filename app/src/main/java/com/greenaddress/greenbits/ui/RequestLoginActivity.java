@@ -49,7 +49,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
-    private Dialog btchipDialog = null;
+    private Dialog mBTChipDialog = null;
     private BTChipHWWallet hwWallet = null;
     private TagDispatcher tagDispatcher;
     private Tag tag;
@@ -231,7 +231,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 final View inflatedLayout = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
                 final EditText pinValue = UI.find(inflatedLayout, R.id.btchipPINValue);
                 final ProgressBar loginProgress = UI.find(RequestLoginActivity.this, R.id.signingLogin);
-                btchipDialog = UI.popup(RequestLoginActivity.this, "BTChip PIN")
+                mBTChipDialog = UI.popup(RequestLoginActivity.this, "BTChip PIN")
                         .customView(inflatedLayout, true)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -248,22 +248,18 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             }
                         }).build();
 
-                // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
                 pinValue.requestFocus();
-                final Window btchipWindow = btchipDialog.getWindow();
-                btchipWindow.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-                btchipWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 pinValue.setOnEditorActionListener(
                         UI.getListenerRunOnEnter(new Runnable() {
                             @Override
                             public void run() {
                                 UI.show(loginProgress);
-                                btchipDialog.hide();
+                                mBTChipDialog.hide();
                                 pinFuture.set(UI.getText(pinValue));
                             }
                         })
                 );
-                btchipDialog.show();
+                UI.showDialog(mBTChipDialog);
             }
         });
         Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
@@ -369,9 +365,8 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (btchipDialog != null) {
-            btchipDialog.dismiss();
-        }
+        if (mBTChipDialog != null)
+            mBTChipDialog.dismiss();
     }
 
     @Override

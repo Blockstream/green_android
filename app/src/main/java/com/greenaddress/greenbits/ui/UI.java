@@ -1,10 +1,12 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -96,7 +98,7 @@ public abstract class UI {
                 .items(namesArray)
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
-                    public boolean onSelection(MaterialDialog dlg, View v, int which, CharSequence text) {
+                    public boolean onSelection(MaterialDialog dialog, View v, int which, CharSequence text) {
                         final List<String> systemNames = service.getEnabledTwoFacNames(true);
                         callback.run(systemNames.get(which));
                         return true;
@@ -169,5 +171,13 @@ public abstract class UI {
 
     public static <T> T find(final View view, int id) {
         return (T) view.findViewById(id);
+    }
+
+    public static void showDialog(final Dialog dialog) {
+        // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
+        dialog.getWindow().clearFlags(LayoutParams.FLAG_NOT_FOCUSABLE |
+                                   LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
     }
 }

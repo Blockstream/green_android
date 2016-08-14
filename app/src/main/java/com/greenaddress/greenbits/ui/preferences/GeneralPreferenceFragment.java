@@ -165,10 +165,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                 }
                             }
                         }).build();
-                // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
-                dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                dialog.show();
+                UI.showDialog(dialog);
                 return false;
             }
         });
