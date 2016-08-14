@@ -142,7 +142,7 @@ public abstract class UI {
     public static View mapClick(final Activity activity, final int id, final Intent activityIntent) {
         return mapClick(activity, id, new View.OnClickListener() {
             @Override
-            public void onClick(final View view) {
+            public void onClick(final View v) {
                 activity.startActivity(activityIntent);
             }
         });
@@ -161,16 +161,16 @@ public abstract class UI {
 
     public static void hide(final View... views) { showIf(false, views); }
 
-    public static String getText(TextView view) {
-        return view.getText().toString();
+    public static String getText(TextView text) {
+        return text.getText().toString();
     }
 
     public static <T> T find(final Activity activity, int id) {
         return (T) activity.findViewById(id);
     }
 
-    public static <T> T find(final View view, int id) {
-        return (T) view.findViewById(id);
+    public static <T> T find(final View v, int id) {
+        return (T) v.findViewById(id);
     }
 
     public static void showDialog(final Dialog dialog) {

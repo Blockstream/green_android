@@ -232,7 +232,7 @@ public class TwoFactorActivity extends GaActivity {
         textCode.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
-                    public void onClick(final View view) {
+                    public void onClick(final View v) {
                         final ClipboardManager clipboard = (ClipboardManager)
                                 getSystemService(Context.CLIPBOARD_SERVICE);
                         final ClipData clip = ClipData.newPlainText("data", gauthCode);

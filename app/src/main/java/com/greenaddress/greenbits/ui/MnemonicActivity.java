@@ -73,7 +73,7 @@ public class MnemonicActivity extends GaActivity {
                 .make(mMnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
                 .setAction("Correct", new View.OnClickListener() {
                     @Override
-                    public void onClick(final View view) {
+                    public void onClick(final View v) {
                         mMnemonicText.setOnTouchListener(null);
                         final String mnemonicStr = UI.getText(mMnemonicText).replace(badWord, closeWord);
                         mMnemonicText.setText(mnemonicStr);
@@ -239,11 +239,11 @@ public class MnemonicActivity extends GaActivity {
             }
         });
         UI.mapClick(this, R.id.mnemonicScanIcon, new View.OnClickListener() {
-                                        public void onClick(final View view) {
+                                        public void onClick(final View v) {
                                             //New Marshmallow permissions paradigm
                                             final String[] perms = {"android.permission.CAMERA"};
                                             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
-                                                    checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
+                                                checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
                                                 requestPermissions(perms, CAMERA_PERMISSION);
                                             } else {
                                                 final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
@@ -384,7 +384,7 @@ public class MnemonicActivity extends GaActivity {
 
         mMnemonicText.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(final View view, final MotionEvent motionEvent) {
+            public boolean onTouch(final View v, final MotionEvent motionEvent) {
                 showErrorCorrection(MnemonicHelper.getClosestWord(mWordsArray, badWord), badWord);
                 return false;
             }

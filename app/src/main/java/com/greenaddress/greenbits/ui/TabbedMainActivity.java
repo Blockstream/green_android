@@ -100,7 +100,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     .setActionTextColor(Color.RED)
                     .setAction(getString(R.string.set2FA), new View.OnClickListener() {
                         @Override
-                        public void onClick(final View view) {
+                        public void onClick(final View v) {
                             startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
                         }
                     });
@@ -133,7 +133,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View view) {
+            public void onClick(final View v) {
                 final ArrayList<String> names = new ArrayList<>();
                 final ArrayList<Integer> pointers = new ArrayList<>();
 
@@ -148,7 +148,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                 final MaterialDialog.ListCallback lcb = new MaterialDialog.ListCallback() {
                     @Override
-                    public void onSelection(final MaterialDialog dialog, final View view, final int which, final CharSequence text) {
+                    public void onSelection(final MaterialDialog dialog, final View v, final int which, final CharSequence text) {
 
                         final int subAccount = pointers.get(which);
                         if (subAccount != service.getCurrentSubAccount()) {

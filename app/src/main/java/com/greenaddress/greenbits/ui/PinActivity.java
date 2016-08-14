@@ -183,7 +183,7 @@ public class PinActivity extends GaActivity implements Observer {
 
             mPinLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(final View view) {
+                public void onClick(final View v) {
                     login();
                 }
             });

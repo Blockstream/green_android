@@ -108,7 +108,7 @@ public class TransactionActivity extends GaActivity {
             textView.setText(identifier);
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View v) {
 
                     String domain = url;
                     try {
@@ -344,7 +344,7 @@ public class TransactionActivity extends GaActivity {
 
             memoEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(final View view) {
+                public void onClick(final View v) {
                     final boolean editVisible = memoEditText.getVisibility() == View.VISIBLE;
                     memoEditText.setText(UI.getText(memoText));
                     UI.hideIf(editVisible, memoEditText, saveMemo);
@@ -369,7 +369,7 @@ public class TransactionActivity extends GaActivity {
                 }
 
                 @Override
-                public void onClick(final View view) {
+                public void onClick(final View v) {
                     final String edited = UI.getText(memoEditText);
                     if (!edited.equals(UI.getText(memoText))) {
                         CB.after(getGAService().changeMemo(txItem.txhash, edited),

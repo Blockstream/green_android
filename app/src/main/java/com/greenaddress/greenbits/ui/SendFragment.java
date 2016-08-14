@@ -301,7 +301,7 @@ public class SendFragment extends SubaccountFragment {
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View view) {
+            public void onClick(final View v) {
                 // FIXME: Instead of checking the state here, enable/disable sendButton when state changes
                 if (!service.isLoggedIn()) {
                     gaActivity.toast(R.string.err_send_not_connected_will_resume);
@@ -447,7 +447,7 @@ public class SendFragment extends SubaccountFragment {
 
         scanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
-                                        public void onClick(final View view) {
+                                        public void onClick(final View v) {
                                             //New Marshmallow permissions paradigm
                                             final String[] perms = {"android.permission.CAMERA"};
                                             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&

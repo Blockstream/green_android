@@ -172,20 +172,20 @@ public class ListTransactionsAdapter extends
         public final TextView textValueQuestionMark;
         public final RelativeLayout mainLayout;
 
-        public ViewHolder(final View itemView) {
+        public ViewHolder(final View v) {
 
-            super(itemView);
+            super(v);
 
-            textValue = UI.find(itemView, R.id.listValueText);
-            textValueQuestionMark = UI.find(itemView, R.id.listValueQuestionMark);
-            textWhen = (TextView) UI.find(itemView, R.id.listWhenText);
-            textReplaceable = UI.find(itemView, R.id.listReplaceableText);
-            textWho = UI.find(itemView, R.id.listWhoText);
-            inOutIcon = UI.find(itemView, R.id.listInOutIcon);
-            mainLayout = UI.find(itemView, R.id.list_item_layout);
-            bitcoinIcon = UI.find(itemView, R.id.listBitcoinIcon);
-            bitcoinScale = UI.find(itemView, R.id.listBitcoinScaleText);
-            listNumberConfirmation = UI.find(itemView, R.id.listNumberConfirmation);
+            textValue = UI.find(v, R.id.listValueText);
+            textValueQuestionMark = UI.find(v, R.id.listValueQuestionMark);
+            textWhen = (TextView) UI.find(v, R.id.listWhenText);
+            textReplaceable = UI.find(v, R.id.listReplaceableText);
+            textWho = UI.find(v, R.id.listWhoText);
+            inOutIcon = UI.find(v, R.id.listInOutIcon);
+            mainLayout = UI.find(v, R.id.list_item_layout);
+            bitcoinIcon = UI.find(v, R.id.listBitcoinIcon);
+            bitcoinScale = UI.find(v, R.id.listBitcoinScaleText);
+            listNumberConfirmation = UI.find(v, R.id.listNumberConfirmation);
         }
     }
 }

@@ -46,18 +46,18 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
     }
 
     @Override
-    public void setContentView(View view) {
-        getDelegate().setContentView(view);
+    public void setContentView(View v) {
+        getDelegate().setContentView(v);
     }
 
     @Override
-    public void setContentView(View view, ViewGroup.LayoutParams params) {
-        getDelegate().setContentView(view, params);
+    public void setContentView(View v, ViewGroup.LayoutParams params) {
+        getDelegate().setContentView(v, params);
     }
 
     @Override
-    public void addContentView(View view, ViewGroup.LayoutParams params) {
-        getDelegate().addContentView(view, params);
+    public void addContentView(View v, ViewGroup.LayoutParams params) {
+        getDelegate().addContentView(v, params);
     }
 
     @Override

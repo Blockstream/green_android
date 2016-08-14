@@ -89,7 +89,7 @@ public class SignUpActivity extends GaActivity {
         mnemonicText.setText(service.getSignUpMnemonic());
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
-            public void onClick(final View view) {
+            public void onClick(final View v) {
                 qrCodeIcon.clearAnimation();
                 if (mnemonicDialog == null) {
                     final DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -135,7 +135,7 @@ public class SignUpActivity extends GaActivity {
 
         signupContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View view) {
+            public void onClick(final View v) {
                 if (onSignUp != null) {
 
                     signupContinueButton.setIndeterminateProgressMode(true);
