@@ -546,8 +546,7 @@ public class Trezor {
         final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.subAccount, ptx.change_pointer);
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
-            // FIXME: We should be able to say setDepth(serverKeys[0].getDepth()).
-            setDepth(serverKeys[0].getPath().size()).
+            setDepth(serverKeys[0].getDepth()).
             setFingerprint(0).
             setChildNum(serverKeys[0].getChildNumber().getI()).
             setPublicKey(ByteString.copyFrom(serverKeys[0].getPubKey())).
@@ -577,8 +576,7 @@ public class Trezor {
                                              ptx.change_pointer);
 
                 curRecoveryNode = TrezorType.HDNodeType.newBuilder().
-                        // FIXME: We should be able to say setDepth(keys[0].getDepth()).
-                        setDepth(keys[0].getPath().size()).
+                        setDepth(keys[0].getDepth()).
                         setFingerprint(0).
                         setChildNum(keys[0].getChildNumber().getI()).
                         setChainCode(ByteString.copyFrom(keys[0].getChainCode())).
