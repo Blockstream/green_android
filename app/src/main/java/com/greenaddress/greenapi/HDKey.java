@@ -8,7 +8,11 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
+import org.bitcoinj.crypto.HDUtils;
+import org.bitcoinj.crypto.LazyECPoint;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,11 +116,31 @@ public class HDKey {
         Wally.bip32_key_free(master);
         Wally.bip32_key_free(derived);
 
-        if (!h(k.getChainCode()).equals(h(chaincode)))
-            throw new RuntimeException("Chain code mismatch");
-        if (!h(k.getPubKey()).equals(h(pub_key)))
-            throw new RuntimeException("Public key mismatch");
+        final ArrayList<ChildNumber> childNumbers = new ArrayList(path.length);
+        for (int i : path)
+            childNumbers.add(new ChildNumber(i));
 
+        final DeterministicKey k2;
+        k2 = new DeterministicKey(ImmutableList.<ChildNumber>builder().addAll(childNumbers).build(),
+                                  chaincode, new LazyECPoint(ECKey.CURVE.getCurve(), pub_key),
+                                  null, /* parent */ null);
+
+        if (!k.equals(k2)) {
+            // FIXME FIXME: Remove logging of keys! FIXME FIXME
+            Log.d("HDKey", "Derivation mismatch: k :" + k.toString());
+            Log.d("HDKey", "Derivation mismatch: k2:" + k2.toString());
+            throw new RuntimeException("Derivation mismatch");
+        }
+
+        // We don't provide a parent key, and the DeterministicKey ctor
+        // currently calculates its depth from the parent depth + 1. This means
+        // callers need to avoid getDepth() in favour of getPath().size() for now.
+        // Verify that this identity holds.
+        if (k.getDepth() != k2.getPath().size()) {
+            Log.d("HDKey", "Derivation depth mismatch " + Integer.toString(k.getDepth()) +
+                  " vs " + Integer.toString(k2.getPath().size()));
+            throw new RuntimeException("Derivation depth mismatch");
+        }
         return k;
     }
     // FIXME: Remove
