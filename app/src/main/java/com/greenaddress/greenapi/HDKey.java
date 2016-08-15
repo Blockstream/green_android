@@ -93,14 +93,17 @@ public class HDKey {
     }
 
     private static DeterministicKey getServerKeyImpl(final int subAccount) {
-        DeterministicKey k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
-        k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
-        for (int i : mGaUserPath)
-            k = deriveChildKey(k, i);
-        if (subAccount != 0)
-            k = deriveChildKey(k, subAccount);
+        final boolean reconcile = false;
+        DeterministicKey k;
+        if (reconcile) {
+            k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
+            k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
+            for (int i : mGaUserPath)
+                k = deriveChildKey(k, i);
+            if (subAccount != 0)
+                k = deriveChildKey(k, subAccount);
+        }
 
-        // Reconcile against wally
         Object master = Wally.bip32_key_init(VER_PUBLIC, 0, 0,
                                              h(Network.depositChainCode), h(Network.depositPubkey),
                                              null, null, null);
@@ -111,30 +114,25 @@ public class HDKey {
             path[mGaUserPath.length + 1] = subAccount;
 
         Object derived = Wally.bip32_key_from_parent_path(master, path, BIP32_FLAG_KEY_PUBLIC);
-        final byte[] pub_key = Wally.bip32_key_get_pub_key(derived);
-        final byte[] chaincode = Wally.bip32_key_get_chain_code(derived);
-        Wally.bip32_key_free(master);
-        Wally.bip32_key_free(derived);
 
+        final DeterministicKey key;
         final ArrayList<ChildNumber> childNumbers = new ArrayList(path.length);
         for (int i : path)
             childNumbers.add(new ChildNumber(i));
+        key = new DeterministicKey(ImmutableList.<ChildNumber>builder().addAll(childNumbers).build(),
+                                   Wally.bip32_key_get_chain_code(derived),
+                                   new LazyECPoint(ECKey.CURVE.getCurve(),
+                                   Wally.bip32_key_get_pub_key(derived)),
+                                   /* parent */ null, childNumbers.size(), 0);
 
-        final DeterministicKey k2;
-        k2 = new DeterministicKey(ImmutableList.<ChildNumber>builder().addAll(childNumbers).build(),
-                                  chaincode, new LazyECPoint(ECKey.CURVE.getCurve(), pub_key),
-                                  /* parent */ null, childNumbers.size(), 0);
+        if (reconcile)
+            if (!k.equals(key))
+                throw new RuntimeException("Derivation mismatch");
 
-        if (!k.equals(k2)) {
-            // FIXME FIXME: Remove logging of keys! FIXME FIXME
-            Log.d("HDKey", "Derivation mismatch: k :" + k.toString());
-            Log.d("HDKey", "Derivation mismatch: k2:" + k2.toString());
-            throw new RuntimeException("Derivation mismatch");
-        }
-
-        return k2;
+        Wally.bip32_key_free(master);
+        Wally.bip32_key_free(derived);
+        return key;
     }
     // FIXME: Remove
-    private static String h(final byte[] bytes) { return Wally.hex_from_bytes(bytes); }
     private static byte[] h(final String hex) { return Wally.hex_to_bytes(hex); }
 }
