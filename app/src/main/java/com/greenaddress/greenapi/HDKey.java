@@ -123,7 +123,7 @@ public class HDKey {
         final DeterministicKey k2;
         k2 = new DeterministicKey(ImmutableList.<ChildNumber>builder().addAll(childNumbers).build(),
                                   chaincode, new LazyECPoint(ECKey.CURVE.getCurve(), pub_key),
-                                  null, /* parent */ null);
+                                  /* parent */ null, childNumbers.size(), 0);
 
         if (!k.equals(k2)) {
             // FIXME FIXME: Remove logging of keys! FIXME FIXME
@@ -132,16 +132,7 @@ public class HDKey {
             throw new RuntimeException("Derivation mismatch");
         }
 
-        // We don't provide a parent key, and the DeterministicKey ctor
-        // currently calculates its depth from the parent depth + 1. This means
-        // callers need to avoid getDepth() in favour of getPath().size() for now.
-        // Verify that this identity holds.
-        if (k.getDepth() != k2.getPath().size()) {
-            Log.d("HDKey", "Derivation depth mismatch " + Integer.toString(k.getDepth()) +
-                  " vs " + Integer.toString(k2.getPath().size()));
-            throw new RuntimeException("Derivation depth mismatch");
-        }
-        return k;
+        return k2;
     }
     // FIXME: Remove
     private static String h(final byte[] bytes) { return Wally.hex_from_bytes(bytes); }
