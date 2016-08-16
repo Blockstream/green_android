@@ -134,7 +134,7 @@ public abstract class UI {
     }
 
     public static View mapClick(final Activity activity, final int id, final View.OnClickListener fn) {
-        final View v = activity.findViewById(id);
+        final View v = find(activity, id);
         v.setOnClickListener(fn);
         return v;
     }
