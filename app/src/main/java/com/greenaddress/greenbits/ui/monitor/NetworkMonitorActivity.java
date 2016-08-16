@@ -45,7 +45,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         final GaService service = mService;
 
         unregisterReceiver(uiUpdated);
-        final PeerGroup peerGroup = service.spv.getPeerGroup();
+        final PeerGroup peerGroup = service.getSPVPeerGroup();
         if (peerGroup != null) {
             peerGroup.removeConnectedEventListener(this);
             peerGroup.removeDisconnectedEventListener(this);
@@ -69,7 +69,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
         peerList.clear();
 
-        final PeerGroup peerGroup = service.spv.getPeerGroup();
+        final PeerGroup peerGroup = service.getSPVPeerGroup();
         if (peerGroup == null || !peerGroup.isRunning())
             return;
 
@@ -82,7 +82,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             mBloomInfo = getString(R.string.network_monitor_bloom_info);
 
         final int currentBlock = service.getCurrentBlock();
-        final int spvHeight = service.spv.getSpvHeight();
+        final int spvHeight = service.getSPVHeight();
         final TextView bloomInfoText = UI.find(this, R.id.bloominfo);
         bloomInfoText.setText(getString(R.string.network_monitor_banner, mBloomInfo, currentBlock - spvHeight));
 

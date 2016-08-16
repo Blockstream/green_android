@@ -89,7 +89,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private void onTwoFactorConfigChange() {
         final GaService service = mService;
 
-        final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
+        final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
         if (twoFacConfig == null)
             return;
 

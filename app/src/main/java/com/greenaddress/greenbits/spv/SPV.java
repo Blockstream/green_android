@@ -60,7 +60,7 @@ public class SPV {
     private final String VERIFIED = "verified_utxo_";
     private final String SPENDABLE = "verified_utxo_spendable_value_";
 
-    public final Map<Integer, Coin> verifiedBalancesCoin = new HashMap<>();
+    private final Map<Integer, Coin> mVerifiedCoinBalances = new HashMap<>();
     private final Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts = new HashMap<>();
     private final Map<TransactionOutPoint, Integer> unspentOutpointsPointers = new HashMap<>();
@@ -72,8 +72,8 @@ public class SPV {
     private PeerGroup peerGroup;
     private PeerFilterProvider pfProvider;
     private final Object startSPVLock = new Object();
-    private boolean isSpvSyncing = false;
-    private boolean startSpvAfterInit = false;
+    private boolean isSPVSyncing = false;
+    private boolean startSPVAfterInit = false;
     private boolean syncStarted = false;
 
     private enum SPVMode {
@@ -87,28 +87,31 @@ public class SPV {
     public void startIfEnabled() {
         resetUnspent();
 
-        isSpvSyncing = false;
+        isSPVSyncing = false;
         if (gaService.isSPVEnabled()) {
             setUpSPV();
 
-            if (startSpvAfterInit) {
-                startSpvSync();
+            if (startSPVAfterInit) {
+                startSPVSync();
             }
         }
-        startSpvAfterInit = false;
+        startSPVAfterInit = false;
         updateUnspentOutputs();
+    }
+
+    public Coin getVerifiedCoinBalance(final int subAccount) {
+        return mVerifiedCoinBalances.get(subAccount);
     }
 
     private void addUtxoToValues(final TransactionOutPoint txOutpoint, final int subAccount, final Coin addValue) {
         if (countedUtxoValues.containsKey(txOutpoint))
            return;
         countedUtxoValues.put(txOutpoint, addValue);
-        if (verifiedBalancesCoin.get(subAccount) == null) {
-            verifiedBalancesCoin.put(subAccount, addValue);
-        } else {
-            verifiedBalancesCoin.put(subAccount,
-                    verifiedBalancesCoin.get(subAccount).add(addValue));
-        }
+        final Coin verifiedBalance = getVerifiedCoinBalance(subAccount);
+        if (verifiedBalance == null)
+            mVerifiedCoinBalances.put(subAccount, addValue);
+        else
+            mVerifiedCoinBalances.put(subAccount, verifiedBalance.add(addValue));
     }
 
     public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
@@ -149,8 +152,9 @@ public class SPV {
                     if (!newUtxos.contains(oldUtxo)) {
                         recalculateBloom = true;
                         final int subAccount = unspentOutpointsSubaccounts.get(oldUtxo);
-                        verifiedBalancesCoin.put(subAccount,
-                                verifiedBalancesCoin.get(subAccount).subtract(countedUtxoValues.get(oldUtxo)));
+                        final Coin verifiedBalance = getVerifiedCoinBalance(subAccount);
+                        mVerifiedCoinBalances.put(subAccount,
+                                                  verifiedBalance.subtract(countedUtxoValues.get(oldUtxo)));
                         changedSubaccounts.add(subAccount);
                         countedUtxoValues.remove(oldUtxo);
                         unspentOutpointsSubaccounts.remove(oldUtxo);
@@ -177,7 +181,7 @@ public class SPV {
         unspentOutpointsPointers.clear();
         unspentOutputsOutpoints.clear();
         countedUtxoValues.clear();
-        verifiedBalancesCoin.clear();
+        mVerifiedCoinBalances.clear();
     }
 
     public void addUtxoToValues(final Sha256Hash txHash) {
@@ -305,35 +309,38 @@ public class SPV {
         }
     }
 
-    public ListenableFuture<Coin> validateTxAndCalculateFeeOrAmount(final PreparedTransaction ptx, final String recipientStr, final Coin amount) {
-        Address recipientNonFinal = null;
+    private ListenableFuture<Boolean>
+    verifyOutputSpendable(final PreparedTransaction ptx, final int index) {
+        return gaService.verifySpendableBy(ptx.decoded.getOutputs().get(index),
+                                           ptx.subAccount, ptx.change_pointer);
+    }
+
+    public ListenableFuture<Coin>
+    validateTx(final PreparedTransaction ptx, final String recipientStr, final Coin amount) {
+        Address recipient = null;
         try {
-            recipientNonFinal = Address.fromBase58(Network.NETWORK, recipientStr);
+            recipient = Address.fromBase58(Network.NETWORK, recipientStr);
         } catch (final AddressFormatException e) {
         }
-        final Address recipient = recipientNonFinal;
 
         // 1. Find the change output:
-        ListenableFuture<List<Boolean>> changeFuture;
-        if (ptx.decoded.getOutputs().size() > 1) {
-            if (ptx.decoded.getOutputs().size() != 2) {
-                throw new IllegalArgumentException("Verification: Wrong number of transaction outputs.");
-            }
+        ListenableFuture<List<Boolean>> changeFuture = Futures.immediateFuture(null);
+
+        if (ptx.decoded.getOutputs().size() == 2) {
             final List<ListenableFuture<Boolean>> changeVerifications = new ArrayList<>();
-            changeVerifications.add(
-                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(0), ptx.subAccount, ptx.change_pointer));
-            changeVerifications.add(
-                    gaService.verifySpendableBy(ptx.decoded.getOutputs().get(1), ptx.subAccount, ptx.change_pointer));
+            changeVerifications.add(verifyOutputSpendable(ptx, 0));
+            changeVerifications.add(verifyOutputSpendable(ptx, 1));
             changeFuture = Futures.allAsList(changeVerifications);
-        } else {
-            changeFuture = Futures.immediateFuture(null);
         }
+        else if (ptx.decoded.getOutputs().size() > 2)
+            throw new IllegalArgumentException("Verification: Wrong number of transaction outputs.");
 
         // 2. Verify the main output value and address, if available:
+        final Address recipientAddr = recipient;
         return Futures.transform(changeFuture, new Function<List<Boolean>, Coin>() {
             @Override
             public Coin apply(final List<Boolean> input) {
-                return Verifier.verify(countedUtxoValues, ptx, recipient, amount, input);
+                return Verifier.verify(countedUtxoValues, ptx, recipientAddr, amount, input);
             }
         });
     }
@@ -357,7 +364,7 @@ public class SPV {
         }
     }
 
-    public int getSpvBlocksLeft() {
+    public int getSPVBlocksLeft() {
         if (gaService.isSPVEnabled())
             return spvBlocksLeft;
         return 0;
@@ -372,7 +379,7 @@ public class SPV {
             peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
         }
     }
-    public int getSpvHeight() {
+    public int getSPVHeight() {
         if (blockChain != null && gaService.isSPVEnabled())
             return blockChain.getBestChainHeight();
         return 0;
@@ -382,16 +389,16 @@ public class SPV {
         return peerGroup != null && peerGroup.isRunning();
     }
 
-    public synchronized void startSpvSync() {
+    public synchronized void startSPVSync() {
         synchronized (startSPVLock) {
             if (syncStarted)
                 return;
             syncStarted = true;
         }
-        if (isSpvSyncing)
+        if (isSPVSyncing)
              return;
         if (peerGroup == null) {  // disconnected while WiFi got up
-            startSpvAfterInit = true;
+            startSPVAfterInit = true;
             return;
         }
 
@@ -401,7 +408,7 @@ public class SPV {
                 peerGroup.startBlockChainDownload(new DownloadProgressTracker() {
                     @Override
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
-                        isSpvSyncing = true;
+                        isSPVSyncing = true;
                         spvBlocksLeft = blocksLeft;
                     }
 
@@ -553,7 +560,7 @@ public class SPV {
 
             peerGroup.stop();
 
-            isSpvSyncing = false;
+            isSPVSyncing = false;
             syncStarted = false;
         }
 
@@ -622,7 +629,7 @@ public class SPV {
             // Restart SPV
             setUpSPV();
             // FIXME: enabled under WiFi only
-            startSpvSync();
+            startSPVSync();
         }
     }
 
@@ -632,7 +639,7 @@ public class SPV {
             gaService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
             if (enabled) {
                 setUpSPV();
-                startSpvSync();
+                startSPVSync();
             } else
                 stopSPVSync();
         }

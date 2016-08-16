@@ -49,7 +49,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         addPreferencesFromResource(R.xml.preference_twofactor);
         setHasOptionsMenu(true);
 
-        final Map<?, ?> config = mService.getTwoFacConfig();
+        final Map<?, ?> config = mService.getTwoFactorConfig();
         if (config == null || config.isEmpty()) {
             final GaPreferenceActivity activity = (GaPreferenceActivity) getActivity();
             activity.toast(R.string.err_send_not_connected_will_resume);

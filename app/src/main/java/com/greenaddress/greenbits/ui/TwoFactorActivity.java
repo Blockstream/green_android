@@ -40,7 +40,7 @@ public class TwoFactorActivity extends GaActivity {
 
         final GaService service = mService;
 
-        if (service.getTwoFacConfig() == null) {
+        if (service.getTwoFactorConfig() == null) {
             finish();
             return;
         }
@@ -222,7 +222,7 @@ public class TwoFactorActivity extends GaActivity {
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
-        final String gauth_url = (String) service.getTwoFacConfig().get("gauth_url");
+        final String gauth_url = (String) service.getTwoFactorConfig().get("gauth_url");
         final BitmapDrawable bd = new BitmapDrawable(getResources(), new QrBitmap(gauth_url, 0).getQRCode());
         bd.setFilterBitmap(false);
         imageView.setImageDrawable(bd);

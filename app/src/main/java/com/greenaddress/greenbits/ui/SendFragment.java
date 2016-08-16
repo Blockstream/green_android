@@ -378,11 +378,12 @@ public class SendFragment extends SubaccountFragment {
                                 @Override
                                 public void onSuccess(final PreparedTransaction ptx) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    CB.after(service.spv.validateTxAndCalculateFeeOrAmount(ptx, recipient, maxButton.isChecked() ? null : amount),
+                                    final Coin verifyAmount = maxButton.isChecked() ? null : amount;
+                                    CB.after(service.validateTx(ptx, recipient, verifyAmount),
                                             new CB.Toast<Coin>(gaActivity, sendButton) {
                                                 @Override
                                                 public void onSuccess(final Coin fee) {
-                                                    final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
+                                                    final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
                                                     // can be non-UI because validation talks to USB if hw wallet is used
                                                     gaActivity.runOnUiThread(new Runnable() {
                                                         @Override
@@ -392,7 +393,7 @@ public class SendFragment extends SubaccountFragment {
                                                             if (maxButton.isChecked()) {
                                                                 // 'fee' in reality is the sent amount in case passed amount=null
                                                                 dialogAmount = fee;
-                                                                dialogFee = service.getBalanceCoin(curSubaccount).subtract(fee);
+                                                                dialogFee = service.getCoinBalance(curSubaccount).subtract(fee);
                                                             } else {
                                                                 dialogAmount = amount;
                                                                 dialogFee = fee;
@@ -440,7 +441,7 @@ public class SendFragment extends SubaccountFragment {
         curBalanceObserver = makeBalanceObserver();
         service.addBalanceObserver(curSubaccount, curBalanceObserver);
 
-        if (service.getBalanceCoin(curSubaccount) != null) {
+        if (service.getCoinBalance(curSubaccount) != null) {
             updateBalance();
         }
 
@@ -553,7 +554,7 @@ public class SendFragment extends SubaccountFragment {
         }
         final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final String btcBalance = format.noCode().format(
-                getGAService().getBalanceCoin(curSubaccount)).toString();
+                getGAService().getCoinBalance(curSubaccount)).toString();
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
 
         try {

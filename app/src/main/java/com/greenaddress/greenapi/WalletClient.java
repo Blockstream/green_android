@@ -366,7 +366,7 @@ public class WalletClient {
         return simpleCall("txs.get_balance", Map.class, subAccount);
     }
 
-    public ListenableFuture<Map<?, ?>> getTwoFacConfig() {
+    public ListenableFuture<Map<?, ?>> getTwoFactorConfig() {
         return simpleCall("twofactor.get_config", Map.class);
     }
 

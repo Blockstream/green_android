@@ -238,13 +238,13 @@ public class TransactionActivity extends GaActivity {
                     if (isWatchOnly || txItem.spvVerified ) {
                         UI.hide((View) UI.find(v, R.id.txUnconfirmed));
                     } else {
-                        if (service.spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
-                            unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),
-                                    service.spv.getSpvBlocksLeft()));
-                        } else {
-                            unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),
-                                    "Not yet connected to SPV!"));
-                        }
+                        final int blocksLeft = service.getSPVBlocksLeft();
+                        final String message = getResources().getString(R.string.txUnverifiedTx);
+                        if (blocksLeft != Integer.MAX_VALUE)
+                            unconfirmedText.setText(String.format("%s %s", message, blocksLeft));
+                        else
+                            unconfirmedText.setText(String.format("%s %s", message,
+                                                    "Not yet connected to SPV!"));
                     }
                 }
             }

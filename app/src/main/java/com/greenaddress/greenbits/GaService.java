@@ -42,6 +42,7 @@ import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
@@ -101,32 +102,32 @@ public class GaService extends Service {
     }
 
     public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
-    final private Map<Integer, GaObservable> balanceObservables = new HashMap<>();
-    final private GaObservable newTransactionsObservable = new GaObservable();
-    final private GaObservable verifiedTxObservable = new GaObservable();
     public ListenableFuture<Void> onConnected;
+    private final Map<Integer, GaObservable> mBalanceObservables = new HashMap<>();
+    private final GaObservable mNewTxObservable = new GaObservable();
+    private final GaObservable mVerifiedTxObservable = new GaObservable();
     private String mSignUpMnemonics = null;
     private Bitmap mSignUpQRCode = null;
     private int mCurrentBlock = 0;
 
     private boolean mAutoReconnect = true;
     // cache
-    private ListenableFuture<List<List<String>>> currencyExchangePairs;
+    private ListenableFuture<List<List<String>>> mCurrencyExchangePairs;
 
-    private final Map<Integer, Coin> balancesCoin = new HashMap<>();
+    private final Map<Integer, Coin> mCoinBalances = new HashMap<>();
 
-    private final Map<Integer, Fiat> balancesFiat = new HashMap<>();
-    private float fiatRate;
-    private String fiatCurrency;
-    private String fiatExchange;
+    private final Map<Integer, Fiat> mFiatBalances = new HashMap<>();
+    private float mFiatRate;
+    private String mFiatCurrency;
+    private String mFiatExchange;
     private ArrayList mSubaccounts;
     private String mReceivingId;
-    private Map<?, ?> twoFacConfig;
-    private final GaObservable twoFacConfigObservable = new GaObservable();
-    private String deviceId;
+    private Map<?, ?> mTwoFactorConfig;
+    private final GaObservable mTwoFactorConfigObservable = new GaObservable();
+    private String mDeviceId;
     private boolean mUserCancelledPINEntry = false;
 
-    public final SPV spv = new SPV(this);
+    public final SPV mSPV = new SPV(this);
 
     private WalletClient mClient;
 
@@ -148,16 +149,16 @@ public class GaService extends Service {
     }
 
     private void setFiatCurrency(final String currency) {
-        getLoginData().currency = fiatCurrency;
-        fiatCurrency = currency;
+        getLoginData().currency = mFiatCurrency;
+        mFiatCurrency = currency;
     }
 
-    private void getAvailableTwoFacMethods() {
-        Futures.addCallback(mClient.getTwoFacConfig(), new FutureCallback<Map<?, ?>>() {
+    private void getAvailableTwoFactorMethods() {
+        Futures.addCallback(mClient.getTwoFactorConfig(), new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(final Map<?, ?> result) {
-                twoFacConfig = result;
-                twoFacConfigObservable.doNotify();
+                mTwoFactorConfig = result;
+                mTwoFactorConfigObservable.doNotify();
             }
 
             @Override
@@ -201,7 +202,7 @@ public class GaService extends Service {
                     if (mClient.isWatchOnly())
                             loginImpl(mClient.watchOnlylogin(mClient.getWatchOnlyUsername(), mClient.getWatchOnlyPassword()));
                     else if (mClient.getSigningWallet() != null)
-                        loginImpl(mClient.login(mClient.getSigningWallet(), deviceId));
+                        loginImpl(mClient.login(mClient.getSigningWallet(), mDeviceId));
                 } catch (final Exception e) {
                     e.printStackTrace();
                     this.onFailure(e);
@@ -259,10 +260,10 @@ public class GaService extends Service {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(Object[] params) {
-                final boolean alreadySyncing = spv.stopSPVSync();
-                spv.setUpSPV();
+                final boolean alreadySyncing = mSPV.stopSPVSync();
+                mSPV.setUpSPV();
                 if (alreadySyncing)
-                    spv.startSpvSync();
+                    mSPV.startSPVSync();
                 return null;
             }
         }.execute();
@@ -277,7 +278,7 @@ public class GaService extends Service {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
-                spv.setEnabled(enabled);
+                mSPV.setEnabled(enabled);
                 return null;
             }
         }.execute();
@@ -292,14 +293,19 @@ public class GaService extends Service {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
-                spv.setSyncOnMobileEnabled(enabled);
+                mSPV.setSyncOnMobileEnabled(enabled);
                 return null;
             }
         }.execute();
     }
 
-    public void resetSPV() {
-        spv.reset();
+    public void resetSPV() { mSPV.reset(); }
+
+    public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
+    public int getSPVHeight() { return mSPV.getSPVHeight(); }
+    public int getSPVBlocksLeft() { return mSPV.getSPVBlocksLeft(); }
+    public Coin getSPVVerifiedBalance(final int subAccount) {
+        return mSPV.getVerifiedCoinBalance(subAccount);
     }
 
     @Override
@@ -312,10 +318,10 @@ public class GaService extends Service {
         mTimerExecutor = new ScheduledThreadPoolExecutor(1);
         mTimerExecutor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 
-        deviceId = cfg("service").getString("device_id", null);
-        if (deviceId == null) {
-            deviceId = UUID.randomUUID().toString();
-            cfgEdit("service").putString("device_id", deviceId).apply();
+        mDeviceId = cfg("service").getString("device_id", null);
+        if (mDeviceId == null) {
+            mDeviceId = UUID.randomUUID().toString();
+            cfgEdit("service").putString("device_id", mDeviceId).apply();
         }
 
         mClient = new WalletClient(new INotificationHandler() {
@@ -323,16 +329,16 @@ public class GaService extends Service {
             public void onNewBlock(final int count) {
                 Log.i(TAG, "onNewBlock");
                 if (isSPVEnabled())
-                    spv.addToBloomFilter(count, null, -1, -1, -1);
+                    mSPV.addToBloomFilter(count, null, -1, -1, -1);
 
-                newTransactionsObservable.doNotify();
+                mNewTxObservable.doNotify();
             }
 
             @Override
             public void onNewTransaction(final int[] affectedSubAccounts) {
                 Log.i(TAG, "onNewTransactions");
-                spv.updateUnspentOutputs();
-                newTransactionsObservable.doNotify();
+                mSPV.updateUnspentOutputs();
+                mNewTxObservable.doNotify();
                 for (final int subAccount : affectedSubAccounts)
                     updateBalance(subAccount);
             }
@@ -421,23 +427,23 @@ public class GaService extends Service {
             public void onSuccess(final LoginData result) {
                 // FIXME: Why are we copying these? If we need them when not logged in,
                 // we should just copy the whole loginData instance
-                fiatCurrency = result.currency;
-                fiatExchange = result.exchange;
+                mFiatCurrency = result.currency;
+                mFiatExchange = result.exchange;
                 mSubaccounts = result.subAccounts;
                 mReceivingId = result.receivingId;
                 HDKey.resetCache(result.gaUserPath);
 
-                balanceObservables.put(0, new GaObservable());
+                mBalanceObservables.put(0, new GaObservable());
                 updateBalance(0);
                 for (final Object s : result.subAccounts) {
                     final Map<?, ?> m = (Map) s;
                     final int pointer = ((Integer) m.get("pointer"));
-                    balanceObservables.put(pointer, new GaObservable());
+                    mBalanceObservables.put(pointer, new GaObservable());
                     updateBalance(pointer);
                 }
                 if (!isWatchOnly())
-                    getAvailableTwoFacMethods();
-                spv.startIfEnabled();
+                    getAvailableTwoFactorMethods();
+                mSPV.startIfEnabled();
                 mState.transitionTo(ConnState.LOGGEDIN);
             }
 
@@ -451,7 +457,7 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
-        return loginImpl(mClient.login(signingWallet, deviceId));
+        return loginImpl(mClient.login(signingWallet, mDeviceId));
     }
 
     public ListenableFuture<LoginData> watchOnlyLogin(final String username, final String password) {
@@ -467,7 +473,7 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics) {
-        return loginImpl(mClient.login(signingWallet, mnemonics, deviceId));
+        return loginImpl(mClient.login(signingWallet, mnemonics, mDeviceId));
     }
 
     public ListenableFuture<LoginData> signup(final String mnemonics) {
@@ -475,14 +481,14 @@ public class GaService extends Service {
         return loginImpl(mClient.loginRegister(signingWallet,
                                                signingWallet.getMasterKey().getPubKey(),
                                                signingWallet.getMasterKey().getChainCode(),
-                                               mnemonics, deviceId));
+                                               mnemonics, mDeviceId));
     }
 
     public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
                                               final byte[] masterPublicKey, final byte[] masterChaincode,
                                               final byte[] pathPublicKey, final byte[] pathChaincode) {
         return loginImpl(mClient.loginRegister(signingWallet, masterPublicKey, masterChaincode,
-                                               pathPublicKey, pathChaincode, deviceId));
+                                               pathPublicKey, pathChaincode, mDeviceId));
     }
 
     public String getMnemonics() {
@@ -495,8 +501,8 @@ public class GaService extends Service {
 
     public void disconnect(final boolean autoReconnect) {
         mAutoReconnect = autoReconnect;
-        spv.stopSPVSync();
-        for (final GaObservable o : balanceObservables.values())
+        mSPV.stopSPVSync();
+        for (final GaObservable o : mBalanceObservables.values())
             o.deleteObservers();
         mClient.disconnect();
         mState.transitionTo(ConnState.DISCONNECTED);
@@ -507,8 +513,8 @@ public class GaService extends Service {
         Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(final Map<?, ?> result) {
-                balancesCoin.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
-                fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
+                mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
+                mFiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                 if (mClient.isWatchOnly())
                     setFiatCurrency((String) result.get("fiat_currency"));
                 // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
@@ -517,7 +523,7 @@ public class GaService extends Service {
                         .movePointRight(Fiat.SMALLEST_UNIT_EXPONENT).toBigInteger();
                 // also strip extra decimals (over 2 places) because that's what the old JS client does
                 final BigInteger fiatValue = tmpValue.subtract(tmpValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
-                balancesFiat.put(subAccount, Fiat.valueOf((String) result.get("fiat_currency"), fiatValue.longValue()));
+                mFiatBalances.put(subAccount, Fiat.valueOf((String) result.get("fiat_currency"), fiatValue.longValue()));
 
                 fireBalanceChanged(subAccount);
             }
@@ -535,19 +541,19 @@ public class GaService extends Service {
     }
 
     public void fireBalanceChanged(final int subAccount) {
-        if (getBalanceCoin(subAccount) == null) {
+        if (getCoinBalance(subAccount) == null) {
             // Called from addUtxoToValues before balance is fetched
             return;
         }
-        balanceObservables.get(subAccount).doNotify();
+        mBalanceObservables.get(subAccount).doNotify();
     }
 
     public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
         return Futures.transform(mClient.setPricingSource(currency, exchange), new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(final Boolean input) {
-                fiatCurrency = currency;
-                fiatExchange = exchange;
+                mFiatCurrency = currency;
+                mFiatExchange = exchange;
                 return input;
             }
         });
@@ -561,8 +567,8 @@ public class GaService extends Service {
                 setCurrentBlock((Integer) result.get("cur_block"));
                 // FIXME: Does this really belong here?
                 if (isSPVEnabled()) {
-                    spv.setUpSPV();
-                    spv.startSpvSync();
+                    mSPV.setUpSPV();
+                    mSPV.startSPVSync();
                 }
                 return result;
             }
@@ -600,9 +606,9 @@ public class GaService extends Service {
     private void preparePrivData(final Map<String, Object> privateData) {
         final int subAccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
-        final Coin verifiedBalance = spv.verifiedBalancesCoin.get(subAccount);
+        final Coin verifiedBalance = getSPVVerifiedBalance(subAccount);
         if (!isSPVEnabled() ||
-            verifiedBalance == null || !verifiedBalance.equals(getBalanceCoin(subAccount)) ||
+            verifiedBalance == null || !verifiedBalance.equals(getCoinBalance(subAccount)) ||
             mClient.getSigningWallet().requiresPrevoutRawTxs()) {
             privateData.put("prevouts_mode", "http");
         } else {
@@ -618,6 +624,11 @@ public class GaService extends Service {
         return mClient.signTransaction(mClient.getSigningWallet(), ptx);
     }
 
+    public ListenableFuture<Coin>
+    validateTx(final PreparedTransaction ptx, final String recipientStr, final Coin amount) {
+        return mSPV.validateTx(ptx, recipientStr, amount);
+    }
+
     public ListenableFuture<PreparedTransaction> prepareTx(final Coin coinValue, final String recipient, final Map<String, Object> privateData) {
         preparePrivData(privateData);
         return mClient.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
@@ -625,7 +636,7 @@ public class GaService extends Service {
 
     public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subAccount, final String recipient, final Map<String, Object> privateData) {
         preparePrivData(privateData);
-        return mClient.prepareTx(getBalanceCoin(subAccount).longValue(), recipient, "receiver", privateData);
+        return mClient.prepareTx(getCoinBalance(subAccount).longValue(), recipient, "receiver", privateData);
     }
 
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
@@ -715,8 +726,8 @@ public class GaService extends Service {
     }
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {
-        if (currencyExchangePairs == null) {
-            currencyExchangePairs = Futures.transform(mClient.getAvailableCurrencies(), new Function<Map<?, ?>, List<List<String>>>() {
+        if (mCurrencyExchangePairs == null) {
+            mCurrencyExchangePairs = Futures.transform(mClient.getAvailableCurrencies(), new Function<Map<?, ?>, List<List<String>>>() {
                 @Override
                 public List<List<String>> apply(final Map<?, ?> result) {
                     final Map<String, ArrayList<String>> per_exchange = (Map) result.get("per_exchange");
@@ -739,7 +750,7 @@ public class GaService extends Service {
                 }
             }, es);
         }
-        return currencyExchangePairs;
+        return mCurrencyExchangePairs;
     }
 
     public void resetSignUp() {
@@ -762,62 +773,62 @@ public class GaService extends Service {
     }
 
     public void addBalanceObserver(final int subAccount, final Observer o) {
-        balanceObservables.get(subAccount).addObserver(o);
+        mBalanceObservables.get(subAccount).addObserver(o);
     }
 
     public void deleteBalanceObserver(final int subAccount, final Observer o) {
-        balanceObservables.get(subAccount).deleteObserver(o);
+        mBalanceObservables.get(subAccount).deleteObserver(o);
     }
 
     public void addNewTxObserver(final Observer o) {
-        newTransactionsObservable.addObserver(o);
+        mNewTxObservable.addObserver(o);
     }
 
     public void deleteNewTxObserver(final Observer o) {
-        newTransactionsObservable.deleteObserver(o);
+        mNewTxObservable.deleteObserver(o);
     }
 
     public void addVerifiedTxObserver(final Observer o) {
-        verifiedTxObservable.addObserver(o);
+        mVerifiedTxObservable.addObserver(o);
     }
 
     public void deleteVerifiedTxObserver(final Observer o) {
-        verifiedTxObservable.deleteObserver(o);
+        mVerifiedTxObservable.deleteObserver(o);
     }
 
     public void addTwoFactorObserver(final Observer o) {
-        twoFacConfigObservable.addObserver(o);
+        mTwoFactorConfigObservable.addObserver(o);
     }
 
     public void deleteTwoFactorObserver(final Observer o) {
-        twoFacConfigObservable.deleteObserver(o);
+        mTwoFactorConfigObservable.deleteObserver(o);
     }
 
     public void notifyObservers(final Sha256Hash tx) {
         // FIXME: later spent outputs can be purged
         cfgInEdit("verified_utxo_").putBoolean(tx.toString(), true).apply();
-        spv.addUtxoToValues(tx);
-        verifiedTxObservable.doNotify();
+        mSPV.addUtxoToValues(tx);
+        mVerifiedTxObservable.doNotify();
     }
 
-    public Coin getBalanceCoin(final int subAccount) {
-        return balancesCoin.get(subAccount);
+    public Coin getCoinBalance(final int subAccount) {
+        return mCoinBalances.get(subAccount);
     }
 
-    public Fiat getBalanceFiat(final int subAccount) {
-        return balancesFiat.get(subAccount);
+    public Fiat getFiatBalance(final int subAccount) {
+        return mFiatBalances.get(subAccount);
     }
 
     public float getFiatRate() {
-        return fiatRate;
+        return mFiatRate;
     }
 
     public String getFiatCurrency() {
-        return fiatCurrency;
+        return mFiatCurrency;
     }
 
     public String getFiatExchange() {
-        return fiatExchange;
+        return mFiatExchange;
     }
 
     public ArrayList getSubaccounts() {
@@ -840,8 +851,8 @@ public class GaService extends Service {
         return null;
     }
 
-    public Map<?, ?> getTwoFacConfig() {
-        return twoFacConfig;
+    public Map<?, ?> getTwoFactorConfig() {
+        return mTwoFactorConfig;
     }
 
     /**
@@ -878,7 +889,7 @@ public class GaService extends Service {
         return Futures.transform(mClient.enableTwoFactor(type, code, twoFacData), new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(final Boolean input) {
-                getAvailableTwoFacMethods();
+                getAvailableTwoFactorMethods();
                 return input;
             }
         });
@@ -888,19 +899,20 @@ public class GaService extends Service {
         return Futures.transform(mClient.disableTwoFac(type, twoFacData), new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(final Boolean input) {
-                getAvailableTwoFacMethods();
+                getAvailableTwoFactorMethods();
                 return input;
             }
         });
     }
 
     public List<String> getEnabledTwoFacNames(final boolean useSystemNames) {
-        if (twoFacConfig == null) return null;
+        if (mTwoFactorConfig == null)
+            return null;
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
         final ArrayList<String> enabledTwoFac = new ArrayList<>();
         for (int i = 0; i < allTwoFac.length; ++i) {
-            if (((Boolean) twoFacConfig.get(allTwoFacSystem[i]))) {
+            if (((Boolean) mTwoFactorConfig.get(allTwoFacSystem[i]))) {
                 if (useSystemNames) {
                     enabledTwoFac.add(allTwoFacSystem[i]);
                 } else {
@@ -1060,7 +1072,7 @@ public class GaService extends Service {
             mState.transitionTo(ConnState.DISCONNECTED);
             reconnect();
         } else
-            spv.onNetConnectivityChanged(info);
+            mSPV.onNetConnectivityChanged(info);
     }
 
     public NetworkInfo getNetworkInfo() {

@@ -43,7 +43,7 @@ public class MainFragment extends SubaccountFragment {
 
     private void updateBalance() {
         final GaService service = getGAService();
-        final Monetary monetary = service.getBalanceCoin(curSubaccount);
+        final Monetary monetary = service.getCoinBalance(curSubaccount);
         if (monetary == null)
             return;
 
@@ -62,18 +62,17 @@ public class MainFragment extends SubaccountFragment {
             balanceBitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
         }
 
-        final String btcBalance = bitcoinFormat.noCode().format(
-                monetary).toString();
+        final String btcBalance = bitcoinFormat.noCode().format(monetary).toString();
         final String btcBalanceVerified;
-        if (service.spv.verifiedBalancesCoin.get(curSubaccount) != null) {
-            btcBalanceVerified = bitcoinFormat.noCode().format(
-                    service.spv.verifiedBalancesCoin.get(curSubaccount)).toString();
-        } else {
+        final Coin verifiedBalance = service.getSPVVerifiedBalance(curSubaccount);
+        if (verifiedBalance != null)
+            btcBalanceVerified = bitcoinFormat.noCode().format(verifiedBalance).toString();
+        else
             btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
-        }
+
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
-                        service.getBalanceFiat(curSubaccount))
+                        service.getFiatBalance(curSubaccount))
                         .toString();
         final String fiatCurrency = service.getFiatCurrency();
         final String converted = CurrencyMapper.map(fiatCurrency);
@@ -167,7 +166,7 @@ public class MainFragment extends SubaccountFragment {
         curBalanceObserver = makeBalanceObserver();
         service.addBalanceObserver(curSubaccount, curBalanceObserver);
 
-        if (service.getBalanceCoin(curSubaccount) != null) {
+        if (service.getCoinBalance(curSubaccount) != null) {
             updateBalance();
             reloadTransactions(false);
         }
