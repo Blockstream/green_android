@@ -35,7 +35,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         getPreferenceManager().getSharedPreferences().edit()
                               .putString("altime", Integer.toString(timeout))
                               .apply();
-        final Preference altime = findPreference("altime");
+        final Preference altime = find("altime");
         altime.setSummary(String.format("%d %s", timeout, getResources().getString(R.string.autologout_time_default)));
         altime.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
@@ -56,19 +56,21 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         final String mnemonic = mService.getMnemonics();
         if (mnemonic != null) {
-            findPreference("mnemonic_passphrase").setSummary(getString(R.string.touch_to_display));
-            findPreference("mnemonic_passphrase").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            final Preference passphrase = find("mnemonic_passphrase");
+            passphrase.setSummary(getString(R.string.touch_to_display));
+            passphrase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(final Preference preference) {
-                    findPreference("mnemonic_passphrase").setSummary(mnemonic);
+                    passphrase.setSummary(mnemonic);
                     return false;
                 }
             });
         }
 
         // -- handle pin
+        final Preference resetPin = find("reset_pin");
         if (mnemonic != null) {
-            findPreference("reset_pin").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            resetPin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(final Preference preference) {
                     final Intent savePin = PinSaveActivity.createIntent(getActivity(), mnemonic);
@@ -77,12 +79,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 }
             });
         } else {
-            getPreferenceScreen().removePreference(findPreference("reset_pin"));
+            getPreferenceScreen().removePreference(resetPin);
         }
 
         // -- handle currency and bitcoin denomination
-        final ListPreference fiatCurrency = (ListPreference) findPreference("fiat_key");
-        final ListPreference bitcoinDenomination = (ListPreference)  findPreference("denomination_key");
+        final ListPreference fiatCurrency = find("fiat_key");
+        final ListPreference bitcoinDenomination = find("denomination_key");
         final ArrayList<String> units = new ArrayList<>();
 
         units.add("BTC");
@@ -116,7 +118,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 return true;
             }
         });
-        final Preference watchOnlyLogin = findPreference("watch_only_login");
+        final Preference watchOnlyLogin = find("watch_only_login");
         try {
             final String username = mService.getWatchOnlyUsername();
             if (username != null) {
@@ -204,15 +206,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 });
 
         // -- handle opt-in rbf
+        final CheckBoxPreference optInRbf = find("optin_rbf");
         if (!mService.getLoginData().rbf) {
-            getPreferenceScreen().removePreference(findPreference("optin_rbf"));
+            getPreferenceScreen().removePreference(optInRbf);
         } else {
-            final CheckBoxPreference optin_rbf = (CheckBoxPreference) findPreference("optin_rbf");
-            optin_rbf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            optInRbf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                     // disable until server confirms set
-                    optin_rbf.setEnabled(false);
+                    optInRbf.setEnabled(false);
 
                     Futures.addCallback(
                             mService.setUserConfig("replace_by_fee", newValue, false),
@@ -222,8 +224,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            optin_rbf.setChecked((Boolean) newValue);
-                                            optin_rbf.setEnabled(true);
+                                            optInRbf.setChecked((Boolean) newValue);
+                                            optInRbf.setEnabled(true);
                                         }
                                     });
                                 }
@@ -233,7 +235,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            optin_rbf.setEnabled(true);
+                                            optInRbf.setEnabled(true);
                                         }
                                     });
                                 }
@@ -242,7 +244,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 }
             });
             final Boolean replace_by_fee = (Boolean) mService.getUserConfig("replace_by_fee");
-            ((CheckBoxPreference) findPreference("optin_rbf")).setChecked(replace_by_fee);
+            optInRbf.setChecked(replace_by_fee);
         }
         getActivity().setResult(Activity.RESULT_OK, null);
     }

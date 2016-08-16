@@ -22,10 +22,13 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
 
-        mTrustedPeer = (EditTextPreference) findPreference("trusted_peer");
+        mTrustedPeer = find("trusted_peer");
+        final Preference resetSPV = find("reset_spv");
+        final CheckBoxPreference spvEnabled = find("spvEnabled");
+        final CheckBoxPreference spvSyncMobile = find("spvSyncMobile");
+
         bindPreferenceSummaryToValue(mTrustedPeer);
 
-        final Preference resetSPV = findPreference("reset_spv");
         resetSPV.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
@@ -34,7 +37,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             }
         });
 
-        final CheckBoxPreference spvEnabled = (CheckBoxPreference) findPreference("spvEnabled");
         final boolean enabled = mService.isSPVEnabled();
         mTrustedPeer.setEnabled(enabled);
         spvEnabled.setChecked(enabled);
@@ -47,7 +49,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             }
         });
 
-        final CheckBoxPreference spvSyncMobile = (CheckBoxPreference) findPreference("spvSyncMobile");
         spvSyncMobile.setChecked(mService.isSPVSyncOnMobileEnabled());
         spvSyncMobile.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override

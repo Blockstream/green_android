@@ -44,4 +44,8 @@ public class GAPreferenceFragment extends PreferenceFragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public <T> T find(final String preferenceName) {
+        return (T) findPreference(preferenceName);
+    }
 }

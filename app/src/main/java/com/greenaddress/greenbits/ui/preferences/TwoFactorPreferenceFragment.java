@@ -25,10 +25,10 @@ import java.util.Map;
 public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private static final int REQUEST_ENABLE_2FA = 0;
-    private String twoFacMethod;
+    private String mTwoFactorMethod;
 
     private CheckBoxPreference getPref(final String method) {
-        return (CheckBoxPreference) findPreference("twoFac" + method);
+        return find("twoFac" + method);
     }
 
     private void setupCheckbox(final Map<?, ?> config, final String method) {
@@ -66,7 +66,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         if (newValue) {
             final Intent intent = new Intent(getActivity(), TwoFactorActivity.class);
             intent.putExtra("method", method.toLowerCase());
-            twoFacMethod = method;
+            mTwoFactorMethod = method;
             startActivityForResult(intent, REQUEST_ENABLE_2FA);
             return;
         }
@@ -118,10 +118,8 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                               public void onSuccess(final Boolean result) {
                                   getActivity().runOnUiThread(new Runnable() {
                                       @Override
-                                      public void run()
-                                      {
-                                          final CheckBoxPreference c = (CheckBoxPreference) findPreference("twoFac" + method);
-                                          c.setChecked(false);
+                                      public void run() {
+                                          getPref(method).setChecked(false);
                                       }
                                   });
                               }
@@ -139,7 +137,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (resultCode == Activity.RESULT_OK)
-            getPref(twoFacMethod).setChecked(true);
+            getPref(mTwoFactorMethod).setChecked(true);
         else
             super.onActivityResult(requestCode, resultCode, data);
     }
