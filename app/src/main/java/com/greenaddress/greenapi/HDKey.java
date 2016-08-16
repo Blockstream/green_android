@@ -10,7 +10,6 @@ import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.HDUtils;
 import org.bitcoinj.crypto.LazyECPoint;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
