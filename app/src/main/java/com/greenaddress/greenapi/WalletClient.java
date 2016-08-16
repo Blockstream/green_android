@@ -69,15 +69,22 @@ public class WalletClient {
     private final Scheduler mScheduler = Schedulers.newThread();
     private final ListeningExecutorService mExecutor;
     private final INotificationHandler mNotificationHandler;
-    private WampClient mConnection;
-    private SocketAddress mProxy = null;
+    private SocketAddress mProxyAddress;
+    private final OkHttpClient mHttpClient = new OkHttpClient();
     private boolean mTorEnabled = false;
+    private WampClient mConnection;
     private LoginData mLoginData;
     private ISigningWallet mHDParent;
     private String mWatchOnlyUsername = null;
     private String mWatchOnlyPassword = null;
     private String mMnemonics = null;
-    private final OkHttpClient httpClient = new OkHttpClient();
+
+
+    public WalletClient(final INotificationHandler notificationHandler,
+                        final ListeningExecutorService es) {
+        mNotificationHandler = notificationHandler;
+        mExecutor = es;
+    }
 
     /**
      * Call handler.
@@ -257,18 +264,13 @@ public class WalletClient {
         });
     }
 
-    public WalletClient(final INotificationHandler notificationHandler, final ListeningExecutorService es) {
-        mNotificationHandler = notificationHandler;
-        mExecutor = es;
-    }
-
     public void setProxy(final String host, final String port) {
         if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(port)) {
-            mProxy = new InetSocketAddress(host, Integer.parseInt(port));
-            httpClient.setProxy(new Proxy(Proxy.Type.SOCKS, mProxy));
+            mProxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
+            mHttpClient.setProxy(new Proxy(Proxy.Type.SOCKS, mProxyAddress));
         } else {
-            mProxy = null;
-            httpClient.setProxy(null);
+            mProxyAddress = null;
+            mHttpClient.setProxy(null);
         }
     }
 
@@ -431,14 +433,14 @@ public class WalletClient {
             @Override
             public void call() {
                 final String wsuri = getUri();
-                Log.i(TAG, "Proxy is configured " + mProxy);
+                Log.i(TAG, "Proxy is configured " + mProxyAddress);
                 Log.i(TAG, "Connecting to " + wsuri);
 
                 final WampClientBuilder builder = new WampClientBuilder();
                 final IWampConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
                 try {
                     builder.withConnectorProvider(connectorProvider)
-                            .withProxyAddress(mProxy)
+                            .withProxyAddress(mProxyAddress)
                             .withUri(wsuri)
                             .withRealm("realm1")
                             .withNrReconnects(0);
@@ -663,7 +665,7 @@ public class WalletClient {
         final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
         clientCall(rpc, "vault.prepare_tx", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.subAccounts, httpClient));
+                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.subAccounts, mHttpClient));
             }
         }, satoshis, destAddress, feesMode, privateData);
 
@@ -697,7 +699,7 @@ public class WalletClient {
 
         clientCall(rpc, "vault.prepare_payreq", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.subAccounts, httpClient));
+                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.subAccounts, mHttpClient));
             }
         }, amount.longValue(), dataClone, privateData);
 

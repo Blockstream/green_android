@@ -74,7 +74,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class GaService extends Service {
+public class GaService extends Service implements INotificationHandler {
     private static final String TAG = GaService.class.getSimpleName();
 
     private enum ConnState {
@@ -177,11 +177,7 @@ public class GaService extends Service {
     }
 
     private void reloadSettings() {
-        final String proxyHost = getProxyHost();
-        final String proxyPort = getProxyPort();
-        if (proxyHost != null && proxyPort != null) {
-            mClient.setProxy(proxyHost, proxyPort);
-        }
+        mClient.setProxy(getProxyHost(), getProxyPort());
         mClient.setTorEnabled(getTorEnabled());
     }
 
@@ -320,52 +316,53 @@ public class GaService extends Service {
 
         mDeviceId = cfg("service").getString("device_id", null);
         if (mDeviceId == null) {
+            // Generate a unique device id
             mDeviceId = UUID.randomUUID().toString();
             cfgEdit("service").putString("device_id", mDeviceId).apply();
         }
 
-        mClient = new WalletClient(new INotificationHandler() {
-            @Override
-            public void onNewBlock(final int count) {
-                Log.i(TAG, "onNewBlock");
-                if (isSPVEnabled())
-                    mSPV.addToBloomFilter(count, null, -1, -1, -1);
+        mClient = new WalletClient(this, es);
+    }
 
-                mNewTxObservable.doNotify();
-            }
+    @Override
+    public void onNewBlock(final int count) {
+        Log.i(TAG, "onNewBlock");
+        if (isSPVEnabled())
+            mSPV.addToBloomFilter(count, null, -1, -1, -1);
 
-            @Override
-            public void onNewTransaction(final int[] affectedSubAccounts) {
-                Log.i(TAG, "onNewTransactions");
-                mSPV.updateUnspentOutputs();
-                mNewTxObservable.doNotify();
-                for (final int subAccount : affectedSubAccounts)
-                    updateBalance(subAccount);
-            }
+        mNewTxObservable.doNotify();
+    }
 
-            @Override
-            public void onConnectionClosed(final int code) {
-                HDKey.resetCache(null);
+    @Override
+    public void onNewTransaction(final int[] affectedSubAccounts) {
+        Log.i(TAG, "onNewTransactions");
+        mSPV.updateUnspentOutputs();
+        mNewTxObservable.doNotify();
+        for (final int subAccount : affectedSubAccounts)
+            updateBalance(subAccount);
+    }
 
-                // Server error codes FIXME: These should be in a class somewhere
-                // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
-                // 1000 NORMAL_CLOSE
-                // 1006 SERVER_RESTART
-                mState.setForcedLogout(code == 4000);
-                mState.transitionTo(ConnState.DISCONNECTED);
+    @Override
+    public void onConnectionClosed(final int code) {
+        HDKey.resetCache(null);
 
-                if (getNetworkInfo() == null) {
-                    mState.transitionTo(ConnState.OFFLINE);
-                    return;
-                }
+        // Server error codes FIXME: These should be in a class somewhere
+        // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
+        // 1000 NORMAL_CLOSE
+        // 1006 SERVER_RESTART
+        mState.setForcedLogout(code == 4000);
+        mState.transitionTo(ConnState.DISCONNECTED);
 
-                Log.i(TAG, "onConnectionClosed code=" + String.valueOf(code));
-                // FIXME: some callback to UI so you see what's happening.
-                mReconnectDelay = 0;
-                if (mAutoReconnect)
-                    reconnect();
-            }
-        }, es);
+        if (getNetworkInfo() == null) {
+            mState.transitionTo(ConnState.OFFLINE);
+            return;
+        }
+
+        Log.i(TAG, "onConnectionClosed code=" + String.valueOf(code));
+        // FIXME: some callback to UI so you see what's happening.
+        mReconnectDelay = 0;
+        if (mAutoReconnect)
+            reconnect();
     }
 
     public ListenableFuture<byte[]> createOutScript(final int subAccount, final Integer pointer) {
