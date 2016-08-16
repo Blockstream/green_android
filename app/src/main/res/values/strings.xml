@@ -132,6 +132,8 @@
     <string name="YES">YES</string>
     <string name="enableSPV">Enable SPV</string>
     <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connections or low end phones.</string>
+    <string name="syncSPVOnMobile">Synchronize SPV on mobile</string>
+    <string name="syncSPVOnMobileSummary">SPV is always synchronized on non mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
     <string name="noTwoFactorWarning">You don\'t have two factor authentication!\nPlease go to settings to set it up!</string>
     <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
     <string name="scan_camera_problem_dialog_title">Camera problem</string>

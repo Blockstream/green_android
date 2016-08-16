@@ -2,7 +2,9 @@
     <CheckBoxPreference android:key="spvEnabled"
                         android:title="@string/enableSPV"
                         android:summary="@string/enableSPVSummary"/>
-
+    <CheckBoxPreference android:key="spvSyncMobile"
+                        android:title="@string/syncSPVOnMobile"
+                        android:summary="@string/syncSPVOnMobileSummary"/>
     <EditTextPreference android:key="trusted_peer"
                         android:title="@string/trustedspv"
                         android:summary="@string/trustedspvExample"

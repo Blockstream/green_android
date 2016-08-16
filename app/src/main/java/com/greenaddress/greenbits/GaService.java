@@ -243,7 +243,6 @@ public class GaService extends Service {
         return mClient.getUserConfig(key);
     }
 
-    public boolean isSPVEnabled() { return !isWatchOnly() && cfg("SPV").getBoolean("enabled", true); }
     public String getProxyHost() { return cfg().getString("proxy_host", null); }
     public String getProxyPort() { return cfg().getString("proxy_port", null); }
     public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
@@ -269,12 +268,31 @@ public class GaService extends Service {
         }.execute();
     }
 
+    public boolean isSPVEnabled() {
+        return !isWatchOnly() && cfg("SPV").getBoolean("enabled", true);
+    }
+
     public void setSPVEnabled(final boolean enabled) {
 
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
                 spv.setEnabled(enabled);
+                return null;
+            }
+        }.execute();
+    }
+
+    public boolean isSPVSyncOnMobileEnabled() {
+        return cfg("SPV").getBoolean("mobileSyncEnabled", false);
+    }
+
+    public void setSPVSyncOnMobileEnabled(final boolean enabled) {
+
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(final Object[] params) {
+                spv.setSyncOnMobileEnabled(enabled);
                 return null;
             }
         }.execute();
@@ -1032,7 +1050,8 @@ public class GaService extends Service {
     }
 
     private void onNetConnectivityChanged() {
-        if (getNetworkInfo() == null) {
+        final NetworkInfo info = getNetworkInfo();
+        if (info == null) {
             // No network connection, go offline until notified that its back
             mState.transitionTo(ConnState.OFFLINE);
         } else if (mState.isDisconnectedOrOffline()) {
@@ -1040,10 +1059,11 @@ public class GaService extends Service {
             // Move to disconnected and try to reconnect
             mState.transitionTo(ConnState.DISCONNECTED);
             reconnect();
-        }
+        } else
+            spv.onNetConnectivityChanged(info);
     }
 
-    private NetworkInfo getNetworkInfo() {
+    public NetworkInfo getNetworkInfo() {
         final Context ctx = getApplicationContext();
         final ConnectivityManager cm;
         cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);

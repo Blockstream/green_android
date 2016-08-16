@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.spv;
 
 import android.content.Intent;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -599,6 +600,10 @@ public class SPV {
         resetUnspent();
     }
 
+    public void onNetConnectivityChanged(final NetworkInfo info) {
+        // FIXME
+    }
+
     public void reset() {
         final boolean enabled = gaService.isSPVEnabled();
         if (enabled) {
@@ -621,7 +626,7 @@ public class SPV {
         }
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
 
         if (enabled != gaService.isSPVEnabled()) {
             gaService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
@@ -630,6 +635,14 @@ public class SPV {
                 startSpvSync();
             } else
                 stopSPVSync();
+        }
+    }
+
+    public void setSyncOnMobileEnabled(final boolean enabled) {
+
+        if (enabled != gaService.isSPVSyncOnMobileEnabled()) {
+            gaService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
+            onNetConnectivityChanged(gaService.getNetworkInfo());
         }
     }
 }

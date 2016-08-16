@@ -47,6 +47,16 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             }
         });
 
+        final CheckBoxPreference spvSyncMobile = (CheckBoxPreference) findPreference("spvSyncMobile");
+        spvSyncMobile.setChecked(mService.isSPVSyncOnMobileEnabled());
+        spvSyncMobile.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                mService.setSPVSyncOnMobileEnabled((Boolean) newValue);
+                return true;
+            }
+        });
+
         final boolean setTextValue = true;
         setTrustedPeersPreference(mService.getTrustedPeers(), setTextValue);
         mTrustedPeer.setOnPreferenceChangeListener(this);
