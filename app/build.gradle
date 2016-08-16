@@ -166,7 +166,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.okhttp:okhttp:2.7.4'
     compile 'com.github.medyo:android-about-page:1.1.0'
-    compile 'com.afollestad.material-dialogs:core:0.9.0.0'
+    compile 'com.afollestad.material-dialogs:core:0.9.0.1'
     compile 'com.maksim88:PasswordEditText:v0.8'
 }
 
