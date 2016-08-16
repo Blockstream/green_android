@@ -41,7 +41,7 @@ function build() {
     export CPPFLAGS="--sysroot=$ANDROID_NDK/platforms/android-$ANDROID_VERSION/arch-$arch_short/"
     export CFLAGS="$CPPFLAGS"
     export LDFLAGS=""
-    configure_opts="--enable-silent-rules --disable-dependency-tracking --enable-swig-java --enable-export-all --enable-endomorphism"
+    configure_opts="--enable-silent-rules --disable-dependency-tracking --enable-swig-java --enable-endomorphism"
 
     if [ "$arch" == "arm-linux-androideabi" ]; then
         # --with-asm=arm does not default to enabled under arm, so enable it
