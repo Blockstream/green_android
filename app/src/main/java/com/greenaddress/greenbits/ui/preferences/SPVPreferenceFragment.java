@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -26,6 +27,17 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         final Preference resetSPV = find("reset_spv");
         final CheckBoxPreference spvEnabled = find("spvEnabled");
         final CheckBoxPreference spvSyncMobile = find("spvSyncMobile");
+
+        if (mService.isWatchOnly()) {
+            // Do not allow editing of SPV prefs from watch only logins
+            mTrustedPeer.setEnabled(false);
+            resetSPV.setEnabled(false);
+            spvEnabled.setEnabled(false);
+            spvSyncMobile.setEnabled(false);
+            UI.toast(getActivity(), R.string.spvSettingsWatchOnly, Toast.LENGTH_LONG);
+            getActivity().setResult(Activity.RESULT_OK, null);
+            return;
+        }
 
         bindPreferenceSummaryToValue(mTrustedPeer);
 
