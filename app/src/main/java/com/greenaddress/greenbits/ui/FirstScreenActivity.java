@@ -292,12 +292,16 @@ public class FirstScreenActivity extends GaActivity {
     public void onResumeWithService() {
         final GaService service = mService;
 
+        // Make a note if the user cancelled PIN entry
+        final boolean userCancelled = service.getUserCancelledPINEntry();
+        service.setUserCancelledPINEntry(false);
+
         //FIXME : recheck state, properly handle TEE link anyway
         if (service.isLoggedIn()) {
             // already logged in, could be from different app via intent
             startNewActivity(TabbedMainActivity.class);
             finish();
-        } else if (service.cfg("pin").getString("ident", null) != null) {
+        } else if (service.cfg("pin").getString("ident", null) != null && !userCancelled) {
             startNewActivity(PinActivity.class);
             finish();
         }

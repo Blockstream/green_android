@@ -124,6 +124,7 @@ public class GaService extends Service {
     private Map<?, ?> twoFacConfig;
     private final GaObservable twoFacConfigObservable = new GaObservable();
     private String deviceId;
+    private boolean mUserCancelledPINEntry = false;
 
     public final SPV spv = new SPV(this);
 
@@ -164,6 +165,14 @@ public class GaService extends Service {
                 t.printStackTrace();
             }
         }, es);
+    }
+
+    public boolean getUserCancelledPINEntry() {
+        return mUserCancelledPINEntry;
+    }
+
+    public void setUserCancelledPINEntry(final boolean value) {
+        mUserCancelledPINEntry = value;
     }
 
     private void reconnect() {

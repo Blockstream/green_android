@@ -254,14 +254,18 @@ public class PinActivity extends GaActivity implements Observer {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        final GaService service = mService;
+
         if (requestCode == ACTIVITY_REQUEST_CODE) {
             // Challenge completed, proceed with using cipher
             if (resultCode == RESULT_OK) {
                 tryDecrypt();
             } else {
                 // The user canceled or didn’t complete the lock screen
-                // operation. Go to error/cancellation flow.
-                toast("Authentication not provided, closing.");
+                // operation. Go back to the initial login screen to allow
+                // them to enter mnemonics.
+                service.setUserCancelledPINEntry(true);
+                startActivity(new Intent(this, FirstScreenActivity.class));
                 finish();
             }
         }
