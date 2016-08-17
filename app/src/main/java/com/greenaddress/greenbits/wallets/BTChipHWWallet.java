@@ -61,6 +61,9 @@ public class BTChipHWWallet extends HWWallet {
         this.dongle = new BTChipDongle(transport);
         this.loginActivity = loginActivity;
         this.pin = pin;
+        if (pin == null)
+            return;
+
         es.submit(new Callable<Object>() {
             @Override
             public Object call() {

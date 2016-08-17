@@ -19,13 +19,6 @@
 
 package com.btchip.comm.android;
 
-import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import android.nfc.Tag;
-
-import nordpol.android.AndroidCard;
-
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -37,11 +30,17 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.BTChipTransportFactory;
 import com.btchip.comm.BTChipTransportFactoryCallback;
+
+import java.util.HashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import nordpol.android.AndroidCard;
 
 public class BTChipTransportAndroid implements BTChipTransportFactory {
 	
@@ -200,8 +199,9 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 	public static UsbDevice getDevice(UsbManager manager) {
 		HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
 		for (UsbDevice device : deviceList.values()) {
-			if ((device.getVendorId() == VID) && 
+			if ((device.getVendorId() == VID || device.getVendorId() == VID2) &&
 			   ((device.getProductId() == PID_WINUSB) || (device.getProductId() == PID_HID) ||
+			    (device.getProductId() == PID_NANOS) || (device.getProductId() == PID_BLUE) ||
 			    (device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON))) {
 				return device;
 			}
@@ -227,7 +227,8 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
         }
         UsbDeviceConnection connection = manager.openDevice(device);
         connection.claimInterface(dongleInterface, true);
-        ledger = ((device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON));
+        ledger = ((device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON)
+		|| (device.getProductId() == PID_NANOS) || (device.getProductId() == PID_BLUE));
         if (device.getProductId() == PID_WINUSB) {
         	return new BTChipTransportAndroidWinUSB(connection, dongleInterface, in, out, TIMEOUT);
         }
@@ -252,9 +253,12 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 	public static final String LOG_STRING = "BTChip";
 	
 	private static final int VID = 0x2581;
+	private static final int VID2 = 0x2c97;
 	private static final int PID_WINUSB = 0x1b7c;
 	private static final int PID_HID = 0x2b7c;
 	private static final int PID_HID_LEDGER = 0x3b7c;
 	private static final int PID_HID_LEDGER_PROTON = 0x4b7c;
+	private static final int PID_NANOS = 0x0000;
+	private static final int PID_BLUE = 0x0001;
 	private static final int TIMEOUT = 20000;	
 }

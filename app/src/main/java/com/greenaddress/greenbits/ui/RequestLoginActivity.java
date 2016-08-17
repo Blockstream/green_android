@@ -46,12 +46,15 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
+    private static final int LEDGER_VID = 11415;
+    private static final int NANO_S_PID = 0000;
+    private static final int BLUE_PID = 0001;
 
     private Dialog mBTChipDialog = null;
-    private BTChipHWWallet hwWallet = null;
+    private BTChipHWWallet mHwWallet = null;
     private TagDispatcher tagDispatcher;
-    private Tag tag;
-    private SettableFuture<BTChipTransport> transportFuture;
+    private Tag mTag;
+    private SettableFuture<BTChipTransport> mTransportFuture;
     private MaterialDialog nfcWaitDialog;
 
     @Override
@@ -61,14 +64,14 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
         final GaService service = mService;
-        tag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        mTag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
         tagDispatcher = TagDispatcher.get(this, this);
 
-        if (((tag != null) && (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction()))) ||
+        if (((mTag != null) && (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction()))) ||
                 (getIntent().getAction() != null &&
                         getIntent().getAction().equals("android.hardware.usb.action.USB_DEVICE_ATTACHED"))) {
             final Trezor t;
-            if (tag != null) {
+            if (mTag != null) {
                 t = null;
             } else {
                 t = Trezor.getDevice(this, new TrezorGUICallback() {
@@ -169,8 +172,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 }), new FutureCallback<LoginData>() {
                     @Override
                     public void onSuccess(final LoginData result) {
-                        startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
-                        finishOnUiThread();
+                        RequestLoginActivity.this.onSuccess();
                     }
 
                     @Override
@@ -195,12 +197,17 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
                 UI.hide(edit);
                 // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
-                if (tag != null) {
+                if (mTag != null) {
                     showPinDialog();
                 } else {
                     final UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null) {
-                        showPinDialog(device);
+                        final int pId = device.getProductId();
+                        final boolean screenDevice = (pId == NANO_S_PID) || (pId == BLUE_PID);
+                        if (device.getVendorId() == LEDGER_VID && screenDevice)
+                            login(device);
+                        else
+                            showPinDialog(device);
                     }
                 }
             }
@@ -218,6 +225,37 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     private void showPinDialog() {
         showPinDialog(null);
+    }
+
+    private void login(final UsbDevice device) {
+
+        final GaService service = mService;
+        Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
+                    @Override
+                    public ListenableFuture<LoginData> apply(final Void nada) throws Exception {
+                        BTChipTransport transport;
+                        if (device != null) {
+                            final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                            transport = BTChipTransportAndroid.open(manager, device);
+                        } else {
+                            // If the mTag was already tapped, work with it
+                            transport = getTransport(mTag);
+                            if (transport == null) {
+                                // Prompt the user to tap
+                                nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
+                                        .title("BTChip")
+                                        .content("Please tap card")
+                                        .build();
+                                nfcWaitDialog.show();
+                            }
+                        }
+                        transport.setDebug(true);
+                        mHwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, null, null);
+
+                        return service.login(mHwWallet);
+                    }
+
+        }), mOnLoggedIn);
     }
 
     private void showPinDialog(final UsbDevice device) {
@@ -267,15 +305,15 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     @Override
                     public ListenableFuture<LoginData> apply(final String pin) throws Exception {
 
-                        transportFuture = SettableFuture.create();
+                        mTransportFuture = SettableFuture.create();
                         if (device != null) {
                             final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-                            transportFuture.set(BTChipTransportAndroid.open(manager, device));
+                            mTransportFuture.set(BTChipTransportAndroid.open(manager, device));
                         } else {
-                            // If the tag was already tapped, work with it
-                            final BTChipTransport transport = getTransport(tag);
+                            // If the mTag was already tapped, work with it
+                            final BTChipTransport transport = getTransport(mTag);
                             if (transport != null) {
-                                transportFuture.set(transport);
+                                mTransportFuture.set(transport);
                             } else {
                                 // Prompt the user to tap
                                 nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
@@ -285,17 +323,17 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                 nfcWaitDialog.show();
                             }
                         }
-                        return Futures.transform(transportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
+                        return Futures.transform(mTransportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(final BTChipTransport transport) {
                                 final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
-                                hwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
+                                mHwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
                                 return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
                                     @Override
                                     public ListenableFuture<LoginData> apply(final Integer remainingAttempts) {
 
                                         if (remainingAttempts == -1)
-                                            return service.login(hwWallet); // -1 means success, so login
+                                            return service.login(mHwWallet); // -1 means success, so login
 
                                         final String msg;
                                         if (remainingAttempts > 0)
@@ -318,47 +356,52 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                     }
                 });
             }
-        }), new FutureCallback<LoginData>() {
-            @Override
-            public void onSuccess(final LoginData result) {
-                if (result != null) {
-                    startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
-                    finishOnUiThread();
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                t.printStackTrace();
-                if (t instanceof LoginFailed) {
-                    // Attempt auto register
-                    try {
-                        final BTChipPublicKey masterPublicKey = hwWallet.getDongle().getWalletPublicKey("");
-                        final BTChipPublicKey loginPublicKey = hwWallet.getDongle().getWalletPublicKey("18241'");
-                        Futures.addCallback(service.signup(hwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
-                                new FutureCallback<LoginData>() {
-                                    @Override
-                                    public void onSuccess(final LoginData result) {
-                                        startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
-                                        finishOnUiThread();
-                                    }
-
-                                    @Override
-                                    public void onFailure(final Throwable t) {
-                                        t.printStackTrace();
-                                        finishOnUiThread();
-                                    }
-                                });
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                        finishOnUiThread();
-                    }
-                } else {
-                    finishOnUiThread();
-                }
-            }
-        });
+        }), mOnLoggedIn);
     }
+
+    private void onSuccess() {
+        startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
+        finishOnUiThread();
+    }
+
+    final FutureCallback<LoginData> mOnLoggedIn = new FutureCallback<LoginData>() {
+        @Override
+        public void onSuccess(final LoginData result) {
+            if (result != null) {
+               RequestLoginActivity.this.onSuccess();
+            }
+        }
+
+        @Override
+        public void onFailure(final Throwable t) {
+            t.printStackTrace();
+            if (t instanceof LoginFailed) {
+                // Attempt auto register
+                try {
+                    final BTChipPublicKey masterPublicKey = mHwWallet.getDongle().getWalletPublicKey("");
+                    final BTChipPublicKey loginPublicKey = mHwWallet.getDongle().getWalletPublicKey("18241'");
+                    Futures.addCallback(mService.signup(mHwWallet, KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode(), KeyUtils.compressPublicKey(loginPublicKey.getPublicKey()), loginPublicKey.getChainCode()),
+                            new FutureCallback<LoginData>() {
+                                @Override
+                                public void onSuccess(final LoginData result) {
+                                    RequestLoginActivity.this.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailure(final Throwable t) {
+                                    t.printStackTrace();
+                                    finishOnUiThread();
+                                }
+                            });
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    finishOnUiThread();
+                }
+            } else {
+                finishOnUiThread();
+            }
+        }
+    };
 
     @Override
     public void onDestroy() {
@@ -412,17 +455,17 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     }
 
     @Override
-    public void tagDiscovered(Tag t) {
+    public void tagDiscovered(final Tag t) {
         Log.d(TAG, "tagDiscovered " + t);
-        this.tag = t;
-        if (transportFuture == null)
+        mTag = t;
+        if (mTransportFuture == null)
             return;
 
         BTChipTransport transport = getTransport(t);
         if (transport == null)
             return;
 
-        if (transportFuture.set(transport)) {
+        if (mTransportFuture.set(transport)) {
             if (nfcWaitDialog == null)
                 return;
 
