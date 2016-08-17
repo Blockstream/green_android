@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProperties;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -169,9 +170,9 @@ public class PinActivity extends GaActivity implements Observer {
         mPinText = UI.find(this, R.id.pinText);
         mPinError = UI.find(this, R.id.pinErrorText);
 
-        final String androidLogin = prefs.getString("native", null);
+        final String nativePIN = prefs.getString("native", null);
 
-        if (androidLogin == null) {
+        if (TextUtils.isEmpty(nativePIN)) {
 
             mPinText.setOnEditorActionListener(
                     UI.getListenerRunOnEnter(new Runnable() {
@@ -213,16 +214,16 @@ public class PinActivity extends GaActivity implements Observer {
         }
 
         final SharedPreferences prefs = service.cfg("pin");
-        final String androidLogin = prefs.getString("native", null);
-        final String aesiv = prefs.getString("nativeiv", null);
+        final String nativePIN = prefs.getString("native", null);
+        final String nativeIV = prefs.getString("nativeiv", null);
 
         try {
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
             final SecretKey secretKey = (SecretKey) keyStore.getKey(KEYSTORE_KEY, null);
             final Cipher cipher = getAESCipher();
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(aesiv, Base64.NO_WRAP)));
-            final byte[] decrypted = cipher.doFinal(Base64.decode(androidLogin, Base64.NO_WRAP));
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(nativeIV, Base64.NO_WRAP)));
+            final byte[] decrypted = cipher.doFinal(Base64.decode(nativePIN, Base64.NO_WRAP));
             final String pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15);
 
             Futures.addCallback(service.onConnected, new FutureCallback<Void>() {

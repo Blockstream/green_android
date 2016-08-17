@@ -36,7 +36,7 @@ public class PinSaveActivity extends GaActivity {
         return intent;
     }
 
-    private void setPin(final String pin) {
+    private void setPin(final String pin, final boolean isNative) {
         final GaService service = mService;
 
         if (pin.length() < 4) {
@@ -57,6 +57,12 @@ public class PinSaveActivity extends GaActivity {
                     @Override
                     public void onSuccess(final Void result) {
                         setResult(RESULT_OK);
+                        if (!isNative) {
+                            // The user has set a non-native PIN.
+                            // In case they already had a native PIN they are overriding,
+                            // blank the native value so future logins don't detect it.
+                            KeyStoreAES.wipePIN(service);
+                        }
                         finishOnUiThread();
                     }
 
@@ -87,7 +93,7 @@ public class PinSaveActivity extends GaActivity {
     @TargetApi(Build.VERSION_CODES.M)
     void tryEncrypt() {
         try {
-            setPin(KeyStoreAES.tryEncrypt(mService));
+            setPin(KeyStoreAES.tryEncrypt(mService), true);
         } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
             KeyStoreAES.showAuthenticationScreen(this);
         } catch (final KeyStoreAES.KeyInvalidated e) {
@@ -126,13 +132,13 @@ public class PinSaveActivity extends GaActivity {
                 UI.getListenerRunOnEnter(new Runnable() {
                     @Override
                     public void run() {
-                        setPin(UI.getText(mPinText));
+                        setPin(UI.getText(mPinText), false);
                     }
                 }));
 
         mSaveButton = (CircularProgressButton) UI.mapClick(this, R.id.pinSaveButton, new View.OnClickListener() {
             public void onClick(final View v) {
-                setPin(UI.getText(mPinText));
+                setPin(UI.getText(mPinText), false);
             }
         });
 

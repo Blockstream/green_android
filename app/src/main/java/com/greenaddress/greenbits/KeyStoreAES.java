@@ -95,10 +95,8 @@ public class KeyStoreAES {
 
             final byte[] encryptedPIN = cipher.doFinal(fakePin);
             final byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-            gaService.cfgEdit("pin")
-                     .putString("native", Base64.encodeToString(encryptedPIN, Base64.NO_WRAP))
-                     .putString("nativeiv", Base64.encodeToString(iv, Base64.NO_WRAP))
-                     .apply();
+            setPINConfig(gaService, Base64.encodeToString(encryptedPIN, Base64.NO_WRAP),
+                         Base64.encodeToString(iv, Base64.NO_WRAP));
             return Base64.encodeToString(fakePin, Base64.NO_WRAP).substring(0, 15);
         } catch (final UserNotAuthenticatedException e) {
             throw new RequiresAuthenticationScreen();
@@ -109,6 +107,19 @@ public class KeyStoreAES {
                 | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void setPINConfig(final GaService gaService,
+                                     final String encryptedPIN, final String iv) {
+        gaService.cfgEdit("pin")
+                 .putString("native", encryptedPIN)
+                 .putString("nativeiv", iv)
+                 .apply();
+    }
+
+    public static void wipePIN(final GaService gaService) {
+        // FIXME: Should we wipe the keystore value?
+        setPINConfig(gaService, "", "");
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
