@@ -69,12 +69,12 @@ public class ListTransactionsAdapter extends
             holder.textValue.setText(btcBalance);
         }
 
-        if (!mService.isSPVEnabled() ||
-            txItem.spvVerified || txItem.isSpent || txItem.type.equals(TransactionItem.TYPE.OUT)) {
-            UI.hide(holder.textValueQuestionMark);
-        } else {
-            UI.show(holder.textValueQuestionMark);
-        }
+        // Hide question mark if we know this tx is verified
+        // (or we are in watch only mode and so have no SPV to verify it with)
+        final boolean verified = txItem.spvVerified || txItem.isSpent ||
+                                 txItem.type.equals(TransactionItem.TYPE.OUT) ||
+                                 !mService.isSPVEnabled();
+        UI.hideIf(verified, holder.textValueQuestionMark);
 
         final Resources res = mActivity.getResources();
 

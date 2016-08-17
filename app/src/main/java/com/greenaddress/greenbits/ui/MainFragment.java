@@ -63,12 +63,12 @@ public class MainFragment extends SubaccountFragment {
         }
 
         final String btcBalance = bitcoinFormat.noCode().format(monetary).toString();
-        final String btcBalanceVerified;
+        final String btcVerifiedBalance;
         final Coin verifiedBalance = service.getSPVVerifiedBalance(curSubaccount);
         if (verifiedBalance != null)
-            btcBalanceVerified = bitcoinFormat.noCode().format(verifiedBalance).toString();
+            btcVerifiedBalance = bitcoinFormat.noCode().format(verifiedBalance).toString();
         else
-            btcBalanceVerified = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
+            btcVerifiedBalance = bitcoinFormat.noCode().format(Coin.valueOf(0)).toString();
 
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
@@ -77,13 +77,14 @@ public class MainFragment extends SubaccountFragment {
         final String fiatCurrency = service.getFiatCurrency();
         final String converted = CurrencyMapper.map(fiatCurrency);
 
-        final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
+        // Hide balance question mark if we know our balance is verified
+        // (or we are in watch only mode and so have no SPV to verify it with)
         final TextView balanceQuestionMark = UI.find(mView, R.id.mainBalanceQuestionMark);
-        if (!service.isSPVEnabled() || btcBalance.equals(btcBalanceVerified))
-            UI.hide(balanceQuestionMark);
-        else
-            UI.show(balanceQuestionMark);
+        final boolean verified = btcBalance.equals(btcVerifiedBalance) ||
+                                 !service.isSPVEnabled();
+        UI.hideIf(verified, balanceQuestionMark);
 
+        final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
         final TextView balanceFiatText = UI.find(mView, R.id.mainLocalBalanceText);
         final FontAwesomeTextView balanceFiatIcon = UI.find(mView, R.id.mainLocalBalanceIcon);
         final DecimalFormat formatter = new DecimalFormat("#,###.########");
