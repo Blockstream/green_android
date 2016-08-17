@@ -108,12 +108,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
     private boolean onTrustedPeerChange(final String newValue) {
 
-        if (mService.getTrustedPeers().equals(newValue))
+        final String peers = newValue.toString().trim().replaceAll("\\s","");
+        if (mService.getTrustedPeers().equals(peers))
             return false;
 
         try {
-            final String peers = newValue.toString().trim().replaceAll("\\s","");
-
             if (peers.isEmpty()) {
                 setTrustedPeers(peers);
                 return true;
