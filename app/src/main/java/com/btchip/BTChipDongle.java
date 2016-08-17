@@ -663,8 +663,8 @@ public class BTChipDongle implements BTChipConstants {
 		int minor = response[3] & 0xff;
 		int patch = response[4] & 0xff;
 		return new BTChipFirmware(major, minor, patch, compressedKeys);
-	}		
-	
+	}
+
 	public void setKeymapEncoding(byte[] keymapEncoding) throws BTChipException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		BufferUtils.writeBuffer(data, keymapEncoding);

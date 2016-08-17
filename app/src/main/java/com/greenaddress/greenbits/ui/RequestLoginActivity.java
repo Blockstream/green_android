@@ -17,11 +17,14 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.btchip.BTChipDongle;
 import com.btchip.BTChipDongle.BTChipPublicKey;
+import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.btchip.comm.android.BTChipTransportAndroidNFC;
 import com.btchip.utils.KeyUtils;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -46,9 +49,6 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
-    private static final int LEDGER_VID = 11415;
-    private static final int NANO_S_PID = 0000;
-    private static final int BLUE_PID = 0001;
 
     private Dialog mBTChipDialog = null;
     private BTChipHWWallet mHwWallet = null;
@@ -177,7 +177,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
                     @Override
                     public void onFailure(final Throwable t) {
-                        if (t instanceof LoginFailed) {
+                        if (Throwables.getRootCause(t) instanceof LoginFailed) {
                             // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -202,9 +202,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 } else {
                     final UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null) {
-                        final int pId = device.getProductId();
-                        final boolean screenDevice = (pId == NANO_S_PID) || (pId == BLUE_PID);
-                        if (device.getVendorId() == LEDGER_VID && screenDevice)
+                        if (BTChipTransportAndroid.isLedgerWithScreen(device))
                             login(device);
                         else
                             showPinDialog(device);
@@ -247,11 +245,20 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                         .content("Please tap card")
                                         .build();
                                 nfcWaitDialog.show();
+                                return Futures.immediateFuture(null);
                             }
                         }
-                        transport.setDebug(true);
+                        transport.setDebug(BuildConfig.DEBUG);
+                        final BTChipDongle dongle = new BTChipDongle(transport, true);
+                        try {
+                            dongle.getFirmwareVersion();
+                        } catch (final BTChipException e) {
+                            // we are in dashboard mode ignore usb
+                            // FIXME: Alternatively show a dialog asking the user to start the Bitcoin app on their hw wallet
+                            finishOnUiThread();
+                            return Futures.immediateFuture(null);
+                        }
                         mHwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, null, null);
-
                         return service.login(mHwWallet);
                     }
 
@@ -375,7 +382,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         @Override
         public void onFailure(final Throwable t) {
             t.printStackTrace();
-            if (t instanceof LoginFailed) {
+            if (Throwables.getRootCause(t) instanceof LoginFailed) {
                 // Attempt auto register
                 try {
                     final BTChipPublicKey masterPublicKey = mHwWallet.getDongle().getWalletPublicKey("");
@@ -435,7 +442,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
             try {
                 card = AndroidCard.get(t);
                 transport = new BTChipTransportAndroidNFC(card);
-                transport.setDebug(true);
+                transport.setDebug(BuildConfig.DEBUG);
                 transport.exchange(DUMMY_COMMAND).get();
                 Log.d(TAG, "NFC transport checked");
             }

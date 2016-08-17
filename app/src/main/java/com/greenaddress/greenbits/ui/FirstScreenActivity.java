@@ -15,6 +15,7 @@ import com.btchip.comm.BTChipTransportFactory;
 import com.btchip.comm.BTChipTransportFactoryCallback;
 import com.btchip.utils.Dump;
 import com.btchip.utils.KeyUtils;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -24,7 +25,6 @@ import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
-import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.ledger.tbase.comm.LedgerTransportTEEProxy;
 import com.ledger.tbase.comm.LedgerTransportTEEProxyFactory;
@@ -65,7 +65,7 @@ public class FirstScreenActivity extends GaActivity {
                 transportFactory = new LedgerTransportTEEProxyFactory(getApplicationContext());
                 final LedgerTransportTEEProxy teeTransport = (LedgerTransportTEEProxy) transportFactory.getTransport();
                 byte[] nvm = teeTransport.loadNVM(NVM_PATH);
-                teeTransport.setDebug(true);
+                teeTransport.setDebug(BuildConfig.DEBUG);
                 if (nvm != null) {
                     teeTransport.setNVM(nvm);
                 }
@@ -246,7 +246,7 @@ public class FirstScreenActivity extends GaActivity {
                     @Override
                     public void onFailure(final Throwable t) {
                         Log.d(TAG, "login failed", t);
-                        if (!(t instanceof LoginFailed)) {
+                        if (!(Throwables.getRootCause(t) instanceof LoginFailed)) {
                             finishOnUiThread();
                         }
                     }

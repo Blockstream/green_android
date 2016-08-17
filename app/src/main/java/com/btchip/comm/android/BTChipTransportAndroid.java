@@ -251,6 +251,12 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 	}
 	
 	public static final String LOG_STRING = "BTChip";
+
+	public static boolean isLedgerWithScreen(final UsbDevice d) {
+		final int pId = d.getProductId();
+		final boolean screenDevice = (pId == PID_NANOS) || (pId == PID_BLUE);
+		return d.getVendorId() == VID2 && screenDevice;
+	}
 	
 	private static final int VID = 0x2581;
 	private static final int VID2 = 0x2c97;
