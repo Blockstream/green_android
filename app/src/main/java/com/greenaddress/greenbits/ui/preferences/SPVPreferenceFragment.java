@@ -13,9 +13,13 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
 
 public class SPVPreferenceFragment extends GAPreferenceFragment
-    implements Preference.OnPreferenceChangeListener {
+    implements Preference.OnPreferenceChangeListener,
+               Preference.OnPreferenceClickListener {
 
     private EditTextPreference mTrustedPeer;
+    private Preference mResetSPV;
+    private CheckBoxPreference mSPVEnabled;
+    private CheckBoxPreference mSPVSyncOnMobile;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -24,58 +28,39 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         setHasOptionsMenu(true);
 
         mTrustedPeer = find("trusted_peer");
-        final Preference resetSPV = find("reset_spv");
-        final CheckBoxPreference spvEnabled = find("spvEnabled");
-        final CheckBoxPreference spvSyncMobile = find("spvSyncMobile");
+        mResetSPV = find("reset_spv");
+        mSPVEnabled = find("spvEnabled");
+        mSPVSyncOnMobile = find("spvSyncMobile");
 
         if (mService.isWatchOnly()) {
             // Do not allow editing of SPV prefs from watch only logins
             mTrustedPeer.setEnabled(false);
-            resetSPV.setEnabled(false);
-            spvEnabled.setEnabled(false);
-            spvSyncMobile.setEnabled(false);
+            mResetSPV.setEnabled(false);
+            mSPVEnabled.setEnabled(false);
+            mSPVSyncOnMobile.setEnabled(false);
             UI.toast(getActivity(), R.string.spvSettingsWatchOnly, Toast.LENGTH_LONG);
-            getActivity().setResult(Activity.RESULT_OK, null);
-            return;
+        } else {
+            // Initialise values and bindings for preference changes
+            bindPreferenceSummaryToValue(mTrustedPeer);
+
+            mSPVEnabled.setChecked(mService.isSPVEnabled());
+            mSPVSyncOnMobile.setChecked(mService.isSPVSyncOnMobileEnabled());
+
+            mTrustedPeer.setEnabled(mService.isSPVEnabled());
+            final boolean setTextValue = true;
+            setTrustedPeersPreference(mService.getTrustedPeers(), setTextValue);
+
+            mResetSPV.setOnPreferenceClickListener(this);
+            mSPVEnabled.setOnPreferenceChangeListener(this);
+            mSPVSyncOnMobile.setOnPreferenceChangeListener(this);
+            mTrustedPeer.setOnPreferenceChangeListener(this);
         }
 
-        bindPreferenceSummaryToValue(mTrustedPeer);
-
-        resetSPV.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                mService.resetSPV();
-                return false;
-            }
-        });
-
-        final boolean enabled = mService.isSPVEnabled();
-        mTrustedPeer.setEnabled(enabled);
-        spvEnabled.setChecked(enabled);
-        spvEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                mTrustedPeer.setEnabled((Boolean) newValue);
-                mService.setSPVEnabled((Boolean) newValue);
-                return true;
-            }
-        });
-
-        spvSyncMobile.setChecked(mService.isSPVSyncOnMobileEnabled());
-        spvSyncMobile.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                mService.setSPVSyncOnMobileEnabled((Boolean) newValue);
-                return true;
-            }
-        });
-
-        final boolean setTextValue = true;
-        setTrustedPeersPreference(mService.getTrustedPeers(), setTextValue);
-        mTrustedPeer.setOnPreferenceChangeListener(this);
         getActivity().setResult(Activity.RESULT_OK, null);
     }
 
+    // FIXME: Verification of trusted peers does not belong in the UI layer,
+    //        it should be available through the service.
     private boolean isBadAddress(final String s) {
         try {
             final int idx = s.indexOf(":");
@@ -110,8 +95,18 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mService.setTrustedPeers(peers);
     }
 
-    @Override
-    public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+    private boolean onSPVEnabledChanged(final Boolean newValue) {
+        mTrustedPeer.setEnabled(newValue);
+        mService.setSPVEnabled(newValue);
+        return true;
+    }
+
+    private boolean onSPVSyncOnMobileChanged(final Boolean newValue) {
+        mService.setSPVSyncOnMobileEnabled(newValue);
+        return true;
+    }
+
+    private boolean onTrustedPeerChange(final String newValue) {
 
         if (mService.getTrustedPeers().equals(newValue))
             return false;
@@ -156,5 +151,23 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         } catch (final Exception e) {
             return false; // not set
         }
+    }
+
+    @Override
+    public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+        if (preference == mSPVEnabled)
+            return onSPVEnabledChanged((Boolean) newValue);
+        if (preference == mSPVSyncOnMobile)
+            return onSPVSyncOnMobileChanged((Boolean) newValue);
+        if (preference == mTrustedPeer)
+            return onTrustedPeerChange((String) newValue);
+        return false;
+    }
+
+    @Override
+    public boolean onPreferenceClick(final Preference preference) {
+        if (preference == mResetSPV)
+            mService.resetSPV();
+        return false;
     }
 }
