@@ -1,8 +1,10 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
@@ -52,10 +54,10 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     private Dialog mBTChipDialog = null;
     private BTChipHWWallet mHwWallet = null;
-    private TagDispatcher tagDispatcher;
+    private TagDispatcher mTagDispatcher;
     private Tag mTag;
     private SettableFuture<BTChipTransport> mTransportFuture;
-    private MaterialDialog nfcWaitDialog;
+    private MaterialDialog mNfcWaitDialog;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -63,49 +65,45 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
-        final GaService service = mService;
-        mTag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        tagDispatcher = TagDispatcher.get(this, this);
+    }
 
-        if (((mTag != null) && (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction()))) ||
-                (getIntent().getAction() != null &&
-                        getIntent().getAction().equals("android.hardware.usb.action.USB_DEVICE_ATTACHED"))) {
-            final Trezor t;
-            if (mTag != null) {
-                t = null;
-            } else {
-                t = Trezor.getDevice(this, new TrezorGUICallback() {
-                    @Override
-                    public String pinMatrixRequest() {
-                        final SettableFuture<String> ret = SettableFuture.create();
-                        RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
-                                final Button[] buttons = new Button[]{
-                                        // upside down
-                                        UI.find(v, R.id.trezorPinButton7),
-                                        UI.find(v, R.id.trezorPinButton8),
-                                        UI.find(v, R.id.trezorPinButton9),
-                                        UI.find(v, R.id.trezorPinButton4),
-                                        UI.find(v, R.id.trezorPinButton5),
-                                        UI.find(v, R.id.trezorPinButton6),
-                                        UI.find(v, R.id.trezorPinButton1),
-                                        UI.find(v, R.id.trezorPinButton2),
-                                        UI.find(v, R.id.trezorPinButton3)
-                                };
-                                final EditText pinValue = UI.find(v, R.id.trezorPinValue);
-                                for (int i = 0; i < 9; ++i) {
-                                    final int ii = i;
-                                    buttons[i].setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            pinValue.setText(UI.getText(pinValue) + (ii + 1));
-                                            pinValue.setSelection(UI.getText(pinValue).length());
-                                        }
-                                    });
-                                }
-                                UI.popup(RequestLoginActivity.this, "Hardware Wallet PIN")
+    private void onUsbDeviceDetected(final Intent intent) {
+        final Trezor t;
+        if (mTag != null) {
+            t = null;
+        } else {
+            t = Trezor.getDevice(this, new TrezorGUICallback() {
+                @Override
+                public String pinMatrixRequest() {
+                    final SettableFuture<String> ret = SettableFuture.create();
+                    RequestLoginActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
+                            final Button[] buttons = new Button[]{
+                                    // upside down
+                                    UI.find(v, R.id.trezorPinButton7),
+                                    UI.find(v, R.id.trezorPinButton8),
+                                    UI.find(v, R.id.trezorPinButton9),
+                                    UI.find(v, R.id.trezorPinButton4),
+                                    UI.find(v, R.id.trezorPinButton5),
+                                    UI.find(v, R.id.trezorPinButton6),
+                                    UI.find(v, R.id.trezorPinButton1),
+                                    UI.find(v, R.id.trezorPinButton2),
+                                    UI.find(v, R.id.trezorPinButton3)
+                            };
+                            final EditText pinValue = UI.find(v, R.id.trezorPinValue);
+                            for (int i = 0; i < 9; ++i) {
+                                final int ii = i;
+                                buttons[i].setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        pinValue.setText(UI.getText(pinValue) + (ii + 1));
+                                        pinValue.setSelection(UI.getText(pinValue).length());
+                                    }
+                                });
+                            }
+                            UI.popup(RequestLoginActivity.this, "Hardware Wallet PIN")
                                     .customView(v, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -113,25 +111,25 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                             ret.set(UI.getText(pinValue));
                                         }
                                     }).build().show();
-                            }
-                        });
-                        try {
-                            return ret.get();
-                        } catch (final InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
-                            return "";
                         }
+                    });
+                    try {
+                        return ret.get();
+                    } catch (final InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        return "";
                     }
+                }
 
-                    @Override
-                    public String passphraseRequest() {
-                        final SettableFuture<String> ret = SettableFuture.create();
-                        RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
-                                final EditText passphraseValue = UI.find(v, R.id.trezorPassphraseValue);
-                                UI.popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
+                @Override
+                public String passphraseRequest() {
+                    final SettableFuture<String> ret = SettableFuture.create();
+                    RequestLoginActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
+                            final EditText passphraseValue = UI.find(v, R.id.trezorPassphraseValue);
+                            UI.popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
                                     .customView(v, true)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -139,85 +137,74 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                             ret.set(UI.getText(passphraseValue));
                                         }
                                     }).build().show();
+                        }
+                    });
+                    try {
+                        return ret.get();
+                    } catch (final InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        return "";
+                    }
+                }
+            });
+        }
+        if (t != null) {
+            final List<Integer> version = t.getFirmwareVersion();
+            if (t.getVendorId() == 21324 &&
+                    (version.get(0) < 1 || (version.get(0) == 1 && version.get(1) < 3))) {
+                final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
+                instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
+                return;
+            }
+            if (t.getVendorId() == 11044 && (version.get(0) < 1)) {
+                final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
+                instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
+                return;
+            }
+
+            Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
+                @Override
+                public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+                    return mService.login(new TrezorHWWallet(t));
+                }
+            }), new FutureCallback<LoginData>() {
+                @Override
+                public void onSuccess(final LoginData result) {
+                    RequestLoginActivity.this.onSuccess();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    if (Throwables.getRootCause(t) instanceof LoginFailed)
+                        // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                new MaterialDialog.Builder(RequestLoginActivity.this)
+                                        .title(R.string.trezor_login_failed)
+                                        .content(R.string.trezor_login_failed_details)
+                                        .build().show();
                             }
                         });
-                        try {
-                            return ret.get();
-                        } catch (final InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
-                            return "";
-                        }
-                    }
-                });
-            }
-            if (t != null) {
-                final List<Integer> version = t.getFirmwareVersion();
-                if (t.getVendorId() == 21324 &&
-                    (version.get(0) < 1 || (version.get(0) == 1 && version.get(1) < 3))) {
-                    final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-                    instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
-                    return;
+                    else
+                        finishOnUiThread();
                 }
-                if (t.getVendorId() == 11044 && (version.get(0) < 1)) {
-                    final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-                    instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
-                    return;
-                }
-
-                Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
-                    @Override
-                    public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                        return service.login(new TrezorHWWallet(t));
-                    }
-                }), new FutureCallback<LoginData>() {
-                    @Override
-                    public void onSuccess(final LoginData result) {
-                        RequestLoginActivity.this.onSuccess();
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        if (Throwables.getRootCause(t) instanceof LoginFailed) {
-                            // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    new MaterialDialog.Builder(RequestLoginActivity.this)
-                                            .title(R.string.trezor_login_failed)
-                                            .content(R.string.trezor_login_failed_details)
-                                            .build().show();
-                                }
-                            });
-                        } else {
-                            finishOnUiThread();
-                        }
-                    }
-                });
-            } else {
-                final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-                UI.hide(edit);
-                // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
-                if (mTag != null) {
-                    showPinDialog();
-                } else {
-                    final UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (device != null) {
-                        if (BTChipTransportAndroid.isLedgerWithScreen(device))
-                            login(device);
-                        else
-                            showPinDialog(device);
-                    }
-                }
-            }
-            return;
-        }
-
-        if (service.cfg("pin").getString("ident", null) != null) {
-            final Intent pin = new Intent(this, PinActivity.class);
-            startActivityForResult(pin, 0);
+            });
         } else {
-            final Intent mnemonic = new Intent(this, MnemonicActivity.class);
-            startActivityForResult(mnemonic, 0);
+            final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
+            edit.setText("");
+            UI.hide(edit);
+            // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
+            if (mTag != null)
+                showPinDialog();
+            else {
+                final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                if (device != null)
+                    if (BTChipTransportAndroid.isLedgerWithScreen(device))
+                        login(device);
+                    else
+                        showPinDialog(device);
+            }
         }
     }
 
@@ -240,11 +227,11 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             transport = getTransport(mTag);
                             if (transport == null) {
                                 // Prompt the user to tap
-                                nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
+                                mNfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
                                         .title("BTChip")
                                         .content("Please tap card")
                                         .build();
-                                nfcWaitDialog.show();
+                                mNfcWaitDialog.show();
                                 return Futures.immediateFuture(null);
                             }
                         }
@@ -255,12 +242,25 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         try {
                             dongle.getFirmwareVersion();
                         } catch (final BTChipException e) {
+                            e.printStackTrace();
                             // we are in dashboard mode ignore usb
-                            // FIXME: Alternatively show a dialog asking the user to start the Bitcoin app on their hw wallet
-                            finishOnUiThread();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    UI.show(instructions);
+                                    instructions.setText(R.string.firstLoginRequestedPleaseOpenBitcoinApp);
+                                }
+                            });
                             return Futures.immediateFuture(null);
                         }
                         mHwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, null, null);
+                        final ProgressBar loginProgress = UI.find(RequestLoginActivity.this, R.id.signingLogin);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                UI.show(loginProgress);
+                            }
+                        });
                         return service.login(mHwWallet);
                     }
 
@@ -321,15 +321,15 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         } else {
                             // If the mTag was already tapped, work with it
                             final BTChipTransport transport = getTransport(mTag);
-                            if (transport != null) {
+                            if (transport != null)
                                 mTransportFuture.set(transport);
-                            } else {
+                            else {
                                 // Prompt the user to tap
-                                nfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
+                                mNfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
                                         .title("BTChip")
                                         .content("Please tap card")
                                         .build();
-                                nfcWaitDialog.show();
+                                mNfcWaitDialog.show();
                             }
                         }
                         return Futures.transform(mTransportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
@@ -370,16 +370,17 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     }
 
     private void onSuccess() {
-        startActivity(new Intent(RequestLoginActivity.this, TabbedMainActivity.class));
+        final Intent intent = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         finishOnUiThread();
     }
 
     final FutureCallback<LoginData> mOnLoggedIn = new FutureCallback<LoginData>() {
         @Override
         public void onSuccess(final LoginData result) {
-            if (result != null) {
+            if (result != null)
                 RequestLoginActivity.this.onSuccess();
-            }
         }
 
         @Override
@@ -403,13 +404,12 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     finishOnUiThread();
                                 }
                             });
+                    return;
                 } catch (final Exception e) {
                     e.printStackTrace();
-                    finishOnUiThread();
                 }
-            } else {
-                finishOnUiThread();
             }
+            finishOnUiThread();
         }
     };
 
@@ -429,13 +429,38 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     @Override
     public void onResumeWithService() {
-        tagDispatcher.enableExclusiveNfc();
+        registerReceiver(mOnUsb, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
+
+        mTag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        mTagDispatcher = TagDispatcher.get(this, this);
+
+        if (((mTag != null) && (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction()))) ||
+                (getIntent().getAction() != null &&
+                        getIntent().getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
+            onUsbDeviceDetected(getIntent());
+            return;
+        }
+
+        if (mService.cfg("pin").getString("ident", null) != null)
+            startActivityForResult(new Intent(this, PinActivity.class), 0);
+        else
+            startActivityForResult(new Intent(this, MnemonicActivity.class), 0);
+
+        mTagDispatcher.enableExclusiveNfc();
     }
 
     @Override
     public void onPauseWithService() {
-        tagDispatcher.disableExclusiveNfc();
+        unregisterReceiver(mOnUsb);
+        mTagDispatcher.disableExclusiveNfc();
     }
+
+    private final BroadcastReceiver mOnUsb = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            onUsbDeviceDetected(intent);
+        }
+    };
 
     private BTChipTransport getTransport(final Tag t) {
         BTChipTransport transport = null;
@@ -471,18 +496,18 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         if (mTransportFuture == null)
             return;
 
-        BTChipTransport transport = getTransport(t);
+        final BTChipTransport transport = getTransport(t);
         if (transport == null)
             return;
 
         if (mTransportFuture.set(transport)) {
-            if (nfcWaitDialog == null)
+            if (mNfcWaitDialog == null)
                 return;
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    nfcWaitDialog.hide();
+                    mNfcWaitDialog.hide();
                 }
             });
         }
