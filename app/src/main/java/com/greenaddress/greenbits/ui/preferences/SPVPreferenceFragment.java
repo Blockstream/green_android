@@ -112,44 +112,40 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         if (mService.getTrustedPeers().equals(peers))
             return false;
 
-        try {
-            if (peers.isEmpty()) {
-                setTrustedPeers(peers);
-                return true;
-            }
-
-            for (final String peer: peers.split(","))
-                if (isBadAddress(peer))
-                    return true;
-
-            if (peers.toLowerCase().contains(".onion")) {
-
-                if (android.os.Build.VERSION.SDK_INT >= 23 &&
-                    (mService.getProxyHost() == null || mService.getProxyPort() == null)) {
-                    // Certain ciphers have been deprecated in API 23+, breaking Orchid
-                    // and HS connectivity (Works with Orbot socks proxy if set)
-                    UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
-                              .content(R.string.enterValidAddressTextTorDisabled).build().show();
-                    return true;
-                }
-
-                setTrustedPeers(peers);
-                return true;
-            }
-
-            // Force the user to confirm that they want to use a non-Tor host
-            UI.popup(getActivity(), R.string.changingWarnOnionTitle)
-                      .content(R.string.changingWarnOnionText)
-                      .onPositive(new MaterialDialog.SingleButtonCallback() {
-                          @Override
-                          public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                              setTrustedPeers(peers);
-                          }
-                      }).build().show();
+        if (peers.isEmpty()) {
+            setTrustedPeers(peers);
             return true;
-        } catch (final Exception e) {
-            return false; // not set
         }
+
+        for (final String peer: peers.split(","))
+            if (isBadAddress(peer))
+                return true;
+
+        if (peers.toLowerCase().contains(".onion")) {
+
+            if (android.os.Build.VERSION.SDK_INT >= 23 &&
+                (mService.getProxyHost() == null || mService.getProxyPort() == null)) {
+                // Certain ciphers have been deprecated in API 23+, breaking Orchid
+                // and HS connectivity (Works with Orbot socks proxy if set)
+                UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
+                          .content(R.string.enterValidAddressTextTorDisabled).build().show();
+                return true;
+            }
+
+            setTrustedPeers(peers);
+            return true;
+        }
+
+        // Force the user to confirm that they want to use a non-Tor host
+        UI.popup(getActivity(), R.string.changingWarnOnionTitle)
+                  .content(R.string.changingWarnOnionText)
+                  .onPositive(new MaterialDialog.SingleButtonCallback() {
+                      @Override
+                      public void onClick(final MaterialDialog dlg, final DialogAction which) {
+                          setTrustedPeers(peers);
+                      }
+                  }).build().show();
+        return true;
     }
 
     @Override
