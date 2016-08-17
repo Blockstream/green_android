@@ -17,7 +17,6 @@ import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
-import com.greenaddress.greenbits.ui.RequestLoginActivity;
 
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.TransactionOutPoint;
@@ -36,51 +35,48 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 public class BTChipHWWallet extends HWWallet {
-    private static final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
-    private final BTChipDongle dongle;
-    private RequestLoginActivity loginActivity;
-    private final String pin;
-    private DeterministicKey cachedPubkey;
-    private List<Integer> addrn = new LinkedList<>();
+    private static final ListeningExecutorService ES = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
+    private final BTChipDongle mDongle;
+    private final String mPin;
+    private DeterministicKey mCachedPubkey;
+    private final List<Integer> mAddrn;
 
     private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
-    private BTChipHWWallet(final BTChipDongle dongle, final RequestLoginActivity loginActivity, final String pin, final List<Integer> addrn) {
-        this.dongle = dongle;
-        this.loginActivity = loginActivity;
-        this.pin = pin;
-        this.addrn = addrn;
+    private BTChipHWWallet(final BTChipDongle dongle, final String pin, final List<Integer> addrn) {
+        this.mDongle = dongle;
+        this.mPin = pin;
+        this.mAddrn = addrn;
     }
 
     public BTChipHWWallet(final BTChipDongle dongle) {
-        this.dongle = dongle;
-        this.pin = "0000";
+        this(dongle, "0000", new LinkedList<Integer>());
     }
 
-    public BTChipHWWallet(final BTChipTransport transport, final RequestLoginActivity loginActivity, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
-        this.dongle = new BTChipDongle(transport);
-        this.loginActivity = loginActivity;
-        this.pin = pin;
-        if (pin == null)
-            return;
+    public BTChipHWWallet(final BTChipTransport transport) {
+        this.mDongle = new BTChipDongle(transport);
+        this.mPin = null;
+        this.mAddrn = new LinkedList<>();
+    }
 
-        es.submit(new Callable<Object>() {
+    public BTChipHWWallet(final BTChipTransport transport, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
+        this(transport);
+        ES.submit(new Callable<Object>() {
             @Override
             public Object call() {
                 try {
-                    dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
+                    mDongle.verifyPin(BTChipHWWallet.this.mPin.getBytes());
                     remainingAttemptsFuture.set(-1);  // -1 means success
                 } catch (final BTChipException e) {
-                    if (e.toString().contains("63c")) {
+                    e.printStackTrace();
+                    if (e.toString().contains("63c"))
                         remainingAttemptsFuture.set(
                                 Integer.valueOf(String.valueOf(e.toString().charAt(e.toString().indexOf("63c") + 3))));
-                    } else if (e.toString().contains("6985")) {
-                        // dongle is not set up
+                    else if (e.toString().contains("6985"))
+                        // mDongle is not set up
                         remainingAttemptsFuture.set(0);
-                    } else {
+                    else
                         remainingAttemptsFuture.setException(e);
-                    }
-                    e.printStackTrace();
                 }
                 return null;
             }
@@ -100,7 +96,7 @@ public class BTChipHWWallet extends HWWallet {
 
         try {
             final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[ptx.decoded.getInputs().size()];
-            if (!dongle.understandMultipleOutputs()) {
+            if (!mDongle.understandMultipleOutputs()) {
                 for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
                     final byte[] inputHash = ptx.decoded.getInputs().get(i).getOutpoint().getHash().getReversedBytes();
                     final byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);
@@ -114,7 +110,7 @@ public class BTChipHWWallet extends HWWallet {
                     input[input.length - 1] = (byte) (index % 256);
                     ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
                     BufferUtils.writeUint32LE(sequenceBuf, ptx.decoded.getInputs().get(i).getSequenceNumber());
-                    inputs[i] = dongle.createInput(input, sequenceBuf.toByteArray(), false);
+                    inputs[i] = mDongle.createInput(input, sequenceBuf.toByteArray(), false);
                 }
             } else {
                 for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
@@ -122,18 +118,18 @@ public class BTChipHWWallet extends HWWallet {
                     final long index = outpoint.getIndex();
                     final ByteArrayInputStream in = new ByteArrayInputStream(ptx.prevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
                     final BitcoinTransaction encodedTx = new BitcoinTransaction(in);
-                    inputs[i] = dongle.getTrustedInput(encodedTx, index, ptx.decoded.getInputs().get(i).getSequenceNumber());
+                    inputs[i] = mDongle.getTrustedInput(encodedTx, index, ptx.decoded.getInputs().get(i).getSequenceNumber());
                 }
             }
             for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
-                dongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(ptx.prev_outputs.get(i).script));
+                mDongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(ptx.prev_outputs.get(i).script));
                 final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(ptx.decoded.getMessageSize() < 32 ? 32 : ptx.decoded.getMessageSize() + 32);
                 stream.write(new VarInt(ptx.decoded.getOutputs().size()).encode());
                 for (final TransactionOutput out : ptx.decoded.getOutputs())
                     out.bitcoinSerialize(stream);
-                dongle.finalizeInputFull(stream.toByteArray());
+                mDongle.finalizeInputFull(stream.toByteArray());
                 final ECKey.ECDSASignature sig;
-                sig = ECKey.ECDSASignature.decodeFromDER(dongle.untrustedHashSign(outToPath(ptx.prev_outputs.get(i)),
+                sig = ECKey.ECDSASignature.decodeFromDER(mDongle.untrustedHashSign(outToPath(ptx.prev_outputs.get(i)),
                                                          "0", ptx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
                 sigs.add(ISigningWallet.getTxSignature(sig));
             }
@@ -153,18 +149,18 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     private DeterministicKey internalGetPubKey() throws BTChipException {
-        if (cachedPubkey == null) {
-            final BTChipDongle.BTChipPublicKey walletKey = dongle.getWalletPublicKey(getPath());
-            cachedPubkey = HDKey.createMasterKey(walletKey.getChainCode(), walletKey.getPublicKey());
+        if (mCachedPubkey == null) {
+            final BTChipDongle.BTChipPublicKey walletKey = mDongle.getWalletPublicKey(getPath());
+            mCachedPubkey = HDKey.createMasterKey(walletKey.getChainCode(), walletKey.getPublicKey());
         }
-        return cachedPubkey;
+        return mCachedPubkey;
     }
 
     @Override
     protected ECKey.ECDSASignature signMessage(final String message) {
         try {
-            dongle.signMessagePrepare(getPath(), message.getBytes());
-            final BTChipDongle.BTChipSignature sig = dongle.signMessageSign(new byte[]{0});
+            mDongle.signMessagePrepare(getPath(), message.getBytes());
+            final BTChipDongle.BTChipSignature sig = mDongle.signMessageSign(new byte[]{0});
             return ECKey.ECDSASignature.decodeFromDER(sig.getSignature());
         } catch (final BTChipException e) {
             throw new RuntimeException(e.getMessage());
@@ -173,11 +169,10 @@ public class BTChipHWWallet extends HWWallet {
 
     private String getPath() {
         final List<String> pathStr = new LinkedList<>();
-        for (final Integer i : addrn) {
+        for (final Integer i : mAddrn) {
             String s = String.valueOf(i & ~0x80000000);
-            if ((i & 0x80000000) != 0) {
+            if ((i & 0x80000000) != 0)
                 s = s + "'";
-            }
             pathStr.add(s);
         }
         return Joiner.on("/").join(pathStr);
@@ -185,26 +180,26 @@ public class BTChipHWWallet extends HWWallet {
 
     @Override
     protected HWWallet derive(final Integer childNumber) {
-        final LinkedList<Integer> addrn_child = new LinkedList<>(addrn);
+        final LinkedList<Integer> addrn_child = new LinkedList<>(mAddrn);
         addrn_child.add(childNumber);
-        return new BTChipHWWallet(dongle, loginActivity, pin, addrn_child);
+        return new BTChipHWWallet(mDongle, mPin, addrn_child);
     }
 
     public BTChipDongle getDongle() {
-        return dongle;
+        return mDongle;
     }
 
     public boolean checkConnected() {
         try {
                 Log.d(TAG, "Connection check");
-                dongle.getFirmwareVersion();
+                mDongle.getFirmwareVersion();
                 Log.d(TAG, "Connection ok");
                 return true;
         }
         catch(final Exception e) {
                 Log.d(TAG, "Connection not connected");
                 try {
-                        dongle.getTransport().close();
+                        mDongle.getTransport().close();
                         Log.d(TAG, "Connection closed");
                 }
                 catch(final Exception e1) {
@@ -214,9 +209,9 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     public void setTransport(final BTChipTransport transport) {
-        dongle.setTransport(transport);
+        mDongle.setTransport(transport);
         try {
-                dongle.verifyPin(BTChipHWWallet.this.pin.getBytes());
+                mDongle.verifyPin(BTChipHWWallet.this.mPin.getBytes());
         }
         catch(final Exception e) {
         }

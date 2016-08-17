@@ -253,7 +253,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             });
                             return Futures.immediateFuture(null);
                         }
-                        mHwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, null, null);
+                        mHwWallet = new BTChipHWWallet(transport);
                         final ProgressBar loginProgress = UI.find(RequestLoginActivity.this, R.id.signingLogin);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -337,7 +337,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             public ListenableFuture<LoginData> apply(final BTChipTransport transport) {
                                 transport.setDebug(BuildConfig.DEBUG);
                                 final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
-                                mHwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
+                                mHwWallet = new BTChipHWWallet(transport, pin, remainingAttemptsFuture);
                                 return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
                                     @Override
                                     public ListenableFuture<LoginData> apply(final Integer remainingAttempts) {
