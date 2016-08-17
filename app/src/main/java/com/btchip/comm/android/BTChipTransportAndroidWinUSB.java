@@ -66,8 +66,8 @@ public class BTChipTransportAndroidWinUSB implements BTChipTransport {
 		if (debug) {
 			Log.d(BTChipTransportAndroid.LOG_STRING, "<= " + Dump.dump(transferBuffer));
 		}		
-		int sw1 = (int)(transferBuffer[0] & 0xff);
-		int sw2 = (int)(transferBuffer[1] & 0xff);
+		int sw1 = transferBuffer[0] & 0xff;
+		int sw2 = transferBuffer[1] & 0xff;
 		if (sw1 != SW1_DATA_AVAILABLE) {
 			byte[] response = new byte[2];
 			response[0] = (byte)sw1;

@@ -21,6 +21,6 @@ package com.btchip.comm;
 
 public interface BTChipTransportFactoryCallback {
 	
-	public void onConnected(boolean success);
+	void onConnected(boolean success);
 
 }

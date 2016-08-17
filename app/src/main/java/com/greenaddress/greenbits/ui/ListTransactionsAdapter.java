@@ -178,7 +178,7 @@ public class ListTransactionsAdapter extends
 
             textValue = UI.find(v, R.id.listValueText);
             textValueQuestionMark = UI.find(v, R.id.listValueQuestionMark);
-            textWhen = (TextView) UI.find(v, R.id.listWhenText);
+            textWhen = UI.find(v, R.id.listWhenText);
             textReplaceable = UI.find(v, R.id.listReplaceableText);
             textWho = UI.find(v, R.id.listWhoText);
             inOutIcon = UI.find(v, R.id.listInOutIcon);

@@ -171,7 +171,7 @@ public class TwoFactorActivity extends GaActivity {
 
     private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, final String newMethod) {
         final GaService service = mService;
-        final View v = inflateView(R.layout.activity_two_factor_2_4_provide_code);
+        inflateView(R.layout.activity_two_factor_2_4_provide_code);
 
         final TextView description = UI.find(this, R.id.description);
         final TextView prompt = UI.find(this, R.id.prompt);
@@ -213,7 +213,7 @@ public class TwoFactorActivity extends GaActivity {
     private void showGauthDetails(final int stepNum, final int numSteps, final String proxyCode) {
         final GaService service = mService;
 
-        final View v = inflateView(R.layout.activity_two_factor_3_gauth_details);
+        inflateView(R.layout.activity_two_factor_3_gauth_details);
         final ImageView imageView = UI.find(this, R.id.imageView);
         final TextView textCode = UI.find(this, R.id.textCode);
         final Button continueButton = UI.find(this, R.id.continueButton);
@@ -268,7 +268,7 @@ public class TwoFactorActivity extends GaActivity {
     private void showProvideConfirmationCode(final int stepNum, final int numSteps) {
         final GaService service = mService;
 
-        final View v = inflateView(R.layout.activity_two_factor_2_4_provide_code);
+        inflateView(R.layout.activity_two_factor_2_4_provide_code);
         final Button continueButton = UI.find(this, R.id.continueButton);
         final EditText code = UI.find(this, R.id.code);
         final TextView prompt = UI.find(this, R.id.prompt);

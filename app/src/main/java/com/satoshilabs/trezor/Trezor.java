@@ -12,7 +12,6 @@ import android.util.Log;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
@@ -45,7 +44,6 @@ import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.WrongNetworkException;
-import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.script.Script;
 import org.spongycastle.util.encoders.Hex;
@@ -264,7 +262,7 @@ public class Trezor {
             request.queue(buffer, 64);
             conn.requestWait();
             final byte[] b = buffer.array();
-            Log.i(TAG, String.format("Read chunk (cont): %d bytes", b.length, msg_size));
+            Log.i(TAG, String.format("Read chunk (cont): %d bytes msg size %d", b.length, msg_size));
 
             String s = "read(cont):";
             for (final byte j : b) {

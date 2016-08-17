@@ -127,9 +127,7 @@ public class WalletClient {
     private void onCallError(final SettableFuture rpc, final String procedure,
                              final ErrorHandler errHandler,
                              final String uri, final String err) {
-        final StringBuilder b = new StringBuilder();
-        b.append(procedure).append("->").append(uri).append(":").append(err);
-        Log.d(TAG, b.toString());
+        Log.d(TAG, procedure + "->" + uri + ":" + err);
         if (errHandler != null)
             errHandler.onError(uri, err);
         else

@@ -28,21 +28,21 @@ public class VarintUtils {
 	
 	public static long read(ByteArrayInputStream in) throws BTChipException {
 		long result = 0;
-		int val1 = (int)(in.read() & 0xff);
+		int val1 = in.read() & 0xff;
 		if (val1 < 0xfd) {
 			result = val1;
 		}
 		else
 		if (val1 == 0xfd) {
-			result |= (int)(in.read() & 0xff);
-			result |= (((int)in.read() & 0xff) << 8);
+			result |= in.read() & 0xff;
+			result |= ((in.read() & 0xff) << 8);
 		}
 		else
 		if (val1 == 0xfe) {
-			result |= (int)(in.read() & 0xff);
-			result |= (((int)in.read() & 0xff) << 8);
-			result |= (((int)in.read() & 0xff) << 16);
-			result |= (((int)in.read() & 0xff) << 24);
+			result |= in.read() & 0xff;
+			result |= ((in.read() & 0xff) << 8);
+			result |= ((in.read() & 0xff) << 16);
+			result |= ((in.read() & 0xff) << 24);
 		}
 		else {
 			throw new BTChipException("Unsupported varint encoding");

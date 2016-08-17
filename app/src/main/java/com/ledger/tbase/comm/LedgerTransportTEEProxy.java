@@ -1,10 +1,5 @@
 package com.ledger.tbase.comm;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.util.concurrent.Future;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -16,6 +11,11 @@ import com.btchip.utils.Dump;
 import com.btchip.utils.FutureUtils;
 import com.ledger.wallet.service.ILedgerWalletService;
 import com.ledger.wallet.service.ServiceResult;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.concurrent.Future;
 
 public class LedgerTransportTEEProxy implements BTChipTransport {
 	
@@ -63,7 +63,7 @@ public class LedgerTransportTEEProxy implements BTChipTransport {
 	}
 	
 	public boolean init() {
-		ServiceResult result = null;
+		ServiceResult result;
 		
 		if (service == null) {
 			Log.d(TAG, "Cannot initialize until service is available");
@@ -105,7 +105,7 @@ public class LedgerTransportTEEProxy implements BTChipTransport {
 		}
 		try {
 			for (byte[] apdu : APDU_INIT) {
-				int sw = 0;
+				int sw;
 				byte[] response = exchange(apdu).get();
 				if ((response != null) && (response.length > 2)) {
 					sw = ((response[response.length - 2] & 0xff) << 8) | (response[response.length - 1] & 0xff);
@@ -145,7 +145,7 @@ public class LedgerTransportTEEProxy implements BTChipTransport {
 
 	@Override
 	public Future<byte[]> exchange(byte[] command) throws BTChipException {
-		ServiceResult result = null;
+		ServiceResult result;
 				
 		if (debug) {
 			Log.d(BTChipTransportAndroid.LOG_STRING, "=> " + Dump.dump(command));
@@ -205,7 +205,7 @@ public class LedgerTransportTEEProxy implements BTChipTransport {
 		if (session == null) {
 			throw new BTChipException("Session is not open");
 		}	
-		ServiceResult result = null;
+		ServiceResult result;
 		try {
 			result = service.getStorage(session);
 		}

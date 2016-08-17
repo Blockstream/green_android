@@ -8,7 +8,6 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
-import org.bitcoinj.crypto.HDUtils;
 import org.bitcoinj.crypto.LazyECPoint;
 
 import java.util.ArrayList;

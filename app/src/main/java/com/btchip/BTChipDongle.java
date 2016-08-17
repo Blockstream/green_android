@@ -19,14 +19,14 @@
 
 package com.btchip;
 
-import java.io.ByteArrayOutputStream;
-
 import com.btchip.comm.BTChipTransport;
 import com.btchip.utils.BIP32Utils;
 import com.btchip.utils.BufferUtils;
 import com.btchip.utils.CoinFormatUtils;
 import com.btchip.utils.Dump;
 import com.btchip.utils.VarintUtils;
+
+import java.io.ByteArrayOutputStream;
 
 public class BTChipDongle implements BTChipConstants {
 	
@@ -45,8 +45,8 @@ public class BTChipDongle implements BTChipConstants {
 		public int getValue() {
 			return value;
 		}
-	};
-	
+	}
+
 	public enum Feature {
 		UNCOMPRESSED_KEYS(0x01),
 		RFC6979(0x02),
@@ -62,8 +62,8 @@ public class BTChipDongle implements BTChipConstants {
 		public int getValue() {
 			return value;
 		}
-	};
-	
+	}
+
 	public enum UserConfirmation {
         NONE(0x00),
         KEYBOARD(0x01),
@@ -106,14 +106,7 @@ public class BTChipDongle implements BTChipConstants {
 
 		@Override
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("Address ");
-			buffer.append(address);
-			buffer.append(" public key ");
-			buffer.append(Dump.dump(publicKey));
-			buffer.append(" chaincode ");
-			buffer.append(Dump.dump(chainCode));
-			return buffer.toString();
+			return String.format("Address %s public key %s chaincode %s", address, Dump.dump(publicKey), Dump.dump(chainCode));
 		}
 	}
 	
@@ -135,12 +128,7 @@ public class BTChipDongle implements BTChipConstants {
 		
 		@Override
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("Signature ");
-			buffer.append(Dump.dump(signature));
-			buffer.append(" y parity ");
-			buffer.append(yParity);
-			return buffer.toString();
+			return String.format("Signature %s y parity %s", Dump.dump(signature), yParity);
 		}
 	}
 	
@@ -172,11 +160,7 @@ public class BTChipDongle implements BTChipConstants {
 		
 		@Override
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append(major).append('.').append(minor).append('.').append(patch);
-			buffer.append(" compressed keys ");
-			buffer.append(compressedKeys);
-			return buffer.toString();
+			return String.format("%s.%s.%s compressed keys %b", major,  minor, patch, compressedKeys);
 		}
 	}
 	
@@ -203,10 +187,7 @@ public class BTChipDongle implements BTChipConstants {
 
 		@Override
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("Value ").append(Dump.dump(value));
-			buffer.append(" trusted ").append(trusted);
-			return buffer.toString();
+			return String.format("Value %s trusted %b", Dump.dump(value), trusted);
 		}
 	}
 
@@ -231,10 +212,7 @@ public class BTChipDongle implements BTChipConstants {
 		
 		@Override
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("Value ").append(Dump.dump(value));
-			buffer.append(" confirmation type ").append(userConfirmation.toString());
-			return buffer.toString();
+			return String.format("Value %s confirmation type %s", Dump.dump(value), userConfirmation);
 		}
 	}
 	
@@ -276,11 +254,8 @@ public class BTChipDongle implements BTChipConstants {
 		
 		@Override
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append(super.toString());
-			buffer.append(" screen data ").append(Dump.dump(screenInfo));
-			return buffer.toString();
-		}				
+			return String.format("%s screen data %s", super.toString(), Dump.dump(screenInfo));
+		}
 	}
 		
 	private BTChipTransport transport;
@@ -322,8 +297,8 @@ public class BTChipDongle implements BTChipConstants {
 		if (response.length < 2) {
 			throw new BTChipException("Truncated response");
 		}
-		lastSW = ((int)(response[response.length - 2] & 0xff) << 8) | 
-				(int)(response[response.length - 1] & 0xff);
+		lastSW = ((response[response.length - 2] & 0xff) << 8) |
+				response[response.length - 1] & 0xff;
 		byte[] result = new byte[response.length - 2];
 		System.arraycopy(response, 0, result, 0, response.length - 2);
 		return result;
@@ -430,7 +405,6 @@ public class BTChipDongle implements BTChipConstants {
 		offset += address.length;
 		byte chainCode[] = new byte[32];
 		System.arraycopy(response, offset, chainCode, 0, chainCode.length);
-		offset += address.length;		
 		return new BTChipPublicKey(publicKey, new String(address), chainCode);
 	}
 	
@@ -505,7 +479,7 @@ public class BTChipDongle implements BTChipConstants {
 	
 	private BTChipOutput convertResponseToOutput(byte[] response) throws BTChipException {
 		BTChipOutput result = null;
-		byte[] value = new byte[(int)(response[0] & 0xff)];
+		byte[] value = new byte[response[0] & 0xff];
 		System.arraycopy(response, 1, value, 0, value.length);
 		byte userConfirmationValue = response[1 + value.length];
 		if (userConfirmationValue == UserConfirmation.NONE.getValue()) {
@@ -551,7 +525,7 @@ public class BTChipDongle implements BTChipConstants {
 	}
 	
 	public BTChipOutput finalizeInput(String outputAddress, String amount, String fees, String changePath) throws BTChipException {
-		BTChipOutput result = null;
+		BTChipOutput result;
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		byte path[] = BIP32Utils.splitPath(changePath);
 		data.write(outputAddress.length());
@@ -568,7 +542,7 @@ public class BTChipDongle implements BTChipConstants {
 		BTChipOutput result = null;		
 		int offset = 0;
 		byte[] response = null;
-		byte[] path = null;
+		byte[] path;
 		boolean oldAPI = false;
 		if (!skipChangeCheck) {
 			if (changePath != null) {
@@ -623,7 +597,7 @@ public class BTChipDongle implements BTChipConstants {
 	public BTChipOutput finalizeInput(byte[] outputScript, String outputAddress, String amount, String fees, String changePath) throws BTChipException {
 		// Try the new API first
 		boolean oldAPI;
-		byte[] path = null;		
+		byte[] path;
 		if (changePath != null) {
 			path = BIP32Utils.splitPath(changePath);
 			exchangeApdu(BTCHIP_CLA, BTCHIP_INS_HASH_INPUT_FINALIZE_FULL, (byte)0xFF, (byte)0x00, path, null);
@@ -685,9 +659,9 @@ public class BTChipDongle implements BTChipConstants {
 	public BTChipFirmware getFirmwareVersion() throws BTChipException {
 		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_FIRMWARE_VERSION, (byte)0x00, (byte)0x00, 0x00, OK);
 		boolean compressedKeys = (response[0] == (byte)0x01);
-		int major = ((int)(response[1] & 0xff) << 8) | ((int)(response[2] & 0xff));
-		int minor = (int)(response[3] & 0xff);
-		int patch = (int)(response[4] & 0xff);
+		int major = ((response[1] & 0xff) << 8) | response[2] & 0xff;
+		int minor = response[3] & 0xff;
+		int patch = response[4] & 0xff;
 		return new BTChipFirmware(major, minor, patch, compressedKeys);
 	}		
 	
@@ -752,6 +726,4 @@ public class BTChipDongle implements BTChipConstants {
 		}
 		return (response[0] == (byte)0x01);
 	}
-	
-	
 }

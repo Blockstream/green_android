@@ -19,21 +19,21 @@
 
 package com.btchip.comm.android;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.util.concurrent.Future;
-
-import android.util.Log;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbRequest;
+import android.util.Log;
 
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerHelper;
 import com.btchip.utils.Dump;
 import com.btchip.utils.FutureUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Future;
 
 public class BTChipTransportAndroidHID implements BTChipTransport {
 
@@ -63,10 +63,9 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 	@Override
 	public Future<byte[]> exchange(byte[] command) throws BTChipException {
 		ByteArrayOutputStream response = new ByteArrayOutputStream();
-		byte[] responseData = null;
+		byte[] responseData;
 		int offset = 0;
 		int responseSize;
-		int result;
 		if (debug) {
 			Log.d(BTChipTransportAndroid.LOG_STRING, "=> " + Dump.dump(command));
 		}
@@ -97,8 +96,8 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 			}
 			connection.requestWait();
 			responseBuffer.rewind();
-			int sw1 = (int)(responseBuffer.get() & 0xff);
-			int sw2 = (int)(responseBuffer.get() & 0xff);
+			int sw1 = responseBuffer.get() & 0xff;
+			int sw2 = responseBuffer.get() & 0xff;
 			if (sw1 != SW1_DATA_AVAILABLE) {
 				response.write(sw1);
 				response.write(sw2);

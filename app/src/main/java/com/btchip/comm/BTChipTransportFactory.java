@@ -23,8 +23,8 @@ import android.content.Context;
 
 public interface BTChipTransportFactory {
 	
-	public BTChipTransport getTransport();
-	public boolean isPluggedIn();
-	public boolean connect(final Context context, final BTChipTransportFactoryCallback callback);
+	BTChipTransport getTransport();
+	boolean isPluggedIn();
+	boolean connect(final Context context, final BTChipTransportFactoryCallback callback);
 
 }

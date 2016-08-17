@@ -19,13 +19,13 @@
 
 package com.btchip;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Vector;
-
 import com.btchip.utils.BufferUtils;
 import com.btchip.utils.Dump;
 import com.btchip.utils.VarintUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Vector;
 
 public class BitcoinTransaction {
 	
@@ -92,12 +92,10 @@ public class BitcoinTransaction {
 		}
 		
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("Prevout ").append(Dump.dump(prevOut)).append('\r').append('\n');
-			buffer.append("Script ").append(Dump.dump(script)).append('\r').append('\n');
-			buffer.append("Sequence ").append(Dump.dump(sequence)).append('\r').append('\n');
-			return buffer.toString();
-		}		
+			return "Prevout " + Dump.dump(prevOut) + '\r' + '\n' +
+					"Script " + Dump.dump(script) + '\r' + '\n' +
+					"Sequence " + Dump.dump(sequence) + '\r' + '\n';
+		}
 	}
 	
 	public class BitcoinOutput {
@@ -143,10 +141,8 @@ public class BitcoinTransaction {
 		}
 		
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("Amount ").append(Dump.dump(amount)).append('\r').append('\n');
-			buffer.append("Script ").append(Dump.dump(script)).append('\r').append('\n');
-			return buffer.toString();			
+			return "Amount " + Dump.dump(amount) + '\r' + '\n' +
+					"Script " + Dump.dump(script) + '\r' + '\n';
 		}
 	}
 	

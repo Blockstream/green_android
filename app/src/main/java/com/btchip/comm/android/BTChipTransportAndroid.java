@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
+
 import nordpol.android.AndroidCard;
 
 import android.app.PendingIntent;
@@ -65,7 +65,7 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
-			UsbDevice usbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+			UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 			String deviceName = usbDevice.getDeviceName();
 
 			if (ACTION_USB_PERMISSION.equals(action)) {
