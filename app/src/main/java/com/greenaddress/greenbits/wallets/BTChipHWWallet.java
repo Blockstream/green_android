@@ -100,7 +100,7 @@ public class BTChipHWWallet extends HWWallet {
 
         try {
             final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[ptx.decoded.getInputs().size()];
-            if (!dongle.hasScreenSupport()) {
+            if (!dongle.understandMultipleOutputs()) {
                 for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
                     final byte[] inputHash = ptx.decoded.getInputs().get(i).getOutpoint().getHash().getReversedBytes();
                     final byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);

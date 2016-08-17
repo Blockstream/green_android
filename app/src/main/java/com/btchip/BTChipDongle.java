@@ -260,7 +260,7 @@ public class BTChipDongle implements BTChipConstants {
 		
 	private BTChipTransport transport;
 	private int lastSW;
-	private boolean supportScreen;
+	private boolean mUnderstandMultipleOutputs;
 	
 	private static final int OK[] = { SW_OK };
 	private static final byte DUMMY[] = { 0 };
@@ -269,13 +269,13 @@ public class BTChipDongle implements BTChipConstants {
 		this.transport = transport;
 	}
 	
-	public BTChipDongle(BTChipTransport transport, boolean supportScreen) {
+	public BTChipDongle(BTChipTransport transport, boolean understandMultipleOutputs) {
 		this.transport = transport;
-		this.supportScreen = supportScreen;
+		this.mUnderstandMultipleOutputs = understandMultipleOutputs;
 	}
 	
-	public boolean hasScreenSupport() {
-		return supportScreen;
+	public boolean understandMultipleOutputs() {
+		return mUnderstandMultipleOutputs;
 	}
 	
 	public BTChipTransport getTransport() {
