@@ -136,6 +136,8 @@ public class TransactionActivity extends GaActivity {
         public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                                  final Bundle savedInstanceState) {
 
+            final GaService service = getGAService();
+
             final View v = inflater.inflate(R.layout.fragment_transaction, container, false);
 
             final TextView hashText = UI.find(v, R.id.txHashText);
@@ -183,7 +185,7 @@ public class TransactionActivity extends GaActivity {
                 feePerKb = Coin.valueOf(0);
             }
 
-            final boolean isWatchOnly = getGAService().isWatchOnly();
+            final boolean isWatchOnly = service.isWatchOnly();
 
             if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT) || txItem.isSpent) {
                 if (txItem.getConfirmations() > 0) {
@@ -194,7 +196,7 @@ public class TransactionActivity extends GaActivity {
                 } else if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT)) {
                     // unconfirmed outgoing output/redeposit - can be RBF'd
                     int currentEstimate = 25, bestEstimate;
-                    final Map<String, Object> feeEstimates = getGAService().getLoginData().feeEstimates;
+                    final Map<String, Object> feeEstimates = service.getLoginData().feeEstimates;
                     final String checkValues[] = {"1", "3", "6"};
                     for (final String value : checkValues) {
                         final double feerate = Double.parseDouble(((Map)feeEstimates.get(value)).get("feerate").toString());
@@ -236,9 +238,9 @@ public class TransactionActivity extends GaActivity {
                     if (isWatchOnly || txItem.spvVerified ) {
                         UI.hide((View) UI.find(v, R.id.txUnconfirmed));
                     } else {
-                        if (getGAService().spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
+                        if (service.spv.getSpvBlocksLeft() != Integer.MAX_VALUE) {
                             unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),
-                                    getGAService().spv.getSpvBlocksLeft()));
+                                    service.spv.getSpvBlocksLeft()));
                         } else {
                             unconfirmedText.setText(String.format("%s %s", getResources().getString(R.string.txUnverifiedTx),
                                     "Not yet connected to SPV!"));
@@ -247,7 +249,7 @@ public class TransactionActivity extends GaActivity {
                 }
             }
 
-            final String btcUnit = (String) getGAService().getUserConfig("unit");
+            final String btcUnit = (String) service.getUserConfig("unit");
             final Coin coin = Coin.valueOf(txItem.amount);
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
             bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
@@ -373,7 +375,7 @@ public class TransactionActivity extends GaActivity {
                 public void onClick(final View v) {
                     final String edited = UI.getText(memoEditText);
                     if (!edited.equals(UI.getText(memoText))) {
-                        CB.after(getGAService().changeMemo(txItem.txhash, edited),
+                        CB.after(service.changeMemo(txItem.txhash, edited),
                                 new CB.Toast<Boolean>(gaActivity) {
                                     @Override
                                     public void onSuccess(final Boolean result) {
@@ -390,14 +392,15 @@ public class TransactionActivity extends GaActivity {
         }
 
         private void replaceByFee(final TransactionItem txItem, final Coin feerate, Integer txSize, final int level) {
-            if (level > 10) {
+            if (level > 10)
                 throw new RuntimeException("Recursion limit exceeded");
-            }
+
             final GaActivity gaActivity = getGaActivity();
+            final GaService service = getGAService();
 
             final Transaction tx = new Transaction(Network.NETWORK, Wally.hex_to_bytes(txItem.data));
             Integer change_pointer = null;
-            final int subAccount = getGAService().getCurrentSubAccount();
+            final int subAccount = service.getCurrentSubAccount();
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
             // by at most 4 bytes per input (signatures have variable lengths)
             if (txSize == null) {
@@ -464,7 +467,7 @@ public class TransactionActivity extends GaActivity {
             }
 
             final Coin finalRemaining = remainingFeeDelta;
-            CB.after(getGAService().getAllUnspentOutputs(1, subAccount),
+            CB.after(service.getAllUnspentOutputs(1, subAccount),
                      new CB.Toast<ArrayList>(gaActivity) {
                 @Override
                 public void onSuccess(ArrayList result) {
@@ -474,7 +477,7 @@ public class TransactionActivity extends GaActivity {
                     for (Object utxo_ : result) {
                         Map<String, Object> utxo = (Map<String, Object>) utxo_;
                         remaining = remaining.subtract(Coin.valueOf(Long.valueOf((String)utxo.get("value"))));
-                        scripts.add(getGAService().createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
+                        scripts.add(service.createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
                         moreInputs.add(utxo);
                         if (remaining.compareTo(Coin.ZERO) <= 0)
                             break;
@@ -501,7 +504,7 @@ public class TransactionActivity extends GaActivity {
 
                     // Funds left over - add a new change output
                     final Coin changeValue = remaining.multiply(-1);
-                    CB.after(getGAService().getNewAddress(subAccount),
+                    CB.after(service.getNewAddress(subAccount),
                              new CB.Toast<Map>(gaActivity) {
                         @Override
                         public void onSuccess(final Map result) {
@@ -527,10 +530,11 @@ public class TransactionActivity extends GaActivity {
                                     final Coin oldFee, final List<Map<String, Object>> moreInputs,
                                     final List<byte[]> morePrevouts, final int level) {
             final GaActivity gaActivity = getGaActivity();
+            final GaService service = getGAService();
 
             final PreparedTransaction ptx;
             ptx = new PreparedTransaction(change_pointer, subAccount, tx,
-                                          getGAService().findSubaccount("2of3", subAccount));
+                                          service.findSubaccount("2of3", subAccount));
 
             for (final Map<String, Object> ep : (List<Map<String, Object>>)txItem.eps) {
                 if (((Boolean) ep.get("is_credit"))) continue;
@@ -601,13 +605,13 @@ public class TransactionActivity extends GaActivity {
 
             ListenableFuture<Void> prevouts = Futures.immediateFuture(null);
             // FIXME: Find another way to do this
-            if (getGAService().getSigningWallet() instanceof TrezorHWWallet) {
+            if (service.getSigningWallet() instanceof TrezorHWWallet) {
                 for (final TransactionInput inp : tx.getInputs()) {
                     prevouts = Futures.transform(prevouts, new AsyncFunction<Void, Void>() {
                         @Override
                         public ListenableFuture<Void> apply(Void input) throws Exception {
                             return Futures.transform(
-                                    getGAService().getRawOutput(inp.getOutpoint().getHash()),
+                                    service.getRawOutput(inp.getOutpoint().getHash()),
                                     new Function<Transaction, Void>() {
                                         @Override
                                         public Void apply(Transaction input) {
@@ -624,15 +628,13 @@ public class TransactionActivity extends GaActivity {
             final ListenableFuture<List<byte[]>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<byte[]>>() {
                 @Override
                 public ListenableFuture<List<byte[]>> apply(Void input) throws Exception {
-                    return getGAService().signTransaction(ptx);
+                    return service.signTransaction(ptx);
                 }
             });
 
             CB.after(signed, new CB.Toast<List<byte[]>>(gaActivity) {
                 @Override
                 public void onSuccess(final List<byte[]> signatures) {
-                    final GaService service = getGAService();
-
                     int i = 0;
                     for (final byte[] sig : signatures) {
                         final TransactionInput input = tx.getInput(i++);
@@ -658,13 +660,8 @@ public class TransactionActivity extends GaActivity {
                     Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
                         @Override
                         public void onSuccess(final Map result) {
-                            gaActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // FIXME: Add notification with "Transaction sent"?
-                                    gaActivity.finish();
-                                }
-                            });
+                            // FIXME: Add notification with "Transaction sent"?
+                            gaActivity.finishOnUiThread();
                         }
 
                         @Override
@@ -698,8 +695,9 @@ public class TransactionActivity extends GaActivity {
         private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee, final Transaction signedTx) {
             Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
             final GaActivity gaActivity = getGaActivity();
+            final GaService service = getGAService();
 
-            final String btcUnit = (String) getGAService().getUserConfig("unit");
+            final String btcUnit = (String) service.getUserConfig("unit");
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
 
             final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
@@ -747,7 +745,7 @@ public class TransactionActivity extends GaActivity {
                 if (!method.equals("gauth")) {
                     Map<String, Long> amount = new HashMap<>();
                     amount.put("amount", newFee.subtract(oldFee).longValue());
-                    getGAService().requestTwoFacCode(method, "bump_fee", amount);
+                    service.requestTwoFacCode(method, "bump_fee", amount);
                 }
             }
 
@@ -759,19 +757,14 @@ public class TransactionActivity extends GaActivity {
                             if (twoFacData != null) {
                                 twoFacData.put("code", UI.getText(newTx2FACodeText));
                             }
-                            final ListenableFuture<Map<String,Object>> sendFuture = getGAService().sendRawTransaction(signedTx, twoFacData, false);
+                            final ListenableFuture<Map<String,Object>> sendFuture = service.sendRawTransaction(signedTx, twoFacData, false);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity) {
                                 @Override
                                 public void onSuccess(final Map result) {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // FIXME: Add notification with "Transaction sent"?
-                                            getActivity().finish();
-                                        }
-                                    });
+                                    // FIXME: Add notification with "Transaction sent"?
+                                    gaActivity.finishOnUiThread();
                                 }
-                            }, getGAService().es);
+                            }, service.es);
                         }
                     })
                     .onNegative(new MaterialDialog.SingleButtonCallback() {
