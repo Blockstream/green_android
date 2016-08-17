@@ -75,9 +75,10 @@ public class SendFragment extends SubaccountFragment {
 
     private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
+        final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+        final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
         final TextView amountText = UI.find(v, R.id.newTxAmountText);
         final TextView amountScale = UI.find(v, R.id.newTxAmountScaleText);
@@ -122,11 +123,11 @@ public class SendFragment extends SubaccountFragment {
             twoFacData = new HashMap<>();
             twoFacData.put("method", method);
             if (!method.equals("gauth")) {
-                getGAService().requestTwoFacCode(method, "send_tx", null);
+                service.requestTwoFacCode(method, "send_tx", null);
             }
         }
 
-        mSummary = UI.popup(getActivity(), R.string.newTxTitle, R.string.send, R.string.cancel)
+        mSummary = UI.popup(gaActivity, R.string.newTxTitle, R.string.send, R.string.cancel)
                 .customView(v, true)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -134,20 +135,18 @@ public class SendFragment extends SubaccountFragment {
                         if (twoFacData != null) {
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
                         }
-                        final ListenableFuture<String> sendFuture = getGAService().signAndSendTransaction(ptx, twoFacData);
+                        final ListenableFuture<String> sendFuture = service.signAndSendTransaction(ptx, twoFacData);
                         Futures.addCallback(sendFuture, new CB.Toast<String>(gaActivity) {
                             @Override
                             public void onSuccess(final String result) {
-                                if (fromIntentURI) {
-                                    // FIXME If coming back from the Trusted UI, there can be a race condition
-                                    if (getActivity() != null) {
-                                        getActivity().finish();
-                                    }
-                                    return;
-                                }
-                                getActivity().runOnUiThread(new Runnable() {
+                                gaActivity.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        if (fromIntentURI) {
+                                            gaActivity.finish();
+                                            return;
+                                        }
+
                                         // FIXME: Add notification with "Transaction sent"?
                                         amountEdit.setText("");
                                         recipientEdit.setText("");
@@ -157,12 +156,12 @@ public class SendFragment extends SubaccountFragment {
                                         noteText.setText("");
                                         noteText.setVisibility(View.INVISIBLE);
 
-                                        final ViewPager mViewPager = UI.find(getActivity(), R.id.container);
+                                        final ViewPager mViewPager = UI.find(gaActivity, R.id.container);
                                         mViewPager.setCurrentItem(1);
                                     }
                                 });
                             }
-                        }, getGAService().es);
+                        }, service.es);
                     }
                 }).build();
 
@@ -203,7 +202,7 @@ public class SendFragment extends SubaccountFragment {
                             } else {
                                 amountStr = "";
                             }
-                            getActivity().runOnUiThread(new Runnable() {
+                            gaActivity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     recipientEdit.setText(name);
@@ -225,7 +224,7 @@ public class SendFragment extends SubaccountFragment {
                 Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
                     @Override
                     public void onSuccess(final Map<?, ?> result) {
-                        getActivity().runOnUiThread(new Runnable() {
+                        gaActivity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
@@ -244,9 +243,10 @@ public class SendFragment extends SubaccountFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        final GaService service = getGAService();
 
         registerReceiver();
+
+        final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
         if (savedInstanceState != null)
@@ -343,11 +343,11 @@ public class SendFragment extends SubaccountFragment {
                 ListenableFuture<PreparedTransaction> ptxFn;
                 if (payreqData == null) {
                     if (!validAddress && !validAmount) {
-                        message = getActivity().getString(R.string.invalidAmountAndAddress);
+                        message = gaActivity.getString(R.string.invalidAmountAndAddress);
                     } else if (!validAddress) {
-                        message = getActivity().getString(R.string.invalidAddress);
+                        message = gaActivity.getString(R.string.invalidAddress);
                     } else if (!validAmount) {
-                        message = getActivity().getString(R.string.invalidAmount);
+                        message = gaActivity.getString(R.string.invalidAmount);
                     }
                     if (message == null) {
                         if (maxButton.isChecked()) {
@@ -384,7 +384,7 @@ public class SendFragment extends SubaccountFragment {
                                                 public void onSuccess(final Coin fee) {
                                                     final Map<?, ?> twoFacConfig = service.getTwoFacConfig();
                                                     // can be non-UI because validation talks to USB if hw wallet is used
-                                                    getActivity().runOnUiThread(new Runnable() {
+                                                    gaActivity.runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
                                                             sendButton.setEnabled(true);
@@ -450,13 +450,13 @@ public class SendFragment extends SubaccountFragment {
                                             //New Marshmallow permissions paradigm
                                             final String[] perms = {"android.permission.CAMERA"};
                                             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
-                                                    getActivity().checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
+                                                    gaActivity.checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
                                                 final int permsRequestCode = 100;
-                                                getActivity().requestPermissions(perms, permsRequestCode);
+                                                gaActivity.requestPermissions(perms, permsRequestCode);
                                             } else {
 
-                                                final Intent qrcodeScanner = new Intent(getActivity(), ScanActivity.class);
-                                                getActivity().startActivityForResult(qrcodeScanner, REQUEST_SEND_QR_SCAN);
+                                                final Intent qrcodeScanner = new Intent(gaActivity, ScanActivity.class);
+                                                gaActivity.startActivityForResult(qrcodeScanner, REQUEST_SEND_QR_SCAN);
                                             }
                                         }
                                     }
