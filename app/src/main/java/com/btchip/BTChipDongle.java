@@ -442,7 +442,7 @@ public class BTChipDongle implements BTChipConstants {
 		// Locktime
 		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_TRUSTED_INPUT, (byte)0x80, (byte)0x00, transaction.getLockTime(), OK);
 		ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
-		BufferUtils.writeUint32BE(sequenceBuf, sequence);
+		BufferUtils.writeUint32LE(sequenceBuf, sequence);
 		return new BTChipInput(response, sequenceBuf.toByteArray(), true);
 	}
 	

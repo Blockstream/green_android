@@ -113,7 +113,7 @@ public class BTChipHWWallet extends HWWallet {
                     index /= 256;
                     input[input.length - 1] = (byte) (index % 256);
                     ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
-                    BufferUtils.writeUint32BE(sequenceBuf, ptx.decoded.getInputs().get(i).getSequenceNumber());
+                    BufferUtils.writeUint32LE(sequenceBuf, ptx.decoded.getInputs().get(i).getSequenceNumber());
                     inputs[i] = dongle.createInput(input, sequenceBuf.toByteArray(), false);
                 }
             } else {

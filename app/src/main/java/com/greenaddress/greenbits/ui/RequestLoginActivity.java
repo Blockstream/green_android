@@ -248,6 +248,8 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                 return Futures.immediateFuture(null);
                             }
                         }
+                        final TextView instructions = UI.find(RequestLoginActivity.this, R.id.firstLoginRequestedInstructionsText);
+
                         transport.setDebug(BuildConfig.DEBUG);
                         final BTChipDongle dongle = new BTChipDongle(transport, true);
                         try {
@@ -333,6 +335,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                         return Futures.transform(mTransportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(final BTChipTransport transport) {
+                                transport.setDebug(BuildConfig.DEBUG);
                                 final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
                                 mHwWallet = new BTChipHWWallet(transport, RequestLoginActivity.this, pin, remainingAttemptsFuture);
                                 return Futures.transform(remainingAttemptsFuture, new AsyncFunction<Integer, LoginData>() {
@@ -375,7 +378,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         @Override
         public void onSuccess(final LoginData result) {
             if (result != null) {
-               RequestLoginActivity.this.onSuccess();
+                RequestLoginActivity.this.onSuccess();
             }
         }
 
