@@ -72,7 +72,7 @@ public class WatchOnlyLoginActivity extends GaActivity {
             @Override
             public void onSuccess(final LoginData result) {
                 startActivity(new Intent(WatchOnlyLoginActivity.this, TabbedMainActivity.class));
-                finish();
+                finishOnUiThread();
             }
 
             @Override
@@ -94,7 +94,7 @@ public class WatchOnlyLoginActivity extends GaActivity {
 
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
-                this.finish();
+                finish();
             }
         }
     }
