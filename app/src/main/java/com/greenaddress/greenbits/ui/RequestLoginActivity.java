@@ -227,15 +227,20 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
                             transport = BTChipTransportAndroid.open(manager, device);
                         } else {
-                            // If the mTag was already tapped, work with it
+                            // If the tag was already tapped, work with it
                             transport = getTransport(mTag);
                             if (transport == null) {
                                 // Prompt the user to tap
-                                mNfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
-                                        .title("BTChip")
-                                        .content("Please tap card")
-                                        .build();
-                                mNfcWaitDialog.show();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mNfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
+                                                .title("BTChip")
+                                                .content("Please tap card")
+                                                .build();
+                                        mNfcWaitDialog.show();
+                                    }
+                                });
                                 return Futures.immediateFuture(null);
                             }
                         }
@@ -322,7 +327,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
                             mTransportFuture.set(BTChipTransportAndroid.open(manager, device));
                         } else {
-                            // If the mTag was already tapped, work with it
+                            // If the tag was already tapped, work with it
                             final BTChipTransport transport = getTransport(mTag);
                             if (transport != null)
                                 mTransportFuture.set(transport);
