@@ -439,7 +439,7 @@ public class SPV {
         return 0;
     }
 
-    public synchronized void startSPVSync() {
+    private synchronized void startSPVSync() {
         synchronized (startSPVLock) {
             if (syncStarted)
                 return;
@@ -519,7 +519,7 @@ public class SPV {
         }
     }
 
-    public synchronized void setUpSPV(){
+    private synchronized void setUpSPV(){
         //teardownSPV must be called if SPV already exists
         //and stopSPV if previous still running.
         if (peerGroup != null) {
