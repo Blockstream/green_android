@@ -210,7 +210,7 @@ public class PinActivity extends GaActivity implements Observer {
 
         final GaService service = mService;
         if (service.onConnected == null) {
-            finish();
+            finishOnUiThread();
             return;
         }
 
