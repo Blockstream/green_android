@@ -72,9 +72,6 @@ public class SPV {
     private BlockChain blockChain;
     private PeerGroup peerGroup;
     private PeerFilterProvider pfProvider;
-    private final Object startSPVLock = new Object();
-    private boolean isSPVSyncing = false;
-    private boolean syncStarted = false;
 
     private enum SPVMode {
         ONION, TRUSTED, NORMAL
@@ -143,7 +140,6 @@ public class SPV {
     public void startIfEnabled() {
         resetUnspent();
 
-        isSPVSyncing = false;
         if (gaService.isSPVEnabled()) {
             setUpSPV();
             startSPVSync();
@@ -435,15 +431,8 @@ public class SPV {
     }
 
     private synchronized void startSPVSync() {
-        synchronized (startSPVLock) {
-            if (syncStarted)
-                return;
-            syncStarted = true;
-        }
-        if (isSPVSyncing)
+        if (peerGroup.isRunning())
              return;
-        if (peerGroup == null)
-            return; // disconnected while WiFi got up - FIXME is this possible?
 
         Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
@@ -451,7 +440,6 @@ public class SPV {
                 peerGroup.startBlockChainDownload(new DownloadProgressTracker() {
                     @Override
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
-                        isSPVSyncing = true;
                         spvBlocksLeft = blocksLeft;
                     }
 
@@ -602,9 +590,6 @@ public class SPV {
             gaService.sendBroadcast(i);
 
             peerGroup.stop();
-
-            isSPVSyncing = false;
-            syncStarted = false;
         }
 
         if (blockChain != null && blockChainListener != null) {
