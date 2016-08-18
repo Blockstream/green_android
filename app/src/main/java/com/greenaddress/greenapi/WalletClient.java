@@ -19,6 +19,7 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.codehaus.jackson.map.MappingJsonFactory;
@@ -37,6 +38,12 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionException;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManagerFactory;
+
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.FingerprintTrustManagerFactory;
 import rx.Scheduler;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -49,6 +56,7 @@ import ws.wamp.jawampa.WampClient;
 import ws.wamp.jawampa.WampClientBuilder;
 import ws.wamp.jawampa.connection.IWampConnectorProvider;
 import ws.wamp.jawampa.transport.netty.NettyWampClientConnectorProvider;
+import ws.wamp.jawampa.transport.netty.NettyWampConnectionConfig;
 
 public class WalletClient {
 
@@ -401,6 +409,12 @@ public class WalletClient {
         });
     }
 
+    private NettyWampConnectionConfig getNettyConfig() throws SSLException {
+        final TrustManagerFactory trustManager = new FingerprintTrustManagerFactory(Network.GAIT_WAMP_CERT_PIN);
+        final SslContext context = SslContextBuilder.forClient().trustManager(trustManager).build();
+        return new NettyWampConnectionConfig.Builder().withSslContext(context).build();
+    }
+
     public ListenableFuture<Void> connect() {
         final SettableFuture<Void> rpc = SettableFuture.create();
         mScheduler.createWorker().schedule(new Action0() {
@@ -416,7 +430,11 @@ public class WalletClient {
                             .withUri(wsuri)
                             .withRealm("realm1")
                             .withNrReconnects(0);
-                } catch (final ApplicationError e) {
+
+                    if (Network.GAIT_WAMP_CERT_PIN != null)
+                        builder.withConnectionConfiguration(getNettyConfig());
+
+                } catch (final ApplicationError | SSLException e) {
                     e.printStackTrace();
                     rpc.setException(e);
                     return;
@@ -458,7 +476,11 @@ public class WalletClient {
                                         mNotificationHandler.onConnectionClosed(0);
                                     } else {
                                         // or the last possible connect attempt failed
-                                        rpc.setException(new GAException("Disconnected"));
+                                        final Throwable t = ((WampClient.DisconnectedState) newStatus).disconnectReason();
+                                        if (t != null)
+                                            rpc.setException(t);
+                                        else
+                                            rpc.setException(new GAException("Disconnected"));
                                     }
                                 }
                             }
@@ -466,6 +488,7 @@ public class WalletClient {
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(final Throwable throwable) {
+                            throwable.printStackTrace();
                             Log.d(TAG, throwable.toString());
                         }
                     });

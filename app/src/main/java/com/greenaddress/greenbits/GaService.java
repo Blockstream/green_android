@@ -200,6 +200,7 @@ public class GaService extends Service {
 
             @Override
             public void onFailure(final Throwable t) {
+                t.printStackTrace();
                 Log.i(TAG, "Failure throwable callback " + t.toString());
                 mState.transitionTo(ConnState.DISCONNECTED);
                 scheduleReconnect();
