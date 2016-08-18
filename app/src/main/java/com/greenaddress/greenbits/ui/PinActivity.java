@@ -25,7 +25,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
+import com.greenaddress.greenbits.ui.preferences.NetworkSettingsActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -314,8 +314,8 @@ public class PinActivity extends GaActivity implements Observer {
         switch(item.getItemId()) {
             case R.id.network_unavailable:
                 return true;
-            case R.id.proxy_preferences:
-                startActivity(new Intent(this, ProxySettingsActivity.class));
+            case R.id.network_preferences:
+                startActivity(new Intent(this, NetworkSettingsActivity.class));
                 return true;
             case R.id.watchonly_preference:
                 startActivity(new Intent(PinActivity.this, WatchOnlyLoginActivity.class));

@@ -13,11 +13,11 @@ import com.greenaddress.greenbits.ui.R;
  * activity is showing a two-pane settings UI.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class ProxyPreferenceFragment extends PreferenceFragment {
+public class NetworkPreferenceFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.pref_proxy);
+        addPreferencesFromResource(R.xml.pref_network);
         setHasOptionsMenu(true);
 
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences

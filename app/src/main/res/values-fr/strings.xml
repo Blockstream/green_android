@@ -160,7 +160,7 @@
   <string name="updated">mis à jour</string>
   <string name="malleated">modifié</string>
   <string name="replaceable">remplaçable</string>
-  <string name="pref_header_proxy">Proxy Http</string>
+  <string name="pref_header_network">Proxy Http</string>
   <string name="pref_title_display_hostname">Nom d\'hôte</string>
   <string name="pref_title_display_port">Port</string>
   <string name="optin_rbf">Activer le remplacement de transaction</string>

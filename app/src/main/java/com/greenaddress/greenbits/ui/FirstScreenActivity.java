@@ -24,7 +24,7 @@ import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.preferences.ProxySettingsActivity;
+import com.greenaddress.greenbits.ui.preferences.NetworkSettingsActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.ledger.tbase.comm.LedgerTransportTEEProxy;
 import com.ledger.tbase.comm.LedgerTransportTEEProxyFactory;
@@ -279,8 +279,8 @@ public class FirstScreenActivity extends GaActivity {
             case R.id.watchonly_preference:
                 startActivity(new Intent(FirstScreenActivity.this, WatchOnlyLoginActivity.class));
                 return true;
-            case R.id.proxy_preferences:
-                startActivity(new Intent(FirstScreenActivity.this, ProxySettingsActivity.class));
+            case R.id.network_preferences:
+                startActivity(new Intent(FirstScreenActivity.this, NetworkSettingsActivity.class));
                 return true;
             case R.id.action_settings:
                 return true;

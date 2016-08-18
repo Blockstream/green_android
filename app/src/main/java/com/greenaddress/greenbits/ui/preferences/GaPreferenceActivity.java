@@ -51,7 +51,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
                GAPreferenceFragment.class.getName().equals(fragmentName) ||
                GeneralPreferenceFragment.class.getName().equals(fragmentName) ||
                SPVPreferenceFragment.class.getName().equals(fragmentName) ||
-               ProxyPreferenceFragment.class.getName().equals(fragmentName) ||
+               NetworkPreferenceFragment.class.getName().equals(fragmentName) ||
                TwoFactorPreferenceFragment.class.getName().equals(fragmentName);
     }
 

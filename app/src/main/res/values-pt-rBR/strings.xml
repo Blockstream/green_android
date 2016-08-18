@@ -162,7 +162,7 @@
   <string name="updated">Atualizado</string>
   <string name="malleated">malleated</string>
   <string name="replaceable">substituível</string>
-  <string name="pref_header_proxy">Http Proxy</string>
+  <string name="pref_header_network">Http Proxy</string>
   <string name="pref_title_display_hostname">Hostname</string>
   <string name="pref_title_display_port">Porta</string>
   <string name="optin_rbf">Ativar substituição de transação</string>

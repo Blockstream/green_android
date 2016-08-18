@@ -150,8 +150,8 @@
             android:name=".preferences.SettingsActivity"
             android:label="@string/title_activity_settings"/>
         <activity
-            android:name=".preferences.ProxySettingsActivity"
-            android:label="@string/pref_header_proxy"/>
+            android:name=".preferences.NetworkSettingsActivity"
+            android:label="@string/pref_header_network"/>
         <activity android:name=".FailHardActivity"/>
         <activity android:name=".AboutActivity"/>
         <activity android:name=".WatchOnlyLoginActivity"/>

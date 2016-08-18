@@ -163,7 +163,7 @@
   <string name="updated">updated</string>
   <string name="malleated">malleated</string>
   <string name="replaceable">replaceable</string>
-  <string name="pref_header_proxy">Http Proxy</string>
+  <string name="pref_header_network">Http Proxy</string>
 
   <string name="pref_title_display_hostname">Hostname</string>
   <string name="pref_title_display_port">Port</string>
