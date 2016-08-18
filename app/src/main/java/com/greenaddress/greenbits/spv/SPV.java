@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.spv;
 
 import android.content.Intent;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.blockstream.libwally.Wally;
@@ -82,6 +83,62 @@ public class SPV {
 
     public SPV(final GaService gaService) {
         this.gaService = gaService;
+    }
+
+    public void onTrustedPeersChanged() {
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                final boolean alreadySyncing = stopSPVSync();
+                setUpSPV();
+                if (alreadySyncing)
+                    startSPVSync();
+                return null;
+            }
+        }.execute();
+    }
+
+    public void setEnabled(final boolean enabled) {
+
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(final Object[] params) {
+                setEnabledImpl(enabled);
+                return null;
+            }
+        }.execute();
+    }
+
+    public void setEnabledImpl(final boolean enabled) {
+
+        if (enabled != gaService.isSPVEnabled()) {
+            gaService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
+            if (enabled) {
+                setUpSPV();
+                startSPVSync();
+            } else
+                stopSPVSync();
+        }
+    }
+
+    public void setSyncOnMobileEnabled(final boolean enabled) {
+
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(final Object[] params) {
+                setSyncOnMobileEnabledImpl(enabled);
+                return null;
+            }
+        }.execute();
+    }
+
+
+    public void setSyncOnMobileEnabledImpl(final boolean enabled) {
+
+        if (enabled != gaService.isSPVSyncOnMobileEnabled()) {
+            gaService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
+            onNetConnectivityChanged(gaService.getNetworkInfo());
+        }
     }
 
     public void startIfEnabled() {
@@ -630,26 +687,6 @@ public class SPV {
             setUpSPV();
             // FIXME: enabled under WiFi only
             startSPVSync();
-        }
-    }
-
-    public void setEnabled(final boolean enabled) {
-
-        if (enabled != gaService.isSPVEnabled()) {
-            gaService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
-            if (enabled) {
-                setUpSPV();
-                startSPVSync();
-            } else
-                stopSPVSync();
-        }
-    }
-
-    public void setSyncOnMobileEnabled(final boolean enabled) {
-
-        if (enabled != gaService.isSPVSyncOnMobileEnabled()) {
-            gaService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
-            onNetConnectivityChanged(gaService.getNetworkInfo());
         }
     }
 }

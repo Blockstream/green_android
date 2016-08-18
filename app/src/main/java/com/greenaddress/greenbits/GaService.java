@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -256,17 +255,7 @@ public class GaService extends Service implements INotificationHandler {
     public void setTrustedPeers(final String peers) {
         cfgEdit("TRUSTED").putString("address", peers).apply();
         setUserConfig("trusted_peer_addr", peers, true);
-
-        new AsyncTask<Object, Object, Object>() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                final boolean alreadySyncing = mSPV.stopSPVSync();
-                mSPV.setUpSPV();
-                if (alreadySyncing)
-                    mSPV.startSPVSync();
-                return null;
-            }
-        }.execute();
+        mSPV.onTrustedPeersChanged();
     }
 
     public boolean isSPVEnabled() {
@@ -274,14 +263,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public void setSPVEnabled(final boolean enabled) {
-
-        new AsyncTask<Object, Object, Object>() {
-            @Override
-            protected Object doInBackground(final Object[] params) {
-                mSPV.setEnabled(enabled);
-                return null;
-            }
-        }.execute();
+         mSPV.setEnabled(enabled);
     }
 
     public boolean isSPVSyncOnMobileEnabled() {
@@ -289,14 +271,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public void setSPVSyncOnMobileEnabled(final boolean enabled) {
-
-        new AsyncTask<Object, Object, Object>() {
-            @Override
-            protected Object doInBackground(final Object[] params) {
-                mSPV.setSyncOnMobileEnabled(enabled);
-                return null;
-            }
-        }.execute();
+        mSPV.setSyncOnMobileEnabled(enabled);
     }
 
     public void resetSPV() { mSPV.reset(); }
@@ -421,9 +396,9 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.registerWatchOnly(username, password);
     }
 
-    private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> f) {
+    private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> loginFn) {
         mState.transitionTo(ConnState.LOGGINGIN);
-        Futures.addCallback(f, new FutureCallback<LoginData>() {
+        Futures.addCallback(loginFn, new FutureCallback<LoginData>() {
             @Override
             public void onSuccess(final LoginData result) {
                 // FIXME: Why are we copying these? If we need them when not logged in,
@@ -454,7 +429,7 @@ public class GaService extends Service implements INotificationHandler {
                 mState.transitionTo(ConnState.CONNECTED);
             }
         }, mExecutor);
-        return f;
+        return loginFn;
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
