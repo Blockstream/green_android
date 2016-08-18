@@ -92,9 +92,8 @@ public class BitcoinTransaction {
 		}
 		
 		public String toString() {
-			return "Prevout " + Dump.dump(prevOut) + '\r' + '\n' +
-					"Script " + Dump.dump(script) + '\r' + '\n' +
-					"Sequence " + Dump.dump(sequence) + '\r' + '\n';
+			return String.format("Prevout %s\r\nScript %s\r\nSequence %s\r\n", Dump.dump(prevOut),
+					Dump.dump(script), Dump.dump(sequence));
 		}
 	}
 	
@@ -141,8 +140,7 @@ public class BitcoinTransaction {
 		}
 		
 		public String toString() {
-			return "Amount " + Dump.dump(amount) + '\r' + '\n' +
-					"Script " + Dump.dump(script) + '\r' + '\n';
+			return String.format("Amount %s\r\nScript %s\r\n", Dump.dump(amount), Dump.dump(script));
 		}
 	}
 	
