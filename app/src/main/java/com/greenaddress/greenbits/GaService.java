@@ -541,11 +541,6 @@ public class GaService extends Service implements INotificationHandler {
             public Map<?, ?> call() throws Exception {
                 Map<?, ?> result = mClient.getMyTransactions(subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
-                // FIXME: Does this really belong here?
-                if (isSPVEnabled()) {
-                    mSPV.setUpSPV();
-                    mSPV.startSPVSync();
-                }
                 return result;
             }
         });
