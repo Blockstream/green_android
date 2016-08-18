@@ -2,12 +2,9 @@
 
     <Preference android:key="mnemonic_passphrase"
                 android:title="@string/mnemonic_passphrase"
-                android:defaultValue=""
                 android:summary="@string/mnemonic_passphrase_not_available"/>
     <Preference android:key="reset_pin"
-        android:title="@string/setPin"
-        android:defaultValue=""
-        android:summary="">
+        android:title="@string/setPin">
     </Preference>
 
     <ListPreference
@@ -27,14 +24,11 @@
                         android:title="@string/optin_rbf" />
 
     <Preference android:key="watch_only_login"
-        android:title="@string/watchOnlyLogin"
-        android:defaultValue=""
-        android:summary="">
+        android:title="@string/watchOnlyLogin">
     </Preference>
 
     <Preference android:key="ledger_wallet"
                 android:title="@string/improve_security_ledger"
-                android:dependency=""
                 android:summary="@string/improve_security_ledger_detail" >
         <intent android:action="android.intent.action.VIEW" android:data="https://www.ledgerwallet.com/r/bead"/>
     </Preference>
