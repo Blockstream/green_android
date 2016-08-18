@@ -34,7 +34,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.satoshilabs.trezor.Trezor;
@@ -63,149 +62,155 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {}
 
+    private boolean onTrezor() {
+        final Trezor t;
+        t = Trezor.getDevice(this, new TrezorGUICallback() {
+            @Override
+            public String pinMatrixRequest() {
+                final SettableFuture<String> ret = SettableFuture.create();
+                RequestLoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
+                        final Button[] buttons = new Button[]{
+                                // upside down
+                                UI.find(v, R.id.trezorPinButton7),
+                                UI.find(v, R.id.trezorPinButton8),
+                                UI.find(v, R.id.trezorPinButton9),
+                                UI.find(v, R.id.trezorPinButton4),
+                                UI.find(v, R.id.trezorPinButton5),
+                                UI.find(v, R.id.trezorPinButton6),
+                                UI.find(v, R.id.trezorPinButton1),
+                                UI.find(v, R.id.trezorPinButton2),
+                                UI.find(v, R.id.trezorPinButton3)
+                        };
+                        final EditText pinValue = UI.find(v, R.id.trezorPinValue);
+                        for (int i = 0; i < 9; ++i) {
+                            final int ii = i;
+                            buttons[i].setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    pinValue.setText(UI.getText(pinValue) + (ii + 1));
+                                    pinValue.setSelection(UI.getText(pinValue).length());
+                                }
+                            });
+                        }
+                        UI.popup(RequestLoginActivity.this, "Hardware Wallet PIN")
+                                .customView(v, true)
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                                        ret.set(UI.getText(pinValue));
+                                    }
+                                }).build().show();
+                    }
+                });
+                try {
+                    return ret.get();
+                } catch (final InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    return "";
+                }
+            }
+
+            @Override
+            public String passphraseRequest() {
+                final SettableFuture<String> ret = SettableFuture.create();
+                RequestLoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
+                        final EditText passphraseValue = UI.find(v, R.id.trezorPassphraseValue);
+                        UI.popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
+                                .customView(v, true)
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                                        ret.set(UI.getText(passphraseValue));
+                                    }
+                                }).build().show();
+                    }
+                });
+                try {
+                    return ret.get();
+                } catch (final InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    return "";
+                }
+            }
+        });
+
+        if (t == null)
+            return false;
+
+        final List<Integer> version = t.getFirmwareVersion();
+        if (t.getVendorId() == 21324 &&
+                (version.get(0) < 1 || (version.get(0) == 1 && version.get(1) < 3))) {
+            final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
+            instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
+            return true;
+        }
+        if (t.getVendorId() == 11044 && (version.get(0) < 1)) {
+            final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
+            instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
+            return true;
+        }
+
+        Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
+            @Override
+            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+                return mService.login(new TrezorHWWallet(t));
+            }
+        }), new FutureCallback<LoginData>() {
+            @Override
+            public void onSuccess(final LoginData result) {
+                RequestLoginActivity.this.onSuccess();
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                if (Throwables.getRootCause(t) instanceof LoginFailed)
+                    // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new MaterialDialog.Builder(RequestLoginActivity.this)
+                                    .title(R.string.trezor_login_failed)
+                                    .content(R.string.trezor_login_failed_details)
+                                    .build().show();
+                        }
+                    });
+                else
+                    finishOnUiThread();
+            }
+        });
+        return true;
+    }
+
+    private void onLedger(final Intent intent) {
+        final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
+        edit.setText("");
+        UI.hide(edit);
+        // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
+        if (mTag != null)
+            showPinDialog();
+        else {
+            final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            if (device != null)
+                if (BTChipTransportAndroid.isLedgerWithScreen(device))
+                    login(device);
+                else
+                    showPinDialog(device);
+        }
     }
 
     private void onUsbDeviceDetected(final Intent intent) {
-        final Trezor t;
-        if (mTag != null) {
-            t = null;
-        } else {
-            t = Trezor.getDevice(this, new TrezorGUICallback() {
-                @Override
-                public String pinMatrixRequest() {
-                    final SettableFuture<String> ret = SettableFuture.create();
-                    RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
-                            final Button[] buttons = new Button[]{
-                                    // upside down
-                                    UI.find(v, R.id.trezorPinButton7),
-                                    UI.find(v, R.id.trezorPinButton8),
-                                    UI.find(v, R.id.trezorPinButton9),
-                                    UI.find(v, R.id.trezorPinButton4),
-                                    UI.find(v, R.id.trezorPinButton5),
-                                    UI.find(v, R.id.trezorPinButton6),
-                                    UI.find(v, R.id.trezorPinButton1),
-                                    UI.find(v, R.id.trezorPinButton2),
-                                    UI.find(v, R.id.trezorPinButton3)
-                            };
-                            final EditText pinValue = UI.find(v, R.id.trezorPinValue);
-                            for (int i = 0; i < 9; ++i) {
-                                final int ii = i;
-                                buttons[i].setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        pinValue.setText(UI.getText(pinValue) + (ii + 1));
-                                        pinValue.setSelection(UI.getText(pinValue).length());
-                                    }
-                                });
-                            }
-                            UI.popup(RequestLoginActivity.this, "Hardware Wallet PIN")
-                                    .customView(v, true)
-                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                                            ret.set(UI.getText(pinValue));
-                                        }
-                                    }).build().show();
-                        }
-                    });
-                    try {
-                        return ret.get();
-                    } catch (final InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                        return "";
-                    }
-                }
+        if (onTrezor())
+            return;
 
-                @Override
-                public String passphraseRequest() {
-                    final SettableFuture<String> ret = SettableFuture.create();
-                    RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
-                            final EditText passphraseValue = UI.find(v, R.id.trezorPassphraseValue);
-                            UI.popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
-                                    .customView(v, true)
-                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(MaterialDialog dialog, DialogAction which) {
-                                            ret.set(UI.getText(passphraseValue));
-                                        }
-                                    }).build().show();
-                        }
-                    });
-                    try {
-                        return ret.get();
-                    } catch (final InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                        return "";
-                    }
-                }
-            });
-        }
-        if (t != null) {
-            final List<Integer> version = t.getFirmwareVersion();
-            if (t.getVendorId() == 21324 &&
-                    (version.get(0) < 1 || (version.get(0) == 1 && version.get(1) < 3))) {
-                final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-                instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
-                return;
-            }
-            if (t.getVendorId() == 11044 && (version.get(0) < 1)) {
-                final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-                instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
-                return;
-            }
-
-            Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
-                @Override
-                public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                    return mService.login(new TrezorHWWallet(t));
-                }
-            }), new FutureCallback<LoginData>() {
-                @Override
-                public void onSuccess(final LoginData result) {
-                    RequestLoginActivity.this.onSuccess();
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    if (Throwables.getRootCause(t) instanceof LoginFailed)
-                        // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                new MaterialDialog.Builder(RequestLoginActivity.this)
-                                        .title(R.string.trezor_login_failed)
-                                        .content(R.string.trezor_login_failed_details)
-                                        .build().show();
-                            }
-                        });
-                    else
-                        finishOnUiThread();
-                }
-            });
-        } else {
-            final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-            edit.setText("");
-            UI.hide(edit);
-            // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
-            if (mTag != null)
-                showPinDialog();
-            else {
-                final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (device != null)
-                    if (BTChipTransportAndroid.isLedgerWithScreen(device))
-                        login(device);
-                    else
-                        showPinDialog(device);
-            }
-        }
+        onLedger(intent);
     }
 
     private void showPinDialog() {
@@ -214,8 +219,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
 
     private void login(final UsbDevice device) {
 
-        final GaService service = mService;
-        Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
+        Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final Void nada) throws Exception {
                         BTChipTransport transport;
@@ -261,14 +265,13 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                 UI.show(loginProgress);
                             }
                         });
-                        return service.login(mHwWallet);
+                        return mService.login(mHwWallet);
                     }
 
         }), mOnLoggedIn);
     }
 
     private void showPinDialog(final UsbDevice device) {
-        final GaService service = mService;
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
             @Override
@@ -307,7 +310,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                 UI.showDialog(mBTChipDialog);
             }
         });
-        Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
+        Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                 return Futures.transform(pinFuture, new AsyncFunction<String, LoginData>() {
@@ -343,7 +346,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                                     public ListenableFuture<LoginData> apply(final Integer remainingAttempts) {
 
                                         if (remainingAttempts == -1)
-                                            return service.login(mHwWallet); // -1 means success, so login
+                                            return mService.login(mHwWallet); // -1 means success, so login
 
                                         final String msg;
                                         if (remainingAttempts > 0)
