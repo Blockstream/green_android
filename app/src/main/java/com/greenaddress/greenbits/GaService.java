@@ -417,9 +417,10 @@ public class GaService extends Service implements INotificationHandler {
                     mBalanceObservables.put(pointer, new GaObservable());
                     updateBalance(pointer);
                 }
-                if (!isWatchOnly())
+                if (!isWatchOnly()) {
                     getAvailableTwoFactorMethods();
-                mSPV.startIfEnabled();
+                    mSPV.startIfEnabled();
+                }
                 mState.transitionTo(ConnState.LOGGEDIN);
             }
 
