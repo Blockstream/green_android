@@ -14,7 +14,6 @@ import com.greenaddress.greenbits.GaService;
 
 public class WatchOnlyLoginActivity extends GaActivity {
 
-    private static final int REQUEST_SIGNUP = 0;
     private EditText mUsernameText;
     private EditText mPasswordText;
     private CircularProgressButton mLoginButton;
@@ -85,18 +84,6 @@ public class WatchOnlyLoginActivity extends GaActivity {
                 });
             }
         });
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                finish();
-            }
-        }
     }
 
     @Override
