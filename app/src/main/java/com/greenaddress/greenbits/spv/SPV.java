@@ -74,7 +74,6 @@ public class SPV {
     private PeerFilterProvider pfProvider;
     private final Object startSPVLock = new Object();
     private boolean isSPVSyncing = false;
-    private boolean startSPVAfterInit = false;
     private boolean syncStarted = false;
 
     private enum SPVMode {
@@ -147,12 +146,8 @@ public class SPV {
         isSPVSyncing = false;
         if (gaService.isSPVEnabled()) {
             setUpSPV();
-
-            if (startSPVAfterInit) {
-                startSPVSync();
-            }
+            startSPVSync();
         }
-        startSPVAfterInit = false;
         updateUnspentOutputs();
     }
 
@@ -447,10 +442,8 @@ public class SPV {
         }
         if (isSPVSyncing)
              return;
-        if (peerGroup == null) {  // disconnected while WiFi got up
-            startSPVAfterInit = true;
-            return;
-        }
+        if (peerGroup == null)
+            return; // disconnected while WiFi got up - FIXME is this possible?
 
         Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
