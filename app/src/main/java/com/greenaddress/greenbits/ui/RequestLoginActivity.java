@@ -166,7 +166,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         }), new FutureCallback<LoginData>() {
             @Override
             public void onSuccess(final LoginData result) {
-                RequestLoginActivity.this.onSuccess();
+                RequestLoginActivity.this.onLoginSuccess();
             }
 
             @Override
@@ -377,7 +377,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         }), mOnLoggedIn);
     }
 
-    private void onSuccess() {
+    private void onLoginSuccess() {
         final Intent intent = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -388,7 +388,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         @Override
         public void onSuccess(final LoginData result) {
             if (result != null)
-                RequestLoginActivity.this.onSuccess();
+                RequestLoginActivity.this.onLoginSuccess();
         }
 
         @Override
@@ -403,7 +403,7 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
                             new FutureCallback<LoginData>() {
                                 @Override
                                 public void onSuccess(final LoginData result) {
-                                    RequestLoginActivity.this.onSuccess();
+                                    RequestLoginActivity.this.onLoginSuccess();
                                 }
 
                                 @Override
