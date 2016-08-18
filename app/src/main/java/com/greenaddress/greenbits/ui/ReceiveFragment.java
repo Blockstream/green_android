@@ -241,7 +241,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             startNewAddressAnimation(v);
 
         Futures.addCallback(getGAService().getNewAddressBitmap(curSubaccount),
-                            onAddress, getGAService().es);
+                            onAddress, getGAService().getExecutor());
      }
 
      private void stopNewAddressAnimation(final View v) {

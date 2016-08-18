@@ -161,7 +161,7 @@ public class SendFragment extends SubaccountFragment {
                                     }
                                 });
                             }
-                        }, service.es);
+                        }, service.getExecutor());
                     }
                 }).build();
 
@@ -235,7 +235,7 @@ public class SendFragment extends SubaccountFragment {
                                 }
                         });
                     }
-                }, service.es);
+                }, service.getExecutor());
             }
         }
     }

@@ -101,7 +101,8 @@ public class PinActivity extends GaActivity implements Observer {
             }
         };
 
-        final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
+        final ListenableFuture<LoginData> loginFuture;
+        loginFuture = Futures.transform(service.onConnected, connectToLogin, service.getExecutor());
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
@@ -148,7 +149,7 @@ public class PinActivity extends GaActivity implements Observer {
                     }
                 });
             }
-        }, service.es);
+        }, service.getExecutor());
     }
 
     @Override

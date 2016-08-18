@@ -301,7 +301,7 @@ public class MainFragment extends SubaccountFragment {
                 t.printStackTrace();
 
             }
-        }, service.es);
+        }, service.getExecutor());
     }
 
     @Override

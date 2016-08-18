@@ -124,7 +124,7 @@ public class SignUpActivity extends GaActivity {
                             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                                 return service.signup(UI.getText(mnemonicText));
                             }
-                        }, service.es);
+                        }, service.getExecutor());
                     } else if (isChecked) {
                         SignUpActivity.this.toast("You are not connected, please wait");
                         checkBox.setChecked(false);
@@ -167,7 +167,7 @@ public class SignUpActivity extends GaActivity {
                                 }
                             });
                         }
-                    }, service.es);
+                    }, service.getExecutor());
                 } else {
                     if (!checkBox.isChecked())
                         SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");

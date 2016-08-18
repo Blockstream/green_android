@@ -59,7 +59,7 @@ public class FirstScreenActivity extends GaActivity {
         }
 
         // Check if a TEE is supported
-        service.es.submit(new Callable<Object>() {
+        service.getExecutor().submit(new Callable<Object>() {
             @Override
             public Object call() {
                 transportFactory = new LedgerTransportTEEProxyFactory(getApplicationContext());
@@ -142,7 +142,7 @@ public class FirstScreenActivity extends GaActivity {
     private void proceedTEE(final LedgerTransportTEEProxy transport, final BTChipDongle dongle, final boolean setup) {
         final GaService service = mService;
 
-        service.es.submit(new Callable<Object>() {
+        service.getExecutor().submit(new Callable<Object>() {
             @Override
             public Object call() {
                 tuiCall = true;

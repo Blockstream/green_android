@@ -77,7 +77,7 @@ public class PinSaveActivity extends GaActivity {
                             }
                         });
                     }
-                }, service.es);
+                }, service.getExecutor());
     }
 
     @Override

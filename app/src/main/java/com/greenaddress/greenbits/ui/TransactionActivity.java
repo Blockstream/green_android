@@ -687,7 +687,7 @@ public class TransactionActivity extends GaActivity {
                                 }
                             });
                         }
-                    }, service.es);
+                    }, service.getExecutor());
                 }
             });
         }
@@ -764,7 +764,7 @@ public class TransactionActivity extends GaActivity {
                                     // FIXME: Add notification with "Transaction sent"?
                                     gaActivity.finishOnUiThread();
                                 }
-                            }, service.es);
+                            }, service.getExecutor());
                         }
                     })
                     .onNegative(new MaterialDialog.SingleButtonCallback() {

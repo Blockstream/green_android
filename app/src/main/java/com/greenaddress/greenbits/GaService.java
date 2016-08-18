@@ -101,7 +101,7 @@ public class GaService extends Service implements INotificationHandler {
         mNetConnectivityReceiver.onReceive(null, null);
     }
 
-    public final ListeningExecutorService es = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
+    private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
     public ListenableFuture<Void> onConnected;
     private final Map<Integer, GaObservable> mBalanceObservables = new HashMap<>();
     private final GaObservable mNewTxObservable = new GaObservable();
@@ -130,6 +130,10 @@ public class GaService extends Service implements INotificationHandler {
     public final SPV mSPV = new SPV(this);
 
     private WalletClient mClient;
+
+    public ListeningExecutorService getExecutor() {
+        return mExecutor;
+    }
 
     public ISigningWallet getSigningWallet() {
         return mClient.getSigningWallet();
@@ -165,7 +169,7 @@ public class GaService extends Service implements INotificationHandler {
             public void onFailure(final Throwable t) {
                 t.printStackTrace();
             }
-        }, es);
+        }, mExecutor);
     }
 
     public boolean getUserCancelledPINEntry() {
@@ -212,7 +216,7 @@ public class GaService extends Service implements INotificationHandler {
                 mState.transitionTo(ConnState.DISCONNECTED);
                 scheduleReconnect();
             }
-        }, es);
+        }, mExecutor);
     }
 
     public static boolean isValidAddress(final String address) {
@@ -321,7 +325,7 @@ public class GaService extends Service implements INotificationHandler {
             cfgEdit("service").putString("device_id", mDeviceId).apply();
         }
 
-        mClient = new WalletClient(this, es);
+        mClient = new WalletClient(this, mExecutor);
     }
 
     @Override
@@ -370,7 +374,7 @@ public class GaService extends Service implements INotificationHandler {
         pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
         pubkeys.add(mClient.getSigningWallet().getMyPublicKey(subAccount, pointer));
 
-        return es.submit(new Callable<byte[]>() {
+        return mExecutor.submit(new Callable<byte[]>() {
             public byte[] call() {
 
                 final Map<String, ?> m = findSubaccount("2of3", subAccount);
@@ -449,7 +453,7 @@ public class GaService extends Service implements INotificationHandler {
                 t.printStackTrace();
                 mState.transitionTo(ConnState.CONNECTED);
             }
-        }, es);
+        }, mExecutor);
         return f;
     }
 
@@ -529,7 +533,7 @@ public class GaService extends Service implements INotificationHandler {
             public void onFailure(final Throwable t) {
 
             }
-        }, es);
+        }, mExecutor);
         return future;
     }
 
@@ -557,7 +561,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<Map<?, ?>> getMyTransactions(final int subAccount) {
-        return es.submit(new Callable<Map<?, ?>>() {
+        return mExecutor.submit(new Callable<Map<?, ?>>() {
             @Override
             public Map<?, ?> call() throws Exception {
                 Map<?, ?> result = mClient.getMyTransactions(subAccount);
@@ -573,7 +577,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<Void> setPin(final String mnemonic, final String pin) {
-        return es.submit(new Callable<Void>() {
+        return mExecutor.submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
                 final PinData pinData = mClient.setPin(mnemonic, pin, "default");
@@ -642,7 +646,7 @@ public class GaService extends Service implements INotificationHandler {
             public ListenableFuture<String> apply(final List<byte[]> txSigs) throws Exception {
                 return mClient.sendTransaction(txSigs, twoFacData);
             }
-        }, es);
+        }, mExecutor);
     }
 
     public ListenableFuture<Map<String, Object>> sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
@@ -719,7 +723,7 @@ public class GaService extends Service implements INotificationHandler {
                 });
             }
         };
-        return Futures.transform(getNewAddress(subAccount), verifyAddress, es);
+        return Futures.transform(getNewAddress(subAccount), verifyAddress, mExecutor);
     }
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {
@@ -745,7 +749,7 @@ public class GaService extends Service implements INotificationHandler {
                     });
                     return ret;
                 }
-            }, es);
+            }, mExecutor);
         }
         return mCurrencyExchangePairs;
     }

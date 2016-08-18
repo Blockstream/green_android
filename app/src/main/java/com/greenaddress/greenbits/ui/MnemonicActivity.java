@@ -157,7 +157,8 @@ public class MnemonicActivity extends GaActivity {
             }
         };
 
-        final ListenableFuture<LoginData> loginFuture = Futures.transform(service.onConnected, connectToLogin, service.es);
+        final ListenableFuture<LoginData> loginFuture;
+        loginFuture = Futures.transform(service.onConnected, connectToLogin, service.getExecutor());
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
@@ -184,7 +185,7 @@ public class MnemonicActivity extends GaActivity {
                     }
                 });
             }
-        }, service.es);
+        }, service.getExecutor());
     }
 
     private ListenableFuture<String> askForPassphrase() {
