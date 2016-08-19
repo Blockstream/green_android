@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
@@ -63,10 +64,15 @@ public class SPV {
     private final String VERIFIED = "verified_utxo_";
     private final String SPENDABLE = "verified_utxo_spendable_value_";
 
+    class AccountInfo extends Pair<Integer, Integer> {
+        public AccountInfo(Integer subAccount, final Integer pointer) { super(subAccount, pointer); }
+        public Integer getSubAccount() { return first; }
+        public Integer getPointer() { return second; }
+    }
+
     private final Map<Integer, Coin> mVerifiedCoinBalances = new HashMap<>();
     private final Map<Sha256Hash, List<Integer>> mUnspentOutputsOutpoints = new HashMap<>();
-    private final Map<TransactionOutPoint, Integer> mUnspentOutpointsSubaccounts = new HashMap<>();
-    private final Map<TransactionOutPoint, Integer> mUnspentOutpointsPointers = new HashMap<>();
+    private final Map<TransactionOutPoint, AccountInfo> mUnspentDetails = new HashMap<>();
     private final GaService mService;
     private BlockChainListener mBlockChainListener;
     private int mBlocksRemaining = Integer.MAX_VALUE;
@@ -180,14 +186,14 @@ public class SPV {
                 for (final TransactionOutPoint oldUtxo : new HashSet<>(mCountedUtxoValues.keySet())) {
                     if (!newUtxos.contains(oldUtxo)) {
                         recalculateBloom = true;
-                        final int subAccount = mUnspentOutpointsSubaccounts.get(oldUtxo);
+
+                        final int subAccount = mUnspentDetails.get(oldUtxo).getSubAccount();
                         final Coin verifiedBalance = getVerifiedBalance(subAccount);
                         mVerifiedCoinBalances.put(subAccount,
                                                   verifiedBalance.subtract(mCountedUtxoValues.get(oldUtxo)));
                         changedSubaccounts.add(subAccount);
                         mCountedUtxoValues.remove(oldUtxo);
-                        mUnspentOutpointsSubaccounts.remove(oldUtxo);
-                        mUnspentOutpointsPointers.remove(oldUtxo);
+                        mUnspentDetails.remove(oldUtxo);
                         mUnspentOutputsOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
                     }
                 }
@@ -207,8 +213,7 @@ public class SPV {
     }
 
     private void resetUnspent() {
-        mUnspentOutpointsSubaccounts.clear();
-        mUnspentOutpointsPointers.clear();
+        mUnspentDetails.clear();
         mUnspentOutputsOutpoints.clear();
         mCountedUtxoValues.clear();
         mVerifiedCoinBalances.clear();
@@ -234,7 +239,7 @@ public class SPV {
             final long value = mService.cfgIn(SPENDABLE).getLong(key, -1);
             if (value != -1) {
                 final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
-                final int subAccount = mUnspentOutpointsSubaccounts.get(txOutpoint);
+                final int subAccount = mUnspentDetails.get(txOutpoint).getSubAccount();
                 if (!mCountedUtxoValues.containsKey(txOutpoint))
                     changedSubaccounts.add(subAccount);
                 updateBalance(txOutpoint, subAccount, Coin.valueOf(value));
@@ -256,8 +261,9 @@ public class SPV {
                         final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
                         if (mCountedUtxoValues.containsKey(txOutpoint))
                             continue;
-                        final int subAccount = mUnspentOutpointsSubaccounts.get(txOutpoint);
-                        final Integer pointer = mUnspentOutpointsPointers.get(txOutpoint);
+                        final AccountInfo accountInfo = mUnspentDetails.get(txOutpoint);
+                        final int subAccount = accountInfo.getSubAccount();
+                        final int pointer = accountInfo.getPointer();
 
                         futuresList.add(Futures.transform(mService.verifySpendableBy(result.getOutput(outpoint), subAccount, pointer), new Function<Boolean, Boolean>() {
                             @Override
@@ -340,13 +346,12 @@ public class SPV {
     }
 
     private void addToUtxo(final Sha256Hash txhash, final Integer prevIndex, final int subAccount, final int pointer) {
-        mUnspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash), subAccount);
-        mUnspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash), pointer);
-        if (mUnspentOutputsOutpoints.get(txhash) == null) {
+        mUnspentDetails.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash),
+                            new AccountInfo(subAccount, pointer));
+        if (mUnspentOutputsOutpoints.get(txhash) == null)
             mUnspentOutputsOutpoints.put(txhash, Lists.newArrayList(prevIndex));
-        } else {
+        else
             mUnspentOutputsOutpoints.get(txhash).add(prevIndex);
-        }
     }
 
     private ListenableFuture<Boolean>
