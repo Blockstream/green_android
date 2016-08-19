@@ -23,9 +23,8 @@ class PeerFilterProvider implements org.bitcoinj.core.PeerFilterProvider {
     @Override
     public int getBloomFilterElementCount() {
         // 1 to avoid downloading full blocks (empty bloom filters are ignored by bitcoinj)
-        if (mSPV == null || mSPV.getUnspentOutpoints().isEmpty())
-            return 1;
-        return mSPV.getUnspentOutpoints().size();
+        final int count = mSPV == null ? 0 : mSPV.getUnspentOutpointsSize();
+        return count == 0 ? 1 : count;
     }
 
     @Override

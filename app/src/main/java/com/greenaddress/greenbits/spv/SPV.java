@@ -149,8 +149,8 @@ public class SPV {
         return mVerifiedCoinBalances.get(subAccount);
     }
 
-    public Map<Sha256Hash, List<Integer>> getUnspentOutpoints() {
-        return mUnspentOutpoints;
+    public int getUnspentOutpointsSize() {
+        return mUnspentOutpoints.size();
     }
 
     public int populateBloomFilter(BloomFilter filter) {
@@ -158,6 +158,10 @@ public class SPV {
         for (final Sha256Hash hash : keys)
             filter.insert(hash.getReversedBytes());
         return keys.size();
+    }
+
+    public boolean isUnspentOutpoint(final Sha256Hash txHash) {
+        return mUnspentOutpoints.containsKey(txHash);
     }
 
     public void updateUnspentOutputs() {
