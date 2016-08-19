@@ -96,16 +96,14 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     @Override
     public synchronized void onPeerConnected(final Peer peer, final int peerCount) {
-        final PrettyPeer new_ppeer = new PrettyPeer(peer);
-        final TextView bloomInfoText = UI.find(this, R.id.bloominfo);
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mPeers.add(new_ppeer);
+                mPeers.add(new PrettyPeer(peer));
                 mPeerListAdapter.notifyDataSetChanged();
 
                 mBloomInfo = peer.getBloomFilter().toString();
+                final TextView bloomInfoText = UI.find(NetworkMonitorActivity.this, R.id.bloominfo);
                 bloomInfoText.setText(mBloomInfo);
             }
         });
