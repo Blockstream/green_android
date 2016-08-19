@@ -56,29 +56,33 @@ public class SPV {
 
     private final static String TAG = SPV.class.getSimpleName();
 
-    private final Map<TransactionOutPoint, Coin> countedUtxoValues = new HashMap<>();
+    private final Map<TransactionOutPoint, Coin> mCountedUtxoValues = new HashMap<>();
 
     private final String VERIFIED = "verified_utxo_";
     private final String SPENDABLE = "verified_utxo_spendable_value_";
 
     private final Map<Integer, Coin> mVerifiedCoinBalances = new HashMap<>();
-    private final Map<Sha256Hash, List<Integer>> unspentOutputsOutpoints = new HashMap<>();
-    private final Map<TransactionOutPoint, Integer> unspentOutpointsSubaccounts = new HashMap<>();
-    private final Map<TransactionOutPoint, Integer> unspentOutpointsPointers = new HashMap<>();
-    public final GaService gaService;
-    private BlockChainListener blockChainListener;
-    private int spvBlocksLeft = Integer.MAX_VALUE;
-    private BlockStore blockStore;
-    private BlockChain blockChain;
-    private PeerGroup peerGroup;
-    private PeerFilterProvider pfProvider;
+    private final Map<Sha256Hash, List<Integer>> mUnspentOutputsOutpoints = new HashMap<>();
+    private final Map<TransactionOutPoint, Integer> mUnspentOutpointsSubaccounts = new HashMap<>();
+    private final Map<TransactionOutPoint, Integer> mUnspentOutpointsPointers = new HashMap<>();
+    private final GaService mService;
+    private BlockChainListener mBlockChainListener;
+    private int mBlocksRemaining = Integer.MAX_VALUE;
+    private BlockStore mBlockStore;
+    private BlockChain mBlockChain;
+    private PeerGroup mPeerGroup;
+    private PeerFilterProvider mPeerFilter;
 
     private enum SPVMode {
         ONION, TRUSTED, NORMAL
     }
 
-    public SPV(final GaService gaService) {
-        this.gaService = gaService;
+    public SPV(final GaService service) {
+        mService = service;
+    }
+
+    public GaService getService() {
+        return mService;
     }
 
     public void onTrustedPeersChanged() {
@@ -107,8 +111,8 @@ public class SPV {
 
     public void setEnabledImpl(final boolean enabled) {
 
-        if (enabled != gaService.isSPVEnabled()) {
-            gaService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
+        if (enabled != mService.isSPVEnabled()) {
+            mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
             if (enabled) {
                 setUpSPV();
                 startSPVSync();
@@ -131,16 +135,16 @@ public class SPV {
 
     public void setSyncOnMobileEnabledImpl(final boolean enabled) {
 
-        if (enabled != gaService.isSPVSyncOnMobileEnabled()) {
-            gaService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
-            onNetConnectivityChanged(gaService.getNetworkInfo());
+        if (enabled != mService.isSPVSyncOnMobileEnabled()) {
+            mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
+            onNetConnectivityChanged(mService.getNetworkInfo());
         }
     }
 
     public void startIfEnabled() {
         resetUnspent();
 
-        if (gaService.isSPVEnabled()) {
+        if (mService.isSPVEnabled()) {
             setUpSPV();
             startSPVSync();
         }
@@ -152,14 +156,14 @@ public class SPV {
     }
 
     public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
-        return unspentOutputsOutpoints;
+        return mUnspentOutputsOutpoints;
     }
 
     public void updateUnspentOutputs() {
-        if (!gaService.isSPVEnabled())
+        if (!mService.isSPVEnabled())
             return;
 
-        Futures.addCallback(gaService.getAllUnspentOutputs(0, null), new FutureCallback<ArrayList>() {
+        Futures.addCallback(mService.getAllUnspentOutputs(0, null), new FutureCallback<ArrayList>() {
             @Override
             public void onSuccess(final ArrayList result) {
                 final Set<TransactionOutPoint> newUtxos = new HashSet<>();
@@ -174,7 +178,7 @@ public class SPV {
                     final Integer pointer = ((Integer) utxo.get("pointer"));
                     final Sha256Hash sha256Hash = Sha256Hash.wrap(txhash);
 
-                    if (!gaService.cfgIn(VERIFIED).getBoolean(txhash, false)) {
+                    if (!mService.cfgIn(VERIFIED).getBoolean(txhash, false)) {
                         recalculateBloom = true;
                         addToBloomFilter(blockHeight, sha256Hash, pt_idx, subaccount, pointer);
                     } else {
@@ -186,26 +190,26 @@ public class SPV {
                 }
 
                 final List<Integer> changedSubaccounts = new ArrayList<>();
-                for (final TransactionOutPoint oldUtxo : new HashSet<>(countedUtxoValues.keySet())) {
+                for (final TransactionOutPoint oldUtxo : new HashSet<>(mCountedUtxoValues.keySet())) {
                     if (!newUtxos.contains(oldUtxo)) {
                         recalculateBloom = true;
-                        final int subAccount = unspentOutpointsSubaccounts.get(oldUtxo);
+                        final int subAccount = mUnspentOutpointsSubaccounts.get(oldUtxo);
                         final Coin verifiedBalance = getVerifiedCoinBalance(subAccount);
                         mVerifiedCoinBalances.put(subAccount,
-                                                  verifiedBalance.subtract(countedUtxoValues.get(oldUtxo)));
+                                                  verifiedBalance.subtract(mCountedUtxoValues.get(oldUtxo)));
                         changedSubaccounts.add(subAccount);
-                        countedUtxoValues.remove(oldUtxo);
-                        unspentOutpointsSubaccounts.remove(oldUtxo);
-                        unspentOutpointsPointers.remove(oldUtxo);
-                        unspentOutputsOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
+                        mCountedUtxoValues.remove(oldUtxo);
+                        mUnspentOutpointsSubaccounts.remove(oldUtxo);
+                        mUnspentOutpointsPointers.remove(oldUtxo);
+                        mUnspentOutputsOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
                     }
                 }
 
-                if (recalculateBloom && peerGroup != null)
-                    peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
+                if (recalculateBloom && mPeerGroup != null)
+                    mPeerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
 
                 for (final int subAccount : changedSubaccounts)
-                    gaService.fireBalanceChanged(subAccount);
+                    mService.fireBalanceChanged(subAccount);
             }
 
             @Override
@@ -216,17 +220,17 @@ public class SPV {
     }
 
     public void resetUnspent() {
-        unspentOutpointsSubaccounts.clear();
-        unspentOutpointsPointers.clear();
-        unspentOutputsOutpoints.clear();
-        countedUtxoValues.clear();
+        mUnspentOutpointsSubaccounts.clear();
+        mUnspentOutpointsPointers.clear();
+        mUnspentOutputsOutpoints.clear();
+        mCountedUtxoValues.clear();
         mVerifiedCoinBalances.clear();
     }
 
     private void updateBalance(final TransactionOutPoint txOutpoint, final int subAccount, final Coin addValue) {
-        if (countedUtxoValues.containsKey(txOutpoint))
+        if (mCountedUtxoValues.containsKey(txOutpoint))
            return;
-        countedUtxoValues.put(txOutpoint, addValue);
+        mCountedUtxoValues.put(txOutpoint, addValue);
         final Coin verifiedBalance = getVerifiedCoinBalance(subAccount);
         if (verifiedBalance == null)
             mVerifiedCoinBalances.put(subAccount, addValue);
@@ -238,13 +242,13 @@ public class SPV {
         final String txHashStr = txHash.toString();
         final List<Integer> changedSubaccounts = new ArrayList<>();
         boolean missing = false;
-        for (final Integer outpoint : unspentOutputsOutpoints.get(txHash)) {
+        for (final Integer outpoint : mUnspentOutputsOutpoints.get(txHash)) {
             final String key = txHashStr + ":" + outpoint;
-            final long value = gaService.cfgIn(SPENDABLE).getLong(key, -1);
+            final long value = mService.cfgIn(SPENDABLE).getLong(key, -1);
             if (value != -1) {
                 final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
-                final int subAccount = unspentOutpointsSubaccounts.get(txOutpoint);
-                if (!countedUtxoValues.containsKey(txOutpoint))
+                final int subAccount = mUnspentOutpointsSubaccounts.get(txOutpoint);
+                if (!mCountedUtxoValues.containsKey(txOutpoint))
                     changedSubaccounts.add(subAccount);
                 updateBalance(txOutpoint, subAccount, Coin.valueOf(value));
             } else {
@@ -252,23 +256,23 @@ public class SPV {
             }
         }
         for (final int subAccount : changedSubaccounts)
-            gaService.fireBalanceChanged(subAccount);
+            mService.fireBalanceChanged(subAccount);
 
         if (!missing) return;
-        Futures.addCallback(gaService.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
+        Futures.addCallback(mService.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
             @Override
             public void onSuccess(final Transaction result) {
                 final List<Integer> changedSubaccounts = new ArrayList<>();
                 final List<ListenableFuture<Boolean>> futuresList = new ArrayList<>();
                 if (result.getHash().equals(txHash)) {
-                    for (final Integer outpoint : unspentOutputsOutpoints.get(txHash)) {
+                    for (final Integer outpoint : mUnspentOutputsOutpoints.get(txHash)) {
                         final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
-                        if (countedUtxoValues.containsKey(txOutpoint))
+                        if (mCountedUtxoValues.containsKey(txOutpoint))
                             continue;
-                        final int subAccount = unspentOutpointsSubaccounts.get(txOutpoint);
-                        final Integer pointer = unspentOutpointsPointers.get(txOutpoint);
+                        final int subAccount = mUnspentOutpointsSubaccounts.get(txOutpoint);
+                        final Integer pointer = mUnspentOutpointsPointers.get(txOutpoint);
 
-                        futuresList.add(Futures.transform(gaService.verifySpendableBy(result.getOutput(outpoint), subAccount, pointer), new Function<Boolean, Boolean>() {
+                        futuresList.add(Futures.transform(mService.verifySpendableBy(result.getOutput(outpoint), subAccount, pointer), new Function<Boolean, Boolean>() {
                             @Override
                             public Boolean apply(final Boolean input) {
                                 if (input) {
@@ -276,7 +280,7 @@ public class SPV {
                                     updateBalance(txOutpoint, subAccount, value);
                                     changedSubaccounts.add(subAccount);
                                     final String key = txHashStr + ":" + outpoint;
-                                    gaService.cfgInEdit(SPENDABLE).putLong(key, value.longValue()).apply();
+                                    mService.cfgInEdit(SPENDABLE).putLong(key, value.longValue()).apply();
                                 } else {
                                     Log.e(TAG,
                                             new Formatter().format("txHash %s outpoint %s not spendable!",
@@ -295,7 +299,7 @@ public class SPV {
                     @Override
                     public void onSuccess(final List<Boolean> result) {
                         for (final int subAccount : changedSubaccounts)
-                            gaService.fireBalanceChanged(subAccount);
+                            mService.fireBalanceChanged(subAccount);
                     }
 
                     @Override
@@ -314,13 +318,13 @@ public class SPV {
 
 
     public void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
-        if (blockChain == null)
+        if (mBlockChain == null)
             return; // can happen before login (onNewBlock)
         if (txhash != null) {
             addToUtxo(txhash, pt_idx, subAccount, pointer);
         }
-        if (blockHeight != null && blockHeight <= blockChain.getBestChainHeight() &&
-                (txhash == null || !unspentOutputsOutpoints.containsKey(txhash))) {
+        if (blockHeight != null && blockHeight <= mBlockChain.getBestChainHeight() &&
+                (txhash == null || !mUnspentOutputsOutpoints.containsKey(txhash))) {
             // new tx or block notification with blockHeight <= current blockHeight means we might've [1]
             // synced the height already while we haven't seen the tx, so we need to re-sync to be able
             // to verify it.
@@ -338,8 +342,8 @@ public class SPV {
                         return blockHeight - 1;
                     }
                 };
-                blockChain.addWallet(fakeWallet);
-                blockChain.removeWallet(fakeWallet);  // can be removed, because the call above
+                mBlockChain.addWallet(fakeWallet);
+                mBlockChain.removeWallet(fakeWallet);  // can be removed, because the call above
                 // should rollback already
             } catch (final Exception e) {
                 // FIXME: Seems this often happens, at least on initial startup
@@ -349,21 +353,21 @@ public class SPV {
     }
 
     private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
-        unspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subAccount);
-        unspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
-        if (unspentOutputsOutpoints.get(txhash) == null) {
+        mUnspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subAccount);
+        mUnspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
+        if (mUnspentOutputsOutpoints.get(txhash) == null) {
             final ArrayList<Integer> newList = new ArrayList<>();
             newList.add(pt_idx);
-            unspentOutputsOutpoints.put(txhash, newList);
+            mUnspentOutputsOutpoints.put(txhash, newList);
         } else {
-            unspentOutputsOutpoints.get(txhash).add(pt_idx);
+            mUnspentOutputsOutpoints.get(txhash).add(pt_idx);
         }
     }
 
     private ListenableFuture<Boolean>
     verifyOutputSpendable(final PreparedTransaction ptx, final int index) {
-        return gaService.verifySpendableBy(ptx.decoded.getOutputs().get(index),
-                                           ptx.subAccount, ptx.change_pointer);
+        return mService.verifySpendableBy(ptx.decoded.getOutputs().get(index),
+                                          ptx.subAccount, ptx.change_pointer);
     }
 
     public ListenableFuture<Coin>
@@ -391,7 +395,7 @@ public class SPV {
         return Futures.transform(changeFuture, new Function<List<Boolean>, Coin>() {
             @Override
             public Coin apply(final List<Boolean> input) {
-                return Verifier.verify(countedUtxoValues, ptx, recipientAddr, amount, input);
+                return Verifier.verify(mCountedUtxoValues, ptx, recipientAddr, amount, input);
             }
         });
     }
@@ -415,38 +419,38 @@ public class SPV {
         }
     }
 
-    public int getSPVBlocksLeft() {
-        if (gaService.isSPVEnabled())
-            return spvBlocksLeft;
+    public int getSPVBlocksRemaining() {
+        if (mService.isSPVEnabled())
+            return mBlocksRemaining;
         return 0;
     }
 
     public PeerGroup getPeerGroup(){
-        return peerGroup;
+        return mPeerGroup;
     }
 
     public int getSPVHeight() {
-        if (blockChain != null && gaService.isSPVEnabled())
-            return blockChain.getBestChainHeight();
+        if (mBlockChain != null && mService.isSPVEnabled())
+            return mBlockChain.getBestChainHeight();
         return 0;
     }
 
     private synchronized void startSPVSync() {
-        if (peerGroup.isRunning())
+        if (mPeerGroup.isRunning())
              return;
 
-        Futures.addCallback(peerGroup.startAsync(), new FutureCallback<Object>() {
+        Futures.addCallback(mPeerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
             public void onSuccess(final Object result) {
-                peerGroup.startBlockChainDownload(new DownloadProgressTracker() {
+                mPeerGroup.startBlockChainDownload(new DownloadProgressTracker() {
                     @Override
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
-                        spvBlocksLeft = blocksLeft;
+                        mBlocksRemaining = blocksLeft;
                     }
 
                     @Override
                     public void onBlocksDownloaded(final Peer peer, final Block block, final FilteredBlock filteredBlock, final int blocksLeft) {
-                        spvBlocksLeft = blocksLeft;
+                        mBlocksRemaining = blocksLeft;
                     }
                 });
             }
@@ -504,19 +508,19 @@ public class SPV {
     private synchronized void setUpSPV(){
         //teardownSPV must be called if SPV already exists
         //and stopSPV if previous still running.
-        if (peerGroup != null) {
+        if (mPeerGroup != null) {
             Log.d(TAG, "Must stop and tear down SPV before setting up again!");
             return;
         }
 
         try {
-            blockStore = new SPVBlockStore(Network.NETWORK, gaService.getSPVChainFile());
-            final StoredBlock storedBlock = blockStore.getChainHead(); // detect corruptions as early as possible
+            mBlockStore = new SPVBlockStore(Network.NETWORK, mService.getSPVChainFile());
+            final StoredBlock storedBlock = mBlockStore.getChainHead(); // detect corruptions as early as possible
             if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
                 InputStream is = null;
                 try {
-                    is = gaService.getAssets().open("checkpoints");
-                    CheckpointManager.checkpoint(Network.NETWORK, is, blockStore, gaService.getLoginData().earliest_key_creation_time);
+                    is = mService.getAssets().open("checkpoints");
+                    CheckpointManager.checkpoint(Network.NETWORK, is, mBlockStore, mService.getLoginData().earliest_key_creation_time);
                 } catch (final IOException e) {
                     // couldn't load checkpoints, log & skip
                     e.printStackTrace();
@@ -530,17 +534,17 @@ public class SPV {
                     }
                 }
             }
-            blockChain = new BlockChain(Network.NETWORK, blockStore);
-            if (blockChainListener != null)
-                blockChainListener.onDispose();
-            blockChainListener = new BlockChainListener(this);
-            blockChain.addListener(blockChainListener);
+            mBlockChain = new BlockChain(Network.NETWORK, mBlockStore);
+            if (mBlockChainListener != null)
+                mBlockChainListener.onDispose();
+            mBlockChainListener = new BlockChainListener(this);
+            mBlockChain.addListener(mBlockChainListener);
 
-            System.setProperty("user.home", gaService.getFilesDir().toString());
-            final String peers = gaService.getTrustedPeers();
+            System.setProperty("user.home", mService.getFilesDir().toString());
+            final String peers = mService.getTrustedPeers();
 
-            String proxyHost = gaService.getProxyHost();
-            String proxyPort = gaService.getProxyPort();
+            String proxyHost = mService.getProxyHost();
+            String proxyPort = mService.getProxyPort();
 
             if (proxyHost == null || proxyPort == null)
                 proxyHost = proxyPort = "";
@@ -550,31 +554,31 @@ public class SPV {
 
             if (!proxyHost.isEmpty() && !proxyPort.isEmpty()) {
                 final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
-                peerGroup = new PeerGroup(context, blockChain, new BlockingClientManager());
+                mPeerGroup = new PeerGroup(context, mBlockChain, new BlockingClientManager());
             } else if (isOnion(peers)) {
                 try {
                     final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
-                    peerGroup = PeerGroup.newWithTor(context, blockChain, new TorClient(), false);
+                    mPeerGroup = PeerGroup.newWithTor(context, mBlockChain, new TorClient(), false);
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
             } else {
-                peerGroup = new PeerGroup(Network.NETWORK, blockChain);
+                mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain);
             }
 
-            if (pfProvider != null)
-                pfProvider.onDispose();
-            pfProvider = new PeerFilterProvider(this);
-            peerGroup.addPeerFilterProvider(pfProvider);
+            if (mPeerFilter != null)
+                mPeerFilter.onDispose();
+            mPeerFilter = new PeerFilterProvider(this);
+            mPeerGroup.addPeerFilterProvider(mPeerFilter);
 
             final String[] addresses = peers.split(",");
             if (addresses.length == 0) {
-                setupPeerGroup(peerGroup, "");
+                setupPeerGroup(mPeerGroup, "");
                 return;
             }
             for (final String s: addresses)
-                setupPeerGroup(peerGroup, s);
-            peerGroup.setMaxConnections(addresses.length);
+                setupPeerGroup(mPeerGroup, s);
+            mPeerGroup.setMaxConnections(addresses.length);
 
         } catch (final BlockStoreException e) {
             e.printStackTrace();
@@ -583,35 +587,35 @@ public class SPV {
 
     public synchronized boolean stopSPVSync() {
 
-        final boolean isRunning = peerGroup != null && peerGroup.isRunning();
+        final boolean isRunning = mPeerGroup != null && mPeerGroup.isRunning();
 
         if (isRunning) {
             final Intent i = new Intent("PEERGROUP_UPDATED");
             i.putExtra("peergroup", "stopSPVSync");
-            gaService.sendBroadcast(i);
+            mService.sendBroadcast(i);
 
-            peerGroup.stop();
+            mPeerGroup.stop();
         }
 
-        if (blockChain != null && blockChainListener != null) {
-            blockChain.removeListener(blockChainListener);
-            blockChainListener.onDispose();
-            blockChainListener = null;
+        if (mBlockChain != null && mBlockChainListener != null) {
+            mBlockChain.removeListener(mBlockChainListener);
+            mBlockChainListener.onDispose();
+            mBlockChainListener = null;
         }
 
-        if (peerGroup != null) {
-            if (pfProvider != null) {
-                peerGroup.removePeerFilterProvider(pfProvider);
-                pfProvider.onDispose();
-                pfProvider = null;
+        if (mPeerGroup != null) {
+            if (mPeerFilter != null) {
+                mPeerGroup.removePeerFilterProvider(mPeerFilter);
+                mPeerFilter.onDispose();
+                mPeerFilter = null;
             }
-            peerGroup = null;
+            mPeerGroup = null;
         }
 
-        if (blockStore != null) {
+        if (mBlockStore != null) {
             try {
-                blockStore.close();
-                blockStore = null;
+                mBlockStore.close();
+                mBlockStore = null;
             } catch (final BlockStoreException x) {
                 throw new RuntimeException(x);
             }
@@ -625,7 +629,7 @@ public class SPV {
     }
 
     public void reset() {
-        final boolean enabled = gaService.isSPVEnabled();
+        final boolean enabled = mService.isSPVEnabled();
         if (enabled) {
             // Stop SPV
             try {
@@ -637,13 +641,13 @@ public class SPV {
         }
 
         // Delete all data
-        final File blockChainFile = gaService.getSPVChainFile();
+        final File blockChainFile = mService.getSPVChainFile();
         if (blockChainFile.exists())
             blockChainFile.delete();
 
         try {
-            gaService.cfgInEdit(SPENDABLE).clear().commit();
-            gaService.cfgInEdit(VERIFIED).clear().commit();
+            mService.cfgInEdit(SPENDABLE).clear().commit();
+            mService.cfgInEdit(VERIFIED).clear().commit();
         } catch (final NullPointerException e) {
             // ignore
         }

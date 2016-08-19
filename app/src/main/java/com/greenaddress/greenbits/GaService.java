@@ -278,7 +278,7 @@ public class GaService extends Service implements INotificationHandler {
 
     public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
     public int getSPVHeight() { return mSPV.getSPVHeight(); }
-    public int getSPVBlocksLeft() { return mSPV.getSPVBlocksLeft(); }
+    public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }
     public Coin getSPVVerifiedBalance(final int subAccount) {
         return mSPV.getVerifiedCoinBalance(subAccount);
     }

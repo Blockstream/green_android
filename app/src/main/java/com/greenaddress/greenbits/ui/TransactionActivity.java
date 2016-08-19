@@ -238,7 +238,7 @@ public class TransactionActivity extends GaActivity {
                     if (isWatchOnly || txItem.spvVerified ) {
                         UI.hide((View) UI.find(v, R.id.txUnconfirmed));
                     } else {
-                        final int blocksLeft = service.getSPVBlocksLeft();
+                        final int blocksLeft = service.getSPVBlocksRemaining();
                         final String message = getResources().getString(R.string.txUnverifiedTx);
                         if (blocksLeft != Integer.MAX_VALUE)
                             unconfirmedText.setText(String.format("%s %s", message, blocksLeft));

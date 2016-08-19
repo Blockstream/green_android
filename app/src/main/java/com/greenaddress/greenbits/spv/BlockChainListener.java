@@ -28,14 +28,14 @@ class BlockChainListener implements org.bitcoinj.core.listeners.BlockChainListen
     @Override
     public void receiveFromBlock(final Transaction tx, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
         if (mSPV != null)
-            mSPV.gaService.notifyObservers(tx.getHash());
+            mSPV.getService().notifyObservers(tx.getHash());
     }
 
     @Override
     public boolean notifyTransactionIsInBlock(final Sha256Hash txHash, final StoredBlock block, final AbstractBlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
         if (mSPV == null)
             return false;
-        mSPV.gaService.notifyObservers(txHash);
+        mSPV.getService().notifyObservers(txHash);
         return mSPV.getUnspentOutputsOutpoints().containsKey(txHash);
     }
 }
