@@ -90,17 +90,6 @@ public class SPV {
         return mService;
     }
 
-    public void onTrustedPeersChanged() {
-        new AsyncTask<Object, Object, Object>() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                final boolean deleteAllData = false;
-                reset(deleteAllData);
-                return null;
-            }
-        }.execute();
-    }
-
     public void setEnabled(final boolean enabled) {
 
         new AsyncTask<Object, Object, Object>() {
@@ -128,6 +117,26 @@ public class SPV {
                 return null;
             }
         }.execute();
+    }
+
+    public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
+
+    public void setTrustedPeers(final String peers) {
+        mService.cfgEdit("TRUSTED").putString("address", peers).apply();
+        mService.setUserConfig("trusted_peer_addr", peers, true);
+
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                final boolean deleteAllData = false;
+                reset(deleteAllData);
+                return null;
+            }
+        }.execute();
+    }
+
+    public PeerGroup getPeerGroup(){
+        return mPeerGroup;
     }
 
     public void startIfEnabled() {
@@ -422,10 +431,6 @@ public class SPV {
         return 0;
     }
 
-    public PeerGroup getPeerGroup(){
-        return mPeerGroup;
-    }
-
     public int getSPVHeight() {
         if (mBlockChain != null && mService.isSPVEnabled())
             return mBlockChain.getBestChainHeight();
@@ -526,7 +531,7 @@ public class SPV {
             mBlockChain.addListener(mBlockChainListener);
 
             System.setProperty("user.home", mService.getFilesDir().toString());
-            final String peers = mService.getTrustedPeers();
+            final String peers = getTrustedPeers();
 
             String proxyHost = mService.getProxyHost();
             String proxyPort = mService.getProxyPort();

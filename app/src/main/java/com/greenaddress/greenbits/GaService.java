@@ -251,13 +251,9 @@ public class GaService extends Service implements INotificationHandler {
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
     public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
 
-    public String getTrustedPeers() { return cfg("TRUSTED").getString("address", ""); }
+    public String getSPVTrustedPeers() { return mSPV.getTrustedPeers(); }
 
-    public void setTrustedPeers(final String peers) {
-        cfgEdit("TRUSTED").putString("address", peers).apply();
-        setUserConfig("trusted_peer_addr", peers, true);
-        mSPV.onTrustedPeersChanged();
-    }
+    public void setSPVTrustedPeers(final String peers) { mSPV.setTrustedPeers(peers); }
 
     public boolean isSPVEnabled() {
         return !isWatchOnly() && cfg("SPV").getBoolean("enabled", true);

@@ -48,7 +48,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
             mTrustedPeer.setEnabled(mService.isSPVEnabled());
             final boolean setTextValue = true;
-            setTrustedPeersPreference(mService.getTrustedPeers(), setTextValue);
+            setTrustedPeersPreference(mService.getSPVTrustedPeers(), setTextValue);
 
             mResetSPV.setOnPreferenceClickListener(this);
             mSPVEnabled.setOnPreferenceChangeListener(this);
@@ -92,7 +92,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     private void setTrustedPeers(final String peers) {
         final boolean setTextValue = false;
         setTrustedPeersPreference(peers, setTextValue);
-        mService.setTrustedPeers(peers);
+        mService.setSPVTrustedPeers(peers);
     }
 
     private boolean onSPVEnabledChanged(final Boolean newValue) {
@@ -109,7 +109,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     private boolean onTrustedPeerChange(final String newValue) {
 
         final String peers = newValue.toString().trim().replaceAll("\\s","");
-        if (mService.getTrustedPeers().equals(peers))
+        if (mService.getSPVTrustedPeers().equals(peers))
             return false;
 
         if (peers.isEmpty()) {

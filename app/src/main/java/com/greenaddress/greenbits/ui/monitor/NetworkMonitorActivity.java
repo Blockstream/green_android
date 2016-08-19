@@ -149,7 +149,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             String ipAddr = mPeer.toString();
             if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
                 // FIXME: This is obviously not right if multiple peers are present
-                ipAddr = mService.getTrustedPeers();
+                ipAddr = mService.getSPVTrustedPeers();
                 if (!ipAddr.isEmpty())
                     ipAddr = mService.createSPVNode(ipAddr).toString();
             }
