@@ -621,9 +621,7 @@ public class SPV {
             stopSPVSync();
 
         // Delete all data
-        final File blockChainFile = mService.getSPVChainFile();
-        if (blockChainFile.exists())
-            blockChainFile.delete();
+        mService.getSPVChainFile().delete();
 
         try {
             mService.cfgInEdit(SPENDABLE).clear().commit();
