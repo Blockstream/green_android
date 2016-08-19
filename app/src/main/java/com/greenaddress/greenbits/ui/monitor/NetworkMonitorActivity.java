@@ -128,10 +128,15 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         public void onReceive(final Context context, final Intent intent) {
 
             final String peerGroupIntent = intent.getExtras().getString("peergroup");
-            if (peerGroupIntent != null && peerGroupIntent.equals("stopSPVSync")) {
-                mPeers.clear();
-                mPeerListAdapter.notifyDataSetChanged();
-            }
+            if (peerGroupIntent == null || !peerGroupIntent.equals("stopSPVSync"))
+                return;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mPeers.clear();
+                    mPeerListAdapter.notifyDataSetChanged();
+                }
+            });
         }
     };
 
