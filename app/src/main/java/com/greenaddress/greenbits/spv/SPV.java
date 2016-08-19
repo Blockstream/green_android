@@ -577,11 +577,9 @@ public class SPV {
         }
     }
 
-    public synchronized boolean stopSPVSync() {
+    public synchronized void stopSPVSync() {
 
-        final boolean isRunning = mPeerGroup != null && mPeerGroup.isRunning();
-
-        if (isRunning) {
+        if (mPeerGroup != null && mPeerGroup.isRunning()) {
             final Intent i = new Intent("PEERGROUP_UPDATED");
             i.putExtra("peergroup", "stopSPVSync");
             mService.sendBroadcast(i);
@@ -612,8 +610,6 @@ public class SPV {
                 throw new RuntimeException(x);
             }
         }
-
-        return isRunning;
     }
 
     public void onNetConnectivityChanged(final NetworkInfo info) {
@@ -621,9 +617,7 @@ public class SPV {
     }
 
     public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
-        final boolean enabled = isEnabled();
-        if (enabled)
-            stopSPVSync();
+        stopSPVSync();
 
         if (deleteAllData) {
             mService.getSPVChainFile().delete();
@@ -639,7 +633,7 @@ public class SPV {
         if (deleteUnspent)
             resetUnspent();
 
-        if (enabled) {
+        if (isEnabled()) {
             // Restart SPV
             setUpSPV();
             // FIXME: enabled under WiFi only
