@@ -42,10 +42,9 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     @Override
     public void onPauseWithService() {
-        final GaService service = mService;
 
         unregisterReceiver(uiUpdated);
-        final PeerGroup peerGroup = service.getSPVPeerGroup();
+        final PeerGroup peerGroup = mService.getSPVPeerGroup();
         if (peerGroup != null) {
             peerGroup.removeConnectedEventListener(this);
             peerGroup.removeDisconnectedEventListener(this);
@@ -56,11 +55,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     @Override
     public void onResumeWithService() {
-        final GaService service = mService;
 
         registerReceiver(uiUpdated, new IntentFilter("PEERGROUP_UPDATED"));
 
-        if (service.isForcedOff()) {
+        if (mService.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
@@ -69,7 +67,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
         mPeers.clear();
 
-        final PeerGroup peerGroup = service.getSPVPeerGroup();
+        final PeerGroup peerGroup = mService.getSPVPeerGroup();
         if (peerGroup == null || !peerGroup.isRunning())
             return;
 
@@ -81,8 +79,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         else
             mBloomInfo = getString(R.string.network_monitor_bloom_info);
 
-        final int currentBlock = service.getCurrentBlock();
-        final int spvHeight = service.getSPVHeight();
+        final int currentBlock = mService.getCurrentBlock();
+        final int spvHeight = mService.getSPVHeight();
         final TextView bloomInfoText = UI.find(this, R.id.bloominfo);
         bloomInfoText.setText(getString(R.string.network_monitor_banner, mBloomInfo, currentBlock - spvHeight));
 
@@ -148,11 +146,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         }
 
         public String toString(){
-            final GaService service = mService;
             String ipAddr = mPeer.toString();
             if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
                 // FIXME: This is obviously not right
-                ipAddr = service.getTrustedPeers();
+                ipAddr = mService.getTrustedPeers();
                 if (!ipAddr.isEmpty())
                     ipAddr = new Node(ipAddr).toString();
             }
@@ -168,6 +165,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         final int port;
 
         Node(final String trusted_addr) {
+            // FIXME: Share this code, its done in SPVPreferenceFragment at least also
             final int index_port = trusted_addr.indexOf(":");
             if (index_port != -1) {
                 addr = trusted_addr.substring(0, index_port);
