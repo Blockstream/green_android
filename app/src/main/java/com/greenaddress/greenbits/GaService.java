@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -705,12 +706,8 @@ public class GaService extends Service implements INotificationHandler {
                     final Map<String, ArrayList<String>> per_exchange = (Map) result.get("per_exchange");
                     final List<List<String>> ret = new LinkedList<>();
                     for (final String exchange : per_exchange.keySet()) {
-                        for (final String currency : per_exchange.get(exchange)) {
-                            final ArrayList<String> currency_exchange = new ArrayList<>(2);
-                            currency_exchange.add(currency);
-                            currency_exchange.add(exchange);
-                            ret.add(currency_exchange);
-                        }
+                        for (final String currency : per_exchange.get(exchange))
+                            ret.add(Lists.newArrayList(currency, exchange));
                     }
                     Collections.sort(ret, new Comparator<List<String>>() {
                         @Override

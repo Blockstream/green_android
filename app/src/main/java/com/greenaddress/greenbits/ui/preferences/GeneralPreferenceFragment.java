@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.ui.UI;
@@ -24,6 +25,8 @@ import java.util.List;
 
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private static final int PINSAVE = 1337;
+    private static final String mMicroSymbol = Html.fromHtml("&micro;").toString();
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,12 +88,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         // -- handle currency and bitcoin denomination
         final ListPreference fiatCurrency = find("fiat_key");
         final ListPreference bitcoinDenomination = find("denomination_key");
-        final ArrayList<String> units = new ArrayList<>();
-
-        units.add("BTC");
-        units.add("mBTC");
-        units.add(Html.fromHtml("&micro;").toString() + "BTC");
-        units.add("bits");
+        final ArrayList<String> units;
+        units = Lists.newArrayList("BTC", "mBTC", mMicroSymbol + "BTC", "bits");
 
         bitcoinDenomination.setEntries(units.toArray(new String[4]));
         bitcoinDenomination.setEntryValues(units.toArray(new String[4]));

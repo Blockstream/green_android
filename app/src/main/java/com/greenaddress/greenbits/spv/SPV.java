@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -352,13 +353,11 @@ public class SPV {
         }
     }
 
-    private void addToUtxo(final Sha256Hash txhash, final int prevIndex, final int subAccount, final int pointer) {
+    private void addToUtxo(final Sha256Hash txhash, final Integer prevIndex, final int subAccount, final int pointer) {
         mUnspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash), subAccount);
         mUnspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash), pointer);
         if (mUnspentOutputsOutpoints.get(txhash) == null) {
-            final ArrayList<Integer> newList = new ArrayList<>();
-            newList.add(prevIndex);
-            mUnspentOutputsOutpoints.put(txhash, newList);
+            mUnspentOutputsOutpoints.put(txhash, Lists.newArrayList(prevIndex));
         } else {
             mUnspentOutputsOutpoints.get(txhash).add(prevIndex);
         }
@@ -379,20 +378,18 @@ public class SPV {
         }
 
         // 1. Find the change output:
-        ListenableFuture<List<Boolean>> changeFuture = Futures.immediateFuture(null);
+        ListenableFuture<List<Boolean>> changeFn = Futures.immediateFuture(null);
 
         if (ptx.decoded.getOutputs().size() == 2) {
-            final List<ListenableFuture<Boolean>> changeVerifications = new ArrayList<>();
-            changeVerifications.add(verifyOutputSpendable(ptx, 0));
-            changeVerifications.add(verifyOutputSpendable(ptx, 1));
-            changeFuture = Futures.allAsList(changeVerifications);
+            changeFn = Futures.allAsList(Lists.newArrayList(verifyOutputSpendable(ptx, 0),
+                                                            verifyOutputSpendable(ptx, 1)));
         }
         else if (ptx.decoded.getOutputs().size() > 2)
             throw new IllegalArgumentException("Verification: Wrong number of transaction outputs.");
 
         // 2. Verify the main output value and address, if available:
         final Address recipientAddr = recipient;
-        return Futures.transform(changeFuture, new Function<List<Boolean>, Coin>() {
+        return Futures.transform(changeFn, new Function<List<Boolean>, Coin>() {
             @Override
             public Coin apply(final List<Boolean> input) {
                 return Verifier.verify(mCountedUtxoValues, ptx, recipientAddr, amount, input);
