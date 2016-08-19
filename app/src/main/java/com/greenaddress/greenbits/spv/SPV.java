@@ -392,13 +392,13 @@ public class SPV {
         final String addr;
         final int port;
 
-        Node(final String trustedAddr) {
-            final int index_port = trustedAddr.indexOf(":");
+        Node(final String address) {
+            final int index_port = address.indexOf(":");
             if (index_port != -1) {
-                addr = trustedAddr.substring(0, index_port);
-                port = Integer.parseInt(trustedAddr.substring(index_port + 1));
+                addr = address.substring(0, index_port);
+                port = Integer.parseInt(address.substring(index_port + 1));
             } else {
-                addr = trustedAddr;
+                addr = address;
                 port = Network.NETWORK.getPort();
             }
         }
@@ -452,44 +452,40 @@ public class SPV {
 
     private boolean isOnion(final String addr) { return addr.toLowerCase().contains(".onion"); }
 
-    private void setupPeerGroup(final PeerGroup peerGroup, final String trustedAddr) {
+    private void addPeer(String address) {
+
         SPVMode mode = SPVMode.NORMAL;
-        if (trustedAddr.contains("."))
-            mode = isOnion(trustedAddr) ? SPVMode.ONION : SPVMode.TRUSTED;
+        if (address.contains("."))
+            mode = isOnion(address) ? SPVMode.ONION : SPVMode.TRUSTED;
 
-        if (Network.NETWORK.getId().equals(NetworkParameters.ID_REGTEST)) {
-            try {
-                peerGroup.addAddress(new PeerAddress(InetAddress.getByName("192.168.56.1"), 19000));
-            } catch (final UnknownHostException e) {
-                e.printStackTrace();
-            }
-            peerGroup.setMaxConnections(1);
-        }
-        else if (mode == SPVMode.NORMAL) {
-            peerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
-        }
-        else if (mode == SPVMode.ONION) {
+        switch (mode) {
+        case NORMAL:
+            mPeerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
+            break;
 
+        case ONION:
             try {
-                final Node n = new Node(trustedAddr);
+                final Node n = new Node(address);
 
                 final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
                     public InetSocketAddress toSocketAddress() {
                         return InetSocketAddress.createUnresolved(n.addr, n.port);
                     }
                 };
-                peerGroup.addAddress(OnionAddr);
+                mPeerGroup.addAddress(OnionAddr);
             } catch (final Exception e){
                 e.printStackTrace();
             }
-        }
-        else {
-            final Node n = new Node(trustedAddr);
+            break;
+
+        case TRUSTED:
+            final Node n = new Node(address);
             try {
-                peerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
+                mPeerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
             } catch (final UnknownHostException e) {
                 e.printStackTrace();
             }
+            break;
         }
     }
 
@@ -562,9 +558,9 @@ public class SPV {
             final ArrayList<String> addresses;
             addresses = new ArrayList<String>(Arrays.asList(peers.split(",")));
             if (addresses.isEmpty())
-                addresses.add("");
-            for (final String s: addresses)
-                setupPeerGroup(mPeerGroup, s);
+                addresses.add(Network.DEFAULT_PEER); // Usually empty, set for regtest
+            for (final String address: addresses)
+                addPeer(address);
             mPeerGroup.setMaxConnections(addresses.size());
 
         } catch (final BlockStoreException e) {
