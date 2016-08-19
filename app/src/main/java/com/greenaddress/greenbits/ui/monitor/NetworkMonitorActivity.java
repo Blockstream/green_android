@@ -114,12 +114,9 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final PrettyPeer new_ppeer = new PrettyPeer(peer);
                 for (Iterator<PrettyPeer> it = mPeers.iterator(); it.hasNext(); ) {
-                    final PrettyPeer ppeer = it.next();
-                    if (new_ppeer.mPeer == ppeer.mPeer) {
+                    if (peer == it.next().mPeer)
                         it.remove();
-                    }
                 }
                 mPeerListAdapter.notifyDataSetChanged();
             }
