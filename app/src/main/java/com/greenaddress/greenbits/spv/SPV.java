@@ -170,18 +170,19 @@ public class SPV {
                     final String txhash = (String) utxo.get("txhash");
                     final Integer blockHeight = (Integer) utxo.get("block_height");
                     final Integer pt_idx = ((Integer) utxo.get("pt_idx"));
-                    final Sha256Hash sha256hash = Sha256Hash.wrap(Wally.hex_to_bytes(txhash));
+                    final Integer subaccount = ((Integer) utxo.get("subaccount"));
+                    final Integer pointer = ((Integer) utxo.get("pointer"));
+                    final Sha256Hash sha256Hash = Sha256Hash.wrap(txhash);
+
                     if (!gaService.cfgIn(VERIFIED).getBoolean(txhash, false)) {
                         recalculateBloom = true;
-                        addToBloomFilter(blockHeight, sha256hash, pt_idx, ((Integer) utxo.get("subaccount")),
-                                ((Integer) utxo.get("pointer")));
+                        addToBloomFilter(blockHeight, sha256Hash, pt_idx, subaccount, pointer);
                     } else {
                         // already verified
-                        addToUtxo(Sha256Hash.wrap(txhash), pt_idx, ((Integer) utxo.get("subaccount")),
-                                ((Integer) utxo.get("pointer")));
-                        addUtxoToValues(Sha256Hash.wrap(txhash));
+                        addToUtxo(sha256Hash, pt_idx, subaccount, pointer);
+                        addUtxoToValues(sha256Hash);
                     }
-                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, pt_idx, sha256hash));
+                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, pt_idx, sha256Hash));
                 }
 
                 final List<Integer> changedSubaccounts = new ArrayList<>();
