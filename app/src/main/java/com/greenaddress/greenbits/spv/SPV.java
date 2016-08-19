@@ -134,8 +134,8 @@ public class SPV {
         if (mService.isSPVEnabled()) {
             setUpSPV();
             startSPVSync();
+            updateUnspentOutputs();
         }
-        updateUnspentOutputs();
     }
 
     public Coin getVerifiedBalance(final int subAccount) {
