@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -122,14 +123,17 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                 return true;
 
         if (peers.toLowerCase().contains(".onion")) {
-
-            if (android.os.Build.VERSION.SDK_INT >= 23 &&
-                (mService.getProxyHost() == null || mService.getProxyPort() == null)) {
-                // Certain ciphers have been deprecated in API 23+, breaking Orchid
-                // and HS connectivity (Works with Orbot socks proxy if set)
-                UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
-                  .content(R.string.enterValidAddressTextTorDisabled).build().show();
-                return true;
+            // Tor address
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                final String proxyHost = mService.getProxyHost();
+                final String proxyPort = mService.getProxyPort();
+                if (TextUtils.isEmpty(proxyHost) || TextUtils.isEmpty(proxyPort)) {
+                    // Certain ciphers have been deprecated in API 23+, breaking Orchid
+                    // and HS connectivity (Works with Orbot socks proxy if set)
+                    UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
+                      .content(R.string.enterValidAddressTextTorDisabled).build().show();
+                    return true;
+                }
             }
 
             setTrustedPeers(peers);

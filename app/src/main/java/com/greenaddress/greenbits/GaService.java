@@ -244,8 +244,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getUserConfig(key);
     }
 
-    public String getProxyHost() { return cfg().getString("proxy_host", null); }
-    public String getProxyPort() { return cfg().getString("proxy_port", null); }
+    public String getProxyHost() { return cfg().getString("proxy_host", ""); }
+    public String getProxyPort() { return cfg().getString("proxy_port", ""); }
     public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
 
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }

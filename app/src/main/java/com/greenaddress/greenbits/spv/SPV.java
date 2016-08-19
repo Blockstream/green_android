@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.spv;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
@@ -536,16 +537,13 @@ public class SPV {
             System.setProperty("user.home", mService.getFilesDir().toString());
             final String peers = getTrustedPeers();
 
-            String proxyHost = mService.getProxyHost();
-            String proxyPort = mService.getProxyPort();
-
-            if (proxyHost == null || proxyPort == null)
-                proxyHost = proxyPort = "";
+            final String proxyHost = mService.getProxyHost();
+            final String proxyPort = mService.getProxyPort();
 
             System.setProperty("socksProxyHost", proxyHost);
             System.setProperty("socksProxyPort", proxyPort);
 
-            if (!proxyHost.isEmpty() && !proxyPort.isEmpty()) {
+            if (!TextUtils.isEmpty(proxyHost) && !TextUtils.isEmpty(proxyPort)) {
                 final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
                 mPeerGroup = new PeerGroup(context, mBlockChain, new BlockingClientManager());
             } else if (isOnion(peers)) {
