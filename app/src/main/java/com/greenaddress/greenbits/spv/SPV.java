@@ -101,8 +101,8 @@ public class SPV {
             protected Object doInBackground(final Object[] params) {
                 if (enabled != isEnabled()) {
                     mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
-                    final boolean deleteAllData = false;
-                    reset(deleteAllData);
+                    // FIXME: Should we delete unspent here?
+                    reset(false /* deleteAllData */, false /* deleteUnspent */);
                 }
                 return null;
             }
@@ -136,8 +136,8 @@ public class SPV {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(Object[] params) {
-                final boolean deleteAllData = false;
-                reset(deleteAllData);
+                // FIXME: Should we delete unspent here?
+                reset(false /* deleteAllData */, false /* deleteUnspent */);
                 return null;
             }
         }.execute();
@@ -625,7 +625,7 @@ public class SPV {
         // FIXME
     }
 
-    public void reset(final boolean deleteAllData) {
+    public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
         final boolean enabled = isEnabled();
         if (enabled)
             stopSPVSync();
@@ -639,9 +639,10 @@ public class SPV {
             } catch (final NullPointerException e) {
                 // ignore
             }
-
-            resetUnspent();
         }
+
+        if (deleteUnspent)
+            resetUnspent();
 
         if (enabled) {
             // Restart SPV
