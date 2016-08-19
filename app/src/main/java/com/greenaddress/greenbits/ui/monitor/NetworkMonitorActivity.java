@@ -26,8 +26,8 @@ import java.util.Iterator;
 
 public final class NetworkMonitorActivity extends GaActivity implements PeerConnectedEventListener, PeerDisconnectedEventListener
 {
-    private final ArrayList<PrettyPeer> peerList = new ArrayList<>();
-    private ArrayAdapter<PrettyPeer> peerListAdapter;
+    private final ArrayList<PrettyPeer> mPeers = new ArrayList<>();
+    private ArrayAdapter<PrettyPeer> mPeerListAdapter;
     private String mBloomInfo = "";
 
     @Override
@@ -51,7 +51,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             peerGroup.removeDisconnectedEventListener(this);
         }
 
-        peerList.clear();
+        mPeers.clear();
     }
 
     @Override
@@ -67,17 +67,17 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             return;
         }
 
-        peerList.clear();
+        mPeers.clear();
 
         final PeerGroup peerGroup = service.getSPVPeerGroup();
         if (peerGroup == null || !peerGroup.isRunning())
             return;
 
         for (final Peer peer : peerGroup.getConnectedPeers())
-            peerList.add(new PrettyPeer(peer));
+            mPeers.add(new PrettyPeer(peer));
 
-        if (peerList.size() > 0)
-            mBloomInfo = peerList.get(0).peer.getBloomFilter().toString();
+        if (mPeers.size() > 0)
+            mBloomInfo = mPeers.get(0).mPeer.getBloomFilter().toString();
         else
             mBloomInfo = getString(R.string.network_monitor_bloom_info);
 
@@ -86,9 +86,9 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         final TextView bloomInfoText = UI.find(this, R.id.bloominfo);
         bloomInfoText.setText(getString(R.string.network_monitor_banner, mBloomInfo, currentBlock - spvHeight));
 
-        peerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peerList);
+        mPeerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mPeers);
         final ListView peerList = UI.find(this, R.id.peerlistview);
-        peerList.setAdapter(peerListAdapter);
+        peerList.setAdapter(mPeerListAdapter);
 
         peerGroup.addConnectedEventListener(this);
         peerGroup.addDisconnectedEventListener(this);
@@ -102,8 +102,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                peerList.add(new_ppeer);
-                peerListAdapter.notifyDataSetChanged();
+                mPeers.add(new_ppeer);
+                mPeerListAdapter.notifyDataSetChanged();
 
                 mBloomInfo = peer.getBloomFilter().toString();
                 bloomInfoText.setText(mBloomInfo);
@@ -117,13 +117,13 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             @Override
             public void run() {
                 final PrettyPeer new_ppeer = new PrettyPeer(peer);
-                for (Iterator<PrettyPeer> it = peerList.iterator(); it.hasNext(); ) {
+                for (Iterator<PrettyPeer> it = mPeers.iterator(); it.hasNext(); ) {
                     final PrettyPeer ppeer = it.next();
-                    if (new_ppeer.peer == ppeer.peer) {
+                    if (new_ppeer.mPeer == ppeer.mPeer) {
                         it.remove();
                     }
                 }
-                peerListAdapter.notifyDataSetChanged();
+                mPeerListAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -134,21 +134,22 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
             final String peerGroupIntent = intent.getExtras().getString("peergroup");
             if (peerGroupIntent != null && peerGroupIntent.equals("stopSPVSync")) {
-                peerList.clear();
-                peerListAdapter.notifyDataSetChanged();
+                mPeers.clear();
+                mPeerListAdapter.notifyDataSetChanged();
             }
         }
     };
 
     private class PrettyPeer {
-        final Peer peer;
+        final Peer mPeer;
+
         public PrettyPeer(final Peer peer) {
-            this.peer = peer;
+            mPeer = peer;
         }
 
         public String toString(){
             final GaService service = mService;
-            String ipAddr = peer.toString();
+            String ipAddr = mPeer.toString();
             if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
                 // FIXME: This is obviously not right
                 ipAddr = service.getTrustedPeers();
@@ -156,9 +157,9 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
                     ipAddr = new Node(ipAddr).toString();
             }
             return String.format("%s\n%s\n%s\n%s", getString(R.string.network_monitor_peer_addr, ipAddr),
-                    getString(R.string.network_monitor_peer_version, peer.getPeerVersionMessage().subVer),
-                    getString(R.string.network_monitor_peer_block, peer.getBestHeight()),
-                    getString(R.string.network_monitor_peer_ping, peer.getLastPingTime()));
+                    getString(R.string.network_monitor_peer_version, mPeer.getPeerVersionMessage().subVer),
+                    getString(R.string.network_monitor_peer_block, mPeer.getBestHeight()),
+                    getString(R.string.network_monitor_peer_ping, mPeer.getLastPingTime()));
         }
     }
 
