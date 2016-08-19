@@ -18,4 +18,8 @@
         android:singleLine="true"
         android:title="@string/pref_title_display_port"/>
 
+    <CheckBoxPreference android:key="tor_enabled"
+        android:dependency="proxy_host"
+        android:title="@string/enableTor"/>
+
 </PreferenceScreen>

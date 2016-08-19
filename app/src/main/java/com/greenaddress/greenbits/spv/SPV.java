@@ -505,8 +505,8 @@ public class SPV {
             if (proxyHost == null || proxyPort == null)
                 proxyHost = proxyPort = "";
 
-            System.setProperty("http.proxyHost", proxyHost);
-            System.setProperty("http.proxyPort", proxyPort);
+            System.setProperty("socksProxyHost", proxyHost);
+            System.setProperty("socksProxyPort", proxyPort);
 
             if (!proxyHost.isEmpty() && !proxyPort.isEmpty()) {
                 final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);

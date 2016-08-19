@@ -4,8 +4,9 @@ package com.greenaddress.greenbits.ui.preferences;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+import android.preference.Preference;
 
+import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ui.R;
 
 /**
@@ -13,18 +14,28 @@ import com.greenaddress.greenbits.ui.R;
  * activity is showing a two-pane settings UI.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class NetworkPreferenceFragment extends PreferenceFragment {
+public class NetworkPreferenceFragment extends GAPreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_network);
         setHasOptionsMenu(true);
 
-        // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-        // to their values. When their values change, their summaries are
-        // updated to reflect the new value, per the Android Design
-        // guidelines.
-        //bindPreferenceSummaryToValue(findPreference("proxy_host"));
-        // bindPreferenceSummaryToValue(findPreference("proxy_port"));
-    }
+        final Preference host = findPreference("proxy_host");
+        host.setOnPreferenceChangeListener(mListener);
+        host.setSummary(mService.getProxyHost());
+        final Preference port = findPreference("proxy_port");
+        port.setSummary(mService.getProxyPort());
+        port.setOnPreferenceChangeListener(mListener);
+        findPreference("tor_enabled").setSummary(getString(R.string.torSummary, Network.GAIT_ONION));
+}
+
+    private final Preference.OnPreferenceChangeListener mListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(final Preference preference, final Object o) {
+            preference.setSummary(o.toString());
+            mService.disconnect(true);
+            return true;
+        }
+    };
 }

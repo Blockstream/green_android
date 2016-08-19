@@ -180,10 +180,10 @@
     <string name="malleated">malleated</string>
     <string name="replaceable">replaceable</string>
     <string name="pref_header_network">Network configuration</string>
-    <string name="pref_title_display_hostname">Hostname</string>
-    <string name="pref_title_display_port">Port</string>
+    <string name="pref_title_display_hostname">Socks5 Hostname</string>
+    <string name="pref_title_display_port">Socks5 Port</string>
     <string name="pref_default_host" translatable="false">127.0.0.1</string>
-    <string name="pref_default_port" translatable="false">8118</string>
+    <string name="pref_default_port" translatable="false">9050</string>
     <string name="optin_rbf">Enable transaction replacement</string>
     <string name="willConfirmAfter">Will confirm after blocks (estimated): %1$d</string>
     <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %1$d blocks.</string>
@@ -232,4 +232,6 @@
     <string name="enter_valid_password">The password can\'t be empty</string>
     <string name="error_username_not_found_or_wrong_password">User not found or invalid password</string>
     <string name="error_username_not_available">Username not available</string>
+    <string name="enableTor">Enable Tor</string>
+    <string name="torSummary">Tor will use %1$s and only work if your proxy is Orbot or Tor enabled</string>
 </resources>

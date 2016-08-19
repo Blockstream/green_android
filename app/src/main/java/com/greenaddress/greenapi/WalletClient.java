@@ -19,7 +19,6 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.codehaus.jackson.map.MappingJsonFactory;
@@ -72,6 +71,7 @@ public class WalletClient {
     private final INotificationHandler mNotificationHandler;
     private WampClient mConnection;
     private SocketAddress mProxy = null;
+    private boolean mTorEnabled = false;
     private LoginData mLoginData;
     private ISigningWallet mHDParent;
     private String mWatchOnlyUsername = null;
@@ -263,13 +263,17 @@ public class WalletClient {
     }
 
     public void setProxy(final String host, final String port) {
-        if (host != null && !host.equals("") && port != null && !port.equals("")) {
+        if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(port)) {
             mProxy = new InetSocketAddress(host, Integer.parseInt(port));
-            httpClient.setProxy(new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, Integer.parseInt(port))));
+            httpClient.setProxy(new Proxy(Proxy.Type.SOCKS, mProxy));
         } else {
             mProxy = null;
             httpClient.setProxy(null);
         }
+    }
+
+    public void setTorEnabled(final boolean torEnabled) {
+        mTorEnabled = torEnabled;
     }
 
     public LoginData getLoginData() {
@@ -415,13 +419,21 @@ public class WalletClient {
         return new NettyWampConnectionConfig.Builder().withSslContext(context).build();
     }
 
+    private String getUri() {
+        if (mTorEnabled)
+            return String.format("ws://%s/v2/ws/", Network.GAIT_ONION);
+        return Network.GAIT_WAMP_URL;
+    }
+
     public ListenableFuture<Void> connect() {
         final SettableFuture<Void> rpc = SettableFuture.create();
         mScheduler.createWorker().schedule(new Action0() {
             @Override
             public void call() {
-                final String wsuri = Network.GAIT_WAMP_URL;
+                final String wsuri = getUri();
+                Log.i(TAG, "Proxy is configured " + mProxy);
                 Log.i(TAG, "Connecting to " + wsuri);
+
                 final WampClientBuilder builder = new WampClientBuilder();
                 final IWampConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
                 try {
@@ -431,7 +443,7 @@ public class WalletClient {
                             .withRealm("realm1")
                             .withNrReconnects(0);
 
-                    if (Network.GAIT_WAMP_CERT_PIN != null)
+                    if (!mTorEnabled && Network.GAIT_WAMP_CERT_PIN != null)
                         builder.withConnectionConfiguration(getNettyConfig());
 
                 } catch (final ApplicationError | SSLException e) {
@@ -439,10 +451,6 @@ public class WalletClient {
                     rpc.setException(e);
                     return;
                 }
-
-                // FIXME: add proxy to wamp connection
-                // final String wstoruri = String.format("ws://%s/ws/inv", Network.GAIT_ONION);
-                // final String ws2toruri = String.format("ws://%s/v2/ws", Network.GAIT_ONION);
 
                 try {
                     mConnection = builder.build();
@@ -496,6 +504,7 @@ public class WalletClient {
                     mConnection.open();
                 } catch (final IllegalStateException e) {
                     // already disconnected
+                    e.printStackTrace();
                 }
             }
         });
@@ -523,7 +532,7 @@ public class WalletClient {
 
             @Override
             public void onFailure(final Throwable t) {
-
+                t.printStackTrace();
             }
         }, mExecutor);
 

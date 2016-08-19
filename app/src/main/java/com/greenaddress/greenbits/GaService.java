@@ -175,7 +175,17 @@ public class GaService extends Service {
         mUserCancelledPINEntry = value;
     }
 
+    private void reloadSettings() {
+        final String proxyHost = getProxyHost();
+        final String proxyPort = getProxyPort();
+        if (proxyHost != null && proxyPort != null) {
+            mClient.setProxy(proxyHost, proxyPort);
+        }
+        mClient.setTorEnabled(getTorEnabled());
+    }
+
     private void reconnect() {
+        reloadSettings();
         Log.i(TAG, "Submitting reconnect after " + mReconnectDelay);
         onConnected = mClient.connect();
         mState.transitionTo(ConnState.CONNECTING);
@@ -236,6 +246,8 @@ public class GaService extends Service {
     public boolean isSPVEnabled() { return !isWatchOnly() && cfg("SPV").getBoolean("enabled", true); }
     public String getProxyHost() { return cfg().getString("proxy_host", null); }
     public String getProxyPort() { return cfg().getString("proxy_port", null); }
+    public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
+
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
     public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
 
@@ -330,12 +342,6 @@ public class GaService extends Service {
                     reconnect();
             }
         }, es);
-
-        final String proxyHost = getProxyHost();
-        final String proxyPort = getProxyPort();
-        if (proxyHost != null && proxyPort != null) {
-            mClient.setProxy(proxyHost, proxyPort);
-        }
     }
 
     public ListenableFuture<byte[]> createOutScript(final int subAccount, final Integer pointer) {
