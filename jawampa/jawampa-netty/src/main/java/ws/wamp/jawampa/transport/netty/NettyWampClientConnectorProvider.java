@@ -16,7 +16,6 @@
 
 package ws.wamp.jawampa.transport.netty;
 
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.util.List;
@@ -57,9 +56,11 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
-import io.netty.handler.proxy.HttpProxyHandler;
+import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.resolver.NoopAddressResolverGroup;
+
 
 /**
  * Returns factory methods for the establishment of WAMP connections between
@@ -262,6 +263,11 @@ public class NettyWampClientConnectorProvider implements IWampConnectorProvider 
                     }
                     
                     Bootstrap b = new Bootstrap();
+
+                    // things should be resolved on via the socks5 proxy
+                    if (proxyAddress != null)
+                        b.resolver(NoopAddressResolverGroup.INSTANCE);
+
                     b.group(nettyEventLoop)
                      .channel(NioSocketChannel.class)
                      .handler(new ChannelInitializer<SocketChannel>() {
@@ -269,7 +275,7 @@ public class NettyWampClientConnectorProvider implements IWampConnectorProvider 
                         protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
                         if (proxyAddress != null) {
-                            p.addLast(new HttpProxyHandler(proxyAddress));
+                            p.addFirst("proxy", new Socks5ProxyHandler(proxyAddress));
                         }
                         if (sslCtx0 != null) {
                             p.addLast(sslCtx0.newHandler(ch.alloc(),
