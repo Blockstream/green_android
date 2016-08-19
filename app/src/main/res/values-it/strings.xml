@@ -144,7 +144,7 @@
   <string name="changingWarnOnionTitle">Attenzione: Indirizzo non-.onion rilevato!</string>
   <string name="changingWarnOnionText">La connessione via nodi Tor (.onion) permette migliore privacy e sicurezza. Se scegli di continuare premi "OK".</string>
   <string name="enterValidAddressTitleTorDisabled">Tor non è attivabile!</string>
-  <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) e superiore non supporta la libreria Tor usata (Orchid).</string>
+  <string name="enterValidAddressTextTorDisabled">Devi configurare prima il proxy (Orbot Sock5) per abilitare Tor.</string>
   <string name="useNativeAuthentication">Riusa l\'autenticazione Android</string>
   <string name="genericsettings">Info &amp; configurazione</string>
   <string name="txFeeInfo">Commissione / Dimensione (bytes) / Commissione per kB</string>

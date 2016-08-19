@@ -7,11 +7,9 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
-import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
@@ -21,7 +19,7 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
-import com.subgraph.orchid.TorClient;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
@@ -30,6 +28,7 @@ import org.bitcoinj.core.BlockChain;
 import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.FilteredBlock;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
@@ -39,22 +38,24 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutPoint;
+import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.net.BlockingClientManager;
 import org.bitcoinj.net.discovery.DnsDiscovery;
+import org.bitcoinj.net.discovery.HttpDiscovery;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
 import org.bitcoinj.wallet.Wallet;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -546,36 +547,54 @@ public class SPV {
             }
         });
     }
+    
+    private void addPeer(final String address) throws UnknownHostException {
 
-    private boolean isOnion(final String addr) { return addr.toLowerCase().contains(".onion"); }
-
-    private void addPeer(String address) {
-
-        if (!address.contains(".")) {
-            // Blank or a host name - Use the built in list, resolving via DNS
-            mPeerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
+        if (address.isEmpty()) {
+            // Blank - Use the built in list, resolving via DNS
+            if (!mService.isProxyEnabled())
+                mPeerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
+            else {
+                final OkHttpClient httpClient = new OkHttpClient();
+                httpClient.setSocketFactory(new Socks5SocketFactory(mService.getProxyHost(), mService.getProxyPort()));
+                mPeerGroup.addPeerDiscovery(new HttpDiscovery(Network.NETWORK,
+                        new HttpDiscovery.Details(
+                                ECKey.fromPublicOnly(Utils.HEX.decode("0238746c59d46d5408bf8b1d0af5740fe1a6e1703fcb56b2953f0b965c740d256f")),
+                                URI.create("http://httpseed.bitcoin.schildbach.de/peers")
+                        ), httpClient));
+            }
             return;
         }
 
         final Node n = createNode(address);
         final PeerAddress peer;
         try {
-            if (!isOnion(address))
-                peer = new PeerAddress(InetAddress.getByName(n.mAddress), n.mPort);
-            else {
-                peer = new PeerAddress(InetAddress.getLocalHost(), n.mPort) {
-                               public InetSocketAddress toSocketAddress() {
-                                   return InetSocketAddress.createUnresolved(n.mAddress, n.mPort);
-                               }
-                           };
-            }
+
+            if (!mService.isProxyEnabled())
+                peer = new PeerAddress(Network.NETWORK, InetAddress.getByName(n.mAddress), n.mPort);
+            else
+                peer = new PeerAddress(Network.NETWORK, n.mAddress, n.mPort) {
+                    @Override
+                    public InetSocketAddress toSocketAddress() {
+                        return InetSocketAddress.createUnresolved(n.mAddress, n.mPort);
+                    }
+
+                    @Override
+                    public String toString() {
+                        return n.toString();
+                    }
+
+                    @Override
+                    public int hashCode() {
+                        return n.mAddress.hashCode() ^ n.mPort;
+                    }
+                };
+
+            mPeerGroup.addAddress(peer);
         } catch (final UnknownHostException e) {
             // FIXME: Should report this error
             e.printStackTrace();
-            return;
         }
-
-        mPeerGroup.addAddress(peer);
     }
 
     private synchronized void setup(){
@@ -619,23 +638,15 @@ public class SPV {
             System.setProperty("user.home", mService.getFilesDir().toString());
             final String peers = getTrustedPeers();
 
-            final String proxyHost = mService.getProxyHost();
-            final String proxyPort = mService.getProxyPort();
-
-            System.setProperty("socksProxyHost", proxyHost);
-            System.setProperty("socksProxyPort", proxyPort);
-
             Log.d(TAG, "Creating peer group");
-            if (!TextUtils.isEmpty(proxyHost) && !TextUtils.isEmpty(proxyPort)) {
-                final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
-                mPeerGroup = new PeerGroup(context, mBlockChain, new BlockingClientManager());
-            } else if (isOnion(peers)) {
-                try {
-                    final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
-                    mPeerGroup = PeerGroup.newWithTor(context, mBlockChain, new TorClient(), false);
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
+            if (mService.isProxyEnabled()) {
+                final String proxyHost = mService.getProxyHost();
+                final String proxyPort = mService.getProxyPort();
+                final Socks5SocketFactory sf = new Socks5SocketFactory(proxyHost, proxyPort);
+                final BlockingClientManager bcm = new BlockingClientManager(sf);
+                bcm.setConnectTimeoutMillis(60000);
+                mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain, bcm);
+                mPeerGroup.setConnectTimeoutMillis(60000);
             } else {
                 mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain);
             }
@@ -647,14 +658,13 @@ public class SPV {
 
             Log.d(TAG, "Adding peers");
             final ArrayList<String> addresses;
-            addresses = new ArrayList<String>(Arrays.asList(peers.split(",")));
+            addresses = new ArrayList<>(Arrays.asList(peers.split(",")));
             if (addresses.isEmpty())
                 addresses.add(Network.DEFAULT_PEER); // Usually empty, set for regtest
             for (final String address: addresses)
                 addPeer(address);
-            mPeerGroup.setMaxConnections(addresses.size());
 
-        } catch (final BlockStoreException e) {
+        } catch (final BlockStoreException | UnknownHostException e) {
             e.printStackTrace();
         }
     }

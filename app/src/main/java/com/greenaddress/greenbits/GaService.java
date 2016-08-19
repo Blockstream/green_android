@@ -13,6 +13,7 @@ import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
@@ -57,6 +58,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -181,7 +183,12 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void reloadSettings() {
-        mClient.setProxy(getProxyHost(), getProxyPort());
+        try {
+            mClient.setProxy(getProxyHost(), getProxyPort());
+        } catch (final UnknownHostException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
         mClient.setTorEnabled(getTorEnabled());
     }
 
@@ -247,7 +254,7 @@ public class GaService extends Service implements INotificationHandler {
     public String getProxyHost() { return cfg().getString("proxy_host", ""); }
     public String getProxyPort() { return cfg().getString("proxy_port", ""); }
     public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
-
+    public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort());}
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
     public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
 

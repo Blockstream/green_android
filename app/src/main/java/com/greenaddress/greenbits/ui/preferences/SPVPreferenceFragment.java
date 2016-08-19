@@ -10,8 +10,8 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,
@@ -124,18 +124,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         if (peers.toLowerCase().contains(".onion")) {
             // Tor address
-            if (android.os.Build.VERSION.SDK_INT >= 23) {
-                final String proxyHost = mService.getProxyHost();
-                final String proxyPort = mService.getProxyPort();
-                if (TextUtils.isEmpty(proxyHost) || TextUtils.isEmpty(proxyPort)) {
-                    // Certain ciphers have been deprecated in API 23+, breaking Orchid
-                    // and HS connectivity (Works with Orbot socks proxy if set)
-                    UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
-                      .content(R.string.enterValidAddressTextTorDisabled).build().show();
-                    return true;
-                }
+            if (!mService.isProxyEnabled()) {
+                UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
+                  .content(R.string.enterValidAddressTextTorDisabled).build().show();
+               return true;
             }
-
             setTrustedPeers(peers);
             return true;
         }

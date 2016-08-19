@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenbits.spv.Socks5SocketFactory;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -26,8 +27,8 @@ import org.codehaus.jackson.map.MappingJsonFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -264,13 +265,13 @@ public class WalletClient {
         });
     }
 
-    public void setProxy(final String host, final String port) {
+    public void setProxy(final String host, final String port) throws UnknownHostException {
         if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(port)) {
             mProxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
-            mHttpClient.setProxy(new Proxy(Proxy.Type.SOCKS, mProxyAddress));
+            mHttpClient.setSocketFactory(new Socks5SocketFactory(host, port));
         } else {
             mProxyAddress = null;
-            mHttpClient.setProxy(null);
+            mHttpClient.setSocketFactory(null);
         }
     }
 
@@ -422,9 +423,13 @@ public class WalletClient {
     }
 
     private String getUri() {
-        if (mTorEnabled)
+        if (isTorEnabled())
             return String.format("ws://%s/v2/ws/", Network.GAIT_ONION);
         return Network.GAIT_WAMP_URL;
+    }
+
+    private boolean isTorEnabled() {
+        return mTorEnabled && mProxyAddress != null;
     }
 
     public ListenableFuture<Void> connect() {
@@ -445,7 +450,7 @@ public class WalletClient {
                             .withRealm("realm1")
                             .withNrReconnects(0);
 
-                    if (!mTorEnabled && Network.GAIT_WAMP_CERT_PIN != null)
+                    if (!isTorEnabled() && Network.GAIT_WAMP_CERT_PIN != null)
                         builder.withConnectionConfiguration(getNettyConfig());
 
                 } catch (final ApplicationError | SSLException e) {

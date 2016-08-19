@@ -146,14 +146,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         }
 
         public String toString(){
-            String ipAddr = mPeer.toString();
-            if (ipAddr.length() >= 11 && ipAddr.substring(0,11).equals("[127.0.0.1]")) {
-                // FIXME: This is obviously not right if multiple peers are present
-                ipAddr = mService.getSPVTrustedPeers();
-                if (!ipAddr.isEmpty())
-                    ipAddr = mService.createSPVNode(ipAddr).toString();
-            }
-            return String.format("%s\n%s\n%s\n%s", getString(R.string.network_monitor_peer_addr, ipAddr),
+            return String.format("%s\n%s\n%s\n%s", getString(R.string.network_monitor_peer_addr, mPeer.toString()),
                     getString(R.string.network_monitor_peer_version, mPeer.getPeerVersionMessage().subVer),
                     getString(R.string.network_monitor_peer_block, mPeer.getBestHeight()),
                     getString(R.string.network_monitor_peer_ping, mPeer.getLastPingTime()));

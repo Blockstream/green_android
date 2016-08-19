@@ -193,7 +193,6 @@
   <string name="send_max_amount">MAX</string>
   <string name="err_sign_up_nfc_not_writable">Erro: tag não gravável</string>
   <string name="err_sign_up_nfc_too_small">Erro: tag pequena</string>
-  <string name="network_monitor_peer_addr">IP Addr: %1$s</string>
   <string name="network_monitor_peer_version">Versão: %1$s</string>
   <string name="network_monitor_peer_block">Block height: %1$d</string>
   <string name="network_monitor_peer_ping">Último ping: %1$d ms</string>

@@ -173,7 +173,7 @@
     <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
     <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
     <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
-    <string name="enterValidAddressTextTorDisabled">Android 6.0 (Marshmallow) and above does not support the Tor library for .onion connections.</string>
+    <string name="enterValidAddressTextTorDisabled">You need to enable the proxy configuration (Orbot Socks5) first to enable Tor.</string>
     <string name="useNativeAuthentication">Use Android\'s authentication</string>
     <string name="genericsettings">Info &amp; settings</string>
     <string name="txFeeInfo">Fee / Size (bytes) / Fee per kB</string>
@@ -215,7 +215,7 @@
     <string name="send_max_amount">MAX</string>
     <string name="err_sign_up_nfc_not_writable">Error: tag not writable</string>
     <string name="err_sign_up_nfc_too_small">Error: tag too small</string>
-    <string name="network_monitor_peer_addr">IP Addr: %1$s</string>
+    <string name="network_monitor_peer_addr">Address: %1$s</string>
     <string name="network_monitor_peer_version">Version: %1$s</string>
     <string name="network_monitor_peer_block">Block height: %1$d</string>
     <string name="network_monitor_peer_ping">Last ping: %1$d ms</string>
