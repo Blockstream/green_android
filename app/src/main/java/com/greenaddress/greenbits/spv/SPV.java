@@ -104,22 +104,17 @@ public class SPV {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
-                setEnabledImpl(enabled);
+                if (enabled != mService.isSPVEnabled()) {
+                    mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
+                    if (enabled) {
+                        setUpSPV();
+                        startSPVSync();
+                    } else
+                        stopSPVSync();
+                }
                 return null;
             }
         }.execute();
-    }
-
-    private void setEnabledImpl(final boolean enabled) {
-
-        if (enabled != mService.isSPVEnabled()) {
-            mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
-            if (enabled) {
-                setUpSPV();
-                startSPVSync();
-            } else
-                stopSPVSync();
-        }
     }
 
     public void setSyncOnMobileEnabled(final boolean enabled) {
@@ -127,19 +122,13 @@ public class SPV {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
-                setSyncOnMobileEnabledImpl(enabled);
+                if (enabled != mService.isSPVSyncOnMobileEnabled()) {
+                    mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
+                    onNetConnectivityChanged(mService.getNetworkInfo());
+                }
                 return null;
             }
         }.execute();
-    }
-
-
-    private void setSyncOnMobileEnabledImpl(final boolean enabled) {
-
-        if (enabled != mService.isSPVSyncOnMobileEnabled()) {
-            mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
-            onNetConnectivityChanged(mService.getNetworkInfo());
-        }
     }
 
     public void startIfEnabled() {
