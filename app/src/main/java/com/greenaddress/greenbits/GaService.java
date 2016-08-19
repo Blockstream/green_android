@@ -464,7 +464,7 @@ public class GaService extends Service implements INotificationHandler {
 
     public void disconnect(final boolean autoReconnect) {
         mAutoReconnect = autoReconnect;
-        mSPV.stopSPVSync();
+        mSPV.stopSync();
         for (final GaObservable o : mBalanceObservables.values())
             o.deleteObservers();
         mClient.disconnect();

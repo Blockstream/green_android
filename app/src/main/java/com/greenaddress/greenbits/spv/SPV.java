@@ -441,7 +441,7 @@ public class SPV {
         return 0;
     }
 
-    private synchronized void startSPVSync() {
+    private synchronized void startSync() {
         if (mPeerGroup.isRunning())
              return;
 
@@ -499,7 +499,7 @@ public class SPV {
         mPeerGroup.addAddress(peer);
     }
 
-    private synchronized void setUpSPV(){
+    private synchronized void setup(){
         //teardownSPV must be called if SPV already exists
         //and stopSPV if previous still running.
         if (mPeerGroup != null) {
@@ -575,7 +575,7 @@ public class SPV {
         }
     }
 
-    public synchronized void stopSPVSync() {
+    public synchronized void stopSync() {
 
         if (mPeerGroup != null && mPeerGroup.isRunning()) {
             final Intent i = new Intent("PEERGROUP_UPDATED");
@@ -615,7 +615,7 @@ public class SPV {
     }
 
     public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
-        stopSPVSync();
+        stopSync();
 
         if (deleteAllData) {
             mService.getSPVChainFile().delete();
@@ -632,10 +632,8 @@ public class SPV {
             resetUnspent();
 
         if (isEnabled()) {
-            // Restart SPV
-            setUpSPV();
-            // FIXME: enabled under WiFi only
-            startSPVSync();
+            setup();
+            startSync();
         }
     }
 }
