@@ -487,32 +487,28 @@ public class GaService extends Service implements INotificationHandler {
         mState.transitionTo(ConnState.DISCONNECTED);
     }
 
-    public ListenableFuture<Map<?, ?>> updateBalance(final int subAccount) {
-        final ListenableFuture<Map<?, ?>> future = mClient.getSubaccountBalance(subAccount);
-        Futures.addCallback(future, new FutureCallback<Map<?, ?>>() {
+    public void updateBalance(final int subAccount) {
+        Futures.addCallback(mClient.getSubaccountBalance(subAccount), new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(final Map<?, ?> result) {
+                final String fiatCurrency = (String) result.get("fiat_currency");
                 mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
                 mFiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                 if (mClient.isWatchOnly())
-                    setFiatCurrency((String) result.get("fiat_currency"));
+                    setFiatCurrency(fiatCurrency);
                 // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
                 // while the server can return more, hence toBigInteger instead here:
                 final BigInteger tmpValue = new BigDecimal((String) result.get("fiat_value"))
                         .movePointRight(Fiat.SMALLEST_UNIT_EXPONENT).toBigInteger();
                 // also strip extra decimals (over 2 places) because that's what the old JS client does
                 final BigInteger fiatValue = tmpValue.subtract(tmpValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
-                mFiatBalances.put(subAccount, Fiat.valueOf((String) result.get("fiat_currency"), fiatValue.longValue()));
-
+                mFiatBalances.put(subAccount, Fiat.valueOf(fiatCurrency, fiatValue.longValue()));
                 fireBalanceChanged(subAccount);
             }
 
             @Override
-            public void onFailure(final Throwable t) {
-
-            }
+            public void onFailure(final Throwable t) { }
         }, mExecutor);
-        return future;
     }
 
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int pointer) {
