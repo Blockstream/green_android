@@ -108,11 +108,8 @@ public class SPV {
             protected Object doInBackground(final Object[] params) {
                 if (enabled != mService.isSPVEnabled()) {
                     mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
-                    if (enabled) {
-                        setUpSPV();
-                        startSPVSync();
-                    } else
-                        stopSPVSync();
+                    final boolean deleteAllData = false;
+                    reset(deleteAllData);
                 }
                 return null;
             }
