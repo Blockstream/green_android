@@ -617,15 +617,8 @@ public class SPV {
 
     public void reset() {
         final boolean enabled = mService.isSPVEnabled();
-        if (enabled) {
-            // Stop SPV
-            try {
-                stopSPVSync();
-            } catch (final NullPointerException e) {
-                // FIXME: Why would we get an NPE here
-                // ignore
-            }
-        }
+        if (enabled)
+            stopSPVSync();
 
         // Delete all data
         final File blockChainFile = mService.getSPVChainFile();
