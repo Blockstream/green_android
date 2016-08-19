@@ -75,10 +75,6 @@ public class SPV {
     private PeerGroup mPeerGroup;
     private PeerFilterProvider mPeerFilter;
 
-    private enum SPVMode {
-        ONION, TRUSTED, NORMAL
-    }
-
     public SPV(final GaService service) {
         mService = service;
     }
@@ -454,39 +450,31 @@ public class SPV {
 
     private void addPeer(String address) {
 
-        SPVMode mode = SPVMode.NORMAL;
-        if (address.contains("."))
-            mode = isOnion(address) ? SPVMode.ONION : SPVMode.TRUSTED;
-
-        switch (mode) {
-        case NORMAL:
+        if (!address.contains(".")) {
+            // Blank or a host name - Use the built in list, resolving via DNS
             mPeerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
-            break;
-
-        case ONION:
-            try {
-                final Node n = new Node(address);
-
-                final PeerAddress OnionAddr = new PeerAddress(InetAddress.getLocalHost(), n.port ) {
-                    public InetSocketAddress toSocketAddress() {
-                        return InetSocketAddress.createUnresolved(n.addr, n.port);
-                    }
-                };
-                mPeerGroup.addAddress(OnionAddr);
-            } catch (final Exception e){
-                e.printStackTrace();
-            }
-            break;
-
-        case TRUSTED:
-            final Node n = new Node(address);
-            try {
-                mPeerGroup.addAddress(new PeerAddress(InetAddress.getByName(n.addr), n.port));
-            } catch (final UnknownHostException e) {
-                e.printStackTrace();
-            }
-            break;
+            return;
         }
+
+        final Node n = new Node(address);
+        final PeerAddress peer;
+        try {
+            if (!isOnion(address))
+                peer = new PeerAddress(InetAddress.getByName(n.addr), n.port);
+            else {
+                peer = new PeerAddress(InetAddress.getLocalHost(), n.port) {
+                               public InetSocketAddress toSocketAddress() {
+                                   return InetSocketAddress.createUnresolved(n.addr, n.port);
+                               }
+                           };
+            }
+        } catch (final UnknownHostException e) {
+            // FIXME: Should report this error
+            e.printStackTrace();
+            return;
+        }
+
+        mPeerGroup.addAddress(peer);
     }
 
     private synchronized void setUpSPV(){
