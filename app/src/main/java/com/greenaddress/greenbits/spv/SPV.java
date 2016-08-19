@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -558,14 +559,13 @@ public class SPV {
             mPeerFilter = new PeerFilterProvider(this);
             mPeerGroup.addPeerFilterProvider(mPeerFilter);
 
-            final String[] addresses = peers.split(",");
-            if (addresses.length == 0) {
-                setupPeerGroup(mPeerGroup, "");
-                return;
-            }
+            final ArrayList<String> addresses;
+            addresses = new ArrayList<String>(Arrays.asList(peers.split(",")));
+            if (addresses.isEmpty())
+                addresses.add("");
             for (final String s: addresses)
                 setupPeerGroup(mPeerGroup, s);
-            mPeerGroup.setMaxConnections(addresses.length);
+            mPeerGroup.setMaxConnections(addresses.size());
 
         } catch (final BlockStoreException e) {
             e.printStackTrace();
