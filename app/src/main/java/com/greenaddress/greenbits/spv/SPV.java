@@ -90,12 +90,16 @@ public class SPV {
         return mService;
     }
 
+    public boolean isEnabled() {
+        return !mService.isWatchOnly() && mService.cfg("SPV").getBoolean("enabled", true);
+    }
+
     public void setEnabled(final boolean enabled) {
 
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
-                if (enabled != mService.isSPVEnabled()) {
+                if (enabled != isEnabled()) {
                     mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
                     final boolean deleteAllData = false;
                     reset(deleteAllData);
@@ -103,6 +107,10 @@ public class SPV {
                 return null;
             }
         }.execute();
+    }
+
+    public boolean isSyncOnMobileEnabled() {
+        return mService.cfg("SPV").getBoolean("mobileSyncEnabled", false);
     }
 
     public void setSyncOnMobileEnabled(final boolean enabled) {
@@ -142,7 +150,7 @@ public class SPV {
     public void startIfEnabled() {
         resetUnspent();
 
-        if (mService.isSPVEnabled()) {
+        if (isEnabled()) {
             setUpSPV();
             startSPVSync();
             updateUnspentOutputs();
@@ -169,7 +177,7 @@ public class SPV {
     }
 
     public void updateUnspentOutputs() {
-        if (!mService.isSPVEnabled())
+        if (!isEnabled())
             return;
 
         Futures.addCallback(mService.getAllUnspentOutputs(0, null), new FutureCallback<ArrayList>() {
@@ -426,13 +434,13 @@ public class SPV {
     public Node createNode(final String address) { return new Node(address); }
 
     public int getSPVBlocksRemaining() {
-        if (mService.isSPVEnabled())
+        if (isEnabled())
             return mBlocksRemaining;
         return 0;
     }
 
     public int getSPVHeight() {
-        if (mBlockChain != null && mService.isSPVEnabled())
+        if (mBlockChain != null && isEnabled())
             return mBlockChain.getBestChainHeight();
         return 0;
     }
@@ -618,7 +626,7 @@ public class SPV {
     }
 
     public void reset(final boolean deleteAllData) {
-        final boolean enabled = mService.isSPVEnabled();
+        final boolean enabled = isEnabled();
         if (enabled)
             stopSPVSync();
 

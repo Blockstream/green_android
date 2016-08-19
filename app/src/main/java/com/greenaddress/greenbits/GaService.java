@@ -251,25 +251,15 @@ public class GaService extends Service implements INotificationHandler {
     public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
     public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
 
+    // SPV
     public String getSPVTrustedPeers() { return mSPV.getTrustedPeers(); }
-
     public void setSPVTrustedPeers(final String peers) { mSPV.setTrustedPeers(peers); }
 
-    public boolean isSPVEnabled() {
-        return !isWatchOnly() && cfg("SPV").getBoolean("enabled", true);
-    }
+    public boolean isSPVEnabled() { return mSPV.isEnabled(); }
+    public void setSPVEnabled(final boolean enabled) { mSPV.setEnabled(enabled); }
 
-    public void setSPVEnabled(final boolean enabled) {
-         mSPV.setEnabled(enabled);
-    }
-
-    public boolean isSPVSyncOnMobileEnabled() {
-        return cfg("SPV").getBoolean("mobileSyncEnabled", false);
-    }
-
-    public void setSPVSyncOnMobileEnabled(final boolean enabled) {
-        mSPV.setSyncOnMobileEnabled(enabled);
-    }
+    public boolean isSPVSyncOnMobileEnabled() { return mSPV.isSyncOnMobileEnabled(); }
+    public void setSPVSyncOnMobileEnabled(final boolean enabled) { mSPV.setSyncOnMobileEnabled(enabled); }
 
     public void resetSPV() { mSPV.reset(true /* Delete all data */); }
 
@@ -277,9 +267,7 @@ public class GaService extends Service implements INotificationHandler {
     public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
     public int getSPVHeight() { return mSPV.getSPVHeight(); }
     public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }
-    public Coin getSPVVerifiedBalance(final int subAccount) {
-        return mSPV.getVerifiedBalance(subAccount);
-    }
+    public Coin getSPVVerifiedBalance(final int subAccount) { return mSPV.getVerifiedBalance(subAccount); }
 
     @Override
     public void onCreate() {
