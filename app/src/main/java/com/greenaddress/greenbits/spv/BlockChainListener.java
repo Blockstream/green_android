@@ -36,6 +36,6 @@ class BlockChainListener implements org.bitcoinj.core.listeners.BlockChainListen
         if (mSPV == null)
             return false;
         mSPV.getService().notifyObservers(txHash);
-        return mSPV.getUnspentOutputsOutpoints().containsKey(txHash);
+        return mSPV.getUnspentOutpoints().containsKey(txHash);
     }
 }

@@ -23,30 +23,21 @@ class PeerFilterProvider implements org.bitcoinj.core.PeerFilterProvider {
     @Override
     public int getBloomFilterElementCount() {
         // 1 to avoid downloading full blocks (empty bloom filters are ignored by bitcoinj)
-        if (mSPV == null || mSPV.getUnspentOutputsOutpoints().isEmpty())
+        if (mSPV == null || mSPV.getUnspentOutpoints().isEmpty())
             return 1;
-        return mSPV.getUnspentOutputsOutpoints().size();
+        return mSPV.getUnspentOutpoints().size();
     }
 
     @Override
     public BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
 
-        final BloomFilter res = new BloomFilter(size, falsePositiveRate, nTweak);
-        if (mSPV == null)
-            return res;
-
-        final Set<Sha256Hash> set = mSPV.getUnspentOutputsOutpoints().keySet();
-        for (final Sha256Hash hash : set) {
-            res.insert(Utils.reverseBytes(hash.getBytes()));
+        final BloomFilter filter = new BloomFilter(size, falsePositiveRate, nTweak);
+        if (mSPV != null && mSPV.populateBloomFilter(filter) == 0) {
+            // Add a fake entry to avoid downloading blocks when filter is empty,
+            // as empty bloom filters are ignored by bitcoinj.
+            filter.insert(new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
         }
-
-        // add fake entry to avoid downloading blocks when filter is empty
-        // (empty bloom filters are ignored by bitcoinj)
-
-        if (set.isEmpty()) {
-            res.insert(new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
-        }
-        return res;
+        return filter;
     }
 
     @Override

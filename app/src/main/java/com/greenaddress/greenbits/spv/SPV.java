@@ -21,6 +21,7 @@ import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
+import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.FilteredBlock;
@@ -71,7 +72,7 @@ public class SPV {
     }
 
     private final Map<Integer, Coin> mVerifiedCoinBalances = new HashMap<>();
-    private final Map<Sha256Hash, List<Integer>> mUnspentOutputsOutpoints = new HashMap<>();
+    private final Map<Sha256Hash, List<Integer>> mUnspentOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, AccountInfo> mUnspentDetails = new HashMap<>();
     private final GaService mService;
     private BlockChainListener mBlockChainListener;
@@ -148,8 +149,15 @@ public class SPV {
         return mVerifiedCoinBalances.get(subAccount);
     }
 
-    public Map<Sha256Hash, List<Integer>> getUnspentOutputsOutpoints() {
-        return mUnspentOutputsOutpoints;
+    public Map<Sha256Hash, List<Integer>> getUnspentOutpoints() {
+        return mUnspentOutpoints;
+    }
+
+    public int populateBloomFilter(BloomFilter filter) {
+        final Set<Sha256Hash> keys = mUnspentOutpoints.keySet();
+        for (final Sha256Hash hash : keys)
+            filter.insert(hash.getReversedBytes());
+        return keys.size();
     }
 
     public void updateUnspentOutputs() {
@@ -194,7 +202,7 @@ public class SPV {
                         changedSubaccounts.add(subAccount);
                         mCountedUtxoValues.remove(oldUtxo);
                         mUnspentDetails.remove(oldUtxo);
-                        mUnspentOutputsOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
+                        mUnspentOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
                     }
                 }
 
@@ -214,7 +222,7 @@ public class SPV {
 
     private void resetUnspent() {
         mUnspentDetails.clear();
-        mUnspentOutputsOutpoints.clear();
+        mUnspentOutpoints.clear();
         mCountedUtxoValues.clear();
         mVerifiedCoinBalances.clear();
     }
@@ -234,7 +242,7 @@ public class SPV {
         final String txHashStr = txHash.toString();
         final List<Integer> changedSubaccounts = new ArrayList<>();
         boolean missing = false;
-        for (final Integer outpoint : mUnspentOutputsOutpoints.get(txHash)) {
+        for (final Integer outpoint : mUnspentOutpoints.get(txHash)) {
             final String key = txHashStr + ":" + outpoint;
             final long value = mService.cfgIn(SPENDABLE).getLong(key, -1);
             if (value != -1) {
@@ -257,7 +265,7 @@ public class SPV {
                 final List<Integer> changedSubaccounts = new ArrayList<>();
                 final List<ListenableFuture<Boolean>> futuresList = new ArrayList<>();
                 if (result.getHash().equals(txHash)) {
-                    for (final Integer outpoint : mUnspentOutputsOutpoints.get(txHash)) {
+                    for (final Integer outpoint : mUnspentOutpoints.get(txHash)) {
                         final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
                         if (mCountedUtxoValues.containsKey(txOutpoint))
                             continue;
@@ -317,7 +325,7 @@ public class SPV {
             addToUtxo(txhash, prevIndex, subAccount, pointer);
         }
         if (blockHeight != null && blockHeight <= mBlockChain.getBestChainHeight() &&
-                (txhash == null || !mUnspentOutputsOutpoints.containsKey(txhash))) {
+                (txhash == null || !mUnspentOutpoints.containsKey(txhash))) {
             // new tx or block notification with blockHeight <= current blockHeight means we might've [1]
             // synced the height already while we haven't seen the tx, so we need to re-sync to be able
             // to verify it.
@@ -348,10 +356,10 @@ public class SPV {
     private void addToUtxo(final Sha256Hash txhash, final Integer prevIndex, final int subAccount, final int pointer) {
         mUnspentDetails.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash),
                             new AccountInfo(subAccount, pointer));
-        if (mUnspentOutputsOutpoints.get(txhash) == null)
-            mUnspentOutputsOutpoints.put(txhash, Lists.newArrayList(prevIndex));
+        if (mUnspentOutpoints.get(txhash) == null)
+            mUnspentOutpoints.put(txhash, Lists.newArrayList(prevIndex));
         else
-            mUnspentOutputsOutpoints.get(txhash).add(prevIndex);
+            mUnspentOutpoints.get(txhash).add(prevIndex);
     }
 
     private ListenableFuture<Boolean>
