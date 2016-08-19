@@ -537,14 +537,17 @@ public class TransactionActivity extends GaActivity {
                                           service.findSubaccount("2of3", subAccount));
 
             for (final Map<String, Object> ep : (List<Map<String, Object>>)txItem.eps) {
-                if (((Boolean) ep.get("is_credit"))) continue;
+                if (((Boolean) ep.get("is_credit")))
+                    continue;
+                final Integer prevIndex = ((Integer) ep.get("pt_idx"));
+                final TransactionInput oldInput = tx.getInput(prevIndex);
                 ptx.prev_outputs.add(new Output(
                         (Integer) ep.get("subaccount"),
                         (Integer) ep.get("pubkey_pointer"),
                         1,
                         (Integer) ep.get("script_type"),
-                        Wally.hex_from_bytes(tx.getInput((Integer) ep.get("pt_idx")).getScriptSig().getChunks().get(3).data),
-                        tx.getInput((Integer) ep.get("pt_idx")).getValue().longValue()
+                        Wally.hex_from_bytes(oldInput.getScriptSig().getChunks().get(3).data),
+                        oldInput.getValue().longValue()
                 ));
             }
 

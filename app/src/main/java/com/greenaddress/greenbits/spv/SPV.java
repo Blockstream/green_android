@@ -173,20 +173,20 @@ public class SPV {
                     final Map<?, ?> utxo = (Map) result.get(i);
                     final String txhash = (String) utxo.get("txhash");
                     final Integer blockHeight = (Integer) utxo.get("block_height");
-                    final Integer pt_idx = ((Integer) utxo.get("pt_idx"));
+                    final Integer prevIndex = ((Integer) utxo.get("pt_idx"));
                     final Integer subaccount = ((Integer) utxo.get("subaccount"));
                     final Integer pointer = ((Integer) utxo.get("pointer"));
                     final Sha256Hash sha256Hash = Sha256Hash.wrap(txhash);
 
                     if (!mService.cfgIn(VERIFIED).getBoolean(txhash, false)) {
                         recalculateBloom = true;
-                        addToBloomFilter(blockHeight, sha256Hash, pt_idx, subaccount, pointer);
+                        addToBloomFilter(blockHeight, sha256Hash, prevIndex, subaccount, pointer);
                     } else {
                         // already verified
-                        addToUtxo(sha256Hash, pt_idx, subaccount, pointer);
+                        addToUtxo(sha256Hash, prevIndex, subaccount, pointer);
                         addUtxoToValues(sha256Hash);
                     }
-                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, pt_idx, sha256Hash));
+                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, prevIndex, sha256Hash));
                 }
 
                 final List<Integer> changedSubaccounts = new ArrayList<>();
@@ -317,11 +317,11 @@ public class SPV {
     }
 
 
-    public void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
+    public void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int prevIndex, final int subAccount, final int pointer) {
         if (mBlockChain == null)
             return; // can happen before login (onNewBlock)
         if (txhash != null) {
-            addToUtxo(txhash, pt_idx, subAccount, pointer);
+            addToUtxo(txhash, prevIndex, subAccount, pointer);
         }
         if (blockHeight != null && blockHeight <= mBlockChain.getBestChainHeight() &&
                 (txhash == null || !mUnspentOutputsOutpoints.containsKey(txhash))) {
@@ -352,15 +352,15 @@ public class SPV {
         }
     }
 
-    private void addToUtxo(final Sha256Hash txhash, final int pt_idx, final int subAccount, final int pointer) {
-        mUnspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), subAccount);
-        mUnspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, pt_idx, txhash), pointer);
+    private void addToUtxo(final Sha256Hash txhash, final int prevIndex, final int subAccount, final int pointer) {
+        mUnspentOutpointsSubaccounts.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash), subAccount);
+        mUnspentOutpointsPointers.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash), pointer);
         if (mUnspentOutputsOutpoints.get(txhash) == null) {
             final ArrayList<Integer> newList = new ArrayList<>();
-            newList.add(pt_idx);
+            newList.add(prevIndex);
             mUnspentOutputsOutpoints.put(txhash, newList);
         } else {
-            mUnspentOutputsOutpoints.get(txhash).add(pt_idx);
+            mUnspentOutputsOutpoints.get(txhash).add(prevIndex);
         }
     }
 
