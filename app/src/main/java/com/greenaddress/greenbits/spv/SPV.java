@@ -94,10 +94,8 @@ public class SPV {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(Object[] params) {
-                final boolean alreadySyncing = stopSPVSync();
-                setUpSPV();
-                if (alreadySyncing)
-                    startSPVSync();
+                final boolean deleteAllData = false;
+                reset(deleteAllData);
                 return null;
             }
         }.execute();
@@ -617,22 +615,23 @@ public class SPV {
         // FIXME
     }
 
-    public void reset() {
+    public void reset(final boolean deleteAllData) {
         final boolean enabled = mService.isSPVEnabled();
         if (enabled)
             stopSPVSync();
 
-        // Delete all data
-        mService.getSPVChainFile().delete();
+        if (deleteAllData) {
+            mService.getSPVChainFile().delete();
 
-        try {
-            mService.cfgInEdit(SPENDABLE).clear().commit();
-            mService.cfgInEdit(VERIFIED).clear().commit();
-        } catch (final NullPointerException e) {
-            // ignore
+            try {
+                mService.cfgInEdit(SPENDABLE).clear().commit();
+                mService.cfgInEdit(VERIFIED).clear().commit();
+            } catch (final NullPointerException e) {
+                // ignore
+            }
+
+            resetUnspent();
         }
-
-        resetUnspent();
 
         if (enabled) {
             // Restart SPV
