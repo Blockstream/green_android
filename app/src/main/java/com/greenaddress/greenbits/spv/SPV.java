@@ -148,13 +148,8 @@ public class SPV {
     }
 
     public void startIfEnabled() {
-        resetUnspent();
-
-        if (isEnabled()) {
-            setUpSPV();
-            startSPVSync();
-            updateUnspentOutputs();
-        }
+        reset(false /* deleteAllData */, true /* deleteUnspent */);
+        updateUnspentOutputs();
     }
 
     public Coin getVerifiedBalance(final int subAccount) {
