@@ -110,7 +110,7 @@ public class SPV {
         }.execute();
     }
 
-    public void setEnabledImpl(final boolean enabled) {
+    private void setEnabledImpl(final boolean enabled) {
 
         if (enabled != mService.isSPVEnabled()) {
             mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
@@ -134,7 +134,7 @@ public class SPV {
     }
 
 
-    public void setSyncOnMobileEnabledImpl(final boolean enabled) {
+    private void setSyncOnMobileEnabledImpl(final boolean enabled) {
 
         if (enabled != mService.isSPVSyncOnMobileEnabled()) {
             mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
@@ -152,7 +152,7 @@ public class SPV {
         updateUnspentOutputs();
     }
 
-    public Coin getVerifiedCoinBalance(final int subAccount) {
+    public Coin getVerifiedBalance(final int subAccount) {
         return mVerifiedCoinBalances.get(subAccount);
     }
 
@@ -195,7 +195,7 @@ public class SPV {
                     if (!newUtxos.contains(oldUtxo)) {
                         recalculateBloom = true;
                         final int subAccount = mUnspentOutpointsSubaccounts.get(oldUtxo);
-                        final Coin verifiedBalance = getVerifiedCoinBalance(subAccount);
+                        final Coin verifiedBalance = getVerifiedBalance(subAccount);
                         mVerifiedCoinBalances.put(subAccount,
                                                   verifiedBalance.subtract(mCountedUtxoValues.get(oldUtxo)));
                         changedSubaccounts.add(subAccount);
@@ -220,7 +220,7 @@ public class SPV {
         });
     }
 
-    public void resetUnspent() {
+    private void resetUnspent() {
         mUnspentOutpointsSubaccounts.clear();
         mUnspentOutpointsPointers.clear();
         mUnspentOutputsOutpoints.clear();
@@ -232,7 +232,7 @@ public class SPV {
         if (mCountedUtxoValues.containsKey(txOutpoint))
            return;
         mCountedUtxoValues.put(txOutpoint, addValue);
-        final Coin verifiedBalance = getVerifiedCoinBalance(subAccount);
+        final Coin verifiedBalance = getVerifiedBalance(subAccount);
         if (verifiedBalance == null)
             mVerifiedCoinBalances.put(subAccount, addValue);
         else
@@ -397,6 +397,7 @@ public class SPV {
         });
     }
 
+    // FIXME: This is copied in network monitor
     class Node {
         final String addr;
         final int port;
