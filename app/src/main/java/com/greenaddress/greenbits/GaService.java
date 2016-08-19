@@ -277,6 +277,7 @@ public class GaService extends Service implements INotificationHandler {
 
     public void resetSPV() { mSPV.reset(); }
 
+    public SPV.Node createSPVNode(final String address) { return mSPV.createNode(address); }
     public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
     public int getSPVHeight() { return mSPV.getSPVHeight(); }
     public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }

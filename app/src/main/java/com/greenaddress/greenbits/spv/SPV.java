@@ -383,25 +383,26 @@ public class SPV {
         });
     }
 
-    // FIXME: This is copied in network monitor
-    class Node {
-        final String addr;
-        final int port;
+    public class Node {
+        final String mAddress;
+        final int mPort;
 
         Node(final String address) {
             final int index_port = address.indexOf(":");
             if (index_port != -1) {
-                addr = address.substring(0, index_port);
-                port = Integer.parseInt(address.substring(index_port + 1));
+                mAddress = address.substring(0, index_port);
+                mPort = Integer.parseInt(address.substring(index_port + 1));
             } else {
-                addr = address;
-                port = Network.NETWORK.getPort();
+                mAddress = address;
+                mPort = Network.NETWORK.getPort();
             }
         }
         public String toString(){
-            return String.format("%s:%d", addr, port);
+            return String.format("%s:%d", mAddress, mPort);
         }
     }
+
+    public Node createNode(final String address) { return new Node(address); }
 
     public int getSPVBlocksRemaining() {
         if (mService.isSPVEnabled())
@@ -456,15 +457,15 @@ public class SPV {
             return;
         }
 
-        final Node n = new Node(address);
+        final Node n = createNode(address);
         final PeerAddress peer;
         try {
             if (!isOnion(address))
-                peer = new PeerAddress(InetAddress.getByName(n.addr), n.port);
+                peer = new PeerAddress(InetAddress.getByName(n.mAddress), n.mPort);
             else {
-                peer = new PeerAddress(InetAddress.getLocalHost(), n.port) {
+                peer = new PeerAddress(InetAddress.getLocalHost(), n.mPort) {
                                public InetSocketAddress toSocketAddress() {
-                                   return InetSocketAddress.createUnresolved(n.addr, n.port);
+                                   return InetSocketAddress.createUnresolved(n.mAddress, n.mPort);
                                }
                            };
             }
