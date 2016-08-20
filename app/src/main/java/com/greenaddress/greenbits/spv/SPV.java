@@ -50,7 +50,6 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -254,15 +253,15 @@ public class SPV {
     }
 
     public void addUtxoToValues(final Sha256Hash txHash, final boolean updateVerified) {
-        final String txHashStr = txHash.toString();
+        final String txHashHex = txHash.toString();
 
         if (updateVerified)
-            mService.cfgInEdit(VERIFIED).putBoolean(txHashStr, true).apply();
+            mService.cfgInEdit(VERIFIED).putBoolean(txHashHex, true).apply();
 
         final List<Integer> changedSubaccounts = new ArrayList<>();
         boolean missing = false;
         for (final Integer outpoint : mUnspentOutpoints.get(txHash)) {
-            final String key = txHashStr + ":" + outpoint;
+            final String key = txHashHex + ":" + outpoint;
             final long value = mService.cfgIn(SPENDABLE).getLong(key, -1);
             if (value != -1) {
                 final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
@@ -283,7 +282,10 @@ public class SPV {
             public void onSuccess(final Transaction result) {
                 final List<Integer> changedSubaccounts = new ArrayList<>();
                 final List<ListenableFuture<Boolean>> futuresList = new ArrayList<>();
-                if (result.getHash().equals(txHash)) {
+                if (!result.getHash().equals(txHash)) {
+                    Log.e(TAG, "txHash mismatch: expected " + txHashHex +
+                               ", got " + result.getHash().toString());
+                } else {
                     for (final Integer outpoint : mUnspentOutpoints.get(txHash)) {
                         final TransactionOutPoint txOutpoint = new TransactionOutPoint(Network.NETWORK, outpoint, txHash);
                         if (mCountedUtxoValues.containsKey(txOutpoint))
@@ -295,25 +297,18 @@ public class SPV {
                         futuresList.add(Futures.transform(mService.verifySpendableBy(result.getOutput(outpoint), subAccount, pointer), new Function<Boolean, Boolean>() {
                             @Override
                             public Boolean apply(final Boolean input) {
+                                final String key = txHashHex + ":" + outpoint;
                                 if (input) {
                                     final Coin value = result.getOutput(outpoint).getValue();
                                     updateBalance(txOutpoint, subAccount, value);
                                     changedSubaccounts.add(subAccount);
-                                    final String key = txHashStr + ":" + outpoint;
                                     mService.cfgInEdit(SPENDABLE).putLong(key, value.longValue()).apply();
-                                } else {
-                                    Log.e(TAG,
-                                            new Formatter().format("txHash %s outpoint %s not spendable!",
-                                                    txHash.toString(), outpoint.toString()).toString());
-                                }
+                                } else
+                                    Log.e(TAG, "txHash " + key + " not spendable!");
                                 return input;
                             }
                         }));
                     }
-                } else {
-                    Log.e(TAG,
-                            new Formatter().format("txHash mismatch: expected %s != %s received",
-                                    txHash.toString(), result.getHash().toString()).toString());
                 }
                 Futures.addCallback(Futures.allAsList(futuresList), new FutureCallback<List<Boolean>>() {
                     @Override
@@ -341,20 +336,20 @@ public class SPV {
             addToBloomFilter(blockHeight, null, -1, -1, -1);
     }
 
-    private void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int prevIndex, final int subAccount, final int pointer) {
+    private void addToBloomFilter(final Integer blockHeight, final Sha256Hash txHash, final int prevIndex, final int subAccount, final int pointer) {
         if (mBlockChain == null)
             return; // can happen before login (onNewBlock)
-        if (txhash != null) {
-            addToUtxo(txhash, prevIndex, subAccount, pointer);
-        }
+        if (txHash != null)
+            addToUtxo(txHash, prevIndex, subAccount, pointer);
+
         if (blockHeight != null && blockHeight <= mBlockChain.getBestChainHeight() &&
-                (txhash == null || !mUnspentOutpoints.containsKey(txhash))) {
+                (txHash == null || !mUnspentOutpoints.containsKey(txHash))) {
             // new tx or block notification with blockHeight <= current blockHeight means we might've [1]
             // synced the height already while we haven't seen the tx, so we need to re-sync to be able
             // to verify it.
-            // [1] - "might've" in case of txhash == null (block height notification),
+            // [1] - "might've" in case of txHash == null (block height notification),
             //       because it depends on the order of notifications
-            //     - "must've" in case of txhash != null, because this means the tx arrived only after
+            //     - "must've" in case of txHash != null, because this means the tx arrived only after
             //       requesting it manually and we already had higher blockHeight
             //
             // We do it using the special case in bitcoinj for VM crashed because of
@@ -376,13 +371,13 @@ public class SPV {
         }
     }
 
-    private void addToUtxo(final Sha256Hash txhash, final Integer prevIndex, final int subAccount, final int pointer) {
-        mUnspentDetails.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txhash),
+    private void addToUtxo(final Sha256Hash txHash, final Integer prevIndex, final int subAccount, final int pointer) {
+        mUnspentDetails.put(new TransactionOutPoint(Network.NETWORK, prevIndex, txHash),
                             new AccountInfo(subAccount, pointer));
-        if (mUnspentOutpoints.get(txhash) == null)
-            mUnspentOutpoints.put(txhash, Lists.newArrayList(prevIndex));
+        if (mUnspentOutpoints.get(txHash) == null)
+            mUnspentOutpoints.put(txHash, Lists.newArrayList(prevIndex));
         else
-            mUnspentOutpoints.get(txhash).add(prevIndex);
+            mUnspentOutpoints.get(txHash).add(prevIndex);
     }
 
     private ListenableFuture<Boolean>
