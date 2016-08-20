@@ -148,6 +148,10 @@ public class SPV {
         return mPeerGroup;
     }
 
+    public boolean isVerified(final Sha256Hash txHash) {
+        return mService.cfgIn(VERIFIED).getBoolean(txHash.toString(), false);
+    }
+
     public void start() {
         reset(false /* deleteAllData */, true /* deleteUnspent */);
         updateUnspentOutputs();
@@ -184,22 +188,21 @@ public class SPV {
 
                 for (int i = 0; i < result.size(); ++i) {
                     final Map<?, ?> utxo = (Map) result.get(i);
-                    final String txhash = (String) utxo.get("txhash");
+                    final String txHashHex = (String) utxo.get("txhash");
                     final Integer blockHeight = (Integer) utxo.get("block_height");
                     final Integer prevIndex = ((Integer) utxo.get("pt_idx"));
                     final Integer subaccount = ((Integer) utxo.get("subaccount"));
                     final Integer pointer = ((Integer) utxo.get("pointer"));
-                    final Sha256Hash sha256Hash = Sha256Hash.wrap(txhash);
+                    final Sha256Hash txHash = Sha256Hash.wrap(txHashHex);
 
-                    if (!mService.cfgIn(VERIFIED).getBoolean(txhash, false)) {
-                        recalculateBloom = true;
-                        addToBloomFilter(blockHeight, sha256Hash, prevIndex, subaccount, pointer);
+                    if (isVerified(txHash)) {
+                        addToUtxo(txHash, prevIndex, subaccount, pointer);
+                        addUtxoToValues(txHash, false /* updateVerified */);
                     } else {
-                        // already verified
-                        addToUtxo(sha256Hash, prevIndex, subaccount, pointer);
-                        addUtxoToValues(sha256Hash);
+                        recalculateBloom = true;
+                        addToBloomFilter(blockHeight, txHash, prevIndex, subaccount, pointer);
                     }
-                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, prevIndex, sha256Hash));
+                    newUtxos.add(new TransactionOutPoint(Network.NETWORK, prevIndex, txHash));
                 }
 
                 final List<Integer> changedSubaccounts = new ArrayList<>();
@@ -250,8 +253,12 @@ public class SPV {
             mVerifiedCoinBalances.put(subAccount, verifiedBalance.add(addValue));
     }
 
-    public void addUtxoToValues(final Sha256Hash txHash) {
+    public void addUtxoToValues(final Sha256Hash txHash, final boolean updateVerified) {
         final String txHashStr = txHash.toString();
+
+        if (updateVerified)
+            mService.cfgInEdit(VERIFIED).putBoolean(txHashStr, true).apply();
+
         final List<Integer> changedSubaccounts = new ArrayList<>();
         boolean missing = false;
         for (final Integer outpoint : mUnspentOutpoints.get(txHash)) {

@@ -269,6 +269,8 @@ public class GaService extends Service implements INotificationHandler {
     public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }
     public Coin getSPVVerifiedBalance(final int subAccount) { return mSPV.getVerifiedBalance(subAccount); }
 
+    public boolean isSPVVerified(final Sha256Hash txHash) { return mSPV.isVerified(txHash); }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -752,10 +754,9 @@ public class GaService extends Service implements INotificationHandler {
         mTwoFactorConfigObservable.deleteObserver(o);
     }
 
-    public void notifyObservers(final Sha256Hash tx) {
+    public void notifyObservers(final Sha256Hash txHash) {
         // FIXME: later spent outputs can be purged
-        cfgInEdit("verified_utxo_").putBoolean(tx.toString(), true).apply();
-        mSPV.addUtxoToValues(tx);
+        mSPV.addUtxoToValues(txHash, true /* updateVerified */);
         mVerifiedTxObservable.doNotify();
     }
 

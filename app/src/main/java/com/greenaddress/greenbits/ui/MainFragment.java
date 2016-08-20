@@ -21,6 +21,7 @@ import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Monetary;
+import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.DecimalFormat;
@@ -206,9 +207,9 @@ public class MainFragment extends SubaccountFragment {
         if (mTxItems == null)
           return;
 
-        final SharedPreferences prefs = getGAService().cfgIn("verified_utxo_");
+        final GaService service = getGAService();
         for (final TransactionItem txItem : mTxItems)
-            txItem.spvVerified = prefs.getBoolean(txItem.txhash, false);
+            txItem.spvVerified = service.isSPVVerified(Sha256Hash.wrap(txItem.txhash));
 
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();

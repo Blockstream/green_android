@@ -1,6 +1,8 @@
 package com.greenaddress.greenbits.ui;
 import com.greenaddress.greenbits.GaService;
 
+import org.bitcoinj.core.Sha256Hash;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
@@ -144,7 +146,7 @@ public class TransactionItem implements Serializable {
         counterparty = tmpCounterparty;
         isSpent = tmpIsSpent;
         receivedOn = tmpReceivedOn;
-        spvVerified = service.cfgIn("verified_utxo_").getBoolean(txhash, false);
+        spvVerified = service.isSPVVerified(Sha256Hash.wrap(txhash));
         final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         date = df.parse(strVal(txJSON, "created_at"));
