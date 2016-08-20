@@ -290,11 +290,9 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     @Override
-    public void onNewBlock(final int count) {
+    public void onNewBlock(final int blockHeight) {
         Log.i(TAG, "onNewBlock");
-        if (isSPVEnabled())
-            mSPV.addToBloomFilter(count, null, -1, -1, -1);
-
+        mSPV.onNewBlock(blockHeight);
         mNewTxObservable.doNotify();
     }
 

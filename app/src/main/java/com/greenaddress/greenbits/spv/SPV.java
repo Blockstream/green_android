@@ -329,8 +329,12 @@ public class SPV {
         });
     }
 
+    public void onNewBlock(final int blockHeight) {
+        if (isEnabled())
+            addToBloomFilter(blockHeight, null, -1, -1, -1);
+    }
 
-    public void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int prevIndex, final int subAccount, final int pointer) {
+    private void addToBloomFilter(final Integer blockHeight, final Sha256Hash txhash, final int prevIndex, final int subAccount, final int pointer) {
         if (mBlockChain == null)
             return; // can happen before login (onNewBlock)
         if (txhash != null) {
