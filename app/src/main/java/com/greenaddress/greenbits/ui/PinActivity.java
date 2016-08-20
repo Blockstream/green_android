@@ -304,6 +304,7 @@ public class PinActivity extends GaActivity implements Observer {
         getMenuInflater().inflate(R.menu.common_menu, menu);
         getMenuInflater().inflate(R.menu.preauth_menu, menu);
         mMenu = menu;
+        setMenuItemVisible(mMenu, R.id.network_unavailable, !mService.isConnected());
         return true;
     }
 
