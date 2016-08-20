@@ -423,10 +423,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if (mService.isWatchOnly())
-            getMenuInflater().inflate(R.menu.watchonly, menu);
-        else
-            getMenuInflater().inflate(R.menu.main, menu);
+        final int id = mService.isWatchOnly() ? R.menu.watchonly : R.menu.main;
+        getMenuInflater().inflate(id, menu);
         mMenu = menu;
         return true;
     }
