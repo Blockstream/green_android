@@ -36,7 +36,7 @@ public class MainFragment extends SubaccountFragment {
     private MaterialDialog mUnconfirmedDialog = null;
     private View mView;
     private List<TransactionItem> mTxItems;
-    private Map<String, List<String> > replacedTxs;
+    private Map<Sha256Hash, List<Sha256Hash> > replacedTxs;
     private Observer curBalanceObserver;
     private int curSubaccount;
     private final Observer mVerifiedTxObserver = makeUiObserver(new Runnable() { public void run() { onVerifiedTx(); } });
@@ -209,7 +209,7 @@ public class MainFragment extends SubaccountFragment {
 
         final GaService service = getGAService();
         for (final TransactionItem txItem : mTxItems)
-            txItem.spvVerified = service.isSPVVerified(Sha256Hash.wrap(txItem.txhash));
+            txItem.spvVerified = service.isSPVVerified(txItem.txHash);
 
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
@@ -248,7 +248,7 @@ public class MainFragment extends SubaccountFragment {
 
                         showTxView(txList.size() > 0);
 
-                        final String oldTop = mTxItems.size() > 0 ? mTxItems.get(0).txhash : null;
+                        final Sha256Hash oldTop = mTxItems.size() > 0 ? mTxItems.get(0).txHash : null;
                         mTxItems.clear();
                         replacedTxs.clear();
 
@@ -263,9 +263,11 @@ public class MainFragment extends SubaccountFragment {
                                 }
 
                                 for (String replacedBy : replacedList) {
-                                    if (!replacedTxs.containsKey(replacedBy))
-                                        replacedTxs.put(replacedBy, new ArrayList<String>());
-                                    replacedTxs.get(replacedBy).add((String) txJSON.get("txhash"));
+                                    final Sha256Hash replacedHash = Sha256Hash.wrap(replacedBy);
+                                    if (!replacedTxs.containsKey(replacedHash))
+                                        replacedTxs.put(replacedHash, new ArrayList<Sha256Hash>());
+                                    final Sha256Hash newTxHash = Sha256Hash.wrap((String) txJSON.get("txhash"));
+                                    replacedTxs.get(replacedHash).add(newTxHash);
                                 }
                             } catch (final ParseException e) {
                                 e.printStackTrace();
@@ -273,15 +275,14 @@ public class MainFragment extends SubaccountFragment {
                         }
 
                         for (TransactionItem txItem : mTxItems) {
-                            if (!replacedTxs.containsKey(txItem.txhash))
-                                continue;
-                            for (String replaced : replacedTxs.get(txItem.txhash))
-                                txItem.replacedHashes.add(replaced);
+                            if (replacedTxs.containsKey(txItem.txHash))
+                                for (Sha256Hash replaced : replacedTxs.get(txItem.txHash))
+                                    txItem.replacedHashes.add(replaced);
                         }
 
                         txView.getAdapter().notifyDataSetChanged();
 
-                        final String newTop = mTxItems.size() > 0 ? mTxItems.get(0).txhash : null;
+                        final Sha256Hash newTop = mTxItems.size() > 0 ? mTxItems.get(0).txHash : null;
                         if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
                             // A new tx has arrived; scroll to the top to show it
                             txView.smoothScrollToPosition(0);

@@ -825,8 +825,8 @@ public class WalletClient {
         return transactionCall("txs.get_raw_output", txHash.toString());
     }
 
-    public ListenableFuture<Boolean> changeMemo(final String txhash, final String memo) {
-        return simpleCall("txs.change_memo", Boolean.class, txhash, memo);
+    public ListenableFuture<Boolean> changeMemo(final Sha256Hash txHash, final String memo) {
+        return simpleCall("txs.change_memo", Boolean.class, txHash.toString(), memo);
     }
 
     public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {

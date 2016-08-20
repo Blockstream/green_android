@@ -86,7 +86,7 @@ public class TransactionActivity extends GaActivity {
             final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
             final Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, Network.BLOCKEXPLORER_TX + txItem.txhash);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, Network.BLOCKEXPLORER_TX + txItem.txHash.toString());
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
             return true;
@@ -174,7 +174,7 @@ public class TransactionActivity extends GaActivity {
             final TransactionItem txItem = (TransactionItem) getActivity().getIntent().getSerializableExtra("TRANSACTION");
             final GaActivity gaActivity = getGaActivity();
 
-            openInBrowser(hashText, txItem.txhash, Network.BLOCKEXPLORER_TX);
+            openInBrowser(hashText, txItem.txHash.toString(), Network.BLOCKEXPLORER_TX);
 
             final Coin fee = Coin.valueOf(txItem.fee);
             final Coin feePerKb;
@@ -315,11 +315,11 @@ public class TransactionActivity extends GaActivity {
                 if (txItem.replacedHashes.size() > 0) {
                     res = TextUtils.concat(res, Html.fromHtml("replaces transactions:<br/>"));
                     for (int i = 0; i < txItem.replacedHashes.size(); ++i) {
-                        if (i > 0) {
+                        if (i > 0)
                             res = TextUtils.concat(res, Html.fromHtml("<br/>"));
-                        }
-                        String txhash = txItem.replacedHashes.get(i);
-                        res = TextUtils.concat(res, Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + txhash + "\">" + txhash + "</a>"));
+                        final String txHashHex = txItem.replacedHashes.get(i).toString();
+                        final String link = "<a href=\"" + Network.BLOCKEXPLORER_TX + txHashHex + "\">" + txHashHex + "</a>";
+                        res = TextUtils.concat(res, Html.fromHtml(link));
                     }
                 }
                 doubleSpentByText.setText(res);
@@ -375,7 +375,7 @@ public class TransactionActivity extends GaActivity {
                 public void onClick(final View v) {
                     final String edited = UI.getText(memoEditText);
                     if (!edited.equals(UI.getText(memoText))) {
-                        CB.after(service.changeMemo(txItem.txhash, edited),
+                        CB.after(service.changeMemo(txItem.txHash, edited),
                                 new CB.Toast<Boolean>(gaActivity) {
                                     @Override
                                     public void onSuccess(final Boolean result) {

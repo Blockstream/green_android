@@ -31,7 +31,7 @@ public class TransactionItem implements Serializable {
     public final String counterparty;
     public final String receivedOn;
     public final boolean replaceable;
-    public final String txhash;
+    public final Sha256Hash txHash;
     public final String doubleSpentBy;
     public final Date date;
     public final String memo;
@@ -39,7 +39,7 @@ public class TransactionItem implements Serializable {
     public final boolean isSpent;
     public final long fee;
     public final int size;
-    public final List<String> replacedHashes;
+    public final List<Sha256Hash> replacedHashes;
     public final String data;
     public final List eps;
 
@@ -78,7 +78,7 @@ public class TransactionItem implements Serializable {
         replacedHashes = new ArrayList<>();
         data = strVal(txJSON, "data");
         eps = (List) txJSON.get("eps");
-        txhash = strVal(txJSON, "txhash");
+        txHash = Sha256Hash.wrap(strVal(txJSON, "txhash"));
 
         memo = txJSON.containsKey("memo") ? strVal(txJSON, "memo") : null;
 
@@ -146,7 +146,7 @@ public class TransactionItem implements Serializable {
         counterparty = tmpCounterparty;
         isSpent = tmpIsSpent;
         receivedOn = tmpReceivedOn;
-        spvVerified = service.isSPVVerified(Sha256Hash.wrap(txhash));
+        spvVerified = service.isSPVVerified(txHash);
         final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         date = df.parse(strVal(txJSON, "created_at"));
