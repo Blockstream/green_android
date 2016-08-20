@@ -403,7 +403,7 @@ public class GaService extends Service implements INotificationHandler {
                 }
                 if (!isWatchOnly()) {
                     getAvailableTwoFactorMethods();
-                    mSPV.startIfEnabled();
+                    mSPV.start();
                 }
                 mState.transitionTo(ConnState.LOGGEDIN);
             }

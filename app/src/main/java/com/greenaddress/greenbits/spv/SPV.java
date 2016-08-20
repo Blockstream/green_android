@@ -148,7 +148,7 @@ public class SPV {
         return mPeerGroup;
     }
 
-    public void startIfEnabled() {
+    public void start() {
         reset(false /* deleteAllData */, true /* deleteUnspent */);
         updateUnspentOutputs();
     }
