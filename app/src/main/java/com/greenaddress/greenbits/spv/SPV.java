@@ -94,11 +94,16 @@ public class SPV {
         return !mService.isWatchOnly() && mService.cfg("SPV").getBoolean("enabled", true);
     }
 
+    private <T> String Var(final String name, final T value) {
+        return name + " => " + value.toString() + " ";
+    }
+
     public void setEnabled(final boolean enabled) {
 
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
+                Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("isEnabled", isEnabled()));
                 if (enabled != isEnabled()) {
                     mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
                     // FIXME: Should we delete unspent here?
@@ -118,7 +123,9 @@ public class SPV {
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(final Object[] params) {
-                if (enabled != mService.isSPVSyncOnMobileEnabled()) {
+                Log.d(TAG, "setSyncOnMobileEnabled: " + Var("enabled", enabled) +
+                      Var("isSyncOnMobileEnabled", isSyncOnMobileEnabled()));
+                if (enabled != isSyncOnMobileEnabled()) {
                     mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
                     onNetConnectivityChanged(mService.getNetworkInfo());
                 }
@@ -130,12 +137,15 @@ public class SPV {
     public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
 
     public void setTrustedPeers(final String peers) {
-        mService.cfgEdit("TRUSTED").putString("address", peers).apply();
-        mService.setUserConfig("trusted_peer_addr", peers, true);
 
         new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(Object[] params) {
+                Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) +
+                      Var("getTrustedPeers", getTrustedPeers()));
+                mService.cfgEdit("TRUSTED").putString("address", peers).apply();
+                mService.setUserConfig("trusted_peer_addr", peers, true);
+
                 // FIXME: Should we delete unspent here?
                 reset(false /* deleteAllData */, false /* deleteUnspent */);
                 return null;
@@ -152,6 +162,7 @@ public class SPV {
     }
 
     public void start() {
+        Log.d(TAG, "start");
         reset(false /* deleteAllData */, true /* deleteUnspent */);
         updateUnspentOutputs();
     }
@@ -176,6 +187,7 @@ public class SPV {
     }
 
     public void updateUnspentOutputs() {
+        Log.d(TAG, "updateUnspentOutputs: " + Var("isEnabled", isEnabled()));
         if (!isEnabled())
             return;
 
@@ -185,6 +197,7 @@ public class SPV {
                 final Set<TransactionOutPoint> newUtxos = new HashSet<>();
                 boolean recalculateBloom = false;
 
+                Log.d(TAG, Var("number of outputs", result.size()));
                 for (int i = 0; i < result.size(); ++i) {
                     final Map<?, ?> utxo = (Map) result.get(i);
                     final String txHashHex = (String) utxo.get("txhash");
@@ -235,6 +248,7 @@ public class SPV {
     }
 
     private void resetUnspent() {
+        Log.d(TAG, "resetUnspent");
         mUnspentDetails.clear();
         mUnspentOutpoints.clear();
         mCountedUtxoValues.clear();
@@ -332,6 +346,8 @@ public class SPV {
     }
 
     public void onNewBlock(final int blockHeight) {
+        Log.d(TAG, "onNewBlock: " + Var("blockHeight", blockHeight) +
+              Var("isEnabled", isEnabled()));
         if (isEnabled())
             addToBloomFilter(blockHeight, null, -1, -1, -1);
     }
@@ -448,6 +464,7 @@ public class SPV {
     }
 
     private synchronized void startSync() {
+        Log.d(TAG, "startSync: " + Var("mPeerGroup.isRunning", mPeerGroup.isRunning()));
         if (mPeerGroup.isRunning())
              return;
 
@@ -457,11 +474,13 @@ public class SPV {
                 mPeerGroup.startBlockChainDownload(new DownloadProgressTracker() {
                     @Override
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
+                        Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
                         mBlocksRemaining = blocksLeft;
                     }
 
                     @Override
                     public void onBlocksDownloaded(final Peer peer, final Block block, final FilteredBlock filteredBlock, final int blocksLeft) {
+                        //Log.d(TAG, "onBlocksDownloaded: " + Var("blocksLeft", blocksLeft));
                         mBlocksRemaining = blocksLeft;
                     }
                 });
@@ -506,14 +525,16 @@ public class SPV {
     }
 
     private synchronized void setup(){
-        //teardownSPV must be called if SPV already exists
-        //and stopSPV if previous still running.
+        Log.d(TAG, "setup: " + Var("mPeerGroup != null", mPeerGroup != null));
+
         if (mPeerGroup != null) {
-            Log.d(TAG, "Must stop and tear down SPV before setting up again!");
+            // FIXME: Make sure this can never happen
+            Log.e(TAG, "Must stop and tear down SPV before setting up again!");
             return;
         }
 
         try {
+            Log.d(TAG, "Creating block store");
             mBlockStore = new SPVBlockStore(Network.NETWORK, mService.getSPVChainFile());
             final StoredBlock storedBlock = mBlockStore.getChainHead(); // detect corruptions as early as possible
             if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
@@ -534,6 +555,7 @@ public class SPV {
                     }
                 }
             }
+            Log.d(TAG, "Creating block chain");
             mBlockChain = new BlockChain(Network.NETWORK, mBlockStore);
             if (mBlockChainListener != null)
                 mBlockChainListener.onDispose();
@@ -549,6 +571,7 @@ public class SPV {
             System.setProperty("socksProxyHost", proxyHost);
             System.setProperty("socksProxyPort", proxyPort);
 
+            Log.d(TAG, "Creating peer group");
             if (!TextUtils.isEmpty(proxyHost) && !TextUtils.isEmpty(proxyPort)) {
                 final org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(Network.NETWORK);
                 mPeerGroup = new PeerGroup(context, mBlockChain, new BlockingClientManager());
@@ -568,6 +591,7 @@ public class SPV {
             mPeerFilter = new PeerFilterProvider(this);
             mPeerGroup.addPeerFilterProvider(mPeerFilter);
 
+            Log.d(TAG, "Adding peers");
             final ArrayList<String> addresses;
             addresses = new ArrayList<String>(Arrays.asList(peers.split(",")));
             if (addresses.isEmpty())
@@ -582,8 +606,10 @@ public class SPV {
     }
 
     public synchronized void stopSync() {
+        Log.d(TAG, "stopSync: " + Var("isEnabled", isEnabled()));
 
         if (mPeerGroup != null && mPeerGroup.isRunning()) {
+            Log.d(TAG, "Stopping peer group");
             final Intent i = new Intent("PEERGROUP_UPDATED");
             i.putExtra("peergroup", "stopSPVSync");
             mService.sendBroadcast(i);
@@ -592,12 +618,14 @@ public class SPV {
         }
 
         if (mBlockChain != null && mBlockChainListener != null) {
+            Log.d(TAG, "Disposing of block chain");
             mBlockChain.removeListener(mBlockChainListener);
             mBlockChainListener.onDispose();
             mBlockChainListener = null;
         }
 
         if (mPeerGroup != null) {
+            Log.d(TAG, "Deleting peer group");
             if (mPeerFilter != null) {
                 mPeerGroup.removePeerFilterProvider(mPeerFilter);
                 mPeerFilter.onDispose();
@@ -607,6 +635,7 @@ public class SPV {
         }
 
         if (mBlockStore != null) {
+            Log.d(TAG, "Closing block store");
             try {
                 mBlockStore.close();
                 mBlockStore = null;
@@ -621,12 +650,16 @@ public class SPV {
     }
 
     public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
+        Log.d(TAG, "reset: " + Var("deleteAllData", deleteAllData) +
+              Var("deleteUnspent", deleteUnspent));
         stopSync();
 
         if (deleteAllData) {
+            Log.d(TAG, "Deleting chain file");
             mService.getSPVChainFile().delete();
 
             try {
+                Log.d(TAG, "Clearing verified and spendable transactions");
                 mService.cfgInEdit(SPENDABLE).clear().commit();
                 mService.cfgInEdit(VERIFIED).clear().commit();
             } catch (final NullPointerException e) {
@@ -634,12 +667,15 @@ public class SPV {
             }
         }
 
-        if (deleteUnspent)
+        if (deleteUnspent) {
+            Log.d(TAG, "Resetting unspent outputs");
             resetUnspent();
+        }
 
         if (isEnabled()) {
             setup();
             startSync();
         }
+        Log.d(TAG, "Finished reset");
     }
 }
