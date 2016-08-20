@@ -582,7 +582,7 @@ public class TransactionActivity extends GaActivity {
                                     new TransactionOutPoint(
                                             Network.NETWORK,
                                             (Integer) ep.get("pt_idx"),
-                                            Sha256Hash.wrap(Wally.hex_to_bytes((String) ep.get("txhash")))
+                                            Sha256Hash.wrap((String) ep.get("txhash"))
                                     ),
                                     Coin.valueOf(Long.valueOf((String) ep.get("value")))
                             )
