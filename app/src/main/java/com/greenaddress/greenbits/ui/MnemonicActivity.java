@@ -434,8 +434,8 @@ public class MnemonicActivity extends GaActivity {
                 finish();
                 break;
             case QRSCANNER:
-                if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
-                    mMnemonicText.setText(data.getStringExtra("com.greenaddress.greenbits.QrText"));
+                if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {
+                    mMnemonicText.setText(data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT));
                     login();
                 }
                 break;

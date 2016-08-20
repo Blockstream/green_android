@@ -278,8 +278,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 finish();
                 break;
             case REQUEST_SEND_QR_SCAN:
-                if (data != null && data.getStringExtra("com.greenaddress.greenbits.QrText") != null) {
-                    String scanned = data.getStringExtra("com.greenaddress.greenbits.QrText");
+                if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {
+                    String scanned = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
                     if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
                         scanned = String.format("bitcoin:%s", scanned);
                     }
@@ -301,7 +301,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     return;
                 }
                 ECKey keyNonFinal = null;
-                final String qrText = data.getStringExtra("com.greenaddress.greenbits.QrText");
+                final String qrText = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
                 try {
                     keyNonFinal = new DumpedPrivateKey(Network.NETWORK,
                             qrText).getKey();
@@ -342,7 +342,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                             txNonBip38 = null;
                             // amount not known until decrypted
                             mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> funds from the password protected BIP38 key below?"));
-                            address = data.getStringExtra("com.greenaddress.greenbits.QrText");
+                            address = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
                         }
 
 
