@@ -391,6 +391,7 @@ public class SPV {
                 // should rollback already
             } catch (final Exception e) {
                 // FIXME: Seems this often happens, at least on initial startup
+                e.printStackTrace();
                 Log.w(TAG, "fakeWallet exception: " + e.toString());
             }
         }
