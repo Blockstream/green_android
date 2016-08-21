@@ -1,8 +1,12 @@
 package com.greenaddress.greenbits.spv;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -16,6 +20,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.ui.R;
 import com.subgraph.orchid.TorClient;
 
 import org.bitcoinj.core.Address;
@@ -50,6 +55,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -81,6 +87,9 @@ public class SPV {
     private BlockChain mBlockChain;
     private PeerGroup mPeerGroup;
     private PeerFilterProvider mPeerFilter;
+    private NotificationManager mNotifyManager;
+    private Builder mNotificationBuilder;
+    private final static int mNotificationId = 1;
 
     public SPV(final GaService service) {
         mService = service;
@@ -478,6 +487,11 @@ public class SPV {
         if (mPeerGroup.isRunning())
              return;
 
+        if (mNotifyManager == null) {
+            mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationBuilder = new NotificationCompat.Builder(mService);
+        }
+
         Futures.addCallback(mPeerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
             public void onSuccess(final Object result) {
@@ -486,12 +500,42 @@ public class SPV {
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
                         Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
                         mBlocksRemaining = blocksLeft;
+                        super.onChainDownloadStarted(peer, blocksLeft);
                     }
 
                     @Override
                     public void onBlocksDownloaded(final Peer peer, final Block block, final FilteredBlock filteredBlock, final int blocksLeft) {
                         //Log.d(TAG, "onBlocksDownloaded: " + Var("blocksLeft", blocksLeft));
                         mBlocksRemaining = blocksLeft;
+                        super.onBlocksDownloaded(peer, block, filteredBlock, blocksLeft);
+                    }
+
+                    @Override
+                    protected void startDownload(int blocks) {
+                        Log.d(TAG, "startDownload");
+                        mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
+                                            .setSmallIcon(R.drawable.ic_sync_black_24dp)
+                                            .setContentText("Sync in progress.");
+                        updateUI(100, 0);
+                    }
+
+                    @Override
+                    protected void progress(double percent, int blocksSoFar, Date date) {
+                        //Log.d(TAG, "progress: " + Var("percent", percent));
+                        updateUI(100, (int) percent);
+                    }
+
+                    @Override
+                    protected void doneDownload() {
+                        Log.d(TAG, "doneDownLoad");
+                        mNotificationBuilder.setContentText("Download complete");
+                        updateUI(0, 0);
+                        mNotifyManager.cancel(mNotificationId);
+                    }
+
+                    private void updateUI(final int total, final int soFar) {
+                        mNotificationBuilder.setProgress(total, soFar, false);
+                        mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
                     }
                 });
             }
