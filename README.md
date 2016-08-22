@@ -33,6 +33,22 @@ This will build both MAINNET and TESTNET builds
 
 For TESTNET only run `./gradlew assembleBtctestnetDebug`
 
+#### Rebuild the checkpoints (optional)
+
+Start on localhost Bitcoin Core on both MainNet and TestNet and make sure they are synchronized and finished booting (verifying blocks, etc)
+
+MainNet:
+
+`./gradlew --project-dir=bitcoinj/tools buildMainnetCheckpoints && mv bitcoinj/tools/checkpoints app/src/production/assets/checkpoints`
+
+TestNet:
+
+`./gradlew --project-dir=bitcoinj/tools buildTestnetCheckpoints && mv bitcoinj/tools/checkpoints-testnet app/src/btctestnet/assets/checkpoints`
+
+or for both in one go run:
+
+`./buildCheckpoints.sh`
+
 ### Acknowledgements
 
 Thanks to [Bitcoin Wallet for Android](https://github.com/schildbach/bitcoin-wallet) for their QR scanning activity source code!

@@ -18,3 +18,7 @@ app/src/main/jniLibs/*
 *.so
 GreenBits.iml
 app/app.iml
+bitcoinj/tools/checkpoints.txt
+bitcoinj/tools/checkpoints-testnet.txt
+bitcoinj/tools/checkpoints-testnet
+bitcoinj/tools/checkpoints

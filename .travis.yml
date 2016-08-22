@@ -18,6 +18,7 @@ jdk:
 script:
    - sed -i -e 's/enable true/enable false/g' app/build.gradle
    - ./gradlew --stacktrace clean assembleProductRelease -PdisablePreDex
+   - ./gradlew --project-dir=bitcoinj/tools build
 
 before_install:
    - curl -O http://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip
