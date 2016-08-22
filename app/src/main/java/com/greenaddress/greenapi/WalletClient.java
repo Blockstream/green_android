@@ -265,10 +265,15 @@ public class WalletClient {
         });
     }
 
-    public void setProxy(final String host, final String port) throws UnknownHostException {
+    public void setProxy(final String host, final String port) {
         if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(port)) {
-            mProxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
-            mHttpClient.setSocketFactory(new Socks5SocketFactory(host, port));
+            try {
+                mProxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
+                mHttpClient.setSocketFactory(new Socks5SocketFactory(host, port));
+            } catch (final UnknownHostException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         } else {
             mProxyAddress = null;
             mHttpClient.setSocketFactory(null);

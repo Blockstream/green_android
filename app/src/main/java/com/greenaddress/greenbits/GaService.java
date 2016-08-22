@@ -58,7 +58,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -183,12 +182,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void reloadSettings() {
-        try {
-            mClient.setProxy(getProxyHost(), getProxyPort());
-        } catch (final UnknownHostException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        mClient.setProxy(getProxyHost(), getProxyPort());
         mClient.setTorEnabled(getTorEnabled());
     }
 
