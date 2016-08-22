@@ -491,6 +491,8 @@ public class SPV {
         if (mNotifyManager == null) {
             mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationBuilder = new NotificationCompat.Builder(mService);
+            mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
+                                .setSmallIcon(R.drawable.ic_sync_black_24dp);
         }
 
         Futures.addCallback(mPeerGroup.startAsync(), new FutureCallback<Object>() {
@@ -514,9 +516,7 @@ public class SPV {
                     @Override
                     protected void startDownload(int blocks) {
                         Log.d(TAG, "startDownload");
-                        mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
-                                            .setSmallIcon(R.drawable.ic_sync_black_24dp)
-                                            .setContentText("Sync in progress.");
+                        mNotificationBuilder.setContentText("Sync in progress.");
                         updateUI(100, 0);
                     }
 
