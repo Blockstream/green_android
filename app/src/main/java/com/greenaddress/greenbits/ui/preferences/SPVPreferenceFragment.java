@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -59,25 +60,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         getActivity().setResult(Activity.RESULT_OK, null);
     }
 
-    // FIXME: Verification of trusted peers does not belong in the UI layer,
-    //        it should be available through the service.
-    private boolean isBadAddress(final String s) {
-        try {
-            final int idx = s.indexOf(":");
-            if (idx != -1)
-                Integer.parseInt(s.substring(idx + 1));
-        } catch (final NumberFormatException e) {
-            return true;
-        }
-
-        if (s.isEmpty() || s.contains("."))
-            return false;
-
-        UI.popup(getActivity(), R.string.enterValidAddressTitle, android.R.string.ok)
-          .content(R.string.enterValidAddressText).build().show();
-        return true;
-    }
-
     private void setTrustedPeersPreference(final String peers, final boolean setTextValue) {
 
         if (peers.isEmpty()) {
@@ -118,8 +100,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         }
 
         for (final String peer: peers.split(","))
-            if (isBadAddress(peer))
+            if (GaService.isBadAddress(peer)) {
+                UI.popup(getActivity(), R.string.enterValidAddressTitle, android.R.string.ok)
+                        .content(R.string.enterValidAddressText).build().show();
                 return false;
+            }
 
         if (peers.toLowerCase().contains(".onion")) {
             // Tor address

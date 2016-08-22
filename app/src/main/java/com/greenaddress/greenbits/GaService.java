@@ -58,6 +58,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -264,13 +266,25 @@ public class GaService extends Service implements INotificationHandler {
 
     public void resetSPV() { mSPV.reset(true /* deleteAllData */, true /* deleteUnspent */); }
 
-    public SPV.Node createSPVNode(final String address) { return mSPV.createNode(address); }
     public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
     public int getSPVHeight() { return mSPV.getSPVHeight(); }
     public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }
     public Coin getSPVVerifiedBalance(final int subAccount) { return mSPV.getVerifiedBalance(subAccount); }
 
     public boolean isSPVVerified(final Sha256Hash txHash) { return mSPV.isVerified(txHash); }
+
+    public static boolean isBadAddress(final String s) {
+        if (s.isEmpty())
+            return false;
+
+        try {
+            new URI("btc://" + s);
+            return false;
+        } catch (final URISyntaxException e) {
+        }
+
+        return true;
+    }
 
     @Override
     public void onCreate() {

@@ -56,6 +56,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -457,27 +458,6 @@ public class SPV {
         });
     }
 
-    public class Node {
-        final String mAddress;
-        final int mPort;
-
-        Node(final String address) {
-            final int index_port = address.indexOf(":");
-            if (index_port != -1) {
-                mAddress = address.substring(0, index_port);
-                mPort = Integer.parseInt(address.substring(index_port + 1));
-            } else {
-                mAddress = address;
-                mPort = Network.NETWORK.getPort();
-            }
-        }
-        public String toString(){
-            return String.format("%s:%d", mAddress, mPort);
-        }
-    }
-
-    public Node createNode(final String address) { return new Node(address); }
-
     public int getSPVBlocksRemaining() {
         if (isEnabled())
             return mBlocksRemaining;
@@ -555,7 +535,33 @@ public class SPV {
         });
     }
 
-    private void addPeer(final String address) throws UnknownHostException {
+    private PeerAddress getPeerAddress(final String address) throws URISyntaxException, UnknownHostException {
+        final URI uri = new URI("btc://" + address);
+        final String host = uri.getHost();
+        final int port = uri.getPort() == -1? Network.NETWORK.getPort() : uri.getPort();
+
+        if (!mService.isProxyEnabled())
+            return new PeerAddress(Network.NETWORK, InetAddress.getByName(host), port);
+        else
+            return new PeerAddress(Network.NETWORK, host, port) {
+                @Override
+                public InetSocketAddress toSocketAddress() {
+                    return InetSocketAddress.createUnresolved(host, port);
+                }
+
+                @Override
+                public String toString() {
+                    return String.format("%s:%s", host, port);
+                }
+
+                @Override
+                public int hashCode() {
+                    return host.hashCode() ^ port;
+                }
+            };
+    }
+
+    private void addPeer(final String address) throws URISyntaxException, UnknownHostException {
 
         if (address.isEmpty()) {
             // Blank - Use the built in list, resolving via DNS
@@ -572,34 +578,10 @@ public class SPV {
             }
             return;
         }
-
-        final Node n = createNode(address);
-        final PeerAddress peer;
         try {
-
-            if (!mService.isProxyEnabled())
-                peer = new PeerAddress(Network.NETWORK, InetAddress.getByName(n.mAddress), n.mPort);
-            else
-                peer = new PeerAddress(Network.NETWORK, n.mAddress, n.mPort) {
-                    @Override
-                    public InetSocketAddress toSocketAddress() {
-                        return InetSocketAddress.createUnresolved(n.mAddress, n.mPort);
-                    }
-
-                    @Override
-                    public String toString() {
-                        return n.toString();
-                    }
-
-                    @Override
-                    public int hashCode() {
-                        return n.mAddress.hashCode() ^ n.mPort;
-                    }
-                };
-
-            mPeerGroup.addAddress(peer);
+            mPeerGroup.addAddress(getPeerAddress(address));
         } catch (final UnknownHostException e) {
-            // FIXME: Should report this error
+            // FIXME: Should report this error: one the host here couldn't be resolved
             e.printStackTrace();
         }
     }
@@ -678,7 +660,8 @@ public class SPV {
             for (final String address: addresses)
                 addPeer(address);
 
-        } catch (final BlockStoreException | UnknownHostException e) {
+
+        } catch (final BlockStoreException | UnknownHostException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
