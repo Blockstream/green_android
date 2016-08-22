@@ -141,7 +141,10 @@ public class SPV {
                       Var("isSyncOnMobileEnabled", isSyncOnMobileEnabled()));
                 if (enabled != isSyncOnMobileEnabled()) {
                     mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
-                    onNetConnectivityChanged(mService.getNetworkInfo());
+                    if (enabled && isEnabled())
+                        startSync();
+                    else
+                        stopSync();
                 }
                 return null;
             }
