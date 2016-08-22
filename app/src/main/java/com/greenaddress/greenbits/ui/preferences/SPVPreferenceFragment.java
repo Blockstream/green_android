@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -127,7 +126,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             if (!mService.isProxyEnabled()) {
                 UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)
                   .content(R.string.enterValidAddressTextTorDisabled).build().show();
-               return true;
+               return false;
             }
             setTrustedPeers(peers);
             return true;
