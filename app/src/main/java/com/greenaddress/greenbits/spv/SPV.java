@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.spv;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
@@ -92,9 +93,11 @@ public class SPV {
     private NotificationManager mNotifyManager;
     private Builder mNotificationBuilder;
     private final static int mNotificationId = 1;
+    private int mNetWorkType;
 
     public SPV(final GaService service) {
         mService = service;
+        mNetWorkType = ConnectivityManager.TYPE_DUMMY;
     }
 
     public GaService getService() {
@@ -548,7 +551,7 @@ public class SPV {
             }
         });
     }
-    
+
     private void addPeer(final String address) throws UnknownHostException {
 
         if (address.isEmpty()) {
@@ -711,8 +714,36 @@ public class SPV {
         }
     }
 
+    // We only care about mobile vs non-mobile so treat others as ethernet
+    private int getNetworkType(final NetworkInfo info) {
+        if (info == null)
+            return ConnectivityManager.TYPE_DUMMY;
+        final int type = info.getType();
+        return type == ConnectivityManager.TYPE_MOBILE ? type : ConnectivityManager.TYPE_ETHERNET;
+    }
+
+    private int getNetworkType() { return getNetworkType(mService.getNetworkInfo()); }
+
+    // Handle changes to network connectivity.
+    // Note that this only handles mobile/non-mobile transitions,
     public void onNetConnectivityChanged(final NetworkInfo info) {
-        // FIXME
+        final int oldType = mNetWorkType;
+        final int newType = getNetworkType(info);
+        mNetWorkType = newType;
+
+        if (!isEnabled() || newType == oldType)
+            return; // No change
+
+        Log.d(TAG, "onNetConnectivityChanged: " + Var("newType", newType) +
+              Var("oldType", oldType) + Var("isSyncOnMobileEnabled", isSyncOnMobileEnabled()));
+
+        if (newType == ConnectivityManager.TYPE_MOBILE) {
+            if (!isSyncOnMobileEnabled())
+                stopSync(); // Mobile network and we have sync mobile disabled
+        } else if (oldType == ConnectivityManager.TYPE_MOBILE) {
+            if (isSyncOnMobileEnabled())
+                startSync(); // Non-Mobile network and we have sync mobile enabled
+        }
     }
 
     public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
@@ -740,7 +771,14 @@ public class SPV {
 
         if (isEnabled()) {
             setup();
-            startSync();
+
+            // We might race with our network callbacks, so fetch the network type
+            // if its unknown.
+            if (mNetWorkType == ConnectivityManager.TYPE_DUMMY)
+                mNetWorkType = getNetworkType();
+
+            if (isSyncOnMobileEnabled() || mNetWorkType != ConnectivityManager.TYPE_MOBILE)
+                startSync();
         }
         Log.d(TAG, "Finished reset");
     }

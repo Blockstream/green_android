@@ -201,7 +201,7 @@ public class GaService extends Service implements INotificationHandler {
                     return;
                 try {
                     if (mClient.isWatchOnly())
-                            loginImpl(mClient.watchOnlylogin(mClient.getWatchOnlyUsername(), mClient.getWatchOnlyPassword()));
+                        loginImpl(mClient.watchOnlylogin(mClient.getWatchOnlyUsername(), mClient.getWatchOnlyPassword()));
                     else if (mClient.getSigningWallet() != null)
                         loginImpl(mClient.login(mClient.getSigningWallet(), mDeviceId));
                 } catch (final Exception e) {
@@ -1019,6 +1019,7 @@ public class GaService extends Service implements INotificationHandler {
         } else if (mState.isDisconnectedOrOffline()) {
             // We have a network connection and are currently disconnected/offline:
             // Move to disconnected and try to reconnect
+            mSPV.onNetConnectivityChanged(info);
             mState.transitionTo(ConnState.DISCONNECTED);
             reconnect();
         } else
