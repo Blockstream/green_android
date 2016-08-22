@@ -154,7 +154,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void setFiatCurrency(final String currency) {
-        getLoginData().currency = mFiatCurrency;
+        getLoginData().currency = currency;
         mFiatCurrency = currency;
     }
 
