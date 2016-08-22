@@ -119,7 +119,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         for (final String peer: peers.split(","))
             if (isBadAddress(peer))
-                return true;
+                return false;
 
         if (peers.toLowerCase().contains(".onion")) {
             // Tor address

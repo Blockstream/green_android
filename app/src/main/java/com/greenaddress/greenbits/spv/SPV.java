@@ -39,7 +39,9 @@ import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.VerificationException;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
+import org.bitcoinj.core.listeners.TransactionReceivedInBlockListener;
 import org.bitcoinj.net.BlockingClientManager;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.net.discovery.HttpDiscovery;
@@ -82,12 +84,11 @@ public class SPV {
     private final Map<Sha256Hash, List<Integer>> mUnspentOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, AccountInfo> mUnspentDetails = new HashMap<>();
     private final GaService mService;
-    private BlockChainListener mBlockChainListener;
     private int mBlocksRemaining = Integer.MAX_VALUE;
     private BlockStore mBlockStore;
     private BlockChain mBlockChain;
     private PeerGroup mPeerGroup;
-    private PeerFilterProvider mPeerFilter;
+    private final PeerFilterProvider mPeerFilter = new PeerFilterProvider(this);
     private NotificationManager mNotifyManager;
     private Builder mNotificationBuilder;
     private final static int mNotificationId = 1;
@@ -597,6 +598,19 @@ public class SPV {
         }
     }
 
+    final TransactionReceivedInBlockListener mTxListner = new TransactionReceivedInBlockListener() {
+        @Override
+        public void receiveFromBlock(final Transaction tx, final StoredBlock block, final BlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
+            getService().notifyObservers(tx.getHash());
+        }
+
+        @Override
+        public boolean notifyTransactionIsInBlock(final Sha256Hash txHash, final StoredBlock block, final BlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
+            getService().notifyObservers(txHash);
+            return isUnspentOutpoint(txHash);
+        }
+    };
+
     private synchronized void setup(){
         Log.d(TAG, "setup: " + Var("mPeerGroup != null", mPeerGroup != null));
 
@@ -630,10 +644,7 @@ public class SPV {
             }
             Log.d(TAG, "Creating block chain");
             mBlockChain = new BlockChain(Network.NETWORK, mBlockStore);
-            if (mBlockChainListener != null)
-                mBlockChainListener.onDispose();
-            mBlockChainListener = new BlockChainListener(this);
-            mBlockChain.addListener(mBlockChainListener);
+            mBlockChain.addTransactionReceivedListener(mTxListner);
 
             System.setProperty("user.home", mService.getFilesDir().toString());
             final String peers = getTrustedPeers();
@@ -651,9 +662,6 @@ public class SPV {
                 mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain);
             }
 
-            if (mPeerFilter != null)
-                mPeerFilter.onDispose();
-            mPeerFilter = new PeerFilterProvider(this);
             mPeerGroup.addPeerFilterProvider(mPeerFilter);
 
             Log.d(TAG, "Adding peers");
@@ -677,24 +685,18 @@ public class SPV {
             final Intent i = new Intent("PEERGROUP_UPDATED");
             i.putExtra("peergroup", "stopSPVSync");
             mService.sendBroadcast(i);
-
             mPeerGroup.stop();
         }
 
-        if (mBlockChain != null && mBlockChainListener != null) {
+        if (mBlockChain != null) {
             Log.d(TAG, "Disposing of block chain");
-            mBlockChain.removeListener(mBlockChainListener);
-            mBlockChainListener.onDispose();
-            mBlockChainListener = null;
+            mBlockChain.removeTransactionReceivedListener(mTxListner);
+            mBlockChain = null;
         }
 
         if (mPeerGroup != null) {
             Log.d(TAG, "Deleting peer group");
-            if (mPeerFilter != null) {
-                mPeerGroup.removePeerFilterProvider(mPeerFilter);
-                mPeerFilter.onDispose();
-                mPeerFilter = null;
-            }
+            mPeerGroup.removePeerFilterProvider(mPeerFilter);
             mPeerGroup = null;
         }
 
