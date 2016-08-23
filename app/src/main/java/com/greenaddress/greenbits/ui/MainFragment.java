@@ -23,7 +23,6 @@ import org.bitcoinj.core.Monetary;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.utils.MonetaryFormat;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,12 +86,7 @@ public class MainFragment extends SubaccountFragment {
         final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
         final TextView balanceFiatText = UI.find(mView, R.id.mainLocalBalanceText);
         final FontAwesomeTextView balanceFiatIcon = UI.find(mView, R.id.mainLocalBalanceIcon);
-        final DecimalFormat formatter = new DecimalFormat("#,###.########");
-        try {
-            balanceText.setText(formatter.format(Double.valueOf(btcBalance)));
-        } catch (final NumberFormatException e) {
-            balanceText.setText(btcBalance);
-        }
+        UI.setAmountText(balanceText, btcBalance);
 
         final int nChars = balanceText.getText().length() + balanceQuestionMark.getText().length() + bitcoinScale.getText().length() + balanceBitcoinIcon.getText().length();
         final int size = Math.min(50 - nChars, 34);
@@ -100,11 +94,7 @@ public class MainFragment extends SubaccountFragment {
         bitcoinScale.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         balanceBitcoinIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 
-        try {
-            balanceFiatText.setText(formatter.format(Double.valueOf(fiatBalance)));
-        } catch (final NumberFormatException e) {
-            balanceFiatText.setText(fiatBalance);
-        }
+        UI.setAmountText(balanceFiatText, fiatBalance);
 
         if (converted != null) {
             balanceFiatIcon.setText(Html.fromHtml(converted + " "));

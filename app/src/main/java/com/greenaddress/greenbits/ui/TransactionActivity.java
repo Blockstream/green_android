@@ -45,7 +45,6 @@ import org.bitcoinj.utils.MonetaryFormat;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -262,29 +261,14 @@ public class TransactionActivity extends GaActivity {
                 feeUnit.setText(Html.fromHtml("&#xf15a; "));
             }
             final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
-            final DecimalFormat formatter = new DecimalFormat("#,###.########");
-
-            try {
-                amount.setText(formatter.format(Double.valueOf(btcBalance)));
-            } catch (final NumberFormatException e) {
-                amount.setText(btcBalance);
-            }
-
+            UI.setAmountText(amount, btcBalance);
 
             final String btcFee = bitcoinFormat.noCode().format(fee).toString();
             final String btcFeePerKb = bitcoinFormat.noCode().format(feePerKb).toString();
-            String feeInfoTextStr = "";
-            try {
-                feeInfoTextStr += formatter.format(Double.valueOf(btcFee));
-            } catch (final NumberFormatException e) {
-                feeInfoTextStr += btcFee;
-            }
+            String feeInfoTextStr = UI.setAmountText(null, btcFee);
             feeInfoTextStr += " / " + String.valueOf(txItem.size) + " / ";
-            try {
-                feeInfoTextStr += formatter.format(Double.valueOf(btcFeePerKb));
-            } catch (final NumberFormatException e) {
-                feeInfoTextStr += btcFeePerKb;
-            }
+            feeInfoTextStr += UI.setAmountText(null, btcFeePerKb);
+
             feeInfoText.setText(feeInfoTextStr);
 
             dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));

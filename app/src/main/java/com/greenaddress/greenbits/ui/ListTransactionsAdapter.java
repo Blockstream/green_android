@@ -18,7 +18,6 @@ import com.greenaddress.greenbits.GaService;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class ListTransactionsAdapter extends
@@ -61,13 +60,7 @@ public class ListTransactionsAdapter extends
         }
 
         final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
-
-        final DecimalFormat formatter = new DecimalFormat("#,###.########");
-        try {
-            holder.textValue.setText(formatter.format(Double.valueOf(btcBalance)));
-        } catch (final NumberFormatException e) {
-            holder.textValue.setText(btcBalance);
-        }
+        UI.setAmountText(holder.textValue, btcBalance);
 
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV to verify it with)

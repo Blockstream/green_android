@@ -39,7 +39,6 @@ import org.bitcoinj.utils.Fiat;
 import org.bitcoinj.utils.MonetaryFormat;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -555,13 +554,7 @@ public class SendFragment extends SubaccountFragment {
         final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final String btcBalance = format.noCode().format(
                 getGAService().getCoinBalance(curSubaccount)).toString();
-        final DecimalFormat formatter = new DecimalFormat("#,###.########");
-
-        try {
-            sendSubAccountBalance.setText(formatter.format(Double.valueOf(btcBalance)));
-        } catch (final NumberFormatException e) {
-            sendSubAccountBalance.setText(btcBalance);
-        }
+        UI.setAmountText(sendSubAccountBalance, btcBalance);
 
         final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBitcoinScale.getText().length() + sendSubAccountBalanceUnit.getText().length();
         final int size = Math.min(50 - nChars, 34);
@@ -678,15 +671,10 @@ public class SendFragment extends SubaccountFragment {
                 final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
                 final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                 final String btcBalance = format.noCode().format(coin).toString();
-                final DecimalFormat formatter = new DecimalFormat("#,###.########");
                 gaActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            sendSubAccountBalance.setText(formatter.format(Double.valueOf(btcBalance)));
-                        } catch (final NumberFormatException e) {
-                            sendSubAccountBalance.setText(btcBalance);
-                        }
+                        UI.setAmountText(sendSubAccountBalance, btcBalance);
                     }
                 });
             }

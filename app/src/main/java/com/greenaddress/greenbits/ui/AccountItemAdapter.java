@@ -14,7 +14,6 @@ import com.greenaddress.greenbits.GaService;
 import org.bitcoinj.core.Monetary;
 import org.bitcoinj.utils.MonetaryFormat;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
@@ -34,8 +33,8 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         mService = service;
     }
 
-    void setCallback(final OnAccountSelected oas) {
-        mOnAccountSelected = oas;
+    void setCallback(final OnAccountSelected cb) {
+        mOnAccountSelected = cb;
     }
 
     @Override
@@ -59,12 +58,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         }
 
         final String btcBalance = bitcoinFormat.noCode().format(monetary).toString();
-        final DecimalFormat formatter = new DecimalFormat("#,###.########");
-        try {
-            holder.mBalance.setText(formatter.format(Double.valueOf(btcBalance)));
-        } catch (final NumberFormatException e) {
-            holder.mBalance.setText(btcBalance);
-        }
+        UI.setAmountText(holder.mBalance, btcBalance);
     }
 
     @SuppressLint("SetTextI18n")

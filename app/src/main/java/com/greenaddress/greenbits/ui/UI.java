@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.greenaddress.greenbits.GaService;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public abstract class UI {
@@ -179,5 +180,19 @@ public abstract class UI {
                                    LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
+    }
+
+    public static String setAmountText(final TextView v, final String d) {
+        String res;
+        try {
+            final DecimalFormat formatter = new DecimalFormat("#,###.########");
+            res = formatter.format(Double.valueOf(d));
+        } catch (final NumberFormatException e) {
+            res = d;
+        }
+
+        if (v != null)
+            v.setText(res);
+        return res;
     }
 }
