@@ -113,7 +113,7 @@ public class SPV {
         return name + " => " + value.toString() + " ";
     }
 
-    public void setEnabled(final boolean enabled) {
+    public void setEnabledAsync(final boolean enabled) {
 
         new AsyncTask<Object, Object, Object>() {
             @Override
@@ -133,7 +133,7 @@ public class SPV {
         return mService.cfg("SPV").getBoolean("mobileSyncEnabled", false);
     }
 
-    public void setSyncOnMobileEnabled(final boolean enabled) {
+    public void setSyncOnMobileEnabledAsync(final boolean enabled) {
 
         new AsyncTask<Object, Object, Object>() {
             @Override
@@ -154,7 +154,7 @@ public class SPV {
 
     public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
 
-    public void setTrustedPeers(final String peers) {
+    public void setTrustedPeersAsync(final String peers) {
 
         new AsyncTask<Object, Object, Object>() {
             @Override

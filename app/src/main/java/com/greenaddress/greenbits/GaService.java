@@ -257,13 +257,13 @@ public class GaService extends Service implements INotificationHandler {
 
     // SPV
     public String getSPVTrustedPeers() { return mSPV.getTrustedPeers(); }
-    public void setSPVTrustedPeers(final String peers) { mSPV.setTrustedPeers(peers); }
+    public void setSPVTrustedPeersAsync(final String peers) { mSPV.setTrustedPeersAsync(peers); }
 
     public boolean isSPVEnabled() { return mSPV.isEnabled(); }
-    public void setSPVEnabled(final boolean enabled) { mSPV.setEnabled(enabled); }
+    public void setSPVEnabledAsync(final boolean enabled) { mSPV.setEnabledAsync(enabled); }
 
     public boolean isSPVSyncOnMobileEnabled() { return mSPV.isSyncOnMobileEnabled(); }
-    public void setSPVSyncOnMobileEnabled(final boolean enabled) { mSPV.setSyncOnMobileEnabled(enabled); }
+    public void setSPVSyncOnMobileEnabledAsync(final boolean enabled) { mSPV.setSyncOnMobileEnabledAsync(enabled); }
 
     public void resetSPV() { mSPV.reset(true /* deleteAllData */, true /* deleteUnspent */); }
 

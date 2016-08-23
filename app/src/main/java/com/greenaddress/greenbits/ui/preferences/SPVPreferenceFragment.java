@@ -74,17 +74,17 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     private void setTrustedPeers(final String peers) {
         final boolean setTextValue = false;
         setTrustedPeersPreference(peers, setTextValue);
-        mService.setSPVTrustedPeers(peers);
+        mService.setSPVTrustedPeersAsync(peers);
     }
 
     private boolean onSPVEnabledChanged(final Boolean newValue) {
         mTrustedPeer.setEnabled(newValue);
-        mService.setSPVEnabled(newValue);
+        mService.setSPVEnabledAsync(newValue);
         return true;
     }
 
     private boolean onSPVSyncOnMobileChanged(final Boolean newValue) {
-        mService.setSPVSyncOnMobileEnabled(newValue);
+        mService.setSPVSyncOnMobileEnabledAsync(newValue);
         return true;
     }
 
