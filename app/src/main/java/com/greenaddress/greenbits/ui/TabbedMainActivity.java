@@ -303,7 +303,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 ECKey keyNonFinal = null;
                 final String qrText = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
                 try {
-                    keyNonFinal = new DumpedPrivateKey(Network.NETWORK,
+                    keyNonFinal = DumpedPrivateKey.fromBase58(Network.NETWORK,
                             qrText).getKey();
                 } catch (final AddressFormatException e) {
                     try {
