@@ -15,6 +15,10 @@
         android:key="denomination_key"
         android:title="@string/settings_denomination" />
 
+    <CheckBoxPreference android:key="show_balance_in_title"
+        android:title="@string/show_balance_in_title"
+        android:summary="@string/show_balance_in_title_sum"/>
+
     <EditTextPreference android:key="altime"
                         android:title="@string/autologout_time"
                         android:inputType="number"

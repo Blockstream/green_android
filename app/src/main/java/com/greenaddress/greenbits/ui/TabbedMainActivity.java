@@ -45,6 +45,7 @@ import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.utils.MonetaryFormat;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -111,21 +112,39 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
     }
 
-    private void configureSubaccountsFooter(final int subAccount) {
+    private void setAccountTitle(final int subAccount) {
+        String titleExtra;
+        if (mService.showBalanceInTitle()) {
+            final String btcUnit = (String) mService.getUserConfig("unit");
+            final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
 
+            final String btcBalance = bitcoinFormat.noCode().format(mService.getCoinBalance(subAccount)).toString();
+            final DecimalFormat formatter = new DecimalFormat("#,###.########");
+            try {
+                titleExtra = formatter.format(Double.valueOf(btcBalance));
+            } catch (final NumberFormatException e) {
+                titleExtra = btcBalance;
+            }
+            titleExtra += " " + bitcoinFormat.code();
+        }
+        else if (mService.haveSubaccounts()) {
+            final Map<String, ?> m = mService.findSubaccount(null, subAccount);
+            if (m == null)
+                titleExtra = getResources().getText(R.string.main_account).toString();
+            else
+                titleExtra = (String) m.get("name");
+        } else
+            return;
+        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), titleExtra));
+    }
+
+    private void configureSubaccountsFooter(final int subAccount) {
+        setAccountTitle(subAccount);
         if (!mService.haveSubaccounts())
             return;
 
         final FloatingActionButton fab = UI.find(this, R.id.fab);
         UI.show(fab);
-
-        final String subAccountName;
-        final Map<String, ?> m = mService.findSubaccount(null, subAccount);
-        if (m == null)
-            subAccountName = getResources().getText(R.string.main_account).toString();
-        else
-            subAccountName = (String) m.get("name");
-        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), subAccountName));
 
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +176,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         final int pointer = pointers.get(account);
                         if (pointer == mService.getCurrentSubAccount())
                             return;
-                        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), names.get(account)));
+                        setAccountTitle(pointer);
                         onSubaccountUpdate(pointer);
                     }
                 });

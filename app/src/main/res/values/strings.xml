@@ -237,4 +237,7 @@
     <string name="error_username_not_available">Username not available</string>
     <string name="enableTor">Enable Tor</string>
     <string name="torSummary">Tor will use %1$s and only work if your proxy is Orbot or Tor enabled</string>
+    <string name="show_balance_in_title">Show balance in title</string>
+    <string name="show_balance_in_title_sum">This hides the Bitcoin balance from elsewhere and always shows it in the title instead of the subaccount name</string>
+
 </resources>

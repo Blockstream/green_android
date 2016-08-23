@@ -115,6 +115,8 @@ public class MainFragment extends SubaccountFragment {
             balanceFiatIcon.setDefaultTypeface();
             balanceFiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         }
+        if (service.showBalanceInTitle())
+            UI.hide(bitcoinScale, balanceText, balanceBitcoinIcon);
     }
 
     @Override

@@ -568,6 +568,8 @@ public class SendFragment extends SubaccountFragment {
         sendSubAccountBalance.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        if (getGAService().showBalanceInTitle())
+            UI.hide(sendSubAccountBalance, sendSubAccountBalanceUnit, sendSubAccountBitcoinScale);
     }
 
     private void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
