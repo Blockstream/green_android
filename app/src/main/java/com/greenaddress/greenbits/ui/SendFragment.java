@@ -193,7 +193,7 @@ public class SendFragment extends SubaccountFragment {
 
 
                             long amount = 0;
-                            for (final Map<?, ?> out : (ArrayList<Map<?, ?>>) result.get("outputs")) {
+                            for (final Map<?, ?> out : (ArrayList<Map>) result.get("outputs")) {
                                 amount += ((Number) out.get("amount")).longValue();
                             }
                             final CharSequence amountStr;

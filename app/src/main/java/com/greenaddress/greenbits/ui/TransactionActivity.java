@@ -410,7 +410,7 @@ public class TransactionActivity extends GaActivity {
             List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
             tx.clearInputs();
             for (int i = 0; i < txItem.eps.size(); ++i) {
-                final Map<String, Object> ep = (Map<String, Object>) txItem.eps.get(i);
+                final Map<String, Object> ep = (Map) txItem.eps.get(i);
                 if (((Boolean) ep.get("is_credit"))) continue;
                 TransactionInput oldInput = oldInputs.get((Integer) ep.get("pt_idx"));
                 TransactionInput newInput = new TransactionInput(
@@ -433,7 +433,7 @@ public class TransactionActivity extends GaActivity {
             List<TransactionOutput> origOuts = new ArrayList<>(tx.getOutputs());
             tx.clearOutputs();
             for (int i = 0; i < txItem.eps.size(); ++i) {
-                final Map<String, Object> ep = (Map<String, Object>) txItem.eps.get(i);
+                final Map<String, Object> ep = (Map) txItem.eps.get(i);
                 if (!((Boolean) ep.get("is_credit"))) continue;
 
                 if (!((Boolean) ep.get("is_relevant"))) {
@@ -475,7 +475,7 @@ public class TransactionActivity extends GaActivity {
                     final List<ListenableFuture<byte[]>> scripts = new ArrayList<>();
                     final List<Map<String, Object>> moreInputs = new ArrayList<>();
                     for (Object utxo_ : result) {
-                        Map<String, Object> utxo = (Map<String, Object>) utxo_;
+                        final Map<String, Object> utxo = (Map) utxo_;
                         remaining = remaining.subtract(Coin.valueOf(Long.valueOf((String)utxo.get("value"))));
                         scripts.add(service.createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
                         moreInputs.add(utxo);
@@ -536,7 +536,7 @@ public class TransactionActivity extends GaActivity {
             ptx = new PreparedTransaction(change_pointer, subAccount, tx,
                                           service.findSubaccount("2of3", subAccount));
 
-            for (final Map<String, Object> ep : (List<Map<String, Object>>)txItem.eps) {
+            for (final Map<String, Object> ep : (List<Map>)txItem.eps) {
                 if (((Boolean) ep.get("is_credit")))
                     continue;
                 final Integer prevIndex = ((Integer) ep.get("pt_idx"));

@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Sha256Hash;
+import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,8 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import org.codehaus.jackson.map.MappingJsonFactory;
 
 public class TransactionItem implements Serializable {
 
@@ -90,7 +89,7 @@ public class TransactionItem implements Serializable {
         boolean tmpIsSpent = true;
         String tmpReceivedOn = null;
         for (int i = 0; i < eps.size(); ++i) {
-            final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
+            final Map<String, Object> ep = (Map) eps.get(i);
             final boolean isSocial = ep.get("social_destination") != null;
             if (isSocial) {
                 Map<String, Object> socialDestination = mapVal(ep, "social_destination");
@@ -119,7 +118,7 @@ public class TransactionItem implements Serializable {
         if (tmpAmount >= 0) {
             type = TransactionItem.TYPE.IN;
             for (int i = 0; i < eps.size(); ++i) {
-                final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
+                final Map<String, Object> ep = (Map) eps.get(i);
                 if (!boolVal(ep, "is_credit") && ep.get("social_source") != null)
                     tmpCounterparty = strVal(ep, "social_source");
             }
@@ -127,7 +126,7 @@ public class TransactionItem implements Serializable {
             tmpReceivedOn = null; // don't show change addresses
             final List<Map<String, Object>> recip_eps = new ArrayList<>();
             for (int i = 0; i < eps.size(); ++i) {
-                final Map<String, Object> ep = (Map<String, Object>) eps.get(i);
+                final Map<String, Object> ep = (Map) eps.get(i);
                 if (boolVal(ep, "is_credit") &&
                     (!boolVal(ep, "is_relevant") || ep.get("social_destination") != null)) {
                     recip_eps.add(ep);

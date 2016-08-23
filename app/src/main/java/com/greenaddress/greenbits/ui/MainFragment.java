@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -254,8 +253,8 @@ public class MainFragment extends SubaccountFragment {
 
                         for (Object tx : txList) {
                             try {
-                                Map<String, Object> txJSON = (Map<String, Object>) tx;
-                                ArrayList<String> replacedList = (ArrayList<String>) txJSON.get("replaced_by");
+                                Map<String, Object> txJSON = (Map) tx;
+                                ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
                                     mTxItems.add(new TransactionItem(service, txJSON, currentBlock));

@@ -355,7 +355,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                 ECKey key;
 
                                 private void doSweep() {
-                                    final ArrayList<String> scripts = (ArrayList<String>) sweepResult.get("prevout_scripts");
+                                    final ArrayList<String> scripts = (ArrayList) sweepResult.get("prevout_scripts");
                                     final Integer outPointer = (Integer) sweepResult.get("out_pointer");
                                     CB.after(service.verifySpendableBy(tx.getOutputs().get(0), 0, outPointer),
                                              new CB.Toast<Boolean>(caller) {
