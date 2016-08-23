@@ -265,7 +265,7 @@ public class GaService extends Service implements INotificationHandler {
     public boolean isSPVSyncOnMobileEnabled() { return mSPV.isSyncOnMobileEnabled(); }
     public void setSPVSyncOnMobileEnabledAsync(final boolean enabled) { mSPV.setSyncOnMobileEnabledAsync(enabled); }
 
-    public void resetSPV() { mSPV.reset(true /* deleteAllData */, true /* deleteUnspent */); }
+    public void resetSPVAsync() { mSPV.resetAsync(); }
 
     public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
     public int getSPVHeight() { return mSPV.getSPVHeight(); }

@@ -747,6 +747,15 @@ public class SPV {
         }
     }
 
+    public void resetAsync() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                reset(true /* deleteAllData */, true /* deleteUnspent */);
+            }
+        });
+    }
+
     public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
         Log.d(TAG, "reset: " + Var("deleteAllData", deleteAllData) +
               Var("deleteUnspent", deleteUnspent));

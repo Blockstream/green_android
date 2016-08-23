@@ -143,7 +143,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     @Override
     public boolean onPreferenceClick(final Preference preference) {
         if (preference == mResetSPV)
-            mService.resetSPV();
+            mService.resetSPVAsync();
         return false;
     }
 }
