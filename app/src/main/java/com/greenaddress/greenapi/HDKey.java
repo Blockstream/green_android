@@ -114,7 +114,7 @@ public class HDKey {
         Object derived = Wally.bip32_key_from_parent_path(master, path, BIP32_FLAG_KEY_PUBLIC);
 
         final DeterministicKey key;
-        final ArrayList<ChildNumber> childNumbers = new ArrayList(path.length);
+        final ArrayList<ChildNumber> childNumbers = new ArrayList<>(path.length);
         for (int i : path)
             childNumbers.add(new ChildNumber(i));
         key = new DeterministicKey(ImmutableList.<ChildNumber>builder().addAll(childNumbers).build(),
