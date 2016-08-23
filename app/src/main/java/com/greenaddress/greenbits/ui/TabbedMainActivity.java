@@ -134,42 +134,42 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final ArrayList<String> names = new ArrayList<>();
-                final ArrayList<Integer> pointers = new ArrayList<>();
+                final ArrayList subaccounts = service.getSubaccounts();
+                final int subaccount_len = subaccounts.size() + 1;
+                final ArrayList<String> names = new ArrayList<>(subaccount_len);
+                final ArrayList<Integer> pointers = new ArrayList<>(subaccount_len);
 
                 names.add(getResources().getText(R.string.main_account).toString());
                 pointers.add(0);
 
-                for (final Object s : service.getSubaccounts()) {
+                for (final Object s : subaccounts) {
                     final Map<String, ?> m = (Map) s;
                     names.add((String) m.get("name"));
                     pointers.add((Integer) m.get("pointer"));
                 }
 
-                final MaterialDialog.ListCallback lcb = new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(final MaterialDialog dialog, final View v, final int which, final CharSequence text) {
-
-                        final int subAccount = pointers.get(which);
-                        if (subAccount != service.getCurrentSubAccount()) {
-                            setTitle(String.format("%s %s", getResources().getText(R.string.app_name), text));
-                            onSubaccountUpdate(subAccount);
-                        }
-                    }
-                };
-
-                new MaterialDialog.Builder(TabbedMainActivity.this)
+                final AccountItemAdapter adapter = new AccountItemAdapter(names, pointers, service);
+                final MaterialDialog dialog = new MaterialDialog.Builder(TabbedMainActivity.this)
                         .title(R.string.footerAccount)
-                        .items(names)
-                        .autoDismiss(true)
-                        .itemsCallback(lcb).show();
+                        .adapter(adapter, null)
+                        .show();
+                adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
+                    @Override
+                    public void onAccountSelected(final int account) {
+                        dialog.dismiss();
+                        final int pointer = pointers.get(account);
+                        if (pointer == service.getCurrentSubAccount())
+                            return;
+                        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), names.get(account)));
+                        onSubaccountUpdate(pointer);
+                    }
+                });
             }
         });
     }
 
     private void onSubaccountUpdate(final int subAccount) {
-        final GaService service = mService;
-        service.setCurrentSubAccount(subAccount);
+        mService.setCurrentSubAccount(subAccount);
 
         final Intent data = new Intent("fragmentupdater");
         data.putExtra("sub", subAccount);
