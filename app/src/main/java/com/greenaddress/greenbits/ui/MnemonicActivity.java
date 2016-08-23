@@ -57,8 +57,8 @@ public class MnemonicActivity extends GaActivity {
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
 
-    private final Set<String> mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
-    private final String[] mWordsArray = new String[Wally.BIP39_WORDLIST_LEN];
+    private ArrayList<String> mWordsArray;
+    private Set<String> mWords;
 
     private EditText mMnemonicText;
     private CircularProgressButton mOkButton;
@@ -218,15 +218,22 @@ public class MnemonicActivity extends GaActivity {
 
     protected int getMainViewId() { return R.layout.activity_mnemonic; }
 
+    public static void initWordList(final ArrayList<String> wordsArray, final Set<String> words) {
+        final Object en = Wally.bip39_get_wordlist("en");
+        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i) {
+            wordsArray.add(Wally.bip39_get_word(en, i));
+            if (words != null)
+                words.add(wordsArray.get(i));
+        }
+    }
+
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.i(TAG, getIntent().getType() + "" + getIntent());
 
-        final Object en = Wally.bip39_get_wordlist("en");
-        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i) {
-            mWordsArray[i] = Wally.bip39_get_word(en, i);
-            mWords.add(mWordsArray[i]);
-        }
+        mWordsArray = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
+        mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
+        initWordList(mWordsArray, mWords);
 
         mMnemonicText = UI.find(this, R.id.mnemonicText);
         mOkButton = UI.find(this,R.id.mnemonicOkButton);

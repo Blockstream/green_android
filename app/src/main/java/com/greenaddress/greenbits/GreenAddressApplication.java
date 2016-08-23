@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits;
 
+import org.bitcoinj.crypto.MnemonicCode;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +15,9 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
+import com.greenaddress.greenbits.ui.MnemonicActivity;
+
+import java.util.ArrayList;
 
 public class GreenAddressApplication extends MultiDexApplication {
 
@@ -50,6 +55,18 @@ public class GreenAddressApplication extends MultiDexApplication {
 
         if (!CryptoHelper.initialize()) {
             failHard("Initialization failed", "Cryptographic initialization failed");
+            return;
+        }
+
+        // Provide bitcoinj with Mnemonics. These are used if we need to create a fake
+        // wallet during SPV syncing to prevent an exception.
+        try {
+            final ArrayList<String> words = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
+            MnemonicActivity.initWordList(words, null);
+            MnemonicCode.INSTANCE = new MnemonicCode(words, null);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            failHard("Bitcoinj initialization failed", e.getMessage());
             return;
         }
 

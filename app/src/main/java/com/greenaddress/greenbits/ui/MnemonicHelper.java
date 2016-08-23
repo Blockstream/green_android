@@ -28,7 +28,7 @@ public class MnemonicHelper {
         return c[s1 - 1];
     }
 
-    static boolean isInvalidWord(final String[] words, final String word, final boolean equals) {
+    static boolean isInvalidWord(final ArrayList<String> words, final String word, final boolean equals) {
         for (final String w : words) {
             if ((!equals && w.startsWith(word)) ||
                     (equals && w.equals(word))) {
@@ -55,15 +55,15 @@ public class MnemonicHelper {
         return decrypted;
     }
 
-    static String getClosestWord(final String[] words, final String word) {
+    static String getClosestWord(final ArrayList<String> words, final String word) {
 
-        final List<Integer> scores = new ArrayList<>(words.length);
+        final List<Integer> scores = new ArrayList<>(words.size());
         for (final String w : words) {
             scores.add(levenshteinDistance(word, w));
         }
         Integer min = Integer.MAX_VALUE;
         final List<Integer> matches = new ArrayList<>();
-        for (int i = 0; i < words.length; ++i) {
+        for (int i = 0; i < words.size(); ++i) {
             final Integer score = scores.get(i);
             if (score.compareTo(min) < 0) {
                 min = score;
@@ -74,19 +74,19 @@ public class MnemonicHelper {
             }
         }
         for (final Integer m : matches) {
-            final String match = words[m];
+            final String match = words.get(m);
             // give preference to words that start with our word
             if (match.startsWith(word)) {
                 return match;
             }
         }
         for (final Integer m : matches) {
-            final String match = words[m];
+            final String match = words.get(m);
             // give preference to words that end with our word
             if (match.endsWith(word)) {
                 return match;
             }
         }
-        return words[matches.get(0)];
+        return words.get(matches.get(0));
     }
 }
