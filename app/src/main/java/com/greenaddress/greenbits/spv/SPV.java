@@ -180,10 +180,15 @@ public class SPV {
         return mService.cfgIn(VERIFIED).getBoolean(txHash.toString(), false);
     }
 
-    public void start() {
-        Log.d(TAG, "start");
-        reset(false /* deleteAllData */, true /* deleteUnspent */);
-        updateUnspentOutputs();
+    public void startAsync() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "start");
+                reset(false /* deleteAllData */, true /* deleteUnspent */);
+                updateUnspentOutputs();
+            }
+        });
     }
 
     public Coin getVerifiedBalance(final int subAccount) {
@@ -665,6 +670,15 @@ public class SPV {
         } catch (final BlockStoreException | UnknownHostException | URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    public synchronized void stopSyncAsync() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                stopSync();
+            }
+        });
     }
 
     public synchronized void stopSync() {

@@ -451,7 +451,7 @@ public class GaService extends Service implements INotificationHandler {
         }
         if (!isWatchOnly()) {
             getAvailableTwoFactorMethods();
-            mSPV.start();
+            mSPV.startAsync();
         }
         mState.transitionTo(ConnState.LOGGEDIN);
     }
@@ -501,7 +501,7 @@ public class GaService extends Service implements INotificationHandler {
 
     public void disconnect(final boolean autoReconnect) {
         mAutoReconnect = autoReconnect;
-        mSPV.stopSync();
+        mSPV.stopSyncAsync();
         for (final GaObservable o : mBalanceObservables.values())
             o.deleteObservers();
         mClient.disconnect();
