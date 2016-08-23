@@ -87,20 +87,36 @@ public class MnemonicCode {
      */
     public MnemonicCode(InputStream wordstream, String wordListDigest) throws IOException, IllegalArgumentException {
         BufferedReader br = new BufferedReader(new InputStreamReader(wordstream, "UTF-8"));
-        this.wordList = new ArrayList<String>(2048);
-        MessageDigest md = Sha256Hash.newDigest();
+        wordList = new ArrayList<String>(2048);
+
         String word;
-        while ((word = br.readLine()) != null) {
-            md.update(word.getBytes());
-            this.wordList.add(word);
-        }
+        while ((word = br.readLine()) != null)
+            wordList.add(word);
         br.close();
 
-        if (this.wordList.size() != 2048)
-            throw new IllegalArgumentException("input stream did not contain 2048 words");
+        initializeFromWords(wordList, wordListDigest);
+    }
+
+    /**
+     * Creates an MnemonicCode object, initializing with words read from the supplied ArrayList.  If a wordListDigest
+     * is supplied the digest of the words will be checked.
+     */
+    public MnemonicCode(ArrayList<String> wordList, String wordListDigest) throws IllegalArgumentException {
+        initializeFromWords(wordList, wordListDigest);
+    }
+
+    private void initializeFromWords(ArrayList<String> wordList, String wordListDigest) throws IllegalArgumentException {
+        if (wordList.size() != 2048)
+            throw new IllegalArgumentException("input wordlist did not contain 2048 words");
+
+        this.wordList = wordList;
 
         // If a wordListDigest is supplied check to make sure it matches.
         if (wordListDigest != null) {
+            MessageDigest md = Sha256Hash.newDigest();
+            for (String word : wordList)
+                md.update(word.getBytes());
+
             byte[] digest = md.digest();
             String hexdigest = HEX.encode(digest);
             if (!hexdigest.equals(wordListDigest))
