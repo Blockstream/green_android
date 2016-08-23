@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
@@ -66,6 +67,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 public class SPV {
 
@@ -82,6 +85,9 @@ public class SPV {
         public Integer getPointer() { return second; }
     }
 
+    // We use a single threaded executor to serialise config changes
+    // without forcing callers to block.
+    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private final Map<Integer, Coin> mVerifiedCoinBalances = new HashMap<>();
     private final Map<Sha256Hash, List<Integer>> mUnspentOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, AccountInfo> mUnspentDetails = new HashMap<>();
@@ -105,28 +111,27 @@ public class SPV {
         return mService;
     }
 
-    public boolean isEnabled() {
-        return !mService.isWatchOnly() && mService.cfg("SPV").getBoolean("enabled", true);
-    }
-
     private <T> String Var(final String name, final T value) {
         return name + " => " + value.toString() + " ";
     }
 
-    public void setEnabledAsync(final boolean enabled) {
+    public boolean isEnabled() {
+        return !mService.isWatchOnly() && mService.cfg("SPV").getBoolean("enabled", true);
+    }
 
-        new AsyncTask<Object, Object, Object>() {
+    public void setEnabledAsync(final boolean enabled) {
+        mExecutor.execute(new Runnable() {
             @Override
-            protected Object doInBackground(final Object[] params) {
-                Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("isEnabled", isEnabled()));
-                if (enabled != isEnabled()) {
-                    mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
-                    // FIXME: Should we delete unspent here?
-                    reset(false /* deleteAllData */, false /* deleteUnspent */);
-                }
-                return null;
+            public void run() {
+                final boolean current = isEnabled();
+                Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("current", current));
+                if (enabled == current)
+                    return;
+                mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
+                // FIXME: Should we delete unspent here?
+                reset(false /* deleteAllData */, false /* deleteUnspent */);
             }
-        }.execute();
+        });
     }
 
     public boolean isSyncOnMobileEnabled() {
@@ -134,41 +139,37 @@ public class SPV {
     }
 
     public void setSyncOnMobileEnabledAsync(final boolean enabled) {
-
-        new AsyncTask<Object, Object, Object>() {
+        mExecutor.execute(new Runnable() {
             @Override
-            protected Object doInBackground(final Object[] params) {
-                Log.d(TAG, "setSyncOnMobileEnabled: " + Var("enabled", enabled) +
-                      Var("isSyncOnMobileEnabled", isSyncOnMobileEnabled()));
-                if (enabled != isSyncOnMobileEnabled()) {
-                    mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
-                    if (enabled && isEnabled())
-                        startSync();
-                    else
-                        stopSync();
-                }
-                return null;
+            public void run() {
+                final boolean current = isSyncOnMobileEnabled();
+                final boolean currentlyEnabled = isEnabled();
+                Log.d(TAG, "setSyncOnMobileEnabled: " + Var("enabled", enabled) + Var("current", current));
+                if (enabled == current)
+                    return;
+                mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
+                if (enabled && currentlyEnabled)
+                    startSync();
+                else
+                    stopSync();
             }
-        }.execute();
+        });
     }
 
     public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
 
     public void setTrustedPeersAsync(final String peers) {
-
-        new AsyncTask<Object, Object, Object>() {
+        mExecutor.execute(new Runnable() {
             @Override
-            protected Object doInBackground(Object[] params) {
-                Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) +
-                      Var("getTrustedPeers", getTrustedPeers()));
+            public void run() {
+                // FIXME: We should check if the peers differ here, instead of in the caller
+                final String current = getTrustedPeers();
+                Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) + Var("current", current));
                 mService.cfgEdit("TRUSTED").putString("address", peers).apply();
                 mService.setUserConfig("trusted_peer_addr", peers, true);
-
-                // FIXME: Should we delete unspent here?
                 reset(false /* deleteAllData */, false /* deleteUnspent */);
-                return null;
             }
-        }.execute();
+        });
     }
 
     public PeerGroup getPeerGroup(){
