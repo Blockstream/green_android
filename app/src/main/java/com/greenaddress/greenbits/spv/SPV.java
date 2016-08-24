@@ -488,12 +488,17 @@ public class SPV {
                                 .setSmallIcon(R.drawable.ic_sync_black_24dp);
         }
 
+        mNotificationBuilder.setContentText("Sync in progress...");
+        mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
+
         Futures.addCallback(mPeerGroup.startAsync(), new FutureCallback<Object>() {
             @Override
             public void onSuccess(final Object result) {
                 mPeerGroup.startBlockChainDownload(new DownloadProgressTracker() {
                     @Override
                     public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
+                        // Note that this method may be called multiple times if syncing
+                        // switches peers while downloading.
                         Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
                         mBlocksRemaining = blocksLeft;
                         super.onChainDownloadStarted(peer, blocksLeft);
@@ -509,7 +514,6 @@ public class SPV {
                     @Override
                     protected void startDownload(int blocks) {
                         Log.d(TAG, "startDownload");
-                        mNotificationBuilder.setContentText("Sync in progress.");
                         updateUI(100, 0);
                     }
 
@@ -522,8 +526,6 @@ public class SPV {
                     @Override
                     protected void doneDownload() {
                         Log.d(TAG, "doneDownLoad");
-                        mNotificationBuilder.setContentText("Download complete");
-                        updateUI(0, 0);
                         mNotifyManager.cancel(mNotificationId);
                     }
 
@@ -537,6 +539,7 @@ public class SPV {
             @Override
             public void onFailure(final Throwable t) {
                 t.printStackTrace();
+                mNotifyManager.cancel(mNotificationId);
             }
         });
     }
