@@ -68,7 +68,6 @@ public class TransactionActivity extends GaActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_transaction, menu);
         return true;
     }
@@ -76,27 +75,19 @@ public class TransactionActivity extends GaActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-
-        final int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_share) {
-            final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
-            final Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, Network.BLOCKEXPLORER_TX + txItem.txHash.toString());
-            sendIntent.setType("text/plain");
-            startActivity(sendIntent);
-            return true;
+        switch(item.getItemId()) {
+            case R.id.action_share:
+                final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
+                final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, Network.BLOCKEXPLORER_TX + txItem.txHash.toString());
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends GAFragment {
 
         private static final String TAG = PlaceholderFragment.class.getSimpleName();
