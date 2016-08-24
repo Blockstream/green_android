@@ -695,6 +695,9 @@ public class SPV {
             mPeerGroup.stop();
         }
 
+        if (mNotifyManager != null)
+            mNotifyManager.cancel(mNotificationId);
+
         if (mBlockChain != null) {
             Log.d(TAG, "Disposing of block chain");
             mBlockChain.removeTransactionReceivedListener(mTxListner);
