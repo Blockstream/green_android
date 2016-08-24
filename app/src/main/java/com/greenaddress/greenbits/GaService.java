@@ -400,31 +400,24 @@ public class GaService extends Service implements INotificationHandler {
 
     private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> loginFn) {
         mState.transitionTo(ConnState.LOGGINGIN);
-        Futures.addCallback(loginFn, new FutureCallback<LoginData>() {
-            @Override
-            public void onSuccess(final LoginData result) {
-                // FIXME: Why are we copying these? If we need them when not logged in,
-                // we should just copy the whole loginData instance
-                mFiatCurrency = result.currency;
-                mFiatExchange = result.exchange;
-                mSubaccounts = result.subAccounts;
-                mReceivingId = result.receivingId;
-                HDKey.resetCache(result.gaUserPath);
 
-                mBalanceObservables.put(0, new GaObservable());
-                updateBalance(0);
-                for (final Object s : result.subAccounts) {
-                    final Map<?, ?> m = (Map) s;
-                    final int pointer = ((Integer) m.get("pointer"));
-                    mBalanceObservables.put(pointer, new GaObservable());
-                    updateBalance(pointer);
-                }
-                if (!isWatchOnly()) {
-                    getAvailableTwoFactorMethods();
-                    mSPV.start();
-                }
-                mState.transitionTo(ConnState.LOGGEDIN);
+        // Chain the login and post-login processing together, so any
+        // callbacks added by the caller are executed only once our post
+        // login processing is completed.
+        final ListenableFuture fn = Futures.transform(loginFn, new Function<LoginData, LoginData>() {
+            @Override
+            public LoginData apply(LoginData loginData) {
+                onPostLogin(loginData);
+                return loginData;
             }
+        });
+
+        // Add a callback to set our state back to connected if an error
+        // occurs. Ideally we could add this in transform(), but it doesnt
+        // seem possible. So there is a delay before our state is updated.
+        Futures.addCallback(fn, new FutureCallback<LoginData>() {
+            @Override
+            public void onSuccess(final LoginData result) { }
 
             @Override
             public void onFailure(final Throwable t) {
@@ -432,7 +425,37 @@ public class GaService extends Service implements INotificationHandler {
                 mState.transitionTo(ConnState.CONNECTED);
             }
         }, mExecutor);
-        return loginFn;
+
+        return fn;
+    }
+
+    private void onPostLogin(final LoginData loginData) {
+
+        // Uncomment to test slow login post processing
+        // android.os.SystemClock.sleep(10000);
+        Log.d(TAG, "Success LOGIN callback");
+
+        // FIXME: Why are we copying these? If we need them when not logged in,
+        // we should just copy the whole loginData instance
+        mFiatCurrency = loginData.currency;
+        mFiatExchange = loginData.exchange;
+        mSubaccounts = loginData.subAccounts;
+        mReceivingId = loginData.receivingId;
+        HDKey.resetCache(loginData.gaUserPath);
+
+        mBalanceObservables.put(0, new GaObservable());
+        updateBalance(0);
+        for (final Object s : loginData.subAccounts) {
+            final Map<?, ?> m = (Map) s;
+            final int pointer = ((Integer) m.get("pointer"));
+            mBalanceObservables.put(pointer, new GaObservable());
+            updateBalance(pointer);
+        }
+        if (!isWatchOnly()) {
+            getAvailableTwoFactorMethods();
+            mSPV.start();
+        }
+        mState.transitionTo(ConnState.LOGGEDIN);
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
