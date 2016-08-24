@@ -70,11 +70,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-
-        boolean isBitcoinURL = getIntent().hasCategory(Intent.CATEGORY_BROWSABLE) ||
-                NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()) ||
-                (getIntent().getData() != null && getIntent().getData().getScheme() != null
-                        && getIntent().getData().getScheme().equals("bitcoin"));
+        final Intent intent = getIntent();
+        final Uri data = intent.getData();
+        final boolean schemeIsBitcoin = data != null && data.getScheme() != null &&
+                data.getScheme().equals("bitcoin");
+        final boolean isBitcoinURL = intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
+                NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
+                schemeIsBitcoin;
 
         if (isBitcoinURL && mService.isLoggedOrLoggingIn()) {
             // already logged in, could be from different app via intent
@@ -126,8 +128,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 titleExtra = btcBalance;
             }
             titleExtra += " " + bitcoinFormat.code();
-        }
-        else if (mService.haveSubaccounts()) {
+        } else if (mService.haveSubaccounts()) {
             final Map<String, ?> m = mService.findSubaccount(null, subAccount);
             if (m == null)
                 titleExtra = getResources().getText(R.string.main_account).toString();
