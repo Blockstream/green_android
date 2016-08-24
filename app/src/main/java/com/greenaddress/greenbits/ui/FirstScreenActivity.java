@@ -23,7 +23,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenapi.Network;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.NetworkSettingsActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.ledger.tbase.comm.LedgerTransportTEEProxy;
@@ -46,20 +45,17 @@ public class FirstScreenActivity extends GaActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
-        final GaService service = mService;
-
         UI.mapClick(this, R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
         UI.mapClick(this, R.id.firstSignUpButton, new Intent(this, SignUpActivity.class));
         final Uri homepage = Uri.parse("https://greenaddress.it");
         UI.mapClick(this, R.id.firstMadeByText, new Intent(Intent.ACTION_VIEW, homepage));
 
         Log.d(TAG, "Create FirstScreenActivity : TUI " + tuiCall);
-        if (tuiCall || (transportFactory != null)) {
+        if (tuiCall || (transportFactory != null))
             return;
-        }
 
         // Check if a TEE is supported
-        service.getExecutor().submit(new Callable<Object>() {
+        mService.getExecutor().submit(new Callable<Object>() {
             @Override
             public Object call() {
                 transportFactory = new LedgerTransportTEEProxyFactory(getApplicationContext());
@@ -88,9 +84,8 @@ public class FirstScreenActivity extends GaActivity {
                         initialized = waitConnected.poll(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
                     } catch (final InterruptedException e) {
                     }
-                    if (initialized) {
+                    if (initialized)
                         initialized = teeTransport.init();
-                    }
                 }
                 Log.d(TAG, "TEE init " + initialized);
                 if (initialized) {
@@ -98,15 +93,16 @@ public class FirstScreenActivity extends GaActivity {
                     // Prompt for use (or use immediately if an NVM file exists and the application is ready)
                     // If ok, attempt setup, then verify PIN, then login to gait backend
                     boolean teeReady = false;
-                    if (nvm != null) {
+                    if (nvm != null)
                         try {
                             final int attempts = dongle.getVerifyPinRemainingAttempts();
                             teeReady = (attempts != 0);
                         } catch (final Exception e) {
                         }
-                    }
                     Log.d(TAG, "TEE ready " + teeReady);
-                    if (!teeReady) {
+                    if (teeReady)
+                        proceedTEE(teeTransport, dongle, false);
+                    else {
                         FirstScreenActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -128,10 +124,7 @@ public class FirstScreenActivity extends GaActivity {
                                             }
                                         }).build().show();
                             }
-
                         });
-                    } else {
-                        proceedTEE(teeTransport, dongle, false);
                     }
                 }
                 return null;
@@ -140,9 +133,8 @@ public class FirstScreenActivity extends GaActivity {
     }
 
     private void proceedTEE(final LedgerTransportTEEProxy transport, final BTChipDongle dongle, final boolean setup) {
-        final GaService service = mService;
 
-        service.getExecutor().submit(new Callable<Object>() {
+        mService.getExecutor().submit(new Callable<Object>() {
             @Override
             public Object call() {
                 tuiCall = true;
@@ -224,15 +216,15 @@ public class FirstScreenActivity extends GaActivity {
                 final BTChipPublicKey masterPublicKeyFixed = masterPublicKey;
                 final BTChipPublicKey loginPublicKeyFixed = loginPublicKey;
 
-                Futures.addCallback(Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
+                Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         if (!setup) {
                             Log.d(TAG, "TEE login");
-                            return service.login(new BTChipHWWallet(dongle));
+                            return mService.login(new BTChipHWWallet(dongle));
                         } else {
                             Log.d(TAG, "TEE signup");
-                            return service.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
+                            return mService.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
                         }
                     }
                 }), new FutureCallback<LoginData>() {
@@ -246,9 +238,8 @@ public class FirstScreenActivity extends GaActivity {
                     @Override
                     public void onFailure(final Throwable t) {
                         Log.d(TAG, "login failed", t);
-                        if (!(Throwables.getRootCause(t) instanceof LoginFailed)) {
+                        if (!(Throwables.getRootCause(t) instanceof LoginFailed))
                             finishOnUiThread();
-                        }
                     }
                 });
 
@@ -256,7 +247,6 @@ public class FirstScreenActivity extends GaActivity {
                 return null;
             }
         });
-
     }
 
     @Override
@@ -290,18 +280,17 @@ public class FirstScreenActivity extends GaActivity {
 
     @Override
     public void onResumeWithService() {
-        final GaService service = mService;
 
         // Make a note if the user cancelled PIN entry
-        final boolean userCancelled = service.getUserCancelledPINEntry();
-        service.setUserCancelledPINEntry(false);
+        final boolean userCancelled = mService.getUserCancelledPINEntry();
+        mService.setUserCancelledPINEntry(false);
 
         //FIXME : recheck state, properly handle TEE link anyway
-        if (service.isLoggedIn()) {
+        if (mService.isLoggedIn()) {
             // already logged in, could be from different app via intent
             startNewActivity(TabbedMainActivity.class);
             finish();
-        } else if (service.cfg("pin").getString("ident", null) != null && !userCancelled) {
+        } else if (mService.cfg("pin").getString("ident", null) != null && !userCancelled) {
             startNewActivity(PinActivity.class);
             finish();
         }

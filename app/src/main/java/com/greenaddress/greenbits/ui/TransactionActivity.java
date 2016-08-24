@@ -72,7 +72,6 @@ public class TransactionActivity extends GaActivity {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch(item.getItemId()) {
@@ -378,9 +377,8 @@ public class TransactionActivity extends GaActivity {
             final int subAccount = service.getCurrentSubAccount();
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
             // by at most 4 bytes per input (signatures have variable lengths)
-            if (txSize == null) {
+            if (txSize == null)
                 txSize = tx.getMessageSize();
-            }
             long requiredFeeDelta = txSize + tx.getInputs().size() * 4;
             List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
             tx.clearInputs();
@@ -411,14 +409,13 @@ public class TransactionActivity extends GaActivity {
                 final Map<String, Object> ep = (Map) txItem.eps.get(i);
                 if (!((Boolean) ep.get("is_credit"))) continue;
 
-                if (!((Boolean) ep.get("is_relevant"))) {
+                if (!((Boolean) ep.get("is_relevant")))
                     // keep non-change/non-redeposit intact
                     tx.addOutput(origOuts.get((Integer)ep.get("pt_idx")));
-                } else {
+                else {
                     if ((ep.get("subaccount") == null && subAccount == 0) ||
-                            ep.get("subaccount").equals(subAccount)) {
+                            ep.get("subaccount").equals(subAccount))
                         change_pointer = (Integer) ep.get("pubkey_pointer");
-                    }
                     // change/redeposit
                     long value = Long.valueOf((String) ep.get("value"));
                     if (Coin.valueOf(value).compareTo(remainingFeeDelta) <= 0) {
@@ -426,7 +423,7 @@ public class TransactionActivity extends GaActivity {
                         remainingFeeDelta = remainingFeeDelta.subtract(
                                 Coin.valueOf(value)
                         );
-                    }  else {
+                    } else {
                         // larger than remaining fee -- subtract the remaining fee
                         TransactionOutput out = origOuts.get((Integer)ep.get("pt_idx"));
                         out.setValue(out.getValue().subtract(remainingFeeDelta));
@@ -728,9 +725,8 @@ public class TransactionActivity extends GaActivity {
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                            if (twoFacData != null) {
+                            if (twoFacData != null)
                                 twoFacData.put("code", UI.getText(newTx2FACodeText));
-                            }
                             final ListenableFuture<Map<String,Object>> sendFuture = service.sendRawTransaction(signedTx, twoFacData, false);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity) {
                                 @Override

@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenbits.GaService;
 
 public class WatchOnlyLoginActivity extends GaActivity {
 
@@ -131,8 +130,7 @@ public class WatchOnlyLoginActivity extends GaActivity {
 
     @Override
     public void onResumeWithService() {
-        final GaService service = mService;
-        if (service.isLoggedOrLoggingIn()) {
+        if (mService.isLoggedOrLoggingIn()) {
             // already logged in, could be from different app via intent
             startActivity(new Intent(this, TabbedMainActivity.class));
             finish();
@@ -161,16 +159,14 @@ public class WatchOnlyLoginActivity extends GaActivity {
         if (mUsernameText.getText().length() == 0) {
             mUsernameText.setError(getString(R.string.enter_valid_username));
             return false;
-        } else {
+        } else
             mUsernameText.setError(null);
-        }
 
         if (mPasswordText.getText().length() == 0) {
             mPasswordText.setError(getString(R.string.enter_valid_password));
             return false;
-        } else {
+        } else
             mPasswordText.setError(null);
-        }
 
         return true;
     }

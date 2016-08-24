@@ -37,7 +37,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenbits.GaService;
 
 import java.io.IOException;
 
@@ -60,8 +59,6 @@ public class SignUpActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-
-        final GaService service = mService;
 
         final CircularProgressButton signupContinueButton = UI.find(this, R.id.signupContinueButton);
         final TextView tos = UI.find(this, R.id.textTosLink);
@@ -86,7 +83,7 @@ public class SignUpActivity extends GaActivity {
 
         final TextView qrCodeIcon = UI.find(this, R.id.signupQrCodeIcon);
         final ImageView qrcodeMnemonic = UI.find(qrView, R.id.qrInDialogImageView);
-        mnemonicText.setText(service.getSignUpMnemonic());
+        mnemonicText.setText(mService.getSignUpMnemonic());
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
@@ -106,7 +103,7 @@ public class SignUpActivity extends GaActivity {
                     mnemonicDialog.setContentView(qrView);
                 }
                 mnemonicDialog.show();
-                final BitmapDrawable bd = new BitmapDrawable(getResources(), service.getSignUpQRCode());
+                final BitmapDrawable bd = new BitmapDrawable(getResources(), mService.getSignUpQRCode());
                 bd.setFilterBitmap(false);
                 qrcodeMnemonic.setImageDrawable(bd);
             }
@@ -115,21 +112,20 @@ public class SignUpActivity extends GaActivity {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
-                if (onSignUp == null) {
-                    if (service.onConnected != null) {
+                if (onSignUp == null)
+                    if (mService.onConnected != null) {
                         signupContinueButton.setEnabled(true);
                         checkBox.setEnabled(false);
-                        onSignUp = Futures.transform(service.onConnected, new AsyncFunction<Void, LoginData>() {
+                        onSignUp = Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                                return service.signup(UI.getText(mnemonicText));
+                                return mService.signup(UI.getText(mnemonicText));
                             }
-                        }, service.getExecutor());
+                        }, mService.getExecutor());
                     } else if (isChecked) {
                         SignUpActivity.this.toast("You are not connected, please wait");
                         checkBox.setChecked(false);
                     }
-                }
             }
         });
 
@@ -151,9 +147,9 @@ public class SignUpActivity extends GaActivity {
                                 }
                             });
 
-                            service.resetSignUp();
+                            mService.resetSignUp();
                             onSignUp = null;
-                            final Intent savePin = PinSaveActivity.createIntent(SignUpActivity.this, service.getMnemonics());
+                            final Intent savePin = PinSaveActivity.createIntent(SignUpActivity.this, mService.getMnemonics());
                             startActivityForResult(savePin, PINSAVE);
                         }
 
@@ -167,13 +163,12 @@ public class SignUpActivity extends GaActivity {
                                 }
                             });
                         }
-                    }, service.getExecutor());
-                } else {
+                    }, mService.getExecutor());
+                } else
                     if (!checkBox.isChecked())
                         SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");
                     else
                         SignUpActivity.this.toast("Signup in progress");
-                }
             }
         });
         signupNfcIcon = UI.find(this, R.id.signupNfcIcon);
@@ -185,9 +180,9 @@ public class SignUpActivity extends GaActivity {
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK).build();
 
-        if (Build.VERSION.SDK_INT < 16) {
+        if (Build.VERSION.SDK_INT < 16)
             UI.hide(signupNfcIcon);
-        } else {
+        else
             signupNfcIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
@@ -195,7 +190,6 @@ public class SignUpActivity extends GaActivity {
                     nfcDialog.show();
                 }
             });
-        }
 
         nfcDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -248,14 +242,13 @@ public class SignUpActivity extends GaActivity {
 
                 } else {
                     final NdefFormatable format = NdefFormatable.get(detectedTag);
-                    if (format != null) {
+                    if (format != null)
                         try {
                             format.connect();
                             format.format(message);
                             nfcTagsWritten.setText(String.valueOf(Integer.parseInt(UI.getText(nfcTagsWritten)) + 1));
                         } catch (final IOException e) {
                         }
-                    }
                 }
             } catch (final Exception e) {
             }
@@ -265,22 +258,19 @@ public class SignUpActivity extends GaActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mnemonicDialog != null) {
+        if (mnemonicDialog != null)
             mnemonicDialog.dismiss();
-        }
-        if (nfcDialog != null) {
+        if (nfcDialog != null)
             nfcDialog.dismiss();
-        }
     }
 
     @Override
     public void onBackPressed() {
-        final GaService service = mService;
 
         if (onSignUp != null) {
-            service.resetSignUp();
+            mService.resetSignUp();
             onSignUp = null;
-            service.disconnect(true);
+            mService.disconnect(true);
         }
         super.onBackPressed();
     }

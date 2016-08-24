@@ -62,14 +62,12 @@ public class PinActivity extends GaActivity implements Observer {
         if (mPinLoginButton.getProgress() != 0)
             return;
 
-        final GaService service = mService;
-
         if (mPinText.length() < 4) {
             shortToast("PIN has to be between 4 and 15 long");
             return;
         }
 
-        if (!service.isConnected()) {
+        if (!mService.isConnected()) {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
@@ -94,22 +92,21 @@ public class PinActivity extends GaActivity implements Observer {
      }
 
     private void setUpLogin(final String pin, final Runnable onFailureFn) {
-        final GaService service = mService;
 
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                return service.pinLogin(pin);
+                return mService.pinLogin(pin);
             }
         };
 
         final ListenableFuture<LoginData> loginFuture;
-        loginFuture = Futures.transform(service.onConnected, connectToLogin, service.getExecutor());
+        loginFuture = Futures.transform(mService.onConnected, connectToLogin, mService.getExecutor());
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
             public void onSuccess(final LoginData result) {
-                service.cfgEdit("pin").putInt("counter", 0).apply();
+                mService.cfgEdit("pin").putInt("counter", 0).apply();
                 if (getCallingActivity() == null)
                     startActivity(new Intent(PinActivity.this, TabbedMainActivity.class));
                 else
@@ -120,7 +117,7 @@ public class PinActivity extends GaActivity implements Observer {
             @Override
             public void onFailure(final Throwable t) {
                 final String message;
-                final SharedPreferences prefs = service.cfg("pin");
+                final SharedPreferences prefs = mService.cfg("pin");
                 final int counter = prefs.getInt("counter", 0) + 1;
 
                 if (t instanceof GAException ||
@@ -153,14 +150,13 @@ public class PinActivity extends GaActivity implements Observer {
                     }
                 });
             }
-        }, service.getExecutor());
+        }, mService.getExecutor());
     }
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        final GaService service = mService;
 
-        final SharedPreferences prefs = service.cfg("pin");
+        final SharedPreferences prefs = mService.cfg("pin");
         final String ident = prefs.getString("ident", null);
 
         if (ident == null) {
@@ -212,13 +208,12 @@ public class PinActivity extends GaActivity implements Observer {
     @TargetApi(Build.VERSION_CODES.M)
     private void tryDecrypt() {
 
-        final GaService service = mService;
-        if (service.onConnected == null) {
+        if (mService.onConnected == null) {
             finishOnUiThread();
             return;
         }
 
-        final SharedPreferences prefs = service.cfg("pin");
+        final SharedPreferences prefs = mService.cfg("pin");
         final String nativePIN = prefs.getString("native", null);
         final String nativeIV = prefs.getString("nativeiv", null);
 
@@ -231,11 +226,11 @@ public class PinActivity extends GaActivity implements Observer {
             final byte[] decrypted = cipher.doFinal(Base64.decode(nativePIN, Base64.NO_WRAP));
             final String pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15);
 
-            Futures.addCallback(service.onConnected, new FutureCallback<Void>() {
+            Futures.addCallback(mService.onConnected, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void result) {
 
-                    if (service.isConnected()) {
+                    if (mService.isConnected()) {
                         setUpLogin(pin, null);
                         return;
                     }
@@ -260,8 +255,6 @@ public class PinActivity extends GaActivity implements Observer {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        final GaService service = mService;
-
         if (requestCode == ACTIVITY_REQUEST_CODE) {
             // Challenge completed, proceed with using cipher
             if (resultCode == RESULT_OK) {
@@ -270,7 +263,7 @@ public class PinActivity extends GaActivity implements Observer {
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go back to the initial login screen to allow
                 // them to enter mnemonics.
-                service.setUserCancelledPINEntry(true);
+                mService.setUserCancelledPINEntry(true);
                 startActivity(new Intent(this, FirstScreenActivity.class));
                 finish();
             }
@@ -288,10 +281,9 @@ public class PinActivity extends GaActivity implements Observer {
 
     @Override
     public void onResumeWithService() {
-        final GaService service = mService;
-        service.addConnectionObserver(this);
+        mService.addConnectionObserver(this);
 
-        if (service.isLoggedOrLoggingIn()) {
+        if (mService.isLoggedOrLoggingIn()) {
             // already logged in, could be from different app via intent
             startActivity(new Intent(this, TabbedMainActivity.class));
             finish();
@@ -300,8 +292,7 @@ public class PinActivity extends GaActivity implements Observer {
 
     @Override
     public void onPauseWithService() {
-        final GaService service = mService;
-        service.deleteConnectionObserver(this);
+        mService.deleteConnectionObserver(this);
     }
 
     @Override

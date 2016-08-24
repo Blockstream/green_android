@@ -39,7 +39,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
-import com.greenaddress.greenbits.GaService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -97,13 +96,12 @@ public class MnemonicActivity extends GaActivity {
             Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
             return true;
         } catch (final IllegalArgumentException e) {
-            for (final String w : mnemonic.split(" ")) {
+            for (final String w : mnemonic.split(" "))
                 if (!mWords.contains(w)) {
                     setWord(w);
                     showErrorCorrection(MnemonicHelper.getClosestWord(mWordsArray, w), w);
                     break;
                 }
-            }
             return false;
         }
     }
@@ -117,14 +115,12 @@ public class MnemonicActivity extends GaActivity {
         if (mOkButton.getProgress() != 0)
             return;
 
-        final GaService service = mService;
-        
-        if (service.isLoggedIn()) {
+        if (mService.isLoggedIn()) {
             toast(R.string.err_mnemonic_activity_logout_required);
             return;
         }
 
-        if (!service.isConnected()) {
+        if (!mService.isConnected()) {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
@@ -145,26 +141,26 @@ public class MnemonicActivity extends GaActivity {
             public ListenableFuture<LoginData> apply(final Void input) {
                 final String mnemonics = UI.getText(mMnemonicText).trim();
                 if (mnemonics.split(" ").length != 27)
-                    return service.login(mnemonics);
+                    return mService.login(mnemonics);
 
                 // Encrypted mnemonic
                 return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final String passphrase) {
-                        return service.login(CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
+                        return mService.login(CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
                     }
                 });
             }
         };
 
         final ListenableFuture<LoginData> loginFuture;
-        loginFuture = Futures.transform(service.onConnected, connectToLogin, service.getExecutor());
+        loginFuture = Futures.transform(mService.onConnected, connectToLogin, mService.getExecutor());
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override
             public void onSuccess(final LoginData result) {
                 if (getCallingActivity() == null) {
-                    final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, service.getMnemonics());
+                    final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, mService.getMnemonics());
                     startActivityForResult(savePin, PINSAVE);
                 } else {
                     setResult(RESULT_OK);
@@ -185,7 +181,7 @@ public class MnemonicActivity extends GaActivity {
                     }
                 });
             }
-        }, service.getExecutor());
+        }, mService.getExecutor());
     }
 
     private ListenableFuture<String> askForPassphrase() {
@@ -308,11 +304,9 @@ public class MnemonicActivity extends GaActivity {
                 mMnemonicText.setOnTouchListener(null);
                 final Spans copy = spans;
                 spans = null;
-                if (copy != null) {
-                    for (final Object span : copy.spans) {
+                if (copy != null)
+                    for (final Object span : copy.spans)
                         s.removeSpan(span);
-                    }
-                }
             }
             public void beforeTextChanged(final CharSequence s, final int start,
                                           final int count, final int after){}
@@ -325,12 +319,10 @@ public class MnemonicActivity extends GaActivity {
     }
 
     private void loginOnUiThread(final String mnemonics) {
-        final GaService service = mService;
-
-        if (service.onConnected == null || mnemonics.equals(service.getMnemonics()))
+        if (mService.onConnected == null || mnemonics.equals(mService.getMnemonics()))
             return;
 
-        CB.after(service.onConnected, new CB.NoOp<Void>() {
+        CB.after(mService.onConnected, new CB.NoOp<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 runOnUiThread(new Runnable() {
@@ -358,11 +350,11 @@ public class MnemonicActivity extends GaActivity {
 
         if (intent.getType().equals("x-gait/mnc")) {
             // Unencrypted NFC
-            String mnemonics = CryptoHelper.mnemonic_from_bytes(getNFCPayload(intent));
+            final String mnemonics = CryptoHelper.mnemonic_from_bytes(getNFCPayload(intent));
             mMnemonicText.setText(mnemonics);
             loginOnUiThread(mnemonics);
 
-        } else if (intent.getType().equals("x-ga/en")) {
+        } else if (intent.getType().equals("x-ga/en"))
             // Encrypted NFC
             CB.after(askForPassphrase(), new CB.NoOp<String>() {
                 @Override
@@ -372,13 +364,11 @@ public class MnemonicActivity extends GaActivity {
                     loginOnUiThread(mnemonics);
                 }
             });
-        }
     }
 
     @Override
     protected void onResumeWithService() {
-        final GaService service = mService;
-        if (service.isLoggedIn()) {
+        if (mService.isLoggedIn()) {
             // already logged in, could be from different app via intent
             startActivity(new Intent(this, TabbedMainActivity.class));
             finish();
@@ -408,16 +398,13 @@ public class MnemonicActivity extends GaActivity {
 
         final int end = start + badWord.length();
 
-        if (spans != null) {
-            for (final Object o: spans.spans) {
+        if (spans != null)
+            for (final Object o: spans.spans)
                 spannable.removeSpan(o);
-            }
-        }
 
         spans = new Spans(badWord);
-        for (final Object s: spans.spans) {
+        for (final Object s: spans.spans)
             spannable.setSpan(s, start, end, 0);
-        }
     }
 
     class Spans {
@@ -451,6 +438,7 @@ public class MnemonicActivity extends GaActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
+        // FIXME: Show connectivity status to user
         // Inflate the menu; this adds items to the action bar if it is present.
         // getMenuInflater().inflate(R.menu.mnemonic, menu);
         return true;

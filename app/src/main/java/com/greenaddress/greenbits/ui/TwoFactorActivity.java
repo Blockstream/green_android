@@ -5,7 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -16,7 +15,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
 import java.util.Formatter;
@@ -36,11 +34,9 @@ public class TwoFactorActivity extends GaActivity {
     }
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
-        final GaService service = mService;
-
-        if (service.getTwoFactorConfig() == null) {
+        if (mService.getTwoFactorConfig() == null) {
             finish();
             return;
         }
@@ -48,14 +44,13 @@ public class TwoFactorActivity extends GaActivity {
         twoFacType = getIntent().getStringExtra("method");
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
-        final List<String> enabledTwoFacNames = service.getEnabledTwoFacNames(false);
-        final List<String> enabledTwoFacNamesSystem = service.getEnabledTwoFacNames(true);
-        for (int i = 0; i < allTwoFacSystem.length; ++i) {
+        final List<String> enabledTwoFacNames = mService.getEnabledTwoFacNames(false);
+        final List<String> enabledTwoFacNamesSystem = mService.getEnabledTwoFacNames(true);
+        for (int i = 0; i < allTwoFacSystem.length; ++i)
             if (allTwoFacSystem[i].equals(twoFacType)) {
                 twoFacTypeName = allTwoFac[i];
                 break;
             }
-        }
         setTitle(new Formatter().format(getTitle().toString(), twoFacTypeName).toString());
 
         if (enabledTwoFacNames.size() > 1) {
@@ -65,7 +60,7 @@ public class TwoFactorActivity extends GaActivity {
             radioGroup.removeViews(0, radioGroup.getChildCount());
 
             for (int i = 0; i < enabledTwoFacNames.size(); ++i) {
-                RadioButton button = new RadioButton(TwoFactorActivity.this);
+                final RadioButton button = new RadioButton(TwoFactorActivity.this);
                 button.setText(enabledTwoFacNames.get(i));
                 button.setId(i);
                 radioGroup.addView(button);
@@ -80,19 +75,15 @@ public class TwoFactorActivity extends GaActivity {
 
             continueButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
                     final String methodName = enabledTwoFacNamesSystem.get(radioGroup.getCheckedRadioButtonId());
-                    final int stepsCount;
-                    if (twoFacType.equals("gauth")) {
-                        // details and confirmation code together
-                        stepsCount = 3;
-                    } else {
-                        stepsCount = 4;
-                    }
+                    // if 3 details and confirmation code together
+                    final int stepsCount = twoFacType.equals("gauth") ? 3 : 4;
+
                     if (!methodName.equals("gauth")) {
                         final Map<String, String> data = new HashMap<>();
                         data.put("method", twoFacType);
-                        service.requestTwoFacCode(methodName, "enable_2fa", data);
+                        mService.requestTwoFacCode(methodName, "enable_2fa", data);
                     }
                     showProvideAuthCode(2, stepsCount, enabledTwoFacNames.get(radioGroup.getCheckedRadioButtonId()),
                             methodName, twoFacType);
@@ -101,32 +92,25 @@ public class TwoFactorActivity extends GaActivity {
         } else if (enabledTwoFacNames.size() == 1) {
             // just one 2FA enabled - go straight to code verification
             final String methodName = enabledTwoFacNamesSystem.get(0);
-            final int stepsCount;
-            if (twoFacType.equals("gauth")) {
-                // details and confirmation code together
-                stepsCount = 2;
-            } else {
-                stepsCount = 3;
-            }
+
+            final int stepsCount = twoFacType.equals("gauth") ? 2 : 3;
+
             if (!methodName.equals("gauth")) {
                 final Map<String, String> data = new HashMap<>();
                 data.put("method", twoFacType);
-                service.requestTwoFacCode(methodName, "enable_2fa", data);
+                mService.requestTwoFacCode(methodName, "enable_2fa", data);
             }
             showProvideAuthCode(1, stepsCount, enabledTwoFacNames.get(0),
                     methodName, twoFacType);
-        } else {
+        } else
             // no 2FA enabled - go straight to 2FA details
-            if (twoFacType.equals("gauth")) {
+            if (twoFacType.equals("gauth"))
                 showGauthDetails(1, 1, null);
-            } else {
+            else
                 showProvideDetails(1, 2, null);
-            }
-        }
     }
 
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
-        final GaService service = mService;
         setContentView(R.layout.activity_two_factor_3_provide_details);
         final Button continueButton = UI.find(this, R.id.continueButton);
         final TextView prompt = UI.find(this, R.id.prompt);
@@ -153,7 +137,7 @@ public class TwoFactorActivity extends GaActivity {
                     twoFacData.put("method", "proxy");
                     twoFacData.put("code", proxyCode);
                 }
-                CB.after(service.initEnableTwoFac(twoFacType, UI.getText(details), twoFacData),
+                CB.after(mService.initEnableTwoFac(twoFacType, UI.getText(details), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
@@ -170,7 +154,6 @@ public class TwoFactorActivity extends GaActivity {
     }
 
     private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, final String newMethod) {
-        final GaService service = mService;
         inflateView(R.layout.activity_two_factor_2_4_provide_code);
 
         final TextView description = UI.find(this, R.id.description);
@@ -185,23 +168,22 @@ public class TwoFactorActivity extends GaActivity {
         final Button continueButton = UI.find(this, R.id.continueButton);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 continueButton.setEnabled(false);
                 final Map<String, String> data = new HashMap<>();
                 data.put("method", oldMethod);
                 data.put("code", UI.getText(code));
-                CB.after(service.requestTwoFacCode("proxy", newMethod, data),
+                CB.after(mService.requestTwoFacCode("proxy", newMethod, data),
                          new CB.Toast<Object>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final Object proxyCode) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (newMethod.equals("gauth")) {
+                                if (newMethod.equals("gauth"))
                                     showGauthDetails(stepNum + 1, numSteps, (String) proxyCode);
-                                } else {
+                                else
                                     showProvideDetails(stepNum + 1, numSteps, (String) proxyCode);
-                                }
                             }
                         });
                     }
@@ -211,7 +193,6 @@ public class TwoFactorActivity extends GaActivity {
     }
 
     private void showGauthDetails(final int stepNum, final int numSteps, final String proxyCode) {
-        final GaService service = mService;
 
         inflateView(R.layout.activity_two_factor_3_gauth_details);
         final ImageView imageView = UI.find(this, R.id.imageView);
@@ -222,7 +203,7 @@ public class TwoFactorActivity extends GaActivity {
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
-        final String gauth_url = (String) service.getTwoFactorConfig().get("gauth_url");
+        final String gauth_url = (String) mService.getTwoFactorConfig().get("gauth_url");
         final BitmapDrawable bd = new BitmapDrawable(getResources(), new QrBitmap(gauth_url, 0).getQRCode());
         bd.setFilterBitmap(false);
         imageView.setImageDrawable(bd);
@@ -238,7 +219,6 @@ public class TwoFactorActivity extends GaActivity {
                                 getSystemService(Context.CLIPBOARD_SERVICE);
                         final ClipData clip = ClipData.newPlainText("data", gauthCode);
                         clipboard.setPrimaryClip(clip);
-
                         TwoFactorActivity.this.toast(R.string.warnOnPaste);
                     }
                 }
@@ -253,7 +233,7 @@ public class TwoFactorActivity extends GaActivity {
                     twoFacData.put("code", proxyCode);
                 }
                 continueButton.setEnabled(false);
-                CB.after(service.enableTwoFactor("gauth", UI.getText(code).trim(), twoFacData),
+                CB.after(mService.enableTwoFactor("gauth", UI.getText(code).trim(), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
@@ -266,7 +246,6 @@ public class TwoFactorActivity extends GaActivity {
     }
 
     private void showProvideConfirmationCode(final int stepNum, final int numSteps) {
-        final GaService service = mService;
 
         inflateView(R.layout.activity_two_factor_2_4_provide_code);
         final Button continueButton = UI.find(this, R.id.continueButton);
@@ -279,12 +258,12 @@ public class TwoFactorActivity extends GaActivity {
 
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 final String enteredCode = UI.getText(code).trim();
                 if (enteredCode.length() != 6)
                     return;
                 continueButton.setEnabled(false);
-                CB.after(service.enableTwoFactor(twoFacType, enteredCode, null),
+                CB.after(mService.enableTwoFactor(twoFacType, enteredCode, null),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(Boolean result) {

@@ -17,7 +17,6 @@ import android.widget.EditText;
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.KeyStoreAES;
 
 public class PinSaveActivity extends GaActivity {
@@ -37,7 +36,6 @@ public class PinSaveActivity extends GaActivity {
     }
 
     private void setPin(final String pin, final boolean isNative) {
-        final GaService service = mService;
 
         if (pin.length() < 4) {
             shortToast(R.string.err_pin_save_wrong_length);
@@ -52,7 +50,7 @@ public class PinSaveActivity extends GaActivity {
         mSaveButton.setProgress(50);
         mPinText.setEnabled(false);
         UI.hide(mSkipButton);
-        Futures.addCallback(service.setPin(mnemonic, pin),
+        Futures.addCallback(mService.setPin(mnemonic, pin),
                 new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(final Void result) {
@@ -61,7 +59,7 @@ public class PinSaveActivity extends GaActivity {
                             // The user has set a non-native PIN.
                             // In case they already had a native PIN they are overriding,
                             // blank the native value so future logins don't detect it.
-                            KeyStoreAES.wipePIN(service);
+                            KeyStoreAES.wipePIN(mService);
                         }
                         finishOnUiThread();
                     }
@@ -77,7 +75,7 @@ public class PinSaveActivity extends GaActivity {
                             }
                         });
                     }
-                }, service.getExecutor());
+                }, mService.getExecutor());
     }
 
     @Override
