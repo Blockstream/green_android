@@ -95,12 +95,12 @@ public class BTChipHWWallet extends HWWallet {
         final List<byte[]> sigs = new LinkedList<>();
 
         try {
-            final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[ptx.decoded.getInputs().size()];
+            final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[ptx.mDecoded.getInputs().size()];
             if (!mDongle.understandsMultipleOutputs()) {
-                for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
-                    final byte[] inputHash = ptx.decoded.getInputs().get(i).getOutpoint().getHash().getReversedBytes();
+                for (int i = 0; i < ptx.mDecoded.getInputs().size(); ++i) {
+                    final byte[] inputHash = ptx.mDecoded.getInputs().get(i).getOutpoint().getHash().getReversedBytes();
                     final byte[] input = Arrays.copyOf(inputHash, inputHash.length + 4);
-                    long index = ptx.decoded.getInputs().get(i).getOutpoint().getIndex();
+                    long index = ptx.mDecoded.getInputs().get(i).getOutpoint().getIndex();
                     input[input.length - 4] = (byte) (index % 256);
                     index /= 256;
                     input[input.length - 3] = (byte) (index % 256);
@@ -109,28 +109,28 @@ public class BTChipHWWallet extends HWWallet {
                     index /= 256;
                     input[input.length - 1] = (byte) (index % 256);
                     ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
-                    BufferUtils.writeUint32LE(sequenceBuf, ptx.decoded.getInputs().get(i).getSequenceNumber());
+                    BufferUtils.writeUint32LE(sequenceBuf, ptx.mDecoded.getInputs().get(i).getSequenceNumber());
                     inputs[i] = mDongle.createInput(input, sequenceBuf.toByteArray(), false);
                 }
             } else {
-                for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
-                    final TransactionOutPoint outpoint = ptx.decoded.getInputs().get(i).getOutpoint();
+                for (int i = 0; i < ptx.mDecoded.getInputs().size(); ++i) {
+                    final TransactionOutPoint outpoint = ptx.mDecoded.getInputs().get(i).getOutpoint();
                     final long index = outpoint.getIndex();
-                    final ByteArrayInputStream in = new ByteArrayInputStream(ptx.prevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
+                    final ByteArrayInputStream in = new ByteArrayInputStream(ptx.mPrevoutRawTxs.get(outpoint.getHash().toString()).unsafeBitcoinSerialize());
                     final BitcoinTransaction encodedTx = new BitcoinTransaction(in);
-                    inputs[i] = mDongle.getTrustedInput(encodedTx, index, ptx.decoded.getInputs().get(i).getSequenceNumber());
+                    inputs[i] = mDongle.getTrustedInput(encodedTx, index, ptx.mDecoded.getInputs().get(i).getSequenceNumber());
                 }
             }
-            for (int i = 0; i < ptx.decoded.getInputs().size(); ++i) {
-                mDongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(ptx.prev_outputs.get(i).script));
-                final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(ptx.decoded.getMessageSize() < 32 ? 32 : ptx.decoded.getMessageSize() + 32);
-                stream.write(new VarInt(ptx.decoded.getOutputs().size()).encode());
-                for (final TransactionOutput out : ptx.decoded.getOutputs())
+            for (int i = 0; i < ptx.mDecoded.getInputs().size(); ++i) {
+                mDongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(ptx.mPrevOutputs.get(i).script));
+                final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(ptx.mDecoded.getMessageSize() < 32 ? 32 : ptx.mDecoded.getMessageSize() + 32);
+                stream.write(new VarInt(ptx.mDecoded.getOutputs().size()).encode());
+                for (final TransactionOutput out : ptx.mDecoded.getOutputs())
                     out.bitcoinSerialize(stream);
                 mDongle.finalizeInputFull(stream.toByteArray());
                 final ECKey.ECDSASignature sig;
-                sig = ECKey.ECDSASignature.decodeFromDER(mDongle.untrustedHashSign(outToPath(ptx.prev_outputs.get(i)),
-                                                         "0", ptx.decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
+                sig = ECKey.ECDSASignature.decodeFromDER(mDongle.untrustedHashSign(outToPath(ptx.mPrevOutputs.get(i)),
+                                                         "0", ptx.mDecoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
                 sigs.add(ISigningWallet.getTxSignature(sig));
             }
             return sigs;

@@ -19,27 +19,26 @@ import java.util.Map;
 
 public class PreparedTransaction {
 
-    public final Integer change_pointer;
-    public final int subAccount;
-    public final Boolean requires_2factor;
-    public final List<Output> prev_outputs = new ArrayList<>();
-    public final Transaction decoded;
-    public final Map<String, Transaction> prevoutRawTxs;
-    public final byte[] twoOfThreeBackupChaincode;
-    public final byte[] twoOfThreeBackupPubkey;
+    public final Integer mChangePointer;
+    public final int mSubAccount;
+    public final Boolean mRequiresTwoFactor;
+    public final List<Output> mPrevOutputs = new ArrayList<>();
+    public final Transaction mDecoded;
+    public final Map<String, Transaction> mPrevoutRawTxs = new HashMap<>();
+    public final byte[] mTwoOfThreeBackupChaincode;
+    public final byte[] mTwoOfThreeBackupPubkey;
 
     private static byte[] getBytes(final Map<String, ?> map, final String key) {
         return map == null ? null : Wally.hex_to_bytes((String) map.get(key));
     }
 
-    public PreparedTransaction(final Integer change_pointer, final int subAccount, final Transaction decoded, final Map<String, ?> twoOfThree) {
-        this.change_pointer = change_pointer;
-        this.subAccount = subAccount;
-        this.requires_2factor = false;
-        this.decoded = decoded;
-        this.prevoutRawTxs = new HashMap<>();
-        this.twoOfThreeBackupChaincode = getBytes(twoOfThree, "2of3_backup_chaincode");
-        this.twoOfThreeBackupPubkey = getBytes(twoOfThree, "2of3_backup_pubkey");
+    public PreparedTransaction(final Integer changePointer, final int subAccount, final Transaction decoded, final Map<String, ?> twoOfThree) {
+        mChangePointer = changePointer;
+        mSubAccount = subAccount;
+        mRequiresTwoFactor = false;
+        mDecoded = decoded;
+        mTwoOfThreeBackupChaincode = getBytes(twoOfThree, "2of3_backup_chaincode");
+        mTwoOfThreeBackupPubkey = getBytes(twoOfThree, "2of3_backup_pubkey");
     }
 
     public static class PreparedData {
@@ -50,59 +49,57 @@ public class PreparedTransaction {
                             final OkHttpClient client)
 
         {
-            this.values = values;
-            this.privateData = privateData;
-            this.subAccounts = subAccounts;
-            this.client = client;
+            mValues = values;
+            mPrivateData = privateData;
+            mSubAccounts = subAccounts;
+            mClient = client;
 
         }
-        final Map<?, ?> values;
-        final Map<String, ?> privateData;
-        final ArrayList subAccounts;
-        final OkHttpClient client;
+        final Map<?, ?> mValues;
+        final Map<String, ?> mPrivateData;
+        final ArrayList mSubAccounts;
+        final OkHttpClient mClient;
 
     }
 
     public PreparedTransaction(final PreparedData pte) {
 
-        this.prevoutRawTxs = new HashMap<>();
-
-        if (pte.privateData == null || pte.privateData.get("subaccount") == null) {
-            this.subAccount = 0;
-            this.twoOfThreeBackupChaincode = null;
-            this.twoOfThreeBackupPubkey = null;
+        if (pte.mPrivateData == null || pte.mPrivateData.get("subaccount") == null) {
+            mSubAccount = 0;
+            mTwoOfThreeBackupChaincode = null;
+            mTwoOfThreeBackupPubkey = null;
         } else {
-            this.subAccount = (Integer) pte.privateData.get("subaccount");
+            mSubAccount = (Integer) pte.mPrivateData.get("subaccount");
             byte[] chaincode = null, pubkey = null;
-            if (this.subAccount != 0) {
+            if (mSubAccount != 0) {
                 // Check if the sub-account is 2of3 and if so store its chaincode/public key
-                for (final Object s : pte.subAccounts) {
+                for (final Object s : pte.mSubAccounts) {
                     final Map<String, ?> m = (Map) s;
-                    if (m.get("type").equals("2of3") && m.get("pointer").equals(this.subAccount)) {
+                    if (m.get("type").equals("2of3") && m.get("pointer").equals(mSubAccount)) {
                         chaincode = getBytes(m, "2of3_backup_chaincode");
                         pubkey = getBytes(m, "2of3_backup_pubkey");
                         break;
                     }
                 }
             }
-            this.twoOfThreeBackupChaincode = chaincode;
-            this.twoOfThreeBackupPubkey = pubkey;
+            mTwoOfThreeBackupChaincode = chaincode;
+            mTwoOfThreeBackupPubkey = pubkey;
         }
 
-        for (final Object obj : (List) pte.values.get("prev_outputs"))
-            this.prev_outputs.add(new Output((Map<?, ?>) obj));
+        for (final Object obj : (List) pte.mValues.get("prev_outputs"))
+            mPrevOutputs.add(new Output((Map<?, ?>) obj));
 
-        if (pte.values.get("change_pointer") != null)
-            this.change_pointer = Integer.parseInt(pte.values.get("change_pointer").toString());
+        if (pte.mValues.get("change_pointer") != null)
+            mChangePointer = Integer.parseInt(pte.mValues.get("change_pointer").toString());
         else
-            this.change_pointer = null;
+            mChangePointer = null;
 
-        this.requires_2factor = (Boolean) pte.values.get("requires_2factor");
-        this.decoded = new Transaction(Network.NETWORK, Wally.hex_to_bytes(pte.values.get("tx").toString()));
+        mRequiresTwoFactor = (Boolean) pte.mValues.get("requires_2factor");
+        mDecoded = new Transaction(Network.NETWORK, Wally.hex_to_bytes(pte.mValues.get("tx").toString()));
 
         // return early if no rawtxs url is given, assumes user asked for 'skip'
         try {
-            if (!URLUtil.isValidUrl((String) pte.values.get("prevout_rawtxs"))) {
+            if (!URLUtil.isValidUrl((String) pte.mValues.get("prevout_rawtxs"))) {
                 return;
             }
         } catch (final Exception e) {
@@ -111,17 +108,17 @@ public class PreparedTransaction {
 
 
         final Request request = new Request.Builder()
-                .url((String)pte.values.get("prevout_rawtxs"))
+                .url((String)pte.mValues.get("prevout_rawtxs"))
                 .build();
         try {
-            final String jsonStr = pte.client.newCall(request).execute().body().string();
+            final String jsonStr = pte.mClient.newCall(request).execute().body().string();
 
             final JSONObject prevout_rawtxs = new JSONObject(jsonStr);
             final Iterator<?> keys = prevout_rawtxs.keys();
 
             while (keys.hasNext()) {
                 final String k = (String)keys.next();
-                prevoutRawTxs.put(k, new Transaction(Network.NETWORK, Wally.hex_to_bytes(prevout_rawtxs.getString(k))));
+                mPrevoutRawTxs.put(k, new Transaction(Network.NETWORK, Wally.hex_to_bytes(prevout_rawtxs.getString(k))));
             }
 
         } catch (final IOException | JSONException e) {

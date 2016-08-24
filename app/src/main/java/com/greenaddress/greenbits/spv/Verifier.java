@@ -31,7 +31,7 @@ class Verifier {
             // simplicity we don't handle it.
             throw new IllegalArgumentException("Verification: Cannot send to a change address.");
         }
-        final TransactionOutput output = ptx.decoded.getOutputs().get(1 - Math.abs(changeIdx));
+        final TransactionOutput output = ptx.mDecoded.getOutputs().get(1 - Math.abs(changeIdx));
         if (recipient != null) {
             final Address gotAddress = output.getScriptPubKey().getToAddress(Network.NETWORK);
             if (!gotAddress.equals(recipient)) {
@@ -44,9 +44,9 @@ class Verifier {
 
         // 3. Verify fee value:
         Coin inValue = Coin.ZERO, outValue = Coin.ZERO;
-        for (final TransactionInput in : ptx.decoded.getInputs()) {
+        for (final TransactionInput in : ptx.mDecoded.getInputs()) {
             if (countedUtxoValues.get(in.getOutpoint()) == null) {
-                final Transaction prevTx = ptx.prevoutRawTxs.get(in.getOutpoint().getHash().toString());
+                final Transaction prevTx = ptx.mPrevoutRawTxs.get(in.getOutpoint().getHash().toString());
                 if (!prevTx.getHash().equals(in.getOutpoint().getHash())) {
                     throw new IllegalArgumentException("Verification: Prev tx hash invalid");
                 }
@@ -55,14 +55,14 @@ class Verifier {
                 inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
             }
         }
-        for (final TransactionOutput out : ptx.decoded.getOutputs()) {
+        for (final TransactionOutput out : ptx.mDecoded.getOutputs()) {
             outValue = outValue.add(out.getValue());
         }
         final Coin fee = inValue.subtract(outValue);
         if (fee.compareTo(Coin.valueOf(1000)) == -1) {
             throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi).");
         }
-        final int kBfee = (int) (500000.0 * ((double) ptx.decoded.getMessageSize()) / 1000.0);
+        final int kBfee = (int) (500000.0 * ((double) ptx.mDecoded.getMessageSize()) / 1000.0);
         if (fee.compareTo(Coin.valueOf(kBfee)) == 1) {
             throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB).");
         }

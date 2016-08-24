@@ -426,8 +426,8 @@ public class SPV {
 
     private ListenableFuture<Boolean>
     verifyOutputSpendable(final PreparedTransaction ptx, final int index) {
-        return mService.verifySpendableBy(ptx.decoded.getOutputs().get(index),
-                                          ptx.subAccount, ptx.change_pointer);
+        return mService.verifySpendableBy(ptx.mDecoded.getOutputs().get(index),
+                                          ptx.mSubAccount, ptx.mChangePointer);
     }
 
     public ListenableFuture<Coin>
@@ -441,11 +441,11 @@ public class SPV {
         // 1. Find the change output:
         ListenableFuture<List<Boolean>> changeFn = Futures.immediateFuture(null);
 
-        if (ptx.decoded.getOutputs().size() == 2) {
+        if (ptx.mDecoded.getOutputs().size() == 2) {
             changeFn = Futures.allAsList(Lists.newArrayList(verifyOutputSpendable(ptx, 0),
                                                             verifyOutputSpendable(ptx, 1)));
         }
-        else if (ptx.decoded.getOutputs().size() > 2)
+        else if (ptx.mDecoded.getOutputs().size() > 2)
             throw new IllegalArgumentException("Verification: Wrong number of transaction outputs.");
 
         // 2. Verify the main output value and address, if available:

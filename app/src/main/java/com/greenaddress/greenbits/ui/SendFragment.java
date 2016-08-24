@@ -397,7 +397,7 @@ public class SendFragment extends SubaccountFragment {
                                                                 dialogAmount = amount;
                                                                 dialogFee = fee;
                                                             }
-                                                            final boolean skipChoice = !ptx.requires_2factor ||
+                                                            final boolean skipChoice = !ptx.mRequiresTwoFactor ||
                                                                                         twoFacConfig == null || !((Boolean) twoFacConfig.get("any"));
                                                             mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                                                                          new CB.Runnable1T<String>() {

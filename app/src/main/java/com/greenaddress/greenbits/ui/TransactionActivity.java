@@ -525,7 +525,7 @@ public class TransactionActivity extends GaActivity {
                     continue;
                 final Integer prevIndex = ((Integer) ep.get("pt_idx"));
                 final TransactionInput oldInput = tx.getInput(prevIndex);
-                ptx.prev_outputs.add(new Output(
+                ptx.mPrevOutputs.add(new Output(
                         (Integer) ep.get("subaccount"),
                         (Integer) ep.get("pubkey_pointer"),
                         1,
@@ -538,7 +538,7 @@ public class TransactionActivity extends GaActivity {
             int i = 0;
             if (moreInputs != null) {
                 for (final Map<String, Object> ep : moreInputs) {
-                    ptx.prev_outputs.add(new Output(
+                    ptx.mPrevOutputs.add(new Output(
                             (Integer) ep.get("subaccount"),
                             (Integer) ep.get("pointer"),
                             1,
@@ -602,7 +602,7 @@ public class TransactionActivity extends GaActivity {
                                     new Function<Transaction, Void>() {
                                         @Override
                                         public Void apply(Transaction input) {
-                                            ptx.prevoutRawTxs.put(Wally.hex_from_bytes(inp.getOutpoint().getHash().getBytes()), input);
+                                            ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(inp.getOutpoint().getHash().getBytes()), input);
                                             return null;
                                         }
                                     }

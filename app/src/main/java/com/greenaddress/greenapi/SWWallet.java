@@ -45,10 +45,10 @@ public class SWWallet extends ISigningWallet {
     }
 
     @Override
-    public List<byte[]> signTransaction(PreparedTransaction ptx) {
-        final Transaction tx = ptx.decoded;
+    public List<byte[]> signTransaction(final PreparedTransaction ptx) {
+        final Transaction tx = ptx.mDecoded;
         final List<TransactionInput> txInputs = tx.getInputs();
-        final List<Output> prevOuts = ptx.prev_outputs;
+        final List<Output> prevOuts = ptx.mPrevOutputs;
         final List<byte[]> sigs = new ArrayList<>(txInputs.size());
 
         for (int i = 0; i < txInputs.size(); ++i) {

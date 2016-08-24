@@ -365,16 +365,16 @@ public class Trezor {
             } else if (r.getRequestType().equals(TrezorType.RequestType.TXMETA)) {
                 final TrezorType.TransactionType.Builder b = TrezorType.TransactionType.newBuilder();
                 if (r.getDetails().hasTxHash()) {
-                    final Transaction tx = curTx.prevoutRawTxs.get(Hex.toHexString(r.getDetails().getTxHash().toByteArray()));
+                    final Transaction tx = curTx.mPrevoutRawTxs.get(Hex.toHexString(r.getDetails().getTxHash().toByteArray()));
                     b.setInputsCnt(tx.getInputs().size());
                     b.setOutputsCnt(tx.getOutputs().size());
                     b.setVersion((int) tx.getVersion())
                             .setLockTime((int) tx.getLockTime());
                 } else {
-                    b.setInputsCnt(curTx.decoded.getInputs().size());
-                    b.setOutputsCnt(curTx.decoded.getOutputs().size());
-                    b.setVersion((int) curTx.decoded.getVersion())
-                            .setLockTime((int) curTx.decoded.getLockTime());
+                    b.setInputsCnt(curTx.mDecoded.getInputs().size());
+                    b.setOutputsCnt(curTx.mDecoded.getOutputs().size());
+                    b.setVersion((int) curTx.mDecoded.getVersion())
+                            .setLockTime((int) curTx.mDecoded.getLockTime());
                 }
                 ackTx = b.build();
             } else {
@@ -388,7 +388,7 @@ public class Trezor {
     }
 
     private TrezorType.TxOutputType createOutput(final int requestIndex) {
-        final TransactionOutput txOut = curTx.decoded.getOutputs().get(requestIndex);
+        final TransactionOutput txOut = curTx.mDecoded.getOutputs().get(requestIndex);
 
         final TrezorType.TxOutputType.Builder b = TrezorType.TxOutputType.newBuilder().
             setAmount(txOut.getValue().longValue());
@@ -402,11 +402,11 @@ public class Trezor {
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curGaNode).
                                     clearAddressN().
-                                    addAddressN(curTx.change_pointer)).
+                                    addAddressN(curTx.mChangePointer)).
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curWalletNode).
                                     clearAddressN().
-                                    addAddressN(curTx.change_pointer)).
+                                    addAddressN(curTx.mChangePointer)).
                             setM(2));
                 } else {
                     b.setMultisig(TrezorType.MultisigRedeemScriptType.newBuilder().
@@ -414,15 +414,15 @@ public class Trezor {
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curGaNode).
                                     clearAddressN().
-                                    addAddressN(curTx.change_pointer)).
+                                    addAddressN(curTx.mChangePointer)).
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curWalletNode).
                                     clearAddressN().
-                                    addAddressN(curTx.change_pointer)).
+                                    addAddressN(curTx.mChangePointer)).
                             addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                     setNode(curRecoveryNode).
                                     clearAddressN().
-                                    addAddressN(curTx.change_pointer)).
+                                    addAddressN(curTx.mChangePointer)).
                             setM(2));
                 }
             } else {
@@ -437,7 +437,7 @@ public class Trezor {
     }
 
     private TrezorType.TxOutputBinType createBinOutput(final ByteString txHash, final int requestIndex) {
-        final TransactionOutput out = curTx.prevoutRawTxs.get(Hex.toHexString(txHash.toByteArray())).getOutput(requestIndex);
+        final TransactionOutput out = curTx.mPrevoutRawTxs.get(Hex.toHexString(txHash.toByteArray())).getOutput(requestIndex);
         return TrezorType.TxOutputBinType.newBuilder().
             setAmount(out.getValue().longValue()).
             setScriptPubkey(ByteString.copyFrom(out.getScriptBytes())).
@@ -447,7 +447,7 @@ public class Trezor {
     private TrezorType.TxInputType createInput(final ByteString txHash, final int requestIndex) {
         final TransactionInput in;
         if (txHash != null) {
-            in = curTx.prevoutRawTxs.get(Hex.toHexString(txHash.toByteArray())).getInput(requestIndex);
+            in = curTx.mPrevoutRawTxs.get(Hex.toHexString(txHash.toByteArray())).getInput(requestIndex);
             return TrezorType.TxInputType.newBuilder().
                     setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes())).
                     setPrevIndex((int)in.getOutpoint().getIndex()).
@@ -455,12 +455,12 @@ public class Trezor {
                     setScriptSig(ByteString.copyFrom(in.getScriptBytes())).
                     build();
         } else {
-            in = curTx.decoded.getInput(requestIndex);
+            in = curTx.mDecoded.getInput(requestIndex);
             final Integer[] addrN;
             if (curSubaccount != 0) {
-                addrN = new Integer[] { 3 + 0x80000000, curSubaccount + 0x80000000, 1, curTx.prev_outputs.get(requestIndex).pointer };
+                addrN = new Integer[] { 3 + 0x80000000, curSubaccount + 0x80000000, 1, curTx.mPrevOutputs.get(requestIndex).pointer };
             } else {
-                addrN = new Integer[] { 1, curTx.prev_outputs.get(requestIndex).pointer};
+                addrN = new Integer[] { 1, curTx.mPrevOutputs.get(requestIndex).pointer};
             }
             final TrezorType.MultisigRedeemScriptType multisig;
             if (curRecoveryNode == null) {
@@ -469,11 +469,11 @@ public class Trezor {
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curGaNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
+                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curWalletNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
+                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
                         setM(2).
                         build();
             } else {
@@ -482,15 +482,15 @@ public class Trezor {
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curGaNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
+                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
                         addPubkeys(TrezorType.HDNodePathType.newBuilder().
                                 setNode(curWalletNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer)).
+                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
                         addPubkeys((TrezorType.HDNodePathType.newBuilder().
                                 setNode(curRecoveryNode).
                                 clearAddressN().
-                                addAddressN(curTx.prev_outputs.get(requestIndex).pointer))).
+                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer))).
                         setM(2).
                         build();
             }
@@ -539,9 +539,9 @@ public class Trezor {
 
     public List<byte[]> MessageSignTx(final PreparedTransaction ptx, final String coinName) {
         curTx = ptx;
-        curSubaccount = ptx.subAccount;
+        curSubaccount = ptx.mSubAccount;
 
-        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.subAccount, ptx.change_pointer);
+        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.mSubAccount, ptx.mChangePointer);
 
         curGaNode = TrezorType.HDNodeType.newBuilder().
             setDepth(serverKeys[0].getDepth()).
@@ -558,20 +558,20 @@ public class Trezor {
             pubkeys.add(ECKey.fromPublicOnly(serverKeys[1].getPubKeyPoint()));
 
             final Integer[] intArray;
-            if (ptx.subAccount != 0) {
-                intArray = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, HDKey.BRANCH_REGULAR, ptx.change_pointer};
+            if (ptx.mSubAccount != 0) {
+                intArray = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR, ptx.mChangePointer};
             } else {
-                intArray = new Integer[]{HDKey.BRANCH_REGULAR, ptx.change_pointer};
+                intArray = new Integer[]{HDKey.BRANCH_REGULAR, ptx.mChangePointer};
             }
             final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
             final String pkHex = xpub[xpub.length - 2];
             pubkeys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
 
             curRecoveryNode = null;
-            if (ptx.twoOfThreeBackupChaincode != null) {
+            if (ptx.mTwoOfThreeBackupChaincode != null) {
                 final DeterministicKey keys[];
-                keys = HDKey.getRecoveryKeys(ptx.twoOfThreeBackupChaincode, ptx.twoOfThreeBackupPubkey,
-                                             ptx.change_pointer);
+                keys = HDKey.getRecoveryKeys(ptx.mTwoOfThreeBackupChaincode, ptx.mTwoOfThreeBackupPubkey,
+                                             ptx.mChangePointer);
 
                 curRecoveryNode = TrezorType.HDNodeType.newBuilder().
                         setDepth(keys[0].getDepth()).
@@ -594,8 +594,8 @@ public class Trezor {
         }
 
         final Integer[] intArray2;
-        if (ptx.subAccount != 0) {
-            intArray2 = new Integer[]{3 + 0x80000000, ptx.subAccount + 0x80000000, HDKey.BRANCH_REGULAR};
+        if (ptx.mSubAccount != 0) {
+            intArray2 = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR};
         } else {
             intArray2 = new Integer[]{HDKey.BRANCH_REGULAR};
         }
@@ -612,15 +612,15 @@ public class Trezor {
                 build();
 
         curSignatures.clear();
-        for (int i = 0; i < curTx.decoded.getInputs().size(); ++i) {
+        for (int i = 0; i < curTx.mDecoded.getInputs().size(); ++i) {
             curSignatures.add("");
         }
 
         final LinkedList<byte[]> signaturesList = new LinkedList<>();
         final String[] signatures = _get(this.send(
                 SignTx.newBuilder().
-                        setInputsCount(ptx.decoded.getInputs().size()).
-                        setOutputsCount(ptx.decoded.getOutputs().size()).
+                        setInputsCount(ptx.mDecoded.getInputs().size()).
+                        setOutputsCount(ptx.mDecoded.getOutputs().size()).
                         setCoinName(coinName).
                         build())).split(";");
         for (final String sig: signatures) {
