@@ -590,31 +590,27 @@ public class TransactionActivity extends GaActivity {
                 return;
             }
 
-            ListenableFuture<Void> prevouts = Futures.immediateFuture(null);
-            // FIXME: Find another way to do this
-            if (service.getSigningWallet() instanceof TrezorHWWallet) {
-                for (final TransactionInput inp : tx.getInputs()) {
-                    prevouts = Futures.transform(prevouts, new AsyncFunction<Void, Void>() {
-                        @Override
-                        public ListenableFuture<Void> apply(Void input) throws Exception {
-                            return Futures.transform(
-                                    service.getRawOutput(inp.getOutpoint().getHash()),
-                                    new Function<Transaction, Void>() {
-                                        @Override
-                                        public Void apply(Transaction input) {
-                                            ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(inp.getOutpoint().getHash().getBytes()), input);
-                                            return null;
-                                        }
-                                    }
-                            );
-                        }
-                    });
+            final List<TransactionInput> inputs = tx.getInputs();
+            final List<ListenableFuture<Void>> outpointToRaw = new ArrayList<>(inputs.size() + 1);
+            if (!(service.getSigningWallet() instanceof TrezorHWWallet))
+                outpointToRaw.add(Futures.immediateFuture((Void) null));
+            else
+                for (final TransactionInput inp : inputs) {
+                    final Sha256Hash hash = inp.getOutpoint().getHash();
+                    outpointToRaw.add(Futures.transform(service.getRawOutput(hash),
+                            new Function<Transaction, Void>() {
+                                @Override
+                                public Void apply(final Transaction input) {
+                                    ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(hash.getBytes()), input);
+                                    return null;
+                                }
+                            }));
                 }
-            }
 
-            final ListenableFuture<List<byte[]>> signed = Futures.transform(prevouts, new AsyncFunction<Void, List<byte[]>>() {
+            final ListenableFuture<List<Void>> prevouts = Futures.allAsList(outpointToRaw);
+            final ListenableFuture<List<byte[]>> signed = Futures.transform(prevouts, new AsyncFunction<List<Void>, List<byte[]>>() {
                 @Override
-                public ListenableFuture<List<byte[]>> apply(Void input) throws Exception {
+                public ListenableFuture<List<byte[]>> apply(final List<Void> input) throws Exception {
                     return service.signTransaction(ptx);
                 }
             });
