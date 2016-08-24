@@ -159,14 +159,16 @@ public class WatchOnlyLoginActivity extends GaActivity {
         if (mUsernameText.getText().length() == 0) {
             mUsernameText.setError(getString(R.string.enter_valid_username));
             return false;
-        } else
-            mUsernameText.setError(null);
+        }
+
+        mUsernameText.setError(null);
 
         if (mPasswordText.getText().length() == 0) {
             mPasswordText.setError(getString(R.string.enter_valid_password));
             return false;
-        } else
-            mPasswordText.setError(null);
+        }
+
+        mPasswordText.setError(null);
 
         return true;
     }

@@ -197,11 +197,10 @@ public class TransactionActivity extends GaActivity {
                     bestEstimate = (Integer)((Map)feeEstimates.get("1")).get("blocks");
                     unconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
                     if (bestEstimate < currentEstimate && txItem.replaceable && !isWatchOnly) {
-                        if (bestEstimate == 1) {
+                        if (bestEstimate == 1)
                             unconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
-                        } else {
+                        else
                             unconfirmedRecommendation.setText(String.format(getResources().getString(R.string.recommendationBlocks), bestEstimate));
-                        }
                         unconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(final View v) {
@@ -210,23 +209,21 @@ public class TransactionActivity extends GaActivity {
                                 replaceByFee(txItem, feerateCoin, null, 0);
                             }
                         });
-                    } else {
+                    } else
                         UI.hide(unconfirmedIncreaseFee, unconfirmedRecommendation);
-                    }
-                } else {
+                } else
                     // incoming spent - hide outgoing-only widgets
                     UI.hide(unconfirmedRecommendation, unconfirmedIncreaseFee,
                             unconfirmedEstimatedBlocks);
-                }
             } else {
                 // unspent incoming output
                 // incoming - hide outgoing-only widgets
                 UI.hide(unconfirmedRecommendation, unconfirmedIncreaseFee,
                         unconfirmedEstimatedBlocks);
-                if (txItem.getConfirmations() > 0) {
-                    if (isWatchOnly || txItem.spvVerified ) {
+                if (txItem.getConfirmations() > 0)
+                    if (isWatchOnly || txItem.spvVerified)
                         UI.hide((View) UI.find(v, R.id.txUnconfirmed));
-                    } else {
+                    else {
                         final int blocksLeft = service.getSPVBlocksRemaining();
                         final String message = getResources().getString(R.string.txUnverifiedTx);
                         if (blocksLeft != Integer.MAX_VALUE)
@@ -235,7 +232,6 @@ public class TransactionActivity extends GaActivity {
                             unconfirmedText.setText(String.format("%s %s", message,
                                                     "Not yet connected to SPV!"));
                     }
-                }
             }
 
             final String btcUnit = (String) service.getUserConfig("unit");
@@ -277,14 +273,12 @@ public class TransactionActivity extends GaActivity {
             if (txItem.doubleSpentBy != null || txItem.replacedHashes.size() > 0) {
                 CharSequence res = "";
                 if (txItem.doubleSpentBy != null) {
-                    if (txItem.doubleSpentBy.equals("malleability") || txItem.doubleSpentBy.equals("update")) {
+                    if (txItem.doubleSpentBy.equals("malleability") || txItem.doubleSpentBy.equals("update"))
                         res = txItem.doubleSpentBy;
-                    } else {
+                    else
                         res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + txItem.doubleSpentBy + "\">" + txItem.doubleSpentBy + "</a>");
-                    }
-                    if (txItem.replacedHashes.size() > 0) {
+                    if (txItem.replacedHashes.size() > 0)
                         res = TextUtils.concat(res, "; ");
-                    }
                 }
                 if (txItem.replacedHashes.size() > 0) {
                     res = TextUtils.concat(res, Html.fromHtml("replaces transactions:<br/>"));
@@ -297,24 +291,21 @@ public class TransactionActivity extends GaActivity {
                     }
                 }
                 doubleSpentByText.setText(res);
-            } else {
+            } else
                 UI.hide(doubleSpentByText, doubleSpentByTitle,
                         (View) UI.find(v, R.id.txDoubleSpentByMargin));
-            }
 
-            if (txItem.counterparty != null && txItem.counterparty.length() > 0) {
+            if (txItem.counterparty != null && txItem.counterparty.length() > 0)
                 recipientText.setText(txItem.counterparty);
-            } else {
+            else
                 UI.hide(recipientText, recipientTitle,
                        (View) UI.find(v, R.id.txRecipientMargin));
-            }
 
-            if (txItem.receivedOn != null && txItem.receivedOn.length() > 0) {
+            if (txItem.receivedOn != null && txItem.receivedOn.length() > 0)
                 openInBrowser(receivedOnText, txItem.receivedOn, Network.BLOCKEXPLORER_ADDRESS);
-            } else {
+            else
                 UI.hide(receivedOnText, receivedOnTitle,
                         (View) UI.find(v, R.id.txReceivedOnMargin));
-            }
 
             if (isWatchOnly)
                 return v;
@@ -372,7 +363,7 @@ public class TransactionActivity extends GaActivity {
             final GaActivity gaActivity = getGaActivity();
             final GaService service = getGAService();
 
-            final Transaction tx = new Transaction(Network.NETWORK, Wally.hex_to_bytes(txItem.data));
+            final Transaction tx = GaService.buildTransaction(txItem.data);
             Integer change_pointer = null;
             final int subAccount = service.getCurrentSubAccount();
             // requiredFeeDelta assumes mintxfee = 1000, and inputs increasing
@@ -380,13 +371,13 @@ public class TransactionActivity extends GaActivity {
             if (txSize == null)
                 txSize = tx.getMessageSize();
             long requiredFeeDelta = txSize + tx.getInputs().size() * 4;
-            List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
+            final List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
             tx.clearInputs();
             for (int i = 0; i < txItem.eps.size(); ++i) {
                 final Map<String, Object> ep = (Map) txItem.eps.get(i);
                 if (((Boolean) ep.get("is_credit"))) continue;
-                TransactionInput oldInput = oldInputs.get((Integer) ep.get("pt_idx"));
-                TransactionInput newInput = new TransactionInput(
+                final TransactionInput oldInput = oldInputs.get((Integer) ep.get("pt_idx"));
+                final TransactionInput newInput = new TransactionInput(
                         Network.NETWORK,
                         null,
                         oldInput.getScriptBytes(),
@@ -397,13 +388,13 @@ public class TransactionActivity extends GaActivity {
                 tx.addInput(newInput);
             }
             final Coin newFeeWithRate = feerate.multiply(txSize).divide(1000);
-            Coin feeDelta = Coin.valueOf(Math.max(
+            final Coin feeDelta = Coin.valueOf(Math.max(
                     newFeeWithRate.subtract(tx.getFee()).longValue(),
                     requiredFeeDelta
             ));
             final Coin oldFee = tx.getFee();
             Coin remainingFeeDelta = feeDelta;
-            List<TransactionOutput> origOuts = new ArrayList<>(tx.getOutputs());
+            final List<TransactionOutput> origOuts = new ArrayList<>(tx.getOutputs());
             tx.clearOutputs();
             for (int i = 0; i < txItem.eps.size(); ++i) {
                 final Map<String, Object> ep = (Map) txItem.eps.get(i);
@@ -425,7 +416,7 @@ public class TransactionActivity extends GaActivity {
                         );
                     } else {
                         // larger than remaining fee -- subtract the remaining fee
-                        TransactionOutput out = origOuts.get((Integer)ep.get("pt_idx"));
+                        final TransactionOutput out = origOuts.get((Integer)ep.get("pt_idx"));
                         out.setValue(out.getValue().subtract(remainingFeeDelta));
                         tx.addOutput(out);
                         remainingFeeDelta = Coin.ZERO;
@@ -442,11 +433,11 @@ public class TransactionActivity extends GaActivity {
             CB.after(service.getAllUnspentOutputs(1, subAccount),
                      new CB.Toast<ArrayList>(gaActivity) {
                 @Override
-                public void onSuccess(ArrayList result) {
+                public void onSuccess(final ArrayList result) {
                     Coin remaining = finalRemaining;
                     final List<ListenableFuture<byte[]>> scripts = new ArrayList<>();
                     final List<Map<String, Object>> moreInputs = new ArrayList<>();
-                    for (Object utxo_ : result) {
+                    for (final Object utxo_ : result) {
                         final Map<String, Object> utxo = (Map) utxo_;
                         remaining = remaining.subtract(Coin.valueOf(Long.valueOf((String)utxo.get("value"))));
                         scripts.add(service.createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
@@ -480,7 +471,7 @@ public class TransactionActivity extends GaActivity {
                              new CB.Toast<Map>(gaActivity) {
                         @Override
                         public void onSuccess(final Map result) {
-                            byte[] script = Wally.hex_to_bytes((String) result.get("script"));
+                            final byte[] script = Wally.hex_to_bytes((String) result.get("script"));
                             tx.addOutput(changeValue,
                                          Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script)));
                             CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
@@ -714,7 +705,7 @@ public class TransactionActivity extends GaActivity {
                 twoFacData.put("method", method);
                 twoFacData.put("bump_fee_amount", newFee.subtract(oldFee).longValue());
                 if (!method.equals("gauth")) {
-                    Map<String, Long> amount = new HashMap<>();
+                    final Map<String, Long> amount = new HashMap<>();
                     amount.put("amount", newFee.subtract(oldFee).longValue());
                     service.requestTwoFacCode(method, "bump_fee", amount);
                 }

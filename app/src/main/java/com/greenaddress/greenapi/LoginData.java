@@ -14,7 +14,7 @@ public class LoginData {
     public String currency;
     public final Map<String, Object> userConfig;
     public Map<String, Object> feeEstimates;
-    public final ArrayList subAccounts;
+    public final ArrayList<Map<String, ?>> subAccounts;
     public final String receivingId;
     public int[] gaUserPath;  // can change on first login (registration)
     public final int earliest_key_creation_time;

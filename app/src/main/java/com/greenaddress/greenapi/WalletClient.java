@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.spv.Socks5SocketFactory;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.squareup.okhttp.OkHttpClient;
@@ -153,7 +154,7 @@ public class WalletClient {
     private SettableFuture clientCall(final SettableFuture rpc,
                                       final String procedure, final Class result,
                                       final CallHandler handler, final ErrorHandler errHandler,
-                                      Object... args) {
+                                      final Object... args) {
         final ObjectMapper mapper = new ObjectMapper();
         final ArrayNode argsNode = mapper.valueToTree(Arrays.asList(args));
 
@@ -198,11 +199,11 @@ public class WalletClient {
 
     private SettableFuture clientCall(final SettableFuture rpc,
                                       final String procedure, final Class result,
-                                      final CallHandler handler, Object... args) {
+                                      final CallHandler handler, final Object... args) {
         return clientCall(rpc, procedure, result, handler, null, args);
     }
 
-    private <V> ListenableFuture<V> simpleCall(final String procedure, final Class result, Object... args) {
+    private <V> ListenableFuture<V> simpleCall(final String procedure, final Class result, final Object... args) {
         final SettableFuture<V> rpc = SettableFuture.create();
         final CallHandler handler = result == null ? stringHandler(rpc) : simpleHandler(rpc);
         final Class resultClass = result == null ? String.class : result;
@@ -210,7 +211,7 @@ public class WalletClient {
     }
 
     private <T> T syncCall(final String procedure, final Class result,
-                           Object... args) throws Exception {
+                           final Object... args) throws Exception {
 
         if (mConnection == null)
             throw new GAException("not connected");
@@ -266,17 +267,17 @@ public class WalletClient {
     }
 
     public void setProxy(final String host, final String port) {
-        if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(port)) {
-            try {
-                mProxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
-                mHttpClient.setSocketFactory(new Socks5SocketFactory(host, port));
-            } catch (final UnknownHostException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        } else {
+        if (TextUtils.isEmpty(host) || TextUtils.isEmpty(port)) {
             mProxyAddress = null;
             mHttpClient.setSocketFactory(null);
+            return;
+        }
+        try {
+            mProxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
+            mHttpClient.setSocketFactory(new Socks5SocketFactory(host, port));
+        } catch (final UnknownHostException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -486,15 +487,18 @@ public class WalletClient {
                                 // and the session was established
                                 connected = true;
                                 rpc.set(null);
-                            } else if (newStatus instanceof WampClient.DisconnectedState) {
-                                if (!initialDisconnectedStateSeen) {
+                                return;
+                            }
+                            
+                            if (newStatus instanceof WampClient.DisconnectedState)
+                                if (!initialDisconnectedStateSeen)
                                     // First state set is always 'disconnected'
                                     initialDisconnectedStateSeen = true;
-                                } else {
-                                    if (connected) {
+                                else
+                                    if (connected)
                                         // Client got disconnected from the remote router
                                         mNotificationHandler.onConnectionClosed(0);
-                                    } else {
+                                    else {
                                         // or the last possible connect attempt failed
                                         final Throwable t = ((WampClient.DisconnectedState) newStatus).disconnectReason();
                                         if (t != null)
@@ -502,8 +506,6 @@ public class WalletClient {
                                         else
                                             rpc.setException(new GAException("Disconnected"));
                                     }
-                                }
-                            }
                         }
                     }, new Action1<Throwable>() {
                         @Override
@@ -535,9 +537,8 @@ public class WalletClient {
                     @Override
                     public void onEvent(final String topicUri, final Object event) {
                         Log.i(TAG, "FEE_ESTIMATES IS " + event.toString());
-                        if (mLoginData != null) {
+                        if (mLoginData != null)
                             mLoginData.feeEstimates = (Map) event;
-                        }
                     }
                 });
             }
@@ -547,7 +548,6 @@ public class WalletClient {
                 t.printStackTrace();
             }
         }, mExecutor);
-
 
         return rpc;
     }
@@ -732,7 +732,7 @@ public class WalletClient {
         return simpleCall("vault.send_tx", null, args, TfaData);
     }
 
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final boolean returnErrorUri) {
         final SettableFuture<Map<String, Object>> rpc = SettableFuture.create();
         final ErrorHandler errHandler = new ErrorHandler() {
             public void onError(final String uri, final String err) {
@@ -756,8 +756,8 @@ public class WalletClient {
         return mLoginData.userConfig.get(key);
     }
 
-    private <T> ByteArrayOutputStream serializeJSON(T src) throws GAException {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
+    private <T> ByteArrayOutputStream serializeJSON(final T src) throws GAException {
+        final ByteArrayOutputStream b = new ByteArrayOutputStream();
         try {
             new MappingJsonFactory().getCodec().writeValue(b, src);
         } catch (final IOException e) {
@@ -813,15 +813,15 @@ public class WalletClient {
         return mHDParent;
     }
 
-    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, Integer subAccount) {
+    public ListenableFuture<ArrayList> getAllUnspentOutputs(final int confs, final Integer subAccount) {
         return simpleCall("txs.get_all_unspent_outputs", ArrayList.class, confs, subAccount);
     }
 
-    private ListenableFuture<Transaction> transactionCall(final String procedure, Object... args) {
+    private ListenableFuture<Transaction> transactionCall(final String procedure, final Object... args) {
         final SettableFuture<Transaction> rpc = SettableFuture.create();
         final CallHandler handler = new CallHandler() {
             public void onResult(final Object tx) {
-                rpc.set(new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) tx)));
+                rpc.set(GaService.buildTransaction((String) tx));
             }
         };
         return clientCall(rpc, procedure, String.class, handler, args);

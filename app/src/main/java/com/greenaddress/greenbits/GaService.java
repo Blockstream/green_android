@@ -92,7 +92,7 @@ public class GaService extends Service implements INotificationHandler {
     @Override
     public IBinder onBind(final Intent intent) { return mBinder; }
 
-    public void onBound(GreenAddressApplication app) {
+    public void onBound(final GreenAddressApplication app) {
         // Update our state when network connectivity changes.
         mNetConnectivityReceiver = new BroadcastReceiver() {
             public void onReceive(final Context context, final Intent intent) {
@@ -123,7 +123,7 @@ public class GaService extends Service implements INotificationHandler {
     private float mFiatRate;
     private String mFiatCurrency;
     private String mFiatExchange;
-    private ArrayList mSubaccounts;
+    private ArrayList<Map<String, ?>> mSubaccounts;
     private String mReceivingId;
     private Map<?, ?> mTwoFactorConfig;
     private final GaObservable mTwoFactorConfigObservable = new GaObservable();
@@ -372,11 +372,10 @@ public class GaService extends Service implements INotificationHandler {
         return Futures.transform(createOutScript(subAccount, pointer), new Function<byte[], Boolean>() {
             @Override
             public Boolean apply(final byte[] multisig) {
-                if (getLoginData().segwit) {
+                if (getLoginData().segwit &&
+                        Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig)))) {
                     // allow segwit p2sh only if segwit is enabled
-                    if (Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig)))) {
-                        return true;
-                    }
+                    return true;
                 }
 
                 final byte[] expectedP2SH = Utils.sha256hash160(multisig);
@@ -445,8 +444,7 @@ public class GaService extends Service implements INotificationHandler {
 
         mBalanceObservables.put(0, new GaObservable());
         updateBalance(0);
-        for (final Object s : loginData.subAccounts) {
-            final Map<?, ?> m = (Map) s;
+        for (final Map<String, ?> m : loginData.subAccounts) {
             final int pointer = ((Integer) m.get("pointer"));
             mBalanceObservables.put(pointer, new GaObservable());
             updateBalance(pointer);
@@ -561,7 +559,7 @@ public class GaService extends Service implements INotificationHandler {
         return mExecutor.submit(new Callable<Map<?, ?>>() {
             @Override
             public Map<?, ?> call() throws Exception {
-                Map<?, ?> result = mClient.getMyTransactions(subAccount);
+                final Map<?, ?> result = mClient.getMyTransactions(subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
                 return result;
             }
@@ -600,13 +598,11 @@ public class GaService extends Service implements INotificationHandler {
         final int subAccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
         // skip fetching raw if not needed
         final Coin verifiedBalance = getSPVVerifiedBalance(subAccount);
-        if (!isSPVEnabled() ||
-            verifiedBalance == null || !verifiedBalance.equals(getCoinBalance(subAccount)) ||
-            mClient.getSigningWallet().requiresPrevoutRawTxs()) {
-            privateData.put("prevouts_mode", "http");
-        } else {
-            privateData.put("prevouts_mode", "skip");
-        }
+        final boolean useHttp = !isSPVEnabled() ||
+                verifiedBalance == null || !verifiedBalance.equals(getCoinBalance(subAccount)) ||
+                mClient.getSigningWallet().requiresPrevoutRawTxs();
+
+        privateData.put("prevouts_mode", useHttp ? "http" : "skip");
 
         final Object rbf_optin = getUserConfig("replace_by_fee");
         if (rbf_optin != null)
@@ -641,11 +637,11 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(Transaction tx, Map<String, Object> twoFacData, final boolean returnErrorUri) {
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final boolean returnErrorUri) {
         return mClient.sendRawTransaction(tx, twoFacData, returnErrorUri);
     }
 
-    public ListenableFuture<ArrayList> getAllUnspentOutputs(int confs, final Integer subAccount) {
+    public ListenableFuture<ArrayList> getAllUnspentOutputs(final int confs, final Integer subAccount) {
         return mClient.getAllUnspentOutputs(confs, subAccount);
     }
 
@@ -690,14 +686,13 @@ public class GaService extends Service implements INotificationHandler {
                 if (getLoginData().segwit) {
                     // allow segwit p2sh only if segwit is enabled
                     scriptHash = Utils.sha256hash160(getSegWitScript(script));
-                } else {
+                } else
                     scriptHash = Utils.sha256hash160(script);
-                }
 
                 final ListenableFuture<Boolean> verify;
-                if (isWatchOnly()) {
+                if (isWatchOnly())
                     verify = Futures.immediateFuture(true);
-                } else {
+                else {
                     final Script sc;
                     sc = ScriptBuilder.createP2SHOutputScript(scriptHash);
                     verify = verifyP2SHSpendableBy(sc, subAccount, pointer);
@@ -819,7 +814,7 @@ public class GaService extends Service implements INotificationHandler {
         return mFiatExchange;
     }
 
-    public ArrayList getSubaccounts() {
+    public ArrayList<Map<String, ?>> getSubaccounts() {
         return mSubaccounts;
     }
 
@@ -828,14 +823,11 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public Map<String, ?> findSubaccount(final String type, final Integer subAccount) {
-        if (haveSubaccounts()) {
-            for (final Object s : mSubaccounts) {
-                final Map<String, ?> ret = (Map) s;
+        if (haveSubaccounts())
+            for (final Map<String, ?> ret : mSubaccounts)
                 if (ret.get("pointer").equals(subAccount) &&
                    (type == null || ret.get("type").equals(type)))
                     return ret;
-            }
-        }
         return null;
     }
 
@@ -899,13 +891,12 @@ public class GaService extends Service implements INotificationHandler {
         final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
         final ArrayList<String> enabledTwoFac = new ArrayList<>();
-        for (int i = 0; i < allTwoFac.length; ++i) {
-            if (((Boolean) mTwoFactorConfig.get(allTwoFacSystem[i]))) {
-                if (useSystemNames) {
-                    enabledTwoFac.add(allTwoFacSystem[i]);
-                } else {
-                    enabledTwoFac.add(allTwoFac[i]);
-                }
+        final String[] twoFacs = useSystemNames ? allTwoFacSystem : allTwoFac;
+
+        for (int i = 0; i < twoFacs.length; ++i) {
+            final String twoFac = twoFacs[i];
+            if (((Boolean) mTwoFactorConfig.get(twoFac))) {
+                enabledTwoFac.add(twoFac);
             }
         }
         return enabledTwoFac;
@@ -1070,5 +1061,9 @@ public class GaService extends Service implements INotificationHandler {
         cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo ni = cm.getActiveNetworkInfo();
         return ni != null && ni.isConnectedOrConnecting() ? ni : null;
+    }
+
+    public static Transaction buildTransaction(final String hex) {
+        return new Transaction(Network.NETWORK, Wally.hex_to_bytes(hex));
     }
 }

@@ -3,6 +3,7 @@ package com.greenaddress.greenapi;
 import android.webkit.URLUtil;
 
 import com.blockstream.libwally.Wally;
+import com.greenaddress.greenbits.GaService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
@@ -45,7 +46,7 @@ public class PreparedTransaction {
 
         public PreparedData(final Map<?, ?> values,
                             final Map<String, ?> privateData,
-                            final ArrayList subAccounts,
+                            final ArrayList<Map<String, ?>> subAccounts,
                             final OkHttpClient client)
 
         {
@@ -57,9 +58,8 @@ public class PreparedTransaction {
         }
         final Map<?, ?> mValues;
         final Map<String, ?> mPrivateData;
-        final ArrayList mSubAccounts;
+        final ArrayList<Map<String, ?>> mSubAccounts;
         final OkHttpClient mClient;
-
     }
 
     public PreparedTransaction(final PreparedData pte) {
@@ -73,14 +73,12 @@ public class PreparedTransaction {
             byte[] chaincode = null, pubkey = null;
             if (mSubAccount != 0) {
                 // Check if the sub-account is 2of3 and if so store its chaincode/public key
-                for (final Object s : pte.mSubAccounts) {
-                    final Map<String, ?> m = (Map) s;
+                for (final Map<String, ?> m : pte.mSubAccounts)
                     if (m.get("type").equals("2of3") && m.get("pointer").equals(mSubAccount)) {
                         chaincode = getBytes(m, "2of3_backup_chaincode");
                         pubkey = getBytes(m, "2of3_backup_pubkey");
                         break;
                     }
-                }
             }
             mTwoOfThreeBackupChaincode = chaincode;
             mTwoOfThreeBackupPubkey = pubkey;
@@ -95,13 +93,12 @@ public class PreparedTransaction {
             mChangePointer = null;
 
         mRequiresTwoFactor = (Boolean) pte.mValues.get("requires_2factor");
-        mDecoded = new Transaction(Network.NETWORK, Wally.hex_to_bytes(pte.mValues.get("tx").toString()));
+        mDecoded = GaService.buildTransaction((String) pte.mValues.get("tx"));
 
         // return early if no rawtxs url is given, assumes user asked for 'skip'
         try {
-            if (!URLUtil.isValidUrl((String) pte.mValues.get("prevout_rawtxs"))) {
+            if (!URLUtil.isValidUrl((String) pte.mValues.get("prevout_rawtxs")))
                 return;
-            }
         } catch (final Exception e) {
             return;
         }
@@ -118,7 +115,7 @@ public class PreparedTransaction {
 
             while (keys.hasNext()) {
                 final String k = (String)keys.next();
-                mPrevoutRawTxs.put(k, new Transaction(Network.NETWORK, Wally.hex_to_bytes(prevout_rawtxs.getString(k))));
+                mPrevoutRawTxs.put(k, GaService.buildTransaction(prevout_rawtxs.getString(k)));
             }
 
         } catch (final IOException | JSONException e) {

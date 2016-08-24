@@ -230,19 +230,15 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 final Parcelable[] rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
                 for (Parcelable ndefMsg_ : rawMessages) {
                     final NdefMessage ndefMsg = (NdefMessage) ndefMsg_;
-                    for (NdefRecord record : ndefMsg.getRecords()) {
-                        if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN && Arrays.equals(record.getType(), NdefRecord.RTD_URI)) {
+                    for (NdefRecord record : ndefMsg.getRecords())
+                        if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN && Arrays.equals(record.getType(), NdefRecord.RTD_URI))
                             mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
-                        }
-                    }
                 }
-            } else {
+            } else
                 mViewPager.setTag(R.id.tag_bitcoin_uri, getIntent().getData());
-            }
             mViewPager.setCurrentItem(2);
-        } else {
+        } else
             mViewPager.setCurrentItem(1);
-        }
     }
 
     @Override
@@ -286,9 +282,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             case REQUEST_SEND_QR_SCAN:
                 if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {
                     String scanned = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
-                    if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
+                    if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:")))
                         scanned = String.format("bitcoin:%s", scanned);
-                    }
                     final Intent browsable = new Intent(this, TabbedMainActivity.class);
                     browsable.setData(Uri.parse(scanned));
                     browsable.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -296,16 +291,14 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 }
                 break;
             case REQUEST_BITCOIN_URL_LOGIN:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK)
                     launch(true);
-                } else {
+                else
                     finish();
-                }
                 break;
             case REQUEST_SWEEP_PRIVKEY:
-                if (data == null) {
+                if (data == null)
                     return;
-                }
                 ECKey keyNonFinal = null;
                 final String qrText = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
                 try {
@@ -337,9 +330,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                             final MonetaryFormat format;
                             format = CurrencyMapper.mapBtcUnitToFormat( (String) mService.getUserConfig("unit"));
                             Coin outputsValue = Coin.ZERO;
-                            for (final TransactionOutput output : txNonBip38.getOutputs()) {
+                            for (final TransactionOutput output : txNonBip38.getOutputs())
                                 outputsValue = outputsValue.add(output.getValue());
-                            }
                             mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> ("
                                     + format.postfixCode().format(outputsValue) + ") funds from the address below?"));
                             address = keyNonBip38.toAddress(Network.NETWORK).toString();
@@ -413,17 +405,16 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                             }).build().show();
                     }
                 };
-                if (keyNonBip38 != null) {
+                if (keyNonBip38 != null)
                     CB.after(mService.prepareSweepSocial(keyNonBip38.getPubKey(), false), callback);
-                } else {
+                else
                     callback.onSuccess(null);
-                }
                 break;
         }
     }
 
     private Transaction getSweepTx(final Map<?, ?> sweepResult) {
-        return new Transaction(Network.NETWORK, Wally.hex_to_bytes((String) sweepResult.get("tx")));
+        return GaService.buildTransaction((String) sweepResult.get("tx"));
     }
 
     @Override
@@ -449,11 +440,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 //New Marshmallow permissions paradigm
                 final String[] perms = {"android.permission.CAMERA"};
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 &&
-                        checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
+                        checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED)
                     requestPermissions(perms, /*permsRequestCode*/ 200);
-                } else {
+                else
                     startActivityForResult(scanner, REQUEST_SWEEP_PRIVKEY);
-                }
                 return true;
             case R.id.network_unavailable:
                 return true;
@@ -474,11 +464,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     @Override
     public void onBackPressed() {
-        if (mViewPager.getCurrentItem() == 1) {
+        if (mViewPager.getCurrentItem() == 1)
             finish();
-        } else {
+        else
             mViewPager.setCurrentItem(1);
-        }
     }
 
     @Override
