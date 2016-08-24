@@ -18,12 +18,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.dd.CircularProgressButton;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.LoginData;
+import com.greenaddress.greenapi.LoginFailed;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.NetworkSettingsActivity;
 
@@ -120,7 +122,9 @@ public class PinActivity extends GaActivity implements Observer {
                 final String message;
                 final SharedPreferences prefs = service.cfg("pin");
                 final int counter = prefs.getInt("counter", 0) + 1;
-                if (t instanceof GAException) {
+
+                if (t instanceof GAException ||
+                    Throwables.getRootCause(t) instanceof LoginFailed) {
                     final SharedPreferences.Editor editor = prefs.edit();
                     if (counter < 3) {
                         editor.putInt("counter", counter);
