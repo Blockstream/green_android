@@ -131,7 +131,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         } else if (mService.haveSubaccounts()) {
             final Map<String, ?> m = mService.findSubaccount(null, subAccount);
             if (m == null)
-                titleExtra = getResources().getText(R.string.main_account).toString();
+                titleExtra = getResources().getString(R.string.main_account);
             else
                 titleExtra = (String) m.get("name");
         } else
@@ -156,7 +156,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 final ArrayList<String> names = new ArrayList<>(subaccount_len);
                 final ArrayList<Integer> pointers = new ArrayList<>(subaccount_len);
 
-                names.add(getResources().getText(R.string.main_account).toString());
+                names.add(getResources().getString(R.string.main_account));
                 pointers.add(0);
 
                 for (final Object s : subaccounts) {
