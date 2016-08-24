@@ -123,15 +123,19 @@ public class SPV {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final boolean current = isEnabled();
-                Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("current", current));
-                if (enabled == current)
-                    return;
-                mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
-                // FIXME: Should we delete unspent here?
-                reset(false /* deleteAllData */, false /* deleteUnspent */);
+                setEnabled(enabled);
             }
         });
+    }
+
+    private synchronized void setEnabled(final boolean enabled) {
+        final boolean current = isEnabled();
+        Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("current", current));
+        if (enabled == current)
+            return;
+        mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
+        // FIXME: Should we delete unspent here?
+        reset(false /* deleteAllData */, false /* deleteUnspent */);
     }
 
     public boolean isSyncOnMobileEnabled() {
@@ -142,18 +146,27 @@ public class SPV {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final boolean current = isSyncOnMobileEnabled();
-                final boolean currentlyEnabled = isEnabled();
-                Log.d(TAG, "setSyncOnMobileEnabled: " + Var("enabled", enabled) + Var("current", current));
-                if (enabled == current)
-                    return;
-                mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
-                if (enabled && currentlyEnabled)
-                    startSync();
-                else
-                    stopSync();
+                setSyncOnMobileEnabled(enabled);
             }
         });
+    }
+
+    private synchronized void setSyncOnMobileEnabled(final boolean enabled) {
+        final boolean current = isSyncOnMobileEnabled();
+        final boolean currentlyEnabled = isEnabled();
+        Log.d(TAG, "setSyncOnMobileEnabled: " + Var("enabled", enabled) + Var("current", current));
+        if (enabled == current)
+            return; // Setting hasn't changed
+
+        mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
+
+        if (getNetworkType() != ConnectivityManager.TYPE_MOBILE)
+            return; // Any change doesn't affect us since we aren't currently on mobile
+
+        if (enabled && currentlyEnabled)
+            startSync();
+        else
+            stopSync();
     }
 
     public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
@@ -162,14 +175,18 @@ public class SPV {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                // FIXME: We should check if the peers differ here, instead of in the caller
-                final String current = getTrustedPeers();
-                Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) + Var("current", current));
-                mService.cfgEdit("TRUSTED").putString("address", peers).apply();
-                mService.setUserConfig("trusted_peer_addr", peers, true);
-                reset(false /* deleteAllData */, false /* deleteUnspent */);
+                setTrustedPeers(peers);
             }
         });
+    }
+
+    private synchronized  void setTrustedPeers(final String peers) {
+        // FIXME: We should check if the peers differ here, instead of in the caller
+        final String current = getTrustedPeers();
+        Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) + Var("current", current));
+        mService.cfgEdit("TRUSTED").putString("address", peers).apply();
+        mService.setUserConfig("trusted_peer_addr", peers, true);
+        reset(false /* deleteAllData */, false /* deleteUnspent */);
     }
 
     public PeerGroup getPeerGroup(){
@@ -184,11 +201,15 @@ public class SPV {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "start");
-                reset(false /* deleteAllData */, true /* deleteUnspent */);
-                updateUnspentOutputs();
+                start();
             }
         });
+    }
+
+    private synchronized void start() {
+        Log.d(TAG, "start");
+        reset(false /* deleteAllData */, true /* deleteUnspent */);
+        updateUnspentOutputs();
     }
 
     public Coin getVerifiedBalance(final int subAccount) {
@@ -675,7 +696,7 @@ public class SPV {
         }
     }
 
-    public synchronized void stopSyncAsync() {
+    public void stopSyncAsync() {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -762,7 +783,7 @@ public class SPV {
         });
     }
 
-    public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
+    public synchronized void reset(final boolean deleteAllData, final boolean deleteUnspent) {
         Log.d(TAG, "reset: " + Var("deleteAllData", deleteAllData) +
               Var("deleteUnspent", deleteUnspent));
         stopSync();
