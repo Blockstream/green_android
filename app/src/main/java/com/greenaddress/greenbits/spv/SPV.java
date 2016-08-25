@@ -161,8 +161,11 @@ public class SPV {
         if (getNetworkType() != ConnectivityManager.TYPE_MOBILE)
             return; // Any change doesn't affect us since we aren't currently on mobile
 
-        if (enabled && currentlyEnabled)
+        if (enabled && currentlyEnabled) {
+            if (mPeerGroup == null)
+                setup();
             startSync();
+        }
         else
             stopSync();
     }
@@ -748,7 +751,9 @@ public class SPV {
     private int getNetworkType() { return getNetworkType(mService.getNetworkInfo()); }
 
     // Handle changes to network connectivity.
-    // Note that this only handles mobile/non-mobile transitions,
+    // Note that this only handles mobile/non-mobile transitions
+    // FIXME: - Move the impl to Async and synchronise it
+    //        - Call setup() before startSync if needed
     public void onNetConnectivityChanged(final NetworkInfo info) {
         final int oldType = mNetWorkType;
         final int newType = getNetworkType(info);
