@@ -84,7 +84,6 @@ public abstract class UI {
         if (skip || names.size() <= 1) {
             // Caller elected to skip, or no choices are available: don't prompt
             a.runOnUiThread(new Runnable() {
-                @Override
                 public void run() {
                     callback.run(names.isEmpty() ? null : service.getEnabledTwoFacNames(true).get(0));
                 }

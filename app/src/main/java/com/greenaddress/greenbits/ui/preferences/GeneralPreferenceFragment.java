@@ -178,7 +178,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                         final Activity activity = getActivity();
                         if (activity != null && result != null) {
                             activity.runOnUiThread(new Runnable() {
-                                @Override
                                 public void run() {
                                     final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
 
@@ -221,7 +220,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                 @Override
                                 public void onSuccess(final Boolean result) {
                                     getActivity().runOnUiThread(new Runnable() {
-                                        @Override
                                         public void run() {
                                             optInRbf.setChecked((Boolean) newValue);
                                             optInRbf.setEnabled(true);
@@ -232,7 +230,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                                 @Override
                                 public void onFailure(final Throwable t) {
                                     getActivity().runOnUiThread(new Runnable() {
-                                        @Override
                                         public void run() {
                                             optInRbf.setEnabled(true);
                                         }

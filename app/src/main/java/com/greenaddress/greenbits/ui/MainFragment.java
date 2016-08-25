@@ -234,7 +234,6 @@ public class MainFragment extends SubaccountFragment {
                 final int currentBlock = ((Integer) result.get("cur_block"));
 
                 activity.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
 
                         showTxView(txList.size() > 0);
@@ -286,7 +285,6 @@ public class MainFragment extends SubaccountFragment {
             @Override
             public void onFailure(final Throwable t) {
                 activity.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         showTxView(false);
                     }

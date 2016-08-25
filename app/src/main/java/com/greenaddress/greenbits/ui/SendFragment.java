@@ -139,7 +139,6 @@ public class SendFragment extends SubaccountFragment {
                             @Override
                             public void onSuccess(final String result) {
                                 gaActivity.runOnUiThread(new Runnable() {
-                                    @Override
                                     public void run() {
                                         if (fromIntentURI) {
                                             gaActivity.finish();
@@ -202,7 +201,6 @@ public class SendFragment extends SubaccountFragment {
                                 amountStr = "";
                             }
                             gaActivity.runOnUiThread(new Runnable() {
-                                @Override
                                 public void run() {
                                     recipientEdit.setText(name);
                                     sendButton.setEnabled(true);
@@ -224,7 +222,6 @@ public class SendFragment extends SubaccountFragment {
                     @Override
                     public void onSuccess(final Map<?, ?> result) {
                         gaActivity.runOnUiThread(new Runnable() {
-                                @Override
                                 public void run() {
                                     final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                                     amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
@@ -385,7 +382,6 @@ public class SendFragment extends SubaccountFragment {
                                                     final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
                                                     // can be non-UI because validation talks to USB if hw wallet is used
                                                     gaActivity.runOnUiThread(new Runnable() {
-                                                        @Override
                                                         public void run() {
                                                             sendButton.setEnabled(true);
                                                             final Coin dialogAmount, dialogFee;
@@ -672,7 +668,6 @@ public class SendFragment extends SubaccountFragment {
                 final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                 final String btcBalance = format.noCode().format(coin).toString();
                 gaActivity.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         UI.setAmountText(sendSubAccountBalance, btcBalance);
                     }

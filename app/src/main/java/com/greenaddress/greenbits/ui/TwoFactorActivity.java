@@ -142,7 +142,6 @@ public class TwoFactorActivity extends GaActivity {
                     @Override
                     public void onSuccess(final Boolean result) {
                         runOnUiThread(new Runnable() {
-                            @Override
                             public void run() {
                                 showProvideConfirmationCode(stepNum + 1, numSteps);
                             }
@@ -178,7 +177,6 @@ public class TwoFactorActivity extends GaActivity {
                     @Override
                     public void onSuccess(final Object proxyCode) {
                         runOnUiThread(new Runnable() {
-                            @Override
                             public void run() {
                                 if (newMethod.equals("gauth"))
                                     showGauthDetails(stepNum + 1, numSteps, (String) proxyCode);

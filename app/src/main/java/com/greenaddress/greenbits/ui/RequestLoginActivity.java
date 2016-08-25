@@ -71,7 +71,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             public String pinMatrixRequest() {
                 final SettableFuture<String> ret = SettableFuture.create();
                 RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
                         final Button[] buttons = new Button[]{
@@ -119,7 +118,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             public String passphraseRequest() {
                 final SettableFuture<String> ret = SettableFuture.create();
                 RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
                         final EditText passphraseValue = UI.find(v, R.id.trezorPassphraseValue);
@@ -174,7 +172,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                 if (Throwables.getRootCause(t) instanceof LoginFailed)
                     // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
                     runOnUiThread(new Runnable() {
-                        @Override
                         public void run() {
                             new MaterialDialog.Builder(RequestLoginActivity.this)
                                     .title(R.string.trezor_login_failed)
@@ -232,7 +229,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                             if (transport == null) {
                                 // Prompt the user to tap
                                 runOnUiThread(new Runnable() {
-                                    @Override
                                     public void run() {
                                         mNfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
                                                 .title("BTChip")
@@ -254,7 +250,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                             e.printStackTrace();
                             // we are in dashboard mode ignore usb
                             runOnUiThread(new Runnable() {
-                                @Override
                                 public void run() {
                                     UI.show(instructions);
                                     instructions.setText(R.string.firstLoginRequestedPleaseOpenBitcoinApp);
@@ -265,7 +260,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                         mHwWallet = new BTChipHWWallet(transport);
                         final ProgressBar loginProgress = UI.find(RequestLoginActivity.this, R.id.signingLogin);
                         runOnUiThread(new Runnable() {
-                            @Override
                             public void run() {
                                 UI.show(loginProgress);
                             }
@@ -279,7 +273,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     private void showPinDialog(final UsbDevice device) {
         final SettableFuture<String> pinFuture = SettableFuture.create();
         RequestLoginActivity.this.runOnUiThread(new Runnable() {
-            @Override
             public void run() {
                 final View v = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
                 final EditText pinValue = UI.find(v, R.id.btchipPINValue);
@@ -304,7 +297,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                 pinValue.requestFocus();
                 pinValue.setOnEditorActionListener(
                         UI.getListenerRunOnEnter(new Runnable() {
-                            @Override
                             public void run() {
                                 UI.show(loginProgress);
                                 mBTChipDialog.hide();
@@ -360,7 +352,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                                             msg = getString(R.string.btchipNotSetup);
 
                                         RequestLoginActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
                                             public void run() {
                                                 RequestLoginActivity.this.toast(msg);
                                                 RequestLoginActivity.this.finish();
@@ -506,12 +497,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             if (mNfcWaitDialog == null)
                 return;
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mNfcWaitDialog.hide();
-                }
-            });
+            runOnUiThread(new Runnable() { public void run() { mNfcWaitDialog.hide(); } });
         }
     }
 }

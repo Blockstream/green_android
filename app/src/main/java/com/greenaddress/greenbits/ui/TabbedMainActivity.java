@@ -207,12 +207,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         mTwoFactorObserver = new Observer() {
             @Override
             public void update(final Observable o, final Object data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onTwoFactorConfigChange();
-                    }
-                });
+                runOnUiThread(new Runnable() { public void run() { onTwoFactorConfigChange(); } });
             }
         };
         // Fake a config change to show the warning if no current 2FA method

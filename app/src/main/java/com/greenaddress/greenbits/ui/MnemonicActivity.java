@@ -174,7 +174,6 @@ public class MnemonicActivity extends LoginActivity {
                 final String message = accountDoesntExist ? "Account doesn't exist" : "Login failed";
                 t.printStackTrace();
                 MnemonicActivity.this.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         MnemonicActivity.this.toast(message);
                         enableLogin();
@@ -187,7 +186,6 @@ public class MnemonicActivity extends LoginActivity {
     private ListenableFuture<String> askForPassphrase() {
         final SettableFuture<String> passphraseFuture = SettableFuture.create();
         runOnUiThread(new Runnable() {
-            @Override
             public void run() {
                 final View v = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
                 final EditText passphraseValue = UI.find(v, R.id.passphraseValue);
@@ -326,7 +324,6 @@ public class MnemonicActivity extends LoginActivity {
             @Override
             public void onSuccess(final Void result) {
                 runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         login();
                     }

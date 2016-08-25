@@ -67,7 +67,6 @@ public class PinSaveActivity extends GaActivity {
                     @Override
                     public void onFailure(final Throwable t) {
                         PinSaveActivity.this.runOnUiThread(new Runnable() {
-                            @Override
                             public void run() {
                                 mSaveButton.setProgress(0);
                                 mPinText.setEnabled(true);
@@ -128,7 +127,6 @@ public class PinSaveActivity extends GaActivity {
 
         mPinText.setOnEditorActionListener(
                 UI.getListenerRunOnEnter(new Runnable() {
-                    @Override
                     public void run() {
                         setPin(UI.getText(mPinText), false);
                     }

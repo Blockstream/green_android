@@ -95,7 +95,6 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     @Override
     public synchronized void onPeerConnected(final Peer peer, final int peerCount) {
         runOnUiThread(new Runnable() {
-            @Override
             public void run() {
                 mPeers.add(new PrettyPeer(peer));
                 mPeerListAdapter.notifyDataSetChanged();
@@ -110,7 +109,6 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     @Override
     public synchronized void onPeerDisconnected(final Peer peer, int peerCount) {
         runOnUiThread(new Runnable() {
-            @Override
             public void run() {
                 for (Iterator<PrettyPeer> it = mPeers.iterator(); it.hasNext(); ) {
                     if (peer == it.next().mPeer)
@@ -129,7 +127,6 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             if (peerGroupIntent == null || !peerGroupIntent.equals("stopSPVSync"))
                 return;
             runOnUiThread(new Runnable() {
-                @Override
                 public void run() {
                     mPeers.clear();
                     mPeerListAdapter.notifyDataSetChanged();

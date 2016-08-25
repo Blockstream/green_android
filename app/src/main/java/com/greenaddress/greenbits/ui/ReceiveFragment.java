@@ -156,7 +156,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     return;
 
                 activity.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         UI.show(copyIcon, copyText);
                         stopNewAddressAnimation(mView);
@@ -202,7 +201,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     return;
 
                 activity.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         stopNewAddressAnimation(mView);
                         UI.show(copyIcon, copyText);

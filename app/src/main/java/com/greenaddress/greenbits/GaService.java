@@ -1008,7 +1008,6 @@ public class GaService extends Service implements INotificationHandler {
         cancelDisconnect();
         Log.d(TAG, "scheduleDisconnect in " + Integer.toString(delayMins) + " mins");
         mDisconnectTimer = mTimerExecutor.schedule(new Runnable() {
-            @Override
             public void run() {
                 Log.d(TAG, "scheduled disconnect");
                 mState.setForcedTimeout(true);
@@ -1032,7 +1031,6 @@ public class GaService extends Service implements INotificationHandler {
             mReconnectTimer.cancel(false);
         }
         mReconnectTimer = mTimerExecutor.schedule(new Runnable() {
-            @Override
             public void run() {
                 Log.d(TAG, "scheduled reconnect");
                 reconnect();

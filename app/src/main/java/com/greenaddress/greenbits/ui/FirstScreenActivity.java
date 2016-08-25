@@ -104,7 +104,6 @@ public class FirstScreenActivity extends LoginActivity {
                         proceedTEE(teeTransport, dongle, false);
                     else {
                         FirstScreenActivity.this.runOnUiThread(new Runnable() {
-                            @Override
                             public void run() {
                                 UI.popup(FirstScreenActivity.this, "Ledger Wallet Trustlet")
                                         .content("Ledger Wallet Trustlet is available - do you want to use it to register ?")

@@ -17,7 +17,6 @@ public abstract class SubaccountFragment extends GAFragment {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             getActivity().runOnUiThread(new Runnable() {
-                @Override
                 public void run() {
                     onSubaccountChanged(intent.getIntExtra("sub", 0));
                 }
@@ -62,10 +61,7 @@ public abstract class SubaccountFragment extends GAFragment {
     }
 
     protected Observer makeBalanceObserver() {
-        return makeUiObserver(new Runnable() {
-                                  @Override
-                                  public void run() { onBalanceUpdated(); }
-                              });
+        return makeUiObserver(new Runnable() { public void run() { onBalanceUpdated(); } });
     }
 
     protected void onBalanceUpdated() { }

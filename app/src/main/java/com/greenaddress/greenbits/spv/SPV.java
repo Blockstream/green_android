@@ -121,7 +121,6 @@ public class SPV {
 
     public void setEnabledAsync(final boolean enabled) {
         mExecutor.execute(new Runnable() {
-            @Override
             public void run() {
                 setEnabled(enabled);
             }
@@ -144,7 +143,6 @@ public class SPV {
 
     public void setSyncOnMobileEnabledAsync(final boolean enabled) {
         mExecutor.execute(new Runnable() {
-            @Override
             public void run() {
                 setSyncOnMobileEnabled(enabled);
             }
@@ -173,7 +171,6 @@ public class SPV {
 
     public void setTrustedPeersAsync(final String peers) {
         mExecutor.execute(new Runnable() {
-            @Override
             public void run() {
                 setTrustedPeers(peers);
             }
@@ -199,7 +196,6 @@ public class SPV {
 
     public void startAsync() {
         mExecutor.execute(new Runnable() {
-            @Override
             public void run() {
                 start();
             }
@@ -698,7 +694,6 @@ public class SPV {
 
     public void stopSyncAsync() {
         mExecutor.execute(new Runnable() {
-            @Override
             public void run() {
                 stopSync();
             }
@@ -776,7 +771,6 @@ public class SPV {
 
     public void resetAsync() {
         mExecutor.execute(new Runnable() {
-            @Override
             public void run() {
                 reset(true /* deleteAllData */, true /* deleteUnspent */);
             }

@@ -79,7 +79,6 @@ public class PinActivity extends LoginActivity implements Observer {
         imm.hideSoftInputFromWindow(mPinText.getWindowToken(), 0);
 
         setUpLogin(UI.getText(mPinText), new Runnable() {
-             @Override
              public void run() {
                  mPinText.setText("");
                  mPinLoginButton.setProgress(0);
@@ -137,7 +136,6 @@ public class PinActivity extends LoginActivity implements Observer {
                     message = t.getMessage();
 
                 PinActivity.this.runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         PinActivity.this.toast(message);
 
@@ -178,7 +176,6 @@ public class PinActivity extends LoginActivity implements Observer {
 
             mPinText.setOnEditorActionListener(
                     UI.getListenerRunOnEnter(new Runnable() {
-                        @Override
                         public void run() {
                             login();
                         }

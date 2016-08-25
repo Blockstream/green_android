@@ -107,7 +107,6 @@ public abstract class GaActivity extends AppCompatActivity {
 
     void finishOnUiThread() {
         runOnUiThread(new Runnable() {
-            @Override
             public void run() {
                 GaActivity.this.finish();
             }
@@ -118,7 +117,6 @@ public abstract class GaActivity extends AppCompatActivity {
         if (m == null)
             return;
         runOnUiThread(new Runnable() {
-            @Override
             public void run() {
                 final MenuItem item = m.findItem(id);
                 if (item != null)

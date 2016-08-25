@@ -141,7 +141,6 @@ public class SignUpActivity extends LoginActivity {
                         @Override
                         public void onSuccess(final LoginData result) {
                             SignUpActivity.this.runOnUiThread(new Runnable() {
-                                @Override
                                 public void run() {
                                     signupContinueButton.setProgress(100);
                                 }
@@ -157,7 +156,6 @@ public class SignUpActivity extends LoginActivity {
                         public void onFailure(final Throwable t) {
                             t.printStackTrace();
                             SignUpActivity.this.runOnUiThread(new Runnable() {
-                                @Override
                                 public void run() {
                                     signupContinueButton.setProgress(0);
                                 }

@@ -117,7 +117,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                               @Override
                               public void onSuccess(final Boolean result) {
                                   getActivity().runOnUiThread(new Runnable() {
-                                      @Override
                                       public void run() {
                                           getPref(method).setChecked(false);
                                       }

@@ -6,6 +6,7 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -36,21 +37,15 @@ public class WatchOnlyLoginActivity extends LoginActivity {
 
         mLoginButton.setIndeterminateProgressMode(true);
         mLoginButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(final View v) {
                 login();
             }
         });
 
-        mPasswordText.setOnEditorActionListener(
-                UI.getListenerRunOnEnter(new Runnable() {
-                    @Override
-                    public void run() {
-                        login();
-                    }
-                })
-        );
+        final TextView.OnEditorActionListener listener;
+        listener = UI.getListenerRunOnEnter(new Runnable() { public void run() { login(); } });
+        mPasswordText.setOnEditorActionListener(listener);
 
         final String username = mService.cfg(CFG).getString("username", "");
         final boolean haveUser = !username.isEmpty();
@@ -117,7 +112,6 @@ public class WatchOnlyLoginActivity extends LoginActivity {
             @Override
             public void onFailure(final Throwable t) {
                 runOnUiThread(new Runnable() {
-                    @Override
                     public void run() {
                         onLoginFailed(getString(R.string.error_username_not_found_or_wrong_password));
                     }
