@@ -33,6 +33,16 @@
             android:hint="@string/password"
             android:inputType="textPassword" />
 
+        <CheckBox
+            android:id="@+id/remember_watch_only"
+            android:layout_width="wrap_content"
+            android:textColor="@color/textColor"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/remember_watch_only" />
+
         <com.dd.CircularProgressButton
             android:id="@+id/btn_login"
             style="@style/myButton"

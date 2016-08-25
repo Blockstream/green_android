@@ -3,8 +3,13 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -14,9 +19,13 @@ import com.greenaddress.greenbits.GaService;
 
 public class WatchOnlyLoginActivity extends GaActivity {
 
+    private final static String CFG = "WATCH_ONLY_CREDENTIALS";
+
     private EditText mUsernameText;
     private EditText mPasswordText;
     private CircularProgressButton mLoginButton;
+    private CheckBox mRememberCheckBox;
+
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -25,6 +34,7 @@ public class WatchOnlyLoginActivity extends GaActivity {
         mUsernameText = UI.find(this, R.id.input_user);
         mPasswordText = UI.find(this, R.id.input_password);
         mLoginButton = UI.find(this, R.id.btn_login);
+        mRememberCheckBox = UI.find(this, R.id.remember_watch_only);
 
         mLoginButton.setIndeterminateProgressMode(true);
         mLoginButton.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +53,39 @@ public class WatchOnlyLoginActivity extends GaActivity {
                     }
                 })
         );
+
+        final String username = mService.cfg(CFG).getString("username", "");
+        final boolean haveUser = !username.isEmpty();
+        mUsernameText.setText(username);
+        mRememberCheckBox.setChecked(haveUser);
+        if (haveUser && mPasswordText.requestFocus())
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        mRememberCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
+                if (!isChecked) {
+                    mService.cfgEdit(CFG).putString("username", "").apply();
+                    return;
+                }
+
+                UI.popup(WatchOnlyLoginActivity.this, R.string.remember_warn_title)
+                        .content(R.string.remember_warn_content)
+                        .canceledOnTouchOutside(false)
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(final MaterialDialog dlg, final DialogAction which) {
+                                mRememberCheckBox.setChecked(false);
+                            }
+                        })
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(final MaterialDialog dlg, final DialogAction which) {
+                                mService.cfgEdit(CFG).putString("username", UI.getText(mUsernameText)).apply();
+                            }
+                        }).build().show();
+            }
+        });
     }
 
     private void login() {
@@ -88,7 +131,6 @@ public class WatchOnlyLoginActivity extends GaActivity {
 
     @Override
     public void onResumeWithService() {
-
         final GaService service = mService;
         if (service.isLoggedOrLoggingIn()) {
             // already logged in, could be from different app via intent
@@ -101,12 +143,16 @@ public class WatchOnlyLoginActivity extends GaActivity {
         mLoginButton.setProgress(50);
         mUsernameText.setEnabled(false);
         mPasswordText.setEnabled(false);
+        mRememberCheckBox.setEnabled(false);
+        final String usr = !mRememberCheckBox.isChecked() ? "" : UI.getText(mUsernameText);
+        mService.cfgEdit(CFG).putString("username", usr).apply();
     }
 
     private void onLoginFailed(final String msg) {
         mLoginButton.setProgress(0);
         mUsernameText.setEnabled(true);
         mPasswordText.setEnabled(true);
+        mRememberCheckBox.setEnabled(true);
         if (msg != null) mPasswordText.setError(msg);
     }
 
