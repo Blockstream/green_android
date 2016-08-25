@@ -1046,11 +1046,11 @@ public class GaService extends Service implements INotificationHandler {
         } else if (mState.isDisconnectedOrOffline()) {
             // We have a network connection and are currently disconnected/offline:
             // Move to disconnected and try to reconnect
-            mSPV.onNetConnectivityChanged(info);
+            mSPV.onNetConnectivityChangedAsync(info);
             mState.transitionTo(ConnState.DISCONNECTED);
             reconnect();
         } else
-            mSPV.onNetConnectivityChanged(info);
+            mSPV.onNetConnectivityChangedAsync(info);
     }
 
     public NetworkInfo getNetworkInfo() {

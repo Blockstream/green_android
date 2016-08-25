@@ -120,11 +120,7 @@ public class SPV {
     }
 
     public void setEnabledAsync(final boolean enabled) {
-        mExecutor.execute(new Runnable() {
-            public void run() {
-                setEnabled(enabled);
-            }
-        });
+        mExecutor.execute(new Runnable() { public void run() { setEnabled(enabled); } });
     }
 
     private synchronized void setEnabled(final boolean enabled) {
@@ -142,11 +138,7 @@ public class SPV {
     }
 
     public void setSyncOnMobileEnabledAsync(final boolean enabled) {
-        mExecutor.execute(new Runnable() {
-            public void run() {
-                setSyncOnMobileEnabled(enabled);
-            }
-        });
+        mExecutor.execute(new Runnable() { public void run() { setSyncOnMobileEnabled(enabled); } });
     }
 
     private synchronized void setSyncOnMobileEnabled(final boolean enabled) {
@@ -173,14 +165,10 @@ public class SPV {
     public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
 
     public void setTrustedPeersAsync(final String peers) {
-        mExecutor.execute(new Runnable() {
-            public void run() {
-                setTrustedPeers(peers);
-            }
-        });
+        mExecutor.execute(new Runnable() { public void run() { setTrustedPeers(peers); } });
     }
 
-    private synchronized  void setTrustedPeers(final String peers) {
+    private synchronized void setTrustedPeers(final String peers) {
         // FIXME: We should check if the peers differ here, instead of in the caller
         final String current = getTrustedPeers();
         Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) + Var("current", current));
@@ -198,11 +186,7 @@ public class SPV {
     }
 
     public void startAsync() {
-        mExecutor.execute(new Runnable() {
-            public void run() {
-                start();
-            }
-        });
+        mExecutor.execute(new Runnable() { public void run() { start(); } });
     }
 
     private synchronized void start() {
@@ -696,11 +680,7 @@ public class SPV {
     }
 
     public void stopSyncAsync() {
-        mExecutor.execute(new Runnable() {
-            public void run() {
-                stopSync();
-            }
-        });
+        mExecutor.execute(new Runnable() { public void run() { stopSync(); } });
     }
 
     public synchronized void stopSync() {
@@ -754,7 +734,11 @@ public class SPV {
     // Note that this only handles mobile/non-mobile transitions
     // FIXME: - Move the impl to Async and synchronise it
     //        - Call setup() before startSync if needed
-    public void onNetConnectivityChanged(final NetworkInfo info) {
+    public void onNetConnectivityChangedAsync(final NetworkInfo info) {
+        mExecutor.execute(new Runnable() { public void run() { onNetConnectivityChanged(info); } });
+    }
+
+    private synchronized void onNetConnectivityChanged(final NetworkInfo info) {
         final int oldType = mNetWorkType;
         final int newType = getNetworkType(info);
         mNetWorkType = newType;
