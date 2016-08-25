@@ -40,7 +40,7 @@ import com.greenaddress.greenapi.LoginData;
 
 import java.io.IOException;
 
-public class SignUpActivity extends GaActivity {
+public class SignUpActivity extends LoginActivity {
     private static final String TAG = SignUpActivity.class.getSimpleName();
     private static final int PINSAVE = 1337;
 
@@ -295,8 +295,7 @@ public class SignUpActivity extends GaActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PINSAVE:
-                startActivity(new Intent(SignUpActivity.this, TabbedMainActivity.class));
-                finish();
+                onLoginSuccess();
                 break;
         }
     }

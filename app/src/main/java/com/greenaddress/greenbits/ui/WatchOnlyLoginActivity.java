@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,7 +15,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
 
-public class WatchOnlyLoginActivity extends GaActivity {
+public class WatchOnlyLoginActivity extends LoginActivity {
 
     private final static String CFG = "WATCH_ONLY_CREDENTIALS";
 
@@ -112,8 +111,7 @@ public class WatchOnlyLoginActivity extends GaActivity {
 
             @Override
             public void onSuccess(final LoginData result) {
-                startActivity(new Intent(WatchOnlyLoginActivity.this, TabbedMainActivity.class));
-                finishOnUiThread();
+                onLoginSuccess();
             }
 
             @Override
@@ -126,15 +124,6 @@ public class WatchOnlyLoginActivity extends GaActivity {
                 });
             }
         });
-    }
-
-    @Override
-    public void onResumeWithService() {
-        if (mService.isLoggedOrLoggingIn()) {
-            // already logged in, could be from different app via intent
-            startActivity(new Intent(this, TabbedMainActivity.class));
-            finish();
-        }
     }
 
     private void onLoginBegin() {

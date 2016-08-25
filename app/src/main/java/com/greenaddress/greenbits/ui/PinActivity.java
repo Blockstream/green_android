@@ -48,7 +48,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 
-public class PinActivity extends GaActivity implements Observer {
+public class PinActivity extends LoginActivity implements Observer {
 
     private Menu mMenu;
     private static final String KEYSTORE_KEY = "NativeAndroidAuth";
@@ -107,10 +107,11 @@ public class PinActivity extends GaActivity implements Observer {
             @Override
             public void onSuccess(final LoginData result) {
                 mService.cfgEdit("pin").putInt("counter", 0).apply();
-                if (getCallingActivity() == null)
-                    startActivity(new Intent(PinActivity.this, TabbedMainActivity.class));
-                else
-                    setResult(RESULT_OK);
+                if (getCallingActivity() == null) {
+                    onLoginSuccess();
+                    return;
+                }
+                setResult(RESULT_OK);
                 finishOnUiThread();
             }
 
@@ -282,12 +283,7 @@ public class PinActivity extends GaActivity implements Observer {
     @Override
     public void onResumeWithService() {
         mService.addConnectionObserver(this);
-
-        if (mService.isLoggedOrLoggingIn()) {
-            // already logged in, could be from different app via intent
-            startActivity(new Intent(this, TabbedMainActivity.class));
-            finish();
-        }
+        super.onResumeWithService();
     }
 
     @Override

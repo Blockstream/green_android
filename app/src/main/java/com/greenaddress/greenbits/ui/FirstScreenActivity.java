@@ -32,7 +32,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class FirstScreenActivity extends GaActivity {
+public class FirstScreenActivity extends LoginActivity {
     private static final String NVM_PATH = "nvm.bin";
     private static final String TAG = FirstScreenActivity.class.getSimpleName();
     private static boolean tuiCall;
@@ -231,8 +231,7 @@ public class FirstScreenActivity extends GaActivity {
                     @Override
                     public void onSuccess(final LoginData result) {
                         Log.d(TAG, "Success");
-                        startActivity(new Intent(FirstScreenActivity.this, TabbedMainActivity.class));
-                        finishOnUiThread();
+                        onLoginSuccess();
                     }
 
                     @Override
@@ -253,10 +252,6 @@ public class FirstScreenActivity extends GaActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.preauth_menu, menu);
         return true;
-    }
-
-    private void startNewActivity(final Class activityClass) {
-        startActivity(new Intent(this, activityClass));
     }
 
     @Override
@@ -287,11 +282,9 @@ public class FirstScreenActivity extends GaActivity {
 
         //FIXME : recheck state, properly handle TEE link anyway
         if (mService.isLoggedIn()) {
-            // already logged in, could be from different app via intent
-            startNewActivity(TabbedMainActivity.class);
-            finish();
+            onLoginSuccess();
         } else if (mService.cfg("pin").getString("ident", null) != null && !userCancelled) {
-            startNewActivity(PinActivity.class);
+            startActivity(new Intent(this, PinActivity.class));
             finish();
         }
     }

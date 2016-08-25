@@ -48,7 +48,7 @@ import java.util.Set;
 import de.schildbach.wallet.ui.ScanActivity;
 
 
-public class MnemonicActivity extends GaActivity {
+public class MnemonicActivity extends LoginActivity {
 
     private static final String TAG = MnemonicActivity.class.getSimpleName();
 
@@ -366,15 +366,6 @@ public class MnemonicActivity extends GaActivity {
             });
     }
 
-    @Override
-    protected void onResumeWithService() {
-        if (mService.isLoggedIn()) {
-            // already logged in, could be from different app via intent
-            startActivity(new Intent(this, TabbedMainActivity.class));
-            finish();
-        }
-    }
-
     private Spans spans;
 
     private void setWord(final String badWord) {
@@ -424,8 +415,7 @@ public class MnemonicActivity extends GaActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PINSAVE:
-                startActivity(new Intent(this, TabbedMainActivity.class));
-                finish();
+                onLoginSuccess();
                 break;
             case QRSCANNER:
                 if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {

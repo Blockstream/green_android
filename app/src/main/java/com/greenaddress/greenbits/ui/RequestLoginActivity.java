@@ -46,7 +46,7 @@ import nordpol.android.AndroidCard;
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 
-public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagListener {
+public class RequestLoginActivity extends LoginActivity implements OnDiscoveredTagListener {
 
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
@@ -377,12 +377,6 @@ public class RequestLoginActivity extends GaActivity implements OnDiscoveredTagL
         }), mOnLoggedIn);
     }
 
-    private void onLoginSuccess() {
-        final Intent intent = new Intent(RequestLoginActivity.this, TabbedMainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finishOnUiThread();
-    }
 
     final FutureCallback<LoginData> mOnLoggedIn = new FutureCallback<LoginData>() {
         @Override
