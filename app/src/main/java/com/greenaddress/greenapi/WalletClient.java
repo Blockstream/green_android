@@ -141,10 +141,25 @@ public class WalletClient {
         void onEvent(String topicUri, Object event);
     }
 
+    private static final String DELIM = ", ";
+    private static void logCallDetails(final String procedure, final String result, final Object... args) {
+        final ArrayList<Object> expanded_args = new ArrayList<>();
+        for (final Object o : args) {
+            if (o instanceof Object[])
+                expanded_args.add(String.format("[%s]", TextUtils.join(DELIM, (Object[]) o)));
+            else
+                expanded_args.add(o);
+        }
+        Log.v(TAG, String.format("%s(%s)\n\t -> %s", procedure, TextUtils.join(DELIM, expanded_args), result));
+    }
+
     private void onCallError(final SettableFuture rpc, final String procedure,
                              final ErrorHandler errHandler,
-                             final String uri, final String err) {
+                             final String uri, final String err,
+                             final Object... args) {
         Log.d(TAG, procedure + "->" + uri + ":" + err);
+        if (BuildConfig.DEBUG)
+            logCallDetails(procedure, err, args);
         if (errHandler != null)
             errHandler.onError(uri, err);
         else
@@ -162,6 +177,8 @@ public class WalletClient {
             @Override
             public void call(final Reply reply) {
                 final JsonNode node = reply.arguments().get(0);
+                if (BuildConfig.DEBUG)
+                    logCallDetails(procedure, node.toString(), args);
                 handler.onResult(mapper.convertValue(node, result));
             }
         };
@@ -173,11 +190,11 @@ public class WalletClient {
                 if (err instanceof ApplicationError) {
                     final ArrayNode a = ((ApplicationError) err).arguments();
                     if (a != null && a.size() >= 2) {
-                        onCallError(rpc, procedure, errHandler, a.get(0).asText(), a.get(1).asText());
+                        onCallError(rpc, procedure, errHandler, a.get(0).asText(), a.get(1).asText(), args);
                         return;
                     }
                 }
-                onCallError(rpc, procedure, errHandler, err.toString(), err.toString());
+                onCallError(rpc, procedure, errHandler, err.toString(), err.toString(), args);
             }
         };
 
@@ -193,7 +210,7 @@ public class WalletClient {
         } catch (final RejectedExecutionException e) {
             // Fall through
         }
-        onCallError(rpc, procedure, errHandler, "not connected", "not connected");
+        onCallError(rpc, procedure, errHandler, "not connected", "not connected", args);
         return rpc;
     }
 
@@ -226,20 +243,27 @@ public class WalletClient {
             reply = mConnection.call(callName, flags, argsNode, null)
                                .observeOn(mScheduler).toBlocking().single();
             final JsonNode node = reply.arguments().get(0);
+            if (BuildConfig.DEBUG)
+                logCallDetails(procedure, node.toString(), args);
             return (T)mapper.convertValue(node, result);
         } catch (final RejectedExecutionException e) {
+            if (BuildConfig.DEBUG)
+                logCallDetails(procedure, e.getMessage(), args);
             throw new GAException("rejected");
         }
         catch (final Exception e) {
             Log.d(TAG, "Sync RPC exception: (" + procedure + ")->" + e.toString());
+            String error = e.toString();
             if (e instanceof ApplicationError) {
                 final ArrayNode a = ((ApplicationError) e).arguments();
                 if (a != null && a.size() >= 2) {
                     // Throw the actual error message and ignore the URI
-                    throw new GAException(a.get(1).asText());
+                    error = a.get(1).asText();
                 }
             }
-            throw new GAException(e.toString());
+            if (BuildConfig.DEBUG)
+                logCallDetails(procedure, error, args);
+            throw new GAException(error);
         }
     }
 
