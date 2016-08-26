@@ -892,13 +892,9 @@ public class GaService extends Service implements INotificationHandler {
         final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
         final ArrayList<String> enabledTwoFac = new ArrayList<>();
         final String[] twoFacs = useSystemNames ? allTwoFacSystem : allTwoFac;
-
-        for (int i = 0; i < twoFacs.length; ++i) {
-            final String twoFac = twoFacs[i];
-            if (((Boolean) mTwoFactorConfig.get(twoFac))) {
-                enabledTwoFac.add(twoFac);
-            }
-        }
+        for (int i = 0; i < allTwoFacSystem.length; ++i)
+            if (((Boolean) mTwoFactorConfig.get(allTwoFacSystem[i])))
+                enabledTwoFac.add(twoFacs[i]);
         return enabledTwoFac;
     }
 
