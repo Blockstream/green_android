@@ -101,6 +101,7 @@ public class SPV {
     private Builder mNotificationBuilder;
     private final static int mNotificationId = 1;
     private int mNetWorkType;
+    private final Object mStateLock = new Object();
 
     public SPV(final GaService service) {
         mService = service;
@@ -123,14 +124,16 @@ public class SPV {
         mExecutor.execute(new Runnable() { public void run() { setEnabled(enabled); } });
     }
 
-    private synchronized void setEnabled(final boolean enabled) {
-        final boolean current = isEnabled();
-        Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("current", current));
-        if (enabled == current)
-            return;
-        mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
-        // FIXME: Should we delete unspent here?
-        reset(false /* deleteAllData */, false /* deleteUnspent */);
+    private void setEnabled(final boolean enabled) {
+        synchronized (mStateLock) {
+            final boolean current = isEnabled();
+            Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("current", current));
+            if (enabled == current)
+                return;
+            mService.cfgEdit("SPV").putBoolean("enabled", enabled).apply();
+            // FIXME: Should we delete unspent here?
+            reset(false /* deleteAllData */, false /* deleteUnspent */);
+        }
     }
 
     public boolean isSyncOnMobileEnabled() {
@@ -141,25 +144,27 @@ public class SPV {
         mExecutor.execute(new Runnable() { public void run() { setSyncOnMobileEnabled(enabled); } });
     }
 
-    private synchronized void setSyncOnMobileEnabled(final boolean enabled) {
-        final boolean current = isSyncOnMobileEnabled();
-        final boolean currentlyEnabled = isEnabled();
-        Log.d(TAG, "setSyncOnMobileEnabled: " + Var("enabled", enabled) + Var("current", current));
-        if (enabled == current)
-            return; // Setting hasn't changed
+    private void setSyncOnMobileEnabled(final boolean enabled) {
+        synchronized (mStateLock) {
+            final boolean current = isSyncOnMobileEnabled();
+            final boolean currentlyEnabled = isEnabled();
+            Log.d(TAG, "setSyncOnMobileEnabled: " + Var("enabled", enabled) + Var("current", current));
+            if (enabled == current)
+                return; // Setting hasn't changed
 
-        mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
+            mService.cfgEdit("SPV").putBoolean("mobileSyncEnabled", enabled).apply();
 
-        if (getNetworkType() != ConnectivityManager.TYPE_MOBILE)
-            return; // Any change doesn't affect us since we aren't currently on mobile
+            if (getNetworkType() != ConnectivityManager.TYPE_MOBILE)
+                return; // Any change doesn't affect us since we aren't currently on mobile
 
-        if (enabled && currentlyEnabled) {
-            if (mPeerGroup == null)
-                setup();
-            startSync();
+            if (enabled && currentlyEnabled) {
+                if (mPeerGroup == null)
+                    setup();
+                startSync();
+            }
+            else
+                stopSync();
         }
-        else
-            stopSync();
     }
 
     public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
@@ -168,13 +173,15 @@ public class SPV {
         mExecutor.execute(new Runnable() { public void run() { setTrustedPeers(peers); } });
     }
 
-    private synchronized void setTrustedPeers(final String peers) {
-        // FIXME: We should check if the peers differ here, instead of in the caller
-        final String current = getTrustedPeers();
-        Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) + Var("current", current));
-        mService.cfgEdit("TRUSTED").putString("address", peers).apply();
-        mService.setUserConfig("trusted_peer_addr", peers, true);
-        reset(false /* deleteAllData */, false /* deleteUnspent */);
+    private void setTrustedPeers(final String peers) {
+        synchronized (mStateLock) {
+            // FIXME: We should check if the peers differ here, instead of in the caller
+            final String current = getTrustedPeers();
+            Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) + Var("current", current));
+            mService.cfgEdit("TRUSTED").putString("address", peers).apply();
+            mService.setUserConfig("trusted_peer_addr", peers, true);
+            reset(false /* deleteAllData */, false /* deleteUnspent */);
+        }
     }
 
     public PeerGroup getPeerGroup(){
@@ -189,10 +196,12 @@ public class SPV {
         mExecutor.execute(new Runnable() { public void run() { start(); } });
     }
 
-    private synchronized void start() {
-        Log.d(TAG, "start");
-        reset(false /* deleteAllData */, true /* deleteUnspent */);
-        updateUnspentOutputs();
+    private void start() {
+        synchronized (mStateLock) {
+            Log.d(TAG, "start");
+            reset(false /* deleteAllData */, true /* deleteUnspent */);
+            updateUnspentOutputs();
+        }
     }
 
     public Coin getVerifiedBalance(final int subAccount) {
@@ -480,72 +489,74 @@ public class SPV {
         return 0;
     }
 
-    private synchronized void startSync() {
-        Log.d(TAG, "startSync: " + Var("mPeerGroup.isRunning", mPeerGroup.isRunning()));
-        if (mPeerGroup.isRunning())
-             return;
+    private void startSync() {
+        synchronized (mStateLock) {
+            Log.d(TAG, "startSync: " + Var("mPeerGroup.isRunning", mPeerGroup.isRunning()));
+            if (mPeerGroup.isRunning())
+                 return;
 
-        if (mNotifyManager == null) {
-            mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationBuilder = new NotificationCompat.Builder(mService);
-            mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
-                                .setSmallIcon(R.drawable.ic_sync_black_24dp);
+            if (mNotifyManager == null) {
+                mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationBuilder = new NotificationCompat.Builder(mService);
+                mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
+                                    .setSmallIcon(R.drawable.ic_sync_black_24dp);
+            }
+
+            mNotificationBuilder.setContentText("Sync in progress...");
+            mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
+
+            Futures.addCallback(mPeerGroup.startAsync(), new FutureCallback<Object>() {
+                @Override
+                public void onSuccess(final Object result) {
+                    mPeerGroup.startBlockChainDownload(new DownloadProgressTracker() {
+                        @Override
+                        public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
+                            // Note that this method may be called multiple times if syncing
+                            // switches peers while downloading.
+                            Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
+                            mBlocksRemaining = blocksLeft;
+                            super.onChainDownloadStarted(peer, blocksLeft);
+                        }
+
+                        @Override
+                        public void onBlocksDownloaded(final Peer peer, final Block block, final FilteredBlock filteredBlock, final int blocksLeft) {
+                            //Log.d(TAG, "onBlocksDownloaded: " + Var("blocksLeft", blocksLeft));
+                            mBlocksRemaining = blocksLeft;
+                            super.onBlocksDownloaded(peer, block, filteredBlock, blocksLeft);
+                        }
+
+                        @Override
+                        protected void startDownload(int blocks) {
+                            Log.d(TAG, "startDownload");
+                            updateUI(100, 0);
+                        }
+
+                        @Override
+                        protected void progress(double percent, int blocksSoFar, Date date) {
+                            //Log.d(TAG, "progress: " + Var("percent", percent));
+                            updateUI(100, (int) percent);
+                        }
+
+                        @Override
+                        protected void doneDownload() {
+                            Log.d(TAG, "doneDownLoad");
+                            mNotifyManager.cancel(mNotificationId);
+                        }
+
+                        private void updateUI(final int total, final int soFar) {
+                            mNotificationBuilder.setProgress(total, soFar, false);
+                            mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    t.printStackTrace();
+                    mNotifyManager.cancel(mNotificationId);
+                }
+            });
         }
-
-        mNotificationBuilder.setContentText("Sync in progress...");
-        mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
-
-        Futures.addCallback(mPeerGroup.startAsync(), new FutureCallback<Object>() {
-            @Override
-            public void onSuccess(final Object result) {
-                mPeerGroup.startBlockChainDownload(new DownloadProgressTracker() {
-                    @Override
-                    public void onChainDownloadStarted(final Peer peer, final int blocksLeft) {
-                        // Note that this method may be called multiple times if syncing
-                        // switches peers while downloading.
-                        Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
-                        mBlocksRemaining = blocksLeft;
-                        super.onChainDownloadStarted(peer, blocksLeft);
-                    }
-
-                    @Override
-                    public void onBlocksDownloaded(final Peer peer, final Block block, final FilteredBlock filteredBlock, final int blocksLeft) {
-                        //Log.d(TAG, "onBlocksDownloaded: " + Var("blocksLeft", blocksLeft));
-                        mBlocksRemaining = blocksLeft;
-                        super.onBlocksDownloaded(peer, block, filteredBlock, blocksLeft);
-                    }
-
-                    @Override
-                    protected void startDownload(int blocks) {
-                        Log.d(TAG, "startDownload");
-                        updateUI(100, 0);
-                    }
-
-                    @Override
-                    protected void progress(double percent, int blocksSoFar, Date date) {
-                        //Log.d(TAG, "progress: " + Var("percent", percent));
-                        updateUI(100, (int) percent);
-                    }
-
-                    @Override
-                    protected void doneDownload() {
-                        Log.d(TAG, "doneDownLoad");
-                        mNotifyManager.cancel(mNotificationId);
-                    }
-
-                    private void updateUI(final int total, final int soFar) {
-                        mNotificationBuilder.setProgress(total, soFar, false);
-                        mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                t.printStackTrace();
-                mNotifyManager.cancel(mNotificationId);
-            }
-        });
     }
 
     private PeerAddress getPeerAddress(final String address) throws URISyntaxException, UnknownHostException {
@@ -612,70 +623,72 @@ public class SPV {
         }
     };
 
-    private synchronized void setup(){
-        Log.d(TAG, "setup: " + Var("mPeerGroup != null", mPeerGroup != null));
+    private void setup(){
+        synchronized (mStateLock) {
+            Log.d(TAG, "setup: " + Var("mPeerGroup != null", mPeerGroup != null));
 
-        if (mPeerGroup != null) {
-            // FIXME: Make sure this can never happen
-            Log.e(TAG, "Must stop and tear down SPV before setting up again!");
-            return;
-        }
+            if (mPeerGroup != null) {
+                // FIXME: Make sure this can never happen
+                Log.e(TAG, "Must stop and tear down SPV before setting up again!");
+                return;
+            }
 
-        try {
-            Log.d(TAG, "Creating block store");
-            mBlockStore = new SPVBlockStore(Network.NETWORK, mService.getSPVChainFile());
-            final StoredBlock storedBlock = mBlockStore.getChainHead(); // detect corruptions as early as possible
-            if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
-                InputStream is = null;
-                try {
-                    is = mService.getAssets().open("checkpoints");
-                    CheckpointManager.checkpoint(Network.NETWORK, is, mBlockStore, mService.getLoginData().earliest_key_creation_time);
-                } catch (final IOException e) {
-                    // couldn't load checkpoints, log & skip
-                    e.printStackTrace();
-                } finally {
+            try {
+                Log.d(TAG, "Creating block store");
+                mBlockStore = new SPVBlockStore(Network.NETWORK, mService.getSPVChainFile());
+                final StoredBlock storedBlock = mBlockStore.getChainHead(); // detect corruptions as early as possible
+                if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
+                    InputStream is = null;
                     try {
-                        if (is != null) {
-                            is.close();
-                        }
+                        is = mService.getAssets().open("checkpoints");
+                        CheckpointManager.checkpoint(Network.NETWORK, is, mBlockStore, mService.getLoginData().earliest_key_creation_time);
                     } catch (final IOException e) {
-                        // do nothing
+                        // couldn't load checkpoints, log & skip
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            if (is != null) {
+                                is.close();
+                            }
+                        } catch (final IOException e) {
+                            // do nothing
+                        }
                     }
                 }
+                Log.d(TAG, "Creating block chain");
+                mBlockChain = new BlockChain(Network.NETWORK, mBlockStore);
+                mBlockChain.addTransactionReceivedListener(mTxListner);
+
+                System.setProperty("user.home", mService.getFilesDir().toString());
+                final String peers = getTrustedPeers();
+
+                Log.d(TAG, "Creating peer group");
+                if (mService.isProxyEnabled()) {
+                    final String proxyHost = mService.getProxyHost();
+                    final String proxyPort = mService.getProxyPort();
+                    final Socks5SocketFactory sf = new Socks5SocketFactory(proxyHost, proxyPort);
+                    final BlockingClientManager bcm = new BlockingClientManager(sf);
+                    bcm.setConnectTimeoutMillis(60000);
+                    mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain, bcm);
+                    mPeerGroup.setConnectTimeoutMillis(60000);
+                } else {
+                    mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain);
+                }
+
+                mPeerGroup.addPeerFilterProvider(mPeerFilter);
+
+                Log.d(TAG, "Adding peers");
+                final ArrayList<String> addresses;
+                addresses = new ArrayList<>(Arrays.asList(peers.split(",")));
+                if (addresses.isEmpty())
+                    addresses.add(Network.DEFAULT_PEER); // Usually empty, set for regtest
+                for (final String address: addresses)
+                    addPeer(address);
+
+
+            } catch (final BlockStoreException | UnknownHostException | URISyntaxException e) {
+                e.printStackTrace();
             }
-            Log.d(TAG, "Creating block chain");
-            mBlockChain = new BlockChain(Network.NETWORK, mBlockStore);
-            mBlockChain.addTransactionReceivedListener(mTxListner);
-
-            System.setProperty("user.home", mService.getFilesDir().toString());
-            final String peers = getTrustedPeers();
-
-            Log.d(TAG, "Creating peer group");
-            if (mService.isProxyEnabled()) {
-                final String proxyHost = mService.getProxyHost();
-                final String proxyPort = mService.getProxyPort();
-                final Socks5SocketFactory sf = new Socks5SocketFactory(proxyHost, proxyPort);
-                final BlockingClientManager bcm = new BlockingClientManager(sf);
-                bcm.setConnectTimeoutMillis(60000);
-                mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain, bcm);
-                mPeerGroup.setConnectTimeoutMillis(60000);
-            } else {
-                mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain);
-            }
-
-            mPeerGroup.addPeerFilterProvider(mPeerFilter);
-
-            Log.d(TAG, "Adding peers");
-            final ArrayList<String> addresses;
-            addresses = new ArrayList<>(Arrays.asList(peers.split(",")));
-            if (addresses.isEmpty())
-                addresses.add(Network.DEFAULT_PEER); // Usually empty, set for regtest
-            for (final String address: addresses)
-                addPeer(address);
-
-
-        } catch (final BlockStoreException | UnknownHostException | URISyntaxException e) {
-            e.printStackTrace();
         }
     }
 
@@ -683,39 +696,41 @@ public class SPV {
         mExecutor.execute(new Runnable() { public void run() { stopSync(); } });
     }
 
-    public synchronized void stopSync() {
-        Log.d(TAG, "stopSync: " + Var("isEnabled", isEnabled()));
+    public void stopSync() {
+        synchronized (mStateLock) {
+            Log.d(TAG, "stopSync: " + Var("isEnabled", isEnabled()));
 
-        if (mPeerGroup != null && mPeerGroup.isRunning()) {
-            Log.d(TAG, "Stopping peer group");
-            final Intent i = new Intent("PEERGROUP_UPDATED");
-            i.putExtra("peergroup", "stopSPVSync");
-            mService.sendBroadcast(i);
-            mPeerGroup.stop();
-        }
+            if (mPeerGroup != null && mPeerGroup.isRunning()) {
+                Log.d(TAG, "Stopping peer group");
+                final Intent i = new Intent("PEERGROUP_UPDATED");
+                i.putExtra("peergroup", "stopSPVSync");
+                mService.sendBroadcast(i);
+                mPeerGroup.stop();
+            }
 
-        if (mNotifyManager != null)
-            mNotifyManager.cancel(mNotificationId);
+            if (mNotifyManager != null)
+                mNotifyManager.cancel(mNotificationId);
 
-        if (mBlockChain != null) {
-            Log.d(TAG, "Disposing of block chain");
-            mBlockChain.removeTransactionReceivedListener(mTxListner);
-            mBlockChain = null;
-        }
+            if (mBlockChain != null) {
+                Log.d(TAG, "Disposing of block chain");
+                mBlockChain.removeTransactionReceivedListener(mTxListner);
+                mBlockChain = null;
+            }
 
-        if (mPeerGroup != null) {
-            Log.d(TAG, "Deleting peer group");
-            mPeerGroup.removePeerFilterProvider(mPeerFilter);
-            mPeerGroup = null;
-        }
+            if (mPeerGroup != null) {
+                Log.d(TAG, "Deleting peer group");
+                mPeerGroup.removePeerFilterProvider(mPeerFilter);
+                mPeerGroup = null;
+            }
 
-        if (mBlockStore != null) {
-            Log.d(TAG, "Closing block store");
-            try {
-                mBlockStore.close();
-                mBlockStore = null;
-            } catch (final BlockStoreException x) {
-                throw new RuntimeException(x);
+            if (mBlockStore != null) {
+                Log.d(TAG, "Closing block store");
+                try {
+                    mBlockStore.close();
+                    mBlockStore = null;
+                } catch (final BlockStoreException x) {
+                    throw new RuntimeException(x);
+                }
             }
         }
     }
@@ -738,23 +753,25 @@ public class SPV {
         mExecutor.execute(new Runnable() { public void run() { onNetConnectivityChanged(info); } });
     }
 
-    private synchronized void onNetConnectivityChanged(final NetworkInfo info) {
-        final int oldType = mNetWorkType;
-        final int newType = getNetworkType(info);
-        mNetWorkType = newType;
+    private void onNetConnectivityChanged(final NetworkInfo info) {
+        synchronized (mStateLock) {
+            final int oldType = mNetWorkType;
+            final int newType = getNetworkType(info);
+            mNetWorkType = newType;
 
-        if (!isEnabled() || newType == oldType)
-            return; // No change
+            if (!isEnabled() || newType == oldType)
+                return; // No change
 
-        Log.d(TAG, "onNetConnectivityChanged: " + Var("newType", newType) +
-              Var("oldType", oldType) + Var("isSyncOnMobileEnabled", isSyncOnMobileEnabled()));
+            Log.d(TAG, "onNetConnectivityChanged: " + Var("newType", newType) +
+                  Var("oldType", oldType) + Var("isSyncOnMobileEnabled", isSyncOnMobileEnabled()));
 
-        if (newType == ConnectivityManager.TYPE_MOBILE) {
-            if (!isSyncOnMobileEnabled())
-                stopSync(); // Mobile network and we have sync mobile disabled
-        } else if (oldType == ConnectivityManager.TYPE_MOBILE) {
-            if (isSyncOnMobileEnabled())
-                startSync(); // Non-Mobile network and we have sync mobile enabled
+            if (newType == ConnectivityManager.TYPE_MOBILE) {
+                if (!isSyncOnMobileEnabled())
+                    stopSync(); // Mobile network and we have sync mobile disabled
+            } else if (oldType == ConnectivityManager.TYPE_MOBILE) {
+                if (isSyncOnMobileEnabled())
+                    startSync(); // Non-Mobile network and we have sync mobile enabled
+            }
         }
     }
 
@@ -766,40 +783,42 @@ public class SPV {
         });
     }
 
-    public synchronized void reset(final boolean deleteAllData, final boolean deleteUnspent) {
-        Log.d(TAG, "reset: " + Var("deleteAllData", deleteAllData) +
-              Var("deleteUnspent", deleteUnspent));
-        stopSync();
+    public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
+        synchronized (mStateLock) {
+            Log.d(TAG, "reset: " + Var("deleteAllData", deleteAllData) +
+                  Var("deleteUnspent", deleteUnspent));
+            stopSync();
 
-        if (deleteAllData) {
-            Log.d(TAG, "Deleting chain file");
-            mService.getSPVChainFile().delete();
+            if (deleteAllData) {
+                Log.d(TAG, "Deleting chain file");
+                mService.getSPVChainFile().delete();
 
-            try {
-                Log.d(TAG, "Clearing verified and spendable transactions");
-                mService.cfgInEdit(SPENDABLE).clear().commit();
-                mService.cfgInEdit(VERIFIED).clear().commit();
-            } catch (final NullPointerException e) {
-                // ignore
+                try {
+                    Log.d(TAG, "Clearing verified and spendable transactions");
+                    mService.cfgInEdit(SPENDABLE).clear().commit();
+                    mService.cfgInEdit(VERIFIED).clear().commit();
+                } catch (final NullPointerException e) {
+                    // ignore
+                }
             }
+
+            if (deleteUnspent) {
+                Log.d(TAG, "Resetting unspent outputs");
+                resetUnspent();
+            }
+
+            if (isEnabled()) {
+                setup();
+
+                // We might race with our network callbacks, so fetch the network type
+                // if its unknown.
+                if (mNetWorkType == ConnectivityManager.TYPE_DUMMY)
+                    mNetWorkType = getNetworkType();
+
+                if (isSyncOnMobileEnabled() || mNetWorkType != ConnectivityManager.TYPE_MOBILE)
+                    startSync();
+            }
+            Log.d(TAG, "Finished reset");
         }
-
-        if (deleteUnspent) {
-            Log.d(TAG, "Resetting unspent outputs");
-            resetUnspent();
-        }
-
-        if (isEnabled()) {
-            setup();
-
-            // We might race with our network callbacks, so fetch the network type
-            // if its unknown.
-            if (mNetWorkType == ConnectivityManager.TYPE_DUMMY)
-                mNetWorkType = getNetworkType();
-
-            if (isSyncOnMobileEnabled() || mNetWorkType != ConnectivityManager.TYPE_MOBILE)
-                startSync();
-        }
-        Log.d(TAG, "Finished reset");
     }
 }
