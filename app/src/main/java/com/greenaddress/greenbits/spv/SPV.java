@@ -276,8 +276,7 @@ public class SPV {
                 if (recalculateBloom && mPeerGroup != null)
                     mPeerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
 
-                for (final int subAccount : changedSubaccounts)
-                    mService.fireBalanceChanged(subAccount);
+                fireBalanceChanged(changedSubaccounts);
             }
 
             @Override
@@ -285,6 +284,11 @@ public class SPV {
                 t.printStackTrace();
             }
         });
+    }
+
+    private void fireBalanceChanged(final List<Integer> subAccounts) {
+        for (final int subAccount : subAccounts)
+            mService.fireBalanceChanged(subAccount);
     }
 
     private void resetUnspent() {
@@ -327,8 +331,7 @@ public class SPV {
                 changedSubaccounts.add(subAccount);
             updateBalance(txOutpoint, subAccount, Coin.valueOf(value));
         }
-        for (final int subAccount : changedSubaccounts)
-            mService.fireBalanceChanged(subAccount);
+        fireBalanceChanged(changedSubaccounts);
 
         if (!missing) return;
         Futures.addCallback(mService.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
@@ -372,8 +375,7 @@ public class SPV {
                 Futures.addCallback(Futures.allAsList(futuresList), new FutureCallback<List<Boolean>>() {
                     @Override
                     public void onSuccess(final List<Boolean> result) {
-                        for (final int subAccount : changedSubaccounts)
-                            mService.fireBalanceChanged(subAccount);
+                        fireBalanceChanged(changedSubaccounts);
                     }
 
                     @Override
