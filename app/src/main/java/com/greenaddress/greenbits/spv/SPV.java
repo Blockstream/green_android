@@ -622,6 +622,16 @@ public class SPV {
         }
     };
 
+    private void setPingInterval(final long interval) {
+        synchronized (mStateLock) {
+            if (mPeerGroup != null)
+                mPeerGroup.setPingIntervalMsec(interval);
+        }
+    }
+
+    public void enablePingMonitoring() { setPingInterval(PeerGroup.DEFAULT_PING_INTERVAL_MSEC); }
+    public void disablePingMonitoring() { setPingInterval(-1); }
+
     private void setup(){
         synchronized (mStateLock) {
             Log.d(TAG, "setup: " + Var("mPeerGroup != null", mPeerGroup != null));
@@ -673,6 +683,7 @@ public class SPV {
                     mPeerGroup.setConnectTimeoutMillis(60000);
                 }
 
+                disablePingMonitoring();
                 mPeerGroup.addPeerFilterProvider(mPeerFilter);
 
                 Log.d(TAG, "Adding peers");

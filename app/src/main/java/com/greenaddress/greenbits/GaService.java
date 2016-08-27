@@ -274,6 +274,9 @@ public class GaService extends Service implements INotificationHandler {
 
     public boolean isSPVVerified(final Sha256Hash txHash) { return mSPV.isVerified(txHash); }
 
+    public void enableSPVPingMonitoring() { mSPV.enablePingMonitoring(); }
+    public void disableSPVPingMonitoring() { mSPV.disablePingMonitoring(); }
+
     public static boolean isBadAddress(final String s) {
         if (s.isEmpty())
             return false;

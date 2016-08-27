@@ -28,20 +28,29 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 {
     private final ArrayList<PrettyPeer> mPeers = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> mPeerListAdapter;
-    private String mBloomInfo = "";
+
+    private ListView mPeerList;
+    private TextView mEmptyView;
+    private TextView mBloomInfoText;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_network; }
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        final ListView peerList = UI.find(this, R.id.peerlistview);
-        final TextView emptyText = UI.find(this, R.id.empty_list_view);
-        peerList.setEmptyView(emptyText);
+        mService.enableSPVPingMonitoring();
+
+        mPeerList = UI.find(this, R.id.peerlistview);
+        mEmptyView = UI.find(this, R.id.empty_list_view);
+        mBloomInfoText = UI.find(this, R.id.bloominfo);
+
+        mPeerList.setEmptyView(mEmptyView);
     }
 
     @Override
     public void onPauseWithService() {
+
+        mService.disableSPVPingMonitoring();
 
         unregisterReceiver(uiUpdated);
         final PeerGroup peerGroup = mService.getSPVPeerGroup();
@@ -71,22 +80,23 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         if (peerGroup == null || !peerGroup.isRunning())
             return;
 
+        mService.enableSPVPingMonitoring();
+
         for (final Peer peer : peerGroup.getConnectedPeers())
             mPeers.add(new PrettyPeer(peer));
 
+        final String bloomDetails;
         if (mPeers.size() > 0)
-            mBloomInfo = mPeers.get(0).mPeer.getBloomFilter().toString();
+            bloomDetails = mPeers.get(0).mPeer.getBloomFilter().toString();
         else
-            mBloomInfo = getString(R.string.network_monitor_bloom_info);
+            bloomDetails = getString(R.string.network_monitor_bloom_info);
 
         final int currentBlock = mService.getCurrentBlock();
         final int spvHeight = mService.getSPVHeight();
-        final TextView bloomInfoText = UI.find(this, R.id.bloominfo);
-        bloomInfoText.setText(getString(R.string.network_monitor_banner, mBloomInfo, currentBlock - spvHeight));
+        mBloomInfoText.setText(getString(R.string.network_monitor_banner, bloomDetails, currentBlock - spvHeight));
 
         mPeerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mPeers);
-        final ListView peerList = UI.find(this, R.id.peerlistview);
-        peerList.setAdapter(mPeerListAdapter);
+        mPeerList.setAdapter(mPeerListAdapter);
 
         peerGroup.addConnectedEventListener(this);
         peerGroup.addDisconnectedEventListener(this);
@@ -98,10 +108,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             public void run() {
                 mPeers.add(new PrettyPeer(peer));
                 mPeerListAdapter.notifyDataSetChanged();
-
-                mBloomInfo = peer.getBloomFilter().toString();
-                final TextView bloomInfoText = UI.find(NetworkMonitorActivity.this, R.id.bloominfo);
-                bloomInfoText.setText(mBloomInfo);
+                mBloomInfoText.setText(peer.getBloomFilter().toString());
             }
         });
     }
@@ -143,10 +150,13 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         }
 
         public String toString(){
+            long pingTime = mPeer.getLastPingTime();
+            if (pingTime == Long.MAX_VALUE)
+                pingTime = 0;
             return String.format("%s\n%s\n%s\n%s", getString(R.string.network_monitor_peer_addr, mPeer.toString()),
                     getString(R.string.network_monitor_peer_version, mPeer.getPeerVersionMessage().subVer),
                     getString(R.string.network_monitor_peer_block, mPeer.getBestHeight()),
-                    getString(R.string.network_monitor_peer_ping, mPeer.getLastPingTime()));
+                    getString(R.string.network_monitor_peer_ping, pingTime));
         }
     }
 }
