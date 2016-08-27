@@ -492,7 +492,7 @@ public class SPV {
                                     .setSmallIcon(R.drawable.ic_sync_black_24dp);
             }
 
-            mNotificationBuilder.setContentText("Sync in progress...");
+            mNotificationBuilder.setContentText("Connecting to peer(s)...");
             mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
 
             CB.after(mPeerGroup.startAsync(), new FutureCallback<Object>() {
@@ -524,6 +524,7 @@ public class SPV {
                         @Override
                         protected void progress(double percent, int blocksSoFar, Date date) {
                             //Log.d(TAG, "progress: " + Var("percent", percent));
+                            mNotificationBuilder.setContentText("Sync in progress...");
                             updateUI(100, (int) percent);
                         }
 
