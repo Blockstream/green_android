@@ -501,7 +501,7 @@ public class SPV {
             }
 
             mNotificationBuilder.setContentText("Connecting to peer(s)...");
-            mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
+            updateNotification(0, 0);
 
             CB.after(mPeerGroup.startAsync(), new FutureCallback<Object>() {
                 @Override
@@ -526,25 +526,20 @@ public class SPV {
                         @Override
                         protected void startDownload(int blocks) {
                             Log.d(TAG, "startDownload");
-                            updateUI(100, 0);
+                            updateNotification(100, 0);
                         }
 
                         @Override
                         protected void progress(double percent, int blocksSoFar, Date date) {
                             //Log.d(TAG, "progress: " + Var("percent", percent));
                             mNotificationBuilder.setContentText("Sync in progress...");
-                            updateUI(100, (int) percent);
+                            updateNotification(100, (int) percent);
                         }
 
                         @Override
                         protected void doneDownload() {
                             Log.d(TAG, "doneDownLoad");
                             mNotifyManager.cancel(mNotificationId);
-                        }
-
-                        private void updateUI(final int total, final int soFar) {
-                            mNotificationBuilder.setProgress(total, soFar, false);
-                            mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
                         }
                     });
                 }
@@ -556,6 +551,11 @@ public class SPV {
                 }
             });
         }
+    }
+
+    private void updateNotification(final int total, final int soFar) {
+        mNotificationBuilder.setProgress(total, soFar, false);
+        mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
     }
 
     private PeerAddress getPeerAddress(final String address) throws URISyntaxException, UnknownHostException {
