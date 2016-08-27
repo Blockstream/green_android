@@ -168,6 +168,8 @@ dependencies {
     compile 'com.github.medyo:android-about-page:1.1.0'
     compile 'com.afollestad.material-dialogs:core:0.9.0.1'
     compile 'com.maksim88:PasswordEditText:v0.8'
+    // used to redirect bitcoinj logging to android in debug builds
+    debugCompile 'com.noveogroup.android:android-logger:1.3.5'
 }
 
 repositories {
