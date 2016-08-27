@@ -556,23 +556,23 @@ public class SPV {
 
         if (!mService.isProxyEnabled())
             return new PeerAddress(Network.NETWORK, InetAddress.getByName(host), port);
-        else
-            return new PeerAddress(Network.NETWORK, host, port) {
-                @Override
-                public InetSocketAddress toSocketAddress() {
-                    return InetSocketAddress.createUnresolved(host, port);
-                }
 
-                @Override
-                public String toString() {
-                    return String.format("%s:%s", host, port);
-                }
+        return new PeerAddress(Network.NETWORK, host, port) {
+            @Override
+            public InetSocketAddress toSocketAddress() {
+                return InetSocketAddress.createUnresolved(host, port);
+            }
 
-                @Override
-                public int hashCode() {
-                    return host.hashCode() ^ port;
-                }
-            };
+            @Override
+            public String toString() {
+                return String.format("%s:%s", host, port);
+            }
+
+            @Override
+            public int hashCode() {
+                return host.hashCode() ^ port;
+            }
+        };
     }
 
     private void addPeer(final String address) throws URISyntaxException, UnknownHostException {
@@ -637,9 +637,8 @@ public class SPV {
                         e.printStackTrace();
                     } finally {
                         try {
-                            if (is != null) {
+                            if (is != null)
                                 is.close();
-                            }
                         } catch (final IOException e) {
                             // do nothing
                         }
@@ -653,7 +652,9 @@ public class SPV {
                 final String peers = getTrustedPeers();
 
                 Log.d(TAG, "Creating peer group");
-                if (mService.isProxyEnabled()) {
+                if (!mService.isProxyEnabled())
+                    mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain);
+                else {
                     final String proxyHost = mService.getProxyHost();
                     final String proxyPort = mService.getProxyPort();
                     final Socks5SocketFactory sf = new Socks5SocketFactory(proxyHost, proxyPort);
@@ -661,8 +662,6 @@ public class SPV {
                     bcm.setConnectTimeoutMillis(60000);
                     mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain, bcm);
                     mPeerGroup.setConnectTimeoutMillis(60000);
-                } else {
-                    mPeerGroup = new PeerGroup(Network.NETWORK, mBlockChain);
                 }
 
                 mPeerGroup.addPeerFilterProvider(mPeerFilter);
