@@ -239,8 +239,7 @@ public class SPV {
                 boolean recalculateBloom = false;
 
                 Log.d(TAG, Var("number of outputs", result.size()));
-                for (int i = 0; i < result.size(); ++i) {
-                    final Map<?, ?> utxo = (Map) result.get(i);
+                for (final Map<?, ?> utxo : (ArrayList<Map<?, ?>>) result) {
                     final String txHashHex = (String) utxo.get("txhash");
                     final Integer blockHeight = (Integer) utxo.get("block_height");
                     final Integer prevIndex = ((Integer) utxo.get("pt_idx"));
