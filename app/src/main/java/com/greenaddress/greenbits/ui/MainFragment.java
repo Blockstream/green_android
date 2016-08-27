@@ -284,13 +284,12 @@ public class MainFragment extends SubaccountFragment {
 
             @Override
             public void onFailure(final Throwable t) {
+                t.printStackTrace();
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
                         showTxView(false);
                     }
                 });
-                t.printStackTrace();
-
             }
         }, service.getExecutor());
     }

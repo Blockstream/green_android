@@ -320,7 +320,7 @@ public class MnemonicActivity extends LoginActivity {
         if (mService.onConnected == null || mnemonics.equals(mService.getMnemonics()))
             return;
 
-        CB.after(mService.onConnected, new CB.NoOp<Void>() {
+        CB.after(mService.onConnected, new CB.Op<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 runOnUiThread(new Runnable() {
@@ -353,7 +353,7 @@ public class MnemonicActivity extends LoginActivity {
 
         } else if (intent.getType().equals("x-ga/en"))
             // Encrypted NFC
-            CB.after(askForPassphrase(), new CB.NoOp<String>() {
+            CB.after(askForPassphrase(), new CB.Op<String>() {
                 @Override
                 public void onSuccess(final String passphrase) {
                     String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(getNFCPayload(intent), passphrase);

@@ -43,7 +43,7 @@ public abstract class GaActivity extends AppCompatActivity {
 
         // Call onCreateWithService() on the GUI thread once our service
         // becomes available. In most cases this will execute immediately.
-        Futures.addCallback(getGAApp().onServiceAttached, new FutureCallback<Void>() {
+        Futures.addCallback(getGAApp().onServiceAttached, new CB.Op<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 GaActivity.this.runOnUiThread(new Runnable() {
@@ -61,11 +61,6 @@ public abstract class GaActivity extends AppCompatActivity {
                         }
                     }
                 });
-            }
-            @Override
-            public void onFailure(final Throwable t) {
-                Log.d(TAG, "onServiceAttached exception:", t);
-                t.printStackTrace();
             }
         });
     }

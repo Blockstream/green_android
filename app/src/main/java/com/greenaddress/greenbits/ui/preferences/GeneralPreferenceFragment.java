@@ -16,9 +16,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,38 +171,31 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             }
         });
 
-        Futures.addCallback(
-                mService.getCurrencyExchangePairs(),
-                new FutureCallback<List<List<String>>>() {
-                    @Override
-                    public void onSuccess(final List<List<String>> result) {
-                        final Activity activity = getActivity();
-                        if (activity != null && result != null) {
-                            activity.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
+        Futures.addCallback(mService.getCurrencyExchangePairs(), new CB.Op<List<List<String>>>() {
+            @Override
+            public void onSuccess(final List<List<String>> result) {
+                final Activity activity = getActivity();
+                if (activity != null && result != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
 
-                                    for (final List<String> currency_exchange : result) {
-                                        final boolean current = currency_exchange.get(0).equals(mService.getFiatCurrency())
-                                                && currency_exchange.get(1).equals(mService.getFiatExchange());
-                                        final String pair = String.format("%s %s", currency_exchange.get(0), currency_exchange.get(1));
-                                        if (current) {
-                                            fiatCurrency.setSummary(pair);
-                                        }
-                                        fiatPairs.add(pair);
-                                    }
-                                    fiatCurrency.setEntries(fiatPairs.toArray(new String[result.size()]));
-                                    fiatCurrency.setEntryValues(fiatPairs.toArray(new String[result.size()]));
+                            for (final List<String> currency_exchange : result) {
+                                final boolean current = currency_exchange.get(0).equals(mService.getFiatCurrency())
+                                        && currency_exchange.get(1).equals(mService.getFiatExchange());
+                                final String pair = String.format("%s %s", currency_exchange.get(0), currency_exchange.get(1));
+                                if (current) {
+                                    fiatCurrency.setSummary(pair);
                                 }
-                            });
+                                fiatPairs.add(pair);
+                            }
+                            fiatCurrency.setEntries(fiatPairs.toArray(new String[result.size()]));
+                            fiatCurrency.setEntryValues(fiatPairs.toArray(new String[result.size()]));
                         }
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
+                    });
+                }
+            }
+        });
 
         // -- handle opt-in rbf
         final CheckBoxPreference optInRbf = find("optin_rbf");

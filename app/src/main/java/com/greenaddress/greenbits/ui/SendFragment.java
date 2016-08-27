@@ -218,7 +218,7 @@ public class SendFragment extends SubaccountFragment {
         } else {
             recipientEdit.setText(URI.getAddress().toString());
             if (URI.getAmount() != null) {
-                Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
+                Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.Op<Map<?, ?>>() {
                     @Override
                     public void onSuccess(final Map<?, ?> result) {
                         gaActivity.runOnUiThread(new Runnable() {
@@ -659,7 +659,7 @@ public class SendFragment extends SubaccountFragment {
 
         curBalanceObserver = makeBalanceObserver();
         service.addBalanceObserver(curSubaccount, curBalanceObserver);
-        CB.after(service.getSubaccountBalance(curSubaccount), new CB.NoOp<Map<?, ?>>() {
+        CB.after(service.getSubaccountBalance(curSubaccount), new CB.Op<Map<?, ?>>() {
             @Override
             public void onSuccess(final Map<?, ?> balance) {
                 final Coin coin = Coin.valueOf(Long.valueOf((String) balance.get("satoshi")));

@@ -20,6 +20,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -228,62 +229,60 @@ public class SPV {
     }
 
     public void updateUnspentOutputs() {
-        Log.d(TAG, "updateUnspentOutputs: " + Var("isEnabled", isEnabled()));
-        if (!isEnabled())
-            return;
-
-        Futures.addCallback(mService.getAllUnspentOutputs(0, null), new FutureCallback<ArrayList>() {
-            @Override
-            public void onSuccess(final ArrayList result) {
-                final Set<TransactionOutPoint> newUtxos = new HashSet<>();
-                boolean recalculateBloom = false;
-
-                Log.d(TAG, Var("number of outputs", result.size()));
-                for (final Map<?, ?> utxo : (ArrayList<Map<?, ?>>) result) {
-                    final String txHashHex = (String) utxo.get("txhash");
-                    final Integer blockHeight = (Integer) utxo.get("block_height");
-                    final Integer prevIndex = ((Integer) utxo.get("pt_idx"));
-                    final Integer subaccount = ((Integer) utxo.get("subaccount"));
-                    final Integer pointer = ((Integer) utxo.get("pointer"));
-                    final Sha256Hash txHash = Sha256Hash.wrap(txHashHex);
-
-                    if (isVerified(txHash)) {
-                        addToUtxo(txHash, prevIndex, subaccount, pointer);
-                        addUtxoToValues(txHash, false /* updateVerified */);
-                    } else {
-                        recalculateBloom = true;
-                        addToBloomFilter(blockHeight, txHash, prevIndex, subaccount, pointer);
-                    }
-                    newUtxos.add(createOutPoint(prevIndex, txHash));
+        final boolean currentlyEnabled = isEnabled();
+        Log.d(TAG, "updateUnspentOutputs: " + Var("currentlyEnabled", currentlyEnabled));
+        if (currentlyEnabled)
+            CB.after(mService.getAllUnspentOutputs(0, null), new CB.Op<ArrayList>() {
+                @Override
+                public void onSuccess(final ArrayList outputs) {
+                    updateUnspentOutputs(outputs);
                 }
+            });
+    }
 
-                final List<Integer> changedSubaccounts = new ArrayList<>();
-                for (final TransactionOutPoint oldUtxo : new HashSet<>(mCountedUtxoValues.keySet())) {
-                    if (!newUtxos.contains(oldUtxo)) {
-                        recalculateBloom = true;
+    private void updateUnspentOutputs(final ArrayList outputs) {
+        final Set<TransactionOutPoint> newUtxos = new HashSet<>();
+        boolean recalculateBloom = false;
 
-                        final int subAccount = mUnspentDetails.get(oldUtxo).getSubAccount();
-                        final Coin verifiedBalance = getVerifiedBalance(subAccount);
-                        mVerifiedCoinBalances.put(subAccount,
-                                                  verifiedBalance.subtract(mCountedUtxoValues.get(oldUtxo)));
-                        changedSubaccounts.add(subAccount);
-                        mCountedUtxoValues.remove(oldUtxo);
-                        mUnspentDetails.remove(oldUtxo);
-                        mUnspentOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
-                    }
-                }
+        Log.d(TAG, Var("number of outputs", outputs.size()));
+        for (final Map<?, ?> utxo : (ArrayList<Map<?, ?>>) outputs) {
+            final String txHashHex = (String) utxo.get("txhash");
+            final Integer blockHeight = (Integer) utxo.get("block_height");
+            final Integer prevIndex = ((Integer) utxo.get("pt_idx"));
+            final Integer subaccount = ((Integer) utxo.get("subaccount"));
+            final Integer pointer = ((Integer) utxo.get("pointer"));
+            final Sha256Hash txHash = Sha256Hash.wrap(txHashHex);
 
-                if (recalculateBloom && mPeerGroup != null)
-                    mPeerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
-
-                fireBalanceChanged(changedSubaccounts);
+            if (isVerified(txHash)) {
+                addToUtxo(txHash, prevIndex, subaccount, pointer);
+                addUtxoToValues(txHash, false /* updateVerified */);
+            } else {
+                recalculateBloom = true;
+                addToBloomFilter(blockHeight, txHash, prevIndex, subaccount, pointer);
             }
+            newUtxos.add(createOutPoint(prevIndex, txHash));
+        }
 
-            @Override
-            public void onFailure(final Throwable t) {
-                t.printStackTrace();
+        final List<Integer> changedSubaccounts = new ArrayList<>();
+        for (final TransactionOutPoint oldUtxo : new HashSet<>(mCountedUtxoValues.keySet())) {
+            if (!newUtxos.contains(oldUtxo)) {
+                recalculateBloom = true;
+
+                final int subAccount = mUnspentDetails.get(oldUtxo).getSubAccount();
+                final Coin verifiedBalance = getVerifiedBalance(subAccount);
+                mVerifiedCoinBalances.put(subAccount,
+                                          verifiedBalance.subtract(mCountedUtxoValues.get(oldUtxo)));
+                changedSubaccounts.add(subAccount);
+                mCountedUtxoValues.remove(oldUtxo);
+                mUnspentDetails.remove(oldUtxo);
+                mUnspentOutpoints.get(oldUtxo.getHash()).remove(((int) oldUtxo.getIndex()));
             }
-        });
+        }
+
+        if (recalculateBloom && mPeerGroup != null)
+            mPeerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
+
+        fireBalanceChanged(changedSubaccounts);
     }
 
     private void fireBalanceChanged(final List<Integer> subAccounts) {
@@ -334,7 +333,7 @@ public class SPV {
         fireBalanceChanged(changedSubaccounts);
 
         if (!missing) return;
-        Futures.addCallback(mService.getRawUnspentOutput(txHash), new FutureCallback<Transaction>() {
+        CB.after(mService.getRawUnspentOutput(txHash), new CB.Op<Transaction>() {
             @Override
             public void onSuccess(final Transaction result) {
                 final List<Integer> changedSubaccounts = new ArrayList<>();
@@ -372,22 +371,12 @@ public class SPV {
                         }
                     }));
                 }
-                Futures.addCallback(Futures.allAsList(futuresList), new FutureCallback<List<Boolean>>() {
+                CB.after(Futures.allAsList(futuresList), new CB.Op<List<Boolean>>() {
                     @Override
                     public void onSuccess(final List<Boolean> result) {
                         fireBalanceChanged(changedSubaccounts);
                     }
-
-                    @Override
-                    public void onFailure(final Throwable t) {
-                        t.printStackTrace();
-                    }
                 });
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                t.printStackTrace();
             }
         });
     }
@@ -506,7 +495,7 @@ public class SPV {
             mNotificationBuilder.setContentText("Sync in progress...");
             mNotifyManager.notify(mNotificationId, mNotificationBuilder.build());
 
-            Futures.addCallback(mPeerGroup.startAsync(), new FutureCallback<Object>() {
+            CB.after(mPeerGroup.startAsync(), new FutureCallback<Object>() {
                 @Override
                 public void onSuccess(final Object result) {
                     mPeerGroup.startBlockChainDownload(new DownloadProgressTracker() {
