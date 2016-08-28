@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.spv;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -22,6 +23,7 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.bitcoinj.core.Address;
@@ -479,6 +481,13 @@ public class SPV {
         return 0;
     }
 
+    private PendingIntent getNotificationIntent() {
+        final Context service = getService();
+        final Intent intent = new Intent(service, TabbedMainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+    }
+
     private void startSync() {
         synchronized (mStateLock) {
             Log.d(TAG, "startSync: " + Var("mPeerGroup.isRunning", mPeerGroup.isRunning()));
@@ -489,7 +498,8 @@ public class SPV {
                 mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
                 mNotificationBuilder = new NotificationCompat.Builder(mService);
                 mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
-                                    .setSmallIcon(R.drawable.ic_sync_black_24dp);
+                                    .setSmallIcon(R.drawable.ic_sync_black_24dp)
+                                    .setContentIntent(getNotificationIntent());
             }
 
             mNotificationBuilder.setContentText("Connecting to peer(s)...");
