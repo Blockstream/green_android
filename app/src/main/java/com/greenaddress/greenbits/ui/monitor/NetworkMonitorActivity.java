@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,6 +29,8 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 {
     private final ArrayList<PrettyPeer> mPeers = new ArrayList<>();
     private ArrayAdapter<PrettyPeer> mPeerListAdapter;
+    private Handler mRefreshHandler;
+    private Runnable mRefreshCallback;
 
     private ListView mPeerList;
     private TextView mEmptyView;
@@ -43,14 +46,25 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         mPeerList = UI.find(this, R.id.peerlistview);
         mEmptyView = UI.find(this, R.id.empty_list_view);
         mBloomInfoText = UI.find(this, R.id.bloominfo);
+        mPeerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mPeers);
 
         mPeerList.setEmptyView(mEmptyView);
+
+        mRefreshHandler = new Handler();
+        mRefreshCallback = new Runnable() {
+            public void run() {
+                // Redraw the list view and update again in 2 seconds
+                mPeerListAdapter.notifyDataSetChanged();
+                mRefreshHandler.postDelayed(mRefreshCallback, 2000);
+            }
+        };
     }
 
     @Override
     public void onPauseWithService() {
 
         mService.disableSPVPingMonitoring();
+        mRefreshHandler.removeCallbacks(mRefreshCallback);
 
         unregisterReceiver(uiUpdated);
         final PeerGroup peerGroup = mService.getSPVPeerGroup();
@@ -95,11 +109,11 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         final int spvHeight = mService.getSPVHeight();
         mBloomInfoText.setText(getString(R.string.network_monitor_banner, bloomDetails, currentBlock - spvHeight));
 
-        mPeerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mPeers);
         mPeerList.setAdapter(mPeerListAdapter);
 
         peerGroup.addConnectedEventListener(this);
         peerGroup.addDisconnectedEventListener(this);
+        mRefreshCallback.run();
     }
 
     @Override
