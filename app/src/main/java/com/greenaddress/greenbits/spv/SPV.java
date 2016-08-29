@@ -201,7 +201,6 @@ public class SPV {
         synchronized (mStateLock) {
             Log.d(TAG, "start");
             reset(false /* deleteAllData */, true /* deleteUnspent */);
-            updateUnspentOutputs();
         }
     }
 
@@ -685,6 +684,7 @@ public class SPV {
 
                 disablePingMonitoring();
                 mPeerGroup.addPeerFilterProvider(mPeerFilter);
+                updateUnspentOutputs();
 
                 Log.d(TAG, "Adding peers");
                 final ArrayList<String> addresses;
