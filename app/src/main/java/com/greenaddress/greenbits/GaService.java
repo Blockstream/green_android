@@ -319,7 +319,7 @@ public class GaService extends Service implements INotificationHandler {
 
     @Override
     public void onNewTransaction(final int[] affectedSubAccounts) {
-        Log.i(TAG, "onNewTransactions");
+        Log.i(TAG, "onNewTransaction");
         mSPV.updateUnspentOutputs();
         mNewTxObservable.doNotify();
         for (final int subAccount : affectedSubAccounts)
