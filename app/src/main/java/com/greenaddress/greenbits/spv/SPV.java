@@ -68,6 +68,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 
@@ -216,16 +217,18 @@ public class SPV {
         return new TransactionOutPoint(Network.NETWORK, index, txHash);
     }
 
-    public void updateUnspentOutputs() {
+    public ListenableFuture<Void> updateUnspentOutputs() {
         final boolean currentlyEnabled = isEnabled();
         Log.d(TAG, "updateUnspentOutputs: " + Var("currentlyEnabled", currentlyEnabled));
         if (currentlyEnabled)
-            CB.after(mService.getAllUnspentOutputs(0, null), new CB.Op<ArrayList>() {
+            return Futures.transform(mService.getAllUnspentOutputs(0, null), new Function<ArrayList, Void>() {
                 @Override
-                public void onSuccess(final ArrayList outputs) {
+                public Void apply(final ArrayList outputs) {
                     updateUnspentOutputs(outputs);
+                    return null;
                 }
-            });
+            }, mService.getExecutor());
+        return Futures.immediateFuture(null);
     }
 
     private void updateUnspentOutputs(final ArrayList outputs) {
@@ -686,8 +689,12 @@ public class SPV {
                 }
 
                 disablePingMonitoring();
+                try {
+                    updateUnspentOutputs().get();
+                } catch(final ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
                 mPeerGroup.addPeerFilterProvider(mPeerFilter);
-                updateUnspentOutputs();
 
                 Log.d(TAG, "Adding peers");
                 final ArrayList<String> addresses;
