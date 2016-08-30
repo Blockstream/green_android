@@ -289,14 +289,6 @@ public class SPV {
             mService.fireBalanceChanged(subAccount);
     }
 
-    private void resetUnspent() {
-        Log.d(TAG, "resetUnspent");
-        mUnspentDetails.clear();
-        mUnspentOutpoints.clear();
-        mCountedUtxoValues.clear();
-        mVerifiedCoinBalances.clear();
-    }
-
     private void updateBalance(final TransactionOutPoint txOutpoint, final int subAccount, final Coin addValue) {
         if (mCountedUtxoValues.containsKey(txOutpoint))
            return;
@@ -813,7 +805,10 @@ public class SPV {
 
             if (deleteUnspent) {
                 Log.d(TAG, "Resetting unspent outputs");
-                resetUnspent();
+                mUnspentDetails.clear();
+                mUnspentOutpoints.clear();
+                mCountedUtxoValues.clear();
+                mVerifiedCoinBalances.clear();
             }
 
             if (isEnabled()) {
