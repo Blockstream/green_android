@@ -208,17 +208,6 @@ public class SPV {
         return mVerifiedCoinBalances.get(subAccount);
     }
 
-    public int getUnspentOutpointsSize() {
-        return mUnspentOutpoints.size();
-    }
-
-    public int populateBloomFilter(BloomFilter filter) {
-        final Set<Sha256Hash> keys = mUnspentOutpoints.keySet();
-        for (final Sha256Hash hash : keys)
-            filter.insert(hash.getReversedBytes());
-        return keys.size();
-    }
-
     public boolean isUnspentOutpoint(final Sha256Hash txHash) {
         return mUnspentOutpoints.containsKey(txHash);
     }
@@ -370,6 +359,28 @@ public class SPV {
                 });
             }
         });
+    }
+
+    public int getBloomFilterElementCount() {
+        final int count = mUnspentOutpoints.size();
+        return count == 0 ? 1 : count;
+    }
+
+    public BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
+        final Set<Sha256Hash> keys = mUnspentOutpoints.keySet();
+        Log.d(TAG, "getBloomFilter returning " + keys.size() + " items");
+        final BloomFilter filter = new BloomFilter(size, falsePositiveRate, nTweak);
+        for (final Sha256Hash hash : keys)
+            filter.insert(hash.getReversedBytes());
+
+        if (keys.isEmpty()) {
+            // Add a fake entry to avoid downloading blocks when filter is empty,
+            // as empty bloom filters are ignored by bitcoinj.
+            // FIXME: This results in a constant filter that peers can use to identify
+            //        us as a GreenBits client. That is undesirable.
+            filter.insert(new byte[]{(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
+        }
+        return filter;
     }
 
     public void onNewBlock(final int blockHeight) {
