@@ -66,8 +66,8 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
     public void onBindViewHolder(final Item holder, final int position) {
         holder.mName.setText(mNames.get(position));
         onDisplayBalance(holder, position);
-        if (mPointers.get(position) == mService.getCurrentSubAccount())
-            holder.mRadio.setChecked(true);
+        final boolean isCurrent = mPointers.get(position) == mService.getCurrentSubAccount();
+        holder.mRadio.setChecked(isCurrent);
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
