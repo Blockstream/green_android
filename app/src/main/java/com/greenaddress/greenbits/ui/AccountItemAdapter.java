@@ -33,7 +33,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         mService = service;
     }
 
-    void setCallback(final OnAccountSelected cb) {
+    public void setCallback(final OnAccountSelected cb) {
         mOnAccountSelected = cb;
     }
 
@@ -68,12 +68,16 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         onDisplayBalance(holder, position);
         final boolean isCurrent = mPointers.get(position) == mService.getCurrentSubAccount();
         holder.mRadio.setChecked(isCurrent);
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+        final View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 mOnAccountSelected.onAccountSelected(position);
             }
-        });
+        };
+        holder.mView.setOnClickListener(listener);
+        // Some Android versions do not pass the radio click to the
+        // view, so we override its listener here too.
+        holder.mRadio.setOnClickListener(listener);
     }
 
     @Override
