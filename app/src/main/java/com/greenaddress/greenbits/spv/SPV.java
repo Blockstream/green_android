@@ -1,11 +1,13 @@
 package com.greenaddress.greenbits.spv;
 
+import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
@@ -484,6 +486,7 @@ public class SPV {
         return 0;
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private PendingIntent getNotificationIntent() {
         final Context service = getService();
         final Intent intent = new Intent(service, TabbedMainActivity.class);
@@ -501,8 +504,9 @@ public class SPV {
                 mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
                 mNotificationBuilder = new NotificationCompat.Builder(mService);
                 mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
-                                    .setSmallIcon(R.drawable.ic_sync_black_24dp)
-                                    .setContentIntent(getNotificationIntent());
+                                    .setSmallIcon(R.drawable.ic_sync_black_24dp);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    mNotificationBuilder.setContentIntent(getNotificationIntent());
             }
 
             mNotificationBuilder.setContentText("Connecting to peer(s)...");
