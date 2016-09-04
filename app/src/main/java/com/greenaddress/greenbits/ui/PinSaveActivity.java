@@ -55,10 +55,13 @@ public class PinSaveActivity extends GaActivity {
                     @Override
                     public void onSuccess(final Void result) {
                         setResult(RESULT_OK);
-                        if (!isNative) {
+                        if (!isNative && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             // The user has set a non-native PIN.
                             // In case they already had a native PIN they are overriding,
                             // blank the native value so future logins don't detect it.
+                            // FIXME: Requiring M or higher is required because otherwise this crashes @ android < 21
+                            // and native is not available before M anyway
+                            // java.lang.VerifyError: com/greenaddress/greenbits/KeyStoreAES
                             KeyStoreAES.wipePIN(mService);
                         }
                         finishOnUiThread();
