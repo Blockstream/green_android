@@ -4,6 +4,7 @@ import android.util.SparseArray;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.collect.ImmutableList;
+import com.greenaddress.greenbits.ui.BuildConfig;
 
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
@@ -89,8 +90,8 @@ public class HDKey {
     }
 
     private static DeterministicKey getServerKeyImpl(final int subAccount) {
-        final boolean reconcile = false;
-        DeterministicKey k;
+        final boolean reconcile = BuildConfig.DEBUG;
+        DeterministicKey k = null;
         if (reconcile) {
             k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
             k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
