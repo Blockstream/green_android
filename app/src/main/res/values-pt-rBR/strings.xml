@@ -112,8 +112,6 @@
   <string name="unconfirmedBalanceTitle">Saldo não confirmado</string>
   <string name="unconfirmedBalanceText">O seu saldo não foi confirmado. Isso significa que ou você tem algumas transações não confirmadas, ou a verificação SPV não terminou.</string>
   <string name="spvNoWiFiTitle">Sincronização SPV</string>
-  <string name="NO">NÃO</string>
-  <string name="YES">SIM</string>
   <string name="enableSPV">Ativar SPV</string>
   <string name="enableSPVSummary">Uma simples verificação de pagamento permite confiar em suas transações e saldo graças à sincronização com a rede Bitcoin. Ele adiciona requisitos de largura de banda e de processamento, de modo que você pode desligá-lo em más ligações ou telefones antigos.</string>
   <string name="noTwoFactorWarning">Você não tem dupla autenticação! \ Por favor, vá as configurações para configurá-lo!</string>

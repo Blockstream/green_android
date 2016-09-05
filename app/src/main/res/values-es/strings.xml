@@ -114,8 +114,6 @@
     <string name="unconfirmedBalanceTitle">Balance sin confirmar</string>
     <string name="unconfirmedBalanceText">Su balance no está confirmado. Significa que hay transacciones sin confirmar o que la verificación de SPV no ha concluido.</string>
     <string name="spvNoWiFiTitle">sincronización de SPV</string>
-    <string name="NO">NO</string>
-    <string name="YES">SI</string>
     <string name="enableSPV">Habilitar SPV</string>
     <string name="enableSPVSummary">Verificación de Pago Simple (SPV) permite verificar sus transacciones y balance gracias a la sincronización con la red de Bitcoin. Esto agrega requisitos de ancho de banda y capacidad de proceso, entonces usted no debería utilizarlo si su conexión es lenta o telefónica.</string>
     <string name="noTwoFactorWarning">¡Usted no tiene autenticación de factor doble!\n¡Por favor disponga una en Configuración!</string>

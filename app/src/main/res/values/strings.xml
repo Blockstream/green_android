@@ -128,8 +128,6 @@
     <string name="unconfirmedBalanceTitle">Unconfirmed balance</string>
     <string name="unconfirmedBalanceText">Your balance is not confirmed. Either you have some unconfirmed incoming transactions, or SPV verification has not finished.</string>
     <string name="spvNoWiFiTitle">SPV synchronization</string>
-    <string name="NO">NO</string>
-    <string name="YES">YES</string>
     <string name="spvSettingsWatchOnly">SPV is not used and its settings cannot be changed in watch only mode.</string>
     <string name="enableSPV">Enable SPV</string>
     <string name="enableSPVSummary">Simple Payment Verification allows trusting your transactions and balance thanks to synchronization with Bitcoin network. It adds bandwidth and processing requirements, so you may want to switch it off if on poor connections or low end phones.</string>

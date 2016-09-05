@@ -108,8 +108,6 @@
   <string name="unconfirmedBalanceTitle">Bilancio non confermato</string>
   <string name="unconfirmedBalanceText">Il tuo bilancio non è confermato. Significa che forse hai delle transazione appena ricevute o che comunque la verifica SPV non è finita.</string>
   <string name="spvNoWiFiTitle">Sincronizzazione SPV</string>
-  <string name="NO">NO</string>
-  <string name="YES">SI</string>
   <string name="enableSPV">Abilita SPV</string>
   <string name="enableSPVSummary">Simple Payment Verification (Verifica Semplice di Pagamento) permette di fidarsi del saldo e delle proprie transazioni grazie alla sincronizzazione con il network Bitcoin. Richiede banda ed elaborazione, quindi si consiglia di spegnerlo se non si ha una buona connessione o si faccia uso di telefoni di fascia bassa.</string>
   <string name="noTwoFactorWarning">Non hai impostato nessuna autenticazione a due fattori! Per favore, vai nelle impostazioni a configurarlo!</string>

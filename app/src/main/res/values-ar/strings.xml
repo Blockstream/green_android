@@ -112,8 +112,6 @@
   <string name="unconfirmedBalanceTitle">الرصيد غير مؤكد</string>
   <string name="unconfirmedBalanceText">لم يتم تأكيد رصيدك. وهذا يعني إما أن لديك بعض المعاملات الواردة غير مؤكدة، أو التحقق SPV لم ينته.</string>
   <string name="spvNoWiFiTitle">تزامن SPV</string>
-  <string name="NO">لا</string>
-  <string name="YES">نعم</string>
   <string name="enableSPV">تفعيل SPV</string>
   <string name="enableSPVSummary">التحقق من الدفع بسيط يسمح الثقة في المعاملات الخاصة بك والتوازن بفضل التزامن مع شبكة بيتكوين. وتضيف متطلبات عرض النطاق الترددي والتجهيز، لذلك قد ترغب في إطفائه إذا كان على اتصالات الظعيفة أو الهواتف المنخفضة التكلفة.</string>
   <string name="noTwoFactorWarning">ليس لديك تحقق مزدوجn!\nيرجى الإنتقال إلى إعدادات إنشائه!</string>

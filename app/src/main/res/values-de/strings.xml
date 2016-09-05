@@ -110,8 +110,6 @@
   <string name="unconfirmedBalanceTitle">Unbestätigte Bilanz</string>
   <string name="unconfirmedBalanceText">Kontostand ist nicht bestätigt. Dies liegt entweder an unbestätigten eingehenden Transaktionen, oder daran das die einfache Zahlungsbestätigung noch nicht beendet ist.</string>
   <string name="spvNoWiFiTitle">EZB-Synchronizierung</string>
-  <string name="NO">NEIN</string>
-  <string name="YES">JA</string>
   <string name="enableSPV">EZB Aktivieren</string>
   <string name="enableSPVSummary">Die einfache Zahlungsbestätigung, oder EZB, erlaubt ihnen ein erhöhtes Vertrauen in Transaktionen und Kontostände dank der Synchronisierung mit dem Bitcoin-Netzwerk. Dies erhöht allerdings Bandbreiten- und Verarbeitungsanforderungen, weshalb sie diese Option bei mangelnder Verbindung und Low-End-Geräten eventuell lieber ausschalten.</string>
   <string name="noTwoFactorWarning">Sie haben keine 2-Faktor-Authentifizierung!\nBitte stellen sie dies in den Einstellungen ein!</string>
