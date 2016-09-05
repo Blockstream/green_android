@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi;
 
+import android.util.SparseArray;
+
 import com.blockstream.libwally.Wally;
 import com.google.common.collect.ImmutableList;
 
@@ -11,8 +13,6 @@ import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.LazyECPoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PUBLIC;
 import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PRIVATE;
@@ -26,7 +26,7 @@ public class HDKey {
 
     public static final int BRANCH_REGULAR = 1;
 
-    private static final Map<Integer, DeterministicKey> mServerKeys = new HashMap<>();
+    private static final SparseArray<DeterministicKey> mServerKeys = new SparseArray<>();
     private static int[] mGaUserPath = null;
 
     private static boolean isMain() {
@@ -72,10 +72,8 @@ public class HDKey {
         DeterministicKey[] ret = new DeterministicKey[2];
         synchronized (mServerKeys) {
             // Fetch the parent key. This is expensive so we cache it
-            if (!mServerKeys.containsKey(subAccount))
+            if ((ret[0] = mServerKeys.get(subAccount)) == null)
                 mServerKeys.put(subAccount, ret[0] = getServerKeyImpl(subAccount));
-            else
-                ret[0] = mServerKeys.get(subAccount);
         }
         // Compute the child key if we were asked for it
         if (pointer != null)

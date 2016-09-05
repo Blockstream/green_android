@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
@@ -64,7 +65,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +106,7 @@ public class GaService extends Service implements INotificationHandler {
 
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
     public ListenableFuture<Void> onConnected;
-    private final Map<Integer, GaObservable> mBalanceObservables = new HashMap<>();
+    private final SparseArray<GaObservable> mBalanceObservables = new SparseArray<>();
     private final GaObservable mNewTxObservable = new GaObservable();
     private final GaObservable mVerifiedTxObservable = new GaObservable();
     private String mSignUpMnemonics = null;
@@ -117,9 +117,9 @@ public class GaService extends Service implements INotificationHandler {
     // cache
     private ListenableFuture<List<List<String>>> mCurrencyExchangePairs;
 
-    private final Map<Integer, Coin> mCoinBalances = new HashMap<>();
+    private final SparseArray<Coin> mCoinBalances = new SparseArray<>();
 
-    private final Map<Integer, Fiat> mFiatBalances = new HashMap<>();
+    private final SparseArray<Fiat> mFiatBalances = new SparseArray<>();
     private float mFiatRate;
     private String mFiatCurrency;
     private String mFiatExchange;
@@ -505,8 +505,11 @@ public class GaService extends Service implements INotificationHandler {
     public void disconnect(final boolean autoReconnect) {
         mAutoReconnect = autoReconnect;
         mSPV.stopSyncAsync();
-        for (final GaObservable o : mBalanceObservables.values())
-            o.deleteObservers();
+        final int size = mBalanceObservables.size();
+        for(int i = 0; i < size; ++i) {
+            final int key = mBalanceObservables.keyAt(i);
+            mBalanceObservables.get(key).deleteObservers();
+        }
         mClient.disconnect();
         mState.transitionTo(ConnState.DISCONNECTED);
     }

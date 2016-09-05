@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 import android.util.Pair;
+import android.util.SparseArray;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -92,7 +93,7 @@ public class SPV {
     // We use a single threaded executor to serialise config changes
     // without forcing callers to block.
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-    private final Map<Integer, Coin> mVerifiedCoinBalances = new HashMap<>();
+    private final SparseArray<Coin> mVerifiedCoinBalances = new SparseArray<>();
     private final Map<Sha256Hash, List<Integer>> mUnspentOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, AccountInfo> mUnspentDetails = new HashMap<>();
     private final GaService mService;
