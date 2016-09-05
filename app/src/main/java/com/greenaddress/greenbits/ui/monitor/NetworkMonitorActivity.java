@@ -10,8 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.greenaddress.greenapi.Network;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
