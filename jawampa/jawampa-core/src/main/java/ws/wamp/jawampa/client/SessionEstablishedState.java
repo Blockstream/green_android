@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.RejectedExecutionException;
 
 import rx.Subscriber;
 import rx.functions.Action0;
@@ -673,9 +674,22 @@ public class SessionEstablishedState implements ClientState {
         subscriber.add(Subscriptions.create(new Action0() {
             @Override
             public void call() {
-                if (stateController.scheduler().isShutdown()) {
-                    return;
+                // There are 2 reasons why the scheduler can reject execution:
+                // 1. The scheduler has shut down.
+                // 2. There are too many outstanding tasks on the queue.
+                // We ignore (1) and rethrow (2). If this code throws then
+                // the number of outstanding tasks allowed can be changed via
+                // the system property "io.netty.eventLoop.maxPendingTasks".
+                try {
+                    callImpl();
+                } catch (RejectedExecutionException e) {
+                    if (!stateController.scheduler().isShutdown()) {
+                        throw e;
+                    }
                 }
+            }
+
+            private void callImpl() {
                 stateController.scheduler().execute(new Runnable() {
                     @Override
                     public void run() {
