@@ -172,7 +172,7 @@ public class SPV {
         }
     }
 
-    public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", ""); }
+    public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", "").trim(); }
 
     public void setTrustedPeersAsync(final String peers) {
         mExecutor.execute(new Runnable() { public void run() { setTrustedPeers(peers); } });
@@ -678,7 +678,6 @@ public class SPV {
                 mBlockChain.addTransactionReceivedListener(mTxListner);
 
                 System.setProperty("user.home", mService.getFilesDir().toString());
-                final String peers = getTrustedPeers();
 
                 Log.d(TAG, "Creating peer group");
                 if (!mService.isProxyEnabled())
@@ -702,14 +701,18 @@ public class SPV {
                 mPeerGroup.addPeerFilterProvider(mPeerFilter);
 
                 Log.d(TAG, "Adding peers");
+                final String peers = getTrustedPeers();
                 final ArrayList<String> addresses;
-                addresses = new ArrayList<>(Arrays.asList(peers.split(",")));
-                if (addresses.isEmpty())
-                    addresses.add(Network.DEFAULT_PEER); // Usually empty, set for regtest
+                if (peers.isEmpty()) {
+                    // DEFAULT_PEER is only set for regtest. For other networks
+                    // it is empty and so will cause us to use DNS discovery.
+                    addresses = new ArrayList<>(Arrays.asList(Network.DEFAULT_PEER));
+                }
+                else
+                    addresses = new ArrayList<>(Arrays.asList(peers.split(",")));
+
                 for (final String address: addresses)
                     addPeer(address);
-
-
             } catch (final BlockStoreException | UnknownHostException | URISyntaxException e) {
                 e.printStackTrace();
             }
