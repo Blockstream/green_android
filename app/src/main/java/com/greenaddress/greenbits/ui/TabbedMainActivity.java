@@ -65,7 +65,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             REQUEST_TX_DETAILS = 4;
     private ViewPager mViewPager;
     private Menu mMenu;
-    private Observer mTwoFactorObserver;
+
+    private final Observer mTwoFactorObserver = new Observer() {
+        @Override
+        public void update(final Observable o, final Object data) {
+            runOnUiThread(new Runnable() { public void run() { onTwoFactorConfigChange(); } });
+        }
+    };
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -77,8 +83,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
                 schemeIsBitcoin;
 
-        if (isBitcoinURL && mService.isLoggedOrLoggingIn()) {
-            // already logged in, could be from different app via intent
+        if (isBitcoinURL && !mService.isLoggedOrLoggingIn()) {
+            // not logged in
             final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
             startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
             return;
@@ -204,12 +210,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         tabLayout.setupWithViewPager(mViewPager);
 
         // Re-show our 2FA warning if config is changed to remove all methods
-        mTwoFactorObserver = new Observer() {
-            @Override
-            public void update(final Observable o, final Object data) {
-                runOnUiThread(new Runnable() { public void run() { onTwoFactorConfigChange(); } });
-            }
-        };
         // Fake a config change to show the warning if no current 2FA method
         mTwoFactorObserver.update(null, null);
 
