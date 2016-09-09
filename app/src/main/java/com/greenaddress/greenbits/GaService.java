@@ -251,8 +251,8 @@ public class GaService extends Service implements INotificationHandler {
     public String getProxyPort() { return cfg().getString("proxy_port", ""); }
     public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
     public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
-    public int getCurrentSubAccount() { return cfg("main").getInt("curSubaccount", 0); }
-    public void setCurrentSubAccount(int subAccount) { cfgEdit("main").putInt("curSubaccount", subAccount).apply(); }
+    public int getCurrentSubAccount() { return cfgIn("CONFIG").getInt("current_subaccount", 0); }
+    public void setCurrentSubAccount(final int subAccount) { cfgInEdit("CONFIG").putInt("current_subaccount", subAccount).apply(); }
     public boolean showBalanceInTitle() { return cfg().getBoolean("show_balance_in_title", false); }
 
     // SPV
