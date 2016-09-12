@@ -105,24 +105,20 @@
             android:ellipsize="end"
             android:textSize="20sp" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/listWhenText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/listWhenText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:textColor="@color/tertiaryTextColor" />
-            <TextView
-                android:id="@+id/listReplaceableText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:text="@string/replaceable"
-                android:textColor="#FF8000" />
-        </LinearLayout>
+            android:padding="2dp"
+            android:textColor="@color/tertiaryTextColor" />
+
+        <TextView
+            android:id="@+id/listReplaceableText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:text="@string/replaceable"
+            android:textColor="#FF8000" />
 
 
     </LinearLayout>
