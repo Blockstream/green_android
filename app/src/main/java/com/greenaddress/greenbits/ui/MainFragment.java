@@ -37,8 +37,8 @@ public class MainFragment extends SubaccountFragment {
     private Map<Sha256Hash, List<Sha256Hash> > replacedTxs;
     private Observer curBalanceObserver;
     private int curSubaccount;
-    private final Observer mVerifiedTxObserver = makeUiObserver(new Runnable() { public void run() { onVerifiedTx(); } });
-    private final Observer mNewTxObserver = makeUiObserver(new Runnable() { public void run() { onNewTx(); } });
+    private Observer mVerifiedTxObserver;
+    private Observer mNewTxObserver;
 
     private void updateBalance() {
         final GaService service = getGAService();
@@ -175,17 +175,37 @@ public class MainFragment extends SubaccountFragment {
     @Override
     public void onPause() {
         super.onPause();
-        final GaService service = getGAService();
-        service.deleteVerifiedTxObserver(mVerifiedTxObserver);
-        service.deleteNewTxObserver(mNewTxObserver);
+        detachObservers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        final GaService service = getGAService();
-        service.addNewTxObserver(mNewTxObserver);
-        service.addVerifiedTxObserver(mVerifiedTxObserver);
+        attachObservers();
+    }
+
+    @Override
+    public void attachObservers() {
+        if (mVerifiedTxObserver == null) {
+            mNewTxObserver = makeUiObserver(new Runnable() { public void run() { onNewTx(); } });
+            getGAService().addNewTxObserver(mNewTxObserver);
+        }
+        if (mVerifiedTxObserver == null) {
+            mVerifiedTxObserver = makeUiObserver(new Runnable() { public void run() { onVerifiedTx(); } });
+            getGAService().addVerifiedTxObserver(mVerifiedTxObserver);
+        }
+    }
+
+    @Override
+    public void detachObservers() {
+        if (mVerifiedTxObserver != null) {
+            getGAService().deleteNewTxObserver(mNewTxObserver);
+            mNewTxObserver = null;
+        }
+        if (mVerifiedTxObserver != null) {
+            getGAService().deleteVerifiedTxObserver(mVerifiedTxObserver);
+            mVerifiedTxObserver = null;
+        }
     }
 
     // Called when a new transaction is seen

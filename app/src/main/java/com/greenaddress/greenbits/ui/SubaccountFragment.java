@@ -49,6 +49,9 @@ public abstract class SubaccountFragment extends GAFragment {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
+    public void attachObservers() {};
+    public void detachObservers() {};
+
     protected Observer makeUiObserver(final Runnable r) {
         return new Observer() {
             @Override

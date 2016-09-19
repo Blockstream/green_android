@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -504,6 +505,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        final SubaccountFragment[] mFragments = new SubaccountFragment[3];
 
         public SectionsPagerAdapter(final FragmentManager fm) {
             super(fm);
@@ -514,14 +516,31 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
             switch (index) {
                 case 0:
-                    return new ReceiveFragment();
+                    if (mFragments[index] == null)
+                        mFragments[index] = new ReceiveFragment();
+                    return mFragments[index];
                 case 1:
-                    return new MainFragment();
+                    if (mFragments[index] == null)
+                        mFragments[index] = new MainFragment();
+                    return mFragments[index];
                 case 2:
-                    return new SendFragment();
+                    if (mFragments[index] == null)
+                        mFragments[index] = new SendFragment();
+                    return mFragments[index];
             }
 
             return null;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int index, Object object) {
+            if (index >=0 && index <=2 && mFragments[index] != null) {
+                // Make sure the fragment is not kept alive and does not
+                // try to process any callbacks it registered for.
+                mFragments[index].detachObservers();
+                mFragments[index] = null;
+            }
+            super.destroyItem(container, index, object);
         }
 
         @Override
