@@ -41,21 +41,21 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
     private View mView;
-    private FutureCallback<QrBitmap> onAddress = null;
-    private QrBitmap address = null;
-    private int curSubaccount;
-    private boolean pausing = false;
-    private Dialog qrDialog;
-    private TagDispatcher tagDispatcher;
+    private FutureCallback<QrBitmap> mNewAddressCallback = null;
+    private QrBitmap mQrCodeBitmap = null;
+    private int mSubAccount;
+    private boolean mPausing = false;
+    private boolean mSettingQrCode = false;
+    private Dialog mQrCodeDialog;
+    private TagDispatcher mTagDispatcher;
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean("pausing", pausing);
-        if (address != null) {
-            outState.putParcelable("address", address);
-        }
+        outState.putBoolean("pausing", mPausing);
+        if (mQrCodeBitmap != null)
+            outState.putParcelable("address", mQrCodeBitmap);
     }
 
     @Override
@@ -63,32 +63,30 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         super.setUserVisibleHint(isVisibleToUser);
         final View v = getView(); // FIXME: This should use mView
 
-        if (!pausing && v != null) {
+        if (!mPausing && v != null) {
             // get a new address every time the tab is displayed
             if (isVisibleToUser) {
                 hideKeyboard();
                 // get a new address:
-                if (address == null && !setting_qrcode)
+                if (mQrCodeBitmap == null && !mSettingQrCode)
                     getNewAddress(v);
             } else { // !isVisibleToUser
                 // hide to avoid showing old address when swiping
                 final TextView receiveAddress = UI.find(v, R.id.receiveAddressText);
                 final ImageView imageView = UI.find(v, R.id.receiveQrImageView);
-                address = null;
+                mQrCodeBitmap = null;
                 receiveAddress.setText("");
                 imageView.setImageBitmap(null);
             }
         }
         if (isVisibleToUser)
-            pausing = false;
+            mPausing = false;
     }
-
-    boolean setting_qrcode = false;
 
     @Override
     public void onResume() {
         super.onResume();
-        if (onAddress != null && address == null && !setting_qrcode)
+        if (mNewAddressCallback != null && mQrCodeBitmap == null && !mSettingQrCode)
             getNewAddress(null);
     }
 
@@ -96,11 +94,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onPause() {
         super.onPause();
 
-        if (getUserVisibleHint()) {
-            pausing = true;
-        }
-        
-        tagDispatcher.disableExclusiveNfc();
+        if (getUserVisibleHint())
+            mPausing = true;
+
+        mTagDispatcher.disableExclusiveNfc();
     }
 
     @Override
@@ -111,14 +108,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         registerReceiver();
 
         if (savedInstanceState != null) {
-            pausing = savedInstanceState.getBoolean("pausing");
-            address = savedInstanceState.getParcelable("address");
+            mPausing = savedInstanceState.getBoolean("pausing");
+            mQrCodeBitmap = savedInstanceState.getParcelable("address");
         }
-        
-        tagDispatcher = TagDispatcher.get(getActivity(), this);
-        tagDispatcher.enableExclusiveNfc();
 
-        curSubaccount = getGAService().getCurrentSubAccount();
+        mTagDispatcher = TagDispatcher.get(getActivity(), this);
+        mTagDispatcher.enableExclusiveNfc();
+
+        mSubAccount = getGAService().getCurrentSubAccount();
 
         mView = inflater.inflate(R.layout.fragment_receive, container, false);
         final TextView receiveAddress = UI.find(mView, R.id.receiveAddressText);
@@ -146,10 +143,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final View qrView = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
         final ImageView qrcodeInDialog = UI.find(qrView, R.id.qrInDialogImageView);
-        onAddress = new FutureCallback<QrBitmap>() {
+        mNewAddressCallback = new FutureCallback<QrBitmap>() {
             @Override
             public void onSuccess(final QrBitmap result) {
-                address = result;
+                mQrCodeBitmap = result;
 
                 final Activity activity = getActivity();
                 if (activity == null)
@@ -165,11 +162,11 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                         final String qrData = result.getData();
                         receiveAddress.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
-                        setting_qrcode = false;
+                        mSettingQrCode = false;
 
                         imageView.setOnClickListener(new View.OnClickListener() {
                             public void onClick(final View v) {
-                                if (qrDialog == null) {
+                                if (mQrCodeDialog == null) {
                                     final DisplayMetrics displaymetrics = new DisplayMetrics();
                                     activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                                     final int height = displaymetrics.heightPixels;
@@ -179,11 +176,11 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                     final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
                                     qrcodeInDialog.setLayoutParams(layoutParams);
 
-                                    qrDialog = new Dialog(activity);
-                                    qrDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                    qrDialog.setContentView(qrView);
+                                    mQrCodeDialog = new Dialog(activity);
+                                    mQrCodeDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                                    mQrCodeDialog.setContentView(qrView);
                                 }
-                                qrDialog.show();
+                                mQrCodeDialog.show();
                                 final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
                                 bd.setFilterBitmap(false);
                                 qrcodeInDialog.setImageDrawable(bd);
@@ -196,11 +193,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             @Override
             public void onFailure(final Throwable t) {
                 t.printStackTrace();
-                final Activity activity = getActivity();
-                if (activity == null)
+                if (getActivity() == null)
                     return;
 
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         stopNewAddressAnimation(mView);
                         UI.show(copyIcon, copyText);
@@ -209,15 +205,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             }
         };
 
-        if (address != null) {
-            onAddress.onSuccess(address);
-        }
+        if (mQrCodeBitmap != null)
+            mNewAddressCallback.onSuccess(mQrCodeBitmap);
 
         newAddressIcon.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
-                        if (!setting_qrcode) {
+                        if (!mSettingQrCode) {
                             // FIXME: Instead of checking the state here, enable/disable sendButton when state changes
                             if (!getGAApp().mService.isLoggedIn()) {
                                 gaActivity.toast(R.string.err_send_not_connected_will_resume);
@@ -233,13 +228,13 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private void getNewAddress(final View v) {
-        setting_qrcode = true;
+        mSettingQrCode = true;
 
         if (v != null)
             startNewAddressAnimation(v);
 
-        Futures.addCallback(getGAService().getNewAddressBitmap(curSubaccount),
-                            onAddress, getGAService().getExecutor());
+        Futures.addCallback(getGAService().getNewAddressBitmap(mSubAccount),
+                            mNewAddressCallback, getGAService().getExecutor());
      }
 
      private void stopNewAddressAnimation(final View v) {
@@ -271,7 +266,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     public void tagDiscovered(final Tag t) {
-    	Log.d("NFC", "Tag discovered " + t);
+        Log.d("NFC", "Tag discovered " + t);
     }
 
     @Override
@@ -288,28 +283,30 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     protected void onSubaccountChanged(final int input) {
-        curSubaccount = input;
+        mSubAccount = input;
         if (mView != null)
             startNewAddressAnimation(mView);
 
-        if (!setting_qrcode)
+        if (!mSettingQrCode)
             getNewAddress(null);
+    }
+
+    private String getAddressUri() {
+        final Address address = Address.fromBase58(Network.NETWORK, mQrCodeBitmap.getData());
+        return BitcoinURI.convertToBitcoinURI(address, null, null, null);
     }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        final int id = item.getItemId();
-        if (id == R.id.action_share) {
-            if (address != null && !address.getData().isEmpty()) {
-                //SHARE intent
-                final Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, BitcoinURI.convertToBitcoinURI(Address.fromBase58(Network.NETWORK, address.getData()), null, null, null));
-                sendIntent.setType("text/plain");
-                startActivity(sendIntent);
+
+        if (item.getItemId() == R.id.action_share) {
+            if (mQrCodeBitmap != null && !mQrCodeBitmap.getData().isEmpty()) {
+                // SHARE intent
+                final Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_TEXT, getAddressUri());
+                intent.setType("text/plain");
+                startActivity(intent);
             }
             return true;
         }
