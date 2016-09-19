@@ -430,10 +430,6 @@ public class SendFragment extends SubaccountFragment {
             }
         });
 
-        makeBalanceObserver(curSubaccount);
-        if (service.getCoinBalance(curSubaccount) != null)
-            updateBalance();
-
         scanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(final View v) {
@@ -451,7 +447,6 @@ public class SendFragment extends SubaccountFragment {
                                         }
                                     }
         );
-
 
         final FontAwesomeTextView fiatView = UI.find(mView, R.id.sendFiatIcon);
         changeFiatIcon(fiatView, service.getFiatCurrency());
@@ -507,6 +502,10 @@ public class SendFragment extends SubaccountFragment {
 
         hideInstantIf2of3();
 
+        makeBalanceObserver(curSubaccount);
+        if (service.getCoinBalance(curSubaccount) != null)
+            onBalanceUpdated();
+
         registerReceiver();
         return mView;
     }
@@ -527,10 +526,6 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onBalanceUpdated() {
-        updateBalance();
-    }
-
-    private void updateBalance() {
         final String btcUnit = (String) getGAService().getUserConfig("unit");
         final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
         final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
