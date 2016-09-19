@@ -106,6 +106,13 @@ public abstract class UI {
                 }).build();
     }
 
+    public static MaterialDialog popupWait(final Activity a, final int title) {
+        final int id = INVALID_RESOURCE_ID;
+        final MaterialDialog dialog = popup(a, title, id).progress(true, 0).build();
+        dialog.show();
+        return dialog;
+    }
+
     public static void toast(final Activity activity, final int id, final int len) {
         activity.runOnUiThread(new Runnable() {
             public void run() {

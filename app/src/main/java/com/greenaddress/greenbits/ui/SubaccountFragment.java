@@ -11,9 +11,12 @@ import android.view.inputmethod.InputMethodManager;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 public abstract class SubaccountFragment extends GAFragment {
 
     private BroadcastReceiver mBroadcastReceiver = null;
+    private MaterialDialog mWaitDialog = null;
 
     // Must be called by subclasses at the end of onCreateView()
     protected void registerReceiver() {
@@ -72,4 +75,16 @@ public abstract class SubaccountFragment extends GAFragment {
     }
 
     protected void onBalanceUpdated() { }
+
+    protected void popupWaitDialog() {
+        if (mWaitDialog == null && getActivity() != null)
+            mWaitDialog = UI.popupWait(getActivity(), R.string.loading);
+    }
+
+    protected void hideWaitDialog() {
+        if (mWaitDialog != null) {
+            mWaitDialog.cancel();
+            mWaitDialog = null;
+        }
+    }
 }

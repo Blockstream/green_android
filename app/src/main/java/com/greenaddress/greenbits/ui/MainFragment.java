@@ -112,6 +112,9 @@ public class MainFragment extends SubaccountFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+
+        popupWaitDialog();
+
         final GaService service = getGAService();
 
         mView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -232,6 +235,8 @@ public class MainFragment extends SubaccountFragment {
     }
 
     private void reloadTransactions(boolean newAdapter) {
+        popupWaitDialog();
+
         final Activity activity = getActivity();
         final GaService service = getGAService();
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
@@ -297,6 +302,7 @@ public class MainFragment extends SubaccountFragment {
                             // A new tx has arrived; scroll to the top to show it
                             txView.smoothScrollToPosition(0);
                         }
+                        hideWaitDialog();
                     }
                 });
 
@@ -308,6 +314,7 @@ public class MainFragment extends SubaccountFragment {
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
                         showTxView(false);
+                        hideWaitDialog();
                     }
                 });
             }

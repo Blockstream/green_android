@@ -103,6 +103,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        popupWaitDialog();
+
         final GaActivity gaActivity = getGaActivity();
 
         if (savedInstanceState != null) {
@@ -152,9 +154,11 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
+                        final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
+
+                        hideWaitDialog();
                         UI.show(copyIcon, copyText);
                         stopNewAddressAnimation(mView);
-                        final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
                         bd.setFilterBitmap(false);
                         imageView.setImageDrawable(bd);
 
@@ -196,6 +200,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
+                        hideWaitDialog();
                         stopNewAddressAnimation(mView);
                         UI.show(copyIcon, copyText);
                     }
@@ -229,6 +234,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private void getNewAddress(final View v) {
         mSettingQrCode = true;
 
+        popupWaitDialog();
         if (v != null)
             startNewAddressAnimation(v);
 
