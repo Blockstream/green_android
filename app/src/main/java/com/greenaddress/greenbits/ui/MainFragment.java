@@ -197,10 +197,12 @@ public class MainFragment extends SubaccountFragment {
             mVerifiedTxObserver = makeUiObserver(new Runnable() { public void run() { onVerifiedTx(); } });
             getGAService().addVerifiedTxObserver(mVerifiedTxObserver);
         }
+        super.attachObservers();
     }
 
     @Override
     public void detachObservers() {
+        super.detachObservers();
         if (mVerifiedTxObserver != null) {
             getGAService().deleteNewTxObserver(mNewTxObserver);
             mNewTxObserver = null;
