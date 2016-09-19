@@ -240,8 +240,6 @@ public class SendFragment extends SubaccountFragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
 
-        registerReceiver();
-
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
@@ -513,6 +511,7 @@ public class SendFragment extends SubaccountFragment {
 
         hideInstantIf2of3();
 
+        registerReceiver();
         return mView;
     }
 

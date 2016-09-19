@@ -13,28 +13,32 @@ import java.util.Observer;
 
 public abstract class SubaccountFragment extends GAFragment {
 
-    final private BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    onSubaccountChanged(intent.getIntExtra("sub", 0));
-                }
-            });
-        }
-    };
+    private BroadcastReceiver mBroadcastReceiver = null;
 
-    abstract protected void onSubaccountChanged(final int input);
-
-    // Must be called by subclasses after onCreateView()
+    // Must be called by subclasses at the end of onCreateView()
     protected void registerReceiver() {
-        getActivity().registerReceiver(br, new IntentFilter("fragmentupdater"));
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(final Context context, final Intent intent) {
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        onSubaccountChanged(intent.getIntExtra("sub", 0));
+                    }
+                });
+            }
+        };
+
+        getActivity().registerReceiver(mBroadcastReceiver, new IntentFilter("fragmentupdater"));
     }
+
+    // Subclasses must override this to process subaccount changes
+    abstract protected void onSubaccountChanged(final int input);
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getActivity().unregisterReceiver(br);
+        getActivity().unregisterReceiver(mBroadcastReceiver);
+        mBroadcastReceiver = null;
     }
 
     protected void hideKeyboard() {

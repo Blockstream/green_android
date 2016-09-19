@@ -105,8 +105,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                              final Bundle savedInstanceState) {
         final GaActivity gaActivity = getGaActivity();
 
-        registerReceiver();
-
         if (savedInstanceState != null) {
             mPausing = savedInstanceState.getBoolean("pausing");
             mQrCodeBitmap = savedInstanceState.getParcelable("address");
@@ -224,6 +222,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 }
         );
 
+        registerReceiver();
         return mView;
     }
 

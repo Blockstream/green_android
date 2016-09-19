@@ -114,8 +114,6 @@ public class MainFragment extends SubaccountFragment {
                              final Bundle savedInstanceState) {
         final GaService service = getGAService();
 
-        registerReceiver();
-
         mView = inflater.inflate(R.layout.fragment_main, container, false);
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.setHasFixedSize(true);
@@ -163,6 +161,8 @@ public class MainFragment extends SubaccountFragment {
             updateBalance();
             reloadTransactions(false);
         }
+
+        registerReceiver();
         return mView;
     }
 
