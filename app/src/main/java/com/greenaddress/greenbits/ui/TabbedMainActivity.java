@@ -120,22 +120,32 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void setAccountTitle(final int subAccount) {
-        String titleExtra;
-        if (mService.showBalanceInTitle()) {
-            final String btcUnit = (String) mService.getUserConfig("unit");
-            final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+        String suffix;
 
-            final String btcBalance = bitcoinFormat.noCode().format(mService.getCoinBalance(subAccount)).toString();
-            titleExtra = String.format("%s %s", UI.setAmountText(null, btcBalance), bitcoinFormat.code());
+        if (mService.showBalanceInTitle()) {
+            final Coin rawBalance = mService.getCoinBalance(subAccount);
+            if (rawBalance == null) {
+                // Not available yet, it will update when the balance is updated.
+                // This is only required until the login RPC returns balances.
+                suffix = "";
+            } else {
+                final String btcUnit = (String) mService.getUserConfig("unit");
+                final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+
+                final String btcBalance = bitcoinFormat.noCode().format(rawBalance).toString();
+                suffix = String.format("%s %s", UI.setAmountText(null, btcBalance), bitcoinFormat.code());
+            }
         } else if (mService.haveSubaccounts()) {
             final Map<String, ?> m = mService.findSubaccount(null, subAccount);
             if (m == null)
-                titleExtra = getResources().getString(R.string.main_account);
+                suffix = getResources().getString(R.string.main_account);
             else
-                titleExtra = (String) m.get("name");
+                suffix = (String) m.get("name");
         } else
-            return;
-        setTitle(String.format("%s %s", getResources().getText(R.string.app_name), titleExtra));
+            suffix = "";
+        if (suffix != "")
+            suffix = " " + suffix;
+        setTitle(String.format("%s%s", getResources().getText(R.string.app_name), suffix));
     }
 
     private void configureSubaccountsFooter(final int subAccount) {
