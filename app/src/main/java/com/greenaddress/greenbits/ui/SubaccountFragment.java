@@ -17,6 +17,8 @@ public abstract class SubaccountFragment extends GAFragment {
 
     private BroadcastReceiver mBroadcastReceiver = null;
     private MaterialDialog mWaitDialog = null;
+    private Observer mBalanceObserver = null;
+    private int mBalanceObserverSubaccount = 0;
 
     // Must be called by subclasses at the end of onCreateView()
     protected void registerReceiver() {
@@ -73,8 +75,19 @@ public abstract class SubaccountFragment extends GAFragment {
         };
     }
 
-    protected Observer makeBalanceObserver() {
-        return makeUiObserver(new Runnable() { public void run() { onBalanceUpdated(); } });
+    protected void makeBalanceObserver(final int subAccount) {
+        deleteBalanceObserver();
+        mBalanceObserver = makeUiObserver(new Runnable() { public void run() { onBalanceUpdated(); } });
+        mBalanceObserverSubaccount = subAccount;
+        getGAService().addBalanceObserver(mBalanceObserverSubaccount, mBalanceObserver);
+    }
+
+    protected void deleteBalanceObserver() {
+        if (mBalanceObserver == null)
+            return;
+        getGAService().deleteBalanceObserver(mBalanceObserverSubaccount, mBalanceObserver);
+        mBalanceObserver = null;
+        mBalanceObserverSubaccount = 0;
     }
 
     protected void onBalanceUpdated() { }

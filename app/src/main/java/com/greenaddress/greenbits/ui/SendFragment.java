@@ -69,7 +69,6 @@ public class SendFragment extends SubaccountFragment {
     private boolean converting = false;
     private MonetaryFormat bitcoinFormat;
     private int curSubaccount;
-    private Observer curBalanceObserver;
     private boolean pausing;
 
     private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
@@ -431,12 +430,9 @@ public class SendFragment extends SubaccountFragment {
             }
         });
 
-        curBalanceObserver = makeBalanceObserver();
-        service.addBalanceObserver(curSubaccount, curBalanceObserver);
-
-        if (service.getCoinBalance(curSubaccount) != null) {
+        makeBalanceObserver(curSubaccount);
+        if (service.getCoinBalance(curSubaccount) != null)
             updateBalance();
-        }
 
         scanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -651,13 +647,11 @@ public class SendFragment extends SubaccountFragment {
     protected void onSubaccountChanged(final int newSubAccount) {
         final GaService service = getGAService();
 
-        service.deleteBalanceObserver(curSubaccount, curBalanceObserver);
         curSubaccount = newSubAccount;
         hideInstantIf2of3();
         final GaActivity gaActivity = getGaActivity();
 
-        curBalanceObserver = makeBalanceObserver();
-        service.addBalanceObserver(curSubaccount, curBalanceObserver);
+        makeBalanceObserver(curSubaccount);
         CB.after(service.getSubaccountBalance(curSubaccount), new CB.Op<Map<?, ?>>() {
             @Override
             public void onSuccess(final Map<?, ?> balance) {

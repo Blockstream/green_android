@@ -35,7 +35,6 @@ public class MainFragment extends SubaccountFragment {
     private View mView;
     private List<TransactionItem> mTxItems;
     private Map<Sha256Hash, List<Sha256Hash> > replacedTxs;
-    private Observer curBalanceObserver;
     private int curSubaccount;
     private Observer mVerifiedTxObserver;
     private Observer mNewTxObserver;
@@ -157,9 +156,7 @@ public class MainFragment extends SubaccountFragment {
         balanceText.setOnClickListener(unconfirmedClickListener);
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
-        curBalanceObserver = makeBalanceObserver();
-        service.addBalanceObserver(curSubaccount, curBalanceObserver);
-
+        makeBalanceObserver(curSubaccount);
         if (service.getCoinBalance(curSubaccount) != null) {
             updateBalance();
             reloadTransactions(false);
@@ -324,13 +321,9 @@ public class MainFragment extends SubaccountFragment {
     }
 
     @Override
-    protected void onSubaccountChanged(final int input) {
-        final GaService service = getGAService();
-
-        service.deleteBalanceObserver(curSubaccount, curBalanceObserver);
-        curSubaccount = input;
-        curBalanceObserver = makeBalanceObserver();
-        service.addBalanceObserver(curSubaccount, curBalanceObserver);
+    protected void onSubaccountChanged(final int newSubAccount) {
+        curSubaccount = newSubAccount;
+        makeBalanceObserver(curSubaccount);
         reloadTransactions(false);
         updateBalance();
     }
