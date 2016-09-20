@@ -497,8 +497,9 @@ public class SPV {
 
     private void startSync() {
         synchronized (mStateLock) {
-            Log.d(TAG, "startSync: " + Var("mPeerGroup.isRunning", mPeerGroup.isRunning()));
-            if (mPeerGroup.isRunning())
+            final boolean isRunning = mPeerGroup != null && mPeerGroup.isRunning();
+            Log.d(TAG, "startSync: " + Var("isRunning", isRunning));
+            if (!isRunning)
                  return;
 
             if (mNotifyManager == null) {
@@ -774,8 +775,6 @@ public class SPV {
 
     // Handle changes to network connectivity.
     // Note that this only handles mobile/non-mobile transitions
-    // FIXME: - Move the impl to Async and synchronise it
-    //        - Call setup() before startSync if needed
     public void onNetConnectivityChangedAsync(final NetworkInfo info) {
         mExecutor.execute(new Runnable() { public void run() { onNetConnectivityChanged(info); } });
     }
@@ -792,6 +791,9 @@ public class SPV {
             Log.d(TAG, "onNetConnectivityChanged: " + Var("newType", newType) +
                   Var("oldType", oldType) + Var("isSyncOnMobileEnabled", isSyncOnMobileEnabled()));
 
+            // FIXME: - It seems network connectivity changes can happen when
+            //          mPeerGroup is null (i.e. setup hasn't been called),
+            //          but its not clear what path leads to this happening.
             if (newType == ConnectivityManager.TYPE_MOBILE) {
                 if (!isSyncOnMobileEnabled())
                     stopSync(); // Mobile network and we have sync mobile disabled
