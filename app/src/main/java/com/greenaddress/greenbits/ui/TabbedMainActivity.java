@@ -542,6 +542,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 // Make sure the fragment is not kept alive and does not
                 // try to process any callbacks it registered for.
                 mFragments[index].detachObservers();
+                // Make sure any wait dialog being shown is dismissed
+                mFragments[index].hideWaitDialog();
                 mFragments[index] = null;
             }
             super.destroyItem(container, index, object);

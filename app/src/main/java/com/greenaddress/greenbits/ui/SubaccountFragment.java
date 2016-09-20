@@ -106,7 +106,7 @@ public abstract class SubaccountFragment extends GAFragment {
         }
     }
 
-    protected void hideWaitDialog() {
+    public void hideWaitDialog() {
         if (mWaitDialog != null) {
             try {
                 mWaitDialog.cancel();
