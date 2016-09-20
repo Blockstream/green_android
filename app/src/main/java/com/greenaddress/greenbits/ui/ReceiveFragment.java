@@ -103,7 +103,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        popupWaitDialog();
+        popupWaitDialog(R.string.generating_address);
 
         final GaActivity gaActivity = getGaActivity();
 
@@ -234,7 +234,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private void getNewAddress(final View v) {
         mSettingQrCode = true;
 
-        popupWaitDialog();
+        popupWaitDialog(R.string.generating_address);
         if (v != null)
             startNewAddressAnimation(v);
 

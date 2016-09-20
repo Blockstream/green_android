@@ -112,7 +112,7 @@ public class MainFragment extends SubaccountFragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
 
-        popupWaitDialog();
+        popupWaitDialog(R.string.loading_transactions);
 
         final GaService service = getGAService();
 
@@ -234,7 +234,7 @@ public class MainFragment extends SubaccountFragment {
     }
 
     private void reloadTransactions(boolean newAdapter) {
-        popupWaitDialog();
+        popupWaitDialog(R.string.loading_transactions);
 
         final Activity activity = getActivity();
         final GaService service = getGAService();

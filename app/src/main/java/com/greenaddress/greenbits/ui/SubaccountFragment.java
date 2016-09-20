@@ -94,9 +94,9 @@ public abstract class SubaccountFragment extends GAFragment {
 
     protected void onBalanceUpdated() { }
 
-    protected void popupWaitDialog() {
+    protected void popupWaitDialog(final int message) {
         if (mWaitDialog == null && getActivity() != null) {
-            mWaitDialog = UI.popupWait(getActivity(), R.string.loading);
+            mWaitDialog = UI.popupWait(getActivity(), message);
             mWaitDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(final DialogInterface d) {
