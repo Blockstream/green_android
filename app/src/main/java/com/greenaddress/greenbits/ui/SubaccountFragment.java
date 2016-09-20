@@ -51,12 +51,13 @@ public abstract class SubaccountFragment extends GAFragment {
         if (getActivity() == null)
             return;
 
+        final View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+
         final InputMethodManager imm;
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        final View v = getActivity().getCurrentFocus();
-        if (v != null)
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     public void attachObservers() {}
