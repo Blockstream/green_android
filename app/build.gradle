@@ -136,7 +136,6 @@ android {
     dexOptions {
         maxProcessCount 2
         javaMaxHeapSize "2048M"
-        incremental false
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
