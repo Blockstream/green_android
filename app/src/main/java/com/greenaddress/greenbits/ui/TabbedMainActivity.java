@@ -216,6 +216,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         final TabLayout tabLayout = UI.find(this, R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        // Keep all of our tabs in memory while paging. This helps any races
+        // left where broadcasts/callbacks are called on the pager when its not
+        // shown.
+        mViewPager.setOffscreenPageLimit(3);
 
         // Re-show our 2FA warning if config is changed to remove all methods
         // Fake a config change to show the warning if no current 2FA method
