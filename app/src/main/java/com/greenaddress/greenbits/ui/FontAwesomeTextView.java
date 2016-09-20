@@ -8,7 +8,8 @@ import android.widget.TextView;
 
 public class FontAwesomeTextView extends TextView {
 
-    private Typeface defaultTypeface;
+    private Typeface mDefaultTypeface;
+    private static Typeface mAwesomeTypeface;
 
     public FontAwesomeTextView(final Context context) {
         super(context);
@@ -37,17 +38,21 @@ public class FontAwesomeTextView extends TextView {
     }
 
     private void init() {
-        defaultTypeface = getTypeface();
+        mDefaultTypeface = getTypeface();
+        // This isn't strictly thread safe the first time through but we assume
+        // UI creation from XML creating these Textviews is single threaded,
+        // and that seems to be the case.
+        if (mAwesomeTypeface == null)
+            mAwesomeTypeface = Typeface.createFromAsset(getContext().getAssets(),
+                                                        "fonts/fontawesome-webfont.ttf");
         setAwesomeTypeface();
     }
 
     public void setDefaultTypeface() {
-        setTypeface(defaultTypeface);
+        setTypeface(mDefaultTypeface);
     }
 
     public void setAwesomeTypeface() {
-        setTypeface(
-                Typeface.createFromAsset(getContext().getAssets(), "fonts/fontawesome-webfont.ttf")
-        );
+        setTypeface(mAwesomeTypeface);
     }
 }
