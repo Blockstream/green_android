@@ -20,6 +20,7 @@ public abstract class SubaccountFragment extends GAFragment {
     private MaterialDialog mWaitDialog = null;
     private Observer mBalanceObserver = null;
     private int mBalanceObserverSubaccount = 0;
+    private boolean mIsSelected = false;
 
     // Must be called by subclasses at the end of onCreateView()
     protected void registerReceiver() {
@@ -45,6 +46,7 @@ public abstract class SubaccountFragment extends GAFragment {
         super.onDestroyView();
         getActivity().unregisterReceiver(mBroadcastReceiver);
         mBroadcastReceiver = null;
+        hideWaitDialog();
     }
 
     protected void hideKeyboard() {
@@ -94,8 +96,14 @@ public abstract class SubaccountFragment extends GAFragment {
 
     protected void onBalanceUpdated() { }
 
+    public void setPageSelected(final boolean isSelected) {
+        mIsSelected = isSelected;
+        if (!isSelected)
+            hideWaitDialog();
+    }
+
     protected void popupWaitDialog(final int message) {
-        if (mWaitDialog == null && getActivity() != null) {
+        if (mIsSelected && mWaitDialog == null && getActivity() != null) {
             mWaitDialog = UI.popupWait(getActivity(), message);
             mWaitDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override

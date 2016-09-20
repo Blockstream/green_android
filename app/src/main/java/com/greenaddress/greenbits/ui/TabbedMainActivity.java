@@ -213,7 +213,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         // Set up the ViewPager with the sections adapter.
         mViewPager = UI.find(this, R.id.container);
         mViewPager.setAdapter(sectionsPagerAdapter);
-
+	mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int index) {
+                sectionsPagerAdapter.onViewPageSelected(index);
+            }
+        });
         final TabLayout tabLayout = UI.find(this, R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         // Keep all of our tabs in memory while paging. This helps any races
@@ -516,7 +521,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        final SubaccountFragment[] mFragments = new SubaccountFragment[3];
+        private final SubaccountFragment[] mFragments = new SubaccountFragment[3];
+        private int mSelectedPage = -1;
 
         public SectionsPagerAdapter(final FragmentManager fm) {
             super(fm);
@@ -550,7 +556,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 // try to process any callbacks it registered for.
                 mFragments[index].detachObservers();
                 // Make sure any wait dialog being shown is dismissed
-                mFragments[index].hideWaitDialog();
+                mFragments[index].setPageSelected(false);
                 mFragments[index] = null;
             }
             super.destroyItem(container, index, object);
@@ -564,9 +570,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         @Override
-        public CharSequence getPageTitle(final int position) {
+        public CharSequence getPageTitle(final int index) {
             final Locale l = Locale.getDefault();
-            switch (position) {
+            switch (index) {
                 case 0:
                     return getString(R.string.receive_title).toUpperCase(l);
                 case 1:
@@ -576,5 +582,16 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             }
             return null;
         }
+
+        public void onViewPageSelected(final int index) {
+            if (index == mSelectedPage)
+                return;
+            if (mSelectedPage != -1 && mFragments[mSelectedPage] != null)
+                mFragments[mSelectedPage].setPageSelected(false);
+            mSelectedPage = index;
+            if (mFragments[mSelectedPage] != null)
+                mFragments[mSelectedPage].setPageSelected(true);
+        }
+
     }
 }
