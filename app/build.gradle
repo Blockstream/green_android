@@ -165,7 +165,7 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.github.medyo:android-about-page:1.1.0'
+    compile 'com.github.medyo:android-about-page:1.1.1'
     compile 'com.afollestad.material-dialogs:core:0.9.0.2'
     compile 'com.maksim88:PasswordEditText:v0.8'
     // used to redirect bitcoinj logging to android in debug builds
