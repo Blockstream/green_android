@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.view.View;
@@ -93,13 +94,23 @@ public abstract class SubaccountFragment extends GAFragment {
     protected void onBalanceUpdated() { }
 
     protected void popupWaitDialog() {
-        if (mWaitDialog == null && getActivity() != null)
+        if (mWaitDialog == null && getActivity() != null) {
             mWaitDialog = UI.popupWait(getActivity(), R.string.loading);
+            mWaitDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(final DialogInterface d) {
+                    mWaitDialog = null;
+                }
+            });
+        }
     }
 
     protected void hideWaitDialog() {
         if (mWaitDialog != null) {
-            mWaitDialog.cancel();
+            try {
+                mWaitDialog.cancel();
+            } catch (final IllegalArgumentException e) {
+            }
             mWaitDialog = null;
         }
     }
