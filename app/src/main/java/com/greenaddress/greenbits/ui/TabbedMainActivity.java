@@ -201,7 +201,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
-    private void launch(boolean isBitcoinURL) {
+    private void launch(final boolean isBitcoinURL) {
 
         setContentView(R.layout.activity_tabbed_main);
         final Toolbar toolbar = UI.find(this, R.id.toolbar);
@@ -227,25 +227,32 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 
-        if (isBitcoinURL) {
-            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-                if (Build.VERSION.SDK_INT < 16) {
-                    // NdefRecord#toUri not available in API < 16
-                    mViewPager.setCurrentItem(1);
-                    return;
-                }
-                final Parcelable[] rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                for (Parcelable ndefMsg_ : rawMessages) {
-                    final NdefMessage ndefMsg = (NdefMessage) ndefMsg_;
-                    for (NdefRecord record : ndefMsg.getRecords())
-                        if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN && Arrays.equals(record.getType(), NdefRecord.RTD_URI))
-                            mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
-                }
-            } else
-                mViewPager.setTag(R.id.tag_bitcoin_uri, getIntent().getData());
-            mViewPager.setCurrentItem(2);
-        } else
+        if (!isBitcoinURL) {
+            // Normal startup: Show the transactions tab initially.
             mViewPager.setCurrentItem(1);
+            return;
+        }
+
+        // Started by clicking on a bitcoin URI, show the send tab initially.
+        if (!NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            mViewPager.setTag(R.id.tag_bitcoin_uri, getIntent().getData());
+        } else {
+            if (Build.VERSION.SDK_INT < 16) {
+                // NdefRecord#toUri not available in API < 16
+                mViewPager.setCurrentItem(1);
+                return;
+            }
+            final Parcelable[] rawMessages;
+            rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            for (Parcelable parcel : rawMessages) {
+                final NdefMessage ndefMsg = (NdefMessage) parcel;
+                for (NdefRecord record : ndefMsg.getRecords())
+                    if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN &&
+                        Arrays.equals(record.getType(), NdefRecord.RTD_URI))
+                        mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
+            }
+        }
+        mViewPager.setCurrentItem(2);
     }
 
     @Override
