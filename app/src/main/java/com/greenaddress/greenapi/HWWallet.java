@@ -57,7 +57,7 @@ public abstract class HWWallet extends ISigningWallet {
     protected Object[] getChallengeArguments(boolean isTrezor) {
         final byte[] id = getPubKey().toAddress(Network.NETWORK).getHash160();
         final Address addr = new Address(Network.NETWORK, id);
-        return new Object[]{ "login.get_trezor_challenge", addr.toString(), isTrezor };
+        return new Object[]{ "login.get_trezor_challenge", addr.toString(), !isTrezor };
     }
 
     protected abstract DeterministicKey getPubKey();
