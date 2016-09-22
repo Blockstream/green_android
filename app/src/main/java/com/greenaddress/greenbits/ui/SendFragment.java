@@ -154,8 +154,8 @@ public class SendFragment extends SubaccountFragment {
                                         noteText.setText("");
                                         noteText.setVisibility(View.INVISIBLE);
 
-                                        final ViewPager mViewPager = UI.find(gaActivity, R.id.container);
-                                        mViewPager.setCurrentItem(1);
+                                        final ViewPager viewPager = UI.find(gaActivity, R.id.container);
+                                        viewPager.setCurrentItem(1);
                                     }
                                 });
                             }
