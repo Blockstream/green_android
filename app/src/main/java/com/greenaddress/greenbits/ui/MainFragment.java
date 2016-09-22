@@ -266,6 +266,11 @@ public class MainFragment extends SubaccountFragment {
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
 
+                        if (!IsPageSelected()) {
+                            Log.d(TAG, "Callback after hiding, ignoring");
+                            return;
+                        }
+
                         showTxView(txList.size() > 0);
 
                         final Sha256Hash oldTop = mTxItems.size() > 0 ? mTxItems.get(0).txHash : null;

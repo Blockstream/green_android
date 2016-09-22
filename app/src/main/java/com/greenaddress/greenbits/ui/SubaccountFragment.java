@@ -25,6 +25,10 @@ public abstract class SubaccountFragment extends GAFragment {
     private int mBalanceObserverSubaccount = 0;
     private boolean mIsSelected = false;
 
+    protected boolean IsPageSelected() {
+        return mIsSelected;
+    }
+
     // Must be called by subclasses at the end of onCreateView()
     protected void registerReceiver() {
         mBroadcastReceiver = new BroadcastReceiver() {
