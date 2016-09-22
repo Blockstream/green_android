@@ -120,15 +120,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void setAccountTitle(final int subAccount) {
-        String suffix;
+        String suffix = "";
 
         if (mService.showBalanceInTitle()) {
             final Coin rawBalance = mService.getCoinBalance(subAccount);
-            if (rawBalance == null) {
-                // Not available yet, it will update when the balance is updated.
-                // This is only required until the login RPC returns balances.
-                suffix = "";
-            } else {
+            if (rawBalance != null) {
+                // We have a balance, i.e. our login callbacks have finished.
+                // This check is only needed until login returns balances atomically.
                 final String btcUnit = (String) mService.getUserConfig("unit");
                 final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
 
@@ -141,9 +139,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 suffix = getResources().getString(R.string.main_account);
             else
                 suffix = (String) m.get("name");
-        } else
-            suffix = "";
-        if (suffix != "")
+        }
+        if (!suffix.isEmpty())
             suffix = " " + suffix;
         setTitle(String.format("%s%s", getResources().getText(R.string.app_name), suffix));
     }
