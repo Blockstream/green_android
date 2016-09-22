@@ -217,12 +217,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         // Set up the ViewPager with the sections adapter.
         mViewPager = UI.find(this, R.id.container);
         mViewPager.setAdapter(sectionsPagerAdapter);
-	mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int index) {
                 sectionsPagerAdapter.onViewPageSelected(index);
             }
         });
+
         final TabLayout tabLayout = UI.find(this, R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         // Keep all of our tabs in memory while paging. This helps any races
@@ -527,6 +528,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         private final SubaccountFragment[] mFragments = new SubaccountFragment[3];
         private int mSelectedPage = -1;
+        private int mInitialSelectedPage = -1;
+        private boolean mInitialPage = true;
 
         public SectionsPagerAdapter(final FragmentManager fm) {
             super(fm);
@@ -534,22 +537,22 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         @Override
         public Fragment getItem(final int index) {
-            switch (index) {
-                case 0:
-                    if (mFragments[index] == null)
-                        mFragments[index] = new ReceiveFragment();
-                    return mFragments[index];
-                case 1:
-                    if (mFragments[index] == null)
-                        mFragments[index] = new MainFragment();
-                    return mFragments[index];
-                case 2:
-                    if (mFragments[index] == null)
-                        mFragments[index] = new SendFragment();
-                    return mFragments[index];
-            }
 
-            return null;
+            if (mFragments[index] == null) {
+                switch (index) {
+                    case 0: mFragments[index] = new ReceiveFragment(); break;
+                    case 1: mFragments[index] = new MainFragment(); break;
+                    case 2: mFragments[index] = new SendFragment(); break;
+               }
+               if (mInitialPage && index == mInitialSelectedPage) {
+                   // Call setPageSelected on the first page now that its created
+                   Log.d(TAG, "SectionsPagerAdapter -> selectingt first page " + index);
+                   mFragments[index].setPageSelected(true);
+                   mInitialSelectedPage = -1;
+                   mInitialPage = false;
+               }
+            }
+            return mFragments[index];
         }
 
         @Override
@@ -588,8 +591,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         public void onViewPageSelected(final int index) {
+            if (mInitialPage)
+                mInitialSelectedPage = index; // Record so we can notify it when constructed
+
             if (index == mSelectedPage)
                 return;
+
             if (mSelectedPage != -1 && mFragments[mSelectedPage] != null)
                 mFragments[mSelectedPage].setPageSelected(false);
             mSelectedPage = index;

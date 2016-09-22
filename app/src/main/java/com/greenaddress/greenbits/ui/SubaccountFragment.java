@@ -105,6 +105,7 @@ public abstract class SubaccountFragment extends GAFragment {
     protected void onBalanceUpdated() { }
 
     public void setPageSelected(final boolean isSelected) {
+        Log.d(TAG, "setPageSelected " + isSelected + " -> " + getClass().getSimpleName());
         mIsSelected = isSelected;
         if (!isSelected)
             hideWaitDialog();
