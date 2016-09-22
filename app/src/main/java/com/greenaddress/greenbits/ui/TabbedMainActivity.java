@@ -78,24 +78,26 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
     };
 
+    private final boolean isBitcoinScheme(final Intent intent) {
+        final Uri uri = intent.getData();
+        return uri != null && uri.getScheme() != null && uri.getScheme().equals("bitcoin");
+    }
+
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         final Intent intent = getIntent();
-        final Uri data = intent.getData();
-        final boolean schemeIsBitcoin = data != null && data.getScheme() != null &&
-                data.getScheme().equals("bitcoin");
-        final boolean isBitcoinURL = intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
-                NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
-                schemeIsBitcoin;
+        final boolean isBitcoinUri = isBitcoinScheme(intent) ||
+                                     intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
+                                     NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
 
-        if (isBitcoinURL && !mService.isLoggedOrLoggingIn()) {
-            // not logged in
-            final Intent loginActivity = new Intent(this, RequestLoginActivity.class);
-            startActivityForResult(loginActivity, REQUEST_BITCOIN_URL_LOGIN);
+        if (isBitcoinUri && !mService.isLoggedOrLoggingIn()) {
+            // Not logged in, force the user to login
+            final Intent login = new Intent(this, RequestLoginActivity.class);
+            startActivityForResult(login, REQUEST_BITCOIN_URL_LOGIN);
             return;
         }
 
-        launch(isBitcoinURL);
+        launch(isBitcoinUri);
     }
 
     private void onTwoFactorConfigChange() {
@@ -205,7 +207,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
-    private void launch(final boolean isBitcoinURL) {
+    private void launch(final boolean isBitcoinUri) {
 
         setContentView(R.layout.activity_tabbed_main);
         final Toolbar toolbar = UI.find(this, R.id.toolbar);
@@ -237,7 +239,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 
-        if (!isBitcoinURL) {
+        if (!isBitcoinUri) {
             // Normal startup: Show the transactions tab initially.
             mViewPager.setCurrentItem(1);
             return;
@@ -315,10 +317,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 }
                 break;
             case REQUEST_BITCOIN_URL_LOGIN:
-                if (resultCode == RESULT_OK)
-                    launch(true);
-                else
+                if (resultCode != RESULT_OK) {
+                    // The user failed to login after clicking on a bitcoin Uri
                     finish();
+                    return;
+                }
+                final boolean isBitcoinUri = true;
+                launch(isBitcoinUri);
                 break;
             case REQUEST_SWEEP_PRIVKEY:
                 if (data == null)
