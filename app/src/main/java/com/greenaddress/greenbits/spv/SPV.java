@@ -499,8 +499,15 @@ public class SPV {
         synchronized (mStateLock) {
             final boolean isRunning = mPeerGroup != null && mPeerGroup.isRunning();
             Log.d(TAG, "startSync: " + Var("isRunning", isRunning));
-            if (!isRunning)
-                 return;
+
+            if (isRunning)
+                return; // Already started to sync
+
+            if (mPeerGroup == null) {
+                // FIXME: Thi should not be possible but it happens in the wild.
+                Log.d(TAG, "startSync: mPeerGroup is null");
+                return;
+            }
 
             if (mNotifyManager == null) {
                 mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
