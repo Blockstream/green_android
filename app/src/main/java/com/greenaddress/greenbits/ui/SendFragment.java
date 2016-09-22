@@ -523,7 +523,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void hideInstantIf2of3() {
-        if (getGAService().findSubaccount("2of3", curSubaccount) != null) {
+        if (getGAService().findSubaccountByType(curSubaccount, "2of3") != null) {
             UI.hide(instantConfirmationCheckbox);
             instantConfirmationCheckbox.setChecked(false);
         } else

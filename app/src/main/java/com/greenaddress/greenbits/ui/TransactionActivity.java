@@ -497,7 +497,7 @@ public class TransactionActivity extends GaActivity {
 
             final PreparedTransaction ptx;
             ptx = new PreparedTransaction(change_pointer, subAccount, tx,
-                                          service.findSubaccount("2of3", subAccount));
+                                          service.findSubaccountByType(subAccount, "2of3"));
 
             for (final Map<String, Object> ep : (List<Map>)txItem.eps) {
                 if (((Boolean) ep.get("is_credit")))

@@ -357,7 +357,7 @@ public class GaService extends Service implements INotificationHandler {
         return mExecutor.submit(new Callable<byte[]>() {
             public byte[] call() {
 
-                final Map<String, ?> m = findSubaccount("2of3", subAccount);
+                final Map<String, ?> m = findSubaccountByType(subAccount, "2of3");
                 if (m != null)
                     pubkeys.add(HDKey.getRecoveryKeys((String) m.get("2of3_backup_chaincode"),
                                                       (String) m.get("2of3_backup_pubkey"), pointer)[1]);
@@ -828,13 +828,17 @@ public class GaService extends Service implements INotificationHandler {
         return mSubaccounts != null && !mSubaccounts.isEmpty();
     }
 
-    public Map<String, ?> findSubaccount(final String type, final Integer subAccount) {
+    public Map<String, ?> findSubaccountByType(final Integer subAccount, final String type) {
         if (haveSubaccounts())
             for (final Map<String, ?> ret : mSubaccounts)
                 if (ret.get("pointer").equals(subAccount) &&
                    (type == null || ret.get("type").equals(type)))
                     return ret;
         return null;
+    }
+
+    public Map<String, ?> findSubaccount(final Integer subAccount) {
+        return findSubaccountByType(subAccount, null);
     }
 
     public Map<?, ?> getTwoFactorConfig() {

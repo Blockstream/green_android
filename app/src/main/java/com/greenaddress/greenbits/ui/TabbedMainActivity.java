@@ -134,7 +134,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 suffix = String.format("%s %s", UI.setAmountText(null, btcBalance), bitcoinFormat.code());
             }
         } else if (mService.haveSubaccounts()) {
-            final Map<String, ?> m = mService.findSubaccount(null, subAccount);
+            final Map<String, ?> m = mService.findSubaccount(subAccount);
             if (m == null)
                 suffix = getResources().getString(R.string.main_account);
             else
