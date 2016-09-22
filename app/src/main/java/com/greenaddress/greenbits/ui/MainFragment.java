@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,8 @@ import java.util.Map;
 import java.util.Observer;
 
 public class MainFragment extends SubaccountFragment {
+    private static final String TAG = MainFragment.class.getSimpleName();
+
     private MaterialDialog mUnconfirmedDialog = null;
     private View mView;
     private List<TransactionItem> mTxItems;
@@ -112,6 +115,7 @@ public class MainFragment extends SubaccountFragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
 
+        Log.d(TAG, "onCreateView -> " + TAG);
         popupWaitDialog(R.string.loading_transactions);
 
         final GaService service = getGAService();
@@ -175,12 +179,14 @@ public class MainFragment extends SubaccountFragment {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause -> " + TAG);
         detachObservers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume -> " + TAG);
         attachObservers();
     }
 

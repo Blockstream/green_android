@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -15,6 +16,8 @@ import java.util.Observer;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 public abstract class SubaccountFragment extends GAFragment {
+
+    private static final String TAG = SubaccountFragment.class.getSimpleName();
 
     private BroadcastReceiver mBroadcastReceiver = null;
     private MaterialDialog mWaitDialog = null;
@@ -44,6 +47,7 @@ public abstract class SubaccountFragment extends GAFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.d(TAG, "onDestroyView -> " + getClass().getSimpleName());
         getActivity().unregisterReceiver(mBroadcastReceiver);
         mBroadcastReceiver = null;
         hideWaitDialog();

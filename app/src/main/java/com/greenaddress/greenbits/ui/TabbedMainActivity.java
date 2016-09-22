@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,6 +59,9 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends GaActivity implements Observer {
+
+    private static final String TAG = TabbedMainActivity.class.getSimpleName();
+
     private static final int
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
@@ -530,7 +534,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         @Override
         public Fragment getItem(final int index) {
-
             switch (index) {
                 case 0:
                     if (mFragments[index] == null)
@@ -551,6 +554,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         @Override
         public void destroyItem(ViewGroup container, int index, Object object) {
+            Log.d(TAG, "destroyItem " + index);
             if (index >=0 && index <=2 && mFragments[index] != null) {
                 // Make sure the fragment is not kept alive and does not
                 // try to process any callbacks it registered for.

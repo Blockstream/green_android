@@ -239,6 +239,7 @@ public class SendFragment extends SubaccountFragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
 
+        Log.d(TAG, "onCreateView -> " + TAG);
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
@@ -512,6 +513,7 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     public void onViewStateRestored(final Bundle savedInstanceState) {
+        Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
         pausing = false;
     }
@@ -615,12 +617,14 @@ public class SendFragment extends SubaccountFragment {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause -> " + TAG);
         pausing = true;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart -> " + TAG);
         pausing = false;
     }
 
@@ -632,6 +636,7 @@ public class SendFragment extends SubaccountFragment {
 
     public void onDestroyView() {
         super.onDestroyView();
+        Log.d(TAG, "onDestroyView -> " + TAG);
         if (mSummary != null)
             mSummary.dismiss();
         if (mTwoFactor != null)

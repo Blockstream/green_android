@@ -86,6 +86,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume -> " + TAG);
         if (mNewAddressCallback != null && mQrCodeBitmap == null && !mSettingQrCode)
             getNewAddress(null);
     }
@@ -93,7 +94,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public void onPause() {
         super.onPause();
-
+        Log.d(TAG, "onPause -> " + TAG);
         if (getUserVisibleHint())
             mPausing = true;
 
@@ -103,6 +104,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView -> " + TAG);
         popupWaitDialog(R.string.generating_address);
 
         final GaActivity gaActivity = getGaActivity();
@@ -173,7 +175,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                     activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                                     final int height = displaymetrics.heightPixels;
                                     final int width = displaymetrics.widthPixels;
-                                    Log.i(TAG, height + "x" + width);
+                                    Log.d(TAG, height + "x" + width);
                                     final int min = (int) (Math.min(height, width) * 0.8);
                                     final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
                                     qrcodeInDialog.setLayoutParams(layoutParams);
@@ -277,6 +279,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate -> " + TAG);
         setHasOptionsMenu(true);
     }
 
