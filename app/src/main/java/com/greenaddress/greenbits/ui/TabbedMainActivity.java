@@ -583,21 +583,17 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         @Override
         public int getCount() {
-            if (mService.isWatchOnly())
-                return 2;
-            return 3;
+            // We don't show the send tab in watch only mode
+            return mService.isWatchOnly() ? 2 : 3;
         }
 
         @Override
         public CharSequence getPageTitle(final int index) {
             final Locale l = Locale.getDefault();
             switch (index) {
-                case 0:
-                    return getString(R.string.receive_title).toUpperCase(l);
-                case 1:
-                    return getString(R.string.main_title).toUpperCase(l);
-                case 2:
-                    return getString(R.string.send_title).toUpperCase(l);
+                case 0: return getString(R.string.receive_title).toUpperCase(l);
+                case 1: return getString(R.string.main_title).toUpperCase(l);
+                case 2: return getString(R.string.send_title).toUpperCase(l);
             }
             return null;
         }
@@ -607,14 +603,16 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                        " current is " + mSelectedPage + " initial " + mInitialPage);
 
             if (mInitialPage)
-                mInitialSelectedPage = index; // Record so we can notify it when constructed
+                mInitialSelectedPage = index; // Store so we can notify it when constructed
 
             if (index == mSelectedPage)
-                return;
+                return; // No change to the selected page
 
+            // Un-select any old selected page
             if (mSelectedPage != -1 && mFragments[mSelectedPage] != null)
                 mFragments[mSelectedPage].setPageSelected(false);
 
+            // Select the current page
             mSelectedPage = index;
             if (mFragments[mSelectedPage] != null)
                 mFragments[mSelectedPage].setPageSelected(true);
