@@ -542,27 +542,34 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         @Override
         public Fragment getItem(final int index) {
+            Log.d(TAG, "SectionsPagerAdapter -> getItem " + index);
+            switch (index) {
+                case 0: return new ReceiveFragment();
+                case 1: return new MainFragment();
+                case 2: return new SendFragment();
+            }
+            return null;
+        }
 
-            if (mFragments[index] == null) {
-                switch (index) {
-                    case 0: mFragments[index] = new ReceiveFragment(); break;
-                    case 1: mFragments[index] = new MainFragment(); break;
-                    case 2: mFragments[index] = new SendFragment(); break;
-               }
-               if (mInitialPage && index == mInitialSelectedPage) {
-                   // Call setPageSelected on the first page now that its created
-                   Log.d(TAG, "SectionsPagerAdapter -> selectingt first page " + index);
-                   mFragments[index].setPageSelected(true);
-                   mInitialSelectedPage = -1;
-                   mInitialPage = false;
-               }
+        @Override
+        public Object instantiateItem(ViewGroup container, int index) {
+            Log.d(TAG, "SectionsPagerAdapter -> instantiateItem " + index);
+
+            mFragments[index] = (SubaccountFragment) super.instantiateItem(container, index);
+
+            if (mInitialPage && index == mInitialSelectedPage) {
+                // Call setPageSelected() on the first page, now that it is created
+                Log.d(TAG, "SectionsPagerAdapter -> selecting first page " + index);
+                mFragments[index].setPageSelected(true);
+                mInitialSelectedPage = -1;
+                mInitialPage = false;
             }
             return mFragments[index];
         }
 
         @Override
         public void destroyItem(ViewGroup container, int index, Object object) {
-            Log.d(TAG, "destroyItem " + index);
+            Log.d(TAG, "SectionsPagerAdapter -> destroyItem " + index);
             if (index >=0 && index <=2 && mFragments[index] != null) {
                 // Make sure the fragment is not kept alive and does not
                 // try to process any callbacks it registered for.
@@ -596,6 +603,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         public void onViewPageSelected(final int index) {
+            Log.d(TAG, "SectionsPagerAdapter -> onViewPageSelected " + index +
+                       " current is " + mSelectedPage + " initial " + mInitialPage);
+
             if (mInitialPage)
                 mInitialSelectedPage = index; // Record so we can notify it when constructed
 
@@ -604,10 +614,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
             if (mSelectedPage != -1 && mFragments[mSelectedPage] != null)
                 mFragments[mSelectedPage].setPageSelected(false);
+
             mSelectedPage = index;
             if (mFragments[mSelectedPage] != null)
                 mFragments[mSelectedPage].setPageSelected(true);
         }
-
     }
 }
