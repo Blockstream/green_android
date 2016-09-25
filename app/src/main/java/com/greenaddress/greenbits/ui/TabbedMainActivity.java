@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -152,6 +153,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         setTitle(String.format("%s%s", getResources().getText(R.string.app_name), suffix));
     }
 
+    private void setBlockWaitDialog(final boolean doBlock) {
+        final SectionsPagerAdapter adapter;
+        adapter = (SectionsPagerAdapter) mViewPager.getAdapter();
+        adapter.setBlockWaitDialog(doBlock);
+    }
+
     private void configureSubaccountsFooter(final int subAccount) {
         setAccountTitle(subAccount);
         if (!mService.haveSubaccounts())
@@ -160,10 +167,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         final FloatingActionButton fab = UI.find(this, R.id.fab);
         UI.show(fab);
 
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                setBlockWaitDialog(true);
                 final ArrayList subaccounts = mService.getSubaccounts();
                 final int subaccount_len = subaccounts.size() + 1;
                 final ArrayList<String> names = new ArrayList<>(subaccount_len);
@@ -183,6 +190,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         .title(R.string.footerAccount)
                         .adapter(adapter, null)
                         .show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(final DialogInterface d) {
+                        setBlockWaitDialog(false);
+                    }
+                });
                 adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
                     @Override
                     public void onAccountSelected(final int account) {
@@ -616,6 +629,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             mSelectedPage = index;
             if (mFragments[mSelectedPage] != null)
                 mFragments[mSelectedPage].setPageSelected(true);
+        }
+
+        public void setBlockWaitDialog(final boolean doBlock) {
+            for (SubaccountFragment fragment : mFragments)
+                if (fragment != null)
+                    fragment.setBlockWaitDialog(doBlock);
         }
     }
 }

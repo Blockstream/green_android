@@ -24,6 +24,7 @@ public abstract class SubaccountFragment extends GAFragment {
     private Observer mBalanceObserver = null;
     private int mBalanceObserverSubaccount = 0;
     private boolean mIsSelected = false;
+    private boolean mBlockWaitDialog = false;
 
     protected boolean IsPageSelected() {
         return mIsSelected;
@@ -112,7 +113,7 @@ public abstract class SubaccountFragment extends GAFragment {
     }
 
     protected void popupWaitDialog(final int message) {
-        if (mIsSelected && mWaitDialog == null && getActivity() != null) {
+        if (mIsSelected && mWaitDialog == null && getActivity() != null && !mBlockWaitDialog) {
             mWaitDialog = UI.popupWait(getActivity(), message);
             mWaitDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
@@ -131,5 +132,11 @@ public abstract class SubaccountFragment extends GAFragment {
             }
             mWaitDialog = null;
         }
+    }
+
+    protected void setBlockWaitDialog(final boolean doBlock) {
+        mBlockWaitDialog = doBlock;
+        if (!mBlockWaitDialog)
+            hideWaitDialog();
     }
 }
