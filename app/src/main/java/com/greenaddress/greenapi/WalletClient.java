@@ -447,7 +447,7 @@ public class WalletClient {
     }
 
     private NettyWampConnectionConfig getNettyConfig() throws SSLException {
-        final TrustManagerFactory trustManager = new FingerprintTrustManagerFactory(Network.GAIT_WAMP_CERT_PIN);
+        final TrustManagerFactory trustManager = new FingerprintTrustManagerFactory(Network.GAIT_WAMP_CERT_PINS);
         final SslContext context = SslContextBuilder.forClient().trustManager(trustManager).build();
         return new NettyWampConnectionConfig.Builder().withSslContext(context).build();
     }
@@ -480,7 +480,7 @@ public class WalletClient {
                             .withRealm("realm1")
                             .withNrReconnects(0);
 
-                    if (!isTorEnabled() && Network.GAIT_WAMP_CERT_PIN != null)
+                    if (!isTorEnabled() && Network.GAIT_WAMP_CERT_PINS != null)
                         builder.withConnectionConfiguration(getNettyConfig());
 
                 } catch (final ApplicationError | SSLException e) {
