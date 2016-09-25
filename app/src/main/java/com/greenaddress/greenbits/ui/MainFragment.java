@@ -163,7 +163,7 @@ public class MainFragment extends SubaccountFragment {
         makeBalanceObserver(curSubaccount);
         if (service.getCoinBalance(curSubaccount) != null) {
             updateBalance();
-            reloadTransactions(false);
+            reloadTransactions(false, true);
         }
 
         registerReceiver();
@@ -173,7 +173,7 @@ public class MainFragment extends SubaccountFragment {
     @Override
     protected void onBalanceUpdated() {
         updateBalance();
-        reloadTransactions(true); // newAdapter for unit change
+        reloadTransactions(true, false); // newAdapter for unit change
     }
 
     @Override
@@ -218,7 +218,7 @@ public class MainFragment extends SubaccountFragment {
 
     // Called when a new transaction is seen
     private void onNewTx() {
-        reloadTransactions(false);
+        reloadTransactions(false, false);
     }
 
     // Called when a new verified transaction is seen
@@ -239,12 +239,15 @@ public class MainFragment extends SubaccountFragment {
         UI.hideIf(doShow, (View) UI.find(mView, R.id.mainEmptyTransText));
     }
 
-    private void reloadTransactions(boolean newAdapter) {
-        popupWaitDialog(R.string.loading_transactions);
-
+    private void reloadTransactions(final boolean newAdapter, final boolean showWaitDialog) {
         final Activity activity = getActivity();
         final GaService service = getGAService();
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
+
+        if (mTxItems == null || mTxItems.isEmpty() || showWaitDialog) {
+            // Show a wait dialog only when initially loading transactions
+            popupWaitDialog(R.string.loading_transactions);
+        }
 
         if (mTxItems == null || newAdapter) {
             mTxItems = new ArrayList<>();
@@ -335,7 +338,7 @@ public class MainFragment extends SubaccountFragment {
     protected void onSubaccountChanged(final int newSubAccount) {
         curSubaccount = newSubAccount;
         makeBalanceObserver(curSubaccount);
-        reloadTransactions(false);
+        reloadTransactions(false, true);
         updateBalance();
     }
 
