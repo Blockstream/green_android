@@ -219,6 +219,11 @@ public class MainFragment extends SubaccountFragment {
 
     // Called when a new transaction is seen
     private void onNewTx() {
+        if (!IsPageSelected()) {
+            Log.d(TAG, "New transaction while page hidden");
+            mIsDirty = true;
+            return;
+        }
         reloadTransactions(false, false);
     }
 
