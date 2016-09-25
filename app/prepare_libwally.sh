@@ -7,11 +7,6 @@ fi
 echo ${JAVA_HOME:?}
 echo ${ANDROID_NDK:?}
 
-export ANDROID_VERSION="23"
-if [ ! -d $ANDROID_NDK/platforms/android-$ANDROID_VERSION ]; then
-    export ANDROID_VERSION="21"
-fi
-
 NUM_JOBS=4
 if [ -f /proc/cpuinfo ]; then
     NUM_JOBS=$(cat /proc/cpuinfo | grep ^processor | wc -l)
@@ -38,6 +33,12 @@ function build() {
     output_dir="../src/main/jniLibs/"`echo $arch_short | sed s/arm$/armeabi/ | sed s/arm64/arm64-v8a/`$arch_suffix
     export CC=${arch_name}-gcc
     export CPP=${arch_name}-cpp
+    if [[ $arch_ver == *"64"* ]]
+    then
+        export ANDROID_VERSION="21"
+    else
+        export ANDROID_VERSION="14"
+    fi
     export CPPFLAGS="--sysroot=$ANDROID_NDK/platforms/android-$ANDROID_VERSION/arch-$arch_short/"
     export CFLAGS="$CPPFLAGS"
     export LDFLAGS=""
