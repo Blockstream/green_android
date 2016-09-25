@@ -41,6 +41,7 @@ public class MainFragment extends SubaccountFragment {
     private int curSubaccount;
     private Observer mVerifiedTxObserver;
     private Observer mNewTxObserver;
+    private boolean mIsDirty = false;
 
     private void updateBalance() {
         final GaService service = getGAService();
@@ -338,6 +339,11 @@ public class MainFragment extends SubaccountFragment {
     protected void onSubaccountChanged(final int newSubAccount) {
         curSubaccount = newSubAccount;
         makeBalanceObserver(curSubaccount);
+        if (!IsPageSelected()) {
+            Log.d(TAG, "Subaccount changed while page hidden");
+            mIsDirty = true;
+            return;
+        }
         reloadTransactions(false, true);
         updateBalance();
     }
@@ -347,6 +353,17 @@ public class MainFragment extends SubaccountFragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             hideKeyboard();
+        }
+    }
+
+    public void setPageSelected(final boolean isSelected) {
+        final boolean needReload = isSelected && !IsPageSelected() && mIsDirty;
+        super.setPageSelected(isSelected);
+        if (needReload) {
+            Log.d(TAG, "Dirty, reloading");
+            reloadTransactions(false, true);
+            updateBalance();
+            mIsDirty = false;
         }
     }
 }
