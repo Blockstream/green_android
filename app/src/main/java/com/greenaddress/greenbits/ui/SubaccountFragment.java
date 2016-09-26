@@ -136,7 +136,7 @@ public abstract class SubaccountFragment extends GAFragment {
 
     protected void setBlockWaitDialog(final boolean doBlock) {
         mBlockWaitDialog = doBlock;
-        if (!mBlockWaitDialog)
+        if (mBlockWaitDialog)
             hideWaitDialog();
     }
 }
