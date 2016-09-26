@@ -538,8 +538,8 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int pointer) {
-        return mClient.getSubaccountBalance(pointer);
+    public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int subAccount) {
+        return mClient.getSubaccountBalance(subAccount);
     }
 
     public void fireBalanceChanged(final int subAccount) {
