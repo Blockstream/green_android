@@ -60,7 +60,7 @@ public class MainFragment extends SubaccountFragment {
             balanceBitcoinIcon.setText("");
             bitcoinScale.setText("bits ");
         } else {
-            balanceBitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
+            balanceBitcoinIcon.setText(R.string.fa_btc_space);
         }
 
         final String btcBalance = bitcoinFormat.format(monetary).toString();

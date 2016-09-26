@@ -243,4 +243,19 @@
     <string name="generating_address">Generating address...</string>
     <string name="loading_transactions">Loading transactions...</string>
 
+    <!-- FontAwesome Glyphs -->
+    <string name="fa_arrow_down" translatable="false">&#xf063;</string>
+    <string name="fa_btc" translatable="false">&#xf15a;</string>
+    <string name="fa_btc_space" translatable="false">&#xf15a; </string>
+    <string name="fa_camera" translatable="false">&#xf030;</string>
+    <string name="fa_clock_o" translatable="false">&#xf017;</string>
+    <string name="fa_copy" translatable="false">&#xf0c5;</string>
+    <string name="fa_pencil" translatable="false">&#xf040;</string>
+    <string name="fa_plus" translatable="false">&#xf067;</string>
+    <string name="fa_qrcode" translatable="false">&#xf029;</string>
+    <string name="fa_refresh" translatable="false">&#xf021;</string>
+    <string name="fa_remove" translatable="false">&#xf00d;</string>
+    <string name="fa_sign_in" translatable="false">&#xf090;</string>
+    <string name="fa_sign_out" translatable="false">&#xf08b;</string>
+    <string name="fa_usd" translatable="false">&#xf155;</string>
 </resources>

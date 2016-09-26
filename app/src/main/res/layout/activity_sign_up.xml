@@ -54,7 +54,7 @@
                         android:layout_height="wrap_content"
                         android:padding="12dp"
                         android:gravity="center"
-                        android:text="&#xf029;"
+                        android:text="@string/fa_qrcode"
                         android:textColor="@color/accent"
                         android:textSize="36sp" />
                     <ImageView

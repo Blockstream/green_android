@@ -243,8 +243,8 @@ public class TransactionActivity extends GaActivity {
                 bitcoinUnit.setText("bits ");
                 feeUnit.setText("bits ");
             } else {
-                bitcoinUnit.setText(Html.fromHtml("&#xf15a; "));
-                feeUnit.setText(Html.fromHtml("&#xf15a; "));
+                bitcoinUnit.setText(R.string.fa_btc_space);
+                feeUnit.setText(R.string.fa_btc_space);
             }
             final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
             UI.setAmountText(amount, btcBalance);
@@ -687,8 +687,8 @@ public class TransactionActivity extends GaActivity {
                 amountUnit.setText("bits ");
                 feeUnit.setText("bits ");
             } else {
-                amountUnit.setText(Html.fromHtml("&#xf15a; "));
-                feeUnit.setText(Html.fromHtml("&#xf15a; "));
+                amountUnit.setText(R.string.fa_btc_space);
+                feeUnit.setText(R.string.fa_btc_space);
             }
             amountText.setText(bitcoinFormat.noCode().format(newFee));
             feeText.setText(bitcoinFormat.noCode().format(oldFee));

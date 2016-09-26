@@ -60,7 +60,7 @@
                         android:layout_height="fill_parent"
                         android:gravity="center"
                         android:paddingBottom="4dp"
-                        android:text="&#xf0c5;"
+                        android:text="@string/fa_copy"
                         android:textColor="@color/accent"
                         android:textSize="34sp" />
                     <TextView
@@ -84,7 +84,7 @@
                         android:layout_height="fill_parent"
                         android:gravity="center"
                         android:paddingBottom="4dp"
-                        android:text="&#xf067;"
+                        android:text="@string/fa_plus"
                         android:textColor="@color/accent"
                         android:textSize="34sp" />
                     <TextView

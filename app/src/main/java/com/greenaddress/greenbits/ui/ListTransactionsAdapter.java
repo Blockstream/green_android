@@ -56,7 +56,7 @@ public class ListTransactionsAdapter extends
             holder.bitcoinIcon.setText("");
             holder.bitcoinScale.setText("bits ");
         } else {
-            holder.bitcoinIcon.setText(Html.fromHtml("&#xf15a; "));
+            holder.bitcoinIcon.setText(R.string.fa_btc_space);
         }
 
         final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
@@ -115,11 +115,11 @@ public class ListTransactionsAdapter extends
         holder.mainLayout.setBackgroundColor(res.getColor(color));
 
         if (txItem.hasEnoughConfirmations()) {
-            final String elem = txItem.amount > 0 ? "&#xf090;" : "&#xf08b;";
-            holder.inOutIcon.setText(Html.fromHtml(elem));
+            final int glyph = txItem.amount > 0 ? R.string.fa_sign_in : R.string.fa_sign_out;
+            holder.inOutIcon.setText(glyph);
             UI.hide(holder.listNumberConfirmation);
         } else {
-            holder.inOutIcon.setText(Html.fromHtml("&#xf017;"));
+            holder.inOutIcon.setText(R.string.fa_clock_o);
             UI.show(holder.listNumberConfirmation);
             holder.listNumberConfirmation.setText(String.valueOf(txItem.getConfirmations()));
         }

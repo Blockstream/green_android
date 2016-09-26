@@ -97,8 +97,8 @@ public class SendFragment extends SubaccountFragment {
             amountUnit.setText("bits ");
             feeUnit.setText("bits ");
         } else {
-            amountUnit.setText(Html.fromHtml("&#xf15a; "));
-            feeUnit.setText(Html.fromHtml("&#xf15a; "));
+            amountUnit.setText(R.string.fa_btc_space);
+            feeUnit.setText(R.string.fa_btc_space);
         }
         amountText.setText(bitcoinFormat.noCode().format(amount));
         feeText.setText(bitcoinFormat.noCode().format(fee));
@@ -146,7 +146,7 @@ public class SendFragment extends SubaccountFragment {
                                         recipientEdit.setText("");
                                         maxButton.setChecked(false);
 
-                                        noteIcon.setText(Html.fromHtml("&#xf040"));
+                                        noteIcon.setText(R.string.fa_pencil);
                                         noteText.setText("");
                                         noteText.setVisibility(View.INVISIBLE);
 
@@ -269,7 +269,7 @@ public class SendFragment extends SubaccountFragment {
         if (btcUnit == null || btcUnit.equals("bits"))
             bitcoinUnitText.setText("bits ");
         else
-            bitcoinUnitText.setText(Html.fromHtml("&#xf15a; "));
+            bitcoinUnitText.setText(R.string.fa_btc_space);
 
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
             final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);
@@ -481,11 +481,11 @@ public class SendFragment extends SubaccountFragment {
             @Override
             public void onClick(final View v) {
                 if (noteText.getVisibility() == View.VISIBLE) {
-                    noteIcon.setText(Html.fromHtml("&#xf040"));
+                    noteIcon.setText(R.string.fa_pencil);
                     noteText.setText("");
                     noteText.setVisibility(View.INVISIBLE);
                 } else {
-                    noteIcon.setText(Html.fromHtml("&#xf00d"));
+                    noteIcon.setText(R.string.fa_remove);
                     UI.show(noteText);
                     noteText.requestFocus();
                 }
@@ -529,7 +529,7 @@ public class SendFragment extends SubaccountFragment {
             sendSubAccountBalanceUnit.setText("");
             sendSubAccountBitcoinScale.setText("bits ");
         } else {
-            sendSubAccountBalanceUnit.setText(Html.fromHtml("&#xf15a; "));
+            sendSubAccountBalanceUnit.setText(R.string.fa_btc_space);
         }
         final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final String btcBalance = format.noCode().format(

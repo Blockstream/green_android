@@ -42,7 +42,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="&#xf15a; "
+                        android:text="@string/fa_btc_space"
                         android:textColor="@color/textColor"
                         android:textSize="34sp" />
 
@@ -77,7 +77,7 @@
                     android:layout_centerVertical="true"
                     android:gravity="center"
                     android:padding="12dp"
-                    android:text="&#xf030;"
+                    android:text="@string/fa_camera"
                     android:textColor="@color/accent"
                     android:textSize="24sp" />
 
@@ -142,7 +142,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="&#xf15a;"
+                                android:text="@string/fa_btc_space"
                                 android:textColor="@color/accent"
                                 android:textSize="24sp" />
 
@@ -205,7 +205,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="&#xf155;"
+                            android:text="@string/fa_usd"
                             android:textAppearance="?android:attr/textAppearanceLarge"
                             android:textColor="@color/accent"
                             android:textSize="24sp" />
@@ -242,7 +242,7 @@
                     android:layout_centerVertical="true"
                     android:gravity="center"
                     android:padding="12dp"
-                    android:text="&#xf040;"
+                    android:text="@string/fa_pencil"
                     android:textColor="@color/accent"
                     android:textSize="24sp" />
 

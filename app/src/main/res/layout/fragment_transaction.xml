@@ -151,7 +151,7 @@
                     android:id="@+id/txBitcoinUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="&#xf15a; "
+                    android:text="@string/fa_btc_space"
                     android:textColor="@color/accent"
                     android:textSize="20sp" />
 
@@ -192,7 +192,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="12dp"
-                    android:text="&#xf040;"
+                    android:text="@string/fa_pencil"
                     android:textColor="@color/accent"
                     android:textSize="24sp" />
 
@@ -273,7 +273,7 @@
                     android:id="@+id/txFeeUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="&#xf15a; "
+                    android:text="@string/fa_btc_space"
                     android:textColor="@color/accent"
                     android:textSize="20sp" />
 

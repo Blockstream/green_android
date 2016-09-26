@@ -34,7 +34,7 @@
                     android:layout_centerVertical="true"
                     android:gravity="center"
                     android:padding="16dp"
-                    android:text="&#xf030;"
+                    android:text="@string/fa_camera"
                     android:textAppearance="?android:attr/textAppearanceLarge"
 
                     android:textColor="@color/accent"

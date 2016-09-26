@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -247,7 +246,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
      private void stopNewAddressAnimation(final View v) {
         final FontAwesomeTextView newAddressIcon = UI.find(v, R.id.receiveNewAddressIcon);
         newAddressIcon.clearAnimation();
-        newAddressIcon.setText(Html.fromHtml("&#xf067;"));
+        newAddressIcon.setText(R.string.fa_plus);
         final TextView copyIcon = UI.find(v, R.id.receiveCopyIcon);
         final TextView copyText = UI.find(v, R.id.receiveCopyText);
         UI.show(copyIcon, copyText);
@@ -258,7 +257,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             return;
 
         final FontAwesomeTextView newAddressIcon = UI.find(v, R.id.receiveNewAddressIcon);
-        newAddressIcon.setText(Html.fromHtml("&#xf021;"));
+        newAddressIcon.setText(R.string.fa_refresh);
         newAddressIcon.setAwesomeTypeface();
         newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
 
