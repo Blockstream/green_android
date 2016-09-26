@@ -636,8 +636,6 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onSubaccountChanged(final int newSubAccount) {
-        final GaService service = getGAService();
-
         curSubaccount = newSubAccount;
 
         if (!IsPageSelected()) {
@@ -650,26 +648,8 @@ public class SendFragment extends SubaccountFragment {
 
     private void updateBalance() {
         hideInstantIf2of3();
-
-        final GaService service = getGAService();
-        final GaActivity gaActivity = getGaActivity();
-
         makeBalanceObserver(curSubaccount);
-        CB.after(service.getSubaccountBalance(curSubaccount), new CB.Op<Map<?, ?>>() {
-            @Override
-            public void onSuccess(final Map<?, ?> balance) {
-                final Coin coin = Coin.valueOf(Long.valueOf((String) balance.get("satoshi")));
-                final String btcUnit = (String) service.getUserConfig("unit");
-                final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
-                final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-                final String btcBalance = format.noCode().format(coin).toString();
-                gaActivity.runOnUiThread(new Runnable() {
-                    public void run() {
-                        UI.setAmountText(sendSubAccountBalance, btcBalance);
-                    }
-                });
-            }
-        });
+        getGAService().updateBalance(curSubaccount);
     }
 
     public void setPageSelected(final boolean isSelected) {
