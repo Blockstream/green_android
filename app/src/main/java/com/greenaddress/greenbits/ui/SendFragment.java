@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.PreparedTransaction;
@@ -102,27 +103,23 @@ public class SendFragment extends SubaccountFragment {
         amountText.setText(bitcoinFormat.noCode().format(amount));
         feeText.setText(bitcoinFormat.noCode().format(fee));
 
-        if (payreqData == null) {
+        if (payreqData != null)
+            recipientText.setText(recipient);
+        else
             recipientText.setText(String.format("%s\n%s\n%s",
                     recipient.substring(0, 12),
                     recipient.substring(12, 24),
                     recipient.substring(24)));
-        } else {
-            recipientText.setText(recipient);
-        }
 
         final Map<String, String> twoFacData;
+        twoFacData = method == null ? null : ImmutableMap.of("method", method);
 
-        if (method == null) {
-            UI.hide(twoFAText, newTx2FACodeText);
-            twoFacData = null;
-        } else {
+        UI.showIf(method != null, twoFAText, newTx2FACodeText);
+
+        if (method != null) {
             twoFAText.setText(String.format("2FA %s code", method));
-            twoFacData = new HashMap<>();
-            twoFacData.put("method", method);
-            if (!method.equals("gauth")) {
+            if (!method.equals("gauth"))
                 service.requestTwoFacCode(method, "send_tx", null);
-            }
         }
 
         mSummary = UI.popup(gaActivity, R.string.newTxTitle, R.string.send, R.string.cancel)
@@ -130,9 +127,9 @@ public class SendFragment extends SubaccountFragment {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                        if (twoFacData != null) {
+                        if (twoFacData != null)
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
-                        }
+
                         final ListenableFuture<String> sendFuture = service.signAndSendTransaction(ptx, twoFacData);
                         Futures.addCallback(sendFuture, new CB.Toast<String>(gaActivity) {
                             @Override
@@ -182,23 +179,20 @@ public class SendFragment extends SubaccountFragment {
                             payreqData = result;
 
                             final String name;
-                            if (result.get("merchant_cn") != null) {
+                            if (result.get("merchant_cn") != null)
                                 name = (String) result.get("merchant_cn");
-                            } else {
+                            else
                                 name = (String) result.get("request_url");
-                            }
-
 
                             long amount = 0;
-                            for (final Map<?, ?> out : (ArrayList<Map>) result.get("outputs")) {
+                            for (final Map<?, ?> out : (ArrayList<Map>) result.get("outputs"))
                                 amount += ((Number) out.get("amount")).longValue();
-                            }
                             final CharSequence amountStr;
-                            if (amount > 0) {
+                            if (amount > 0)
                                 amountStr = bitcoinFormat.noCode().format(Coin.valueOf(amount));
-                            } else {
+                            else
                                 amountStr = "";
-                            }
+
                             gaActivity.runOnUiThread(new Runnable() {
                                 public void run() {
                                     recipientEdit.setText(name);
@@ -216,22 +210,23 @@ public class SendFragment extends SubaccountFragment {
                     });
         } else {
             recipientEdit.setText(URI.getAddress().toString());
-            if (URI.getAmount() != null) {
-                Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.Op<Map<?, ?>>() {
-                    @Override
-                    public void onSuccess(final Map<?, ?> result) {
-                        gaActivity.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
-                                    amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
-                                    convertBtcToFiat(fiatRate);
-                                    amountEdit.setEnabled(false);
-                                    amountFiatEdit.setEnabled(false);
-                                }
-                        });
-                    }
-                }, service.getExecutor());
-            }
+            if (URI.getAmount() == null)
+                return;
+
+            Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.Op<Map<?, ?>>() {
+                @Override
+                public void onSuccess(final Map<?, ?> result) {
+                    gaActivity.runOnUiThread(new Runnable() {
+                            public void run() {
+                                final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
+                                amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
+                                convertBtcToFiat(fiatRate);
+                                amountEdit.setEnabled(false);
+                                amountFiatEdit.setEnabled(false);
+                            }
+                    });
+                }
+            }, service.getExecutor());
         }
     }
 
@@ -271,11 +266,10 @@ public class SendFragment extends SubaccountFragment {
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
         bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
-        if (btcUnit == null || btcUnit.equals("bits")) {
+        if (btcUnit == null || btcUnit.equals("bits"))
             bitcoinUnitText.setText("bits ");
-        } else {
+        else
             bitcoinUnitText.setText(Html.fromHtml("&#xf15a; "));
-        }
 
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
             final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);
@@ -285,9 +279,8 @@ public class SendFragment extends SubaccountFragment {
             } catch (final BitcoinURIParseException e) {
                 gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
             }
-            if (bitcoinUri != null) {
+            if (bitcoinUri != null)
                 processBitcoinURI(bitcoinUri);
-            }
             fromIntentURI = true;
             container.setTag(R.id.tag_bitcoin_uri, null);
         }
@@ -317,9 +310,7 @@ public class SendFragment extends SubaccountFragment {
 
                 final boolean validAddress = GaService.isValidAddress(recipient);
 
-                final boolean validAmount =
-                        !(amount.compareTo(Coin.ZERO) <= 0) ||
-                        maxButton.isChecked();
+                final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0) || maxButton.isChecked();
                 String message = null;
 
                 final Map<String, Object> privateData = new HashMap<>();
@@ -519,11 +510,12 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void hideInstantIf2of3() {
-        if (getGAService().findSubaccountByType(curSubaccount, "2of3") != null) {
-            UI.hide(instantConfirmationCheckbox);
-            instantConfirmationCheckbox.setChecked(false);
-        } else
+        if (getGAService().findSubaccountByType(curSubaccount, "2of3") == null) {
             UI.show(instantConfirmationCheckbox);
+            return;
+        }
+        UI.hide(instantConfirmationCheckbox);
+        instantConfirmationCheckbox.setChecked(false);
     }
 
     @Override
@@ -572,9 +564,9 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void convertBtcToFiat(final float exchangeRate) {
-        if (converting || pausing) {
+        if (converting || pausing)
             return;
-        }
+
         converting = true;
         final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
                 .toBigInteger().longValue());
@@ -587,19 +579,18 @@ public class SendFragment extends SubaccountFragment {
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             amountFiatEdit.setText(fiatValue.toPlainString());
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            if (UI.getText(amountEdit).equals(getString(R.string.send_max_amount))) {
+            if (UI.getText(amountEdit).equals(getString(R.string.send_max_amount)))
                 amountFiatEdit.setText(getString(R.string.send_max_amount));
-            } else {
+            else
                 amountFiatEdit.setText("");
-            }
         }
         converting = false;
     }
 
     private void convertFiatToBtc() {
-        if (converting || pausing) {
+        if (converting || pausing)
             return;
-        }
+
         converting = true;
         final float exchangeRate = getGAService().getFiatRate();
         final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
