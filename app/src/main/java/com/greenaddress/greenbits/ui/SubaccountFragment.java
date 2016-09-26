@@ -25,6 +25,7 @@ public abstract class SubaccountFragment extends GAFragment {
     private int mBalanceObserverSubaccount = 0;
     private boolean mIsSelected = false;
     private boolean mBlockWaitDialog = false;
+    protected boolean mIsDirty = false;
 
     protected boolean IsPageSelected() {
         return mIsSelected;
@@ -138,5 +139,13 @@ public abstract class SubaccountFragment extends GAFragment {
         mBlockWaitDialog = doBlock;
         if (mBlockWaitDialog)
             hideWaitDialog();
+    }
+
+    protected boolean isDirty() {
+        return mIsDirty;
+    }
+
+    protected void setIsDirty(final boolean isDirty) {
+        mIsDirty = isDirty;
     }
 }

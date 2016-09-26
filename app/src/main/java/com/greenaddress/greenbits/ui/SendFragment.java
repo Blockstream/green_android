@@ -639,7 +639,19 @@ public class SendFragment extends SubaccountFragment {
         final GaService service = getGAService();
 
         curSubaccount = newSubAccount;
+
+        if (!IsPageSelected()) {
+            Log.d(TAG, "Subaccount changed while page hidden");
+            setIsDirty(true);
+            return;
+        }
+        updateBalance();
+    }
+
+    private void updateBalance() {
         hideInstantIf2of3();
+
+        final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
         makeBalanceObserver(curSubaccount);
@@ -658,5 +670,15 @@ public class SendFragment extends SubaccountFragment {
                 });
             }
         });
+    }
+
+    public void setPageSelected(final boolean isSelected) {
+        final boolean needReload = isDirty();
+        super.setPageSelected(isSelected);
+        if (needReload && isSelected) {
+            Log.d(TAG, "Dirty, reloading");
+            updateBalance();
+            setIsDirty(false);
+        }
     }
 }
