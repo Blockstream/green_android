@@ -536,11 +536,11 @@ public class SendFragment extends SubaccountFragment {
                 getGAService().getCoinBalance(curSubaccount)).toString();
         UI.setAmountText(sendSubAccountBalance, btcBalance);
 
-        final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBitcoinScale.getText().length() + sendSubAccountBalanceUnit.getText().length();
+        final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBalanceUnit.getText().length() + sendSubAccountBitcoinScale.getText().length();
         final int size = Math.min(50 - nChars, 34);
         sendSubAccountBalance.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-        sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        sendSubAccountBitcoinScale.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         if (getGAService().showBalanceInTitle())
             UI.hide(sendSubAccountBalance, sendSubAccountBalanceUnit, sendSubAccountBitcoinScale);
     }
