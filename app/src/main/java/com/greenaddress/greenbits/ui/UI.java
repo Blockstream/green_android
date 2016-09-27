@@ -155,6 +155,7 @@ public abstract class UI {
         });
     }
 
+    // Show/Hide controls
     public static void showIf(final boolean condition, final View... views) {
         for (View v: views)
             v.setVisibility(condition ? View.VISIBLE : View.GONE);
@@ -167,6 +168,20 @@ public abstract class UI {
     }
 
     public static void hide(final View... views) { showIf(false, views); }
+
+    // Enable/Disable controls
+    public static void enableIf(final boolean condition, final View... views) {
+        for (View v: views)
+            v.setEnabled(condition);
+    }
+
+    public static void enable(final View... views) { enableIf(true, views); }
+
+    public static void disableIf(final boolean condition, final View... views) {
+        enableIf(!condition, views);
+    }
+
+    public static void disable(final View... views) { enableIf(false, views); }
 
     public static String getText(TextView text) {
         return text.getText().toString();

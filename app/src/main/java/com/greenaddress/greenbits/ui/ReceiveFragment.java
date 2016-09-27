@@ -50,7 +50,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     TextView mAddressText;
     ImageView mAddressImage;
     TextView mCopyIcon;
-    TextView mCopyText;
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
@@ -124,8 +123,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mAddressText = UI.find(mView, R.id.receiveAddressText);
         mAddressImage = UI.find(mView, R.id.receiveQrImageView);
         mCopyIcon = UI.find(mView, R.id.receiveCopyIcon);
-        mCopyText = UI.find(mView, R.id.receiveCopyText);
-        UI.hide(mCopyIcon, mCopyText);
+        UI.disable(mCopyIcon);
 
         mCopyIcon.setOnClickListener(
                 new View.OnClickListener() {
@@ -159,7 +157,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
 
                         hideWaitDialog();
-                        UI.show(mCopyIcon, mCopyText);
+                        UI.enable(mCopyIcon);
                         bd.setFilterBitmap(false);
                         mAddressImage.setImageDrawable(bd);
 
@@ -202,7 +200,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         hideWaitDialog();
-                        UI.show(mCopyIcon, mCopyText);
+                        UI.enable(mCopyIcon);
                     }
                 });
             }
@@ -247,7 +245,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (getActivity() == null)
             return;
 
-        UI.hide(mCopyIcon, mCopyText);
+        UI.disable(mCopyIcon);
         mAddressText.setText("");
         mAddressImage.setImageBitmap(null);
     }
