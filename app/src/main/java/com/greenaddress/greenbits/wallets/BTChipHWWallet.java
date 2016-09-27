@@ -55,14 +55,18 @@ public class BTChipHWWallet extends HWWallet {
         this(dongle, "0000", new LinkedList<Integer>());
     }
 
-    public BTChipHWWallet(final BTChipTransport transport) {
+    public BTChipHWWallet(final BTChipTransport transport, final String pin) {
         this.mDongle = new BTChipDongle(transport);
-        this.mPin = null;
+        this.mPin = pin;
         this.mAddrn = new LinkedList<>();
     }
 
+    public BTChipHWWallet(final BTChipTransport transport) {
+        this(transport, null);
+    }
+
     public BTChipHWWallet(final BTChipTransport transport, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
-        this(transport);
+        this(transport, pin);
         ES.submit(new Callable<Object>() {
             @Override
             public Object call() {
@@ -79,6 +83,8 @@ public class BTChipHWWallet extends HWWallet {
                         remainingAttemptsFuture.set(0);
                     else
                         remainingAttemptsFuture.setException(e);
+                } catch (final Exception e) {
+                    e.printStackTrace();
                 }
                 return null;
             }
