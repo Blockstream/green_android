@@ -68,7 +68,7 @@ public class SendFragment extends SubaccountFragment {
 
     private boolean converting = false;
     private MonetaryFormat bitcoinFormat;
-    private int curSubaccount;
+    private int mSubaccount;
     private boolean pausing;
 
     private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
@@ -212,7 +212,7 @@ public class SendFragment extends SubaccountFragment {
             if (URI.getAmount() == null)
                 return;
 
-            Futures.addCallback(service.getSubaccountBalance(curSubaccount), new CB.Op<Map<?, ?>>() {
+            Futures.addCallback(service.getSubaccountBalance(mSubaccount), new CB.Op<Map<?, ?>>() {
                 @Override
                 public void onSuccess(final Map<?, ?> result) {
                     gaActivity.runOnUiThread(new Runnable() {
@@ -242,7 +242,7 @@ public class SendFragment extends SubaccountFragment {
 
         mView = inflater.inflate(R.layout.fragment_send, container, false);
 
-        curSubaccount = service.getCurrentSubAccount();
+        mSubaccount = service.getCurrentSubAccount();
 
         sendButton = UI.find(mView, R.id.sendSendButton);
         maxButton = UI.find(mView, R.id.sendMaxButton);
@@ -318,8 +318,8 @@ public class SendFragment extends SubaccountFragment {
                 if (!memo.isEmpty())
                     privateData.put("memo", memo);
 
-                if (curSubaccount != 0)
-                    privateData.put("subaccount", curSubaccount);
+                if (mSubaccount != 0)
+                    privateData.put("subaccount", mSubaccount);
 
                 if (instantConfirmationCheckbox.isChecked())
                     privateData.put("instant", true);
@@ -344,7 +344,7 @@ public class SendFragment extends SubaccountFragment {
                             // safer. If we attempted to send the calculated amount
                             // instead with 'sender' fee algorithm, the transaction
                             // could fail due to differences in calculations.
-                            ptxFn = service.prepareSweepAll(curSubaccount, recipient, privateData);
+                            ptxFn = service.prepareSweepAll(mSubaccount, recipient, privateData);
                         } else {
                             ptxFn = service.prepareTx(amount, recipient, privateData);
                         }
@@ -376,7 +376,7 @@ public class SendFragment extends SubaccountFragment {
                                                             if (maxButton.isChecked()) {
                                                                 // 'fee' in reality is the sent amount in case passed amount=null
                                                                 dialogAmount = fee;
-                                                                dialogFee = service.getCoinBalance(curSubaccount).subtract(fee);
+                                                                dialogFee = service.getCoinBalance(mSubaccount).subtract(fee);
                                                             } else {
                                                                 dialogAmount = amount;
                                                                 dialogFee = fee;
@@ -493,8 +493,8 @@ public class SendFragment extends SubaccountFragment {
 
         hideInstantIf2of3();
 
-        makeBalanceObserver(curSubaccount);
-        if (service.getCoinBalance(curSubaccount) != null)
+        makeBalanceObserver(mSubaccount);
+        if (service.getCoinBalance(mSubaccount) != null)
             onBalanceUpdated();
 
         registerReceiver();
@@ -509,7 +509,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void hideInstantIf2of3() {
-        if (getGAService().findSubaccountByType(curSubaccount, "2of3") == null) {
+        if (getGAService().findSubaccountByType(mSubaccount, "2of3") == null) {
             UI.show(instantConfirmationCheckbox);
             return;
         }
@@ -532,7 +532,7 @@ public class SendFragment extends SubaccountFragment {
         }
         final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         final String btcBalance = format.noCode().format(
-                getGAService().getCoinBalance(curSubaccount)).toString();
+                getGAService().getCoinBalance(mSubaccount)).toString();
         UI.setAmountText(sendSubAccountBalance, btcBalance);
 
         final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBalanceUnit.getText().length() + sendSubAccountBitcoinScale.getText().length();
@@ -635,7 +635,7 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onSubaccountChanged(final int newSubAccount) {
-        curSubaccount = newSubAccount;
+        mSubaccount = newSubAccount;
 
         if (!IsPageSelected()) {
             Log.d(TAG, "Subaccount changed while page hidden");
@@ -647,8 +647,8 @@ public class SendFragment extends SubaccountFragment {
 
     private void updateBalance() {
         hideInstantIf2of3();
-        makeBalanceObserver(curSubaccount);
-        getGAService().updateBalance(curSubaccount);
+        makeBalanceObserver(mSubaccount);
+        getGAService().updateBalance(mSubaccount);
     }
 
     public void setPageSelected(final boolean isSelected) {

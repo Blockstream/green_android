@@ -37,14 +37,14 @@ public class MainFragment extends SubaccountFragment {
     private View mView;
     private List<TransactionItem> mTxItems;
     private Map<Sha256Hash, List<Sha256Hash> > replacedTxs;
-    private int curSubaccount;
+    private int mSubaccount;
     private Observer mVerifiedTxObserver;
     private Observer mNewTxObserver;
     private final Runnable mDialogCB = new Runnable() { public void run() { mUnconfirmedDialog = null; } };
 
     private void updateBalance() {
         final GaService service = getGAService();
-        final Monetary monetary = service.getCoinBalance(curSubaccount);
+        final Monetary monetary = service.getCoinBalance(mSubaccount);
         if (monetary == null)
             return;
 
@@ -65,7 +65,7 @@ public class MainFragment extends SubaccountFragment {
 
         final String btcBalance = bitcoinFormat.format(monetary).toString();
         final String btcVerifiedBalance;
-        final Coin verifiedBalance = service.getSPVVerifiedBalance(curSubaccount);
+        final Coin verifiedBalance = service.getSPVVerifiedBalance(mSubaccount);
         if (verifiedBalance != null)
             btcVerifiedBalance = bitcoinFormat.format(verifiedBalance).toString();
         else
@@ -73,7 +73,7 @@ public class MainFragment extends SubaccountFragment {
 
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
-                        service.getFiatBalance(curSubaccount))
+                        service.getFiatBalance(mSubaccount))
                         .toString();
         final String fiatCurrency = service.getFiatCurrency();
         final String converted = CurrencyMapper.map(fiatCurrency);
@@ -128,7 +128,7 @@ public class MainFragment extends SubaccountFragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         txView.setLayoutManager(layoutManager);
 
-        curSubaccount = service.getCurrentSubAccount();
+        mSubaccount = service.getCurrentSubAccount();
 
         final TextView firstP = UI.find(mView, R.id.mainFirstParagraphText);
         final TextView secondP = UI.find(mView, R.id.mainSecondParagraphText);
@@ -155,8 +155,8 @@ public class MainFragment extends SubaccountFragment {
         balanceText.setOnClickListener(unconfirmedClickListener);
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
-        makeBalanceObserver(curSubaccount);
-        if (service.getCoinBalance(curSubaccount) != null) {
+        makeBalanceObserver(mSubaccount);
+        if (service.getCoinBalance(mSubaccount) != null) {
             updateBalance();
             reloadTransactions(false, true);
         }
@@ -259,7 +259,7 @@ public class MainFragment extends SubaccountFragment {
         if (replacedTxs == null || newAdapter)
             replacedTxs = new HashMap<>();
 
-        Futures.addCallback(service.getMyTransactions(curSubaccount),
+        Futures.addCallback(service.getMyTransactions(mSubaccount),
             new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(final Map<?, ?> result) {
@@ -336,8 +336,8 @@ public class MainFragment extends SubaccountFragment {
 
     @Override
     protected void onSubaccountChanged(final int newSubAccount) {
-        curSubaccount = newSubAccount;
-        makeBalanceObserver(curSubaccount);
+        mSubaccount = newSubAccount;
+        makeBalanceObserver(mSubaccount);
         if (!IsPageSelected()) {
             Log.d(TAG, "Subaccount changed while page hidden");
             setIsDirty(true);

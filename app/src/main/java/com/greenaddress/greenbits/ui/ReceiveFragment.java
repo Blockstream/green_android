@@ -39,7 +39,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private View mView = null;
     private FutureCallback<QrBitmap> mNewAddressCallback = null;
     private QrBitmap mQrCodeBitmap = null;
-    private int mSubAccount = 0;
+    private int mSubaccount = 0;
     private Dialog mQrCodeDialog = null;
     private TagDispatcher mTagDispatcher = null;
     private TextView mAddressText = null;
@@ -75,7 +75,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mTagDispatcher = TagDispatcher.get(gaActivity, this);
         mTagDispatcher.enableExclusiveNfc();
 
-        mSubAccount = getGAService().getCurrentSubAccount();
+        mSubaccount = getGAService().getCurrentSubAccount();
 
         mView = inflater.inflate(R.layout.fragment_receive, container, false);
         mAddressText = UI.find(mView, R.id.receiveAddressText);
@@ -127,16 +127,16 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private void getNewAddress() {
-        Log.d(TAG, "Generating new address for subaccount " + mSubAccount);
+        Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
         popupWaitDialog(R.string.generating_address);
         UI.disable(mCopyIcon);
         destroyCurrentAddress();
-        Futures.addCallback(getGAService().getNewAddressBitmap(mSubAccount),
+        Futures.addCallback(getGAService().getNewAddressBitmap(mSubaccount),
                             mNewAddressCallback, getGAService().getExecutor());
     }
 
     private void destroyCurrentAddress() {
-        Log.d(TAG, "Destroying address for subaccount " + mSubAccount);
+        Log.d(TAG, "Destroying address for subaccount " + mSubaccount);
         mAddressText.setText("");
         mAddressImage.setImageBitmap(null);
     }
@@ -217,7 +217,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     protected void onSubaccountChanged(final int newSubAccount) {
-        mSubAccount = newSubAccount;
+        mSubaccount = newSubAccount;
         if (IsPageSelected())
             getNewAddress();
         else
