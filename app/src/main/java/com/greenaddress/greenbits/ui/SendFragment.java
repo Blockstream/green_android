@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.PreparedTransaction;
@@ -110,12 +109,15 @@ public class SendFragment extends SubaccountFragment {
                     recipient.substring(12, 24),
                     recipient.substring(24)));
 
-        final Map<String, String> twoFacData;
-        twoFacData = method == null ? null : ImmutableMap.of("method", method);
-
         UI.showIf(method != null, twoFAText, newTx2FACodeText);
 
-        if (method != null) {
+        final Map<String, String> twoFacData;
+
+        if (method == null)
+            twoFacData = null;
+        else {
+            twoFacData = new HashMap<>();
+            twoFacData.put("method", method);
             twoFAText.setText(String.format("2FA %s code", method));
             if (!method.equals("gauth"))
                 service.requestTwoFacCode(method, "send_tx", null);
