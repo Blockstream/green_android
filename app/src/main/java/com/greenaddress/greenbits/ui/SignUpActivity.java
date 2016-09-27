@@ -16,7 +16,6 @@ import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +24,6 @@ import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -89,14 +87,7 @@ public class SignUpActivity extends LoginActivity {
             public void onClick(final View v) {
                 qrCodeIcon.clearAnimation();
                 if (mnemonicDialog == null) {
-                    final DisplayMetrics displaymetrics = new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                    final int height = displaymetrics.heightPixels;
-                    final int width = displaymetrics.widthPixels;
-                    Log.i(TAG, height + "x" + width);
-                    final int min = (int) (Math.min(height, width) * 0.8);
-                    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
-                    qrcodeMnemonic.setLayoutParams(layoutParams);
+                    qrcodeMnemonic.setLayoutParams(UI.getScreenLayout(SignUpActivity.this, 0.8));
 
                     mnemonicDialog = new Dialog(SignUpActivity.this);
                     mnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);

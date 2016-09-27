@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -175,12 +173,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mAddressImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 if (mQrCodeDialog == null) {
-                    final DisplayMetrics dm = new DisplayMetrics();
-                    activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-                    final int height = dm.heightPixels;
-                    final int width = dm.widthPixels;
-                    final int min = (int) (Math.min(height, width) * 0.8);
-                    qrcodeInDialog.setLayoutParams(new LinearLayout.LayoutParams(min, min));
+                    qrcodeInDialog.setLayoutParams(UI.getScreenLayout(activity, 0.8));
 
                     mQrCodeDialog = new Dialog(activity);
                     mQrCodeDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);

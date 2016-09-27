@@ -3,12 +3,14 @@ package com.greenaddress.greenbits.ui;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -193,6 +195,14 @@ public abstract class UI {
 
     public static <T> T find(final View v, int id) {
         return (T) v.findViewById(id);
+    }
+
+    public static LinearLayout.LayoutParams getScreenLayout(final Activity activity,
+                                                            final double scale) {
+        final DisplayMetrics dm = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        final int min = (int) (Math.min(dm.heightPixels, dm.widthPixels) * scale);
+        return new LinearLayout.LayoutParams(min, min);
     }
 
     public static void showDialog(final Dialog dialog) {
