@@ -47,6 +47,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private boolean mSettingQrCode = false;
     private Dialog mQrCodeDialog;
     private TagDispatcher mTagDispatcher;
+    TextView mAddressText;
+    ImageView mAddressImage;
+    TextView mCopyIcon;
+    TextView mCopyText;
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
@@ -71,11 +75,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     getNewAddress(v);
             } else { // !isVisibleToUser
                 // hide to avoid showing old address when swiping
-                final TextView receiveAddress = UI.find(v, R.id.receiveAddressText);
-                final ImageView imageView = UI.find(v, R.id.receiveQrImageView);
                 mQrCodeBitmap = null;
-                receiveAddress.setText("");
-                imageView.setImageBitmap(null);
+                mAddressText.setText("");
+                mAddressImage.setImageBitmap(null);
             }
         }
         if (isVisibleToUser)
@@ -119,21 +121,20 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mSubAccount = getGAService().getCurrentSubAccount();
 
         mView = inflater.inflate(R.layout.fragment_receive, container, false);
-        final TextView receiveAddress = UI.find(mView, R.id.receiveAddressText);
-        final TextView copyIcon = UI.find(mView, R.id.receiveCopyIcon);
-        final TextView copyText = UI.find(mView, R.id.receiveCopyText);
-        UI.hide(copyIcon, copyText);
+        mAddressText = UI.find(mView, R.id.receiveAddressText);
+        mAddressImage = UI.find(mView, R.id.receiveQrImageView);
+        mCopyIcon = UI.find(mView, R.id.receiveCopyIcon);
+        mCopyText = UI.find(mView, R.id.receiveCopyText);
+        UI.hide(mCopyIcon, mCopyText);
 
-        final TextView newAddressIcon = UI.find(mView, R.id.receiveNewAddressIcon);
-        final ImageView imageView = UI.find(mView, R.id.receiveQrImageView);
-        copyIcon.setOnClickListener(
+        mCopyIcon.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
                         // Gets a handle to the clipboard service.
                         final ClipboardManager clipboard = (ClipboardManager)
                                 getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                        final ClipData clip = ClipData.newPlainText("data", UI.getText(receiveAddress).replace("\n", ""));
+                        final ClipData clip = ClipData.newPlainText("data", UI.getText(mAddressText).replace("\n", ""));
                         clipboard.setPrimaryClip(clip);
 
                         final String text = gaActivity.getString(R.string.toastOnCopyAddress) + " " + gaActivity.getString(R.string.warnOnPaste);
@@ -158,16 +159,15 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
 
                         hideWaitDialog();
-                        UI.show(copyIcon, copyText);
-                        stopNewAddressAnimation(mView);
+                        UI.show(mCopyIcon, mCopyText);
                         bd.setFilterBitmap(false);
-                        imageView.setImageDrawable(bd);
+                        mAddressImage.setImageDrawable(bd);
 
                         final String qrData = result.getData();
-                        receiveAddress.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
+                        mAddressText.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
                         mSettingQrCode = false;
 
-                        imageView.setOnClickListener(new View.OnClickListener() {
+                        mAddressImage.setOnClickListener(new View.OnClickListener() {
                             public void onClick(final View v) {
                                 if (mQrCodeDialog == null) {
                                     final DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -202,8 +202,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         hideWaitDialog();
-                        stopNewAddressAnimation(mView);
-                        UI.show(copyIcon, copyText);
+                        UI.show(mCopyIcon, mCopyText);
                     }
                 });
             }
@@ -212,6 +211,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (mQrCodeBitmap != null)
             mNewAddressCallback.onSuccess(mQrCodeBitmap);
 
+        final TextView newAddressIcon = UI.find(mView, R.id.receiveNewAddressIcon);
         newAddressIcon.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -243,31 +243,13 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                             mNewAddressCallback, getGAService().getExecutor());
      }
 
-     private void stopNewAddressAnimation(final View v) {
-        final FontAwesomeTextView newAddressIcon = UI.find(v, R.id.receiveNewAddressIcon);
-        newAddressIcon.clearAnimation();
-        newAddressIcon.setText(R.string.fa_plus);
-        final TextView copyIcon = UI.find(v, R.id.receiveCopyIcon);
-        final TextView copyText = UI.find(v, R.id.receiveCopyText);
-        UI.show(copyIcon, copyText);
-    }
-
     private void startNewAddressAnimation(final View v) {
         if (getActivity() == null)
             return;
 
-        final FontAwesomeTextView newAddressIcon = UI.find(v, R.id.receiveNewAddressIcon);
-        newAddressIcon.setText(R.string.fa_refresh);
-        newAddressIcon.setAwesomeTypeface();
-        newAddressIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
-
-        final TextView receiveAddress = UI.find(v, R.id.receiveAddressText);
-        final TextView copyIcon = UI.find(v, R.id.receiveCopyIcon);
-        final TextView copyText = UI.find(v, R.id.receiveCopyText);
-        final ImageView imageView = UI.find(v, R.id.receiveQrImageView);
-        UI.hide(copyIcon, copyText);
-        receiveAddress.setText("");
-        imageView.setImageBitmap(null);
+        UI.hide(mCopyIcon, mCopyText);
+        mAddressText.setText("");
+        mAddressImage.setImageBitmap(null);
     }
 
     @Override
@@ -283,14 +265,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     @Override
-    public void onCreateOptionsMenu (final Menu menu, final MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.receive, menu);
     }
 
     @Override
-    protected void onSubaccountChanged(final int input) {
-        mSubAccount = input;
+    protected void onSubaccountChanged(final int newSubAccount) {
+        mSubAccount = newSubAccount;
         if (mView != null)
             startNewAddressAnimation(mView);
 
