@@ -43,8 +43,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private FutureCallback<QrBitmap> mNewAddressCallback = null;
     private QrBitmap mQrCodeBitmap = null;
     private int mSubAccount;
-    private boolean mPausing = false;
-    private boolean mSettingQrCode = false;
     private Dialog mQrCodeDialog;
     private TagDispatcher mTagDispatcher;
     TextView mAddressText;
@@ -52,52 +50,15 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     TextView mCopyIcon;
 
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean("pausing", mPausing);
-        if (mQrCodeBitmap != null)
-            outState.putParcelable("address", mQrCodeBitmap);
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        final View v = getView(); // FIXME: This should use mView
-
-        if (!mPausing && v != null) {
-            // get a new address every time the tab is displayed
-            if (isVisibleToUser) {
-                hideKeyboard();
-                // get a new address:
-                if (mQrCodeBitmap == null && !mSettingQrCode)
-                    getNewAddress(v);
-            } else { // !isVisibleToUser
-                // hide to avoid showing old address when swiping
-                mQrCodeBitmap = null;
-                mAddressText.setText("");
-                mAddressImage.setImageBitmap(null);
-            }
-        }
-        if (isVisibleToUser)
-            mPausing = false;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (mNewAddressCallback != null && mQrCodeBitmap == null && !mSettingQrCode)
-            getNewAddress(null);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        if (getUserVisibleHint())
-            mPausing = true;
-
         mTagDispatcher.disableExclusiveNfc();
     }
 
@@ -109,12 +70,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         final GaActivity gaActivity = getGaActivity();
 
-        if (savedInstanceState != null) {
-            mPausing = savedInstanceState.getBoolean("pausing");
-            mQrCodeBitmap = savedInstanceState.getParcelable("address");
-        }
-
-        mTagDispatcher = TagDispatcher.get(getActivity(), this);
+        mTagDispatcher = TagDispatcher.get(gaActivity, this);
         mTagDispatcher.enableExclusiveNfc();
 
         mSubAccount = getGAService().getCurrentSubAccount();
@@ -130,17 +86,18 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     @Override
                     public void onClick(final View v) {
                         // Gets a handle to the clipboard service.
-                        final ClipboardManager clipboard = (ClipboardManager)
-                                getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                        final ClipData clip = ClipData.newPlainText("data", UI.getText(mAddressText).replace("\n", ""));
-                        clipboard.setPrimaryClip(clip);
-
-                        final String text = gaActivity.getString(R.string.toastOnCopyAddress) + " " + gaActivity.getString(R.string.warnOnPaste);
+                        final ClipboardManager cm;
+                        cm = (ClipboardManager) gaActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+                        final String address = UI.getText(mAddressText).replace("\n", "");
+                        final ClipData data = ClipData.newPlainText("data", address);
+                        cm.setPrimaryClip(data);
+                        final String text = gaActivity.getString(R.string.toastOnCopyAddress) +
+                                            " " + gaActivity.getString(R.string.warnOnPaste);
                         gaActivity.toast(text);
                     }
                 }
         );
-        final View qrView = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+        final View qrView = gaActivity.getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
         final ImageView qrcodeInDialog = UI.find(qrView, R.id.qrInDialogImageView);
         mNewAddressCallback = new FutureCallback<QrBitmap>() {
@@ -163,7 +120,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                         final String qrData = result.getData();
                         mAddressText.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
-                        mSettingQrCode = false;
 
                         mAddressImage.setOnClickListener(new View.OnClickListener() {
                             public void onClick(final View v) {
@@ -210,18 +166,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             mNewAddressCallback.onSuccess(mQrCodeBitmap);
 
         final TextView newAddressIcon = UI.find(mView, R.id.receiveNewAddressIcon);
-        newAddressIcon.setOnClickListener(
-                new View.OnClickListener() {
+        newAddressIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
-                        if (!mSettingQrCode) {
-                            // FIXME: Instead of checking the state here, enable/disable sendButton when state changes
-                            if (!getGAApp().mService.isLoggedIn()) {
-                                gaActivity.toast(R.string.err_send_not_connected_will_resume);
-                                return;
-                            }
-                            getNewAddress(mView);
-                        }
+                        getNewAddress();
                     }
                 }
         );
@@ -230,29 +178,24 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         return mView;
     }
 
-    private void getNewAddress(final View v) {
-        mSettingQrCode = true;
-
+    private void getNewAddress() {
+        Log.d(TAG, "Generating new address for subaccount " + mSubAccount);
         popupWaitDialog(R.string.generating_address);
-        if (v != null)
-            startNewAddressAnimation(v);
-
+        UI.disable(mCopyIcon);
+        destroyCurrentAddress();
         Futures.addCallback(getGAService().getNewAddressBitmap(mSubAccount),
                             mNewAddressCallback, getGAService().getExecutor());
-     }
+    }
 
-    private void startNewAddressAnimation(final View v) {
-        if (getActivity() == null)
-            return;
-
-        UI.disable(mCopyIcon);
+    private void destroyCurrentAddress() {
+        Log.d(TAG, "Destroying address for subaccount " + mSubAccount);
         mAddressText.setText("");
         mAddressImage.setImageBitmap(null);
     }
 
     @Override
     public void tagDiscovered(final Tag t) {
-        Log.d("NFC", "Tag discovered " + t);
+        Log.d(TAG, "Tag discovered " + t);
     }
 
     @Override
@@ -271,11 +214,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     protected void onSubaccountChanged(final int newSubAccount) {
         mSubAccount = newSubAccount;
-        if (mView != null)
-            startNewAddressAnimation(mView);
-
-        if (!mSettingQrCode)
-            getNewAddress(null);
+        if (IsPageSelected())
+            getNewAddress();
+        else
+            destroyCurrentAddress();
     }
 
     private String getAddressUri() {
@@ -299,5 +241,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setPageSelected(final boolean isSelected) {
+        final boolean needToRegenerate = isSelected && !IsPageSelected();
+        super.setPageSelected(isSelected);
+        if (needToRegenerate)
+            getNewAddress();
+        else if (!isSelected)
+            destroyCurrentAddress();
     }
 }
