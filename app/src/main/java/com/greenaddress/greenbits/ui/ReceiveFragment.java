@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
@@ -56,6 +57,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
+        if (mQrCodeDialog != null) {
+            mQrCodeDialog.dismiss();
+            mQrCodeDialog = null;
+        }
         mTagDispatcher.disableExclusiveNfc();
     }
 
@@ -154,14 +159,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (activity == null)
             return;
 
-        final View qrView = activity.getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
-        final ImageView qrcodeInDialog = UI.find(qrView, R.id.qrInDialogImageView);
-
         mQrCodeBitmap = result;
         final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
-
-        hideWaitDialog();
-        UI.enable(mCopyIcon);
         bd.setFilterBitmap(false);
         mAddressImage.setImageDrawable(bd);
 
@@ -171,19 +170,38 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         mAddressImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
-                if (mQrCodeDialog == null) {
-                    qrcodeInDialog.setLayoutParams(UI.getScreenLayout(activity, 0.8));
 
-                    mQrCodeDialog = new Dialog(activity);
-                    mQrCodeDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    mQrCodeDialog.setContentView(qrView);
-                }
+                if (mQrCodeDialog != null)
+                    mQrCodeDialog.dismiss();
+
+                final View view = activity.getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+                final ImageView qrCode = UI.find(view, R.id.qrInDialogImageView);
+
+                qrCode.setLayoutParams(UI.getScreenLayout(activity, 0.8));
+
+                mQrCodeDialog = new Dialog(activity);
+                mQrCodeDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                mQrCodeDialog.setContentView(view);
+                mQrCodeDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(final DialogInterface dialog) {
+                        mQrCodeDialog = null;
+                    }
+                });
+                mQrCodeDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(final DialogInterface dialog) {
+                        mQrCodeDialog = null;
+                    }
+                });
+
+                qrCode.setImageDrawable(bd);
                 mQrCodeDialog.show();
-                final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
-                bd.setFilterBitmap(false);
-                qrcodeInDialog.setImageDrawable(bd);
             }
         });
+
+        hideWaitDialog();
+        UI.enable(mCopyIcon);
     }
 
     @Override
