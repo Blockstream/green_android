@@ -39,7 +39,7 @@ public abstract class UI {
         public void onCancel(final DialogInterface d) { mCallback.run(); }
         @Override
         public void onDismiss(final DialogInterface d) { if (!mCancelOnly) mCallback.run(); }
-    };
+    }
 
     public static void setDialogCloseHandler(final Dialog d, final Runnable callback, final boolean cancelOnly) {
         final DialogCloseHandler handler = new DialogCloseHandler(callback, cancelOnly);
