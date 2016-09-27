@@ -39,15 +39,15 @@ import nordpol.android.TagDispatcher;
 public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredTagListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
-    private View mView;
+    private View mView = null;
     private FutureCallback<QrBitmap> mNewAddressCallback = null;
     private QrBitmap mQrCodeBitmap = null;
-    private int mSubAccount;
-    private Dialog mQrCodeDialog;
-    private TagDispatcher mTagDispatcher;
-    TextView mAddressText;
-    ImageView mAddressImage;
-    TextView mCopyIcon;
+    private int mSubAccount = 0;
+    private Dialog mQrCodeDialog = null;
+    private TagDispatcher mTagDispatcher = null;
+    private TextView mAddressText = null;
+    private ImageView mAddressImage = null;
+    private TextView mCopyIcon = null;
 
     @Override
     public void onResume() {
@@ -78,101 +78,47 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mView = inflater.inflate(R.layout.fragment_receive, container, false);
         mAddressText = UI.find(mView, R.id.receiveAddressText);
         mAddressImage = UI.find(mView, R.id.receiveQrImageView);
+
         mCopyIcon = UI.find(mView, R.id.receiveCopyIcon);
         UI.disable(mCopyIcon);
+        mCopyIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                onCopyClicked();
+            }
+        });
 
-        mCopyIcon.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        // Gets a handle to the clipboard service.
-                        final ClipboardManager cm;
-                        cm = (ClipboardManager) gaActivity.getSystemService(Context.CLIPBOARD_SERVICE);
-                        final String address = UI.getText(mAddressText).replace("\n", "");
-                        final ClipData data = ClipData.newPlainText("data", address);
-                        cm.setPrimaryClip(data);
-                        final String text = gaActivity.getString(R.string.toastOnCopyAddress) +
-                                            " " + gaActivity.getString(R.string.warnOnPaste);
-                        gaActivity.toast(text);
-                    }
-                }
-        );
-        final View qrView = gaActivity.getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
-
-        final ImageView qrcodeInDialog = UI.find(qrView, R.id.qrInDialogImageView);
         mNewAddressCallback = new FutureCallback<QrBitmap>() {
             @Override
             public void onSuccess(final QrBitmap result) {
-                mQrCodeBitmap = result;
-
-                final Activity activity = getActivity();
-                if (activity == null)
-                    return;
-
-                activity.runOnUiThread(new Runnable() {
-                    public void run() {
-                        final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
-
-                        hideWaitDialog();
-                        UI.enable(mCopyIcon);
-                        bd.setFilterBitmap(false);
-                        mAddressImage.setImageDrawable(bd);
-
-                        final String qrData = result.getData();
-                        mAddressText.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12), qrData.substring(12, 24), qrData.substring(24)));
-
-                        mAddressImage.setOnClickListener(new View.OnClickListener() {
-                            public void onClick(final View v) {
-                                if (mQrCodeDialog == null) {
-                                    final DisplayMetrics displaymetrics = new DisplayMetrics();
-                                    activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                                    final int height = displaymetrics.heightPixels;
-                                    final int width = displaymetrics.widthPixels;
-                                    Log.d(TAG, height + "x" + width);
-                                    final int min = (int) (Math.min(height, width) * 0.8);
-                                    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(min, min);
-                                    qrcodeInDialog.setLayoutParams(layoutParams);
-
-                                    mQrCodeDialog = new Dialog(activity);
-                                    mQrCodeDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                                    mQrCodeDialog.setContentView(qrView);
-                                }
-                                mQrCodeDialog.show();
-                                final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
-                                bd.setFilterBitmap(false);
-                                qrcodeInDialog.setImageDrawable(bd);
-                            }
-                        });
-                    }
-                });
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            onNewAddressGenerated(result);
+                        }
+                    });
             }
 
             @Override
             public void onFailure(final Throwable t) {
                 t.printStackTrace();
-                if (getActivity() == null)
-                    return;
-
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        hideWaitDialog();
-                        UI.enable(mCopyIcon);
-                    }
-                });
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            hideWaitDialog();
+                            UI.enable(mCopyIcon);
+                        }
+                    });
             }
         };
 
-        if (mQrCodeBitmap != null)
-            mNewAddressCallback.onSuccess(mQrCodeBitmap);
-
         final TextView newAddressIcon = UI.find(mView, R.id.receiveNewAddressIcon);
         newAddressIcon.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        getNewAddress();
-                    }
-                }
-        );
+            @Override
+            public void onClick(final View v) {
+                getNewAddress();
+            }
+        });
 
         registerReceiver();
         return mView;
@@ -191,6 +137,61 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Log.d(TAG, "Destroying address for subaccount " + mSubAccount);
         mAddressText.setText("");
         mAddressImage.setImageBitmap(null);
+    }
+
+    private void onCopyClicked() {
+        // Gets a handle to the clipboard service.
+        final GaActivity gaActivity = getGaActivity();
+        final ClipboardManager cm;
+        cm = (ClipboardManager) gaActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        final String address = UI.getText(mAddressText).replace("\n", "");
+        final ClipData data = ClipData.newPlainText("data", address);
+        cm.setPrimaryClip(data);
+        final String text = gaActivity.getString(R.string.toastOnCopyAddress) +
+                            " " + gaActivity.getString(R.string.warnOnPaste);
+        gaActivity.toast(text);
+    }
+
+    private void onNewAddressGenerated(final QrBitmap result) {
+        final Activity activity = getActivity();
+        if (activity == null)
+            return;
+
+        final View qrView = activity.getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+        final ImageView qrcodeInDialog = UI.find(qrView, R.id.qrInDialogImageView);
+
+        mQrCodeBitmap = result;
+        final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
+
+        hideWaitDialog();
+        UI.enable(mCopyIcon);
+        bd.setFilterBitmap(false);
+        mAddressImage.setImageDrawable(bd);
+
+        final String qrData = result.getData();
+        mAddressText.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12),
+                             qrData.substring(12, 24), qrData.substring(24)));
+
+        mAddressImage.setOnClickListener(new View.OnClickListener() {
+            public void onClick(final View v) {
+                if (mQrCodeDialog == null) {
+                    final DisplayMetrics dm = new DisplayMetrics();
+                    activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+                    final int height = dm.heightPixels;
+                    final int width = dm.widthPixels;
+                    final int min = (int) (Math.min(height, width) * 0.8);
+                    qrcodeInDialog.setLayoutParams(new LinearLayout.LayoutParams(min, min));
+
+                    mQrCodeDialog = new Dialog(activity);
+                    mQrCodeDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    mQrCodeDialog.setContentView(qrView);
+                }
+                mQrCodeDialog.show();
+                final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
+                bd.setFilterBitmap(false);
+                qrcodeInDialog.setImageDrawable(bd);
+            }
+        });
     }
 
     @Override
