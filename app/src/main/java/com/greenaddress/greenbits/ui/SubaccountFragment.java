@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
@@ -26,6 +25,7 @@ public abstract class SubaccountFragment extends GAFragment {
     private boolean mIsSelected = false;
     private boolean mBlockWaitDialog = false;
     protected boolean mIsDirty = false;
+    private final Runnable mDialogCB = new Runnable() { public void run() { mWaitDialog = null; } };
 
     protected boolean IsPageSelected() {
         return mIsSelected;
@@ -116,12 +116,7 @@ public abstract class SubaccountFragment extends GAFragment {
     protected void popupWaitDialog(final int message) {
         if (mIsSelected && mWaitDialog == null && getActivity() != null && !mBlockWaitDialog) {
             mWaitDialog = UI.popupWait(getActivity(), message);
-            mWaitDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(final DialogInterface d) {
-                    mWaitDialog = null;
-                }
-            });
+            UI.setDialogCloseHandler(mWaitDialog, mDialogCB);
         }
     }
 

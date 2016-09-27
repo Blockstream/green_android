@@ -2,12 +2,13 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.WindowManager.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -23,6 +24,32 @@ import java.util.List;
 
 public abstract class UI {
     public static final int INVALID_RESOURCE_ID = 0;
+
+    // Class to unify cancel and dismiss handling */
+    private static class DialogCloseHandler implements DialogInterface.OnCancelListener,
+                                                       DialogInterface.OnDismissListener {
+        private final Runnable mCallback;
+        private final boolean mCancelOnly;
+
+        public DialogCloseHandler(final Runnable callback, final boolean cancelOnly) {
+            mCallback = callback;
+            mCancelOnly = cancelOnly;
+        }
+        @Override
+        public void onCancel(final DialogInterface d) { mCallback.run(); }
+        @Override
+        public void onDismiss(final DialogInterface d) { if (!mCancelOnly) mCallback.run(); }
+    };
+
+    public static void setDialogCloseHandler(final Dialog d, final Runnable callback, final boolean cancelOnly) {
+        final DialogCloseHandler handler = new DialogCloseHandler(callback, cancelOnly);
+        d.setOnCancelListener(handler);
+        d.setOnDismissListener(handler);
+    }
+
+    public static void setDialogCloseHandler(final Dialog d, final Runnable callback) {
+        setDialogCloseHandler(d, callback, false);
+    }
 
     public static TextView.OnEditorActionListener getListenerRunOnEnter(final Runnable r) {
         return new EditText.OnEditorActionListener() {

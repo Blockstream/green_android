@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -78,6 +77,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             runOnUiThread(new Runnable() { public void run() { onTwoFactorConfigChange(); } });
         }
     };
+    private final Runnable mDialogCB = new Runnable() { public void run() { setBlockWaitDialog(false); } };
 
     private boolean isBitcoinScheme(final Intent intent) {
         final Uri uri = intent.getData();
@@ -190,12 +190,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         .title(R.string.footerAccount)
                         .adapter(adapter, null)
                         .show();
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(final DialogInterface d) {
-                        setBlockWaitDialog(false);
-                    }
-                });
+                UI.setDialogCloseHandler(dialog, mDialogCB);
+
                 adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
                     @Override
                     public void onAccountSelected(final int account) {

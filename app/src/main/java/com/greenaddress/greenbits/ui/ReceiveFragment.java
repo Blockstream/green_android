@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
@@ -46,6 +45,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private TextView mAddressText = null;
     private ImageView mAddressImage = null;
     private TextView mCopyIcon = null;
+    private final Runnable mDialogCB = new Runnable() { public void run() { mQrCodeDialog = null; } };
 
     @Override
     public void onResume() {
@@ -166,18 +166,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final Dialog dialog = new Dialog(getActivity());
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(v);
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(final DialogInterface dialog) {
-                mQrCodeDialog = null;
-            }
-        });
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(final DialogInterface dialog) {
-                mQrCodeDialog = null;
-            }
-        });
+        UI.setDialogCloseHandler(dialog, mDialogCB);
 
         qrCode.setImageDrawable(bd);
         mQrCodeDialog = dialog;

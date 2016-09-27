@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.BitmapDrawable;
@@ -50,6 +49,7 @@ public class SignUpActivity extends LoginActivity {
     private ImageView signupNfcIcon;
     private TextView mnemonicText;
     private ListenableFuture<LoginData> onSignUp;
+    private final Runnable mDialogCB = new Runnable() { public void run() { mWriteMode = false; } };
 
     @Override
     protected int getMainViewId() { return R.layout.activity_sign_up; }
@@ -179,12 +179,7 @@ public class SignUpActivity extends LoginActivity {
                 }
             });
 
-        nfcDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(final DialogInterface dialog) {
-                mWriteMode = false;
-            }
-        });
+        UI.setDialogCloseHandler(nfcDialog, mDialogCB, true /* cancelOnly */);
     }
 
     @Override

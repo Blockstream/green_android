@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +40,7 @@ public class MainFragment extends SubaccountFragment {
     private int curSubaccount;
     private Observer mVerifiedTxObserver;
     private Observer mNewTxObserver;
+    private final Runnable mDialogCB = new Runnable() { public void run() { mUnconfirmedDialog = null; } };
 
     private void updateBalance() {
         final GaService service = getGAService();
@@ -146,13 +146,8 @@ public class MainFragment extends SubaccountFragment {
                 if (mUnconfirmedDialog == null && balanceQuestionMark.getVisibility() == View.VISIBLE) {
                     // Question mark is visible and dialog not shown, so show it
                     mUnconfirmedDialog = UI.popup(getActivity(), R.string.unconfirmedBalanceTitle, 0)
-                            .content(R.string.unconfirmedBalanceText)
-                            .cancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(final DialogInterface dialog) {
-                                    mUnconfirmedDialog = null;
-                                }
-                            }).build();
+                                           .content(R.string.unconfirmedBalanceText).build();
+                    UI.setDialogCloseHandler(mUnconfirmedDialog, mDialogCB);
                     mUnconfirmedDialog.show();
                 }
             }
