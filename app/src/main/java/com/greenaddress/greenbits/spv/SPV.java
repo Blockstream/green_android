@@ -65,6 +65,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -714,7 +715,7 @@ public class SPV {
                 if (peers.isEmpty()) {
                     // DEFAULT_PEER is only set for regtest. For other networks
                     // it is empty and so will cause us to use DNS discovery.
-                    addresses = new ArrayList<>(Arrays.asList(Network.DEFAULT_PEER));
+                    addresses = new ArrayList<>(Collections.singletonList(Network.DEFAULT_PEER));
                 }
                 else
                     addresses = new ArrayList<>(Arrays.asList(peers.split(",")));

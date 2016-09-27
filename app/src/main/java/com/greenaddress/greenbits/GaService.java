@@ -38,6 +38,7 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.SWWallet;
 import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.Address;
@@ -997,7 +998,8 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public void decRef() {
-        assert mRefCount > 0 : "Incorrect reference count";
+        if (BuildConfig.DEBUG && mRefCount <= 0)
+            throw new RuntimeException("Incorrect reference count");
         if (--mRefCount == 0)
             scheduleDisconnect();
     }

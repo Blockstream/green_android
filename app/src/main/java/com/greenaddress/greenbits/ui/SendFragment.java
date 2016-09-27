@@ -43,7 +43,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observer;
 
 import de.schildbach.wallet.ui.ScanActivity;
 

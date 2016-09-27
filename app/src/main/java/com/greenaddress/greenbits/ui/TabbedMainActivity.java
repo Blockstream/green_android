@@ -79,7 +79,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
     };
 
-    private final boolean isBitcoinScheme(final Intent intent) {
+    private boolean isBitcoinScheme(final Intent intent) {
         final Uri uri = intent.getData();
         return uri != null && uri.getScheme() != null && uri.getScheme().equals("bitcoin");
     }
