@@ -154,9 +154,38 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         gaActivity.toast(text);
     }
 
+    private void onAddressImageClicked(final BitmapDrawable bd) {
+        if (mQrCodeDialog != null)
+            mQrCodeDialog.dismiss();
+
+        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+
+        final ImageView qrCode = UI.find(v, R.id.qrInDialogImageView);
+        qrCode.setLayoutParams(UI.getScreenLayout(getActivity(), 0.8));
+
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(v);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(final DialogInterface dialog) {
+                mQrCodeDialog = null;
+            }
+        });
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(final DialogInterface dialog) {
+                mQrCodeDialog = null;
+            }
+        });
+
+        qrCode.setImageDrawable(bd);
+        mQrCodeDialog = dialog;
+        mQrCodeDialog.show();
+    }
+
     private void onNewAddressGenerated(final QrBitmap result) {
-        final Activity activity = getActivity();
-        if (activity == null)
+        if (getActivity() == null)
             return;
 
         mQrCodeBitmap = result;
@@ -169,34 +198,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                              qrData.substring(12, 24), qrData.substring(24)));
 
         mAddressImage.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(final View v) {
-
-                if (mQrCodeDialog != null)
-                    mQrCodeDialog.dismiss();
-
-                final View view = activity.getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
-                final ImageView qrCode = UI.find(view, R.id.qrInDialogImageView);
-
-                qrCode.setLayoutParams(UI.getScreenLayout(activity, 0.8));
-
-                mQrCodeDialog = new Dialog(activity);
-                mQrCodeDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                mQrCodeDialog.setContentView(view);
-                mQrCodeDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(final DialogInterface dialog) {
-                        mQrCodeDialog = null;
-                    }
-                });
-                mQrCodeDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(final DialogInterface dialog) {
-                        mQrCodeDialog = null;
-                    }
-                });
-
-                qrCode.setImageDrawable(bd);
-                mQrCodeDialog.show();
+                onAddressImageClicked(bd);
             }
         });
 
