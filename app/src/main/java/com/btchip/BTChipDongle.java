@@ -27,9 +27,12 @@ import com.btchip.utils.Dump;
 import com.btchip.utils.VarintUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.PipedInputStream;
 
 public class BTChipDongle implements BTChipConstants {
-	
+
+	private BTChipFirmware firmwareVersion;
+
 	public enum OperationMode {
 		WALLET(0x01),
 		RELAXED_WALLET(0x02),
@@ -631,13 +634,38 @@ public class BTChipDongle implements BTChipConstants {
 	public byte[] untrustedHashSign(String privateKeyPath, String pin) throws BTChipException {
 		return untrustedHashSign(privateKeyPath, pin, 0, (byte)0x01);
 	}
-	
+
+	public boolean shouldUseNewSigningApi() {
+		try {
+			if (this.firmwareVersion == null) this.getFirmwareVersion();
+		} catch (BTChipException e) {
+			return false;
+		}
+		if (this.firmwareVersion.getMajor() > 0x2001) { // 0x2001 = Ledger 1.x, 0x3001 = Nano S
+			return true;
+		} else if (this.firmwareVersion.getMajor() == 0x2001 &&
+				this.firmwareVersion.getMinor() > 0) {
+			return true;
+		} else if (this.firmwareVersion.getMajor() == 0x2001 &&
+				this.firmwareVersion.getMinor() == 0 &&
+				this.firmwareVersion.getPatch() >= 2) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public boolean signMessagePrepare(String path, byte[] message) throws BTChipException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		BufferUtils.writeBuffer(data, BIP32Utils.splitPath(path));
+		if (this.shouldUseNewSigningApi()) {
+			// length has two bytes in Ledger 1.0.2+
+			data.write((byte)0);
+		}
 		data.write((byte)message.length);
 		BufferUtils.writeBuffer(data, message);
-		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_SIGN_MESSAGE, (byte)0x00, (byte)0x00, data.toByteArray(), OK);
+		final byte p2 = (byte) (this.shouldUseNewSigningApi() ? 0x01 : 0x00);
+		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_SIGN_MESSAGE, (byte)0x00, p2, data.toByteArray(), OK);
 		return (response[0] == (byte)0x01);
 	}
 	
@@ -650,7 +678,8 @@ public class BTChipDongle implements BTChipConstants {
 			data.write((byte)pin.length);
 			BufferUtils.writeBuffer(data, pin);
 		}
-		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_SIGN_MESSAGE, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
+		final byte p2 = (byte) (this.shouldUseNewSigningApi() ? 0x01 : 0x00);
+		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_SIGN_MESSAGE, (byte)0x80, p2, data.toByteArray(), OK);
 		int yParity = (response[0] & 0x0F);
 		response[0] = (byte)0x30;
 		return new BTChipSignature(response, yParity);
@@ -659,10 +688,12 @@ public class BTChipDongle implements BTChipConstants {
 	public BTChipFirmware getFirmwareVersion() throws BTChipException {
 		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_FIRMWARE_VERSION, (byte)0x00, (byte)0x00, 0x00, OK);
 		boolean compressedKeys = (response[0] == (byte)0x01);
+
 		int major = ((response[1] & 0xff) << 8) | response[2] & 0xff;
 		int minor = response[3] & 0xff;
 		int patch = response[4] & 0xff;
-		return new BTChipFirmware(major, minor, patch, compressedKeys);
+		this.firmwareVersion = new BTChipFirmware(major, minor, patch, compressedKeys);
+		return this.firmwareVersion;
 	}
 
 	public void setKeymapEncoding(byte[] keymapEncoding) throws BTChipException {
