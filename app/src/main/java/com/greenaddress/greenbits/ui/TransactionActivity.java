@@ -683,7 +683,7 @@ public class TransactionActivity extends GaActivity {
 
             amountScale.setText(Html.fromHtml(prefix));
             feeScale.setText(Html.fromHtml(prefix));
-            if (prefix.isEmpty()) {
+            if (btcUnit == null || btcUnit.equals("bits")) {
                 amountUnit.setText("bits ");
                 feeUnit.setText("bits ");
             } else {

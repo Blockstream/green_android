@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.Html;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
@@ -66,7 +65,7 @@ public class SendFragment extends SubaccountFragment {
 
 
     private boolean converting = false;
-    private MonetaryFormat bitcoinFormat;
+    private MonetaryFormat mBitcoinFormat;
     private int mSubaccount;
     private boolean pausing;
 
@@ -87,19 +86,19 @@ public class SendFragment extends SubaccountFragment {
         final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
-        final String prefix = CurrencyMapper.mapBtcFormatToPrefix(bitcoinFormat);
+        final String prefix = CurrencyMapper.mapBtcFormatToPrefix(mBitcoinFormat);
 
         amountScale.setText(Html.fromHtml(prefix));
         feeScale.setText(Html.fromHtml(prefix));
-        if (TextUtils.isEmpty(prefix)) {
+        if (mBitcoinFormat.code().equals("bits")) {
             amountUnit.setText("bits ");
             feeUnit.setText("bits ");
         } else {
             amountUnit.setText(R.string.fa_btc_space);
             feeUnit.setText(R.string.fa_btc_space);
         }
-        amountText.setText(bitcoinFormat.noCode().format(amount));
-        feeText.setText(bitcoinFormat.noCode().format(fee));
+        amountText.setText(mBitcoinFormat.noCode().format(amount));
+        feeText.setText(mBitcoinFormat.noCode().format(fee));
 
         if (payreqData != null)
             recipientText.setText(recipient);
@@ -190,7 +189,7 @@ public class SendFragment extends SubaccountFragment {
                                 amount += ((Number) out.get("amount")).longValue();
                             final CharSequence amountStr;
                             if (amount > 0)
-                                amountStr = bitcoinFormat.noCode().format(Coin.valueOf(amount));
+                                amountStr = mBitcoinFormat.noCode().format(Coin.valueOf(amount));
                             else
                                 amountStr = "";
 
@@ -220,7 +219,7 @@ public class SendFragment extends SubaccountFragment {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
                                 final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
-                                amountEdit.setText(bitcoinFormat.noCode().format(URI.getAmount()));
+                                amountEdit.setText(mBitcoinFormat.noCode().format(URI.getAmount()));
                                 convertBtcToFiat(fiatRate);
                                 amountEdit.setEnabled(false);
                                 amountFiatEdit.setEnabled(false);
@@ -265,7 +264,7 @@ public class SendFragment extends SubaccountFragment {
         final String btcUnit = (String) service.getUserConfig("unit");
         final TextView bitcoinScale = UI.find(mView, R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
-        bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+        mBitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
         if (btcUnit == null || btcUnit.equals("bits"))
             bitcoinUnitText.setText("bits ");
@@ -298,7 +297,7 @@ public class SendFragment extends SubaccountFragment {
                 final Coin amount;
                 Coin nonFinalAmount;
                 try {
-                    nonFinalAmount = bitcoinFormat.parse(UI.getText(amountEdit));
+                    nonFinalAmount = mBitcoinFormat.parse(UI.getText(amountEdit));
                 } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
@@ -574,7 +573,7 @@ public class SendFragment extends SubaccountFragment {
 
         try {
             final ExchangeRate rate = new ExchangeRate(exchangeFiat);
-            final Coin btcValue = bitcoinFormat.parse(UI.getText(amountEdit));
+            final Coin btcValue = mBitcoinFormat.parse(UI.getText(amountEdit));
             Fiat fiatValue = rate.coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
@@ -599,7 +598,7 @@ public class SendFragment extends SubaccountFragment {
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);
         try {
             final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(amountFiatEdit));
-            amountEdit.setText(bitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
+            amountEdit.setText(mBitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
             amountEdit.setText("");
         }
