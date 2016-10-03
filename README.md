@@ -6,7 +6,7 @@ You need to have correctly installed the following
 
 - "Android SDK Platform-tools" version 24.0.3 recommended
 - "Android SDK Tools" version 25.2.2 recommended
-- "Android SDK Build-tools" version 24.0.2 recommended
+- "Android SDK Build-tools" version 24.0.3 recommended
 - "Android Support Library" version 23.2.1 recommended
 - "Android Support Repository" version 38.0.0 recommended
 - "Android NDK" version r12b recommended
