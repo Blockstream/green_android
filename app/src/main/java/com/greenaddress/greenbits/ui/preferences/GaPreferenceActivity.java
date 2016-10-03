@@ -14,12 +14,10 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
 
 
-// Our GaPreferenceActivity derived classes aren't exported publically, so the
+// Our GaPreferenceActivity derived classes aren't exported publicly, so the
 // only way they can be created is from internal GaActivity derived activities.
-// This means we always have our service available and don't need to check it.
-//
-// We only need to check that we havent been logged off when resuming the
-// session, and update the session ref count correctly.
+// This means we always have our service available and don't need to check it,
+// except when resuming the activity where the service may have been destroyed.
 public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
 
     @Override
@@ -78,8 +76,9 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     final public void onResume() {
         super.onResume();
         final GaService service = getGAApp().mService;
-        service.incRef();
-        if (service.isForcedOff()) {
+        if (service != null)
+            service.incRef();
+        if (service == null || service.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
