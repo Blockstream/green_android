@@ -44,7 +44,6 @@ import javax.net.ssl.TrustManagerFactory;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.FingerprintTrustManagerFactory;
 import rx.Scheduler;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -447,7 +446,7 @@ public class WalletClient {
     }
 
     private NettyWampConnectionConfig getNettyConfig() throws SSLException {
-        final TrustManagerFactory trustManager = new FingerprintTrustManagerFactory(Network.GAIT_WAMP_CERT_PINS);
+        final TrustManagerFactory trustManager = new FingerprintTrustManagerFactorySHA256(Network.GAIT_WAMP_CERT_PINS);
         final SslContext context = SslContextBuilder.forClient().trustManager(trustManager).build();
         return new NettyWampConnectionConfig.Builder().withSslContext(context).build();
     }
