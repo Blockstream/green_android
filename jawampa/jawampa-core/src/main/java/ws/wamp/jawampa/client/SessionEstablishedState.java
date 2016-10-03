@@ -16,6 +16,7 @@
 
 package ws.wamp.jawampa.client;
 
+import java.lang.UnsupportedOperationException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -680,9 +681,11 @@ public class SessionEstablishedState implements ClientState {
                 // We ignore (1) and rethrow (2). If this code throws then
                 // the number of outstanding tasks allowed can be changed via
                 // the system property "io.netty.eventLoop.maxPendingTasks".
+                // Note that UnsupportedOperationException can be thrown
+                // internally depending on how shutdown races.
                 try {
                     callImpl();
-                } catch (RejectedExecutionException e) {
+                } catch (UnsupportedOperationException | RejectedExecutionException e) {
                     if (!stateController.scheduler().isShutdown()) {
                         throw e;
                     }
