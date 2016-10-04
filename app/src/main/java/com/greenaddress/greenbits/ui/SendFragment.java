@@ -249,6 +249,9 @@ public class SendFragment extends SubaccountFragment {
 
         Log.d(TAG, "onCreateView -> " + TAG);
         final GaService service = getGAService();
+        if (service == null)
+            return null; // Restored without a service, let parent activity finish()
+
         final GaActivity gaActivity = getGaActivity();
 
         if (savedInstanceState != null)

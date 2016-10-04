@@ -116,9 +116,11 @@ public class MainFragment extends SubaccountFragment {
                              final Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView -> " + TAG);
-        popupWaitDialog(R.string.loading_transactions);
-
         final GaService service = getGAService();
+        if (service == null)
+            return null; // Restored without a service, let parent activity finish()
+
+        popupWaitDialog(R.string.loading_transactions);
 
         mView = inflater.inflate(R.layout.fragment_main, container, false);
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);

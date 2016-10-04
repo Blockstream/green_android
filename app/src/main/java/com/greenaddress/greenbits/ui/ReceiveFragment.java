@@ -67,6 +67,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView -> " + TAG);
+
+        if (getGAService() == null)
+            return null; // Restored without a service, let parent activity finish()
+
         popupWaitDialog(R.string.generating_address);
 
         final GaActivity gaActivity = getGaActivity();
