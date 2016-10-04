@@ -54,8 +54,10 @@ public abstract class SubaccountFragment extends GAFragment {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView -> " + getClass().getSimpleName());
-        getActivity().unregisterReceiver(mBroadcastReceiver);
-        mBroadcastReceiver = null;
+        if (mBroadcastReceiver != null) {
+           getActivity().unregisterReceiver(mBroadcastReceiver);
+           mBroadcastReceiver = null;
+        }
         hideWaitDialog();
     }
 
