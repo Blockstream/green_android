@@ -46,7 +46,7 @@ public final class CB {
        }
 
        @Override
-       final public void onFailure(final Throwable t) {
+       public void onFailure(final Throwable t) {
            t.printStackTrace();
            UI.toast(mActivity, t, mEnabler);
        }

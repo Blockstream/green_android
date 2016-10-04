@@ -207,6 +207,19 @@ public class SendFragment extends SubaccountFragment {
                                 }
                             });
                         }
+
+                        @Override
+                        public void onFailure(final Throwable t) {
+                            super.onFailure(t);
+                            gaActivity.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    UI.hide(bip70Progress);
+                                    recipientEdit.setEnabled(true);
+                                    sendButton.setEnabled(true);
+                                    UI.show(noteIcon);
+                                }
+                            });
+                        }
                     });
         } else {
             recipientEdit.setText(URI.getAddress().toString());
