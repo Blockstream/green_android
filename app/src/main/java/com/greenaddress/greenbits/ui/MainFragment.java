@@ -184,7 +184,8 @@ public class MainFragment extends SubaccountFragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        attachObservers();
+        if (getGAService() != null)
+            attachObservers();
     }
 
     @Override
