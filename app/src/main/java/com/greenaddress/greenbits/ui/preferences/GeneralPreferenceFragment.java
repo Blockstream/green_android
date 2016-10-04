@@ -7,6 +7,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,12 +26,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
+    private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
+
     private static final int PINSAVE = 1337;
     private static final String mMicroSymbol = Html.fromHtml("&micro;").toString();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (mService == null || !mService.isLoggedIn()) {
+            // If we are restored and our service has not been destroyed, its
+            // state is unreliable and our parent activity should shortly
+            // be calling finish(). Avoid accessing the service in this case.
+            Log.d(TAG, "Avoiding create on logged out service");
+            return;
+        }
+
         addPreferencesFromResource(R.xml.preference_general);
         setHasOptionsMenu(true);
 
