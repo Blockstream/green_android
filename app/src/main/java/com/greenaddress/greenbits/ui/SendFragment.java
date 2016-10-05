@@ -203,8 +203,7 @@ public class SendFragment extends SubaccountFragment {
                                         convertBtcToFiat();
                                         mAmountEdit.setEnabled(false);
                                         mAmountFiatEdit.setEnabled(false);
-                                        UI.hide(mMaxButton);
-                                        UI.hide(mMaxLabel);
+                                        UI.hide(mMaxButton, mMaxLabel);
                                     }
                                     UI.hide(bip70Progress);
                                 }
@@ -239,8 +238,7 @@ public class SendFragment extends SubaccountFragment {
                                 convertBtcToFiat(fiatRate);
                                 mAmountEdit.setEnabled(false);
                                 mAmountFiatEdit.setEnabled(false);
-                                UI.hide(mMaxButton);
-                                UI.hide(mMaxLabel);
+                                UI.hide(mMaxButton, mMaxLabel);
                             }
                     });
                 }
