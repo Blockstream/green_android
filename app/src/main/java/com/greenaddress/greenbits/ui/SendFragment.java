@@ -51,24 +51,24 @@ public class SendFragment extends SubaccountFragment {
     private View mView;
     private Dialog mSummary;
     private Dialog mTwoFactor;
-    private EditText amountEdit;
-    private EditText amountFiatEdit;
-    private EditText recipientEdit;
-    private EditText noteText;
-    private CheckBox instantConfirmationCheckbox;
-    private TextView noteIcon;
-    private Button sendButton;
-    private Switch maxButton;
-    private TextView maxLabel;
-    private TextView scanIcon;
-    private Map<?, ?> payreqData = null;
-    private boolean fromIntentURI = false;
+    private EditText mAmountEdit;
+    private EditText mAmountFiatEdit;
+    private EditText mRecipientEdit;
+    private EditText mNoteText;
+    private CheckBox mInstantConfirmationCheckbox;
+    private TextView mNoteIcon;
+    private Button mSendButton;
+    private Switch mMaxButton;
+    private TextView mMaxLabel;
+    private TextView mScanIcon;
+    private Map<?, ?> mPayreqData = null;
+    private boolean mFromIntentURI = false;
 
 
-    private boolean converting = false;
+    private boolean mConverting = false;
     private MonetaryFormat mBitcoinFormat;
     private int mSubaccount;
-    private boolean pausing;
+    private boolean mPausing;
 
     private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
@@ -101,7 +101,7 @@ public class SendFragment extends SubaccountFragment {
         amountText.setText(mBitcoinFormat.noCode().format(amount));
         feeText.setText(mBitcoinFormat.noCode().format(fee));
 
-        if (payreqData != null)
+        if (mPayreqData != null)
             recipientText.setText(recipient);
         else
             recipientText.setText(String.format("%s\n%s\n%s",
@@ -137,19 +137,19 @@ public class SendFragment extends SubaccountFragment {
                             public void onSuccess(final String result) {
                                 gaActivity.runOnUiThread(new Runnable() {
                                     public void run() {
-                                        if (fromIntentURI) {
+                                        if (mFromIntentURI) {
                                             gaActivity.finish();
                                             return;
                                         }
 
                                         // FIXME: Add notification with "Transaction sent"?
-                                        amountEdit.setText("");
-                                        recipientEdit.setText("");
-                                        maxButton.setChecked(false);
+                                        mAmountEdit.setText("");
+                                        mRecipientEdit.setText("");
+                                        mMaxButton.setChecked(false);
 
-                                        noteIcon.setText(R.string.fa_pencil);
-                                        noteText.setText("");
-                                        noteText.setVisibility(View.INVISIBLE);
+                                        mNoteIcon.setText(R.string.fa_pencil);
+                                        mNoteText.setText("");
+                                        mNoteText.setVisibility(View.INVISIBLE);
 
                                         final ViewPager viewPager = UI.find(gaActivity, R.id.container);
                                         viewPager.setCurrentItem(1);
@@ -170,14 +170,14 @@ public class SendFragment extends SubaccountFragment {
         if (URI.getPaymentRequestUrl() != null) {
             final ProgressBar bip70Progress = UI.find(mView, R.id.sendBip70ProgressBar);
             UI.show(bip70Progress);
-            recipientEdit.setEnabled(false);
-            sendButton.setEnabled(false);
-            UI.hide(noteIcon);
+            mRecipientEdit.setEnabled(false);
+            mSendButton.setEnabled(false);
+            UI.hide(mNoteIcon);
             Futures.addCallback(service.processBip70URL(URI.getPaymentRequestUrl()),
                     new CB.Toast<Map<?, ?>>(gaActivity) {
                         @Override
                         public void onSuccess(final Map<?, ?> result) {
-                            payreqData = result;
+                            mPayreqData = result;
 
                             final String name;
                             if (result.get("merchant_cn") != null)
@@ -196,15 +196,15 @@ public class SendFragment extends SubaccountFragment {
 
                             gaActivity.runOnUiThread(new Runnable() {
                                 public void run() {
-                                    recipientEdit.setText(name);
-                                    sendButton.setEnabled(true);
+                                    mRecipientEdit.setText(name);
+                                    mSendButton.setEnabled(true);
                                     if (!amountStr.toString().isEmpty()) {
-                                        amountEdit.setText(amountStr);
+                                        mAmountEdit.setText(amountStr);
                                         convertBtcToFiat();
-                                        amountEdit.setEnabled(false);
-                                        amountFiatEdit.setEnabled(false);
-                                        UI.hide(maxButton);
-                                        UI.hide(maxLabel);
+                                        mAmountEdit.setEnabled(false);
+                                        mAmountFiatEdit.setEnabled(false);
+                                        UI.hide(mMaxButton);
+                                        UI.hide(mMaxLabel);
                                     }
                                     UI.hide(bip70Progress);
                                 }
@@ -217,15 +217,15 @@ public class SendFragment extends SubaccountFragment {
                             gaActivity.runOnUiThread(new Runnable() {
                                 public void run() {
                                     UI.hide(bip70Progress);
-                                    recipientEdit.setEnabled(true);
-                                    sendButton.setEnabled(true);
-                                    UI.show(noteIcon);
+                                    mRecipientEdit.setEnabled(true);
+                                    mSendButton.setEnabled(true);
+                                    UI.show(mNoteIcon);
                                 }
                             });
                         }
                     });
         } else {
-            recipientEdit.setText(URI.getAddress().toString());
+            mRecipientEdit.setText(URI.getAddress().toString());
             if (URI.getAmount() == null)
                 return;
 
@@ -235,12 +235,12 @@ public class SendFragment extends SubaccountFragment {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
                                 final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
-                                amountEdit.setText(mBitcoinFormat.noCode().format(URI.getAmount()));
+                                mAmountEdit.setText(mBitcoinFormat.noCode().format(URI.getAmount()));
                                 convertBtcToFiat(fiatRate);
-                                amountEdit.setEnabled(false);
-                                amountFiatEdit.setEnabled(false);
-                                UI.hide(maxButton);
-                                UI.hide(maxLabel);
+                                mAmountEdit.setEnabled(false);
+                                mAmountFiatEdit.setEnabled(false);
+                                UI.hide(mMaxButton);
+                                UI.hide(mMaxLabel);
                             }
                     });
                 }
@@ -260,28 +260,28 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
 
         if (savedInstanceState != null)
-            pausing = savedInstanceState.getBoolean("pausing");
+            mPausing = savedInstanceState.getBoolean("pausing");
 
         mView = inflater.inflate(R.layout.fragment_send, container, false);
 
         mSubaccount = service.getCurrentSubAccount();
 
-        sendButton = UI.find(mView, R.id.sendSendButton);
-        maxButton = UI.find(mView, R.id.sendMaxButton);
-        maxLabel = UI.find(mView, R.id.sendMaxLabel);
-        noteText = UI.find(mView, R.id.sendToNoteText);
-        noteIcon = UI.find(mView, R.id.sendToNoteIcon);
-        instantConfirmationCheckbox = UI.find(mView, R.id.instantConfirmationCheckBox);
+        mSendButton = UI.find(mView, R.id.sendSendButton);
+        mMaxButton = UI.find(mView, R.id.sendMaxButton);
+        mMaxLabel = UI.find(mView, R.id.sendMaxLabel);
+        mNoteText = UI.find(mView, R.id.sendToNoteText);
+        mNoteIcon = UI.find(mView, R.id.sendToNoteIcon);
+        mInstantConfirmationCheckbox = UI.find(mView, R.id.instantConfirmationCheckBox);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // pre-Material Design the label was already a part of the switch
-            UI.hide(maxLabel);
+            UI.hide(mMaxLabel);
         }
 
-        amountEdit = UI.find(mView, R.id.sendAmountEditText);
-        amountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
-        recipientEdit = UI.find(mView, R.id.sendToEditText);
-        scanIcon = UI.find(mView, R.id.sendScanIcon);
+        mAmountEdit = UI.find(mView, R.id.sendAmountEditText);
+        mAmountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
+        mRecipientEdit = UI.find(mView, R.id.sendToEditText);
+        mScanIcon = UI.find(mView, R.id.sendScanIcon);
 
         final String btcUnit = (String) service.getUserConfig("unit");
         final TextView bitcoinScale = UI.find(mView, R.id.sendBitcoinScaleText);
@@ -303,11 +303,11 @@ public class SendFragment extends SubaccountFragment {
             }
             if (bitcoinUri != null)
                 processBitcoinURI(bitcoinUri);
-            fromIntentURI = true;
+            mFromIntentURI = true;
             container.setTag(R.id.tag_bitcoin_uri, null);
         }
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 // FIXME: Instead of checking the state here, enable/disable sendButton when state changes
@@ -315,11 +315,11 @@ public class SendFragment extends SubaccountFragment {
                     gaActivity.toast(R.string.err_send_not_connected_will_resume);
                     return;
                 }
-                final String recipient = UI.getText(recipientEdit);
+                final String recipient = UI.getText(mRecipientEdit);
                 final Coin amount;
                 Coin nonFinalAmount;
                 try {
-                    nonFinalAmount = mBitcoinFormat.parse(UI.getText(amountEdit));
+                    nonFinalAmount = mBitcoinFormat.parse(UI.getText(mAmountEdit));
                 } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
@@ -332,23 +332,23 @@ public class SendFragment extends SubaccountFragment {
 
                 final boolean validAddress = GaService.isValidAddress(recipient);
 
-                final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0) || maxButton.isChecked();
+                final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0) || mMaxButton.isChecked();
                 String message = null;
 
                 final Map<String, Object> privateData = new HashMap<>();
 
-                final String memo = UI.getText(noteText);
+                final String memo = UI.getText(mNoteText);
                 if (!memo.isEmpty())
                     privateData.put("memo", memo);
 
                 if (mSubaccount != 0)
                     privateData.put("subaccount", mSubaccount);
 
-                if (instantConfirmationCheckbox.isChecked())
+                if (mInstantConfirmationCheckbox.isChecked())
                     privateData.put("instant", true);
 
                 ListenableFuture<PreparedTransaction> ptxFn;
-                if (payreqData == null) {
+                if (mPayreqData == null) {
                     if (!validAddress && !validAmount) {
                         message = gaActivity.getString(R.string.invalidAmountAndAddress);
                     } else if (!validAddress) {
@@ -357,7 +357,7 @@ public class SendFragment extends SubaccountFragment {
                         message = gaActivity.getString(R.string.invalidAmount);
                     }
                     if (message == null) {
-                        if (maxButton.isChecked()) {
+                        if (mMaxButton.isChecked()) {
                             // prepareSweepAll again in case some fee estimation
                             // has changed while user was considering the amount,
                             // and to make sure the same algorithm of fee calcualation
@@ -375,28 +375,28 @@ public class SendFragment extends SubaccountFragment {
                         ptxFn = null;
                     }
                 } else {
-                    ptxFn = service.preparePayreq(amount, payreqData, privateData);
+                    ptxFn = service.preparePayreq(amount, mPayreqData, privateData);
                 }
 
                 if (ptxFn != null) {
-                    sendButton.setEnabled(false);
+                    mSendButton.setEnabled(false);
                     CB.after(ptxFn,
-                            new CB.Toast<PreparedTransaction>(gaActivity, sendButton) {
+                            new CB.Toast<PreparedTransaction>(gaActivity, mSendButton) {
                                 @Override
                                 public void onSuccess(final PreparedTransaction ptx) {
                                     // final Coin fee = Coin.parseCoin("0.0001");        //FIXME: pass real fee
-                                    final Coin verifyAmount = maxButton.isChecked() ? null : amount;
+                                    final Coin verifyAmount = mMaxButton.isChecked() ? null : amount;
                                     CB.after(service.validateTx(ptx, recipient, verifyAmount),
-                                            new CB.Toast<Coin>(gaActivity, sendButton) {
+                                            new CB.Toast<Coin>(gaActivity, mSendButton) {
                                                 @Override
                                                 public void onSuccess(final Coin fee) {
                                                     final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
                                                     // can be non-UI because validation talks to USB if hw wallet is used
                                                     gaActivity.runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            sendButton.setEnabled(true);
+                                                            mSendButton.setEnabled(true);
                                                             final Coin dialogAmount, dialogFee;
-                                                            if (maxButton.isChecked()) {
+                                                            if (mMaxButton.isChecked()) {
                                                                 // 'fee' in reality is the sent amount in case passed amount=null
                                                                 dialogAmount = fee;
                                                                 dialogFee = service.getCoinBalance(mSubaccount).subtract(fee);
@@ -428,23 +428,23 @@ public class SendFragment extends SubaccountFragment {
             }
         });
 
-        maxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mMaxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton v, boolean isChecked) {
                 if (isChecked) {
-                    amountEdit.setEnabled(false);
-                    amountFiatEdit.setEnabled(false);
-                    amountEdit.setText(getString(R.string.send_max_amount));
+                    mAmountEdit.setEnabled(false);
+                    mAmountFiatEdit.setEnabled(false);
+                    mAmountEdit.setText(getString(R.string.send_max_amount));
                 } else {
-                    amountEdit.setText("");
-                    amountEdit.setEnabled(true);
-                    amountFiatEdit.setEnabled(true);
+                    mAmountEdit.setText("");
+                    mAmountEdit.setEnabled(true);
+                    mAmountFiatEdit.setEnabled(true);
                 }
             }
         });
 
-        scanIcon.setOnClickListener(new View.OnClickListener() {
+        mScanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(final View v) {
                                             //New Marshmallow permissions paradigm
@@ -465,7 +465,7 @@ public class SendFragment extends SubaccountFragment {
         final FontAwesomeTextView fiatView = UI.find(mView, R.id.sendFiatIcon);
         changeFiatIcon(fiatView, service.getFiatCurrency());
 
-        amountFiatEdit.addTextChangedListener(new TextWatcher() {
+        mAmountFiatEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
 
@@ -482,7 +482,7 @@ public class SendFragment extends SubaccountFragment {
             }
         });
 
-        amountEdit.addTextChangedListener(new TextWatcher() {
+        mAmountEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
 
@@ -499,17 +499,17 @@ public class SendFragment extends SubaccountFragment {
             }
         });
 
-        noteIcon.setOnClickListener(new View.OnClickListener() {
+        mNoteIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (noteText.getVisibility() == View.VISIBLE) {
-                    noteIcon.setText(R.string.fa_pencil);
-                    noteText.setText("");
-                    noteText.setVisibility(View.INVISIBLE);
+                if (mNoteText.getVisibility() == View.VISIBLE) {
+                    mNoteIcon.setText(R.string.fa_pencil);
+                    mNoteText.setText("");
+                    mNoteText.setVisibility(View.INVISIBLE);
                 } else {
-                    noteIcon.setText(R.string.fa_remove);
-                    UI.show(noteText);
-                    noteText.requestFocus();
+                    mNoteIcon.setText(R.string.fa_remove);
+                    UI.show(mNoteText);
+                    mNoteText.requestFocus();
                 }
             }
         });
@@ -528,16 +528,16 @@ public class SendFragment extends SubaccountFragment {
     public void onViewStateRestored(final Bundle savedInstanceState) {
         Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
-        pausing = false;
+        mPausing = false;
     }
 
     private void hideInstantIf2of3() {
         if (getGAService().findSubaccountByType(mSubaccount, "2of3") == null) {
-            UI.show(instantConfirmationCheckbox);
+            UI.show(mInstantConfirmationCheckbox);
             return;
         }
-        UI.hide(instantConfirmationCheckbox);
-        instantConfirmationCheckbox.setChecked(false);
+        UI.hide(mInstantConfirmationCheckbox);
+        mInstantConfirmationCheckbox.setChecked(false);
     }
 
     @Override
@@ -586,65 +586,65 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void convertBtcToFiat(final float exchangeRate) {
-        if (converting || pausing)
+        if (mConverting || mPausing)
             return;
 
-        converting = true;
+        mConverting = true;
         final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
                 .toBigInteger().longValue());
 
         try {
             final ExchangeRate rate = new ExchangeRate(exchangeFiat);
-            final Coin btcValue = mBitcoinFormat.parse(UI.getText(amountEdit));
+            final Coin btcValue = mBitcoinFormat.parse(UI.getText(mAmountEdit));
             Fiat fiatValue = rate.coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
-            amountFiatEdit.setText(fiatValue.toPlainString());
+            mAmountFiatEdit.setText(fiatValue.toPlainString());
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            if (UI.getText(amountEdit).equals(getString(R.string.send_max_amount)))
-                amountFiatEdit.setText(getString(R.string.send_max_amount));
+            if (UI.getText(mAmountEdit).equals(getString(R.string.send_max_amount)))
+                mAmountFiatEdit.setText(getString(R.string.send_max_amount));
             else
-                amountFiatEdit.setText("");
+                mAmountFiatEdit.setText("");
         }
-        converting = false;
+        mConverting = false;
     }
 
     private void convertFiatToBtc() {
-        if (converting || pausing)
+        if (mConverting || mPausing)
             return;
 
-        converting = true;
+        mConverting = true;
         final float exchangeRate = getGAService().getFiatRate();
         final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
                 .toBigInteger().longValue());
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);
         try {
-            final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(amountFiatEdit));
-            amountEdit.setText(mBitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
+            final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(mAmountFiatEdit));
+            mAmountEdit.setText(mBitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            amountEdit.setText("");
+            mAmountEdit.setText("");
         }
-        converting = false;
+        mConverting = false;
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        pausing = true;
+        mPausing = true;
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart -> " + TAG);
-        pausing = false;
+        mPausing = false;
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("pausing", pausing);
+        outState.putBoolean("pausing", mPausing);
     }
 
     public void onDestroyView() {
