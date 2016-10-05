@@ -158,7 +158,7 @@ public class MainFragment extends SubaccountFragment {
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         makeBalanceObserver(mSubaccount);
-        if (service.getCoinBalance(mSubaccount) != null) {
+        if (IsPageSelected() && service.getCoinBalance(mSubaccount) != null) {
             updateBalance();
             reloadTransactions(false, true);
         }
@@ -186,6 +186,7 @@ public class MainFragment extends SubaccountFragment {
         Log.d(TAG, "onResume -> " + TAG);
         if (getGAService() != null)
             attachObservers();
+        setIsDirty(true);
     }
 
     @Override
@@ -247,6 +248,11 @@ public class MainFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
 
+        // Mark ourselves as clean before fetching. This means that while the callback
+        // is running, we may be marked dirty again if a new block arrives, which
+        // is required to avoid missing updates while the RPC is in flight.
+        setIsDirty(false);
+
         if (mTxItems == null || mTxItems.isEmpty() || showWaitDialog) {
             // Show a wait dialog only when initially loading transactions
             popupWaitDialog(R.string.loading_transactions);
@@ -274,6 +280,8 @@ public class MainFragment extends SubaccountFragment {
 
                         if (!IsPageSelected()) {
                             Log.d(TAG, "Callback after hiding, ignoring");
+                            // Mark ourselves as dirty so we reload when next shown
+                            setIsDirty(true);
                             return;
                         }
 
