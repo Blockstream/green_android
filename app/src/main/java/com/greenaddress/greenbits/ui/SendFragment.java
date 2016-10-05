@@ -59,6 +59,7 @@ public class SendFragment extends SubaccountFragment {
     private TextView noteIcon;
     private Button sendButton;
     private Switch maxButton;
+    private TextView maxLabel;
     private TextView scanIcon;
     private Map<?, ?> payreqData = null;
     private boolean fromIntentURI = false;
@@ -202,6 +203,8 @@ public class SendFragment extends SubaccountFragment {
                                         convertBtcToFiat();
                                         amountEdit.setEnabled(false);
                                         amountFiatEdit.setEnabled(false);
+                                        UI.hide(maxButton);
+                                        UI.hide(maxLabel);
                                     }
                                     UI.hide(bip70Progress);
                                 }
@@ -236,6 +239,8 @@ public class SendFragment extends SubaccountFragment {
                                 convertBtcToFiat(fiatRate);
                                 amountEdit.setEnabled(false);
                                 amountFiatEdit.setEnabled(false);
+                                UI.hide(maxButton);
+                                UI.hide(maxLabel);
                             }
                     });
                 }
@@ -263,13 +268,14 @@ public class SendFragment extends SubaccountFragment {
 
         sendButton = UI.find(mView, R.id.sendSendButton);
         maxButton = UI.find(mView, R.id.sendMaxButton);
+        maxLabel = UI.find(mView, R.id.sendMaxLabel);
         noteText = UI.find(mView, R.id.sendToNoteText);
         noteIcon = UI.find(mView, R.id.sendToNoteIcon);
         instantConfirmationCheckbox = UI.find(mView, R.id.instantConfirmationCheckBox);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // pre-Material Design the label was already a part of the switch
-            UI.hide((View) UI.find(mView, R.id.sendMaxLabel));
+            UI.hide(maxLabel);
         }
 
         amountEdit = UI.find(mView, R.id.sendAmountEditText);
