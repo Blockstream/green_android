@@ -142,6 +142,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Log.d(TAG, "Destroying address for subaccount " + mSubaccount);
         mAddressText.setText("");
         mAddressImage.setImageBitmap(null);
+        mView.setVisibility(View.GONE);
     }
 
     private void onCopyClicked() {
@@ -198,6 +199,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         hideWaitDialog();
         UI.enable(mCopyIcon);
+        mView.setVisibility(View.VISIBLE);
     }
 
     @Override
