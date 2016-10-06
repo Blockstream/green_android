@@ -24,7 +24,7 @@
     <string name="newTxTitle">Нова Транзакція</string>
     <string name="sweepAddressTitle">Скановані кошти</string>
     <string name="twoFactorChoicesTitle">обрати метод 2 факторної авторизації</string>
-    <string name="choose">ВИБРАТИ</string>
+    <string name="choose">ОБРАТИ</string>
     <string name="cancel">ВІДМІНИТИ</string>
     <string name="attemptsLeft">%1$d спроб залишилось</string>
 
@@ -69,11 +69,11 @@
     <string name="toastOnCopyAddress">Адреса скопійована у буфе обміну.</string>
     <string name="receiveAddressSubTitle">Адреса</string>
     <string name="sendPayTo">Оплатити до</string>
-    <string name="action_sweep">Очистити</string>
+    <string name="action_sweep">Сканувати</string>
     <string name="action_logout">Вийти</string>
     <string name="txTypeIn">Отримано</string>
     <string name="txTypeOut">Відправлено</string>
-    <string name="txTypeRedeposit">Redeposited</string>
+    <string name="txTypeRedeposit">Перезараховано</string>
     <string name="mnemonicHint">Уведіть Ваш пароль GreenAddress або відскануйте qr-код</string>
     <string name="title_activity_settings">Налаштування</string>
     <string name="ago">%1$d %2$s тому</string>
@@ -109,9 +109,9 @@
     <string name="instantConfirmation">Моментальне Підтвердження</string>
     <string name="trezor_login_failed">невдалий вхід Фізичного Гаманця </string>
     <string name="trezor_login_failed_details">Це скоріше всього означає вам потрібно прив\'язати ваш Фізичний Гаманець з GreenAddress використовуючи дектоп клієнт.</string>
-    <string name="improve_security_ledger">Покращити ваш безпечність за допомогою Ledger</string>
+    <string name="improve_security_ledger">Покращити безпеку ваших коштів за допомогою Ledger</string>
     <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard безпека для ваших Bitcoin.</string>
-    <string name="mnemonic_passphrase">Пароль для мнемонічної фрази</string>
+    <string name="mnemonic_passphrase">Відобразити мнемонічну фразу</string>
     <string name="mnemonic_passphrase_not_available">Відсутній пароль</string>
     <string name="autologout_time">Час автоматичного виходу</string>
     <string name="autologout_time_default"> хвилин</string>
@@ -126,7 +126,7 @@
     <string name="enableSPVSummary">проста перевірка платежу (SPV) дозволяє довіряти вашим транзакціямі балансу завдяки синхронізації з мережею Bitcoin. Вона збільшує споживання трафіку і обчислювальної потужностіIt , тому можливо Ви бажаєте її відімкнути, якщо ви користуєтесь повільним з\'єднанням або застарівшим телефоном.</string>
     <string name="syncSPVOnMobile">Синхронізувати SPV на телефоні</string>
     <string name="syncSPVOnMobileSummary">SPV завжди синхронізується на стійких з\'єднаннях на кшталт WiFi чи Ethernet. Це налаштування також синхронізується при використанні мобільного з\'єднання. Це може коштувати значну суму в залежності від вашого тарифного плану тому зверніть увагу при використанні.</string>
-    <string name="noTwoFactorWarning">Ви не маєте 2 факторну автентифікацію!\nПерейдіть в налаштування щоб увімкнути її!</string>
+    <string name="noTwoFactorWarning">Вам необхідно встановити 2 факторну автентифікацію!\nПерейдіть в налаштування щоб увімкнути її!</string>
     <string name="scan_camera_problem_dialog_message">Проблеми з камерою. Вам можливо необхідно перезавантажити пристрій.</string>
     <string name="scan_camera_problem_dialog_title">Проблеми з камерою</string>
     <string name="providePassphrase">Будь-ласка введіть пароль:</string>
@@ -213,7 +213,7 @@
     <string name="view_block_explorer">Ви впевнені що хочете переглянути деталі блоку %1$s ?</string>
     <string name="no_peers_connected">З\'єднання з пірами відсутнє</string>
     <string name="settings_currency">Курс обміну на валюту</string>
-    <string name="settings_denomination">Bitcoin вартість</string>
+    <string name="settings_denomination">Bitcoin деномінація</string>
     <string name="watchOnlyLogin">Логін лише для перегляду</string>
     <string name="watchOnlyLoginStatus">Увімкнено: %1$s</string>
     <string name="watchOnlyLoginSetup">Доторкніться для встановлення</string>
