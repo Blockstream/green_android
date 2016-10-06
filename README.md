@@ -9,7 +9,7 @@ You need to have correctly installed the following
 - "Android SDK Build-tools" version 24.0.3 recommended
 - "Android Support Library" version 23.2.1 recommended
 - "Android Support Repository" version 38.0.0 recommended
-- "Android NDK" version r12b recommended
+- "Android NDK" version r13 recommended
 
 ## Clone the repo
 
