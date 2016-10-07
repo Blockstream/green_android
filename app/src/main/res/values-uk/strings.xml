@@ -100,7 +100,7 @@
     <string name="trezorProvidePin">Будь-ласка введіть ПІН Фізичного Гаманця. Огляньте пристрій для цифр:</string>
     <string name="trezorProvidePassphrase">Будь-ласка введіть ваш пароль Фізичного Гаманця.</string>
     <string name="main_account">Основний</string>
-    <string name="footerAccount">Акаунт</string>
+    <string name="footerAccount">Аккаунт</string>
     <string name="btchipProvidePIN">Будь-ласка введіть Ваш ПІН BTChip:</string>
     <string name="firstLoginRequestedInstructionsOldTrezor">ПЗ Вашого Фізичного Гаманця застаріло. Будь-ласка обновіть його до, як мінімум, 1.3.0 за адресою http://mytrezor.com/ з вашого комп\'ютера.</string>
     <string name="firstLoginRequestedPleaseOpenBitcoinApp">Детектовано Ledger Dashboard, будь-ласка відкрийте додаток Bitcoin для доступу.</string>
@@ -166,7 +166,7 @@
     <string name="enterValidAddressTitleTorDisabled">Tor з\'єднання відімкнено!</string>
     <string name="enterValidAddressTextTorDisabled">Вам потрібно спочатку увімкнути налаштування проксі (Orbot Socks5) для ввімкнення Tor.</string>
     <string name="useNativeAuthentication">Використовувати аутентифікацію Android </string>
-    <string name="genericsettings">Інформація і налаштування</string>
+    <string name="genericsettings">Інформація і Налаштування</string>
     <string name="txFeeInfo">Вільно / Розмір (байтів) / Вільно на kB</string>
     <string name="doubleSpend">подвійна трата</string>
     <string name="txDoubleSpentBy">Двічі потрачено </string>

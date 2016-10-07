@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="action_settings">Настройки</string>
+    <string name="title_activity_mnemonic">Восстановить</string>
+    <string name="sendToText">Кому:</string>
+    <string name="sendAmountText">Сумма</string>
+    <string name="sendSendButton">Проверить и Отослать</string>
+    <string name="pinSaveText">Сохранить</string>
+    <string name="pinLoginText">Войти</string>
+    <string name="title_activity_qr_scanner">QR Сканнер</string>
+    <string name="title_activity_sign_up">Создать</string>
+    <string name="signupContinueButtonText">Продолжить</string>
+    <string name="signupCheckBoxText">Я сохранил пароль и прочёл Условия Использования</string>
+    <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">Условия Использования</a></string>
+
+    <string name="firstSignUpText">СОЗДАТЬ</string>
+    <string name="firstLogInText">ВОССТАНОВИТЬ</string>
+    <string name="receive_title">ПОЛУЧИТЬ</string>
+    <string name="main_title">АКТИВНОСТЬ</string>
+    <string name="send_title">ОТОСЛАТЬ</string>
+    <string name="pinTitleText">ПИН</string>
+    <string name="network_unavailable">Отсутствует соединение</string>
+    <string name="newTxTitle">Новая Транзакция</string>
+    <string name="sweepAddressTitle">Сканированыне средства</string>
+    <string name="twoFactorChoicesTitle">Выбрать метод 2 факторной авторизации</string>
+    <string name="choose">ВЫБРАТЬ</string>
+    <string name="cancel">ОТМЕНИТЬ</string>
+    <string name="attemptsLeft">%1$d попыток осталось</string>
+
+    <string-array name="twoFactorChoices">
+        <item>Email</item>
+        <item>SMS</item>
+        <item>Звонок</item>
+        <item>Google Auth</item>
+    </string-array>
+    <string-array name="timesStrings">
+        <item>год</item>
+        <item>месяц</item>
+        <item>день</item>
+        <item>час</item>
+        <item>минута</item>
+        <item>секунда</item>
+    </string-array>
+    <string-array name="timesStringPlurals">
+        <item>лет</item>
+        <item>месяцев</item>
+        <item>дней</item>
+        <item>часов</item>
+        <item>минут</item>
+        <item>секунд</item>
+    </string-array>
+
+    <string name="send">ОТОСЛАТЬ</string>
+    <string name="sweep">СКАНИРОВАТЬ</string>
+    <string name="sweep_bip38_passphrase_prompt">Пожалуйста введите BIP38 пароль:</string>
+    <string name="invalid_passphrase">Пароль неверный</string>
+    <string name="invalid_key">неверный ключ</string>
+    <string name="warning">Внимание!</string>
+    <string name="save_password_now">Вы ДОЛЖНЫ сохранить этот пароль НЕМЕДЛЕННО</string>
+    <string name="greenaddress_headline">bitcoin кошелёк проще, безопаснее и быстрее</string>
+    <string name="pinSkipText">ПРОПУСТИТЬ</string>
+    <string name="sendOptionalMemo">Не обязательное напоминание</string>
+    <string name="madeBy">сделано GreenAddress</string>
+    <string name="welcomeGreenBits">Добро пожаловать в GreenBits</string>
+    <string name="attemptsFinished">Некорректный ПИН, у Вас не осталось попыток. Попробуйте войти используя пароль.</string>
+    <string name="attemptsLeftLong">Некорректный ПИН, у Вас осталось  %1$d  попыток</string>
+    <string name="warnOnPaste">Будьте внимательны, другие приложения могут читать или модифицировать буфер обмена</string>
+    <string name="toastOnCopyAddress">Адрес скопирован в буфер обмена.</string>
+    <string name="receiveAddressSubTitle">Адрес</string>
+    <string name="sendPayTo">Оплатить к</string>
+    <string name="action_sweep">Сканировать</string>
+    <string name="action_logout">Выйти</string>
+    <string name="txTypeIn">Получено</string>
+    <string name="txTypeOut">Отправлено</string>
+    <string name="txTypeRedeposit">Redeposited</string>
+    <string name="mnemonicHint">Введите Ваш пароль GreenAddress или отскануйте qr-код</string>
+    <string name="title_activity_settings">Настройки</string>
+    <string name="ago">%1$d %2$s назад</string>
+    <string name="txSubTitle">Детали транзакции</string>
+    <string name="txHashText">Хеш</string>
+    <string name="txRecipientText">Получатель</string>
+    <string name="txMemoText">Напоминание</string>
+    <string name="action_network">Монитор Сети</string>
+    <string name="action_about">О Нас</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="txDateText">Дата</string>
+    <string name="txAmountText">Сумма</string>
+    <string name="newTxAmount">Сумма: </string>
+    <string name="newTxRecipient">Получатель:</string>
+    <string name="newTxFee">Стоимость:</string>
+    <string name="invalidAmountAndAddress">сумма и адрес некоректные</string>
+    <string name="invalidAddress">Адрес некоректный</string>
+    <string name="invalidAmount">Сумма некоректная</string>
+    <string name="noBalanceFirstLine"><a href="https://bitcoin.org/en/getting-started">О Bitcoin</a> </string>
+    <string name="noBalanceSecondLine">Где их <a href="http://howtobuybitcoins.info/">покупать</a></string>
+    <string name="noBalanceThirdLine">Ознакомиться с <a href="https://greenaddress.it/faq">FAQ</a></string>
+    <string name="trezor_headline">Ознакомиться с инструкцией вашего Физического Кошелька</string>
+    <string name="trezorProvidePin">Пожалуйста введите ПИН Физического Кошелька. Осмотрите устройство на наличие цифр:</string>
+    <string name="trezorProvidePassphrase">Пожалуйста введите ваш пароль Физического Кошелька.</string>
+    <string name="main_account">Основной</string>
+    <string name="footerAccount">Аккаунт</string>
+    <string name="btchipProvidePIN">Пожалуйста введите Ваш ПИН BTChip:</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">ПО Вашего Физического Кошелька устарело. Пожалуйста обновите его к, как минимум, 1.3.0 по адресу http://mytrezor.com/ с Вашего компьютера.</string>
+    <string name="firstLoginRequestedPleaseOpenBitcoinApp">Детектировано Ledger Dashboard, Пожалуйста откройте приложение Bitcoin для доступа.</string>
+    <string name="btchipInvalidPIN">ПИН некоректный. Осталось %1$d попыток. Пожалуйста переподсоедините ваш BTChip перед следуйщей попыткой.</string>
+    <string name="btchipNotSetup">BTChip не установлен. Пожалуйста установите его на дектоп клиент для использование.</string>
+    <string name="instantConfirmation">Моментальное Подтверждение</string>
+    <string name="trezor_login_failed">неудачний вход Физического Кошелька </string>
+    <string name="trezor_login_failed_details">Это скорее всего значит что вам нужно привязать ваш Физический Кошелёк к GreenAddress используя настольный клиент.</string>
+    <string name="improve_security_ledger">Улучшить вашу безопасность с помощью Ledger</string>
+    <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard безопасность для ваших Bitcoin.</string>
+    <string name="mnemonic_passphrase">Пароль для мнемонической фразы</string>
+    <string name="mnemonic_passphrase_not_available">Пароль отсутствует</string>
+    <string name="autologout_time">Время автоматического выхода</string>
+    <string name="autologout_time_default"> минут</string>
+    <string name="touch_to_display">Коснитесь для отображения</string>
+    <string name="txUnconfirmedTx">Транзакция не подтверждена. Пожалуйста подождите подтверждений блока для получения доверия для этой транзакции.</string>
+    <string name="txUnverifiedTx">Транзакция не подтверждена. Пожалуйста подождите синхронизацию для получения доверия для этой транзакции. Осталось блоков:</string>
+    <string name="unconfirmedBalanceTitle">Неподтвержденный баланс</string>
+    <string name="unconfirmedBalanceText">Ваш баланс не подтвержден. Вы имеете неподтвержденые входные трансакци, или проверка SPV не завершилась.</string>
+    <string name="spvNoWiFiTitle">SPV синхронизация</string>
+    <string name="spvSettingsWatchOnly">SPV не используется и его настройки не могут изменится в режиме для чтения.</string>
+    <string name="enableSPV">Включить SPV</string>
+    <string name="enableSPVSummary">простая проверка платежа (SPV) разрешает доверять вашим транзакциям и балансу благодаря синхронизации с сетью Bitcoin. Она увеличивает потребление трафика и вычислительной мощьности, по этому возможно Вы желаете ее отключить, если вы используете медленное соединение или устаревший телефон.</string>
+    <string name="syncSPVOnMobile">синхронизировать SPV на телефоне</string>
+    <string name="syncSPVOnMobileSummary">SPV всегда синхронизируется на стойких соединениях вида WiFi или Ethernet. Эта установка также синхронизируется при использовании мобильного соединения. Это может стоить значительных средств в зависимости от Вашего тарифного плана поэтому обратите внимание при использовании.</string>
+    <string name="noTwoFactorWarning">Вам необходимо установить 2 факторную аутентификацию!\nПерейдите в настройки чтобы включить её!</string>
+    <string name="scan_camera_problem_dialog_message">Проблеми с камерой. Вам возможно нужно перезагрузить устройство.</string>
+    <string name="scan_camera_problem_dialog_title">Проблеми с камерой</string>
+    <string name="providePassphrase">Пожалуйста введите пароль:</string>
+    <string name="pref_header_twofactor">2 факторная аутентификации</string>
+    <string name="twoFacPhoneCall">Телефонный звонок</string>
+    <string name="twoFacSMS">SMS</string>
+    <string name="twoFacGauth">Google Authenticator</string>
+    <string name="twoFacEmail">E-mail</string>
+    <string name="hideTwoFacWarning">спрятать предупреждение 2ФА</string>
+
+    <string name="twoFacSetupHeader">%1$s настройки 2ФА</string>
+    <string name="progress">Прогресс:</string>
+    <string name="twoFacStep1Description">Сначала нужно ввести код автентификации с одного с ваших преждевременно настроеных методов. Для предупреждения изменений настроек 2ФА злобными пользователями без Вашего уведомления.</string>
+    <string name="twoFacStep1SelectExisting">Виберите установленный 2ФА метод для автентификации для установки нового:</string>
+    <string name="twoFacProvideGauthDetailsDescription">введите код с Вашего нового Google Authenticator. Его можно получить путем сканирования QR-кода ниже в приложении Google Authenticator.</string>
+    <string name="twoFacProvideGauthDetails">код Google Authenticator.</string>
+    <string name="twoFacProvideDetails">Пожалуйста введите ваш %1$s.</string>
+    <string name="twoFacEmailChangeNotice">Предоставление E-mail включает уведомление и возможность восстановление транзакций</string>
+    <string name="twoFacEmailConfirmNotice">Вам нужно подтвердить ваш email в следуйщем шаге, иначе вы не будете получать никаких уведомлений.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">Вам нужно ввести код подтверждения для того чтобы уверится что вы имеете доступ к новому 2ФА методу. После введения кода метод будет включен.</string>
+    <string name="twoFacProvideConfirmationCode">Пожалуйста введите  %1$s код.</string>
+    <string name="continueText">Продолжить</string>
+    <string name="twoFacProvideAuthCodeDescription">Вам нужно ввести код подтверждения с уже установленых методов 2ФА. Это используется для пердупреждения изменений ваших настроек 2ФА злобными пользователями без вашего соглашения.</string>
+    <string name="recoveryAndNotifications">Восстановление и Уведомление</string>
+    <string name="emailAddress">email адрес</string>
+    <string name="phoneNumber">номер телефона</string>
+    <string name="newAddress">Новый</string>
+    <string name="copyAddress">Копировать</string>
+    <string name="txReceivedOn">Получено в </string>
+    <string name="twoFacGauthTextCode">Или вы можете использовать следуйщий код (коснитесь чтобы скопировать) : %1$s. Не забудьте сделать его резервную копию!</string>
+    <string name="trustedspv">Подключайтесь только к доверенным пирам для SPV</string>
+    <string name="trustedspvExample">Например: 8.90.14.2:8333,40.116.12.85:8333</string>
+    <string name="enterValidAddressTitle">Адрес некоректный!</string>
+    <string name="enterValidAddressText">Пожалуйста введите коректный .onion либо IP адрес. (желательно .onion )</string>
+    <string name="changingWarnOnionTitle">Вниманее: Не-.onion адрес обнаружен!</string>
+    <string name="changingWarnOnionText">Соединение с Tor (.onion) нодами розрешает получить большую приватность і безопасность. Для продолжения нажмите "OK".</string>
+    <string name="enterValidAddressTitleTorDisabled">Tor соединение отключено!</string>
+    <string name="enterValidAddressTextTorDisabled">Вам нужно сначала включить настройки прокси (Orbot Socks5) для включения Tor.</string>
+    <string name="useNativeAuthentication">Использовать аутентификацию Android </string>
+    <string name="genericsettings">Інформация и Настройки</string>
+    <string name="txFeeInfo">Свободно / Размер (байт) / Свободно на kB</string>
+    <string name="doubleSpend">двойная трата</string>
+    <string name="txDoubleSpentBy">потрачено два раза </string>
+    <string name="updated">обновлено</string>
+    <string name="malleated">мутировало</string>
+    <string name="replaceable">заменимое</string>
+    <string name="pref_header_network">Сетевые настройки</string>
+    <string name="pref_title_display_hostname">Socks5 хост</string>
+    <string name="pref_title_display_port">Socks5 порт</string>
+    <string name="pref_default_host" translatable="false">127.0.0.1</string>
+    <string name="pref_default_port" translatable="false">9050</string>
+    <string name="optin_rbf">Включить замену транзакций</string>
+    <string name="willConfirmAfter">Будет подтверждено после такого количества блоков (ориентировочно): %1$d</string>
+    <string name="recommendationBlocks">Если вы сейчас поднимете плату к рекомендуемому уровню, транзакция будед подтверждена ориентировочно через %1$d блоков.</string>
+    <string name="recommendationSingleBlock">Если вы сейчас поднимете плату к рекомендуемому уровню, транзакция будед подтверждена ориентировочно через 1 блок.</string>
+    <string name="increaseFee">Поднять платеж</string>
+    <string name="newFeeText">Новый платеж:</string>
+    <string name="oldFeeText">Старый платеж:</string>
+    <string name="feeIncreaseTitle">Увеличение платежа</string>
+    <string name="insufficientFundsText">Не достаточно средств</string>
+    <string name="app_version">Версия %1$s %2$s</string>
+    <string name="invalidWord">\'%1$s\' - это слово некоректное, или желаете исправить на  %2$s?</string>
+    <string name="app_description">GreenAddress Логотип</string>
+    <string name="setPin">Установить ПИН</string>
+    <string name="set2FA">Установить 2ФА</string>
+    <string name="resetSPV">сбросить SPV</string>
+    <string name="err_send_invalid_bitcoin_uri">Некоректный Bitcoin URI</string>
+    <string name="err_send_not_connected_will_resume">Отсутствует соединение, соединение восстановится автоматически</string>
+    <string name="err_send_need_recipient">Пожалуйста введите получателя</string>
+    <string name="err_request_login_no_pin">ПИН не введен, завершение работи.</string>
+    <string name="err_tabbed_sweep_failed">Проверка не удалась: некоректный исходящтй адрес</string>
+    <string name="err_tabbed_sweep_requires_camera_permissions">Пожалуйста включите разрешение на камеру для использования функционала сканирования.</string>
+    <string name="err_qrscan_requires_camera_permissions">Пожалуйста включите разрешение на камеру для использования функционала сканирования.</string>
+    <string name="err_mnemonic_activity_logout_required">Вы сначала должны выйти для того чтобы войти.</string>
+    <string name="err_mnemonic_activity_invalid_mnemonic">некоректный пароль (должен содержать от 24 до 27 слов)</string>
+    <string name="err_pin_save_wrong_length">ПИН должен содержать от 4 до 15 знаков</string>
+    <string name="send_max_amount">МАКС</string>
+    <string name="err_sign_up_nfc_not_writable">Ошибка: тег не записывается</string>
+    <string name="err_sign_up_nfc_too_small">Ошибка: тег слишком маленький</string>
+    <string name="network_monitor_peer_addr">Адрес: %1$s</string>
+    <string name="network_monitor_peer_version">Версия: %1$s</string>
+    <string name="network_monitor_peer_block">Высота блока: %1$d</string>
+    <string name="network_monitor_peer_ping">Последний пинг: %1$d ms</string>
+    <string name="network_monitor_bloom_info">Інформація про блум отсутствует.</string>
+    <string name="network_monitor_banner">%1$s Блоков осталось %2$d</string>
+    <string name="view_block_explorer">Вы уверены что хотите посмотреть детали блока %1$s ?</string>
+    <string name="no_peers_connected">Соединение с пирами отсутствует</string>
+    <string name="settings_currency">Курс обмена на валюту</string>
+    <string name="settings_denomination">Bitcoin деноминация</string>
+    <string name="watchOnlyLogin">Логин только для просмотра</string>
+    <string name="watchOnlyLoginStatus">Включено: %1$s</string>
+    <string name="watchOnlyLoginSetup">Коснитесь для восстановления</string>
+    <string name="watchOnlyLoginDisabled">Логин только для просмотра включено</string>
+    <string name="password">Пароль</string>
+    <string name="username">Логин</string>
+    <string name="enter_valid_username">Пожалуйста введите корректный логин</string>
+    <string name="enter_valid_password">Пароль не может быть пустым</string>
+    <string name="error_username_not_found_or_wrong_password">Пользователь не найден или пароль некоректный</string>
+    <string name="error_username_not_available">Логин не возможен</string>
+    <string name="enableTor">Включить Tor</string>
+    <string name="torSummary">Tor будет использовать %1$s и работать только при включенном прокси типа Orbot или Tor </string>
+    <string name="show_balance_in_title">Показовать баланс в заголовке</string>
+    <string name="show_balance_in_title_sum">Эта настройка прячет баланс Bitcoin в остальных местах и всегда отображает его только в  лише у заголовке вместо наименования субакаунта</string>
+    <string name="remember_watch_only">Запомнить логин</string>
+    <string name="remember_warn_title">Внимание: логин будет сохранен на этом устройстве</string>
+    <string name="remember_warn_content">Сохранение логина на устройстве может быть небезопасным; если кто-то получит доступ к памяти устройства то сможет получить ваш логин в чистом виде. Для продолжения нажмите "OK".</string>
+
+</resources>
