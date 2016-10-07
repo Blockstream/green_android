@@ -34,7 +34,7 @@ public class MainFragment extends SubaccountFragment {
     private static final String TAG = MainFragment.class.getSimpleName();
 
     private MaterialDialog mUnconfirmedDialog = null;
-    private View mView;
+    private View mView = null;
     private List<TransactionItem> mTxItems;
     private Map<Sha256Hash, List<Sha256Hash> > replacedTxs;
     private int mSubaccount;
@@ -246,12 +246,20 @@ public class MainFragment extends SubaccountFragment {
     private void reloadTransactions(final boolean newAdapter, final boolean showWaitDialog) {
         final Activity activity = getActivity();
         final GaService service = getGAService();
-        final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
+        final RecyclerView txView;
 
         // Mark ourselves as clean before fetching. This means that while the callback
         // is running, we may be marked dirty again if a new block arrives, which
         // is required to avoid missing updates while the RPC is in flight.
         setIsDirty(false);
+
+        if (activity == null || service == null || mView == null) {
+            // Don't attempt to load transactions if we are being restored
+            // without an activity, service or view
+            return;
+        }
+
+        txView = UI.find(mView, R.id.mainTransactionList);
 
         if (mTxItems == null || mTxItems.isEmpty() || showWaitDialog) {
             // Show a wait dialog only when initially loading transactions
