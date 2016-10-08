@@ -188,4 +188,13 @@
   <string name="enter_valid_password">La password non deve essere vuota</string>
   <string name="error_username_not_found_or_wrong_password">Utente inesistente o password non corretta</string>
   <string name="error_username_not_available">Username non disponibile</string>
+  <string name="enableTor">Abilita Tor</string>
+  <string name="torSummary">Tor userà %1$s e funzionerà solo se il proxy usato è Orbot o supporta Tor</string>
+  <string name="show_balance_in_title">Visualizza il bilancio nel titolo</string>
+  <string name="show_balance_in_title_sum">Questa opzione nasconde il bilancio nelle schermate normali e la visualizza nel titolo al posto del nome del subaccount</string>
+  <string name="remember_watch_only">Ricorda nome utente</string>
+  <string name="remember_warn_title">Attenzione: Il nome utente verrà salvato nel dispositivo.</string>
+  <string name="remember_warn_content">Lasciare il nome utente sul dispositivo potrebbe essere un problema; se qualcuno ha accesso alla vostra memoria potrebbe leggere il vostro nome utente in chiaro. Se decidi di continuare premi "OK".</string>
+  <string name="generating_address">Generazione indirizzo...</string>
+  <string name="loading_transactions">Caricamento transazioni...</string>
 </resources>
