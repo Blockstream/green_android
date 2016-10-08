@@ -176,8 +176,6 @@
     <string name="pref_header_network">Сетевые настройки</string>
     <string name="pref_title_display_hostname">Socks5 хост</string>
     <string name="pref_title_display_port">Socks5 порт</string>
-    <string name="pref_default_host" translatable="false">127.0.0.1</string>
-    <string name="pref_default_port" translatable="false">9050</string>
     <string name="optin_rbf">Включить замену транзакций</string>
     <string name="willConfirmAfter">Будет подтверждено после такого количества блоков (ориентировочно): %1$d</string>
     <string name="recommendationBlocks">Если вы сейчас поднимете плату к рекомендуемому уровню, транзакция будед подтверждена ориентировочно через %1$d блоков.</string>
