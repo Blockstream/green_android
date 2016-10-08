@@ -48,10 +48,7 @@ public class MainFragment extends SubaccountFragment {
 
         final GaService service = getGAService();
         final Monetary monetary = service.getCoinBalance(mSubaccount);
-        if (monetary == null)
-            return;
-
-        if (service.getLoginData() == null)
+        if (service.getLoginData() == null || monetary == null)
             return;
 
         final String btcUnit = (String) service.getUserConfig("unit");
