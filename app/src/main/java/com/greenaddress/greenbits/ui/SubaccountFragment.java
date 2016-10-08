@@ -24,11 +24,28 @@ public abstract class SubaccountFragment extends GAFragment {
     private int mBalanceObserverSubaccount = 0;
     private boolean mIsSelected = false;
     private boolean mBlockWaitDialog = false;
-    protected boolean mIsDirty = false;
+    private boolean mIsDirty = false;
+    protected View mView = null;
     private final Runnable mDialogCB = new Runnable() { public void run() { mWaitDialog = null; } };
 
     protected boolean IsPageSelected() {
         return mIsSelected;
+    }
+
+    private boolean getZombieStatus(final boolean status) {
+        if (status)
+            Log.d(TAG, "Zombie re-awakening: " + getClass().getName());
+        return status;
+    }
+
+    // Returns true if we are being restored without an activity or service
+    protected boolean isZombieNoView() {
+        return getZombieStatus(getActivity() == null || getGAService() == null);
+    }
+
+    // Returns true if we are being restored without an activity, service or view
+    protected boolean isZombie() {
+        return getZombieStatus(getActivity() == null || getGAService() == null || mView == null);
     }
 
     // Must be called by subclasses at the end of onCreateView()

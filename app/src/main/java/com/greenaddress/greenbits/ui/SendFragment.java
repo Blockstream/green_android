@@ -48,7 +48,6 @@ public class SendFragment extends SubaccountFragment {
 
     private static final String TAG = SendFragment.class.getSimpleName();
     private static final int REQUEST_SEND_QR_SCAN = 0;
-    private View mView;
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private EditText mAmountEdit;
@@ -251,10 +250,10 @@ public class SendFragment extends SubaccountFragment {
                              final Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView -> " + TAG);
-        final GaService service = getGAService();
-        if (service == null)
-            return null; // Restored without a service, let parent activity finish()
+        if (isZombieNoView())
+            return null;
 
+        final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
         if (savedInstanceState != null)
@@ -667,6 +666,9 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void updateBalance() {
+        Log.d(TAG, "Updating balance");
+        if (isZombie())
+            return;
         hideInstantIf2of3();
         makeBalanceObserver(mSubaccount);
         getGAService().updateBalance(mSubaccount);
@@ -678,7 +680,8 @@ public class SendFragment extends SubaccountFragment {
         if (needReload && isSelected) {
             Log.d(TAG, "Dirty, reloading");
             updateBalance();
-            setIsDirty(false);
+            if (!isZombie())
+                setIsDirty(false);
         }
     }
 }

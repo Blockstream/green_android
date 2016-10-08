@@ -34,7 +34,6 @@ public class MainFragment extends SubaccountFragment {
     private static final String TAG = MainFragment.class.getSimpleName();
 
     private MaterialDialog mUnconfirmedDialog = null;
-    private View mView = null;
     private List<TransactionItem> mTxItems;
     private Map<Sha256Hash, List<Sha256Hash> > replacedTxs;
     private int mSubaccount;
@@ -43,6 +42,10 @@ public class MainFragment extends SubaccountFragment {
     private final Runnable mDialogCB = new Runnable() { public void run() { mUnconfirmedDialog = null; } };
 
     private void updateBalance() {
+        Log.d(TAG, "Updating balance");
+        if (isZombie())
+            return;
+
         final GaService service = getGAService();
         final Monetary monetary = service.getCoinBalance(mSubaccount);
         if (monetary == null)
@@ -116,10 +119,10 @@ public class MainFragment extends SubaccountFragment {
                              final Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView -> " + TAG);
-        final GaService service = getGAService();
-        if (service == null)
-            return null; // Restored without a service, let parent activity finish()
+        if (isZombieNoView())
+            return null;
 
+        final GaService service = getGAService();
         popupWaitDialog(R.string.loading_transactions);
 
         mView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -248,16 +251,13 @@ public class MainFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final RecyclerView txView;
 
+        if (isZombie())
+            return;
+
         // Mark ourselves as clean before fetching. This means that while the callback
         // is running, we may be marked dirty again if a new block arrives, which
         // is required to avoid missing updates while the RPC is in flight.
         setIsDirty(false);
-
-        if (activity == null || service == null || mView == null) {
-            // Don't attempt to load transactions if we are being restored
-            // without an activity, service or view
-            return;
-        }
 
         txView = UI.find(mView, R.id.mainTransactionList);
 
@@ -381,7 +381,8 @@ public class MainFragment extends SubaccountFragment {
             Log.d(TAG, "Dirty, reloading");
             reloadTransactions(false, true);
             updateBalance();
-            setIsDirty(false);
+            if (!isZombie())
+                setIsDirty(false);
         }
     }
 }

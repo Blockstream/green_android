@@ -35,7 +35,6 @@ import nordpol.android.TagDispatcher;
 public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredTagListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
-    private View mView = null;
     private FutureCallback<QrBitmap> mNewAddressCallback = null;
     private QrBitmap mQrCodeBitmap = null;
     private int mSubaccount = 0;
@@ -68,8 +67,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                              final Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView -> " + TAG);
 
-        if (getGAService() == null)
-            return null; // Restored without a service, let parent activity finish()
+        if (isZombieNoView())
+            return null;
 
         popupWaitDialog(R.string.generating_address);
 
@@ -131,6 +130,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     private void getNewAddress() {
         Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
+        if (isZombie())
+            return;
         popupWaitDialog(R.string.generating_address);
         UI.disable(mCopyIcon);
         destroyCurrentAddress();
@@ -140,6 +141,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     private void destroyCurrentAddress() {
         Log.d(TAG, "Destroying address for subaccount " + mSubaccount);
+        if (isZombie())
+            return;
         mAddressText.setText("");
         mAddressImage.setImageBitmap(null);
         mView.setVisibility(View.GONE);
