@@ -59,7 +59,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             mQrCodeDialog.dismiss();
             mQrCodeDialog = null;
         }
-        mTagDispatcher.disableExclusiveNfc();
+        if (mTagDispatcher != null)
+            mTagDispatcher.disableExclusiveNfc();
     }
 
     @Override
