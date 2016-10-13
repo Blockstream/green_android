@@ -2,16 +2,16 @@
 <resources>
 
     <string name="action_settings">Configuración</string>
-    <string name="title_activity_mnemonic">Ingresar</string>
+    <string name="title_activity_mnemonic">Actualizar</string>
     <string name="sendToText">Destinatario</string>
-    <string name="sendAmountText">Monto</string>
-    <string name="sendSendButton">Verificar &amp; Enviar</string>
+    <string name="sendAmountText">Cantidad</string>
+    <string name="sendSendButton">Verificar y enviar</string>
     <string name="pinSaveText">Guardar</string>
-    <string name="pinLoginText">Ingresar</string>
+    <string name="pinLoginText">Entrar</string>
     <string name="title_activity_qr_scanner">Escaner de QR</string>
-    <string name="title_activity_sign_up">Inscribirse</string>
+    <string name="title_activity_sign_up">Crear cuenta</string>
     <string name="signupContinueButtonText">CONTINUAR</string>
-    <string name="signupCheckBoxText">He asegurado la frase clave y he leído los Términos y Condiciones de servicio</string>
+    <string name="signupCheckBoxText">He puesto a salvo la frase clave y he leído los Términos y Condiciones de servicio</string>
     <string name="termsofservice"><a href="https://greenaddress.it/es/tos/">Términos y Condiciones de servicio</a></string>
     <string name="firstSignUpText">INSCRIBIRSE</string>
     <string name="firstLogInText">INGRESAR</string>
@@ -20,7 +20,7 @@
     <string name="send_title">ENVIAR</string>
     <string name="network_unavailable">Desconectado</string>
     <string name="newTxTitle">Nueva transacción</string>
-    <string name="sweepAddressTitle">Barrer fondos</string>
+    <string name="sweepAddressTitle">Retirar fondos de dirección</string>
     <string name="twoFactorChoicesTitle">Selecione método de autenticación de 2 factores</string>
     <string name="choose">SELECCIONAR</string>
     <string name="cancel">CANCELAR</string>
@@ -30,7 +30,7 @@
         <item>Email</item>
         <item>SMS</item>
         <item>Teléfono</item>
-        <item>Autenticación de Google</item>
+        <item>Google Authenticator</item>
     </string-array>
 
     <string-array name="timesStrings">
@@ -51,7 +51,7 @@
     </string-array>
 
     <string name="send">ENVIAR</string>
-    <string name="sweep">BARRER</string>
+    <string name="sweep">RETIRAR FONDOS</string>
     <string name="sweep_bip38_passphrase_prompt">Por favor, provea la contraseña BIP38:</string>
     <string name="invalid_passphrase">Frase clave inválida</string>
     <string name="invalid_key">Clave inválida</string>
@@ -68,7 +68,7 @@
     <string name="toastOnCopyAddress">Dirección copiada al portapepeles.</string>
     <string name="receiveAddressSubTitle">Dirección</string>
     <string name="sendPayTo">Pagar a</string>
-    <string name="action_sweep">Barrer</string>
+    <string name="action_sweep">Retirar fondos</string>
     <string name="txTypeIn">Depositar</string>
     <string name="txTypeOut">Retirar</string>
     <string name="txTypeRedeposit">Redepositar</string>
@@ -76,7 +76,7 @@
     <string name="title_activity_settings">Configuración</string>
     <string name="ago">%1$d %2$s hace</string>
     <string name="txSubTitle">Detalles de tansacción</string>
-    <string name="txRecipientText">Receptor</string>
+    <string name="txRecipientText">Destinatario</string>
 
     <!-- Example settings for Notifications -->
     <string name="txDateText">Fecha</string>
@@ -86,11 +86,11 @@
     <string name="newTxFee">Impuesto:</string>
     <string name="invalidAmountAndAddress">Dirección o montos inválidos</string>
     <string name="invalidAddress">Dirección inválida</string>
-    <string name="invalidAmount">Monto inválido</string>
+    <string name="invalidAmount">Cantidad inválida</string>
     <string name="noBalanceFirstLine">Comience <a href="https://bitcoin.org/es/getting-started">a usar</a> Bitcoin</string>
     <string name="noBalanceSecondLine">Dónde <a href="http://howtobuybitcoins.info/">comprar</a> Bitcoin</string>
     <string name="noBalanceThirdLine">Lea nuestras <a href="https://greenaddress.it/es/faq">Preguntas Frecuentes</a></string>
-    <string name="trezor_headline">Por favor, siga las instrucciones en su Hardware Wallet</string>
+    <string name="trezor_headline">Por favor, siga las instrucciones en su Trezor</string>
     <string name="trezorProvidePin">Por favor, ingrese el PIN de Hardware Wallet. Busque en el dispositivo la posición de los números:</string>
     <string name="trezorProvidePassphrase">Por favor, ingrese la frase clave de su Hardware Wallet.</string>
     <string name="main_account">Principal</string>
@@ -146,5 +146,68 @@
     <string name="txReceivedOn">Recibido en</string>
     <string name="twoFacGauthTextCode">O usted puede usar el siguiente código: %s. ¡Recuerde hacer una copia de seguridad!</string>
     <string name="enterValidAddressTitle">Dirección no valida!</string>
-    <string name="setPin">Eliges una clave PIN</string>
+    <string name="setPin">Configurar PIN</string>
+
+  <string name="trustedspv">Conectar solamente con nodos de cofianza para SPV</string>
+  <string name="enterValidAddressText">Introduzca una dirección .onion o IP válida (preferiblemente .onion)</string>
+  <string name="changingWarnOnionTitle">Advertencia: ¡Dirección no .onion detectada!</string>
+  <string name="changingWarnOnionText">Conectarse usando solamente nodos Tor (.onion) mejora la seguridad y privacidad. Si escoge esta opción, por favor, pulse "Aceptar"</string>
+  <string name="enterValidAddressTitleTorDisabled">¡La conexión Tor está desactivada!</string>
+  <string name="enterValidAddressTextTorDisabled">Para habilitar Tor, primero debe activar la configuración proxy (Orbot Socks5).</string>
+
+  <string name="useNativeAuthentication">Reusar la autenticación de Android</string>
+  <string name="genericsettings">Información y configuración</string>
+  <string name="txFeeInfo">Comisión / Tamaño (bytes) / Comisión por kB</string>
+  <string name="doubleSpend">Pago duplicado</string>
+  <string name="txDoubleSpentBy">Pago duplicado por</string>
+  <string name="updated">actualizada</string>
+  <string name="malleated">modificada</string>
+  <string name="replaceable">reemplazable</string>
+  <string name="pref_title_display_hostname">Dirección Socks5</string>
+  <string name="pref_title_display_port">Puerto Socks5</string>
+  <string name="optin_rbf">Activar reemplazo de transacciones</string>
+  <string name="app_version">Versión %1$s %2$s</string>
+  <string name="invalidWord">La palabra \'%1$s\' no es válida, ¿corregir por %2$s?</string>
+  <string name="set2FA">Configurar 2FA</string>
+  <string name="resetSPV">Reiniciar SPV</string>
+  <string name="err_send_invalid_bitcoin_uri">Dirección Bitcoin URI inválida</string>
+  <string name="err_send_not_connected_will_resume">Desconectado, la conexión se restablecerá automáticamente.</string>
+  <string name="err_send_need_recipient">Por favor, introduzca un destinatario</string>
+  <string name="err_request_login_no_pin">No se ha facilitado el PIN, saliendo.</string>
+  <string name="err_tabbed_sweep_failed">Fallo en la validación: dirección inválida</string>
+  <string name="err_tabbed_sweep_requires_camera_permissions">Por favor autorice los permisos de la cámara para utilizar la funcionalidad de retiro de fondos</string>
+  <string name="err_qrscan_requires_camera_permissions">Por favor autorice los permisos de la cámara para utilizar la funcionalidad de escaneado de código QR.</string>
+  <string name="err_mnemonic_activity_logout_required">Debe salir antes de acceder.</string>
+  <string name="err_mnemonic_activity_invalid_mnemonic">Frase mnemónica inválida (debe contener entre 24 y 27 palabras)</string>
+  <string name="err_pin_save_wrong_length">El PIN debe contener entre 4 y 15 caracteres</string>
+  <string name="send_max_amount">Máximo a enviar</string>
+  <string name="err_sign_up_nfc_not_writable">Error: no se puede escribir en el tag NFC</string>
+  <string name="err_sign_up_nfc_too_small">Error: el tag NFC es demasiado pequeño</string>
+  <string name="network_monitor_peer_addr">Dirección: %1$s</string>
+  <string name="network_monitor_peer_version">Versión: %1$s</string>
+  <string name="network_monitor_peer_block">Bloque: %1$d</string>
+  <string name="network_monitor_peer_ping">Último ping: %1$d ms</string>
+  <string name="network_monitor_bloom_info">No hay información sobre el filtro bloom.</string>
+  <string name="network_monitor_banner">faltan %1$s bloques %2$d</string>
+  <string name="trustedspvExample">Por ejemplo: 8.90.14.2:8333,40.116.12.85:8333</string>
+  <string name="view_block_explorer">¿Está seguro de que quiere enviarle los detalles al explorador de bloques %1$s?</string>
+  <string name="no_peers_connected">Ningún nodo conectado</string>
+  <string name="watchOnlyLogin">Entrar en Watch only</string>
+  <string name="watchOnlyLoginStatus">Activado: %1$s</string>
+  <string name="watchOnlyLoginSetup">Pulsa para configurar</string>
+  <string name="watchOnlyLoginDisabled">Watch Only desactivado</string>
+  <string name="enter_valid_username">Introduzca nombre de usuario válido</string>
+  <string name="enter_valid_password">La contraseña no puede estar vacía</string>
+  <string name="error_username_not_found_or_wrong_password">El usuario no existe o la contraseña es incorrecta</string>
+  <string name="error_username_not_available">El nombre de usuario no está disponible</string>
+  <string name="enableTor">Habilitar Tor</string>
+  <string name="torSummary">Tor usará %1$s y solamente funcioanrá si el proxy utilizado es Orbot o compatible con Tor</string>
+  <string name="show_balance_in_title">Mostrar cantidad disponible en el título</string>
+  <string name="show_balance_in_title_sum">Esta opción oculta la cantidad disponible de los otros sitios y la muestra siempre en el título en bez de el nombre de la sub-cuenta</string>
+  <string name="remember_watch_only">Recordar usuario</string>
+  <string name="remember_warn_title">Advertencia: El nombre de usuario será guardado en el dispositivo.</string>
+  <string name="remember_warn_content">Guardar el nombre de usuario en el dispositivo puede ser peligroso, si alguien accede a la memoria puede saber tu nombre de usuario. Si quiere continuar pulse "Aceptar".</string>
+  <string name="generating_address">Generando dirección...</string>
+  <string name="loading_transactions">Cargando transacciones...</string>
+    
 </resources>
