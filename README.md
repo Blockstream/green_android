@@ -1,8 +1,10 @@
-Build status: [![Build Status](https://travis-ci.org/greenaddress/GreenBits.png?branch=master)](https://travis-ci.org/greenaddress/GreenBits) 
+# GreenBits - A native GreenAddress wallet for Android
 
-## Android SDK requirements
+Build status: [![Build Status](https://travis-ci.org/greenaddress/GreenBits.png?branch=master)](https://travis-ci.org/greenaddress/GreenBits)
 
-You need to have correctly installed the following
+## Build requirements
+
+You need to have the following Android developer tools installed:
 
 - "Android SDK Platform-tools" version 24.0.4 recommended
 - "Android SDK Tools" version 25.2.2 recommended
@@ -10,6 +12,14 @@ You need to have correctly installed the following
 - "Android Support Library" version 23.2.1 recommended
 - "Android Support Repository" version 38.0.0 recommended
 - "Android NDK" version r13 recommended
+
+The above tools can be installed from the Android SDK manager.
+
+GreenBits uses [libwally](https://github.com/jgriffiths/libwally-core) which
+requires the following to be installed for building:
+
+- [SWIG](http://www.swig.org/). Most Linux distributions have this packaged,
+    for example on debian `sudo apt-get install swig` should work.
 
 ## Clone the repo
 
@@ -21,9 +31,10 @@ You need to have correctly installed the following
 
 #### Cross-compile the native libraries:
 
-This step requires the environment variables ANDROID_NDK and JAVA_HOME to be set correctly
+This step requires the environment variables `ANDROID_NDK` and `JAVA_HOME` to
+be set correctly.
 
-`cd app && ./prepare_fdroid.sh`
+`cd app && ./prepare_fdroid.sh && cd ..`
 
 #### Build the Android app
 
@@ -35,17 +46,23 @@ For TESTNET only run `./gradlew assembleBtctestnetDebug`
 
 #### Rebuild the checkpoints (optional)
 
-Start on localhost Bitcoin Core on both MainNet and TestNet and make sure they are synchronized and finished booting (verifying blocks, etc)
+Checkpoint files reduce the amount of data that SPV has to download. The
+checkpoint data is rebuilt periodically but you may wish to update it if
+you will be making and testing changes.
 
-MainNet:
+To rebuild, start both MAINNET and TESTNET instances of bitcoind on
+localhost. Make sure they are fully synchronized and have finished
+booting (verifying blocks, etc).
+
+On MAINNET:
 
 `./gradlew --project-dir=bitcoinj/tools buildMainnetCheckpoints && mv bitcoinj/tools/checkpoints app/src/production/assets/checkpoints`
 
-TestNet:
+On TESTNET:
 
 `./gradlew --project-dir=bitcoinj/tools buildTestnetCheckpoints && mv bitcoinj/tools/checkpoints-testnet app/src/btctestnet/assets/checkpoints`
 
-or for both in one go run:
+Or to build both at once, run:
 
 `./buildCheckpoints.sh`
 
