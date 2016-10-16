@@ -246,7 +246,7 @@
     <!-- FontAwesome Glyphs -->
     <string name="fa_arrow_down" translatable="false">&#xf063;</string>
     <string name="fa_btc" translatable="false">&#xf15a;</string>
-    <string name="fa_btc_space" translatable="false">&#xf15a; </string>
+    <string name="fa_btc_space" translatable="false">&#xf15a;\u0020</string>
     <string name="fa_camera" translatable="false">&#xf030;</string>
     <string name="fa_clock_o" translatable="false">&#xf017;</string>
     <string name="fa_copy" translatable="false">&#xf0c5;</string>
