@@ -220,7 +220,7 @@
                 android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:hint="@string/sendOptionalMemo"
-                android:inputType="textMultiLine|textNoSuggestions"
+                android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                 android:textColor="@color/textColor"
                 android:textSize="24sp"
                 />

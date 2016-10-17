@@ -54,7 +54,7 @@
                     android:imeActionId="2"
                     android:imeActionLabel="Login"
                     android:imeOptions="actionGo"
-                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                     android:minLines="2"
                     android:digits="abcdefghijklmnopqrstuvwxyz "
                     android:text=""

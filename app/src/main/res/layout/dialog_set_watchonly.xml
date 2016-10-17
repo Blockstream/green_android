@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:inputType="textNoSuggestions" />
+        android:inputType="textNoSuggestions|textVisiblePassword" />
 
     <TextView
         android:layout_width="wrap_content"

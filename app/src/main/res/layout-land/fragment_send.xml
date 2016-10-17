@@ -91,7 +91,7 @@
                     android:layout_toLeftOf="@id/sendScanIcon"
                     android:textColor="@color/textColor"
                     android:hint="@string/sendPayTo"
-                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                     android:textSize="24sp" />
                 <ProgressBar
                     android:id="@+id/sendBip70ProgressBar"
@@ -257,7 +257,7 @@
                     android:layout_toLeftOf="@id/sendToNoteIcon"
                     android:textColor="@color/textColor"
                     android:hint="@string/sendOptionalMemo"
-                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                     android:textSize="24sp" />
 
             </RelativeLayout>
