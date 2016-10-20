@@ -78,7 +78,7 @@ public class MnemonicActivity extends LoginActivity {
                         final int textLength = mnemonicStr.length();
                         mMnemonicText.setSelection(textLength, textLength);
 
-                        final int words = mnemonicStr.split(" ").length;
+                        final int words = mnemonicStr.trim().split(" ").length;
                         if (validateMnemonic(mnemonicStr) && (words == 24 || words == 27))
                             login();
                     }
