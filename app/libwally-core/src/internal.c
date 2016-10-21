@@ -1,6 +1,8 @@
 #include <include/wally_core.h>
 #include <include/wally_crypto.h>
 #include "internal.h"
+#include "ccan/ccan/build_assert/build_assert.h"
+#include "ccan/ccan/crypto/ripemd160/ripemd160.h"
 #include "ccan/ccan/crypto/sha256/sha256.h"
 #include "ccan/ccan/crypto/sha512/sha512.h"
 #include <stdint.h>
@@ -9,9 +11,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#ifdef __ANDROID__
-#include "cpufeatures/cpu-features.c"
-#endif
+#undef malloc
+#undef free
 
 /* Caller is responsible for thread safety */
 static secp256k1_context *global_ctx = NULL;
@@ -48,7 +49,7 @@ int wally_free_string(char *str)
     if (!str)
         return WALLY_EINVAL;
     clear(str, strlen(str));
-    free(str);
+    wally_free(str);
     return WALLY_OK;
 }
 
@@ -106,8 +107,32 @@ int wally_sha512(const unsigned char *bytes_in, size_t len_in,
         return WALLY_EINVAL;
 
     sha512(aligned ? (struct sha512 *)bytes_out : &sha, bytes_in, len_in);
-    if (!aligned)
+    if (!aligned) {
         memcpy(bytes_out, &sha, sizeof(sha));
+        clear(&sha, sizeof(sha));
+    }
+    return WALLY_OK;
+}
+
+int wally_hash160(const unsigned char *bytes_in, size_t len_in,
+                  unsigned char *bytes_out, size_t len)
+{
+    struct sha256 sha;
+    struct ripemd160 ripemd;
+    bool aligned = alignment_ok(bytes_out, sizeof(ripemd.u.u32));
+
+    if (!bytes_in || !bytes_out || len != HASH160_LEN)
+        return WALLY_EINVAL;
+
+    BUILD_ASSERT(sizeof(ripemd) == HASH160_LEN);
+
+    sha256(&sha, bytes_in, len_in);
+    ripemd160(aligned ? (struct ripemd160 *)bytes_out : &ripemd, &sha, sizeof(sha));
+    if (!aligned) {
+        memcpy(bytes_out, &ripemd, sizeof(ripemd));
+        clear(&ripemd, sizeof(ripemd));
+    }
+    clear(&sha, sizeof(sha));
     return WALLY_OK;
 }
 
@@ -160,3 +185,72 @@ void clear_n(unsigned int count, ...)
 
     va_end(args);
 }
+
+static void *wally_internal_malloc(size_t size)
+{
+    return malloc(size);
+}
+
+static void wally_internal_free(void *ptr)
+{
+    free(ptr);
+}
+
+static int wally_internal_ec_nonce_fn(unsigned char *nonce32,
+                                      const unsigned char *msg32, const unsigned char *key32,
+                                      const unsigned char *algo16, void *data, unsigned int attempt)
+{
+    return secp256k1_nonce_function_default(nonce32, msg32, key32, algo16, data, attempt);
+}
+
+static struct wally_operations _ops = {
+    wally_internal_malloc,
+    wally_internal_free,
+    wally_internal_ec_nonce_fn
+};
+
+void *wally_malloc(size_t size)
+{
+    return _ops.malloc_fn(size);
+}
+
+void wally_free(void *ptr)
+{
+    _ops.free_fn(ptr);
+}
+
+char *wally_strdup(const char *str)
+{
+    size_t len = strlen(str) + 1;
+    char *new_str = (char *)wally_malloc(len);
+    if (new_str)
+        memcpy(new_str, str, len); /* Copies terminating nul */
+    return new_str;
+}
+
+const struct wally_operations *wally_ops(void)
+{
+    return &_ops;
+}
+
+int wally_get_operations(struct wally_operations *output)
+{
+    if (!output)
+        return WALLY_EINVAL;
+    memcpy(output, &_ops, sizeof(_ops));
+    return WALLY_OK;
+}
+
+int wally_set_operations(const struct wally_operations *ops)
+{
+    if (!ops)
+        return WALLY_EINVAL;
+    memcpy(&_ops, ops, sizeof(_ops));
+    return WALLY_OK;
+}
+
+#ifdef __ANDROID__
+#define malloc(size) wally_malloc(size)
+#define free(ptr) wally_free(ptr)
+#include "cpufeatures/cpu-features.c"
+#endif

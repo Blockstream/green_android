@@ -98,7 +98,7 @@ WALLY_CORE_API int wally_aes_cbc(
 #define SHA512_LEN 64
 
 /**
- * SHA-256
+ * SHA-256(m)
  *
  * @bytes_in: The message to hash
  * @len_in: The length of @bytes_in in bytes.
@@ -112,7 +112,7 @@ WALLY_CORE_API int wally_sha256(
     size_t len);
 
 /**
- * SHA-256d (double SHA-256)
+ * SHA-256(SHA-256(m)) (double SHA-256)
  *
  * @bytes_in: The message to hash
  * @len_in: The length of @bytes_in in bytes.
@@ -126,7 +126,7 @@ WALLY_CORE_API int wally_sha256d(
     size_t len);
 
 /**
- * SHA-512
+ * SHA-512(m)
  *
  * @bytes_in: The message to hash
  * @len_in: The length of @bytes_in in bytes.
@@ -134,6 +134,23 @@ WALLY_CORE_API int wally_sha256d(
  * @len: The length of @bytes_out in bytes. Must be @SHA512_LEN.
  */
 WALLY_CORE_API int wally_sha512(
+    const unsigned char *bytes_in,
+    size_t len_in,
+    unsigned char *bytes_out,
+    size_t len);
+
+/** Output length for @wally_hash160 */
+#define HASH160_LEN 20
+
+/**
+ * RIPEMD-160(SHA-256(m))
+ *
+ * @bytes_in: The message to hash
+ * @len_in: The length of @bytes_in in bytes.
+ * @bytes_out: Destination for the resulting hash.
+ * @len: The length of @bytes_out in bytes. Must be @HASH160_LEN.
+ */
+WALLY_CORE_API int wally_hash160(
     const unsigned char *bytes_in,
     size_t len_in,
     unsigned char *bytes_out,
@@ -207,7 +224,7 @@ WALLY_CORE_API int wally_hmac_sha512(
  *        @PBKDF2_HMAC_FLAG_BLOCK_RESERVED then this memory must
  *        have @PBKDF2_HMAC_EXTRA_LEN of spare room at the end of the salt itself.
  * @salt_len: Length of @salt_in_out in bytes, including any extra spare bytes.
- * @flags: PBKDF2_HMAC_FLAG_ flags values indicating desired behaviour.
+ * @flags: PBKDF2_HMAC_FLAG_ flag values indicating desired behaviour.
  * @cost: The cost of the function. The larger this number, the
  *        longer the key will take to derive.
  * @bytes_out: Destination for the derived pseudorandom key.
@@ -226,8 +243,25 @@ WALLY_CORE_API int wally_pbkdf2_hmac_sha256(
     unsigned char *bytes_out,
     size_t len);
 
-/** @see wally_pbkdf2_hmac_sha512. */
-WALLY_CORE_API int wally_pbkdf2_hmac_sha512 (
+/**
+ * Derive a pseudorandom key from inputs using HMAC SHA-512.
+ *
+ * @pass: Password to derive from.
+ * @pass_len: Length of @pass in bytes.
+ * @salt_in_out: Salt to derive from. If @flags contains the value
+ *        @PBKDF2_HMAC_FLAG_BLOCK_RESERVED then this memory must
+ *        have @PBKDF2_HMAC_EXTRA_LEN of spare room at the end of the salt itself.
+ * @salt_len: Length of @salt_in_out in bytes, including any extra spare bytes.
+ * @flags: PBKDF2_HMAC_FLAG_ flag values indicating desired behaviour.
+ * @cost: The cost of the function. The larger this number, the
+ *        longer the key will take to derive.
+ * @bytes_out: Destination for the derived pseudorandom key.
+ * @len: The length of @bytes_out in bytes. This must be a multiple
+ *       of @PBKDF2_HMAC_SHA512_LEN.
+ *
+ * Returns 0 on success or non-zero if any parameter is invalid.
+ */
+WALLY_CORE_API int wally_pbkdf2_hmac_sha512(
     const unsigned char *pass,
     size_t pass_len,
     unsigned char *salt_in_out,
@@ -236,5 +270,147 @@ WALLY_CORE_API int wally_pbkdf2_hmac_sha512 (
     uint32_t cost,
     unsigned char *bytes_out,
     size_t len);
+
+/** The length of a private key used for EC signing */
+#define EC_PRIVATE_KEY_LEN 32
+/** The length of a public key used for EC signing */
+#define EC_PUBLIC_KEY_LEN 33
+/** The length of an uncompressed public key */
+#define EC_PUBLIC_KEY_UNCOMPRESSED_LEN 65
+/** The length of a message hash to EC sign */
+#define EC_MESSAGE_HASH_LEN 32
+/** The length of a compact signature produced by EC signing */
+#define EC_SIGNATURE_LEN 64
+/** The maximum encoded length of a DER encoded signature */
+#define EC_SIGNATURE_DER_MAX_LEN 72
+
+/** Indicates that a signature using ECDSA/secp256k1 is required */
+#define EC_FLAG_ECDSA 0x1
+/** Indicates that a signature using EC-Schnorr-SHA256 is required */
+#define EC_FLAG_SCHNORR 0x2
+
+
+/**
+ * Verify that a private key is valid.
+ *
+ * @priv_key: The private key to validate.
+ * @priv_key_len: The length of @priv_key in bytes. Must be @EC_PRIVATE_KEY_LEN.
+ */
+WALLY_CORE_API int wally_ec_private_key_verify(
+    const unsigned char *priv_key,
+    size_t priv_key_len);
+
+/**
+ * Create a public key from a private key.
+ *
+ * @priv_key: The private key to create a public key from.
+ * @priv_key_len: The length of @priv_key in bytes. Must be @EC_PRIVATE_KEY_LEN.
+ * @bytes_out: Destination for the resulting public key.
+ * @len: The length of @bytes_out in bytes. Must be @EC_PUBLIC_KEY_LEN.
+ */
+WALLY_CORE_API int wally_ec_public_key_from_private_key(
+    const unsigned char *priv_key,
+    size_t priv_key_len,
+    unsigned char *bytes_out,
+    size_t len);
+
+/**
+ * Create an uncompressed public key from a compressed public key.
+ *
+ * @pub_key: The private key to create a public key from.
+ * @pub_key_len: The length of @pub_key in bytes. Must be @EC_PUBLIC_KEY_LEN.
+ * @bytes_out: Destination for the resulting public key.
+ * @len: The length of @bytes_out in bytes. Must be @EC_PUBLIC_KEY_UNCOMPRESSED_LEN.
+ */
+WALLY_CORE_API int wally_ec_public_key_decompress(
+    const unsigned char *pub_key,
+    size_t pub_key_len,
+    unsigned char *bytes_out,
+    size_t len);
+
+/**
+ * Sign a message hash with a private key, producing a compact signature.
+ *
+ * @priv_key: The private key to sign with.
+ * @priv_key_len: The length of @priv_key in bytes. Must be @EC_PRIVATE_KEY_LEN.
+ * @bytes_in: The message hash to sign.
+ * @len_in: The length of @bytes_in in bytes. Must be @EC_MESSAGE_HASH_LEN.
+ * @flags: EC_FLAG_ flag values indicating desired behaviour.
+ * @bytes_out: Destination for the resulting compact signature.
+ * @len: The length of @bytes_out in bytes. Must be @EC_SIGNATURE_LEN.
+ */
+WALLY_CORE_API int wally_ec_sig_from_bytes(
+    const unsigned char *priv_key,
+    size_t priv_key_len,
+    const unsigned char *bytes_in,
+    size_t len_in,
+    uint32_t flags,
+    unsigned char *bytes_out,
+    size_t len);
+
+/**
+ * Convert a signature to low-s form.
+ *
+ * @sig_in: The compact signature to convert.
+ * @sig_in_len: The length of @sig_in in bytes. Must be @EC_SIGNATURE_LEN.
+ * @bytes_out: Destination for the resulting low-s signature.
+ * @len: The length of @bytes_out in bytes. Must be @EC_SIGNATURE_LEN.
+ * @written: Destination for the number of bytes written to @bytes_out.
+ */
+WALLY_CORE_API int wally_ec_sig_normalize(
+    const unsigned char *sig_in,
+    size_t sig_in_len,
+    unsigned char *bytes_out,
+    size_t len);
+
+/**
+ * Convert a compact signature to DER encoding.
+ *
+ * @sig_in: The compact signature to convert.
+ * @sig_in_len: The length of @sig_in in bytes. Must be @EC_SIGNATURE_LEN.
+ * @bytes_out: Destination for the resulting DER encoded signature.
+ * @len: The length of @bytes_out in bytes. Must be @EC_SIGNATURE_DER_MAX_LEN.
+ * @written: Destination for the number of bytes written to @bytes_out.
+ */
+WALLY_CORE_API int wally_ec_sig_to_der(
+    const unsigned char *sig_in,
+    size_t sig_in_len,
+    unsigned char *bytes_out,
+    size_t len,
+    size_t *written);
+
+/**
+ * Convert a DER encoded signature to a compact signature.
+ *
+ * @bytes_in: The DER encoded signature to convert.
+ * @len_in: The length of @sig_in in bytes.
+ * @bytes_out: Destination for the resulting compact signature.
+ * @len: The length of @bytes_out in bytes. Must be @EC_SIGNATURE_LEN.
+ */
+WALLY_CORE_API int wally_ec_sig_from_der(
+    const unsigned char *bytes_in,
+    size_t len_in,
+    unsigned char *bytes_out,
+    size_t len);
+
+/**
+ * Verify a signed message hash.
+ *
+ * @pub_key: The public key to verify with.
+ * @pub_key_len: The length of @pub_key in bytes. Must be @EC_PUBLIC_KEY_LEN.
+ * @bytes_in: The message hash to verify.
+ * @len_in: The length of @bytes_in in bytes. Must be @EC_MESSAGE_HASH_LEN.
+ * @flags: EC_FLAG_ flag values indicating desired behaviour.
+ * @sig_in: The compact signature of the message in @bytes_in.
+ * @sig_in_len: The length of @sig_in in bytes. Must be @EC_SIGNATURE_LEN.
+ */
+WALLY_CORE_API int wally_ec_sig_verify(
+    const unsigned char *pub_key,
+    size_t pub_key_len,
+    const unsigned char *bytes_in,
+    size_t len_in,
+    uint32_t flags,
+    const unsigned char *sig_in,
+    size_t sig_in_len);
 
 #endif /* LIBWALLY_CORE_CRYPTO_H */

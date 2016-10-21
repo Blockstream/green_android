@@ -94,6 +94,11 @@ AC_ARG_ENABLE(tests,
     [use_tests=$enableval],
     [use_tests=yes])
 
+AC_ARG_ENABLE(openssl_tests,
+    AS_HELP_STRING([--enable-openssl-tests],[enable OpenSSL tests, if OpenSSL is available (default is auto)]),
+    [enable_openssl_tests=$enableval],
+    [enable_openssl_tests=auto])
+
 AC_ARG_ENABLE(experimental,
     AS_HELP_STRING([--enable-experimental],[allow experimental configure options (default is no)]),
     [use_experimental=$enableval],
@@ -362,16 +367,25 @@ esac
 if test x"$use_tests" = x"yes"; then
   SECP_OPENSSL_CHECK
   if test x"$has_openssl_ec" = x"yes"; then
-    AC_DEFINE(ENABLE_OPENSSL_TESTS, 1, [Define this symbol if OpenSSL EC functions are available])
-    SECP_TEST_INCLUDES="$SSL_CFLAGS $CRYPTO_CFLAGS"
-    SECP_TEST_LIBS="$CRYPTO_LIBS"
+    if test x"$enable_openssl_tests" != x"no"; then
+      AC_DEFINE(ENABLE_OPENSSL_TESTS, 1, [Define this symbol if OpenSSL EC functions are available])
+      SECP_TEST_INCLUDES="$SSL_CFLAGS $CRYPTO_CFLAGS"
+      SECP_TEST_LIBS="$CRYPTO_LIBS"
 
-    case $host in
-    *mingw*)
-      SECP_TEST_LIBS="$SECP_TEST_LIBS -lgdi32"
-      ;;
-    esac
-
+      case $host in
+      *mingw*)
+        SECP_TEST_LIBS="$SECP_TEST_LIBS -lgdi32"
+        ;;
+      esac
+    fi
+  else
+    if test x"$enable_openssl_tests" = x"yes"; then
+      AC_MSG_ERROR([OpenSSL tests requested but OpenSSL with EC support is not available])
+    fi
+  fi
+else
+  if test x"$enable_openssl_tests" = x"yes"; then
+    AC_MSG_ERROR([OpenSSL tests requested but tests are not enabled])
   fi
 fi
 
@@ -410,7 +424,7 @@ if test x"$use_endomorphism" = x"yes"; then
   AC_DEFINE(USE_ENDOMORPHISM, 1, [Define this symbol to use endomorphism optimization])
 fi
 
-if test x"$use_ecmult_static_precomputation" = x"yes"; then
+if test x"$set_precomp" = x"yes"; then
   AC_DEFINE(USE_ECMULT_STATIC_PRECOMPUTATION, 1, [Define this symbol to use a statically generated ecmult table])
 fi
 
@@ -479,7 +493,7 @@ AC_SUBST(SECP_TEST_LIBS)
 AC_SUBST(SECP_TEST_INCLUDES)
 AM_CONDITIONAL([USE_TESTS], [test x"$use_tests" != x"no"])
 AM_CONDITIONAL([USE_BENCHMARK], [test x"$use_benchmark" = x"yes"])
-AM_CONDITIONAL([USE_ECMULT_STATIC_PRECOMPUTATION], [test x"$use_ecmult_static_precomputation" = x"yes"])
+AM_CONDITIONAL([USE_ECMULT_STATIC_PRECOMPUTATION], [test x"$set_precomp" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_ECDH], [test x"$enable_module_ecdh" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_SCHNORR], [test x"$enable_module_schnorr" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_RECOVERY], [test x"$enable_module_recovery" = x"yes"])

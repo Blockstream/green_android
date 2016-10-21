@@ -134,6 +134,7 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %typemap(in,noblock=1,numinputs=0) size_t *written(size_t sz) {
     sz = 0; $1 = ($1_ltype)&sz;
 }
+
 /* Integer values are also returned as size_t's */
 %typemap(in,noblock=1,numinputs=0) size_t *output(size_t sz) {
     sz = 0; $1 = ($1_ltype)&sz;
@@ -182,6 +183,7 @@ static jbyteArray create_array(JNIEnv *jenv, const unsigned char* p, size_t len)
 %apply(char *STRING, size_t LENGTH) { (const unsigned char *priv_key, size_t priv_key_len) };
 %apply(char *STRING, size_t LENGTH) { (const unsigned char *pub_key, size_t pub_key_len) };
 %apply(char *STRING, size_t LENGTH) { (const unsigned char *salt, size_t salt_len) };
+%apply(char *STRING, size_t LENGTH) { (const unsigned char *sig_in, size_t sig_in_len) };
 %apply(char *STRING, size_t LENGTH) { (unsigned char *bytes_out, size_t len) };
 %apply(char *STRING, size_t LENGTH) { (unsigned char *bytes_in_out, size_t len) };
 %apply(char *STRING, size_t LENGTH) { (unsigned char *salt_in_out, size_t salt_len) };
@@ -287,12 +289,21 @@ typedef unsigned int uint32_t;
 %returns_size_t(bip39_mnemonic_to_seed);
 %returns_array_(wally_aes, 6, 7, AES_BLOCK_LEN);
 %returns_size_t(wally_aes_cbc);
+%returns_void__(wally_ec_private_key_verify);
+%returns_array_(wally_ec_public_key_decompress, 3, 4, EC_PUBLIC_KEY_UNCOMPRESSED_LEN);
+%returns_array_(wally_ec_public_key_from_private_key, 3, 4, EC_PUBLIC_KEY_LEN);
+%returns_array_(wally_ec_sig_from_bytes, 6, 7, EC_SIGNATURE_LEN);
+%returns_array_(wally_ec_sig_normalize, 3, 4, EC_SIGNATURE_LEN);
+%returns_array_(wally_ec_sig_from_der, 3, 4, EC_SIGNATURE_LEN);
+%returns_size_t(wally_ec_sig_to_der);
+%returns_void__(wally_ec_sig_verify);
 %returns_string(wally_hex_from_bytes);
 %returns_size_t(wally_hex_to_bytes);
 %returns_void__(wally_scrypt);
 %returns_array_(wally_sha256, 3, 4, SHA256_LEN);
 %returns_array_(wally_sha256d, 3, 4, SHA256_LEN);
 %returns_array_(wally_sha512, 3, 4, SHA512_LEN);
+%returns_array_(wally_hash160, 3, 4, HASH160_LEN);
 %returns_array_(wally_hmac_sha256, 5, 6, HMAC_SHA256_LEN);
 %returns_array_(wally_hmac_sha512, 5, 6, HMAC_SHA512_LEN);
 %returns_array_(wally_pbkdf2_hmac_sha256, 7, 8, PBKDF2_HMAC_SHA256_LEN);

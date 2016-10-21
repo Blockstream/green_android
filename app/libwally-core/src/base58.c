@@ -8,6 +8,7 @@
 /* Temporary stack buffer sizes */
 #define BIGNUM_WORDS 128u
 #define BIGNUM_BYTES (BIGNUM_WORDS * sizeof(uint32_t))
+#define BASE58_ALL_DEFINED_FLAGS (BASE58_FLAG_CHECKSUM)
 
 static const unsigned char base58_to_byte[256] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* ........ */
@@ -96,7 +97,7 @@ static int base58_decode(const char *base58, size_t base58_len,
 
     /* Allocate our bignum buffer if it won't fit on the stack */
     if (bn_words > BIGNUM_WORDS)
-        if (!(bn = malloc(bn_words * sizeof(*bn)))) {
+        if (!(bn = wally_malloc(bn_words * sizeof(*bn)))) {
             ret = WALLY_ENOMEM;
             goto cleanup;
         }
@@ -145,7 +146,7 @@ static int base58_decode(const char *base58, size_t base58_len,
 cleanup:
     clear(bn, bn_words * sizeof(*bn));
     if (bn != bn_buf)
-        free(bn);
+        wally_free(bn);
     return ret;
 }
 
@@ -172,7 +173,7 @@ int base58_from_bytes(unsigned char *bytes_in, size_t len_in,
 
     *output = NULL;
 
-    if (flags & ~BASE58_FLAG_CHECKSUM || !len_in)
+    if (flags & ~BASE58_ALL_DEFINED_FLAGS || !len_in)
         goto cleanup; /* Invalid flags or no input */
 
     if (flags & BASE58_FLAG_CHECKSUM) {
@@ -188,7 +189,7 @@ int base58_from_bytes(unsigned char *bytes_in, size_t len_in,
         ; /* no-op*/
 
     if (zeros == len_in) {
-        if (!(*output = malloc(zeros + 1))) {
+        if (!(*output = wally_malloc(zeros + 1))) {
             ret = WALLY_ENOMEM;
             goto cleanup;
         }
@@ -202,7 +203,7 @@ int base58_from_bytes(unsigned char *bytes_in, size_t len_in,
 
     /* Allocate our bignum buffer if it won't fit on the stack */
     if (bn_bytes > BIGNUM_BYTES)
-        if (!(bn = malloc(bn_bytes))) {
+        if (!(bn = wally_malloc(bn_bytes))) {
             ret = WALLY_ENOMEM;
             goto cleanup;
         }
@@ -227,7 +228,7 @@ int base58_from_bytes(unsigned char *bytes_in, size_t len_in,
     /* Copy the result */
     bn_bytes = bn + bn_bytes - top_byte;
 
-    if (!(*output = malloc(zeros + bn_bytes + 1))) {
+    if (!(*output = wally_malloc(zeros + bn_bytes + 1))) {
         ret = WALLY_ENOMEM;
         goto cleanup;
     }
@@ -242,7 +243,7 @@ int base58_from_bytes(unsigned char *bytes_in, size_t len_in,
 cleanup:
     clear(bn, bn_bytes);
     if (bn != bn_buf)
-        free(bn);
+        wally_free(bn);
     return ret;
 }
 
@@ -261,11 +262,11 @@ int base58_to_bytes(const char *str_in, uint32_t flags,
     if (written)
         *written = 0;
 
-    if (!str_in || flags & ~BASE58_FLAG_CHECKSUM ||
+    if (!str_in || flags & ~BASE58_ALL_DEFINED_FLAGS ||
         !bytes_out || !len || !written)
         return WALLY_EINVAL;
 
-    if (flags & BASE58_FLAG_CHECKSUM && len < BASE58_CHECKSUM_LEN)
+    if (flags & BASE58_FLAG_CHECKSUM && len <= BASE58_CHECKSUM_LEN)
         return WALLY_EINVAL; /* No room for checksum */
 
     *written = len;
