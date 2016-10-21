@@ -16,6 +16,7 @@ import org.bitcoinj.crypto.LazyECPoint;
 import java.util.ArrayList;
 
 import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PUBLIC;
+import static com.blockstream.libwally.Wally.BIP32_FLAG_SKIP_HASH;
 import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PRIVATE;
 import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PUBLIC;
 import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PRIVATE;
@@ -110,7 +111,8 @@ public class HDKey {
         if (subAccount != 0)
             path[mGaUserPath.length + 1] = subAccount;
 
-        Object derived = Wally.bip32_key_from_parent_path(master, path, BIP32_FLAG_KEY_PUBLIC);
+        final int flags = BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH;
+        Object derived = Wally.bip32_key_from_parent_path(master, path, flags);
 
         final DeterministicKey key;
         final ArrayList<ChildNumber> childNumbers = new ArrayList<>(path.length);
