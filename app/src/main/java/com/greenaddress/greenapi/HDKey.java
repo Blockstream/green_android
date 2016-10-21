@@ -124,12 +124,13 @@ public class HDKey {
                                    Wally.bip32_key_get_pub_key(derived)),
                                    /* parent */ null, childNumbers.size(), 0);
 
-        if (reconcile)
-            if (!k.equals(key))
-                throw new RuntimeException("Derivation mismatch");
-
+        final boolean matched = !reconcile || k.equals(key);
         Wally.bip32_key_free(master);
         Wally.bip32_key_free(derived);
+
+        if (!matched)
+            throw new RuntimeException("Derivation mismatch");
+
         return key;
     }
     // FIXME: Remove
