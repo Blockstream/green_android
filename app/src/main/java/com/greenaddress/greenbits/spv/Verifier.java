@@ -5,6 +5,7 @@ import com.greenaddress.greenapi.PreparedTransaction;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutPoint;
@@ -59,12 +60,13 @@ class Verifier {
             outValue = outValue.add(out.getValue());
         }
         final Coin fee = inValue.subtract(outValue);
-        if (fee.compareTo(Coin.valueOf(1000)) == -1) {
-            throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi).");
+        if (fee.compareTo(Coin.valueOf(1000)) == -1 &&
+            !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
+            throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi). Fee is: " + fee.toFriendlyString());
         }
         final int kBfee = (int) (500000.0 * ((double) ptx.mDecoded.getMessageSize()) / 1000.0);
         if (fee.compareTo(Coin.valueOf(kBfee)) == 1) {
-            throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB).");
+            throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB). Fee is: " + fee.toFriendlyString());
         }
         if (amount == null) {
             return output.getValue();
