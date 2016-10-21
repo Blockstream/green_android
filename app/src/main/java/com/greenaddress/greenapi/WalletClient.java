@@ -446,9 +446,20 @@ public class WalletClient {
     }
 
     private NettyWampConnectionConfig getNettyConfig() throws SSLException {
-        final TrustManagerFactory trustManager = new FingerprintTrustManagerFactorySHA256(Network.GAIT_WAMP_CERT_PINS);
-        final SslContext context = SslContextBuilder.forClient().trustManager(trustManager).build();
-        return new NettyWampConnectionConfig.Builder().withSslContext(context).build();
+        final int TWO_MB = 2 * 1024 * 1024; // Max message size in bytes
+
+        NettyWampConnectionConfig.Builder configBuilder;
+        configBuilder = new NettyWampConnectionConfig.Builder()
+                                                     .withMaxFramePayloadLength(TWO_MB);
+
+        if (Network.GAIT_WAMP_CERT_PINS != null && !isTorEnabled()) {
+            final TrustManagerFactory tmf;
+            tmf = new FingerprintTrustManagerFactorySHA256(Network.GAIT_WAMP_CERT_PINS);
+            final SslContext ctx = SslContextBuilder.forClient().trustManager(tmf).build();
+            configBuilder.withSslContext(ctx);
+        }
+
+        return configBuilder.build();
     }
 
     private String getUri() {
@@ -477,11 +488,8 @@ public class WalletClient {
                             .withProxyAddress(mProxyAddress)
                             .withUri(wsuri)
                             .withRealm("realm1")
-                            .withNrReconnects(0);
-
-                    if (!isTorEnabled() && Network.GAIT_WAMP_CERT_PINS != null)
-                        builder.withConnectionConfiguration(getNettyConfig());
-
+                            .withNrReconnects(0)
+                            .withConnectionConfiguration(getNettyConfig());
                 } catch (final ApplicationError | SSLException e) {
                     e.printStackTrace();
                     rpc.setException(e);
