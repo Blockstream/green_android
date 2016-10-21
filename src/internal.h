@@ -24,5 +24,19 @@ inline static void clear(void *p, size_t len)
     clear_n(1, p, len);
 }
 
+/* Fetch our internal operations function pointers */
+const struct wally_operations *wally_ops(void);
+
+void *wally_malloc(size_t size);
+void wally_free(void *ptr);
+char *wally_strdup(const char *str);
+
+#define malloc(size) __use_wally_malloc_internally__
+#define free(ptr) __use_wally_free_internally__
+#ifdef strdup
+#undef strdup
+#endif
+#define strdup(ptr) __use_wally_strdup_internally__
+
 #endif /* LIBWALLY_INTERNAL_H */
 

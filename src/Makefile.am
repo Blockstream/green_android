@@ -7,22 +7,24 @@ noinst_LTLIBRARIES =
 
 if USE_SWIG_PYTHON
 noinst_LTLIBRARIES += libswig_python.la
-libswig_python_la_SOURCES = \
-    swig_python/swig_python_wrap.c \
-    swig_python/swig_python_weak.c
+libswig_python_la_SOURCES = swig_python/swig_python_wrap.c
 
-libswig_python_la_CFLAGS = -I$(top_srcdir) $(AM_CFLAGS) $(SWIG_PYTHON_CPPFLAGS) $(SWIG_WARN_CFLAGS)
+libswig_python_la_CFLAGS = -I$(top_srcdir) $(AM_CFLAGS) $(SWIG_PYTHON_CPPFLAGS) $(SWIG_WARN_CFLAGS) $(NOALIAS_CFLAGS)
+libswig_python_la_LIBADD = $(PYTHON_LIBS)
 
 # We must sed the wrapper to workaround SWIGs odd library naming conventions
-swig_python/swig_python_wrap.c : swig_python/swig.i
-	$(AM_V_at)$(SWIG) $(SWIG_PYTHON_OPT) -outdir swig_python -o $@ $< && $(GNU_SED) -i 's/_wallycore/libwallycore/g' swig_python/wallycore.py $@
+swig_python/swig_python_wrap.c : swig_python/swig.i swig_python/python_extra.py_in
+	$(AM_V_at)$(SWIG) $(SWIG_PYTHON_OPT) -outdir swig_python -o $@ $< && \
+    $(GNU_SED) -i 's/_wallycore/libwallycore/g' swig_python/wallycore.py $@ && \
+    cat swig_python/wallycore.py swig_python/python_extra.py_in > swig_python/wallycore/__init__.py && \
+    rm swig_python/wallycore.py
 
 PYTHON_TEST = PYTHONDONTWRITEBYTECODE=1 $(PYTHON)
 PYTHON_SWIGTEST = PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.libs:swig_python $(PYTHON)
 
 .PHONY: clean-swig-python
 clean-swig-python:
-	$(AM_V_at)rm -f swig_python/swig_python_wrap.c swig_python/wallycore.py
+	$(AM_V_at)rm -f swig_python/swig_python_wrap.c swig_python/wallycore/__init__.py
 clean-local: clean-swig-python
 
 if IS_OSX
@@ -30,8 +32,6 @@ if IS_OSX
 .libs/libwallycore.so:
 	$(AM_V_at)ln -s libwallycore.dylib .libs/libwallycore.so
 SWIG_PYTHON_TEST_DEPS = .libs/libwallycore.so
-# Weak symbols are b0rked, so link python in
-libswig_python_la_LIBADD = $(PYTHON_LIBS)
 endif
 
 endif
@@ -45,7 +45,7 @@ libswig_java_la_CFLAGS = -I$(top_srcdir) $(AM_CFLAGS) $(SWIG_JAVA_CPPFLAGS) $(SW
 
 SWIG_JOPT = $(SWIG_JAVA_OPT) -outdir swig_java -noproxy -package com.blockstream.libwally
 
-swig_java/swig_java_wrap.c: swig_java/swig.i
+swig_java/swig_java_wrap.c: swig_java/swig.i swig_java/jni_extra.java_in
 	$(AM_V_at)$(SWIG) $(SWIG_JOPT) -o $@ $< && \
     $(GNU_SED) -i 's/wallycoreJNI/Wally/g' $@ && \
     $(GNU_SED) -i 's/ = (char \*) (\*jenv)->Get/ = (unsigned char \*) (\*jenv)->Get/g' $@
@@ -57,13 +57,13 @@ $(sjs)/$(cblw)/Wally.java: swig_java/swig_java_wrap.c
 	$(AM_V_at)$(top_srcdir)/tools/swigjavapost.sh @GNU_SED@
 
 $(sjs)/$(cblw)/Wally.class: $(sjs)/$(cblw)/Wally.java
-	$(AM_V_at)$(JAVAC) -source $(JAVAC_TARGET) -target $(JAVAC_TARGET) -sourcepath $(sjs)/$(cblw)/ $(sjs)/$(cblw)/Wally.java
+	$(AM_V_at)$(JAVAC) -implicit:none -source $(JAVAC_TARGET) -target $(JAVAC_TARGET) -sourcepath $(sjs)/$(cblw)/ $(sjs)/$(cblw)/Wally.java
 
 swig_java/wallycore.jar: $(sjs)/$(cblw)/Wally.class
 	$(AM_V_at)$(JAR) cf swig_java/wallycore.jar -C $(sjs) '$(cblw)/Wally$$Obj.class' -C $(sjs) '$(cblw)/Wally.class'
 
 $(sjs)/$(cbt)/%.class: $(sjs)/$(cbt)/%.java swig_java/wallycore.jar
-	$(AM_V_at)$(JAVAC) -source $(JAVAC_TARGET) -target $(JAVAC_TARGET) -sourcepath $(sjs) $(filter %.java,$^)
+	$(AM_V_at)$(JAVAC) -implicit:none -source $(JAVAC_TARGET) -target $(JAVAC_TARGET) -sourcepath $(sjs) $(filter %.java,$^)
 
 if HAVE_JAVAC
 all: swig_java/wallycore.jar
@@ -96,6 +96,7 @@ libwallycore_la_SOURCES = \
     mnemonic.c \
     pbkdf2.c \
     scrypt.c \
+    sign.c \
     wordlist.c \
     ccan/ccan/crypto/ripemd160/ripemd160.c \
     ccan/ccan/crypto/sha256/sha256.c \
@@ -127,19 +128,18 @@ endif
 check-local: $(SWIG_PYTHON_TEST_DEPS) $(SWIG_JAVA_TEST_DEPS)
 if RUN_PYTHON_TESTS
 	$(AM_V_at)$(PYTHON_TEST) test/test_aes.py
+	$(AM_V_at)$(PYTHON_TEST) test/test_base58.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_bip32.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_bip38.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_bip39.py
+	$(AM_V_at)$(PYTHON_TEST) test/test_hash.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_hex.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_hmac.py
+	$(AM_V_at)$(PYTHON_TEST) test/test_mnemonic.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_pbkdf2.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_scrypt.py
-	$(AM_V_at)$(PYTHON_TEST) test/test_sha2.py
-if EXPORT_ALL
-	$(AM_V_at)$(PYTHON_TEST) test/test_base58.py
-	$(AM_V_at)$(PYTHON_TEST) test/test_mnemonic.py
+	$(AM_V_at)$(PYTHON_TEST) test/test_sign.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_wordlist.py
-endif
 if USE_SWIG_PYTHON
 	$(AM_V_at)$(PYTHON_SWIGTEST) swig_python/contrib/mnemonic.py
 endif

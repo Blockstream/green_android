@@ -33,7 +33,7 @@ int bip39_get_languages(char **output)
 {
     if (!output)
         return WALLY_EINVAL;
-    *output = strdup("en es fr it jp zhs zht");
+    *output = wally_strdup("en es fr it jp zhs zht");
     return *output ? WALLY_OK : WALLY_ENOMEM;
 }
 
@@ -68,7 +68,7 @@ int bip39_get_word(const struct words *w, size_t idx,
     if (!output || !(word = wordlist_lookup_index(w, idx)))
         return WALLY_EINVAL;
 
-    *output = word ? strdup(word) : NULL;
+    *output = word ? wally_strdup(word) : NULL;
     return *output ? WALLY_OK : WALLY_ENOMEM;
 }
 
@@ -218,7 +218,7 @@ int  bip39_mnemonic_to_seed(const char *mnemonic, const char *password,
     if (!mnemonic || !bytes_out || len != BIP39_SEED_LEN_512)
         return WALLY_EINVAL;
 
-    salt = malloc(salt_len);
+    salt = wally_malloc(salt_len);
     if (!salt)
         return WALLY_ENOMEM;
 
@@ -235,7 +235,7 @@ int  bip39_mnemonic_to_seed(const char *mnemonic, const char *password,
         *written = BIP39_SEED_LEN_512; /* Succeeded */
 
     clear(salt, salt_len);
-    free(salt);
+    wally_free(salt);
 
     return ret;
 }

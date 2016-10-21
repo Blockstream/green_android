@@ -1,6 +1,7 @@
 from ctypes import *
 from binascii import hexlify, unhexlify
 from os.path import isfile
+from os import urandom
 import platform
 import sys
 
@@ -18,17 +19,25 @@ wally_free_string.restype, wally_free_string.argtypes = None, [c_char_p]
 
 WALLY_OK, WALLY_ERROR, WALLY_EINVAL, WALLY_ENOMEM = 0, -1, -2, -3
 
+_malloc_fn_t = CFUNCTYPE(c_void_p, c_ulong)
+_ec_nonce_fn_t = CFUNCTYPE(c_int, c_void_p, c_void_p, c_void_p, c_void_p, c_void_p, c_uint)
+
+class operations(Structure):
+    _fields_ = [('malloc_fn', _malloc_fn_t),
+                ('free_fn', c_void_p),
+                ('ec_nonce_fn', _ec_nonce_fn_t)]
+
 class ext_key(Structure):
-    _fields_ = [("chain_code", c_ubyte * 32),
-                ("parent160", c_ubyte * 20),
-                ("depth", c_ubyte),
-                ("pad1", c_ubyte * 10),
-                ("priv_key", c_ubyte * 33),
-                ("child_num", c_uint),
-                ("hash160", c_ubyte * 20),
-                ("version", c_uint),
-                ("pad2", c_ubyte * 3),
-                ("pub_key", c_ubyte * 33)]
+    _fields_ = [('chain_code', c_ubyte * 32),
+                ('parent160', c_ubyte * 20),
+                ('depth', c_ubyte),
+                ('pad1', c_ubyte * 10),
+                ('priv_key', c_ubyte * 33),
+                ('child_num', c_uint),
+                ('hash160', c_ubyte * 20),
+                ('version', c_uint),
+                ('pad2', c_ubyte * 3),
+                ('pub_key', c_ubyte * 33)]
 
 # Sentinel classes for returning output parameters
 class c_char_p_p_class(object):
@@ -51,7 +60,8 @@ for f in (
     ('base58_from_bytes', c_int, [c_void_p, c_ulong, c_uint, c_char_p_p]),
     ('base58_get_length', c_int, [c_char_p, c_ulong_p]),
     ('base58_to_bytes', c_int, [c_char_p, c_uint, c_void_p, c_ulong, c_ulong_p]),
-    ('bip32_key_from_seed', c_int, [c_void_p, c_ulong, c_uint, POINTER(ext_key)]),
+    ('bip32_key_free', c_int, [POINTER(ext_key)]),
+    ('bip32_key_from_seed', c_int, [c_void_p, c_ulong, c_uint, c_uint, POINTER(ext_key)]),
     ('bip32_key_serialize', c_int, [POINTER(ext_key), c_uint, c_void_p, c_ulong]),
     ('bip32_key_unserialize', c_int, [c_void_p, c_uint, POINTER(ext_key)]),
     ('bip32_key_from_parent', c_int, [c_void_p, c_uint, c_uint, POINTER(ext_key)]),
@@ -70,6 +80,7 @@ for f in (
     ('wally_sha256', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
     ('wally_sha256d', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
     ('wally_sha512', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
+    ('wally_hash160', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
     ('wally_hex_from_bytes', c_int, [c_void_p, c_ulong, c_char_p_p]),
     ('wally_hex_to_bytes', c_int, [c_char_p, c_void_p, c_ulong, c_ulong_p]),
     ('wally_hmac_sha256', c_int, [c_void_p, c_ulong, c_void_p, c_ulong, c_void_p]),
@@ -80,6 +91,16 @@ for f in (
     ('wally_pbkdf2_hmac_sha512', c_int, [c_void_p, c_ulong, c_void_p, c_ulong, c_uint, c_ulong, c_void_p, c_ulong]),
     ('wally_scrypt', c_int, [c_void_p, c_ulong, c_void_p, c_ulong, c_uint, c_uint, c_uint, c_void_p, c_ulong]),
     ('wally_secp_randomize', c_int, [c_void_p, c_ulong]),
+    ('wally_ec_private_key_verify', c_int, [c_void_p, c_ulong]),
+    ('wally_ec_public_key_decompress', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
+    ('wally_ec_public_key_from_private_key', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
+    ('wally_ec_sig_from_bytes', c_int, [c_void_p, c_ulong, c_void_p, c_ulong, c_uint, c_void_p, c_ulong]),
+    ('wally_ec_sig_from_der', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
+    ('wally_ec_sig_normalize', c_int, [c_void_p, c_ulong, c_void_p, c_ulong]),
+    ('wally_ec_sig_to_der', c_int, [c_void_p, c_ulong, c_void_p, c_ulong, c_ulong_p]),
+    ('wally_ec_sig_verify', c_int, [c_void_p, c_ulong, c_void_p, c_ulong, c_uint, c_void_p, c_ulong]),
+    ('wally_get_operations', c_int, [POINTER(operations)]),
+    ('wally_set_operations', c_int, [POINTER(operations)]),
     ):
 
     def bind_fn(name, res, args):
@@ -122,20 +143,81 @@ for f in (
         fn = mkint(fn)
     globals()[name] = fn
 
-
 def load_words(lang):
     with open(root_dir + 'src/data/wordlists/%s.txt' % lang, 'r') as f:
         words_list = [l.strip() for l in f.readlines()]
         return words_list, ' '.join(words_list)
+
+def h(s):
+    return hexlify(s)
+
+def make_cbuffer(hex_in):
+    if hex_in is None:
+        return None, 0
+    hex_len = len(hex_in) // 2
+    return unhexlify(hex_in), hex_len
 
 is_python3 = int(sys.version[0]) >= 3
 utf8 = lambda s: s
 if is_python3:
     utf8 = lambda s: s.encode('utf-8')
 
-def h(s):
-    return hexlify(s)
+assert wally_secp_randomize(urandom(32), 32) == WALLY_OK, 'Random init failed'
 
-def make_cbuffer(hex_in):
-    hex_len = len(hex_in) // 2
-    return unhexlify(hex_in), hex_len
+_original_ops = operations()
+_new_ops = operations()
+for ops in (_original_ops, _new_ops):
+    assert wally_get_operations(byref(ops)) == WALLY_OK
+
+# Disable internal tests if not available
+def internal_only():
+    def decorator(test_func):
+        def wrapped(*args):
+            if wordlist_init is None:
+                print (test_func.__name__ + ' disabled, use --enable-export-all to enable ')
+            else:
+                return test_func(*args)
+        return wrapped
+    return decorator
+
+# Support for malloc testing
+_fail_malloc_at = 0
+_fail_malloc_counter = 0
+
+def _failable_malloc(size):
+    global _fail_malloc_counter
+    _fail_malloc_counter += 1
+    if _fail_malloc_counter == _fail_malloc_at:
+        return None
+    return _original_ops.malloc_fn(size)
+
+_new_ops.malloc_fn = _malloc_fn_t(_failable_malloc)
+
+def malloc_fail(failures):
+    def decorator(test_func):
+        def wrapped(*args):
+            global _fail_malloc_at, _fail_malloc_counter
+            for fail_at in failures:
+                _fail_malloc_at, _fail_malloc_counter = fail_at, 0
+                test_func(*args)
+                _fail_malloc_at, _fail_malloc_counter = 0, 0
+        return wrapped
+    return decorator
+
+# Support for signing testing
+_fake_ec_nonce = None
+
+def set_fake_ec_nonce(nonce):
+    global _fake_ec_nonce
+    _fake_ec_nonce = nonce
+
+def _fake_ec_nonce_fn(nonce32, msg32, key32, algo16, data, attempt):
+    global _fake_ec_nonce
+    if _fake_ec_nonce is not None:
+        memmove(nonce32, _fake_ec_nonce, 32)
+        return 1
+    return _original_ops.ec_nonce_fn(nonce32, msg32, key32, algo16, data, attempt)
+
+_new_ops.ec_nonce_fn = _ec_nonce_fn_t(_fake_ec_nonce_fn)
+
+assert wally_set_operations(byref(_new_ops)) == WALLY_OK
