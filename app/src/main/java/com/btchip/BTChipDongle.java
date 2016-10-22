@@ -171,11 +171,13 @@ public class BTChipDongle implements BTChipConstants {
 		private byte[] value;
 		private byte[] sequence;
 		private boolean trusted;
+		private boolean segwit;
 		
-		public BTChipInput(byte[] value, byte[] sequence, boolean trusted) {
+		public BTChipInput(byte[] value, byte[] sequence, boolean trusted, boolean segwit) {
 			this.value = value;
 			this.sequence = sequence;
 			this.trusted = trusted;
+			this.segwit = segwit;
 		}
 		
 		public byte[] getValue() {
@@ -187,10 +189,13 @@ public class BTChipDongle implements BTChipConstants {
 		public byte[] getSequence() {
 			return sequence;
 		}
+		public boolean isSegwit() {
+			return segwit;
+		}
 
 		@Override
 		public String toString() {
-			return String.format("Value %s trusted %b", Dump.dump(value), trusted);
+			return String.format("Value %s trusted %b sequence %s segwit %b", Dump.dump(value), trusted, (sequence != null ? Dump.dump(sequence) : ""), segwit);
 		}
 	}
 
@@ -446,27 +451,34 @@ public class BTChipDongle implements BTChipConstants {
 		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_TRUSTED_INPUT, (byte)0x80, (byte)0x00, transaction.getLockTime(), OK);
 		ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
 		BufferUtils.writeUint32LE(sequenceBuf, sequence);
-		return new BTChipInput(response, sequenceBuf.toByteArray(), true);
+		return new BTChipInput(response, sequenceBuf.toByteArray(), true, false);
 	}
 	
-	public BTChipInput createInput(byte[] value, byte[] sequence, boolean trusted) {
-		return new BTChipInput(value, sequence, trusted);
+	public BTChipInput createInput(byte[] value, byte[] sequence, boolean trusted, boolean segwit) {
+		return new BTChipInput(value, sequence, trusted, segwit);
 	}
 	
 	public void startUntrustedTransction(boolean newTransaction, long inputIndex, BTChipInput usedInputList[], byte[] redeemScript) throws BTChipException {
+		boolean segwit = false;
+		for (BTChipInput input : usedInputList) {
+			if (input.isSegwit()) {
+				segwit = true;
+				break;
+			}
+		}
 		// Start building a fake transaction with the passed inputs
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		BufferUtils.writeBuffer(data, BitcoinTransaction.DEFAULT_VERSION);
 		VarintUtils.write(data, usedInputList.length);
-		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_HASH_INPUT_START, (byte)0x00, (newTransaction ? (byte)0x00 : (byte)0x80), data.toByteArray(), OK);
+		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_HASH_INPUT_START, (byte)0x00, (newTransaction ? (segwit ? (byte)0x02 : (byte)0x00) : (byte)0x80), data.toByteArray(), OK);
 		// Loop for each input
 		long currentIndex = 0;
 		for (BTChipInput input : usedInputList) {
 			byte[] script = (currentIndex == inputIndex ? redeemScript : new byte[0]);
 			data = new ByteArrayOutputStream();
-			data.write(input.isTrusted() ? (byte)0x01 : (byte)0x00);
+			data.write(input.isSegwit() ? (byte)0x02 : input.isTrusted() ? (byte)0x01 : (byte)0x00);
 			if (input.isTrusted()) {
-				// untrusted inputs have constant length
+				// other inputs have constant length
 				data.write(input.getValue().length);
 			}
 			BufferUtils.writeBuffer(data, input.getValue());
