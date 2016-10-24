@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -163,7 +164,7 @@ public class ListTransactionsAdapter extends
         public final TextView inOutIcon;
         public final TextView bitcoinScale;
         public final TextView textValueQuestionMark;
-        public final RelativeLayout mainLayout;
+        public final LinearLayout mainLayout;
 
         public ViewHolder(final View v) {
 
