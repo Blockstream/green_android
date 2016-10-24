@@ -98,96 +98,153 @@ public class BTChipHWWallet extends HWWallet {
         return BRANCH + out.pointer;
     }
 
+    private List<byte[]> signSegwitInputs(final PreparedTransaction ptx) throws BTChipException, IOException {
+        final Transaction decoded = ptx.mDecoded;
+        final List<TransactionInput> txInputs = decoded.getInputs();
+        final List<Output> prevOuts = ptx.mPrevOutputs;
+        final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[txInputs.size()];
+        final List<byte[]> sigs = new LinkedList<>();
+
+        for (int i = 0; i < txInputs.size(); ++i) {
+            final TransactionInput txInput = txInputs.get(i);
+            final TransactionOutPoint txOutpoint = txInput.getOutpoint();
+            final byte[] inputHash = txOutpoint.getHash().getReversedBytes();
+            final Output prevOut = prevOuts.get(i);
+            ByteArrayOutputStream inputBuf = new ByteArrayOutputStream();
+            inputBuf.write(inputHash, 0, inputHash.length);
+            long index = txOutpoint.getIndex();
+            BufferUtils.writeUint32LE(inputBuf, index);
+            BufferUtils.writeUint64LE(inputBuf, prevOut.value);
+            ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
+            BufferUtils.writeUint32LE(sequenceBuf, txInput.getSequenceNumber());
+            inputs[i] = mDongle.createInput(inputBuf.toByteArray(), sequenceBuf.toByteArray(), false, true);
+        }
+
+        // Prepare the pseudo transaction
+        BTChipDongle.BTChipInput singleInput[] = new BTChipDongle.BTChipInput[1];
+        final List<TransactionOutput> txOutputs = decoded.getOutputs();
+        Output output = ptx.mPrevOutputs.get(0);
+        // Provide the first script instead of a null script to initialize the P2SH confirmation logic
+        mDongle.startUntrustedTransction(true, 0, inputs, Wally.hex_to_bytes(output.script), true);
+        final int msgSize = decoded.getMessageSize();
+        final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(msgSize < 32 ? 32 : msgSize + 32);
+        stream.write(new VarInt(txOutputs.size()).encode());
+        for (final TransactionOutput out : txOutputs)
+            out.bitcoinSerialize(stream);
+        mDongle.finalizeInputFull(stream.toByteArray());
+        // Sign each input
+        for (int i = 0; i < txInputs.size(); ++i) {
+            output = ptx.mPrevOutputs.get(i);
+            singleInput[0] = inputs[i];
+            final Output prevOut = prevOuts.get(i);
+            if (prevOut.scriptType != 14) // sign segwit only
+                continue;
+            mDongle.startUntrustedTransction(false, 0, singleInput, Wally.hex_to_bytes(output.script), true);
+            final ECKey.ECDSASignature sig;
+            sig = ECKey.ECDSASignature.decodeFromDER(mDongle.untrustedHashSign(outToPath(output),
+                    "0", decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
+            sigs.add(ISigningWallet.getTxSignature(sig));
+        }
+
+        return sigs;
+    }
+
+    private List<byte[]> signNonSegwitInputs(final PreparedTransaction ptx) throws BTChipException, IOException {
+        final Transaction decoded = ptx.mDecoded;
+        final List<TransactionInput> txInputs = decoded.getInputs();
+        final List<Output> prevOuts = ptx.mPrevOutputs;
+        final List<byte[]> sigs = new LinkedList<>();
+
+        final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[txInputs.size()];
+        if (!mDongle.understandsMultipleOutputs()) {
+            for (int i = 0; i < txInputs.size(); ++i) {
+                final TransactionInput txInput = txInputs.get(i);
+                final TransactionOutPoint txOutpoint = txInput.getOutpoint();
+                final byte[] inputHash = txOutpoint.getHash().getReversedBytes();
+                ByteArrayOutputStream inputBuf = new ByteArrayOutputStream();
+                inputBuf.write(inputHash, 0, inputHash.length);
+                long index = txOutpoint.getIndex();
+                BufferUtils.writeUint32LE(inputBuf, index);
+                ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
+                BufferUtils.writeUint32LE(sequenceBuf, txInput.getSequenceNumber());
+                inputs[i] = mDongle.createInput(inputBuf.toByteArray(), sequenceBuf.toByteArray(), false, false);
+            }
+        } else {
+            for (int i = 0; i < txInputs.size(); ++i) {
+                final TransactionInput txInput = txInputs.get(i);
+                final TransactionOutPoint txOutpoint = txInput.getOutpoint();
+                final long index = txOutpoint.getIndex();
+                final ByteArrayInputStream in = new ByteArrayInputStream(ptx.mPrevoutRawTxs.get(txOutpoint.getHash().toString()).unsafeBitcoinSerialize());
+                final BitcoinTransaction encodedTx = new BitcoinTransaction(in);
+                inputs[i] = mDongle.getTrustedInput(encodedTx, index, txInput.getSequenceNumber());
+            }
+        }
+        for (int i = 0; i < txInputs.size(); ++i) {
+            final List<TransactionOutput> txOutputs = decoded.getOutputs();
+            final Output output = ptx.mPrevOutputs.get(i);
+            mDongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(output.script), false);
+            final int msgSize = decoded.getMessageSize();
+            final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(msgSize < 32 ? 32 : msgSize + 32);
+            stream.write(new VarInt(txOutputs.size()).encode());
+            for (final TransactionOutput out : txOutputs)
+                out.bitcoinSerialize(stream);
+            mDongle.finalizeInputFull(stream.toByteArray());
+            final Output prevOut = prevOuts.get(i);
+            if (prevOut.scriptType == 14) // don't sign segwit
+                continue;
+            final ECKey.ECDSASignature sig;
+            sig = ECKey.ECDSASignature.decodeFromDER(mDongle.untrustedHashSign(outToPath(output),
+                    "0", decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
+            sigs.add(ISigningWallet.getTxSignature(sig));
+        }
+        return sigs;
+    }
+
     @Override
     public List<byte[]> signTransaction(final PreparedTransaction ptx) {
-        final List<byte[]> sigs = new LinkedList<>();
         final Transaction decoded = ptx.mDecoded;
-        final List<TransactionInput> txInputs = decoded.getInputs();            
-        final List<Output> prevOuts = ptx.mPrevOutputs;    
+        final List<TransactionInput> txInputs = decoded.getInputs();
+        final List<Output> prevOuts = ptx.mPrevOutputs;
+
+        final List<byte[]> sigs = new LinkedList<>();
         try {
-            // Assume all inputs use segwit if one input is found
-            boolean segwit = false;
+            boolean segwit = false, nonSegwit = false;
             for (int i = 0; i < txInputs.size(); ++i) {
                 final Output prevOut = prevOuts.get(i);
                 if (prevOut.scriptType.equals(14)) {
                     segwit = true;
-                    break;
+                } else {
+                    nonSegwit = true;
                 }
             }
             // Sanity check on the firmware version, in case devices have been swapped
             if (segwit && !mDongle.shouldUseNewSigningApi()) {
                 throw new RuntimeException("Segwit not supported");
             }
-            final BTChipDongle.BTChipInput inputs[] = new BTChipDongle.BTChipInput[txInputs.size()];
-            if (!mDongle.understandsMultipleOutputs() || segwit) {
-                for (int i = 0; i < txInputs.size(); ++i) {
-                    int valueLength = (segwit ? 8 : 0);
-                    final TransactionInput txInput = txInputs.get(i);
-                    final TransactionOutPoint txOutpoint = txInput.getOutpoint();
-                    final byte[] inputHash = txOutpoint.getHash().getReversedBytes();
-                    final Output prevOut = prevOuts.get(i);
-                    ByteArrayOutputStream inputBuf = new ByteArrayOutputStream();
-                    inputBuf.write(inputHash, 0, inputHash.length);
-                    long index = txOutpoint.getIndex();
-                    BufferUtils.writeUint32LE(inputBuf, index);
-                    if (segwit) {
-                        BufferUtils.writeUint64LE(inputBuf, prevOut.value);
-                    }
-                    ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
-                    BufferUtils.writeUint32LE(sequenceBuf, txInput.getSequenceNumber());
-                    inputs[i] = mDongle.createInput(inputBuf.toByteArray(), sequenceBuf.toByteArray(), false, segwit);
-                }
+
+            final List<byte[]> segwitSigs, nonSegwitSigs;
+
+            if (segwit) {
+                segwitSigs = signSegwitInputs(ptx);
             } else {
-                for (int i = 0; i < txInputs.size(); ++i) {
-                    final TransactionInput txInput = txInputs.get(i);
-                    final TransactionOutPoint txOutpoint = txInput.getOutpoint();
-                    final long index = txOutpoint.getIndex();
-                    final ByteArrayInputStream in = new ByteArrayInputStream(ptx.mPrevoutRawTxs.get(txOutpoint.getHash().toString()).unsafeBitcoinSerialize());
-                    final BitcoinTransaction encodedTx = new BitcoinTransaction(in);
-                    inputs[i] = mDongle.getTrustedInput(encodedTx, index, txInput.getSequenceNumber());
+                segwitSigs = new LinkedList<>();
+            }
+
+            if (nonSegwit) {
+                nonSegwitSigs = signNonSegwitInputs(ptx);
+            } else {
+                nonSegwitSigs = new LinkedList<>();
+            }
+
+            for (int i = 0; i < txInputs.size(); ++i) {
+                final Output prevOut = prevOuts.get(i);
+                if (prevOut.scriptType.equals(14)) {
+                    sigs.add(segwitSigs.remove(0));
+                } else {
+                    sigs.add(nonSegwitSigs.remove(0));
                 }
             }
-            if (!segwit) {
-                for (int i = 0; i < txInputs.size(); ++i) {
-                    final List<TransactionOutput> txOutputs = decoded.getOutputs();
-                    final Output output = ptx.mPrevOutputs.get(i);
-                    mDongle.startUntrustedTransction(i == 0, i, inputs, Wally.hex_to_bytes(output.script));
-                    final int msgSize = decoded.getMessageSize();
-                    final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(msgSize < 32 ? 32 : msgSize + 32);
-                    stream.write(new VarInt(txOutputs.size()).encode());
-                    for (final TransactionOutput out : txOutputs)
-                        out.bitcoinSerialize(stream);
-                    mDongle.finalizeInputFull(stream.toByteArray());
-                    final ECKey.ECDSASignature sig;
-                    sig = ECKey.ECDSASignature.decodeFromDER(mDongle.untrustedHashSign(outToPath(output),
-                                                         "0", decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
-                    sigs.add(ISigningWallet.getTxSignature(sig));
-                }
-            }
-            else {
-                // Prepare the pseudo transaction
-                BTChipDongle.BTChipInput singleInput[] = new BTChipDongle.BTChipInput[1];
-                final List<TransactionOutput> txOutputs = decoded.getOutputs();                    
-                Output output = ptx.mPrevOutputs.get(0);    
-                // Provide the first script instead of a null script to initialize the P2SH confirmation logic
-                mDongle.startUntrustedTransction(true, 0, inputs, Wally.hex_to_bytes(output.script));
-                final int msgSize = decoded.getMessageSize();
-                final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(msgSize < 32 ? 32 : msgSize + 32);
-                stream.write(new VarInt(txOutputs.size()).encode());
-                for (final TransactionOutput out : txOutputs)
-                    out.bitcoinSerialize(stream);
-                mDongle.finalizeInputFull(stream.toByteArray());
-                // Sign each input
-                for (int i = 0; i < txInputs.size(); ++i) {       
-                    output = ptx.mPrevOutputs.get(i);        
-                    singleInput[0] = inputs[i];
-                    mDongle.startUntrustedTransction(false, 0, singleInput, Wally.hex_to_bytes(output.script));
-                    final ECKey.ECDSASignature sig;
-                    sig = ECKey.ECDSASignature.decodeFromDER(mDongle.untrustedHashSign(outToPath(output),
-                                                         "0", decoded.getLockTime(), (byte) 1 /* = SIGHASH_ALL */));
-                    sigs.add(ISigningWallet.getTxSignature(sig));
-                }
-            }
+
             return sigs;
         } catch (final BTChipException | IOException e) {
             throw new RuntimeException(e.getMessage());

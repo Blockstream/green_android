@@ -457,15 +457,8 @@ public class BTChipDongle implements BTChipConstants {
 	public BTChipInput createInput(byte[] value, byte[] sequence, boolean trusted, boolean segwit) {
 		return new BTChipInput(value, sequence, trusted, segwit);
 	}
-	
-	public void startUntrustedTransction(boolean newTransaction, long inputIndex, BTChipInput usedInputList[], byte[] redeemScript) throws BTChipException {
-		boolean segwit = false;
-		for (BTChipInput input : usedInputList) {
-			if (input.isSegwit()) {
-				segwit = true;
-				break;
-			}
-		}
+
+	public void startUntrustedTransction(boolean newTransaction, long inputIndex, BTChipInput usedInputList[], byte[] redeemScript, boolean segwit) throws BTChipException {
 		// Start building a fake transaction with the passed inputs
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		BufferUtils.writeBuffer(data, BitcoinTransaction.DEFAULT_VERSION);
