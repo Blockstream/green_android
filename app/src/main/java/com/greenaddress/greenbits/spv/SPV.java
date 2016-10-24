@@ -580,6 +580,10 @@ public class SPV {
     private PeerAddress getPeerAddress(final String address) throws URISyntaxException, UnknownHostException {
         final URI uri = new URI("btc://" + address);
         final String host = uri.getHost();
+
+        if (host == null)
+            throw new UnknownHostException(address);
+
         final int port = uri.getPort() == -1? Network.NETWORK.getPort() : uri.getPort();
 
         if (!mService.isProxyEnabled())
@@ -598,7 +602,7 @@ public class SPV {
 
             @Override
             public int hashCode() {
-                return host.hashCode() ^ port;
+                return uri.hashCode();
             }
         };
     }
