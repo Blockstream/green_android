@@ -384,7 +384,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
                         addressText.setText(String.format("%s\n%s\n%s", address.substring(0, 12), address.substring(12, 24), address.substring(24)));
 
-                        UI.popup(caller, R.string.sweepAddressTitle, R.string.sweep, R.string.cancel)
+                        final MaterialDialog.Builder builder = UI.popup(caller, R.string.sweepAddressTitle, R.string.sweep, R.string.cancel)
                             .customView(v, true)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
                                 Transaction tx;
@@ -440,11 +440,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                         caller.toast(R.string.invalid_passphrase);
                                     }
                                 }
-                            }).build().show();
+                            });
+
+                        runOnUiThread(new Runnable() { public void run() { builder.build().show(); } });
                     }
                 };
                 if (keyNonBip38 != null)
-                    CB.after(mService.prepareSweepSocial(keyNonBip38.getPubKey(), false), callback);
+                    CB.after(mService.prepareSweepSocial(keyNonBip38.getPubKey(), true), callback);
                 else
                     callback.onSuccess(null);
                 break;
