@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -10,6 +11,8 @@ public class FontFitEditText extends EditText {
 
     //Attributes
     private Paint mTestPaint;
+    private float mTextSizeMax;
+    private float mTextSizeMin;
 
     public FontFitEditText(Context context) {
         super(context);
@@ -18,6 +21,11 @@ public class FontFitEditText extends EditText {
 
     public FontFitEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FontFitEditText);
+        mTextSizeMax = typedArray.getDimensionPixelSize(R.styleable.FontFitEditText_textSizeMax, 0);
+        mTextSizeMax = pxToDp(mTextSizeMax);
+        mTextSizeMin = typedArray.getDimensionPixelSize(R.styleable.FontFitEditText_textSizeMin, 0);
+        mTextSizeMin = pxToDp(mTextSizeMin);
         initialise();
     }
 
@@ -27,6 +35,18 @@ public class FontFitEditText extends EditText {
         //max size defaults to the initially specified text size unless it is too small
     }
 
+    private float getScale() {
+        return (getResources().getDisplayMetrics().densityDpi / 160);
+    }
+
+    private float pxToDp(float px) {
+        return px / getScale();
+    }
+
+    private float dpiToPx(float px) {
+        return px * getScale();
+    }
+
     /* Re size the font so the specified text fits in the text box
      * assuming the text box is the specified width.
      */
@@ -34,22 +54,27 @@ public class FontFitEditText extends EditText {
         if (textWidth <= 0)
             return;
         int targetWidth = textWidth - this.getPaddingLeft() - this.getPaddingRight();
-        float hi = 50;
-        float lo = 20;
+        targetWidth = (int)pxToDp(targetWidth);
+
+        // font size in dp
+        float hi = (mTextSizeMax > 0 && mTextSizeMax > mTextSizeMin) ? mTextSizeMax : 28;
+        float lo = (mTextSizeMin > 0 && mTextSizeMin < hi) ? mTextSizeMin : 16;
+
         final float threshold = 0.5f; // How close we have to be
 
         mTestPaint.set(this.getPaint());
 
         while ((hi - lo) > threshold) {
-            float size = (hi + lo) / 2;
-            mTestPaint.setTextSize(size);
-            if (mTestPaint.measureText(text) >= targetWidth)
-                hi = size; // too big
+            float sizeDpi = (hi + lo) / 2;
+            float sizePx = dpiToPx(sizeDpi);
+            mTestPaint.setTextSize(sizePx);
+            if (pxToDp(mTestPaint.measureText(text)) >= targetWidth)
+                hi = sizeDpi; // too big
             else
-                lo = size; // too small
+                lo = sizeDpi; // too small
         }
         // Use lo so that we undershoot rather than overshoot
-        this.setTextSize(TypedValue.COMPLEX_UNIT_PX, lo);
+        this.setTextSize(TypedValue.COMPLEX_UNIT_DIP, lo);
     }
 
     @Override
