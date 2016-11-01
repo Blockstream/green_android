@@ -68,12 +68,12 @@
     <string name="warnOnPaste">Будьте внимательны, другие приложения могут читать или модифицировать буфер обмена</string>
     <string name="toastOnCopyAddress">Адрес скопирован в буфер обмена.</string>
     <string name="receiveAddressSubTitle">Адрес</string>
-    <string name="sendPayTo">Оплатить к</string>
+    <string name="sendPayTo">Оплатить на</string>
     <string name="action_sweep">Сканировать</string>
     <string name="action_logout">Выйти</string>
     <string name="txTypeIn">Получено</string>
     <string name="txTypeOut">Отправлено</string>
-    <string name="txTypeRedeposit">Redeposited</string>
+    <string name="txTypeRedeposit">Перезачислено</string>
     <string name="mnemonicHint">Введите Ваш пароль GreenAddress или отскануйте qr-код</string>
     <string name="title_activity_settings">Настройки</string>
     <string name="ago">%1$d %2$s назад</string>
@@ -108,7 +108,7 @@
     <string name="btchipNotSetup">BTChip не установлен. Пожалуйста установите его на дектоп клиент для использование.</string>
     <string name="instantConfirmation">Моментальное Подтверждение</string>
     <string name="trezor_login_failed">неудачний вход Физического Кошелька </string>
-    <string name="trezor_login_failed_details">Это скорее всего значит что вам нужно привязать ваш Физический Кошелёк к GreenAddress используя настольный клиент.</string>
+    <string name="trezor_login_failed_details">Это скорее всего значит, что вам нужно привязать ваш Физический Кошелёк к GreenAddress используя настольный клиент.</string>
     <string name="improve_security_ledger">Улучшить вашу безопасность с помощью Ledger</string>
     <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard безопасность для ваших Bitcoin.</string>
     <string name="mnemonic_passphrase">Пароль для мнемонической фразы</string>
@@ -125,7 +125,7 @@
     <string name="enableSPV">Включить SPV</string>
     <string name="enableSPVSummary">простая проверка платежа (SPV) разрешает доверять вашим транзакциям и балансу благодаря синхронизации с сетью Bitcoin. Она увеличивает потребление трафика и вычислительной мощьности, по этому возможно Вы желаете ее отключить, если вы используете медленное соединение или устаревший телефон.</string>
     <string name="syncSPVOnMobile">синхронизировать SPV на телефоне</string>
-    <string name="syncSPVOnMobileSummary">SPV всегда синхронизируется на стойких соединениях вида WiFi или Ethernet. Эта установка также синхронизируется при использовании мобильного соединения. Это может стоить значительных средств в зависимости от Вашего тарифного плана поэтому обратите внимание при использовании.</string>
+    <string name="syncSPVOnMobileSummary">SPV всегда синхронизируется на стойких интернет-соединениях вида WiFi или Ethernet. Эта установка также синхронизируется при использовании мобильного соединения. Это может стоить Вам значительных средств, в зависимости от Вашего тарифного плана, поэтому обратите внимание при использовании.</string>
     <string name="noTwoFactorWarning">Вам необходимо установить 2 факторную аутентификацию!\nПерейдите в настройки чтобы включить её!</string>
     <string name="scan_camera_problem_dialog_message">Проблеми с камерой. Вам возможно нужно перезагрузить устройство.</string>
     <string name="scan_camera_problem_dialog_title">Проблеми с камерой</string>
@@ -198,7 +198,7 @@
     <string name="err_tabbed_sweep_failed">Проверка не удалась: некоректный исходящтй адрес</string>
     <string name="err_tabbed_sweep_requires_camera_permissions">Пожалуйста включите разрешение на камеру для использования функционала сканирования.</string>
     <string name="err_qrscan_requires_camera_permissions">Пожалуйста включите разрешение на камеру для использования функционала сканирования.</string>
-    <string name="err_mnemonic_activity_logout_required">Вы сначала должны выйти для того чтобы войти.</string>
+    <string name="err_mnemonic_activity_logout_required">Вы сначала должны выйти, для того чтобы войти.</string>
     <string name="err_mnemonic_activity_invalid_mnemonic">некоректный пароль (должен содержать от 24 до 27 слов)</string>
     <string name="err_pin_save_wrong_length">ПИН должен содержать от 4 до 15 знаков</string>
     <string name="send_max_amount">МАКС</string>
@@ -226,8 +226,8 @@
     <string name="error_username_not_available">Логин не возможен</string>
     <string name="enableTor">Включить Tor</string>
     <string name="torSummary">Tor будет использовать %1$s и работать только при включенном прокси типа Orbot или Tor </string>
-    <string name="show_balance_in_title">Показовать баланс в заголовке</string>
-    <string name="show_balance_in_title_sum">Эта настройка прячет баланс Bitcoin в остальных местах и всегда отображает его только в  лише у заголовке вместо наименования субакаунта</string>
+    <string name="show_balance_in_title">Показывать баланс в заголовке</string>
+    <string name="show_balance_in_title_sum">Эта настройка прячет баланс Bitcoin в остальных местах и всегда отображает его только в заголовке, вместо наименования субакаунта</string>
     <string name="remember_watch_only">Запомнить логин</string>
     <string name="remember_warn_title">Внимание: логин будет сохранен на этом устройстве</string>
     <string name="remember_warn_content">Сохранение логина на устройстве может быть небезопасным; если кто-то получит доступ к памяти устройства то сможет получить ваш логин в чистом виде. Для продолжения нажмите "OK".</string>
