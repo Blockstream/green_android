@@ -174,7 +174,7 @@
   <string name="err_sign_up_nfc_too_small">Errore: tag nfc troppo piccola</string>
   <string name="network_monitor_peer_addr">Indirizzo: %1$s</string>
   <string name="network_monitor_peer_version">Versione: %1$s</string>
-  <string name="network_monitor_peer_block">Blochi: %1$d</string>
+  <string name="network_monitor_peer_block">Blocchi: %1$d</string>
   <string name="network_monitor_peer_ping">Ultimo ping: %1$d ms</string>
   <string name="network_monitor_bloom_info">Non ci sono informazioni sul filtro bloom.</string>
   <string name="network_monitor_banner">%1$s Blocchi rimanenti %2$d</string>
