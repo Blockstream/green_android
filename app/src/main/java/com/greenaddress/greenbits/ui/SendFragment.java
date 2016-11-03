@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -136,12 +137,13 @@ public class SendFragment extends SubaccountFragment {
                             public void onSuccess(final String result) {
                                 gaActivity.runOnUiThread(new Runnable() {
                                     public void run() {
+                                        UI.toast(gaActivity, R.string.transactionCompleted, Toast.LENGTH_LONG);
+
                                         if (mFromIntentURI) {
                                             gaActivity.finish();
                                             return;
                                         }
 
-                                        // FIXME: Add notification with "Transaction sent"?
                                         mAmountEdit.setText("");
                                         mRecipientEdit.setText("");
                                         UI.enable(mAmountEdit, mRecipientEdit);
