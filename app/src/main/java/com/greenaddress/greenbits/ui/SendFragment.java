@@ -144,7 +144,9 @@ public class SendFragment extends SubaccountFragment {
                                         // FIXME: Add notification with "Transaction sent"?
                                         mAmountEdit.setText("");
                                         mRecipientEdit.setText("");
+                                        UI.enable(mAmountEdit, mRecipientEdit);
                                         mMaxButton.setChecked(false);
+                                        UI.show(mMaxButton, mMaxLabel);
 
                                         mNoteIcon.setText(R.string.fa_pencil);
                                         mNoteText.setText("");
