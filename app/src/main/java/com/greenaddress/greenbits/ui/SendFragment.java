@@ -300,7 +300,11 @@ public class SendFragment extends SubaccountFragment {
             }
             if (bitcoinUri != null)
                 processBitcoinURI(bitcoinUri);
-            mFromIntentURI = true;
+            // set intent uri flag only if the call arrives from non internal qr scan
+            if (container.getTag(R.id.internal_qr) == null) {
+                mFromIntentURI = true;
+                container.setTag(R.id.internal_qr, null);
+            }
             container.setTag(R.id.tag_bitcoin_uri, null);
         }
 

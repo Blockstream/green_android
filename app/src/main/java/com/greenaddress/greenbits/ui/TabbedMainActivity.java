@@ -70,6 +70,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             REQUEST_TX_DETAILS = 4;
     private ViewPager mViewPager;
     private Menu mMenu;
+    private Boolean mInternalQr = false;
 
     private final Observer mTwoFactorObserver = new Observer() {
         @Override
@@ -87,6 +88,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         final Intent intent = getIntent();
+        mInternalQr = intent.getBooleanExtra("internal_qr", false);
         final boolean isBitcoinUri = isBitcoinScheme(intent) ||
                                      intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
                                      NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
@@ -264,6 +266,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     }
                 }
             }
+            // if arrives from internal QR scan
+            if (mInternalQr) {
+                mViewPager.setTag(R.id.internal_qr, "internal_qr");
+            }
         }
 
         // set adapter and tabs only after all setTag in ViewPager container
@@ -326,7 +332,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     final Intent browsable = new Intent(this, TabbedMainActivity.class);
                     browsable.setData(Uri.parse(scanned));
                     browsable.addCategory(Intent.CATEGORY_BROWSABLE);
+                    browsable.putExtra("internal_qr", true);
+                    // start new activity and finish old one
                     startActivity(browsable);
+                    this.finish();
                 }
                 break;
             case REQUEST_BITCOIN_URL_LOGIN:

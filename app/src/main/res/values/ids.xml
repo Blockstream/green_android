@@ -3,4 +3,7 @@
     <item
         type="id"
         name="tag_bitcoin_uri" />
+    <item
+        type="id"
+        name="internal_qr" />
 </resources>
