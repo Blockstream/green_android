@@ -227,16 +227,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = UI.find(this, R.id.container);
-        mViewPager.setAdapter(sectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int index) {
-                sectionsPagerAdapter.onViewPageSelected(index);
-            }
-        });
 
-        final TabLayout tabLayout = UI.find(this, R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
         // Keep all of our tabs in memory while paging. This helps any races
         // left where broadcasts/callbacks are called on the pager when its not
         // shown.
@@ -248,32 +239,45 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 
-        if (!isBitcoinUri) {
-            // Normal startup: Show the transactions tab initially.
-            mViewPager.setCurrentItem(1);
-            return;
+        // by default go to center tab
+        int goToTab = 1;
+
+        if (isBitcoinUri) {
+            // go to send page tab
+            goToTab = 2;
+
+            // Started by clicking on a bitcoin URI, show the send tab initially.
+            if (!NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+                mViewPager.setTag(R.id.tag_bitcoin_uri, getIntent().getData());
+            } else {
+                // NdefRecord#toUri not available in API < 16
+                if (Build.VERSION.SDK_INT > 16) {
+                    final Parcelable[] rawMessages;
+                    rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+                    for (Parcelable parcel : rawMessages) {
+                        final NdefMessage ndefMsg = (NdefMessage) parcel;
+                        for (NdefRecord record : ndefMsg.getRecords())
+                            if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN &&
+                                    Arrays.equals(record.getType(), NdefRecord.RTD_URI)) {
+                                mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
+                            }
+                    }
+                }
+            }
         }
 
-        // Started by clicking on a bitcoin URI, show the send tab initially.
-        if (!NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-            mViewPager.setTag(R.id.tag_bitcoin_uri, getIntent().getData());
-        } else {
-            if (Build.VERSION.SDK_INT < 16) {
-                // NdefRecord#toUri not available in API < 16
-                mViewPager.setCurrentItem(1);
-                return;
+        // set adapter and tabs only after all setTag in ViewPager container
+        mViewPager.setAdapter(sectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int index) {
+                sectionsPagerAdapter.onViewPageSelected(index);
             }
-            final Parcelable[] rawMessages;
-            rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            for (Parcelable parcel : rawMessages) {
-                final NdefMessage ndefMsg = (NdefMessage) parcel;
-                for (NdefRecord record : ndefMsg.getRecords())
-                    if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN &&
-                        Arrays.equals(record.getType(), NdefRecord.RTD_URI))
-                        mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
-            }
-        }
-        mViewPager.setCurrentItem(2);
+        });
+        final TabLayout tabLayout = UI.find(this, R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+
+        mViewPager.setCurrentItem(goToTab);
     }
 
     @Override
