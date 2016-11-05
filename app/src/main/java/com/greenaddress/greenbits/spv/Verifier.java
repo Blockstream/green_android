@@ -64,9 +64,9 @@ class Verifier {
             !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
             throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi). Fee is: " + fee.toFriendlyString());
         }
-        final int kBfee = (int) (500000.0 * ((double) ptx.mDecoded.getMessageSize()) / 1000.0);
+        final int kBfee = (int) (15000000.0 * ((double) ptx.mDecoded.getMessageSize()) / 1000.0);
         if (fee.compareTo(Coin.valueOf(kBfee)) == 1) {
-            throw new IllegalArgumentException("Verification: Fee is too large (expected at most 500000 satoshi per kB). Fee is: " + fee.toFriendlyString());
+            throw new IllegalArgumentException("Verification: Fee is too large (expected at most 15000000 satoshi per kB). Fee is: " + fee.toFriendlyString());
         }
         if (amount == null) {
             return output.getValue();
