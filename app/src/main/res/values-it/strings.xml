@@ -22,7 +22,7 @@
   <string name="sweepAddressTitle">Preleva tutto da qrcode</string>
   <string name="twoFactorChoicesTitle">Scegli l\'autenticazione a due fattori</string>
   <string name="choose">SCEGLI</string>
-  <string name="cancel">CANCELLA</string>
+  <string name="cancel">ANNULLA</string>
   <string name="attemptsLeft">%1$d tentativi rimasti</string>
   <string-array name="twoFactorChoices">
     <item>Email</item>
