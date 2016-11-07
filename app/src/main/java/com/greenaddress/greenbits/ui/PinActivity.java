@@ -207,6 +207,7 @@ public class PinActivity extends LoginActivity implements Observer {
     private void tryDecrypt() {
 
         if (mService.onConnected == null) {
+            toast(R.string.unable_to_connect_to_service);
             finishOnUiThread();
             return;
         }
