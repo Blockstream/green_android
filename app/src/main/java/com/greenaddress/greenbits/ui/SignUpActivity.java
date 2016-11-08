@@ -113,7 +113,7 @@ public class SignUpActivity extends LoginActivity {
                             }
                         }, mService.getExecutor());
                     } else if (isChecked) {
-                        SignUpActivity.this.toast("You are not connected, please wait");
+                        SignUpActivity.this.toast(R.string.notConnected);
                         checkBox.setChecked(false);
                     }
             }
@@ -154,15 +154,15 @@ public class SignUpActivity extends LoginActivity {
                     }, mService.getExecutor());
                 } else
                     if (!checkBox.isChecked())
-                        SignUpActivity.this.toast("Please secure your passphrase and confirm you agree to the Terms of Service");
+                        SignUpActivity.this.toast(R.string.securePassphraseMsg);
                     else
-                        SignUpActivity.this.toast("Signup in progress");
+                        SignUpActivity.this.toast(R.string.signupInProgress);
             }
         });
         signupNfcIcon = UI.find(this, R.id.signupNfcIcon);
 
         nfcDialog = new MaterialDialog.Builder(SignUpActivity.this)
-                .title("Hold your NFC tag close to the device")
+                .title(R.string.nfcDialogMessage)
                 .customView(nfcView, true)
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)

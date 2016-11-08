@@ -97,7 +97,7 @@ public class PinSaveActivity extends GaActivity {
         } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
             KeyStoreAES.showAuthenticationScreen(this);
         } catch (final KeyStoreAES.KeyInvalidated e) {
-            toast("Problem with key " + e.getMessage());
+            toast(String.format(getResources().getString(R.string.problemWithKey), e.getMessage()));
         }
     }
 

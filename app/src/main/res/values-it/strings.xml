@@ -199,4 +199,10 @@
   <string name="loading_transactions">Caricamento transazioni...</string>
   <string name="transactionCompleted">Transazione completata con successo</string>
   <string name="unable_to_connect_to_service">GreenBits non riesce a collegarsi, per favore verifica la connessione a internet</string>
+  <string name="nfcDialogMessage">Tieni la tag NFC vicino al dispositivo</string>
+  <string name="securePassphraseMsg">Metti al sicuro la passphrase e conferma di accettare i Termini di Servizio</string>
+  <string name="signupInProgress">Registrazione in corso</string>
+  <string name="notConnected">Non sei connesso, si prega di attendere</string>
+  <string name="pinErrorLength">Il PIN deve essere compreso tra 4 e 15 numeri</string>
+  <string name="problemWithKey">Problemi con la chiave %s</string>
 </resources>

@@ -63,7 +63,7 @@ public class PinActivity extends LoginActivity implements Observer {
             return;
 
         if (mPinText.length() < 4) {
-            shortToast("PIN has to be between 4 and 15 long");
+            shortToast(R.string.pinErrorLength);
             return;
         }
 

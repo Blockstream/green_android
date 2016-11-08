@@ -260,4 +260,10 @@
     <string name="fa_usd" translatable="false">&#xf155;</string>
     <string name="transactionCompleted">Transaction successfully completed</string>
     <string name="unable_to_connect_to_service">GreenBits is unable to connect, please verify your internet connection</string>
+    <string name="nfcDialogMessage">Hold your NFC tag close to the device</string>
+    <string name="securePassphraseMsg">Please secure your passphrase and confirm you agree to the Terms of Service</string>
+    <string name="signupInProgress">Signup in progress</string>
+    <string name="notConnected">You are not connected, please wait</string>
+    <string name="pinErrorLength">PIN has to be between 4 and 15 long</string>
+    <string name="problemWithKey">Problem with key %s</string>
 </resources>
