@@ -47,6 +47,7 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
@@ -602,14 +603,16 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void preparePrivData(final Map<String, Object> privateData) {
-        final int subAccount = privateData.containsKey("subaccount")? (int) privateData.get("subaccount"):0;
-        // skip fetching raw if not needed
+        final int subAccount = (int) privateData.getOrDefault("subaccount", 0);
+        // Skip fetching raw previous outputs if they are not required
         final Coin verifiedBalance = getSPVVerifiedBalance(subAccount);
-        final boolean useHttp = !isSPVEnabled() ||
+        final boolean fetchPrev = !isSPVEnabled() ||
                 verifiedBalance == null || !verifiedBalance.equals(getCoinBalance(subAccount)) ||
                 mClient.getSigningWallet().requiresPrevoutRawTxs();
 
-        privateData.put("prevouts_mode", useHttp ? "http" : "skip");
+        final boolean isRegTest = Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST));
+        final String fetchMode = isRegTest ? "" : "http"; // Fetch inline for regtest
+        privateData.put("prevouts_mode", fetchPrev ? fetchMode : "skip");
 
         final Object rbf_optin = getUserConfig("replace_by_fee");
         if (rbf_optin != null)

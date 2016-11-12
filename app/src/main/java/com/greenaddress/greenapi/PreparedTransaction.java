@@ -7,6 +7,7 @@ import com.greenaddress.greenbits.GaService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,14 +96,25 @@ public class PreparedTransaction {
         mRequiresTwoFactor = (Boolean) pte.mValues.get("requires_2factor");
         mDecoded = GaService.buildTransaction((String) pte.mValues.get("tx"));
 
-        // return early if no rawtxs url is given, assumes user asked for 'skip'
+        if (Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
+            // For REGTEST we fetch the previous outputs inline
+            // FIXME: Do this for the other environments too after more testing
+            final Map<String, String> txs;
+            txs = (Map<String, String>) pte.mValues.get("prevout_rawtxs");
+            // if txs is null, the caller passed 'skip' to avoid returning previous txs
+            if (txs != null)
+                for (String txHash : txs.keySet())
+                    mPrevoutRawTxs.put(txHash, GaService.buildTransaction(txs.get(txHash)));
+            return;
+        }
+
+        // Return early if no rawtxs url is given, assumes user asked for 'skip'
         try {
             if (!URLUtil.isValidUrl((String) pte.mValues.get("prevout_rawtxs")))
                 return;
         } catch (final Exception e) {
             return;
         }
-
 
         final Request request = new Request.Builder()
                 .url((String)pte.mValues.get("prevout_rawtxs"))
