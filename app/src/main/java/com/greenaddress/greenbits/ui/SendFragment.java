@@ -7,9 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.text.Editable;
 import android.text.Html;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -34,11 +32,8 @@ import com.greenaddress.greenbits.GaService;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
-import org.bitcoinj.utils.ExchangeRate;
-import org.bitcoinj.utils.Fiat;
 import org.bitcoinj.utils.MonetaryFormat;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,10 +60,9 @@ public class SendFragment extends SubaccountFragment {
     private boolean mFromIntentURI = false;
 
 
-    private boolean mConverting = false;
     private MonetaryFormat mBitcoinFormat;
     private int mSubaccount;
-    private boolean mPausing;
+    private AmountFields mAmountFields;
 
     private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
@@ -203,7 +197,7 @@ public class SendFragment extends SubaccountFragment {
                                     mSendButton.setEnabled(true);
                                     if (!amountStr.toString().isEmpty()) {
                                         mAmountEdit.setText(amountStr);
-                                        convertBtcToFiat();
+                                        mAmountFields.convertBtcToFiat();
                                         mAmountEdit.setEnabled(false);
                                         mAmountFiatEdit.setEnabled(false);
                                         UI.hide(mMaxButton, mMaxLabel);
@@ -238,7 +232,7 @@ public class SendFragment extends SubaccountFragment {
                             public void run() {
                                 final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                                 mAmountEdit.setText(mBitcoinFormat.noCode().format(URI.getAmount()));
-                                convertBtcToFiat(fiatRate);
+                                mAmountFields.convertBtcToFiat(fiatRate);
                                 mAmountEdit.setEnabled(false);
                                 mAmountFiatEdit.setEnabled(false);
                                 UI.hide(mMaxButton, mMaxLabel);
@@ -260,10 +254,11 @@ public class SendFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        if (savedInstanceState != null)
-            mPausing = savedInstanceState.getBoolean("pausing");
-
         mView = inflater.inflate(R.layout.fragment_send, container, false);
+
+        mAmountFields = new AmountFields(service, getContext(), mView, null);
+        if (savedInstanceState != null)
+            mAmountFields.setPause(savedInstanceState.getBoolean("pausing"));
 
         mSubaccount = service.getCurrentSubAccount();
 
@@ -467,43 +462,6 @@ public class SendFragment extends SubaccountFragment {
                                     }
         );
 
-        final FontAwesomeTextView fiatView = UI.find(mView, R.id.sendFiatIcon);
-        changeFiatIcon(fiatView, service.getFiatCurrency());
-
-        mAmountFiatEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                convertFiatToBtc();
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-
-            }
-        });
-
-        mAmountEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                convertBtcToFiat();
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-
-            }
-        });
-
         mNoteIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -533,7 +491,7 @@ public class SendFragment extends SubaccountFragment {
     public void onViewStateRestored(final Bundle savedInstanceState) {
         Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
-        mPausing = false;
+        mAmountFields.setPause(false);
     }
 
     private void hideInstantIf2of3() {
@@ -572,84 +530,24 @@ public class SendFragment extends SubaccountFragment {
             UI.hide(sendSubAccountBalance, sendSubAccountBalanceUnit, sendSubAccountBitcoinScale);
     }
 
-    private void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
-
-        final String converted = CurrencyMapper.map(currency);
-        if (converted != null) {
-            fiatIcon.setText(Html.fromHtml(converted + " "));
-            fiatIcon.setAwesomeTypeface();
-            fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-        } else {
-            fiatIcon.setText(currency);
-            fiatIcon.setDefaultTypeface();
-            fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        }
-    }
-
-    private void convertBtcToFiat() {
-        convertBtcToFiat(getGAService().getFiatRate());
-    }
-
-    private void convertBtcToFiat(final float exchangeRate) {
-        if (mConverting || mPausing)
-            return;
-
-        mConverting = true;
-        final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
-                .toBigInteger().longValue());
-
-        try {
-            final ExchangeRate rate = new ExchangeRate(exchangeFiat);
-            final Coin btcValue = mBitcoinFormat.parse(UI.getText(mAmountEdit));
-            Fiat fiatValue = rate.coinToFiat(btcValue);
-            // strip extra decimals (over 2 places) because that's what the old JS client does
-            fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
-            mAmountFiatEdit.setText(fiatValue.toPlainString());
-        } catch (final ArithmeticException | IllegalArgumentException e) {
-            if (UI.getText(mAmountEdit).equals(getString(R.string.send_max_amount)))
-                mAmountFiatEdit.setText(getString(R.string.send_max_amount));
-            else
-                mAmountFiatEdit.setText("");
-        }
-        mConverting = false;
-    }
-
-    private void convertFiatToBtc() {
-        if (mConverting || mPausing)
-            return;
-
-        mConverting = true;
-        final float exchangeRate = getGAService().getFiatRate();
-        final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
-                .toBigInteger().longValue());
-        final ExchangeRate rate = new ExchangeRate(exchangeFiat);
-        try {
-            final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(mAmountFiatEdit));
-            mAmountEdit.setText(mBitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
-        } catch (final ArithmeticException | IllegalArgumentException e) {
-            mAmountEdit.setText("");
-        }
-        mConverting = false;
-    }
-
     @Override
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        mPausing = true;
+        mAmountFields.setPause(true);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart -> " + TAG);
-        mPausing = false;
+        mAmountFields.setPause(false);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("pausing", mPausing);
+        outState.putBoolean("pausing", mAmountFields.getPause());
     }
 
     public void onDestroyView() {
