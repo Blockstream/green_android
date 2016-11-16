@@ -231,8 +231,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final GaActivity gaActivity = getGaActivity();
         final ClipboardManager cm;
         cm = (ClipboardManager) gaActivity.getSystemService(Context.CLIPBOARD_SERVICE);
-        final String address = UI.getText(mAddressText).replace("\n", "");
-        final ClipData data = ClipData.newPlainText("data", address);
+        final ClipData data = ClipData.newPlainText("data", mQrCodeBitmap.getData());
         cm.setPrimaryClip(data);
         final String text = gaActivity.getString(R.string.toastOnCopyAddress) +
                             " " + gaActivity.getString(R.string.warnOnPaste);
@@ -312,8 +311,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private String getAddressUri() {
-        final Address address = Address.fromBase58(Network.NETWORK, mQrCodeBitmap.getData());
-        return BitcoinURI.convertToBitcoinURI(address, null, null, null);
+        final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
+        return BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);
     }
 
     @Override
