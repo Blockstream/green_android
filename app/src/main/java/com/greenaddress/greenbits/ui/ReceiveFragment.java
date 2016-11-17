@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.AsyncTask;
@@ -160,17 +161,20 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         bitmapWorkerTask.execute();
     }
 
-    class BitmapWorkerTask extends AsyncTask<Object, Object, QrBitmap> {
+    class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
 
         @Override
-        protected QrBitmap doInBackground(Object... integers) {
+        protected Bitmap doInBackground(Object... integers) {
             String amountEdit = UI.getText(mAmountEdit);
             mCurrentAmount = null;
             if (amountEdit.isEmpty()) {
-                if (mQrCodeBitmap != null)
-                    return new QrBitmap(mCurrentAddress, 0 /* transparent background */);
-                else
+                if (mQrCodeBitmap != null) {
+                    final QrBitmap qrBitmap = new QrBitmap(mCurrentAddress, 0 /* transparent background */);
+                    mQrCodeBitmap = qrBitmap;
+                    return qrBitmap.getQRCode();
+                } else {
                     return null;
+                }
             }
             try {
                 final String btcUnit = (String) getGAService().getUserConfig("unit");
@@ -179,18 +183,21 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
                 mCurrentAmount = bitcoinFormat.parse(amountEdit);
                 final String qrcodeText = BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);
-                return new QrBitmap(qrcodeText, 0 /* transparent background */);
+                final QrBitmap qrBitmap = new QrBitmap(qrcodeText, 0 /* transparent background */);
+                mQrCodeBitmap = qrBitmap;
+                return qrBitmap.getQRCode();
             } catch (final ArithmeticException | IllegalArgumentException e) {
-                return new QrBitmap(mCurrentAddress, 0 /* transparent background */);
+                final QrBitmap qrBitmap = new QrBitmap(mCurrentAddress, 0 /* transparent background */);
+                mQrCodeBitmap = qrBitmap;
+                return qrBitmap.getQRCode();
             }
         }
 
         @Override
-        protected void onPostExecute(final QrBitmap qrBitmap) {
-            if (qrBitmap == null)
+        protected void onPostExecute(final Bitmap bitmap) {
+            if (bitmap == null)
                 return;
-            mQrCodeBitmap = qrBitmap;
-            final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), qrBitmap.getQRCode());
+            final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
             bitmapDrawable.setFilterBitmap(false);
             mAddressImage.setImageDrawable(bitmapDrawable);
             mAddressImage.setOnClickListener(new View.OnClickListener() {
