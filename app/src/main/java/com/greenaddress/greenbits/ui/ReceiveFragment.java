@@ -147,6 +147,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         });
         mAmountEdit = UI.find(mView, R.id.sendAmountEditText);
         mAmountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
+        View amountFields = UI.find(mView, R.id.amountFields);
+        UI.showIf(getGAService().cfg().getBoolean("showAmountInReceive", false), amountFields);
 
         registerReceiver();
         return mView;

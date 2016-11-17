@@ -37,4 +37,8 @@
         <intent android:action="android.intent.action.VIEW" android:data="https://www.ledgerwallet.com/r/bead"/>
     </Preference>
 
+    <CheckBoxPreference android:key="showAmountInReceive"
+        android:title="@string/showAmountInReceive"
+        android:summary="@string/showAmountInReceiveDetail"/>
+
 </PreferenceScreen>

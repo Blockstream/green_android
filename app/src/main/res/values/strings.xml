@@ -266,4 +266,6 @@
     <string name="notConnected">You are not connected, please wait</string>
     <string name="pinErrorLength">PIN has to be between 4 and 15 long</string>
     <string name="problemWithKey">Problem with key %s</string>
+    <string name="showAmountInReceive">Amount fields in receive tab</string>
+    <string name="showAmountInReceiveDetail">Show amount fields in receive tab</string>
 </resources>

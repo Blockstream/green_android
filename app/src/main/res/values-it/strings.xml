@@ -205,4 +205,6 @@
   <string name="notConnected">Non sei connesso, si prega di attendere</string>
   <string name="pinErrorLength">Il PIN deve essere compreso tra 4 e 15 numeri</string>
   <string name="problemWithKey">Problemi con la chiave %s</string>
+  <string name="showAmountInReceive">Campi per l\'importo in ricevi</string>
+  <string name="showAmountInReceiveDetail">Mostra i campi per l\'importo nella tab ricevi</string>
 </resources>
