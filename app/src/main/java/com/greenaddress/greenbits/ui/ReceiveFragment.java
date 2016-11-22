@@ -157,6 +157,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     public void conversionFinish() {
+        if (bitmapWorkerTask != null)
+            bitmapWorkerTask.cancel(true);
         bitmapWorkerTask = new BitmapWorkerTask();
         bitmapWorkerTask.execute();
     }
@@ -269,6 +271,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private void onNewAddressGenerated(final QrBitmap result) {
         if (getActivity() == null)
             return;
+
+        if (bitmapWorkerTask != null)
+            bitmapWorkerTask.cancel(true);
 
         mQrCodeBitmap = result;
         final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
