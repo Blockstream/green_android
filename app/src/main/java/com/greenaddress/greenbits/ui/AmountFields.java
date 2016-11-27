@@ -141,10 +141,7 @@ class AmountFields {
             else
                 mAmountFiatEdit.setText("");
         }
-        if (mOnConversionFinishListener != null) {
-            mOnConversionFinishListener.conversionFinish();
-        }
-        mConverting = false;
+        finishConversion();
     }
 
     private void convertFiatToBtc() {
@@ -162,9 +159,13 @@ class AmountFields {
         } catch (final ArithmeticException | IllegalArgumentException e) {
             mAmountEdit.setText("");
         }
-        if (mOnConversionFinishListener != null) {
+        finishConversion();
+    }
+
+    private void finishConversion() {
+        if (mOnConversionFinishListener != null)
             mOnConversionFinishListener.conversionFinish();
-        }
         mConverting = false;
     }
+
 }
