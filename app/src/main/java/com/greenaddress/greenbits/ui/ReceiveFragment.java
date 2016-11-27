@@ -56,7 +56,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private EditText mAmountFiatEdit;
     private String mCurrentAddress = "";
     private Coin mCurrentAmount = null;
-    private BitmapWorkerTask bitmapWorkerTask;
+    private BitmapWorkerTask mBitmapWorkerTask;
     private AmountFields mAmountFields;
 
     @Override
@@ -157,10 +157,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     public void conversionFinish() {
-        if (bitmapWorkerTask != null)
-            bitmapWorkerTask.cancel(true);
-        bitmapWorkerTask = new BitmapWorkerTask();
-        bitmapWorkerTask.execute();
+        if (mBitmapWorkerTask != null)
+            mBitmapWorkerTask.cancel(true);
+        mBitmapWorkerTask = new BitmapWorkerTask();
+        mBitmapWorkerTask.execute();
     }
 
     class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
@@ -272,9 +272,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (getActivity() == null)
             return;
 
-        if (bitmapWorkerTask != null) {
-            bitmapWorkerTask.cancel(true);
-            bitmapWorkerTask = null;
+        if (mBitmapWorkerTask != null) {
+            mBitmapWorkerTask.cancel(true);
+            mBitmapWorkerTask = null;
         }
 
         mQrCodeBitmap = result;
