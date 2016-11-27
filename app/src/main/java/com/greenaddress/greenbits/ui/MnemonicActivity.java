@@ -13,7 +13,6 @@ import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.Spannable;
-import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
@@ -268,7 +267,7 @@ public class MnemonicActivity extends LoginActivity {
             }
         });
 
-        mMnemonicText.addTextChangedListener(new TextWatcher() {
+        mMnemonicText.addTextChangedListener(new UI.TextWatcher() {
             public void afterTextChanged(final Editable s) {
                 final String mnemonic = s.toString();
                 if (mnemonic.startsWith(" ")) {
@@ -305,11 +304,6 @@ public class MnemonicActivity extends LoginActivity {
                 if (copy != null)
                     for (final Object span : copy.spans)
                         s.removeSpan(span);
-            }
-            public void beforeTextChanged(final CharSequence s, final int start,
-                                          final int count, final int after){}
-            public void onTextChanged(final CharSequence s, final int start,
-                                      final int before, final int count) {
             }
         });
 

@@ -1,9 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
-import android.text.Editable;
 import android.text.Html;
-import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.EditText;
@@ -59,37 +57,17 @@ class AmountFields {
 
         changeFiatIcon(fiatView, mGaService.getFiatCurrency());
 
-        mAmountFiatEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-
-            }
-
+        mAmountFiatEdit.addTextChangedListener(new UI.TextWatcher() {
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
                 convertFiatToBtc();
             }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-
-            }
         });
 
-        mAmountEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-
-            }
-
+        mAmountEdit.addTextChangedListener(new UI.TextWatcher() {
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
                 convertBtcToFiat();
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-
             }
         });
     }

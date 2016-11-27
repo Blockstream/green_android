@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
@@ -167,6 +168,17 @@ public abstract class UI {
                 Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    // Dummy TextWatcher for simple overrides
+    public static class TextWatcher implements android.text.TextWatcher {
+        TextWatcher() { super(); }
+        @Override
+        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) { }
+        @Override
+        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) { }
+        @Override
+        public void afterTextChanged(final Editable s) { }
     }
 
     public static View mapClick(final Activity activity, final int id, final View.OnClickListener fn) {
