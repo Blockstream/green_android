@@ -62,14 +62,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public void onResume() {
         super.onResume();
-        mAmountFields.setPause(false);
+        mAmountFields.setIsPausing(false);
         Log.d(TAG, "onResume -> " + TAG);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mAmountFields.setPause(true);
+        mAmountFields.setIsPausing(true);
         Log.d(TAG, "onPause -> " + TAG);
         if (mQrCodeDialog != null) {
             mQrCodeDialog.dismiss();
@@ -100,7 +100,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         mAmountFields = new AmountFields(getGAService(), getContext(), mView, this);
         if (savedInstanceState != null)
-            mAmountFields.setPause(savedInstanceState.getBoolean("pausing"));
+            mAmountFields.setIsPausing(savedInstanceState.getBoolean("pausing"));
 
         mReceiveAddressLayout = UI.find(mView, R.id.receiveAddressLayout);
         mAddressText = UI.find(mView, R.id.receiveAddressText);
@@ -360,12 +360,12 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onViewStateRestored(final Bundle savedInstanceState) {
         Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
-        mAmountFields.setPause(false);
+        mAmountFields.setIsPausing(false);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("pausing", mAmountFields.getPause());
+        outState.putBoolean("pausing", mAmountFields.isPausing());
     }
 }

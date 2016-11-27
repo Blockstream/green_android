@@ -258,7 +258,7 @@ public class SendFragment extends SubaccountFragment {
 
         mAmountFields = new AmountFields(service, getContext(), mView, null);
         if (savedInstanceState != null)
-            mAmountFields.setPause(savedInstanceState.getBoolean("pausing"));
+            mAmountFields.setIsPausing(savedInstanceState.getBoolean("pausing"));
 
         mSubaccount = service.getCurrentSubAccount();
 
@@ -491,7 +491,7 @@ public class SendFragment extends SubaccountFragment {
     public void onViewStateRestored(final Bundle savedInstanceState) {
         Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
-        mAmountFields.setPause(false);
+        mAmountFields.setIsPausing(false);
     }
 
     private void hideInstantIf2of3() {
@@ -534,20 +534,20 @@ public class SendFragment extends SubaccountFragment {
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        mAmountFields.setPause(true);
+        mAmountFields.setIsPausing(true);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart -> " + TAG);
-        mAmountFields.setPause(false);
+        mAmountFields.setIsPausing(false);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("pausing", mAmountFields.getPause());
+        outState.putBoolean("pausing", mAmountFields.isPausing());
     }
 
     public void onDestroyView() {

@@ -29,7 +29,7 @@ class AmountFields {
     private boolean mConverting = false;
     private GaService mGaService;
     private Context mContext;
-    private Boolean mPausing = false;
+    private Boolean mIsPausing = false;
 
     interface OnConversionFinishListener {
         void conversionFinish();
@@ -94,12 +94,12 @@ class AmountFields {
         });
     }
 
-    void setPause(Boolean value) {
-        mPausing = value;
+    void setIsPausing(Boolean isPausing) {
+        mIsPausing = isPausing;
     }
 
-    Boolean getPause() {
-        return mPausing;
+    Boolean isPausing() {
+        return mIsPausing;
     }
 
     private void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
@@ -121,7 +121,7 @@ class AmountFields {
     }
 
     void convertBtcToFiat(final float exchangeRate) {
-        if (mConverting || mPausing)
+        if (mConverting || mIsPausing)
             return;
 
         mConverting = true;
@@ -145,7 +145,7 @@ class AmountFields {
     }
 
     private void convertFiatToBtc() {
-        if (mConverting || mPausing)
+        if (mConverting || mIsPausing)
             return;
 
         mConverting = true;
