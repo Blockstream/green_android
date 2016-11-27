@@ -517,7 +517,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public void updateBalance(final int subAccount) {
-        Futures.addCallback(mClient.getSubaccountBalance(subAccount), new FutureCallback<Map<?, ?>>() {
+        Futures.addCallback(getSubaccountBalance(subAccount), new FutureCallback<Map<?, ?>>() {
             @Override
             public void onSuccess(final Map<?, ?> result) {
                 final String fiatCurrency = (String) result.get("fiat_currency");
