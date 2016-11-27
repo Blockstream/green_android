@@ -272,8 +272,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (getActivity() == null)
             return;
 
-        if (bitmapWorkerTask != null)
+        if (bitmapWorkerTask != null) {
             bitmapWorkerTask.cancel(true);
+            bitmapWorkerTask = null;
+        }
 
         mQrCodeBitmap = result;
         final BitmapDrawable bd = new BitmapDrawable(getResources(), result.getQRCode());
