@@ -787,6 +787,16 @@ public class WalletClient {
         return mLoginData.userConfig.get(key);
     }
 
+    // Returns True if the user hasn't elected to use segwit yet
+    public boolean isSegwitUnconfirmed() {
+        return getUserConfig("use_segwit") == null;
+    }
+
+    // Returns True iff the user has elected to use segwit
+    public boolean isSegwitEnabled() {
+        return !isSegwitUnconfirmed() && (Boolean) getUserConfig("use_segwit");
+    }
+
     private <T> ByteArrayOutputStream serializeJSON(final T src) throws GAException {
         final ByteArrayOutputStream b = new ByteArrayOutputStream();
         try {

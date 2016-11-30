@@ -9,7 +9,7 @@ class PeerFilterProvider implements org.bitcoinj.core.PeerFilterProvider {
 
     @Override
     public long getEarliestKeyCreationTime() {
-        return mSPV.getService().getLoginData().earliest_key_creation_time;
+        return mSPV.getService().getLoginData().earliestKeyCreationTime;
     }
 
     @Override

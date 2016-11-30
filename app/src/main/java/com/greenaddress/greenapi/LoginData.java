@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class LoginData {
-    private final static int EPOCH_START = 1393628400;
-
     public final String exchange;
     public String currency;
     public final Map<String, Object> userConfig;
@@ -17,8 +15,8 @@ public class LoginData {
     public final ArrayList<Map<String, ?>> subAccounts;
     public final String receivingId;
     public int[] gaUserPath;  // can change on first login (registration)
-    public final int earliest_key_creation_time;
-    public final boolean segwit;
+    public final int earliestKeyCreationTime;
+    public final boolean isSegwitServer; // Does the server support segwit?
     public final boolean rbf;
 
     public LoginData(final Map<?, ?> map) throws IOException {
@@ -33,28 +31,13 @@ public class LoginData {
         if (path != null)
             setGaUserPath(Wally.hex_to_bytes(path));
         this.receivingId = (String) map.get("receiving_id");
-        if (map.get("segwit") == null) {
-            this.segwit = false;
-        } else {
-            this.segwit = (Boolean) map.get("segwit");
-        }
-        if (map.get("rbf") == null) {
-            this.rbf = false;
+        this.isSegwitServer = (Boolean) map.get("segwit_server");
+        this.rbf = (Boolean) map.get("rbf");
+        if (this.rbf)
+            this.feeEstimates = (Map<String, Object>) map.get("fee_estimates");
+        else
             this.feeEstimates = null;
-        } else {
-            this.rbf = (Boolean) map.get("rbf");
-            if (this.rbf) {
-                this.feeEstimates = (Map<String, Object>) map.get("fee_estimates");
-            } else {
-                this.feeEstimates = null;
-            }
-        }
-        if (map.containsKey("earliest_key_creation_time")) {
-            this.earliest_key_creation_time = (Integer) map.get("earliest_key_creation_time");
-        } else {
-            // server doesn't provide it yet, set it to EPOCH
-            this.earliest_key_creation_time = EPOCH_START;
-        }
+        this.earliestKeyCreationTime = (Integer) map.get("earliest_key_creation_time");
     }
 
     private int u8(int i) { return i < 0 ? 256 + i : i; }

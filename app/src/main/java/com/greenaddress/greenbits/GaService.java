@@ -204,7 +204,7 @@ public class GaService extends Service implements INotificationHandler {
                 if (mState.isForcedOff())
                     return;
                 try {
-                    if (mClient.isWatchOnly())
+                    if (isWatchOnly())
                         loginImpl(mClient.watchOnlylogin(mClient.getWatchOnlyUsername(), mClient.getWatchOnlyPassword()));
                     else if (mClient.getSigningWallet() != null)
                         loginImpl(mClient.login(mClient.getSigningWallet(), mDeviceId));
@@ -235,6 +235,10 @@ public class GaService extends Service implements INotificationHandler {
 
     public boolean isWatchOnly() {
         return mClient.isWatchOnly();
+    }
+
+    public boolean isSegwitEnabled() {
+        return mClient.isSegwitEnabled();
     }
 
     // Sugar for fetching/editing preferences
@@ -377,15 +381,11 @@ public class GaService extends Service implements INotificationHandler {
         return Futures.transform(createOutScript(subAccount, pointer), new Function<byte[], Boolean>() {
             @Override
             public Boolean apply(final byte[] multisig) {
-                if (getLoginData().segwit &&
-                        Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig)))) {
-                    // allow segwit p2sh only if segwit is enabled
+                if (isSegwitEnabled() &&
+                    Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig))))
                     return true;
-                }
 
-                final byte[] expectedP2SH = Utils.sha256hash160(multisig);
-
-                return Arrays.equals(gotP2SH, expectedP2SH);
+                return Arrays.equals(gotP2SH, Utils.sha256hash160(multisig));
             }
         });
     }
@@ -523,7 +523,7 @@ public class GaService extends Service implements INotificationHandler {
                 final String fiatCurrency = (String) result.get("fiat_currency");
                 mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
                 mFiatRate = Float.valueOf((String) result.get("fiat_exchange"));
-                if (mClient.isWatchOnly())
+                if (isWatchOnly())
                     setFiatCurrency(fiatCurrency);
                 // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
                 // while the server can return more, hence toBigInteger instead here:
@@ -695,10 +695,9 @@ public class GaService extends Service implements INotificationHandler {
                 final Integer pointer = ((Integer) input.get("pointer"));
                 final byte[] script = Wally.hex_to_bytes((String) input.get("script"));
                 final byte[] scriptHash;
-                if (getLoginData().segwit) {
-                    // allow segwit p2sh only if segwit is enabled
+                if (isSegwitEnabled())
                     scriptHash = Utils.sha256hash160(getSegWitScript(script));
-                } else
+                else
                     scriptHash = Utils.sha256hash160(script);
 
                 final ListenableFuture<Boolean> verify;
