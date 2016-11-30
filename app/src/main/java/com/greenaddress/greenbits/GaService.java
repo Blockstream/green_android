@@ -685,7 +685,8 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<Map> getNewAddress(final int subAccount) {
-        return mClient.getNewAddress(subAccount);
+        final String addrType = isSegwitEnabled() ? "p2wsh" : "p2sh";
+        return mClient.getNewAddress(subAccount, addrType);
     }
 
     public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {

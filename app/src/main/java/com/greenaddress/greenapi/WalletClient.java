@@ -688,8 +688,8 @@ public class WalletClient {
         return syncCall("txs.get_list_v2", Map.class, null, null, null, null, subAccount);
     }
 
-    public ListenableFuture<Map> getNewAddress(final int subAccount) {
-        return simpleCall("vault.fund", Map.class, subAccount, true);
+    public ListenableFuture<Map> getNewAddress(final int subAccount, final String addrType) {
+        return simpleCall("vault.fund", Map.class, subAccount, true, addrType);
     }
 
     public PinData setPin(final String mnemonic, final String pin, final String deviceName) throws Exception {
