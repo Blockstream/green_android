@@ -361,31 +361,28 @@ public class WalletClient {
 
     public ListenableFuture<LoginData> loginRegisterImpl(final ISigningWallet signingWallet,
                                                          final byte[] masterPublicKey, final byte[] masterChaincode,
-                                                         final byte[] path,final String agent,  final String deviceId) {
+                                                         final byte[] path, final String agent, final String deviceId) {
 
         final SettableFuture<ISigningWallet> rpc = SettableFuture.create();
         clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
             public void onResult(final Object result) {
                 rpc.set(signingWallet);
             }
-        }, Wally.hex_from_bytes(masterPublicKey), Wally.hex_from_bytes(masterChaincode), agent);
+        }, Wally.hex_from_bytes(masterPublicKey),
+           Wally.hex_from_bytes(masterChaincode),
+           agent,
+           Wally.hex_from_bytes(path));
 
         final AsyncFunction<ISigningWallet, LoginData> fn = new AsyncFunction<ISigningWallet, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final ISigningWallet signingWallet) throws Exception {
-                return login(signingWallet, deviceId);
+                return login(signingWallet, deviceId, null);
             }
         };
 
         final Function<LoginData, LoginData> postFn = new Function<LoginData, LoginData>() {
             @Override
             public LoginData apply(LoginData loginData) {
-                try {
-                    syncCall("login.set_gait_path", Void.class, Wally.hex_from_bytes(path));
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-                loginData.setGaUserPath(path);
                 HDKey.resetCache(loginData.gaUserPath);
                 return loginData;
             }
@@ -583,11 +580,6 @@ public class WalletClient {
         return rpc;
     }
 
-    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics, final String deviceId) {
-        mMnemonics = mnemonics;
-        return login(signingWallet, deviceId);
-    }
-
     private LoginData watchOnlyLoginImpl(final String username, final String password) throws Exception {
         final Map<String, String> credentials = new HashMap<>(2);
         credentials.put("username", username);
@@ -666,7 +658,9 @@ public class WalletClient {
         });
     }
 
-    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String deviceId) {
+    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String deviceId, final String mnemonics) {
+        if (mnemonics != null)
+            mMnemonics = mnemonics;
         return mExecutor.submit(new Callable<LoginData>() {
             @Override
             public LoginData call() {

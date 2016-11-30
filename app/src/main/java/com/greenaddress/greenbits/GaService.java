@@ -207,7 +207,7 @@ public class GaService extends Service implements INotificationHandler {
                     if (isWatchOnly())
                         loginImpl(mClient.watchOnlylogin(mClient.getWatchOnlyUsername(), mClient.getWatchOnlyPassword()));
                     else if (mClient.getSigningWallet() != null)
-                        loginImpl(mClient.login(mClient.getSigningWallet(), mDeviceId));
+                        loginImpl(mClient.login(mClient.getSigningWallet(), mDeviceId, null));
                 } catch (final Exception e) {
                     e.printStackTrace();
                     this.onFailure(e);
@@ -462,7 +462,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet) {
-        return loginImpl(mClient.login(signingWallet, mDeviceId));
+        return loginImpl(mClient.login(signingWallet, mDeviceId, null));
     }
 
     public ListenableFuture<LoginData> watchOnlyLogin(final String username, final String password) {
@@ -478,7 +478,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics) {
-        return loginImpl(mClient.login(signingWallet, mnemonics, mDeviceId));
+        return loginImpl(mClient.login(signingWallet, mDeviceId, mnemonics));
     }
 
     public ListenableFuture<LoginData> signup(final String mnemonics) {
