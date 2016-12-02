@@ -171,31 +171,21 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         @Override
         protected Bitmap doInBackground(Object... integers) {
-            String amountEdit = UI.getText(mAmountEdit);
+            final String amount = UI.getText(mAmountEdit);
             mCurrentAmount = null;
-            if (amountEdit.isEmpty()) {
-                if (mQrCodeBitmap != null) {
-                    final QrBitmap qrBitmap = new QrBitmap(mCurrentAddress, 0 /* transparent background */);
-                    mQrCodeBitmap = qrBitmap;
-                    return qrBitmap.getQRCode();
-                } else {
-                    return null;
-                }
-            }
+            if (amount.isEmpty())
+                return mQrCodeBitmap == null ? null : resetBitmap(mCurrentAddress);
+
             try {
                 final String btcUnit = (String) getGAService().getUserConfig("unit");
                 final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
 
                 final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
-                mCurrentAmount = bitcoinFormat.parse(amountEdit);
-                final String qrcodeText = BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);
-                final QrBitmap qrBitmap = new QrBitmap(qrcodeText, 0 /* transparent background */);
-                mQrCodeBitmap = qrBitmap;
-                return qrBitmap.getQRCode();
+                mCurrentAmount = bitcoinFormat.parse(amount);
+                final String qrCodeText = BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);
+                return resetBitmap(qrCodeText);
             } catch (final ArithmeticException | IllegalArgumentException e) {
-                final QrBitmap qrBitmap = new QrBitmap(mCurrentAddress, 0 /* transparent background */);
-                mQrCodeBitmap = qrBitmap;
-                return qrBitmap.getQRCode();
+                return resetBitmap(mCurrentAddress);
             }
         }
 
@@ -212,6 +202,12 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     onAddressImageClicked(bitmapDrawable);
                 }
             });
+        }
+
+        private Bitmap resetBitmap(final String address) {
+            final int TRANSPARENT = 0; // Transparent background
+            mQrCodeBitmap = new QrBitmap(address, TRANSPARENT);
+            return mQrCodeBitmap.getQRCode();
         }
     }
 
