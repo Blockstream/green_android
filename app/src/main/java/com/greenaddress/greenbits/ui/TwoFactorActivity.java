@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,7 +27,6 @@ public class TwoFactorActivity extends GaActivity {
 
     private View inflateView(final int id) {
         final View v = getLayoutInflater().inflate(id, null, false);
-        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
         setContentView(v);
         return v;
     }
