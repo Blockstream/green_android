@@ -31,6 +31,10 @@ public class TwoFactorActivity extends GaActivity {
         return v;
     }
 
+    private String getTypeString(final String fmt, final String type) {
+        return new Formatter().format(fmt, type).toString();
+    }
+
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
@@ -49,7 +53,7 @@ public class TwoFactorActivity extends GaActivity {
                 mTwoFacTypeName = allTwoFac[i];
                 break;
             }
-        setTitle(new Formatter().format(getTitle().toString(), mTwoFacTypeName).toString());
+        setTitle(getTypeString(getTitle().toString(), mTwoFacTypeName));
 
         if (enabledTwoFacNames.size() > 1) {
             setContentView(R.layout.activity_two_factor_1_choose);
@@ -125,8 +129,7 @@ public class TwoFactorActivity extends GaActivity {
         final String type = getResources().getString(resId);
 
         final TextView promptText = UI.find(this, R.id.prompt);
-        promptText.setText(new Formatter().format(
-                UI.getText(promptText), type).toString());
+        promptText.setText(getTypeString(UI.getText(promptText), type));
         if (!isEmail)
             UI.hide((View) UI.find(this, R.id.emailNotices));
 
@@ -166,7 +169,7 @@ public class TwoFactorActivity extends GaActivity {
         final TextView prompt = UI.find(this, R.id.prompt);
         final EditText code = UI.find(this, R.id.code);
         description.setText(R.string.twoFacProvideAuthCodeDescription);
-        prompt.setText(new Formatter().format(UI.getText(prompt), oldMethodName).toString());
+        prompt.setText(getTypeString(UI.getText(prompt), oldMethodName));
         final ProgressBar progressBar = UI.find(this, R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
@@ -251,8 +254,8 @@ public class TwoFactorActivity extends GaActivity {
         inflateView(R.layout.activity_two_factor_2_4_provide_code);
         final Button continueButton = UI.find(this, R.id.continueButton);
         final EditText code = UI.find(this, R.id.code);
-        final TextView prompt = UI.find(this, R.id.prompt);
-        prompt.setText(new Formatter().format(UI.getText(prompt), mTwoFacTypeName).toString());
+        final TextView promptText = UI.find(this, R.id.prompt);
+        promptText.setText(getTypeString(UI.getText(promptText), mTwoFacTypeName));
         final ProgressBar progressBar = UI.find(this, R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
