@@ -110,34 +110,43 @@ public class TwoFactorActivity extends GaActivity {
                 showProvideDetails(1, 2, null);
     }
 
+    private final Map<String, String> makeProxyData(final String proxyCode) {
+        final Map<String, String> data = new HashMap<>();
+        if (proxyCode != null) {
+            data.put("method", "proxy");
+            data.put("code", proxyCode);
+        }
+        return data;
+    }
+
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
         setContentView(R.layout.activity_two_factor_3_provide_details);
-        final Button continueButton = UI.find(this, R.id.continueButton);
-        final TextView prompt = UI.find(this, R.id.prompt);
-        final TextView details = UI.find(this, R.id.details);
-        prompt.setText(new Formatter().format(
-                UI.getText(prompt),
-                twoFacType.equals("email") ?
-                        getResources().getString(R.string.emailAddress) :
-                        getResources().getString(R.string.phoneNumber)).toString());
-        if (!twoFacType.equals("email"))
+
+        final boolean isEmail = twoFacType.equals("email");
+        final int resId = isEmail ? R.string.emailAddress : R.string.phoneNumber;
+        final String type = getResources().getString(resId);
+
+        final TextView promptText = UI.find(this, R.id.prompt);
+        promptText.setText(new Formatter().format(
+                UI.getText(promptText), type).toString());
+        if (!isEmail)
             UI.hide((View) UI.find(this, R.id.emailNotices));
 
         final ProgressBar progressBar = UI.find(this, R.id.progressBar);
         progressBar.setProgress(stepNum);
         progressBar.setMax(numSteps);
 
+        final TextView detailsText = UI.find(this, R.id.details);
+        final Button continueButton = UI.find(this, R.id.continueButton);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (UI.getText(details).trim().isEmpty()) return;
-                continueButton.setEnabled(false);
-                final Map<String, String> twoFacData = new HashMap<>();
-                if (proxyCode != null) {  // two factor required
-                    twoFacData.put("method", "proxy");
-                    twoFacData.put("code", proxyCode);
-                }
-                CB.after(mService.initEnableTwoFac(twoFacType, UI.getText(details), twoFacData),
+                final String details = UI.getText(detailsText).trim();
+                if (details.isEmpty())
+                    return;
+                UI.disable(continueButton);
+                final Map<String, String> twoFacData = makeProxyData(proxyCode);
+                CB.after(mService.initEnableTwoFac(twoFacType, details, twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
@@ -225,11 +234,7 @@ public class TwoFactorActivity extends GaActivity {
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, String> twoFacData = new HashMap<>();
-                if (proxyCode != null) {
-                    twoFacData.put("method", "proxy");
-                    twoFacData.put("code", proxyCode);
-                }
+                final Map<String, String> twoFacData = makeProxyData(proxyCode);
                 continueButton.setEnabled(false);
                 CB.after(mService.enableTwoFactor("gauth", UI.getText(code).trim(), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, continueButton) {
