@@ -62,7 +62,7 @@ public class SendFragment extends SubaccountFragment {
 
     private MonetaryFormat mBitcoinFormat;
     private int mSubaccount;
-    private AmountFields mAmountFields;
+    private AmountFields mAmountFields = null;
 
     private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");
@@ -257,9 +257,10 @@ public class SendFragment extends SubaccountFragment {
         mView = inflater.inflate(R.layout.fragment_send, container, false);
 
         mAmountFields = new AmountFields(service, getContext(), mView, null);
-        if (savedInstanceState != null)
-            mAmountFields.setIsPausing(savedInstanceState.getBoolean("pausing"));
-
+        if (savedInstanceState != null) {
+            final Boolean pausing = savedInstanceState.getBoolean("pausing", false);
+            mAmountFields.setIsPausing(pausing);
+        }
         mSubaccount = service.getCurrentSubAccount();
 
         mSendButton = UI.find(mView, R.id.sendSendButton);
@@ -491,7 +492,8 @@ public class SendFragment extends SubaccountFragment {
     public void onViewStateRestored(final Bundle savedInstanceState) {
         Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
-        mAmountFields.setIsPausing(false);
+        if (mAmountFields != null)
+            mAmountFields.setIsPausing(false);
     }
 
     private void hideInstantIf2of3() {
@@ -534,20 +536,23 @@ public class SendFragment extends SubaccountFragment {
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        mAmountFields.setIsPausing(true);
+        if (mAmountFields != null)
+            mAmountFields.setIsPausing(true);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart -> " + TAG);
-        mAmountFields.setIsPausing(false);
+        if (mAmountFields != null)
+            mAmountFields.setIsPausing(false);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("pausing", mAmountFields.isPausing());
+        if (mAmountFields != null)
+            outState.putBoolean("pausing", mAmountFields.isPausing());
     }
 
     public void onDestroyView() {

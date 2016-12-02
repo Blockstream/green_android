@@ -57,19 +57,21 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private String mCurrentAddress = "";
     private Coin mCurrentAmount = null;
     private BitmapWorkerTask mBitmapWorkerTask;
-    private AmountFields mAmountFields;
+    private AmountFields mAmountFields = null;
 
     @Override
     public void onResume() {
         super.onResume();
-        mAmountFields.setIsPausing(false);
+        if (mAmountFields != null)
+            mAmountFields.setIsPausing(false);
         Log.d(TAG, "onResume -> " + TAG);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mAmountFields.setIsPausing(true);
+        if (mAmountFields != null)
+            mAmountFields.setIsPausing(true);
         Log.d(TAG, "onPause -> " + TAG);
         if (mQrCodeDialog != null) {
             mQrCodeDialog.dismiss();
@@ -99,8 +101,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mView = inflater.inflate(R.layout.fragment_receive, container, false);
 
         mAmountFields = new AmountFields(getGAService(), getContext(), mView, this);
-        if (savedInstanceState != null)
-            mAmountFields.setIsPausing(savedInstanceState.getBoolean("pausing"));
+        if (savedInstanceState != null) {
+            final Boolean pausing = savedInstanceState.getBoolean("pausing", false);
+            mAmountFields.setIsPausing(pausing);
+        }
 
         mReceiveAddressLayout = UI.find(mView, R.id.receiveAddressLayout);
         mAddressText = UI.find(mView, R.id.receiveAddressText);
@@ -362,12 +366,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onViewStateRestored(final Bundle savedInstanceState) {
         Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
-        mAmountFields.setIsPausing(false);
+        if (mAmountFields != null)
+            mAmountFields.setIsPausing(false);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("pausing", mAmountFields.isPausing());
+        if (mAmountFields != null)
+            outState.putBoolean("pausing", mAmountFields.isPausing());
     }
 }
