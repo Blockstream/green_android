@@ -15,6 +15,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.greenaddress.greenbits.QrBitmap;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.Formatter;
 import java.util.HashMap;
@@ -85,32 +86,15 @@ public class TwoFactorActivity extends GaActivity {
             mContinueButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    final String methodName = enabledTwoFacNamesSystem.get(radioGroup.getCheckedRadioButtonId());
-                    // if 3 details and confirmation code together
-                    final int stepsCount = mTwoFacType.equals("gauth") ? 3 : 4;
-
-                    if (!methodName.equals("gauth")) {
-                        final Map<String, String> data = new HashMap<>();
-                        data.put("method", mTwoFacType);
-                        mService.requestTwoFacCode(methodName, "enable_2fa", data);
-                    }
-                    showProvideAuthCode(2, stepsCount, enabledTwoFacNames.get(radioGroup.getCheckedRadioButtonId()),
-                            methodName, mTwoFacType);
+                    final int checked = radioGroup.getCheckedRadioButtonId();
+                    showProvideAuthCode(2, enabledTwoFacNames.get(checked),
+                                        enabledTwoFacNamesSystem.get(checked));
                 }
             });
         } else if (enabledTwoFacNames.size() == 1) {
             // just one 2FA enabled - go straight to code verification
-            final String methodName = enabledTwoFacNamesSystem.get(0);
-
-            final int stepsCount = mTwoFacType.equals("gauth") ? 2 : 3;
-
-            if (!methodName.equals("gauth")) {
-                final Map<String, String> data = new HashMap<>();
-                data.put("method", mTwoFacType);
-                mService.requestTwoFacCode(methodName, "enable_2fa", data);
-            }
-            showProvideAuthCode(1, stepsCount, enabledTwoFacNames.get(0),
-                    methodName, mTwoFacType);
+            showProvideAuthCode(1, enabledTwoFacNames.get(0),
+                                enabledTwoFacNamesSystem.get(0));
         } else
             // no 2FA enabled - go straight to 2FA details
             if (mTwoFacType.equals("gauth"))
@@ -119,13 +103,10 @@ public class TwoFactorActivity extends GaActivity {
                 showProvideDetails(1, 2, null);
     }
 
-    private final Map<String, String> makeProxyData(final String proxyCode) {
-        final Map<String, String> data = new HashMap<>();
-        if (proxyCode != null) {
-            data.put("method", "proxy");
-            data.put("code", proxyCode);
-        }
-        return data;
+    private Map<String, String> make2FAData(final String method, final String code) {
+        if (code == null)
+            return new HashMap<String, String>();
+        return ImmutableMap.of("method", method, "code", code);
     }
 
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
@@ -150,7 +131,7 @@ public class TwoFactorActivity extends GaActivity {
                 if (details.isEmpty())
                     return;
                 UI.disable(mContinueButton);
-                final Map<String, String> twoFacData = makeProxyData(proxyCode);
+                final Map<String, String> twoFacData = make2FAData("proxy", proxyCode);
                 CB.after(mService.initEnableTwoFac(mTwoFacType, details, twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
@@ -166,7 +147,13 @@ public class TwoFactorActivity extends GaActivity {
         });
     }
 
-    private void showProvideAuthCode(final int stepNum, final int numSteps, final String oldMethodName, final String oldMethod, final String newMethod) {
+    private void showProvideAuthCode(final int stepNum, final String oldMethodName, final String oldMethod) {
+        final int numSteps = stepNum + (mTwoFacType.equals("gauth") ? 1 : 2);
+
+        if (!oldMethod.equals("gauth"))
+            mService.requestTwoFacCode(oldMethod, "enable_2fa",
+                                       ImmutableMap.of("method", mTwoFacType));
+
         setView(R.layout.activity_two_factor_2_4_provide_code);
 
         final TextView descriptionText = UI.find(this, R.id.description);
@@ -179,16 +166,14 @@ public class TwoFactorActivity extends GaActivity {
             @Override
             public void onClick(final View v) {
                 mContinueButton.setEnabled(false);
-                final Map<String, String> data = new HashMap<>();
-                data.put("method", oldMethod);
-                data.put("code", UI.getText(mCodeText).trim());
-                CB.after(mService.requestTwoFacCode("proxy", newMethod, data),
+                final Map<String, String> data = make2FAData(oldMethod, UI.getText(mCodeText).trim());
+                CB.after(mService.requestTwoFacCode("proxy", mTwoFacType, data),
                          new CB.Toast<Object>(TwoFactorActivity.this, mContinueButton) {
                     @Override
                     public void onSuccess(final Object proxyCode) {
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                if (newMethod.equals("gauth"))
+                                if (mTwoFacType.equals("gauth"))
                                     showGauthDetails(stepNum + 1, numSteps, (String) proxyCode);
                                 else
                                     showProvideDetails(stepNum + 1, numSteps, (String) proxyCode);
@@ -233,7 +218,7 @@ public class TwoFactorActivity extends GaActivity {
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Map<String, String> twoFacData = makeProxyData(proxyCode);
+                final Map<String, String> twoFacData = make2FAData("proxy", proxyCode);
                 mContinueButton.setEnabled(false);
                 CB.after(mService.enableTwoFactor("gauth", UI.getText(mCodeText).trim(), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
