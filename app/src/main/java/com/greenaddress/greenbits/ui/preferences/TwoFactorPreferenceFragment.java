@@ -73,10 +73,10 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
         final boolean skipChoice = false;
         final Dialog dlg = UI.popupTwoFactorChoice(getActivity(), mService, skipChoice,
-                                                     new CB.Runnable1T<String>() {
+                                                   new CB.Runnable1T<String>() {
             @Override
-            public void run(final String whichMethod) {
-                disable2FA(method, whichMethod);
+            public void run(final String withMethod) {
+                disable2FA(method, withMethod);
             }
         });
         if (dlg != null)
@@ -90,21 +90,14 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             mService.requestTwoFacCode(withMethod, "disable_2fa", data);
         }
         final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
-        final EditText twoFacValue = UI.find(v, R.id.btchipPINValue);
-        final TextView prompt = UI.find(v, R.id.btchipPinPrompt);
-        final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
-        final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
-        String withMethodName = "";
-        int i = 0;
-        for (final String name : allTwoFacSystem) {
-            if (name.equals(withMethod)) {
-                withMethodName = allTwoFac[i];
-                break;
-            }
-            i++;
-        }
-        prompt.setText(getString(R.string.twoFacProvideConfirmationCode, withMethodName));
 
+        final Map<String, String> localizedMap = UI.getTwoFactorLookup(getResources());
+
+        final TextView promptText = UI.find(v, R.id.btchipPinPrompt);
+        promptText.setText(getString(R.string.twoFacProvideConfirmationCode,
+                                     localizedMap.get(withMethod)));
+
+        final EditText codeText = UI.find(v, R.id.btchipPINValue);
         UI.popup(this.getActivity(), "2FA")
                   .customView(v, true)
                   .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -112,7 +105,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                       public void onClick(final MaterialDialog dialog, final DialogAction which) {
                           final Map<String, String> twoFacData = new HashMap<>();
                           twoFacData.put("method", withMethod);
-                          twoFacData.put("code", UI.getText(twoFacValue));
+                          twoFacData.put("code", UI.getText(codeText));
                           Futures.addCallback(mService.disableTwoFac(method.toLowerCase(), twoFacData), new FutureCallback<Boolean>() {
                               @Override
                               public void onSuccess(final Boolean result) {
