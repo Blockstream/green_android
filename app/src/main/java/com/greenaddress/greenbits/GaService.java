@@ -904,7 +904,7 @@ public class GaService extends Service implements INotificationHandler {
     public List<String> getEnabledTwoFactorMethods() {
         if (mTwoFactorConfig == null)
             return null;
-        final String[] methods = getResources().getStringArray(R.array.twoFactorChoicesSystem);
+        final String[] methods = getResources().getStringArray(R.array.twoFactorMethods);
         final ArrayList<String> enabled = new ArrayList<>();
         for (int i = 0; i < methods.length; ++i)
             if (((Boolean) mTwoFactorConfig.get(methods[i])))

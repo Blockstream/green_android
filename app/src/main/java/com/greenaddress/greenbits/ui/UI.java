@@ -112,11 +112,11 @@ public abstract class UI {
     }
 
     public static Map<String, String> getTwoFactorLookup(final Resources res) {
-        final List<String> names = Arrays.asList(res.getStringArray(R.array.twoFactorChoices));
-        final List<String> api = Arrays.asList(res.getStringArray(R.array.twoFactorChoicesSystem));
+        final List<String> localized = Arrays.asList(res.getStringArray(R.array.twoFactorChoices));
+        final List<String> methods = Arrays.asList(res.getStringArray(R.array.twoFactorMethods));
         final Map<String, String> map = new HashMap();
-        for (int i = 0; i < names.size(); i++)
-            map.put(api.get(i), names.get(i));
+        for (int i = 0; i < localized.size(); i++)
+            map.put(methods.get(i), localized.get(i));
         return map;
     }
 

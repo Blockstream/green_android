@@ -35,7 +35,7 @@
         <item>Call</item>
         <item>Google Auth</item>
     </string-array>
-    <string-array name="twoFactorChoicesSystem" translatable="false">
+    <string-array name="twoFactorMethods" translatable="false">
         <item>email</item>
         <item>sms</item>
         <item>phone</item>
