@@ -24,8 +24,8 @@ import java.util.Map;
 
 public class TwoFactorActivity extends GaActivity {
 
-    private String mTwoFacType;
-    private String  mTwoFacTypeName;
+    private String mMethod; // Current 2FA Method
+    private Map<String, String> mLocalizedMap; // 2FA method to localized description
 
     private Button mContinueButton;
     private TextView mPromptText;
@@ -52,31 +52,28 @@ public class TwoFactorActivity extends GaActivity {
             return;
         }
 
-        mTwoFacType = getIntent().getStringExtra("method");
-        final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
-        final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
-        final List<String> enabledTwoFacNames = mService.getEnabledTwoFacNames(false);
-        final List<String> enabledTwoFacNamesSystem = mService.getEnabledTwoFacNames(true);
-        for (int i = 0; i < allTwoFacSystem.length; ++i)
-            if (allTwoFacSystem[i].equals(mTwoFacType)) {
-                mTwoFacTypeName = allTwoFac[i];
-                break;
-            }
-        setTitle(getTypeString(getTitle().toString(), mTwoFacTypeName));
+        mMethod = getIntent().getStringExtra("method");
+        mLocalizedMap = UI.getTwoFactorLookup(getResources());
 
-        if (enabledTwoFacNames.size() > 1) {
+        setTitle(getTypeString(getTitle().toString(), mLocalizedMap.get(mMethod)));
+
+        final List<String> enabledMethods = mService.getEnabledTwoFacNames(true);
+
+        if (enabledMethods.size() > 1) {
+            // Multiple 2FA options enabled - Allow the user to choose
             setView(R.layout.activity_two_factor_1_choose);
-            final RadioGroup radioGroup = UI.find(this, R.id.radioGroup);
-            radioGroup.removeViews(0, radioGroup.getChildCount());
 
-            for (int i = 0; i < enabledTwoFacNames.size(); ++i) {
-                final RadioButton button = new RadioButton(TwoFactorActivity.this);
-                button.setText(enabledTwoFacNames.get(i));
-                button.setId(i);
-                radioGroup.addView(button);
+            final RadioGroup group = UI.find(this, R.id.radioGroup);
+            group.removeViews(0, group.getChildCount());
+
+            for (int i = 0; i < enabledMethods.size(); ++i) {
+                final RadioButton b = new RadioButton(TwoFactorActivity.this);
+                b.setText(mLocalizedMap.get(enabledMethods.get(i)));
+                b.setId(i);
+                group.addView(b);
             }
 
-            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(final RadioGroup group, final int checkedId) {
                     mContinueButton.setEnabled(true);
@@ -86,18 +83,16 @@ public class TwoFactorActivity extends GaActivity {
             mContinueButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    final int checked = radioGroup.getCheckedRadioButtonId();
-                    showProvideAuthCode(2, enabledTwoFacNames.get(checked),
-                                        enabledTwoFacNamesSystem.get(checked));
+                    final int checked = group.getCheckedRadioButtonId();
+                    showProvideAuthCode(2, enabledMethods.get(checked));
                 }
             });
-        } else if (enabledTwoFacNames.size() == 1) {
+        } else if (enabledMethods.size() == 1) {
             // just one 2FA enabled - go straight to code verification
-            showProvideAuthCode(1, enabledTwoFacNames.get(0),
-                                enabledTwoFacNamesSystem.get(0));
+            showProvideAuthCode(1, enabledMethods.get(0));
         } else
             // no 2FA enabled - go straight to 2FA details
-            if (mTwoFacType.equals("gauth"))
+            if (mMethod.equals("gauth"))
                 showGauthDetails(1, 1, null);
             else
                 showProvideDetails(1, 2, null);
@@ -112,7 +107,7 @@ public class TwoFactorActivity extends GaActivity {
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
         setView(R.layout.activity_two_factor_3_provide_details);
 
-        final boolean isEmail = mTwoFacType.equals("email");
+        final boolean isEmail = mMethod.equals("email");
         final int resId = isEmail ? R.string.emailAddress : R.string.phoneNumber;
         final String type = getResources().getString(resId);
 
@@ -132,7 +127,7 @@ public class TwoFactorActivity extends GaActivity {
                     return;
                 UI.disable(mContinueButton);
                 final Map<String, String> twoFacData = make2FAData("proxy", proxyCode);
-                CB.after(mService.initEnableTwoFac(mTwoFacType, details, twoFacData),
+                CB.after(mService.initEnableTwoFac(mMethod, details, twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
@@ -147,18 +142,19 @@ public class TwoFactorActivity extends GaActivity {
         });
     }
 
-    private void showProvideAuthCode(final int stepNum, final String oldMethodName, final String oldMethod) {
-        final int numSteps = stepNum + (mTwoFacType.equals("gauth") ? 1 : 2);
+    private void showProvideAuthCode(final int stepNum, final String method) {
+        final int numSteps = stepNum + (mMethod.equals("gauth") ? 1 : 2);
 
-        if (!oldMethod.equals("gauth"))
-            mService.requestTwoFacCode(oldMethod, "enable_2fa",
-                                       ImmutableMap.of("method", mTwoFacType));
+        final String localizedName = mLocalizedMap.get(method);
+        if (!method.equals("gauth"))
+            mService.requestTwoFacCode(method, "enable_2fa",
+                                       ImmutableMap.of("method", mMethod));
 
         setView(R.layout.activity_two_factor_2_4_provide_code);
 
         final TextView descriptionText = UI.find(this, R.id.description);
         descriptionText.setText(R.string.twoFacProvideAuthCodeDescription);
-        mPromptText.setText(getTypeString(UI.getText(mPromptText), oldMethodName));
+        mPromptText.setText(getTypeString(UI.getText(mPromptText), localizedName));
         mProgressBar.setProgress(stepNum);
         mProgressBar.setMax(numSteps);
 
@@ -166,14 +162,14 @@ public class TwoFactorActivity extends GaActivity {
             @Override
             public void onClick(final View v) {
                 mContinueButton.setEnabled(false);
-                final Map<String, String> data = make2FAData(oldMethod, UI.getText(mCodeText).trim());
-                CB.after(mService.requestTwoFacCode("proxy", mTwoFacType, data),
+                final Map<String, String> data = make2FAData(method, UI.getText(mCodeText).trim());
+                CB.after(mService.requestTwoFacCode("proxy", mMethod, data),
                          new CB.Toast<Object>(TwoFactorActivity.this, mContinueButton) {
                     @Override
                     public void onSuccess(final Object proxyCode) {
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                if (mTwoFacType.equals("gauth"))
+                                if (mMethod.equals("gauth"))
                                     showGauthDetails(stepNum + 1, numSteps, (String) proxyCode);
                                 else
                                     showProvideDetails(stepNum + 1, numSteps, (String) proxyCode);
@@ -235,7 +231,7 @@ public class TwoFactorActivity extends GaActivity {
     private void showProvideConfirmationCode(final int stepNum, final int numSteps) {
 
         setView(R.layout.activity_two_factor_2_4_provide_code);
-        mPromptText.setText(getTypeString(UI.getText(mPromptText), mTwoFacTypeName));
+        mPromptText.setText(getTypeString(UI.getText(mPromptText), mLocalizedMap.get(mMethod)));
 
         mProgressBar.setProgress(stepNum);
         mProgressBar.setMax(numSteps);
@@ -247,7 +243,7 @@ public class TwoFactorActivity extends GaActivity {
                 if (enteredCode.length() != 6)
                     return;
                 mContinueButton.setEnabled(false);
-                CB.after(mService.enableTwoFactor(mTwoFacType, enteredCode, null),
+                CB.after(mService.enableTwoFactor(mMethod, enteredCode, null),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
                     public void onSuccess(Boolean result) {

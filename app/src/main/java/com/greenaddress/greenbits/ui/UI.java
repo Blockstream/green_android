@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -21,7 +22,10 @@ import com.afollestad.materialdialogs.Theme;
 import com.greenaddress.greenbits.GaService;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class UI {
     public static final int INVALID_RESOURCE_ID = 0;
@@ -107,30 +111,41 @@ public abstract class UI {
         return popup(a, title, android.R.string.ok, android.R.string.cancel);
     }
 
+    public static Map<String, String> getTwoFactorLookup(final Resources res) {
+        final List<String> names = Arrays.asList(res.getStringArray(R.array.twoFactorChoices));
+        final List<String> api = Arrays.asList(res.getStringArray(R.array.twoFactorChoicesSystem));
+        final Map<String, String> map = new HashMap();
+        for (int i = 0; i < names.size(); i++)
+            map.put(api.get(i), names.get(i));
+        return map;
+    }
+
     public static MaterialDialog popupTwoFactorChoice(final Activity a, final GaService service,
                                                       final boolean skip, final CB.Runnable1T<String> callback) {
-        final List<String> names = service.getEnabledTwoFacNames(false);
+        final List<String> methods = skip ? null : service.getEnabledTwoFacNames(true);
 
-        if (skip || names.size() <= 1) {
+        if (skip || methods.size() <= 1) {
             // Caller elected to skip, or no choices are available: don't prompt
             a.runOnUiThread(new Runnable() {
                 public void run() {
-                    callback.run(names.isEmpty() ? null : service.getEnabledTwoFacNames(true).get(0));
+                    callback.run((skip || methods.isEmpty()) ? null : methods.get(0));
                 }
             });
             return null;
         }
 
         // Return a pop up dialog to let the user choose.
-        String[] namesArray = new String[names.size()];
-        namesArray = names.toArray(namesArray);
+        final Map<String, String> localizedMap = getTwoFactorLookup(a.getResources());
+        String[] localizedMethods = new String[methods.size()];
+        for (int i = 0; i < methods.size(); i++)
+            localizedMethods[i] = localizedMap.get(methods.get(i));
+
         return popup(a, R.string.twoFactorChoicesTitle, R.string.choose, R.string.cancel)
-                .items(namesArray)
+                .items(localizedMethods)
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
                     public boolean onSelection(MaterialDialog dialog, View v, int which, CharSequence text) {
-                        final List<String> systemNames = service.getEnabledTwoFacNames(true);
-                        callback.run(systemNames.get(which));
+                        callback.run(methods.get(which));
                         return true;
                     }
                 }).build();
