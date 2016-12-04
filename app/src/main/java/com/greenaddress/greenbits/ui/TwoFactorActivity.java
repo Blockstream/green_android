@@ -57,7 +57,7 @@ public class TwoFactorActivity extends GaActivity {
 
         setTitle(getTypeString(getTitle().toString(), mLocalizedMap.get(mMethod)));
 
-        final List<String> enabledMethods = mService.getEnabledTwoFacNames(true);
+        final List<String> enabledMethods = mService.getEnabledTwoFactorMethods();
 
         if (enabledMethods.size() > 1) {
             // Multiple 2FA options enabled - Allow the user to choose

@@ -122,7 +122,7 @@ public abstract class UI {
 
     public static MaterialDialog popupTwoFactorChoice(final Activity a, final GaService service,
                                                       final boolean skip, final CB.Runnable1T<String> callback) {
-        final List<String> methods = skip ? null : service.getEnabledTwoFacNames(true);
+        final List<String> methods = skip ? null : service.getEnabledTwoFactorMethods();
 
         if (skip || methods.size() <= 1) {
             // Caller elected to skip, or no choices are available: don't prompt

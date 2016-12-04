@@ -901,17 +901,15 @@ public class GaService extends Service implements INotificationHandler {
         });
     }
 
-    public List<String> getEnabledTwoFacNames(final boolean useSystemNames) {
+    public List<String> getEnabledTwoFactorMethods() {
         if (mTwoFactorConfig == null)
             return null;
-        final String[] allTwoFac = getResources().getStringArray(R.array.twoFactorChoices);
-        final String[] allTwoFacSystem = getResources().getStringArray(R.array.twoFactorChoicesSystem);
-        final ArrayList<String> enabledTwoFac = new ArrayList<>();
-        final String[] twoFacs = useSystemNames ? allTwoFacSystem : allTwoFac;
-        for (int i = 0; i < allTwoFacSystem.length; ++i)
-            if (((Boolean) mTwoFactorConfig.get(allTwoFacSystem[i])))
-                enabledTwoFac.add(twoFacs[i]);
-        return enabledTwoFac;
+        final String[] methods = getResources().getStringArray(R.array.twoFactorChoicesSystem);
+        final ArrayList<String> enabled = new ArrayList<>();
+        for (int i = 0; i < methods.length; ++i)
+            if (((Boolean) mTwoFactorConfig.get(methods[i])))
+                enabled.add(methods[i]);
+        return enabled;
     }
 
     private static class GaObservable extends Observable {
