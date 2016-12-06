@@ -157,11 +157,6 @@ public class GaService extends Service implements INotificationHandler {
         return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
     }
 
-    private void setFiatCurrency(final String currency) {
-        getLoginData().currency = currency;
-        mFiatCurrency = currency;
-    }
-
     private void getAvailableTwoFactorMethods() {
         Futures.addCallback(mClient.getTwoFactorConfig(), new FutureCallback<Map<?, ?>>() {
             @Override
@@ -555,8 +550,6 @@ public class GaService extends Service implements INotificationHandler {
         final String fiatCurrency = (String) data.get("fiat_currency");
         mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) data.get("satoshi"))));
         mFiatRate = Float.valueOf((String) data.get("fiat_exchange"));
-        if (isWatchOnly())
-            setFiatCurrency(fiatCurrency);
         // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
         // while the server can return more, hence toBigInteger instead here:
         final BigInteger tmpValue = new BigDecimal((String) data.get("fiat_value"))
