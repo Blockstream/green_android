@@ -41,14 +41,15 @@ public class SignUpActivity extends LoginActivity {
     private static final int PINSAVE = 1337;
 
     private boolean mWriteMode = false;
-    private Dialog mnemonicDialog;
-    private Dialog nfcDialog;
+    private Dialog mMnemonicDialog;
+    private Dialog mNfcDialog;
     private NfcAdapter mNfcAdapter;
     private PendingIntent mNfcPendingIntent;
-    private TextView nfcTagsWritten;
-    private ImageView signupNfcIcon;
-    private TextView mnemonicText;
-    private ListenableFuture<LoginData> onSignUp;
+    private TextView mNfcTagsWrittenText;
+    private ImageView mSignupNfcIcon;
+    private TextView mMnemonicText;
+    private CircularProgressButton mContinueButton;
+    private ListenableFuture<LoginData> mOnSignUp;
     private final Runnable mDialogCB = new Runnable() { public void run() { mWriteMode = false; } };
 
     @Override
@@ -57,42 +58,42 @@ public class SignUpActivity extends LoginActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
-        final CircularProgressButton signupContinueButton = UI.find(this, R.id.signupContinueButton);
+        mContinueButton = UI.find(this, R.id.signupContinueButton);
+        mMnemonicText = UI.find(this, R.id.signupMnemonicText);
+
         final TextView tos = UI.find(this, R.id.textTosLink);
         final CheckBox checkBox = UI.find(this, R.id.signupAcceptCheckBox);
         final View nfcView = getLayoutInflater().inflate(R.layout.dialog_nfc_write, null, false);
-        nfcTagsWritten = UI.find(nfcView, R.id.nfcTagsWrittenText);
+        mNfcTagsWrittenText = UI.find(nfcView, R.id.nfcTagsWrittenText);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         mNfcPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, SignUpActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        if (onSignUp != null) {
+        if (mOnSignUp != null) {
             checkBox.setEnabled(false);
             checkBox.setChecked(true);
         }
 
         tos.setMovementMethod(LinkMovementMethod.getInstance());
 
-        mnemonicText = UI.find(this, R.id.signupMnemonicText);
-
         final View qrView = getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
 
         final TextView qrCodeIcon = UI.find(this, R.id.signupQrCodeIcon);
         final ImageView qrcodeMnemonic = UI.find(qrView, R.id.qrInDialogImageView);
-        mnemonicText.setText(mService.getSignUpMnemonic());
+        mMnemonicText.setText(mService.getSignUpMnemonic());
 
         qrCodeIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 qrCodeIcon.clearAnimation();
-                if (mnemonicDialog == null) {
+                if (mMnemonicDialog == null) {
                     qrcodeMnemonic.setLayoutParams(UI.getScreenLayout(SignUpActivity.this, 0.8));
 
-                    mnemonicDialog = new Dialog(SignUpActivity.this);
-                    mnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                    mnemonicDialog.setContentView(qrView);
+                    mMnemonicDialog = new Dialog(SignUpActivity.this);
+                    mMnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    mMnemonicDialog.setContentView(qrView);
                 }
-                mnemonicDialog.show();
+                mMnemonicDialog.show();
                 final BitmapDrawable bd = new BitmapDrawable(getResources(), mService.getSignUpQRCode());
                 bd.setFilterBitmap(false);
                 qrcodeMnemonic.setImageDrawable(bd);
@@ -101,16 +102,16 @@ public class SignUpActivity extends LoginActivity {
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
-                if (onSignUp != null)
+            public void onCheckedChanged(final CompoundButton continueBtn, final boolean isChecked) {
+                if (mOnSignUp != null)
                     return;
                 if (mService.onConnected != null) {
-                    signupContinueButton.setEnabled(true);
+                    continueBtn.setEnabled(true);
                     checkBox.setEnabled(false);
-                    onSignUp = Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
+                    mOnSignUp = Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
                         @Override
                         public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                            return mService.signup(UI.getText(mnemonicText));
+                            return mService.signup(UI.getText(mMnemonicText));
                         }
                     }, mService.getExecutor());
                 } else if (isChecked) {
@@ -120,28 +121,23 @@ public class SignUpActivity extends LoginActivity {
             }
         });
 
-        signupContinueButton.setOnClickListener(new View.OnClickListener() {
+        mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (onSignUp == null) {
+                if (mOnSignUp == null) {
                     final boolean checked = checkBox.isChecked();
                     SignUpActivity.this.toast(checked ? R.string.signupInProgress : R.string.securePassphraseMsg);
                     return;
                 }
 
-                signupContinueButton.setIndeterminateProgressMode(true);
-                signupContinueButton.setProgress(50);
-                Futures.addCallback(onSignUp, new FutureCallback<LoginData>() {
+                mContinueButton.setIndeterminateProgressMode(true);
+                mContinueButton.setProgress(50);
+                Futures.addCallback(mOnSignUp, new FutureCallback<LoginData>() {
                     @Override
                     public void onSuccess(final LoginData result) {
-                        SignUpActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                signupContinueButton.setProgress(100);
-                            }
-                        });
-
+                        setComplete(true);
                         mService.resetSignUp();
-                        onSignUp = null;
+                        mOnSignUp = null;
                         final Intent savePin = PinSaveActivity.createIntent(SignUpActivity.this, mService.getMnemonics());
                         startActivityForResult(savePin, PINSAVE);
                     }
@@ -149,18 +145,14 @@ public class SignUpActivity extends LoginActivity {
                     @Override
                     public void onFailure(final Throwable t) {
                         t.printStackTrace();
-                        SignUpActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                signupContinueButton.setProgress(0);
-                            }
-                        });
+                        setComplete(false);
                     }
                 }, mService.getExecutor());
             }
         });
-        signupNfcIcon = UI.find(this, R.id.signupNfcIcon);
+        mSignupNfcIcon = UI.find(this, R.id.signupNfcIcon);
 
-        nfcDialog = new MaterialDialog.Builder(SignUpActivity.this)
+        mNfcDialog = new MaterialDialog.Builder(SignUpActivity.this)
                 .title(R.string.nfcDialogMessage)
                 .customView(nfcView, true)
                 .titleColorRes(R.color.white)
@@ -168,17 +160,30 @@ public class SignUpActivity extends LoginActivity {
                 .theme(Theme.DARK).build();
 
         if (Build.VERSION.SDK_INT < 16)
-            UI.hide(signupNfcIcon);
+            UI.hide(mSignupNfcIcon);
         else
-            signupNfcIcon.setOnClickListener(new View.OnClickListener() {
+            mSignupNfcIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     mWriteMode = true;
-                    nfcDialog.show();
+                    mNfcDialog.show();
                 }
             });
 
-        UI.setDialogCloseHandler(nfcDialog, mDialogCB, true /* cancelOnly */);
+        UI.setDialogCloseHandler(mNfcDialog, mDialogCB, true /* cancelOnly */);
+    }
+
+    private void setComplete(final boolean isComplete) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                mContinueButton.setProgress(isComplete ? 100 : 0);
+            }
+        });
+    }
+
+    private void incrementTagsWritten() {
+        final Integer written = Integer.parseInt(UI.getText(mNfcTagsWrittenText));
+        mNfcTagsWrittenText.setText(String.valueOf(written + 1));
     }
 
     @Override
@@ -188,7 +193,7 @@ public class SignUpActivity extends LoginActivity {
             final IntentFilter[] filters = new IntentFilter[]{filter};
             mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, filters, null);
         }
-        UI.showIf(mNfcAdapter != null && mNfcAdapter.isEnabled(), signupNfcIcon);
+        UI.showIf(mNfcAdapter != null && mNfcAdapter.isEnabled(), mSignupNfcIcon);
     }
 
     @Override
@@ -198,7 +203,7 @@ public class SignUpActivity extends LoginActivity {
     }
 
     @Override
-    @SuppressLint("NewApi") // signupNfcIcon is hidden for API < 16
+    @SuppressLint("NewApi") // mSignupNfcIcon is hidden for API < 16
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
 
@@ -207,7 +212,7 @@ public class SignUpActivity extends LoginActivity {
 
         final Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        final byte[] seed = CryptoHelper.mnemonic_to_bytes(UI.getText(mnemonicText));
+        final byte[] seed = CryptoHelper.mnemonic_to_bytes(UI.getText(mMnemonicText));
 
         final NdefRecord[] record = new NdefRecord[1];
         record[0] = NdefRecord.createMime("x-gait/mnc", seed);
@@ -223,15 +228,14 @@ public class SignUpActivity extends LoginActivity {
                 if (ndef.getMaxSize() < size)
                     shortToast(R.string.err_sign_up_nfc_too_small);
                 ndef.writeNdefMessage(message);
-                nfcTagsWritten.setText(String.valueOf(Integer.parseInt(UI.getText(nfcTagsWritten)) + 1));
-
+                incrementTagsWritten();
             } else {
                 final NdefFormatable format = NdefFormatable.get(detectedTag);
                 if (format != null)
                     try {
                         format.connect();
                         format.format(message);
-                        nfcTagsWritten.setText(String.valueOf(Integer.parseInt(UI.getText(nfcTagsWritten)) + 1));
+                        incrementTagsWritten();
                     } catch (final IOException e) {
                     }
             }
@@ -242,18 +246,18 @@ public class SignUpActivity extends LoginActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mnemonicDialog != null)
-            mnemonicDialog.dismiss();
-        if (nfcDialog != null)
-            nfcDialog.dismiss();
+        if (mMnemonicDialog != null)
+            mMnemonicDialog.dismiss();
+        if (mNfcDialog != null)
+            mNfcDialog.dismiss();
     }
 
     @Override
     public void onBackPressed() {
 
-        if (onSignUp != null) {
+        if (mOnSignUp != null) {
             mService.resetSignUp();
-            onSignUp = null;
+            mOnSignUp = null;
             mService.disconnect(true);
         }
         super.onBackPressed();
