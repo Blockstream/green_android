@@ -481,19 +481,42 @@ public class GaService extends Service implements INotificationHandler {
         return loginImpl(mClient.login(signingWallet, mDeviceId, mnemonics));
     }
 
+    private ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
+                                               final String mnemonics,
+                                               final byte[] pubkey, final byte[] chaincode,
+                                               final byte[] pathPubkey, final byte[] pathChaincode) {
+        mState.transitionTo(ConnState.LOGGINGIN);
+
+        ListenableFuture<LoginData> fn;
+        return mExecutor.submit(new Callable<LoginData>() {
+                   @Override
+                   public LoginData call() throws Exception {
+                       try {
+                           mClient.registerUser(signingWallet, mnemonics,
+                                                pubkey, chaincode,
+                                                pathPubkey, pathChaincode,
+                                                mDeviceId);
+                           onPostLogin(mClient.getLoginData());
+                           return mClient.getLoginData();
+                       } catch (final Exception e) {
+                           e.printStackTrace();
+                           mState.transitionTo(ConnState.CONNECTED);
+                           throw e;
+                       }
+                   }
+               });
+    }
+
     public ListenableFuture<LoginData> signup(final String mnemonics) {
-        final SWWallet signingWallet = new SWWallet(mnemonics);
-        return loginImpl(mClient.loginRegister(signingWallet,
-                                               signingWallet.getMasterKey().getPubKey(),
-                                               signingWallet.getMasterKey().getChainCode(),
-                                               mnemonics, mDeviceId));
+        final SWWallet sw = new SWWallet(mnemonics);
+        return signup(sw, mnemonics, sw.getMasterKey().getPubKey(),
+                      sw.getMasterKey().getChainCode(), null, null);
     }
 
     public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
-                                              final byte[] masterPublicKey, final byte[] masterChaincode,
-                                              final byte[] pathPublicKey, final byte[] pathChaincode) {
-        return loginImpl(mClient.loginRegister(signingWallet, masterPublicKey, masterChaincode,
-                                               pathPublicKey, pathChaincode, mDeviceId));
+                                              final byte[] pubkey, final byte[] chaincode,
+                                              final byte[] pathPubkey, final byte[] pathChaincode) {
+        return signup(signingWallet, null, pubkey, chaincode, pathPubkey, pathChaincode);
     }
 
     public String getMnemonics() {

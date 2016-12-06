@@ -80,6 +80,7 @@ public class WalletClient {
     private String mWatchOnlyPassword = null;
     private String mMnemonics = null;
 
+    private String h(final byte[] data) { return Wally.hex_from_bytes(data); }
 
     public WalletClient(final INotificationHandler notificationHandler,
                         final ListeningExecutorService es) {
@@ -333,7 +334,6 @@ public class WalletClient {
         mLoginData = null;
         mMnemonics = null;
         mWatchOnlyUsername = null;
-
         mHDParent = null;
 
         if (mConnection != null) {
@@ -342,53 +342,26 @@ public class WalletClient {
         }
     }
 
-    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet,
-                                                     final byte[] masterPublicKey, final byte[] masterChaincode,
-                                                     final String mnemonics, final String deviceId) {
-        mMnemonics = mnemonics;
-        return loginRegisterImpl(signingWallet, masterPublicKey, masterChaincode,
-                                 mnemonicToPath(mnemonics), USER_AGENT, deviceId);
-    }
+    public void registerUser(final ISigningWallet signingWallet,
+                             final String mnemonics,
+                             final byte[] pubkey, final byte[] chaincode,
+                             final byte[] pathPubkey, final byte[] pathChaincode,
+                             final String deviceId) throws Exception {
+        String agent = USER_AGENT;
+        final byte[] path;
 
-    public ListenableFuture<LoginData> loginRegister(final ISigningWallet signingWallet,
-                                                     final byte[] masterPublicKey, final byte[] masterChaincode,
-                                                     final byte[] pathPublicKey, final byte[] pathChaincode,
-                                                     final String deviceId) {
-        return loginRegisterImpl(signingWallet, masterPublicKey, masterChaincode,
-                                 extendedKeyToPath(pathPublicKey, pathChaincode),
-                                 String.format("%s HW", USER_AGENT), deviceId);
-    }
+        if (mnemonics != null) {
+            mMnemonics = mnemonics; // Software Wallet
+            path = mnemonicToPath(mnemonics);
+        } else {
+            agent += " HW"; // Hardware Wallet
+            path = extendedKeyToPath(pathPubkey, pathChaincode);
+        }
 
-    public ListenableFuture<LoginData> loginRegisterImpl(final ISigningWallet signingWallet,
-                                                         final byte[] masterPublicKey, final byte[] masterChaincode,
-                                                         final byte[] path, final String agent, final String deviceId) {
-
-        final SettableFuture<ISigningWallet> rpc = SettableFuture.create();
-        clientCall(rpc, "login.register", Boolean.class, new CallHandler() {
-            public void onResult(final Object result) {
-                rpc.set(signingWallet);
-            }
-        }, Wally.hex_from_bytes(masterPublicKey),
-           Wally.hex_from_bytes(masterChaincode),
-           agent,
-           Wally.hex_from_bytes(path));
-
-        final AsyncFunction<ISigningWallet, LoginData> fn = new AsyncFunction<ISigningWallet, LoginData>() {
-            @Override
-            public ListenableFuture<LoginData> apply(final ISigningWallet signingWallet) throws Exception {
-                return login(signingWallet, deviceId, null);
-            }
-        };
-
-        final Function<LoginData, LoginData> postFn = new Function<LoginData, LoginData>() {
-            @Override
-            public LoginData apply(LoginData loginData) {
-                HDKey.resetCache(loginData.gaUserPath);
-                return loginData;
-            }
-        };
-
-        return Futures.transform(Futures.transform(rpc, fn, mExecutor), postFn, mExecutor);
+        // We don't check the return value of login.register (never returns false)
+        syncCall("login.register", Boolean.class, h(pubkey), h(chaincode), agent, h(path));
+        loginImpl(signingWallet, deviceId);
+        HDKey.resetCache(mLoginData.gaUserPath);
     }
 
     public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int subAccount) {
@@ -517,7 +490,7 @@ public class WalletClient {
                                 rpc.set(null);
                                 return;
                             }
-                            
+
                             if (newStatus instanceof WampClient.DisconnectedState)
                                 if (!initialDisconnectedStateSeen)
                                     // First state set is always 'disconnected'
@@ -621,7 +594,7 @@ public class WalletClient {
         return mWatchOnlyPassword;
     }
 
-    private LoginData loginImpl(final ISigningWallet signingWallet, final String deviceId) throws Exception, LoginFailed {
+    private LoginData loginImpl(final ISigningWallet signingWallet, final String deviceId) throws Exception {
 
         // FIXME: Unify this RPC call, this is ugly
         final Object[] args = signingWallet.getChallengeArguments();
@@ -753,7 +726,7 @@ public class WalletClient {
     public ListenableFuture<String> sendTransaction(final List<byte[]> signatures, final Object TfaData) {
         final List<String> args = new ArrayList<>();
         for (final byte[] s : signatures)
-            args.add(Wally.hex_from_bytes(s));
+            args.add(h(s));
         return simpleCall("vault.send_tx", null, args, TfaData);
     }
 
@@ -764,8 +737,8 @@ public class WalletClient {
                 rpc.setException(new GAException(returnErrorUri ? uri : err));
             }
         };
-        final String txStr =  Wally.hex_from_bytes(tx.bitcoinSerialize());
-        return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc), errHandler, txStr, twoFacData);
+        return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc),
+                          errHandler, h(tx.bitcoinSerialize()), twoFacData);
     }
 
     public ListenableFuture<List<byte[]>> signTransaction(final ISigningWallet signingWallet, final PreparedTransaction ptx) {
