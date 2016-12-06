@@ -364,7 +364,7 @@ public class WalletClient {
         HDKey.resetCache(mLoginData.gaUserPath);
     }
 
-    public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int subAccount) {
+    public ListenableFuture<Map<String, ?>> getSubaccountBalance(final int subAccount) {
         return simpleCall("txs.get_balance", Map.class, subAccount);
     }
 
@@ -376,7 +376,7 @@ public class WalletClient {
         return simpleCall("login.available_currencies", Map.class);
     }
 
-    private void onAuthenticationComplete(final Map<?,?> loginData, final ISigningWallet wallet, final String username, final String password) throws IOException {
+    private void onAuthenticationComplete(final Map<String,?> loginData, final ISigningWallet wallet, final String username, final String password) throws IOException {
         mLoginData = new LoginData(loginData);
         mHDParent = wallet;
         mWatchOnlyUsername = username;
@@ -558,7 +558,7 @@ public class WalletClient {
         credentials.put("username", username);
         credentials.put("password", password);
         final Object ret = syncCall("login.watch_only",  Object.class, "custom", credentials, false);
-        final Map<?, ?> json;
+        final Map<String, ?> json;
         json = new MappingJsonFactory().getCodec().readValue((String)ret, Map.class);
         onAuthenticationComplete(json, null, username, password);  // requires receivingId to be set
         return mLoginData;
@@ -614,7 +614,7 @@ public class WalletClient {
             throw new LoginFailed();
         }
 
-        onAuthenticationComplete((Map <?,?>) ret, signingWallet, null, null);  // requires receivingId to be set
+        onAuthenticationComplete((Map <String,?>) ret, signingWallet, null, null);  // requires receivingId to be set
         return mLoginData;
     }
 

@@ -448,11 +448,11 @@ public class GaService extends Service implements INotificationHandler {
         HDKey.resetCache(loginData.gaUserPath);
 
         mBalanceObservables.put(0, new GaObservable());
-        updateBalance(0);
-        for (final Map<String, ?> m : loginData.subAccounts) {
-            final int pointer = ((Integer) m.get("pointer"));
+        updateBalance(0, loginData.rawData);
+        for (final Map<String, ?> data : loginData.subAccounts) {
+            final int pointer = ((Integer) data.get("pointer"));
             mBalanceObservables.put(pointer, new GaObservable());
-            updateBalance(pointer);
+            updateBalance(pointer, data);
         }
         if (!isWatchOnly()) {
             getAvailableTwoFactorMethods();
@@ -540,22 +540,10 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public void updateBalance(final int subAccount) {
-        Futures.addCallback(getSubaccountBalance(subAccount), new FutureCallback<Map<?, ?>>() {
+        Futures.addCallback(getSubaccountBalance(subAccount), new FutureCallback<Map<String, ?>>() {
             @Override
-            public void onSuccess(final Map<?, ?> result) {
-                final String fiatCurrency = (String) result.get("fiat_currency");
-                mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) result.get("satoshi"))));
-                mFiatRate = Float.valueOf((String) result.get("fiat_exchange"));
-                if (isWatchOnly())
-                    setFiatCurrency(fiatCurrency);
-                // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
-                // while the server can return more, hence toBigInteger instead here:
-                final BigInteger tmpValue = new BigDecimal((String) result.get("fiat_value"))
-                        .movePointRight(Fiat.SMALLEST_UNIT_EXPONENT).toBigInteger();
-                // also strip extra decimals (over 2 places) because that's what the old JS client does
-                final BigInteger fiatValue = tmpValue.subtract(tmpValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
-                mFiatBalances.put(subAccount, Fiat.valueOf(fiatCurrency, fiatValue.longValue()));
-                fireBalanceChanged(subAccount);
+            public void onSuccess(final Map<String, ?> data) {
+                updateBalance(subAccount, data);
             }
 
             @Override
@@ -563,7 +551,23 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    public ListenableFuture<Map<?, ?>> getSubaccountBalance(final int subAccount) {
+    private void updateBalance(final int subAccount, final Map<String, ?> data) {
+        final String fiatCurrency = (String) data.get("fiat_currency");
+        mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) data.get("satoshi"))));
+        mFiatRate = Float.valueOf((String) data.get("fiat_exchange"));
+        if (isWatchOnly())
+            setFiatCurrency(fiatCurrency);
+        // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
+        // while the server can return more, hence toBigInteger instead here:
+        final BigInteger tmpValue = new BigDecimal((String) data.get("fiat_value"))
+                .movePointRight(Fiat.SMALLEST_UNIT_EXPONENT).toBigInteger();
+        // Also strip extra decimals (over 2 places) because that's what the old JS client does
+        final BigInteger fiatValue = tmpValue.subtract(tmpValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
+        mFiatBalances.put(subAccount, Fiat.valueOf(fiatCurrency, fiatValue.longValue()));
+        fireBalanceChanged(subAccount);
+    }
+
+    public ListenableFuture<Map<String, ?>> getSubaccountBalance(final int subAccount) {
         return mClient.getSubaccountBalance(subAccount);
     }
 

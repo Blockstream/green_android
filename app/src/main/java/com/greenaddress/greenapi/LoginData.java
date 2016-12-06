@@ -18,8 +18,9 @@ public class LoginData {
     public final int earliestKeyCreationTime;
     public final boolean isSegwitServer; // Does the server support segwit?
     public final boolean rbf;
+    public final Map<String, ?> rawData;
 
-    public LoginData(final Map<?, ?> map) throws IOException {
+    public LoginData(final Map<String, ?> map) throws IOException {
         this.exchange = (String) map.get("exchange");
         this.currency = (String) map.get("currency");
         // The name 'appearance' for user config is historical
@@ -38,6 +39,7 @@ public class LoginData {
         else
             this.feeEstimates = null;
         this.earliestKeyCreationTime = (Integer) map.get("earliest_key_creation_time");
+        this.rawData = map;
     }
 
     private int u8(int i) { return i < 0 ? 256 + i : i; }
