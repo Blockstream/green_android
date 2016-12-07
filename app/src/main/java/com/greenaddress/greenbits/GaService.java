@@ -522,6 +522,10 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getLoginData();
     }
 
+    public Map<String, Object> getFeeEstimates() {
+        return mClient.getFeeEstimates();
+    }
+
     public void disconnect(final boolean autoReconnect) {
         mAutoReconnect = autoReconnect;
         mSPV.stopSyncAsync();

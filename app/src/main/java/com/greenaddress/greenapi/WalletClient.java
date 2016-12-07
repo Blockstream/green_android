@@ -78,6 +78,7 @@ public class WalletClient {
     private boolean mTorEnabled = false;
     private WampClient mConnection;
     private LoginData mLoginData;
+    private Map<String, Object> mFeeEstimates;
     private ISigningWallet mHDParent;
     private String mWatchOnlyUsername = null;
     private String mWatchOnlyPassword = null;
@@ -316,6 +317,10 @@ public class WalletClient {
         return mLoginData;
     }
 
+    public Map<String, Object> getFeeEstimates() {
+        return mFeeEstimates;
+    }
+
     private static byte[] mnemonicToPath(final String mnemonic) {
         final byte[] hash = CryptoHelper.pbkdf2_hmac_sha512(mnemonic.getBytes(), GA_PATH.getBytes());
         return Wally.hmac_sha512(GA_KEY.getBytes(), hash);
@@ -381,6 +386,10 @@ public class WalletClient {
 
     private void onAuthenticationComplete(final Map<String,?> loginData, final ISigningWallet wallet, final String username, final String password) throws IOException {
         mLoginData = new LoginData(loginData);
+        if (loginData.containsKey("fee_estimates"))
+            mFeeEstimates = (Map) loginData.get("fee_estimates");
+        else
+            mFeeEstimates = null;
         mHDParent = wallet;
         mWatchOnlyUsername = username;
         mWatchOnlyPassword = password;
@@ -539,10 +548,9 @@ public class WalletClient {
                 });
                 clientSubscribe("fee_estimates", Map.class, new EventHandler() {
                     @Override
-                    public void onEvent(final String topicUri, final Object event) {
-                        Log.i(TAG, "FEE_ESTIMATES IS " + event.toString());
-                        if (mLoginData != null)
-                            mLoginData.feeEstimates = (Map) event;
+                    public void onEvent(final String topicUri, final Object newFeeEstimates) {
+                        Log.i(TAG, "FEE_ESTIMATES IS " + newFeeEstimates.toString());
+                        mFeeEstimates = (Map) newFeeEstimates;
                     }
                 });
             }
