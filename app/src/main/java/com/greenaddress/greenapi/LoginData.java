@@ -1,9 +1,7 @@
 package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
-import org.codehaus.jackson.map.MappingJsonFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -20,12 +18,9 @@ public class LoginData {
     public final boolean rbf;
     public final Map<String, ?> rawData;
 
-    public LoginData(final Map<String, ?> map) throws IOException {
+    public LoginData(final Map<String, ?> map) {
         this.exchange = (String) map.get("exchange");
         this.currency = (String) map.get("currency");
-        // The name 'appearance' for user config is historical
-        final String cfg = (String) map.get("appearance");
-        this.userConfig = new MappingJsonFactory().getCodec().readValue(cfg, Map.class);
         this.subAccounts = (ArrayList) map.get("subaccounts");
         gaUserPath = null;
         final String path = (String) map.get("gait_path");
@@ -40,6 +35,7 @@ public class LoginData {
             this.feeEstimates = null;
         this.earliestKeyCreationTime = (Integer) map.get("earliest_key_creation_time");
         this.rawData = map;
+        this.userConfig = (Map<String, Object>) map.get("appearance");
     }
 
     private int u8(int i) { return i < 0 ? 256 + i : i; }

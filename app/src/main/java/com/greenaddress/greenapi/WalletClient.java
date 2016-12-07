@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -63,8 +64,10 @@ public class WalletClient {
     private static final String TAG = WalletClient.class.getSimpleName();
     private static final String GA_KEY = "GreenAddress.it HD wallet path";
     private static final String GA_PATH = "greenaddress_path";
-    private static final String USER_AGENT = String.format("%s;%s;%s;%s",
-            BuildConfig.VERSION_CODE, BuildConfig.BUILD_TYPE,
+    // v2: API version 2, sw: Opt in/out segwit
+    private static final String FEATURES = "v2,sw";
+    private static final String USER_AGENT = String.format("[%s]%s;%s;%s;%s",
+            FEATURES, BuildConfig.VERSION_CODE, BuildConfig.BUILD_TYPE,
             android.os.Build.VERSION.SDK_INT, System.getProperty("os.arch"));
 
     private final Scheduler mScheduler = Schedulers.newThread();
@@ -554,13 +557,11 @@ public class WalletClient {
     }
 
     private LoginData watchOnlyLoginImpl(final String username, final String password) throws Exception {
-        final Map<String, String> credentials = new HashMap<>(2);
-        credentials.put("username", username);
-        credentials.put("password", password);
-        final Object ret = syncCall("login.watch_only",  Object.class, "custom", credentials, false);
-        final Map<String, ?> json;
-        json = new MappingJsonFactory().getCodec().readValue((String)ret, Map.class);
-        onAuthenticationComplete(json, null, username, password);  // requires receivingId to be set
+        final Map<String, ?> loginData;
+        loginData = syncCall("login.watch_only_v2",  Map.class, "custom",
+                             ImmutableMap.of("username", username, "password", password),
+                             USER_AGENT);
+        onAuthenticationComplete(loginData, null, username, password);  // requires receivingId to be set
         return mLoginData;
     }
 
