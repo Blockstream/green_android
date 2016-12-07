@@ -211,9 +211,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // -- handle opt-in rbf
         final CheckBoxPreference optInRbf = find("optin_rbf");
-        if (!mService.getLoginData().rbf) {
+        final boolean rbf = mService.getLoginData().get("rbf");
+        if (!rbf)
             getPreferenceScreen().removePreference(optInRbf);
-        } else {
+        else {
             optInRbf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(final Preference preference, final Object newValue) {

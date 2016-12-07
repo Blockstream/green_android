@@ -369,7 +369,7 @@ public class WalletClient {
         // We don't check the return value of login.register (never returns false)
         syncCall("login.register", Boolean.class, h(pubkey), h(chaincode), agent, h(path));
         loginImpl(signingWallet, deviceId);
-        HDKey.resetCache(mLoginData.gaUserPath);
+        HDKey.resetCache(mLoginData.mGaitPath);
     }
 
     public ListenableFuture<Map<String, ?>> getSubaccountBalance(final int subAccount) {
@@ -394,12 +394,13 @@ public class WalletClient {
         mWatchOnlyUsername = username;
         mWatchOnlyPassword = password;
 
-        if (mLoginData.rbf && getUserConfig("replace_by_fee") == null) {
+        final boolean rbf = mLoginData.get("rbf");
+        if (rbf && getUserConfig("replace_by_fee") == null) {
             // Enable rbf if server supports it and not disabled by user explicitly
             setUserConfig("replace_by_fee", Boolean.TRUE, false);
         }
 
-        clientSubscribe("txs.wallet_" + mLoginData.receivingId, Map.class, new EventHandler() {
+        clientSubscribe("txs.wallet_" + mLoginData.get("receiving_id"), Map.class, new EventHandler() {
             @Override
             public void onEvent(final String topicUri, final Object event) {
 
@@ -682,7 +683,7 @@ public class WalletClient {
         final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
         clientCall(rpc, "vault.prepare_tx", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.subAccounts, mHttpClient));
+                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.mSubAccounts, mHttpClient));
             }
         }, satoshis, destAddress, feesMode, privateData);
 
@@ -716,7 +717,7 @@ public class WalletClient {
 
         clientCall(rpc, "vault.prepare_payreq", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.subAccounts, mHttpClient));
+                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.mSubAccounts, mHttpClient));
             }
         }, amount.longValue(), dataClone, privateData);
 
@@ -760,7 +761,7 @@ public class WalletClient {
     }
 
     public Object getUserConfig(final String key) {
-        return mLoginData.userConfig.get(key);
+        return mLoginData.mUserConfig.get(key);
     }
 
     // Returns True if the user hasn't elected to use segwit yet
@@ -790,16 +791,16 @@ public class WalletClient {
     public ListenableFuture<Boolean> setUserConfig(final String key, final Object value, final boolean updateImmediately) {
         final Object oldValue = getUserConfig(key);
         if (updateImmediately)
-            mLoginData.userConfig.put(key, value);
+            mLoginData.mUserConfig.put(key, value);
 
-        final Map<String, Object> clonedConfig = new HashMap<>(mLoginData.userConfig);
+        final Map<String, Object> clonedConfig = new HashMap<>(mLoginData.mUserConfig);
         clonedConfig.put(key, value);
         final String newJSON;
         try {
             newJSON = serializeJSON(clonedConfig).toString();
         } catch (final GAException e) {
             if (updateImmediately)
-                mLoginData.userConfig.put(key, oldValue); // Restore
+                mLoginData.mUserConfig.put(key, oldValue); // Restore
             return Futures.immediateFailedFuture(e);
         }
 
@@ -807,7 +808,7 @@ public class WalletClient {
         final CallHandler handler = new CallHandler() {
             public void onResult(final Object result) {
                 if (!updateImmediately)
-                    mLoginData.userConfig.put(key, value);
+                    mLoginData.mUserConfig.put(key, value);
                 rpc.set(true);
             }
         };
@@ -815,7 +816,7 @@ public class WalletClient {
             public void onError(final String uri, final String err) {
                 Log.d(TAG, "updateAppearance failed: " + err);
                 if (updateImmediately)
-                    mLoginData.userConfig.put(key, oldValue); // Restore
+                    mLoginData.mUserConfig.put(key, oldValue); // Restore
                 rpc.setException(new GAException(err));
             }
         };

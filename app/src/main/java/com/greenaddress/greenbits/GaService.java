@@ -125,7 +125,7 @@ public class GaService extends Service implements INotificationHandler {
     private float mFiatRate;
     private String mFiatCurrency;
     private String mFiatExchange;
-    private ArrayList<Map<String, ?>> mSubaccounts;
+    private ArrayList<Map<String, ?>> mSubAccounts;
     private String mReceivingId;
     private Map<?, ?> mTwoFactorConfig;
     private final GaObservable mTwoFactorConfigObservable = new GaObservable();
@@ -436,15 +436,15 @@ public class GaService extends Service implements INotificationHandler {
 
         // FIXME: Why are we copying these? If we need them when not logged in,
         // we should just copy the whole loginData instance
-        mFiatCurrency = loginData.currency;
-        mFiatExchange = loginData.exchange;
-        mSubaccounts = loginData.subAccounts;
-        mReceivingId = loginData.receivingId;
-        HDKey.resetCache(loginData.gaUserPath);
+        mFiatCurrency = loginData.get("currency");
+        mFiatExchange = loginData.get("exchange");
+        mSubAccounts = loginData.mSubAccounts;
+        mReceivingId = loginData.get("receiving_id");
+        HDKey.resetCache(loginData.mGaitPath);
 
         mBalanceObservables.put(0, new GaObservable());
-        updateBalance(0, loginData.rawData);
-        for (final Map<String, ?> data : loginData.subAccounts) {
+        updateBalance(0, loginData.mRawData);
+        for (final Map<String, ?> data : mSubAccounts) {
             final int pointer = ((Integer) data.get("pointer"));
             mBalanceObservables.put(pointer, new GaObservable());
             updateBalance(pointer, data);
@@ -851,16 +851,16 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ArrayList<Map<String, ?>> getSubaccounts() {
-        return mSubaccounts;
+        return mSubAccounts;
     }
 
     public boolean haveSubaccounts() {
-        return mSubaccounts != null && !mSubaccounts.isEmpty();
+        return mSubAccounts != null && !mSubAccounts.isEmpty();
     }
 
     public Map<String, ?> findSubaccountByType(final Integer subAccount, final String type) {
         if (haveSubaccounts())
-            for (final Map<String, ?> ret : mSubaccounts)
+            for (final Map<String, ?> ret : mSubAccounts)
                 if (ret.get("pointer").equals(subAccount) &&
                    (type == null || ret.get("type").equals(type)))
                     return ret;

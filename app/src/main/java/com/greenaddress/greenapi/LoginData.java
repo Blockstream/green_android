@@ -6,28 +6,20 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class LoginData {
-    public final String exchange;
-    public final String currency;
-    public final Map<String, Object> userConfig;
-    public final ArrayList<Map<String, ?>> subAccounts;
-    public final String receivingId;
-    public final int[] gaUserPath;
-    public final int earliestKeyCreationTime;
-    public final boolean isSegwitServer; // Does the server support segwit?
-    public final boolean rbf;
-    public final Map<String, ?> rawData;
+    public final ArrayList<Map<String, ?>> mSubAccounts;
+    public final Map<String, Object> mUserConfig;
+    public final int[] mGaitPath;
+    public final Map<String, ?> mRawData;
 
     public LoginData(final Map<String, ?> map) {
-        this.exchange = (String) map.get("exchange");
-        this.currency = (String) map.get("currency");
-        this.subAccounts = (ArrayList) map.get("subaccounts");
-        gaUserPath = getPath((String) map.get("gait_path"));
-        this.receivingId = (String) map.get("receiving_id");
-        this.isSegwitServer = (Boolean) map.get("segwit_server");
-        this.rbf = (Boolean) map.get("rbf");
-        this.earliestKeyCreationTime = (Integer) map.get("earliest_key_creation_time");
-        this.rawData = map;
-        this.userConfig = (Map<String, Object>) map.get("appearance");
+        mSubAccounts = (ArrayList) map.get("subaccounts");
+        mUserConfig = (Map<String, Object>) map.get("appearance");
+        mGaitPath = getPath((String) map.get("gait_path"));
+        mRawData = map;
+    }
+
+    public <T> T get(final String name) {
+        return (T) mRawData.get(name);
     }
 
     private int u8(int i) { return i < 0 ? 256 + i : i; }

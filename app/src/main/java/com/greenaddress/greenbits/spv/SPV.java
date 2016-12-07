@@ -673,7 +673,7 @@ public class SPV {
                     InputStream is = null;
                     try {
                         is = mService.getAssets().open("checkpoints");
-                        final int keyTime = mService.getLoginData().earliestKeyCreationTime;
+                        final int keyTime = mService.getLoginData().get("earliest_key_creation_time");
                         CheckpointManager.checkpoint(Network.NETWORK, is,
                                                      mBlockStore, keyTime);
                     } catch (final IOException e) {
