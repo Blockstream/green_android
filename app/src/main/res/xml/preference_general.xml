@@ -41,4 +41,8 @@
         <intent android:action="android.intent.action.VIEW" android:data="https://www.ledgerwallet.com/r/bead"/>
     </Preference>
 
+    <Preference android:key="toggle_segwit"
+        android:title="@string/segwit_disable"
+        android:enabled="false"/>
+
 </PreferenceScreen>

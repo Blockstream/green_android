@@ -25,11 +25,13 @@ import com.greenaddress.greenbits.ui.UI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeneralPreferenceFragment extends GAPreferenceFragment {
+public class GeneralPreferenceFragment extends GAPreferenceFragment
+    implements Preference.OnPreferenceClickListener {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
 
     private static final int PINSAVE = 1337;
     private static final String mMicroSymbol = Html.fromHtml("&micro;").toString();
+    private Preference mToggleSW;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -249,6 +251,65 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             final Boolean replace_by_fee = (Boolean) mService.getUserConfig("replace_by_fee");
             optInRbf.setChecked(replace_by_fee);
         }
+
+        final boolean segwit = mService.getLoginData().get("segwit_server");
+        final boolean userSegwit = mService.isSegwitEnabled();
+
+        mToggleSW = find("toggle_segwit");
+        mToggleSW.setOnPreferenceClickListener(this);
+        setupSWToggle();
+
         getActivity().setResult(Activity.RESULT_OK, null);
     }
+
+    private void setupSWToggle() {
+        final boolean segwit = mService.getLoginData().get("segwit_server");
+        final boolean userSegwit = mService.isSegwitEnabled();
+
+        mToggleSW.setTitle(userSegwit ? R.string.segwit_disable : R.string.segwit_enable);
+
+        if (segwit &&
+            (!userSegwit || !mService.isSegwitLocked())) {
+            // User hasn't enabled segwit, or they have but we haven't
+            // generated a segwit address yet (that we know of).
+            mToggleSW.setEnabled(true);
+        } else {
+            mToggleSW.setEnabled(false);
+        }
+    }
+
+
+    @Override
+    public boolean onPreferenceClick(final Preference preference) {
+        if (preference == mToggleSW)
+            return onToggleSWClicked();
+        return false;
+    }
+
+    private boolean onToggleSWClicked() {
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() { mToggleSW.setEnabled(false); }
+        });
+        final boolean immediate = true;
+        CB.after(mService.setUserConfig("use_segwit", !mService.isSegwitEnabled(), immediate),
+                 new CB.Op<Boolean>() {
+            @Override
+            public void onSuccess(final Boolean result) {
+                toggle();
+            }
+            @Override
+            public void onFailure(final Throwable t) {
+                super.onFailure(t);
+                toggle();
+            }
+            private void toggle() {
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() { setupSWToggle(); }
+                });
+            }
+
+        });
+        return false;
+    }
+
 }
