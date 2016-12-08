@@ -232,6 +232,10 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.isWatchOnly();
     }
 
+    public boolean isSegwitUnconfirmed() {
+        return mClient.isSegwitUnconfirmed();
+    }
+
     public boolean isSegwitEnabled() {
         return mClient.isSegwitEnabled();
     }

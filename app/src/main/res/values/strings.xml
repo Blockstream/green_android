@@ -268,4 +268,6 @@
     <string name="problemWithKey">Problem with key %s</string>
     <string name="showAmountInReceive">Amount fields in receive tab</string>
     <string name="showAmountInReceiveDetail">Show amount fields in receive tab</string>
-</resources>
+    <string name="segwit_dialog_title">Account updated</string>
+    <string name="segwit_dialog_content">Your account has been automatically updated to enable segregated witness. You can disable this upgrade in settings only until you generate the next address to receive funds.</string>
+ </resources>
