@@ -173,7 +173,7 @@ public class SPV {
         }
     }
 
-    public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", "").trim(); }
+    public String getTrustedPeers() { return mService.cfg("TRUSTED").getString("address", mService.cfg().getString("trusted_peer", "")).trim(); }
 
     public void setTrustedPeersAsync(final String peers) {
         mExecutor.execute(new Runnable() { public void run() { setTrustedPeers(peers); } });

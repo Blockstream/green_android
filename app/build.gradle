@@ -93,6 +93,15 @@ android {
             applicationId "com.greenaddress.greenbits_android_wallet.testnet"
             versionName String.format("%s_testnet", defaultConfig.getProperty("versionName"))
         }
+        publicregtest {
+            applicationId "com.greenaddress.greenbits_android_wallet.publicregtest"
+            versionName String.format("%s_publicregtest", defaultConfig.getProperty("versionName"))
+        }
+        publicregtest_21 {
+            minSdkVersion 21
+            applicationId "com.greenaddress.greenbits_android_wallet.publicregtest"
+            versionName String.format("%s_publicregtest", defaultConfig.getProperty("versionName"))
+        }
         regtest {
             applicationId "com.greenaddress.greenbits_android_wallet.regtest"
             versionName String.format("%s_regtest", defaultConfig.getProperty("versionName"))
@@ -122,6 +131,11 @@ android {
             java { srcDir 'src/btctestnet/java' }
             assets { srcDir 'src/btctestnet/assets' }
             res { srcDir 'src/btctestnet/res' }
+        }
+        publicregtest_21 {
+            java { srcDir 'src/publicregtest/java' }
+            assets { srcDir 'src/publicregtest/assets' }
+            res { srcDir 'src/publicregtest/res' }
         }
         regtest_21 {
             java { srcDir 'src/regtest/java' }
