@@ -25,7 +25,6 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
-import com.squareup.okhttp.OkHttpClient;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
@@ -34,7 +33,6 @@ import org.bitcoinj.core.BlockChain;
 import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.FilteredBlock;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
@@ -44,13 +42,11 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutPoint;
-import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.VerificationException;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.core.listeners.TransactionReceivedInBlockListener;
 import org.bitcoinj.net.BlockingClientManager;
 import org.bitcoinj.net.discovery.DnsDiscovery;
-import org.bitcoinj.net.discovery.HttpDiscovery;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
@@ -73,8 +69,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SPV {
 
@@ -609,19 +605,9 @@ public class SPV {
 
     private void addPeer(final String address) throws URISyntaxException, UnknownHostException {
 
-        if (address.isEmpty()) {
-            // Blank - Use the built in list, resolving via DNS
-            if (!mService.isProxyEnabled())
-                mPeerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
-            else {
-                final OkHttpClient httpClient = new OkHttpClient();
-                httpClient.setSocketFactory(new Socks5SocketFactory(mService.getProxyHost(), mService.getProxyPort()));
-                mPeerGroup.addPeerDiscovery(new HttpDiscovery(Network.NETWORK,
-                        new HttpDiscovery.Details(
-                                ECKey.fromPublicOnly(Utils.HEX.decode("0238746c59d46d5408bf8b1d0af5740fe1a6e1703fcb56b2953f0b965c740d256f")),
-                                URI.create("http://httpseed.bitcoin.schildbach.de/peers")
-                        ), httpClient));
-            }
+        if (address.isEmpty() && !mService.isProxyEnabled()) {
+            // Blank w/o proxy: Use the built in resolving via DNS
+            mPeerGroup.addPeerDiscovery(new DnsDiscovery(Network.NETWORK));
             return;
         }
         try {
