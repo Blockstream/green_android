@@ -14,14 +14,14 @@ public class FontFitEditText extends EditText {
     private float mTextSizeMax;
     private float mTextSizeMin;
 
-    public FontFitEditText(Context context) {
+    public FontFitEditText(final Context context) {
         super(context);
         initialise();
     }
 
-    public FontFitEditText(Context context, AttributeSet attrs) {
+    public FontFitEditText(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FontFitEditText);
+        final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FontFitEditText);
         mTextSizeMax = typedArray.getDimensionPixelSize(R.styleable.FontFitEditText_textSizeMax, 0);
         mTextSizeMax = pxToDp(mTextSizeMax);
         mTextSizeMin = typedArray.getDimensionPixelSize(R.styleable.FontFitEditText_textSizeMin, 0);
@@ -39,18 +39,18 @@ public class FontFitEditText extends EditText {
         return (getResources().getDisplayMetrics().densityDpi / 160);
     }
 
-    private float pxToDp(float px) {
+    private float pxToDp(final float px) {
         return px / getScale();
     }
 
-    private float dpiToPx(float px) {
+    private float dpiToPx(final float px) {
         return px * getScale();
     }
 
     /* Re size the font so the specified text fits in the text box
      * assuming the text box is the specified width.
      */
-    private void refitText(String text, int textWidth) {
+    private void refitText(final String text, final int textWidth) {
         if (textWidth <= 0)
             return;
         int targetWidth = textWidth - this.getPaddingLeft() - this.getPaddingRight();
@@ -65,8 +65,8 @@ public class FontFitEditText extends EditText {
         mTestPaint.set(this.getPaint());
 
         while ((hi - lo) > threshold) {
-            float sizeDpi = (hi + lo) / 2;
-            float sizePx = dpiToPx(sizeDpi);
+            final float sizeDpi = (hi + lo) / 2;
+            final float sizePx = dpiToPx(sizeDpi);
             mTestPaint.setTextSize(sizePx);
             if (pxToDp(mTestPaint.measureText(text)) >= targetWidth)
                 hi = sizeDpi; // too big
@@ -78,10 +78,10 @@ public class FontFitEditText extends EditText {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int height = getMeasuredHeight();
+        final int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+        final int height = getMeasuredHeight();
         refitText(UI.getText(this), parentWidth);
         this.setMeasuredDimension(parentWidth, height);
     }
