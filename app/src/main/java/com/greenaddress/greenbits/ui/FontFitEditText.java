@@ -25,6 +25,7 @@ public class FontFitEditText extends EditText {
         mTextSizeMax = typedArray.getDimensionPixelSize(R.styleable.FontFitEditText_textSizeMax, 0);
         mTextSizeMax = pxToDp(mTextSizeMax);
         mTextSizeMin = typedArray.getDimensionPixelSize(R.styleable.FontFitEditText_textSizeMin, 0);
+        typedArray.recycle();
         mTextSizeMin = pxToDp(mTextSizeMin);
         initialise();
     }
