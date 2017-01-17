@@ -5,7 +5,6 @@ import com.blockstream.libwally.Wally;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.DeterministicKey;
 
 public abstract class HWWallet extends ISigningWallet {
@@ -30,7 +29,9 @@ public abstract class HWWallet extends ISigningWallet {
 
         // Generate a message to sign from the challenge
         final String challenge = "greenaddress.it      login " + challengeString;
-        final Sha256Hash hash = Sha256Hash.wrap(Wally.sha256d(Utils.formatMessageForSigning(challenge)));
+        final byte[] rawHash = Wally.format_bitcoin_message(challenge.getBytes(),
+                                                            Wally.BITCOIN_MESSAGE_FLAG_HASH);
+        final Sha256Hash hash = Sha256Hash.wrap(rawHash);
 
         // Return the path to the caller for them to pass in the server RPC call
         challengePath[0] = "GA";
