@@ -20,6 +20,7 @@ import android.util.SparseArray;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -883,14 +884,13 @@ public class GaService extends Service implements INotificationHandler {
         return mTwoFactorConfig;
     }
 
-    /**
-     * @param updateImmediately whether to not wait for server to reply before updating
-     *                          the value in local settings dict (set false to wait)
-     */
     public ListenableFuture<Boolean> setUserConfig(final String key, final Object value, final boolean updateImmediately) {
-        return mClient.setUserConfig(key, value, updateImmediately);
+        return mClient.setUserConfig(ImmutableMap.of(key, value), updateImmediately);
     }
 
+    public ListenableFuture<Boolean> setUserConfig(final Map<String, Object> values, final boolean updateImmediately) {
+        return mClient.setUserConfig(values, updateImmediately);
+    }
 
     public ListenableFuture<Object> requestTwoFacCode(final String method, final String action, final Object data) {
         return mClient.requestTwoFacCode(method, action, data);

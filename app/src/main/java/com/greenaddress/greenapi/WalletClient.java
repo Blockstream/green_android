@@ -37,6 +37,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -397,7 +398,9 @@ public class WalletClient {
         final boolean rbf = mLoginData.get("rbf");
         if (rbf && getUserConfig("replace_by_fee") == null) {
             // Enable rbf if server supports it and not disabled by user explicitly
-            setUserConfig("replace_by_fee", Boolean.TRUE, false);
+            // FIXME: The server should do this surely?
+            final Object t = Boolean.TRUE;
+            setUserConfig(ImmutableMap.of("replace_by_fee", t), false);
         }
 
         clientSubscribe("txs.wallet_" + mLoginData.get("receiving_id"), Map.class, new EventHandler() {
@@ -784,39 +787,46 @@ public class WalletClient {
         return b;
     }
 
-    /**
-     * @param updateImmediately whether to not wait for server to reply before updating
-     *                          the value in local settings dict (set false to wait)
-     */
-    public ListenableFuture<Boolean> setUserConfig(final String key, final Object value, final boolean updateImmediately) {
-        final Object oldValue = getUserConfig(key);
-        if (updateImmediately)
-            mLoginData.mUserConfig.put(key, value);
+    private void updateMap(final Map<String, Object> dest, final Map<String, Object> src,
+                           final Set<String> keys) {
+        for (String k : keys)
+            dest.put(k, src.get(k));
+    }
 
+    public ListenableFuture<Boolean> setUserConfig(final Map<String, Object> values, final boolean updateImmediately) {
+        // Create updated JSON config for the RPC call
         final Map<String, Object> clonedConfig = new HashMap<>(mLoginData.mUserConfig);
-        clonedConfig.put(key, value);
+        updateMap(clonedConfig, values, values.keySet());
+
         final String newJSON;
         try {
             newJSON = serializeJSON(clonedConfig).toString();
         } catch (final GAException e) {
-            if (updateImmediately)
-                mLoginData.mUserConfig.put(key, oldValue); // Restore
             return Futures.immediateFailedFuture(e);
+        }
+
+        final Map<String, Object> oldValues = new HashMap();
+        if (updateImmediately) {
+            // Save old values and update current config
+            updateMap(oldValues, mLoginData.mUserConfig, values.keySet());
+            updateMap(mLoginData.mUserConfig, values, values.keySet());
         }
 
         final SettableFuture<Boolean> rpc = SettableFuture.create();
         final CallHandler handler = new CallHandler() {
             public void onResult(final Object result) {
+                // Update local config if it wasn't updated previously
                 if (!updateImmediately)
-                    mLoginData.mUserConfig.put(key, value);
+                    updateMap(mLoginData.mUserConfig, values, values.keySet());
                 rpc.set(true);
             }
         };
         final ErrorHandler errHandler = new ErrorHandler() {
             public void onError(final String uri, final String err) {
                 Log.d(TAG, "updateAppearance failed: " + err);
+                // Restore local config if it was updated previously
                 if (updateImmediately)
-                    mLoginData.mUserConfig.put(key, oldValue); // Restore
+                    updateMap(mLoginData.mUserConfig, oldValues, oldValues.keySet());
                 rpc.setException(new GAException(err));
             }
         };
