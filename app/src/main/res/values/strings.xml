@@ -143,6 +143,7 @@
     <string name="twoFacGauth">Google Authenticator</string>
     <string name="twoFacEmail">E-mail</string>
     <string name="hideTwoFacWarning">Hide 2FA warning</string>
+    <string name="enable_nlocktime_emails">Enable nLocktime recovery emails</string>
 
     <string name="twoFacSetupHeader">%1$s 2FA setup</string>
     <string name="progress">Progress:</string>

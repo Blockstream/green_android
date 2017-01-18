@@ -14,4 +14,7 @@
     <CheckBoxPreference android:key="twoFacPhone"
                         android:title="@string/twoFacPhoneCall"/>
 
+    <CheckBoxPreference android:key="twoFacNLocktimeEmails"
+                        android:title="@string/enable_nlocktime_emails"/>
+
 </PreferenceScreen>

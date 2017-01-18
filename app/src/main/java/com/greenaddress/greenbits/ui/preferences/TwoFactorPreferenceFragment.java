@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.ui.CB;
@@ -25,22 +27,30 @@ import java.util.Map;
 public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private static final int REQUEST_ENABLE_2FA = 0;
+    private static final String NLOCKTIME_EMAILS = "NLocktimeEmails";
     private String mTwoFactorMethod;
 
     private CheckBoxPreference getPref(final String method) {
         return find("twoFac" + method);
     }
 
-    private void setupCheckbox(final Map<?, ?> config, final String method) {
+    private CheckBoxPreference setupCheckbox(final Map<?, ?> config, final String method) {
         final CheckBoxPreference c = getPref(method);
-        c.setChecked(config.get(method.toLowerCase()).equals(true));
+        if (method.equals(NLOCKTIME_EMAILS))
+            c.setChecked(isNlocktimeConfig(true));
+        else
+            c.setChecked(config.get(method.toLowerCase()).equals(true));
         c.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference p, final Object newValue) {
-                change2FA(method, (Boolean) newValue);
+                if (method.equals(NLOCKTIME_EMAILS))
+                    setNlocktimeConfig((Boolean) newValue);
+                else
+                    prompt2FAChange(method, (Boolean) newValue);
                 return false;
             }
         });
+        return c;
     }
 
     @Override
@@ -56,13 +66,36 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             activity.finish();
             return;
         }
-        setupCheckbox(config, "Email");
+        final CheckBoxPreference emailCB = setupCheckbox(config, "Email");
         setupCheckbox(config, "Gauth");
         setupCheckbox(config, "SMS");
         setupCheckbox(config, "Phone");
+        final CheckBoxPreference nlockCB = setupCheckbox(config, NLOCKTIME_EMAILS);
+        nlockCB.setEnabled(emailCB.isChecked());
     }
 
-    private void change2FA(final String method, final Boolean newValue) {
+    final boolean isNlocktimeConfig(final Boolean enabled) {
+        Boolean b = false;
+        final Map<String, Object> outer;
+        outer = (Map) mService.getUserConfig("notifications_settings");
+        if (outer != null)
+            b = Boolean.TRUE.equals((Boolean) outer.get("email_incoming")) &&
+                Boolean.TRUE.equals((Boolean) outer.get("email_outgoing"));
+        return b.equals(enabled);
+    }
+
+    private void setNlocktimeConfig(final Boolean enabled) {
+        if (isNlocktimeConfig(enabled))
+            return; // Nothing to do
+        final Map<String, Object> inner, outer;
+        inner = ImmutableMap.of("email_incoming", (Object) enabled,
+                                "email_outgoing", (Object) enabled);
+        outer = ImmutableMap.of("notifications_settings", (Object) inner);
+        mService.setUserConfig(Maps.newHashMap(outer), true /* Immediate */);
+        getPref(NLOCKTIME_EMAILS).setChecked(enabled);
+    }
+
+    private void prompt2FAChange(final String method, final Boolean newValue) {
         if (newValue) {
             final Intent intent = new Intent(getActivity(), TwoFactorActivity.class);
             intent.putExtra("method", method.toLowerCase());
@@ -111,7 +144,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                               public void onSuccess(final Boolean result) {
                                   getActivity().runOnUiThread(new Runnable() {
                                       public void run() {
-                                          getPref(method).setChecked(false);
+                                          change2FA(method, false);
                                       }
                                   });
                               }
@@ -129,8 +162,17 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (resultCode == Activity.RESULT_OK)
-            getPref(mTwoFactorMethod).setChecked(true);
+            change2FA(mTwoFactorMethod, true);
         else
             super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void change2FA(final String method, final Boolean checked) {
+        getPref(method).setChecked(checked);
+        if (method.equals("Email")) {
+            // Reset nlocktime prefs when the user changes email 2FA
+            setNlocktimeConfig(checked);
+            getPref(NLOCKTIME_EMAILS).setEnabled(checked);
+        }
     }
 }
