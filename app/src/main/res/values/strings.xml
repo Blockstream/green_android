@@ -254,7 +254,6 @@
     <string name="fa_pencil" translatable="false">&#xf040;</string>
     <string name="fa_plus" translatable="false">&#xf067;</string>
     <string name="fa_qrcode" translatable="false">&#xf029;</string>
-    <string name="fa_refresh" translatable="false">&#xf021;</string>
     <string name="fa_remove" translatable="false">&#xf00d;</string>
     <string name="fa_sign_in" translatable="false">&#xf090;</string>
     <string name="fa_sign_out" translatable="false">&#xf08b;</string>

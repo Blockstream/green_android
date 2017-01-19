@@ -11,7 +11,6 @@
         android:layout_height="wrap_content">
 
         <RelativeLayout
-            android:id="@+id/listInOutRelative"
             android:layout_width="64dp"
             android:layout_height="wrap_content">
 
@@ -86,7 +85,6 @@
                     android:textColor="@color/tertiaryTextColor" />
 
                 <LinearLayout
-                    android:id="@+id/listRightElement"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
