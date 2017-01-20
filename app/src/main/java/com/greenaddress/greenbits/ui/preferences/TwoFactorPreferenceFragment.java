@@ -79,8 +79,8 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         final Map<String, Object> outer;
         outer = (Map) mService.getUserConfig("notifications_settings");
         if (outer != null)
-            b = Boolean.TRUE.equals((Boolean) outer.get("email_incoming")) &&
-                Boolean.TRUE.equals((Boolean) outer.get("email_outgoing"));
+            b = Boolean.TRUE.equals(outer.get("email_incoming")) &&
+                Boolean.TRUE.equals(outer.get("email_outgoing"));
         return b.equals(enabled);
     }
 
