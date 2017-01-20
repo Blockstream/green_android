@@ -248,9 +248,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
             optInRbf.setChecked(replace_by_fee);
         }
 
-        final boolean segwit = mService.getLoginData().get("segwit_server");
-        final boolean userSegwit = mService.isSegwitEnabled();
-
         mToggleSW = find("toggle_segwit");
         mToggleSW.setOnPreferenceClickListener(this);
         setupSWToggle();

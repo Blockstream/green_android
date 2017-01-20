@@ -489,7 +489,6 @@ public class GaService extends Service implements INotificationHandler {
                                                final byte[] pathPubkey, final byte[] pathChaincode) {
         mState.transitionTo(ConnState.LOGGINGIN);
 
-        ListenableFuture<LoginData> fn;
         return mExecutor.submit(new Callable<LoginData>() {
                    @Override
                    public LoginData call() throws Exception {
