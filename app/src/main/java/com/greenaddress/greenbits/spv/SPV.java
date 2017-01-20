@@ -603,7 +603,7 @@ public class SPV {
         };
     }
 
-    private void addPeer(final String address) throws URISyntaxException, UnknownHostException {
+    private void addPeer(final String address) throws URISyntaxException {
 
         if (address.isEmpty() && !mService.isProxyEnabled()) {
             // Blank w/o proxy: Use the built in resolving via DNS

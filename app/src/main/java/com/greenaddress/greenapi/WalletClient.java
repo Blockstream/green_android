@@ -384,7 +384,7 @@ public class WalletClient {
         return simpleCall("login.available_currencies", Map.class);
     }
 
-    private void onAuthenticationComplete(final Map<String,?> loginData, final ISigningWallet wallet, final String username, final String password) throws IOException {
+    private void onAuthenticationComplete(final Map<String,?> loginData, final ISigningWallet wallet, final String username, final String password) {
         mLoginData = new LoginData(loginData);
         if (loginData.containsKey("fee_estimates"))
             mFeeEstimates = (Map) loginData.get("fee_estimates");
