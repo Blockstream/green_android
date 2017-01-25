@@ -100,8 +100,6 @@
   <string name="instantConfirmation">تأكيد فوري</string>
   <string name="trezor_login_failed">فشل تسجيل دخول Hardware Wallet</string>
   <string name="trezor_login_failed_details">هذا يعني ربما تحتاج إلى إقران جهاز Hardware Wallet الخاص بك مع GreenAddress باستخدام تطبيق سطح المكتب.</string>
-  <string name="improve_security_ledger">حسين الأمن الخاص بك مع ليدجر</string>
-  <string name="improve_security_ledger_detail">Ledger Wallet:البطاقة الذكية لتئمين ال بيتكوين الخاص بك.</string>
   <string name="mnemonic_passphrase">عبارة المرور المتعلق بالذاكرة</string>
   <string name="mnemonic_passphrase_not_available">عبارة المرور غير متاحة</string>
   <string name="autologout_time">مهلة الخروج التلقائي </string>

@@ -39,10 +39,4 @@
         android:title="@string/segwit_disable"
         android:enabled="false"/>
 
-    <Preference android:key="ledger_wallet"
-                android:title="@string/improve_security_ledger"
-                android:summary="@string/improve_security_ledger_detail" >
-        <intent android:action="android.intent.action.VIEW" android:data="https://www.ledgerwallet.com/r/bead"/>
-    </Preference>
-
 </PreferenceScreen>

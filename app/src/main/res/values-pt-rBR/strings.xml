@@ -100,8 +100,6 @@
   <string name="instantConfirmation">Confirmação Imediata</string>
   <string name="trezor_login_failed">O login na sua Hardware Wallet falhou</string>
   <string name="trezor_login_failed_details">Isso provavelmente significa que você precisa emparelhar o dispositivo Wallet Hardware com a GreenAddress usando um aplicativo desktop.</string>
-  <string name="improve_security_ledger">Melhorar a sua segurança com Ledger</string>
-  <string name="improve_security_ledger_detail">Ledger Wallet: Segurança para seus Bitcoins.</string>
   <string name="mnemonic_passphrase">Senha mnemônica</string>
   <string name="mnemonic_passphrase_not_available">Senha não disponível</string>
   <string name="autologout_time">Tempo limite de Auto logout</string>

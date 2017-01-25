@@ -102,8 +102,6 @@
   <string name="instantConfirmation">Confirmation instantanée</string>
   <string name="trezor_login_failed">La connexion au portefeuille matériel a échoué</string>
   <string name="trezor_login_failed_details">Cela signifie probablement que vous devez relier votre portefeuille matériel avec GreenAddress en utilisant l\'application de bureau.</string>
-  <string name="improve_security_ledger">Améliorez votre sécurité avec Ledger</string>
-  <string name="improve_security_ledger_detail">Ledger Wallet : la sécurité de la carte à puce pour vos Bitcoins.</string>
   <string name="mnemonic_passphrase">Phrase de récupération mnémonique</string>
   <string name="mnemonic_passphrase_not_available">Phrase de récupération non disponible</string>
   <string name="autologout_time">Timeout de déconnexion</string>

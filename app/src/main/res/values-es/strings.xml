@@ -102,8 +102,6 @@
     <string name="instantConfirmation">Confirmación instantánea</string>
     <string name="trezor_login_failed">Ingreso a Hardware Wallet fracasado</string>
     <string name="trezor_login_failed_details">Esto significa probablemente que usted necesita emparejar su dispositivo Hardware Wallet con GreenAddress usando la aplicación de escritorio.</string>
-    <string name="improve_security_ledger">Aumente su seguridad con Ledger</string>
-    <string name="improve_security_ledger_detail">Cartera Ledger: La seguridad de una Tarjeta Inteligente para sus Bitcoins.</string>
     <string name="mnemonic_passphrase">Frase clave mnemotécnica</string>
     <string name="mnemonic_passphrase_not_available">Frase clave no disponible</string>
     <string name="autologout_time">Tiempo de ingreso automático agotado</string>

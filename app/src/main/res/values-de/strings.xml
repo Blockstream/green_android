@@ -98,8 +98,6 @@
   <string name="instantConfirmation">Sofortige Bestätigung</string>
   <string name="trezor_login_failed">Hardware Wallet Login fehlgeschlagen</string>
   <string name="trezor_login_failed_details">Dies bedeutet wahrscheinlich dass sie ihren Hardware Wallet und GreenAddress über die Desktop-App koppeln müssen.</string>
-  <string name="improve_security_ledger">Verbessern sie ihre Sicherheit mit Ledger</string>
-  <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard Sicherheit für ihre Bitcoins.</string>
   <string name="mnemonic_passphrase">Mnemonischer Kennwortsatz</string>
   <string name="mnemonic_passphrase_not_available">Der Kennwortsatz ist nicht verfügbar</string>
   <string name="autologout_time">Automatische logout Zeiteinstellung</string>

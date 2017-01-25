@@ -109,8 +109,6 @@
     <string name="instantConfirmation">Моментальне Підтвердження</string>
     <string name="trezor_login_failed">невдалий вхід Фізичного Гаманця </string>
     <string name="trezor_login_failed_details">Це скоріше всього означає вам потрібно прив\'язати ваш Фізичний Гаманець з GreenAddress використовуючи дектоп клієнт.</string>
-    <string name="improve_security_ledger">Покращити безпеку ваших коштів за допомогою Ledger</string>
-    <string name="improve_security_ledger_detail">Ledger Wallet: Smartcard безпека для ваших Bitcoin.</string>
     <string name="mnemonic_passphrase">Відобразити мнемонічну фразу</string>
     <string name="mnemonic_passphrase_not_available">Відсутній пароль</string>
     <string name="autologout_time">Час автоматичного виходу</string>
