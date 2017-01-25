@@ -10,6 +10,7 @@ local.properties
 bin/
 gen/
 *.swp
+*.iml
 app/*.apk
 app/manifest-merger-*-report.txt
 .*.swo
