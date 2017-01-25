@@ -6,11 +6,10 @@ Build status: [![Build Status](https://travis-ci.org/greenaddress/GreenBits.png?
 
 You need to have the following Android developer tools installed:
 
-- "Android SDK Platform-tools" version 25.0.0 recommended
-- "Android SDK Tools" version 25.2.2 recommended
+- "Android SDK Platform-tools" version 25.0.3 recommended
+- "Android SDK Tools" version 25.2.5 recommended
 - "Android SDK Build-tools" version 25.0.2 recommended
-- "Android Support Library" version 23.2.1 recommended
-- "Android Support Repository" version 39.0.0 recommended
+- "Android Support Library" version 25.1.0 recommended
 - "Android NDK" version r13b recommended
 
 The above tools can be installed from the Android SDK manager.
