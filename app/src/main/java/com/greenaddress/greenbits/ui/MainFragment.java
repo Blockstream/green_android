@@ -75,8 +75,6 @@ public class MainFragment extends SubaccountFragment {
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
                         service.getFiatBalance(mSubaccount))
                         .toString();
-        final String fiatCurrency = service.getFiatCurrency();
-        final String converted = CurrencyMapper.map(fiatCurrency);
 
         // Hide balance question mark if we know our balance is verified
         // (or we are in watch only mode and so have no SPV to verify it with)
@@ -98,15 +96,8 @@ public class MainFragment extends SubaccountFragment {
 
         UI.setAmountText(balanceFiatText, fiatBalance);
 
-        if (converted != null) {
-            balanceFiatIcon.setText(Html.fromHtml(converted + " "));
-            balanceFiatIcon.setAwesomeTypeface();
-            balanceFiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-        } else {
-            balanceFiatIcon.setText(fiatCurrency);
-            balanceFiatIcon.setDefaultTypeface();
-            balanceFiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        }
+        AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
+
         if (service.showBalanceInTitle())
             UI.hide(bitcoinScale, balanceText, balanceBitcoinIcon);
     }

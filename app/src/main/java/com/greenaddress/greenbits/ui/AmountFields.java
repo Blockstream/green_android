@@ -80,18 +80,27 @@ class AmountFields {
         return mIsPausing;
     }
 
-    private void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
-
-        final String converted = CurrencyMapper.map(currency);
-        if (converted != null) {
-            fiatIcon.setText(Html.fromHtml(converted + " "));
-            fiatIcon.setAwesomeTypeface();
-            fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-        } else {
-            fiatIcon.setText(currency);
-            fiatIcon.setDefaultTypeface();
-            fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+    public static void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
+        final String symbol;
+        switch (currency) {
+            case "USD": symbol = "&#xf155; "; break;
+            case "AUD": symbol = "&#xf155; "; break;
+            case "CAD": symbol = "&#xf155; "; break;
+            case "EUR": symbol = "&#xf153; "; break;
+            case "CNY": symbol = "&#xf157; "; break;
+            case "GBP": symbol = "&#xf154; "; break;
+            case "ILS": symbol = "&#xf20b; "; break;
+            case "RUB": symbol = "&#xf158; "; break;
+            case "BRL": symbol = "R&#xf155; "; break;
+            default:
+                fiatIcon.setText(currency);
+                fiatIcon.setDefaultTypeface();
+                fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                return;
         }
+        fiatIcon.setText(Html.fromHtml(symbol));
+        fiatIcon.setAwesomeTypeface();
+        fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
     }
 
     void convertBtcToFiat() {
