@@ -56,10 +56,6 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
             holder.mBalanceDenomination.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
             holder.mBalanceDenominationIcon.setText(R.string.fa_btc_space);
         }
-        if (monetary == null) {
-            // FIXME: remove this check when login returns all balances or async coin balance is merged
-            return;
-        }
         final String btcBalance = bitcoinFormat.noCode().format(monetary).toString();
         UI.setAmountText(holder.mBalance, btcBalance);
     }
