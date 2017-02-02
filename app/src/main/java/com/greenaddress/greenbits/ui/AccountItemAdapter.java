@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.annotation.SuppressLint;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +52,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
             holder.mBalanceDenomination.setText("bits ");
             holder.mBalanceDenominationIcon.setText("");
         } else {
-            holder.mBalanceDenomination.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+            holder.mBalanceDenomination.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
             holder.mBalanceDenominationIcon.setText(R.string.fa_btc_space);
         }
         final String btcBalance = bitcoinFormat.noCode().format(monetary).toString();

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -30,7 +29,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
 
     private static final int PINSAVE = 1337;
-    private static final String mMicroSymbol = Html.fromHtml("&micro;").toString();
     private Preference mToggleSW;
 
     @Override
@@ -103,8 +101,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         // -- handle currency and bitcoin denomination
         final ListPreference fiatCurrency = find("fiat_key");
         final ListPreference bitcoinDenomination = find("denomination_key");
+        // FIXME: This belongs whereever CurrencyMapper code ends up
         final ArrayList<String> units;
-        units = Lists.newArrayList("BTC", "mBTC", mMicroSymbol + "BTC", "bits");
+        units = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
 
         bitcoinDenomination.setEntries(units.toArray(new String[4]));
         bitcoinDenomination.setEntryValues(units.toArray(new String[4]));

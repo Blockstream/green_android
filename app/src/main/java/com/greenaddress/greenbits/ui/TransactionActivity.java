@@ -237,8 +237,8 @@ public class TransactionActivity extends GaActivity {
             final String btcUnit = (String) service.getUserConfig("unit");
             final Coin coin = Coin.valueOf(txItem.amount);
             final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-            bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
-            feeScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+            bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
+            feeScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
             if (btcUnit == null || btcUnit.equals("bits")) {
                 bitcoinUnit.setText("bits ");
                 feeUnit.setText("bits ");

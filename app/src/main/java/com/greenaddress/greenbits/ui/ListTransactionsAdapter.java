@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +50,7 @@ public class ListTransactionsAdapter extends
 
         final Coin coin = Coin.valueOf(txItem.amount);
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(mBtcUnit);
-        holder.bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(mBtcUnit)));
+        holder.bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(mBtcUnit));
         if (mBtcUnit == null || mBtcUnit.equals("bits")) {
             holder.bitcoinIcon.setText("");
             holder.bitcoinScale.setText("bits ");

@@ -49,7 +49,7 @@ class AmountFields {
         final String btcUnit = (String) mGaService.getUserConfig("unit");
 
         mBitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
         if (btcUnit == null || btcUnit.equals("bits"))
             bitcoinUnitText.setText("bits ");
         else

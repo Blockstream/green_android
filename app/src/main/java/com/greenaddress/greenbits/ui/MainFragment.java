@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.TypedValue;
@@ -55,7 +54,7 @@ public class MainFragment extends SubaccountFragment {
         final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit).noCode();
         final TextView balanceBitcoinIcon = UI.find(mView, R.id.mainBalanceBitcoinIcon);
         final TextView bitcoinScale = UI.find(mView, R.id.mainBitcoinScaleText);
-        bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
         if (btcUnit == null || btcUnit.equals("bits")) {
             balanceBitcoinIcon.setText("");
             bitcoinScale.setText("bits ");

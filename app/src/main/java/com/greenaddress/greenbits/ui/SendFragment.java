@@ -284,7 +284,7 @@ public class SendFragment extends SubaccountFragment {
         final TextView bitcoinScale = UI.find(mView, R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
         mBitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        bitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
         if (btcUnit == null || btcUnit.equals("bits"))
             bitcoinUnitText.setText("bits ");
         else
@@ -511,7 +511,7 @@ public class SendFragment extends SubaccountFragment {
         final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
         final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
         final TextView sendSubAccountBitcoinScale = UI.find(mView, R.id.sendSubAccountBitcoinScale);
-        sendSubAccountBitcoinScale.setText(Html.fromHtml(CurrencyMapper.mapBtcUnitToPrefix(btcUnit)));
+        sendSubAccountBitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
         if (btcUnit == null || btcUnit.equals("bits")) {
             sendSubAccountBalanceUnit.setText("");
             sendSubAccountBitcoinScale.setText("bits ");

@@ -1,18 +1,18 @@
 package com.greenaddress.greenbits.ui;
 
-import android.text.Html;
-
 import org.bitcoinj.utils.MonetaryFormat;
 
 class CurrencyMapper {
+    private static final String MICRO = "\u00B5";
+    private static final String MICRO_BTC = "\u00B5BTC";
     private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
 
     public static String mapBtcUnitToPrefix(final String btcUnit) {
         if (btcUnit != null) {
             if (btcUnit.equals("mBTC"))
                 return "m";
-            if (btcUnit.equals(Html.fromHtml("&micro;").toString() + "BTC"))
-                return "&micro;"; // bits or uBTC or default
+            if (btcUnit.equals(MICRO_BTC))
+                return MICRO;
         }
         return ""; // Everything else
     }
@@ -23,7 +23,7 @@ class CurrencyMapper {
                 return MonetaryFormat.BTC;
             if (btcUnit.equals("mBTC"))
                 return MBTC;
-            if (btcUnit.equals(Html.fromHtml("&micro;").toString() + "BTC"))
+            if (btcUnit.equals(MICRO_BTC))
                 return MonetaryFormat.UBTC;
         }
         return MonetaryFormat.UBTC.code(6, "bits");
@@ -35,7 +35,7 @@ class CurrencyMapper {
         if (bitcoinFormat.code().equals(MonetaryFormat.CODE_MBTC))
             return "m";
         if (bitcoinFormat.code().equals(MonetaryFormat.CODE_UBTC))
-            return "&micro;";
+            return MICRO;
         if (bitcoinFormat.code().equals("bits"))
             return "";
         return null;
