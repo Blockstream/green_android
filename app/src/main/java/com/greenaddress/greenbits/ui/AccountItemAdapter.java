@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.greenaddress.greenbits.GaService;
 
-import org.bitcoinj.core.Monetary;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
 
 import java.util.ArrayList;
@@ -53,9 +53,9 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
             holder.mBalanceDenominationIcon.setText(R.string.fa_btc_space);
         }
 
-        final Monetary monetary = mService.getCoinBalance(mPointers.get(position));
+        final Coin balance = mService.getCoinBalance(mPointers.get(position));
         final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        final String btcBalance = mf.noCode().format(monetary).toString();
+        final String btcBalance = mf.noCode().format(balance).toString();
         UI.setAmountText(holder.mBalance, btcBalance);
     }
 

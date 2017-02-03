@@ -18,7 +18,6 @@ import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.Monetary;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.utils.MonetaryFormat;
 
@@ -46,8 +45,8 @@ public class MainFragment extends SubaccountFragment {
             return;
 
         final GaService service = getGAService();
-        final Monetary monetary = service.getCoinBalance(mSubaccount);
-        if (service.getLoginData() == null || monetary == null)
+        final Coin balance = service.getCoinBalance(mSubaccount);
+        if (service.getLoginData() == null || balance == null)
             return;
 
         final String btcUnit = (String) service.getUserConfig("unit");
@@ -62,7 +61,7 @@ public class MainFragment extends SubaccountFragment {
             balanceBitcoinIcon.setText(R.string.fa_btc_space);
         }
 
-        final String btcBalance = mf.format(monetary).toString();
+        final String btcBalance = mf.format(balance).toString();
         final String btcVerifiedBalance;
         final Coin verifiedBalance = service.getSPVVerifiedBalance(mSubaccount);
         if (verifiedBalance != null)
