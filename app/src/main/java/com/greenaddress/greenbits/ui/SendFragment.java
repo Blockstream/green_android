@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -60,7 +59,7 @@ public class SendFragment extends SubaccountFragment {
     private boolean mFromIntentURI = false;
 
 
-    private MonetaryFormat mBitcoinFormat;
+    private String mBitcoinUnit;
     private int mSubaccount;
     private AmountFields mAmountFields = null;
 
@@ -81,19 +80,21 @@ public class SendFragment extends SubaccountFragment {
         final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
-        final String prefix = CurrencyMapper.mapBtcFormatToPrefix(mBitcoinFormat);
 
-        amountScale.setText(Html.fromHtml(prefix));
-        feeScale.setText(Html.fromHtml(prefix));
-        if (mBitcoinFormat.code().equals("bits")) {
+        final String prefix = CurrencyMapper.mapBtcUnitToPrefix(mBitcoinUnit);
+        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
+
+        amountScale.setText(prefix);
+        feeScale.setText(prefix);
+        if (mf.code().equals("bits")) {
             amountUnit.setText("bits ");
             feeUnit.setText("bits ");
         } else {
             amountUnit.setText(R.string.fa_btc_space);
             feeUnit.setText(R.string.fa_btc_space);
         }
-        amountText.setText(mBitcoinFormat.noCode().format(amount));
-        feeText.setText(mBitcoinFormat.noCode().format(fee));
+        amountText.setText(mf.noCode().format(amount));
+        feeText.setText(mf.noCode().format(fee));
 
         if (mPayreqData != null)
             recipientText.setText(recipient);
@@ -186,9 +187,10 @@ public class SendFragment extends SubaccountFragment {
                             for (final Map<?, ?> out : (ArrayList<Map>) result.get("outputs"))
                                 amount += ((Number) out.get("amount")).longValue();
                             final CharSequence amountStr;
-                            if (amount > 0)
-                                amountStr = mBitcoinFormat.noCode().format(Coin.valueOf(amount));
-                            else
+                            if (amount > 0) {
+                                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
+                                amountStr = mf.noCode().format(Coin.valueOf(amount));
+                            } else
                                 amountStr = "";
 
                             gaActivity.runOnUiThread(new Runnable() {
@@ -230,11 +232,11 @@ public class SendFragment extends SubaccountFragment {
                 public void onSuccess(final Map<?, ?> result) {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
+                                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
+                                mAmountEdit.setText(mf.noCode().format(URI.getAmount()));
                                 final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
-                                mAmountEdit.setText(mBitcoinFormat.noCode().format(URI.getAmount()));
                                 mAmountFields.convertBtcToFiat(fiatRate);
-                                mAmountEdit.setEnabled(false);
-                                mAmountFiatEdit.setEnabled(false);
+                                UI.disable(mAmountEdit, mAmountFiatEdit);
                                 UI.hide(mMaxButton, mMaxLabel);
                             }
                     });
@@ -280,12 +282,12 @@ public class SendFragment extends SubaccountFragment {
         mRecipientEdit = UI.find(mView, R.id.sendToEditText);
         mScanIcon = UI.find(mView, R.id.sendScanIcon);
 
-        final String btcUnit = (String) service.getUserConfig("unit");
         final TextView bitcoinScale = UI.find(mView, R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
-        mBitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
-        if (btcUnit == null || btcUnit.equals("bits"))
+
+        mBitcoinUnit = (String) service.getUserConfig("unit");
+        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(mBitcoinUnit));
+        if (mBitcoinUnit == null || mBitcoinUnit.equals("bits"))
             bitcoinUnitText.setText("bits ");
         else
             bitcoinUnitText.setText(R.string.fa_btc_space);
@@ -320,7 +322,8 @@ public class SendFragment extends SubaccountFragment {
                 final Coin amount;
                 Coin nonFinalAmount;
                 try {
-                    nonFinalAmount = mBitcoinFormat.parse(UI.getText(mAmountEdit));
+                    final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
+                    nonFinalAmount = mf.parse(UI.getText(mAmountEdit));
                 } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
@@ -507,19 +510,18 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onBalanceUpdated() {
-        final String btcUnit = (String) getGAService().getUserConfig("unit");
         final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
         final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
         final TextView sendSubAccountBitcoinScale = UI.find(mView, R.id.sendSubAccountBitcoinScale);
-        sendSubAccountBitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
-        if (btcUnit == null || btcUnit.equals("bits")) {
+        sendSubAccountBitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(mBitcoinUnit));
+        if (mBitcoinUnit == null || mBitcoinUnit.equals("bits")) {
             sendSubAccountBalanceUnit.setText("");
             sendSubAccountBitcoinScale.setText("bits ");
         } else {
             sendSubAccountBalanceUnit.setText(R.string.fa_btc_space);
         }
-        final MonetaryFormat format = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-        final String btcBalance = format.noCode().format(
+        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
+        final String btcBalance = mf.noCode().format(
                 getGAService().getCoinBalance(mSubaccount)).toString();
         UI.setAmountText(sendSubAccountBalance, btcBalance);
 

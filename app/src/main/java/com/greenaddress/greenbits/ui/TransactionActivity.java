@@ -659,9 +659,6 @@ public class TransactionActivity extends GaActivity {
             final GaActivity gaActivity = getGaActivity();
             final GaService service = getGAService();
 
-            final String btcUnit = (String) service.getUserConfig("unit");
-            final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-
             final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
             final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);
@@ -679,10 +676,12 @@ public class TransactionActivity extends GaActivity {
                     (View) UI.find(v, R.id.newTxRecipientText));
             final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
             final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
-            final String prefix = CurrencyMapper.mapBtcFormatToPrefix(bitcoinFormat);
 
-            amountScale.setText(Html.fromHtml(prefix));
-            feeScale.setText(Html.fromHtml(prefix));
+            final String btcUnit = (String) service.getUserConfig("unit");
+            final String prefix = CurrencyMapper.mapBtcUnitToPrefix(btcUnit);
+
+            amountScale.setText(prefix);
+            feeScale.setText(prefix);
             if (btcUnit == null || btcUnit.equals("bits")) {
                 amountUnit.setText("bits ");
                 feeUnit.setText("bits ");
@@ -690,12 +689,11 @@ public class TransactionActivity extends GaActivity {
                 amountUnit.setText(R.string.fa_btc_space);
                 feeUnit.setText(R.string.fa_btc_space);
             }
-            amountText.setText(bitcoinFormat.noCode().format(newFee));
-            feeText.setText(bitcoinFormat.noCode().format(oldFee));
-
+            final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+            amountText.setText(mf.noCode().format(newFee));
+            feeText.setText(mf.noCode().format(oldFee));
 
             final Map<String, Object> twoFacData;
-
             if (method == null) {
                 UI.hide(twoFAText, newTx2FACodeText);
                 twoFacData = null;

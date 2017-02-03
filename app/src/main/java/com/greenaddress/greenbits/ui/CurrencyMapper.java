@@ -8,36 +8,20 @@ class CurrencyMapper {
     private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
 
     public static String mapBtcUnitToPrefix(final String btcUnit) {
-        if (btcUnit != null) {
-            if (btcUnit.equals("mBTC"))
-                return "m";
-            if (btcUnit.equals(MICRO_BTC))
-                return MICRO;
-        }
+        if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
+            return "m";
+        if (MICRO_BTC.equals(btcUnit))
+            return MICRO;
         return ""; // Everything else
     }
 
     public static MonetaryFormat mapBtcUnitToFormat(final String btcUnit) {
-        if (btcUnit != null) {
-            if (btcUnit.equals("BTC"))
-                return MonetaryFormat.BTC;
-            if (btcUnit.equals("mBTC"))
-                return MBTC;
-            if (btcUnit.equals(MICRO_BTC))
-                return MonetaryFormat.UBTC;
-        }
+        if (MonetaryFormat.CODE_BTC.equals(btcUnit))
+            return MonetaryFormat.BTC;
+        if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
+            return MBTC;
+        if (MICRO_BTC.equals(btcUnit))
+            return MonetaryFormat.UBTC;
         return MonetaryFormat.UBTC.code(6, "bits");
-    }
-
-    public static String mapBtcFormatToPrefix(final MonetaryFormat bitcoinFormat) {
-        if (bitcoinFormat.code().equals(MonetaryFormat.CODE_BTC))
-            return "";
-        if (bitcoinFormat.code().equals(MonetaryFormat.CODE_MBTC))
-            return "m";
-        if (bitcoinFormat.code().equals(MonetaryFormat.CODE_UBTC))
-            return MICRO;
-        if (bitcoinFormat.code().equals("bits"))
-            return "";
-        return null;
     }
 }
