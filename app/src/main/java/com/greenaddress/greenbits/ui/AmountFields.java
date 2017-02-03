@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 class AmountFields {
     private EditText mAmountEdit;
     private EditText mAmountFiatEdit;
-    private MonetaryFormat mBitcoinFormat;
     private boolean mConverting = false;
     private GaService mGaService;
     private Context mContext;
@@ -48,7 +47,6 @@ class AmountFields {
         final FontAwesomeTextView fiatView = UI.find(view, R.id.sendFiatIcon);
         final String btcUnit = (String) mGaService.getUserConfig("unit");
 
-        mBitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
         bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
         if (btcUnit == null || btcUnit.equals("bits"))
             bitcoinUnitText.setText("bits ");
@@ -70,6 +68,11 @@ class AmountFields {
                 convertBtcToFiat();
             }
         });
+    }
+
+    private MonetaryFormat getFormat() {
+        final String btcUnit = (String) mGaService.getUserConfig("unit");
+        return CurrencyMapper.mapBtcUnitToFormat(btcUnit);
     }
 
     void setIsPausing(Boolean isPausing) {
@@ -117,7 +120,7 @@ class AmountFields {
 
         try {
             final ExchangeRate rate = new ExchangeRate(exchangeFiat);
-            final Coin btcValue = mBitcoinFormat.parse(UI.getText(mAmountEdit));
+            final Coin btcValue = getFormat().parse(UI.getText(mAmountEdit));
             Fiat fiatValue = rate.coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
@@ -143,7 +146,7 @@ class AmountFields {
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);
         try {
             final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(mAmountFiatEdit));
-            mAmountEdit.setText(mBitcoinFormat.noCode().format(rate.fiatToCoin(fiatValue)));
+            mAmountEdit.setText(getFormat().noCode().format(rate.fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
             mAmountEdit.setText("");
         }
