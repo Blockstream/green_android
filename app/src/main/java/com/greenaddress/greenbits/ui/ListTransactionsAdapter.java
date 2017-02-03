@@ -49,7 +49,7 @@ public class ListTransactionsAdapter extends
 
 
         final Coin coin = Coin.valueOf(txItem.amount);
-        final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(mBtcUnit);
+        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBtcUnit);
         holder.bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(mBtcUnit));
         if (mBtcUnit == null || mBtcUnit.equals("bits")) {
             holder.bitcoinIcon.setText("");
@@ -58,7 +58,7 @@ public class ListTransactionsAdapter extends
             holder.bitcoinIcon.setText(R.string.fa_btc_space);
         }
 
-        final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
+        final String btcBalance = mf.noCode().format(coin).toString();
         UI.setAmountText(holder.textValue, btcBalance);
 
         // Hide question mark if we know this tx is verified

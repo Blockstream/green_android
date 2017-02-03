@@ -236,7 +236,7 @@ public class TransactionActivity extends GaActivity {
 
             final String btcUnit = (String) service.getUserConfig("unit");
             final Coin coin = Coin.valueOf(txItem.amount);
-            final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+            final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
             bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
             feeScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
             if (btcUnit == null || btcUnit.equals("bits")) {
@@ -246,11 +246,11 @@ public class TransactionActivity extends GaActivity {
                 bitcoinUnit.setText(R.string.fa_btc_space);
                 feeUnit.setText(R.string.fa_btc_space);
             }
-            final String btcBalance = bitcoinFormat.noCode().format(coin).toString();
+            final String btcBalance = mf.noCode().format(coin).toString();
             UI.setAmountText(amount, btcBalance);
 
-            final String btcFee = bitcoinFormat.noCode().format(fee).toString();
-            final String btcFeePerKb = bitcoinFormat.noCode().format(feePerKb).toString();
+            final String btcFee = mf.noCode().format(fee).toString();
+            final String btcFeePerKb = mf.noCode().format(feePerKb).toString();
             String feeInfoTextStr = UI.setAmountText(null, btcFee);
             feeInfoTextStr += " / " + String.valueOf(txItem.size) + " / ";
             feeInfoTextStr += UI.setAmountText(null, btcFeePerKb);

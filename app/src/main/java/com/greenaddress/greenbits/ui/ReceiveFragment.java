@@ -178,10 +178,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
             try {
                 final String btcUnit = (String) getGAService().getUserConfig("unit");
-                final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+                mCurrentAmount = mf.parse(amount);
 
                 final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
-                mCurrentAmount = bitcoinFormat.parse(amount);
                 final String qrCodeText = BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);
                 return resetBitmap(qrCodeText);
             } catch (final ArithmeticException | IllegalArgumentException e) {

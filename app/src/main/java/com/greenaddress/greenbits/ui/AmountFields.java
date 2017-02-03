@@ -123,8 +123,9 @@ class AmountFields {
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             mAmountFiatEdit.setText(fiatValue.toPlainString());
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            if (UI.getText(mAmountEdit).equals(mContext.getString(R.string.send_max_amount)))
-                mAmountFiatEdit.setText(mContext.getString(R.string.send_max_amount));
+            final String maxAmount = mContext.getString(R.string.send_max_amount);
+            if (UI.getText(mAmountEdit).equals(maxAmount))
+                mAmountFiatEdit.setText(maxAmount);
             else
                 mAmountFiatEdit.setText("");
         }
@@ -154,5 +155,4 @@ class AmountFields {
             mOnConversionFinishListener.conversionFinish();
         mConverting = false;
     }
-
 }

@@ -140,10 +140,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 // We have a balance, i.e. our login callbacks have finished.
                 // This check is only needed until login returns balances atomically.
                 final String btcUnit = (String) mService.getUserConfig("unit");
-                final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
 
-                final String btcBalance = bitcoinFormat.noCode().format(rawBalance).toString();
-                suffix = String.format("%s %s", UI.setAmountText(null, btcBalance), bitcoinFormat.code());
+                final String btcBalance = mf.noCode().format(rawBalance).toString();
+                suffix = String.format("%s %s", UI.setAmountText(null, btcBalance), mf.code());
             }
         } else if (mService.haveSubaccounts()) {
             final Map<String, ?> m = mService.findSubaccount(subAccount);
@@ -400,13 +400,13 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         if (keyNonBip38 != null) {
                             UI.hide(passwordPrompt, passwordEdit);
                             txNonBip38 = getSweepTx(sweepResult);
-                            final MonetaryFormat format;
-                            format = CurrencyMapper.mapBtcUnitToFormat( (String) mService.getUserConfig("unit"));
+                            final String btcUnit = (String) mService.getUserConfig("unit");
+                            final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                             Coin outputsValue = Coin.ZERO;
                             for (final TransactionOutput output : txNonBip38.getOutputs())
                                 outputsValue = outputsValue.add(output.getValue());
                             mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> ("
-                                    + format.postfixCode().format(outputsValue) + ") funds from the address below?"));
+                                    + mf.postfixCode().format(outputsValue) + ") funds from the address below?"));
                             address = keyNonBip38.toAddress(Network.NETWORK).toString();
                         } else {
                             passwordPrompt.setText(R.string.sweep_bip38_passphrase_prompt);

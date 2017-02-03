@@ -44,10 +44,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
     }
 
     private void onDisplayBalance(final Item holder, final int position) {
-        final Monetary monetary = mService.getCoinBalance(mPointers.get(position));
         final String btcUnit = (String) mService.getUserConfig("unit");
-        final MonetaryFormat bitcoinFormat = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-
         if (btcUnit == null || btcUnit.equals("bits")) {
             holder.mBalanceDenomination.setText("bits ");
             holder.mBalanceDenominationIcon.setText("");
@@ -55,7 +52,10 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
             holder.mBalanceDenomination.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
             holder.mBalanceDenominationIcon.setText(R.string.fa_btc_space);
         }
-        final String btcBalance = bitcoinFormat.noCode().format(monetary).toString();
+
+        final Monetary monetary = mService.getCoinBalance(mPointers.get(position));
+        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
+        final String btcBalance = mf.noCode().format(monetary).toString();
         UI.setAmountText(holder.mBalance, btcBalance);
     }
 
