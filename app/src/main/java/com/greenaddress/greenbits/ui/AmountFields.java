@@ -106,6 +106,11 @@ class AmountFields {
         fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
     }
 
+    public static String formatValue(final Coin value, final String unit) {
+        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(unit);
+        return mf.noCode().format(value).toString();
+    }
+
     void convertBtcToFiat() {
         convertBtcToFiat(mGaService.getFiatRate());
     }

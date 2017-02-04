@@ -93,8 +93,8 @@ public class SendFragment extends SubaccountFragment {
             amountUnit.setText(R.string.fa_btc_space);
             feeUnit.setText(R.string.fa_btc_space);
         }
-        amountText.setText(mf.noCode().format(amount));
-        feeText.setText(mf.noCode().format(fee));
+        amountText.setText(AmountFields.formatValue(amount, mBitcoinUnit));
+        feeText.setText(AmountFields.formatValue(fee, mBitcoinUnit));
 
         if (mPayreqData != null)
             recipientText.setText(recipient);
@@ -187,10 +187,9 @@ public class SendFragment extends SubaccountFragment {
                             for (final Map<?, ?> out : (ArrayList<Map>) result.get("outputs"))
                                 amount += ((Number) out.get("amount")).longValue();
                             final CharSequence amountStr;
-                            if (amount > 0) {
-                                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
-                                amountStr = mf.noCode().format(Coin.valueOf(amount));
-                            } else
+                            if (amount > 0)
+                                amountStr = AmountFields.formatValue(Coin.valueOf(amount), mBitcoinUnit);
+                            else
                                 amountStr = "";
 
                             gaActivity.runOnUiThread(new Runnable() {
@@ -232,8 +231,7 @@ public class SendFragment extends SubaccountFragment {
                 public void onSuccess(final Map<?, ?> result) {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
-                                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
-                                mAmountEdit.setText(mf.noCode().format(URI.getAmount()));
+                                mAmountEdit.setText(AmountFields.formatValue(URI.getAmount(), mBitcoinUnit));
                                 final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                                 mAmountFields.convertBtcToFiat(fiatRate);
                                 UI.disable(mAmountEdit, mAmountFiatEdit);
@@ -520,9 +518,8 @@ public class SendFragment extends SubaccountFragment {
         } else {
             sendSubAccountBalanceUnit.setText(R.string.fa_btc_space);
         }
-        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
-        final String btcBalance = mf.noCode().format(
-                getGAService().getCoinBalance(mSubaccount)).toString();
+        final Coin balance = getGAService().getCoinBalance(mSubaccount);
+        final String btcBalance = AmountFields.formatValue(balance, mBitcoinUnit);
         UI.setAmountText(sendSubAccountBalance, btcBalance);
 
         final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBalanceUnit.getText().length() + sendSubAccountBitcoinScale.getText().length();

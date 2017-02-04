@@ -50,7 +50,6 @@ public class MainFragment extends SubaccountFragment {
             return;
 
         final String btcUnit = (String) service.getUserConfig("unit");
-        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit).noCode();
         final TextView balanceBitcoinIcon = UI.find(mView, R.id.mainBalanceBitcoinIcon);
         final TextView bitcoinScale = UI.find(mView, R.id.mainBitcoinScaleText);
         bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
@@ -61,13 +60,9 @@ public class MainFragment extends SubaccountFragment {
             balanceBitcoinIcon.setText(R.string.fa_btc_space);
         }
 
-        final String btcBalance = mf.format(balance).toString();
-        final String btcVerifiedBalance;
+        final String btcBalance = AmountFields.formatValue(balance, btcUnit);
         final Coin verifiedBalance = service.getSPVVerifiedBalance(mSubaccount);
-        if (verifiedBalance != null)
-            btcVerifiedBalance = mf.format(verifiedBalance).toString();
-        else
-            btcVerifiedBalance = mf.format(Coin.valueOf(0)).toString();
+        final String btcVerifiedBalance = AmountFields.formatValue(verifiedBalance, btcUnit);
 
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(

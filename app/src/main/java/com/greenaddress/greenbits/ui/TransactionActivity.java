@@ -41,7 +41,6 @@ import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.script.ScriptChunk;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -236,7 +235,6 @@ public class TransactionActivity extends GaActivity {
 
             final String btcUnit = (String) service.getUserConfig("unit");
             final Coin coin = Coin.valueOf(txItem.amount);
-            final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
             bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
             feeScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
             if (btcUnit == null || btcUnit.equals("bits")) {
@@ -246,11 +244,11 @@ public class TransactionActivity extends GaActivity {
                 bitcoinUnit.setText(R.string.fa_btc_space);
                 feeUnit.setText(R.string.fa_btc_space);
             }
-            final String btcBalance = mf.noCode().format(coin).toString();
+            final String btcBalance = AmountFields.formatValue(coin, btcUnit);
             UI.setAmountText(amount, btcBalance);
 
-            final String btcFee = mf.noCode().format(fee).toString();
-            final String btcFeePerKb = mf.noCode().format(feePerKb).toString();
+            final String btcFee = AmountFields.formatValue(fee, btcUnit);
+            final String btcFeePerKb = AmountFields.formatValue(feePerKb, btcUnit);
             String feeInfoTextStr = UI.setAmountText(null, btcFee);
             feeInfoTextStr += " / " + String.valueOf(txItem.size) + " / ";
             feeInfoTextStr += UI.setAmountText(null, btcFeePerKb);
@@ -689,9 +687,8 @@ public class TransactionActivity extends GaActivity {
                 amountUnit.setText(R.string.fa_btc_space);
                 feeUnit.setText(R.string.fa_btc_space);
             }
-            final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-            amountText.setText(mf.noCode().format(newFee));
-            feeText.setText(mf.noCode().format(oldFee));
+            amountText.setText(AmountFields.formatValue(newFee, btcUnit));
+            feeText.setText(AmountFields.formatValue(oldFee, btcUnit));
 
             final Map<String, Object> twoFacData;
             if (method == null) {

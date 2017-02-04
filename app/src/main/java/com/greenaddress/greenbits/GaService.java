@@ -278,7 +278,10 @@ public class GaService extends Service implements INotificationHandler {
     public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
     public int getSPVHeight() { return mSPV.getSPVHeight(); }
     public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }
-    public Coin getSPVVerifiedBalance(final int subAccount) { return mSPV.getVerifiedBalance(subAccount); }
+    public Coin getSPVVerifiedBalance(final int subAccount) {
+        final Coin balance = mSPV.getVerifiedBalance(subAccount);
+        return balance == null ? Coin.valueOf(0) : balance;
+    }
 
     public boolean isSPVVerified(final Sha256Hash txHash) { return mSPV.isVerified(txHash); }
 
@@ -639,7 +642,7 @@ public class GaService extends Service implements INotificationHandler {
         // Skip fetching raw previous outputs if they are not required
         final Coin verifiedBalance = getSPVVerifiedBalance(subAccount);
         final boolean fetchPrev = !isSPVEnabled() ||
-                verifiedBalance == null || !verifiedBalance.equals(getCoinBalance(subAccount)) ||
+                !verifiedBalance.equals(getCoinBalance(subAccount)) ||
                 mClient.getSigningWallet().requiresPrevoutRawTxs();
 
         final boolean isRegTest = Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST));
