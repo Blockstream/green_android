@@ -48,7 +48,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private TextView mAddressText = null;
     private ImageView mAddressImage = null;
     private TextView mCopyIcon = null;
-    private LinearLayout mReceiveAddressLayout = null;
     private final Runnable mDialogCB = new Runnable() { public void run() { mQrCodeDialog = null; } };
 
     private EditText mAmountEdit;
@@ -105,7 +104,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             mAmountFields.setIsPausing(pausing);
         }
 
-        mReceiveAddressLayout = UI.find(mView, R.id.receiveAddressLayout);
         mAddressText = UI.find(mView, R.id.receiveAddressText);
         mAddressImage = UI.find(mView, R.id.receiveQrImageView);
 
