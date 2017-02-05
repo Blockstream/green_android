@@ -43,11 +43,8 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
     }
 
     private void onDisplayBalance(final Item holder, final int position) {
-        final String btcUnit = (String) mService.getUserConfig("unit");
-        holder.mUnit.setText(CurrencyMapper.getUnit(btcUnit));
         final Coin balance = mService.getCoinBalance(mPointers.get(position));
-        final String btcBalance = AmountFields.formatValue(balance, btcUnit);
-        UI.setAmountText(holder.mBalance, btcBalance);
+        UI.setCoinText(mService, holder.mUnit, holder.mBalance, balance, true);
     }
 
     @SuppressLint("SetTextI18n")

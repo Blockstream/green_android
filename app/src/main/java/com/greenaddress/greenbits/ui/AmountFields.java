@@ -43,8 +43,7 @@ class AmountFields {
         mAmountFiatEdit = UI.find(view, R.id.sendAmountFiatEditText);
 
         final TextView bitcoinUnitText = UI.find(view, R.id.sendBitcoinUnitText);
-        final String btcUnit = (String) mGaService.getUserConfig("unit");
-        bitcoinUnitText.setText(CurrencyMapper.getUnit(btcUnit));
+        UI.setCoinText(mGaService, bitcoinUnitText, null, null, true);
 
         final FontAwesomeTextView fiatView = UI.find(view, R.id.sendFiatIcon);
         changeFiatIcon(fiatView, mGaService.getFiatCurrency());
@@ -96,7 +95,7 @@ class AmountFields {
     }
 
     private MonetaryFormat getFormat() {
-        return getFormat((String) mGaService.getUserConfig("unit"));
+        return getFormat(mGaService.getBitcoinUnit());
     }
 
     private static MonetaryFormat getFormat(final String unit) {

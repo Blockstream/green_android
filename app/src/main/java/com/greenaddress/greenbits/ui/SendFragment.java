@@ -59,7 +59,6 @@ public class SendFragment extends SubaccountFragment {
     private boolean mFromIntentURI = false;
 
 
-    private String mBitcoinUnit;
     private int mSubaccount;
     private AmountFields mAmountFields = null;
 
@@ -79,10 +78,8 @@ public class SendFragment extends SubaccountFragment {
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 
-        amountUnit.setText(CurrencyMapper.getUnit(mBitcoinUnit));
-        amountText.setText(AmountFields.formatValue(amount, mBitcoinUnit));
-        feeUnit.setText(CurrencyMapper.getUnit(mBitcoinUnit));
-        feeText.setText(AmountFields.formatValue(fee, mBitcoinUnit));
+        UI.setCoinText(service, amountUnit, amountText, amount, false);
+        UI.setCoinText(service, feeUnit, feeText, fee, false);
 
         if (mPayreqData != null)
             recipientText.setText(recipient);
@@ -175,9 +172,9 @@ public class SendFragment extends SubaccountFragment {
                             for (final Map<?, ?> out : (ArrayList<Map>) result.get("outputs"))
                                 amount += ((Number) out.get("amount")).longValue();
                             final CharSequence amountStr;
-                            if (amount > 0)
-                                amountStr = AmountFields.formatValue(Coin.valueOf(amount), mBitcoinUnit);
-                            else
+                            if (amount > 0) {
+                                amountStr = UI.setCoinText(service, null, null, Coin.valueOf(amount), false);
+                            } else
                                 amountStr = "";
 
                             gaActivity.runOnUiThread(new Runnable() {
@@ -219,7 +216,9 @@ public class SendFragment extends SubaccountFragment {
                 public void onSuccess(final Map<?, ?> result) {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
-                                mAmountEdit.setText(AmountFields.formatValue(URI.getAmount(), mBitcoinUnit));
+                                final Coin uriAmount = URI.getAmount();
+                                UI.setCoinText(service, null, mAmountEdit, uriAmount, false);
+
                                 final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                                 mAmountFields.convertBtcToFiat(fiatRate);
                                 UI.disable(mAmountEdit, mAmountFiatEdit);
@@ -270,8 +269,7 @@ public class SendFragment extends SubaccountFragment {
 
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
 
-        mBitcoinUnit = (String) service.getUserConfig("unit");
-        bitcoinUnitText.setText(CurrencyMapper.getUnit(mBitcoinUnit));
+        UI.setCoinText(service, bitcoinUnitText, null, null, false);
 
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
             final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);
@@ -307,7 +305,8 @@ public class SendFragment extends SubaccountFragment {
 
                 Coin nonFinalAmount;
                 try {
-                    nonFinalAmount = AmountFields.parseValue(UI.getText(mAmountEdit), mBitcoinUnit);
+                    final String btcUnit = service.getBitcoinUnit();
+                    nonFinalAmount = AmountFields.parseValue(UI.getText(mAmountEdit), btcUnit);
                 } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }
@@ -488,19 +487,17 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onBalanceUpdated() {
+        final GaService service = getGAService();
         final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
-        sendSubAccountBalanceUnit.setText(CurrencyMapper.getUnit(mBitcoinUnit));
-
         final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
-        final Coin balance = getGAService().getCoinBalance(mSubaccount);
-        final String btcBalance = AmountFields.formatValue(balance, mBitcoinUnit);
-        UI.setAmountText(sendSubAccountBalance, btcBalance);
+        final Coin balance = service.getCoinBalance(mSubaccount);
+        UI.setCoinText(service, sendSubAccountBalanceUnit, sendSubAccountBalance, balance, true);
 
         final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBalanceUnit.getText().length();
         final int size = Math.min(50 - nChars, 34);
         sendSubAccountBalance.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-        if (getGAService().showBalanceInTitle())
+        if (service.showBalanceInTitle())
             UI.hide(sendSubAccountBalance, sendSubAccountBalanceUnit);
     }
 

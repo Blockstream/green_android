@@ -130,8 +130,8 @@ public class TransactionActivity extends GaActivity {
 
             final TextView hashText = UI.find(v, R.id.txHashText);
 
-            final TextView amount = UI.find(v, R.id.txAmountText);
             final TextView bitcoinUnit = UI.find(v, R.id.txBitcoinUnit);
+            final TextView amountText = UI.find(v, R.id.txAmountText);
 
             final TextView dateText = UI.find(v, R.id.txDateText);
             final TextView memoText = UI.find(v, R.id.txMemoText);
@@ -231,20 +231,12 @@ public class TransactionActivity extends GaActivity {
                     }
             }
 
-            final String btcUnit = (String) service.getUserConfig("unit");
-            bitcoinUnit.setText(CurrencyMapper.getUnit(btcUnit));
-            feeUnit.setText(CurrencyMapper.getUnit(btcUnit));
             final Coin coin = Coin.valueOf(txItem.amount);
-            final String btcBalance = AmountFields.formatValue(coin, btcUnit);
-            UI.setAmountText(amount, btcBalance);
+            UI.setCoinText(service, bitcoinUnit, amountText, coin, true);
 
-            final String btcFee = AmountFields.formatValue(fee, btcUnit);
-            final String btcFeePerKb = AmountFields.formatValue(feePerKb, btcUnit);
-            String feeInfoTextStr = UI.setAmountText(null, btcFee);
-            feeInfoTextStr += " / " + String.valueOf(txItem.size) + " / ";
-            feeInfoTextStr += UI.setAmountText(null, btcFeePerKb);
-
-            feeInfoText.setText(feeInfoTextStr);
+            feeInfoText.setText(UI.setCoinText(service, feeUnit, null, fee, true) +
+                                " / " + String.valueOf(txItem.size) + " / " +
+                                UI.setCoinText(service, feeUnit, null, feePerKb, true));
 
             dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));
             if (txItem.memo != null && txItem.memo.length() > 0) {
@@ -664,12 +656,8 @@ public class TransactionActivity extends GaActivity {
             final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
             final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 
-            final String btcUnit = (String) service.getUserConfig("unit");
-            amountUnit.setText(CurrencyMapper.getUnit(btcUnit));
-            amountText.setText(AmountFields.formatValue(newFee, btcUnit));
-
-            feeUnit.setText(CurrencyMapper.getUnit(btcUnit));
-            feeText.setText(AmountFields.formatValue(oldFee, btcUnit));
+            UI.setCoinText(service, amountUnit, amountText, newFee, false);
+            UI.setCoinText(service, feeUnit, feeText, oldFee, false);
 
             final Map<String, Object> twoFacData;
             if (method == null) {

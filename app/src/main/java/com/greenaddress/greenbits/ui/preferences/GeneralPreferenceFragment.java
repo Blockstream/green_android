@@ -115,8 +115,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
                 return true;
             }
         });
-        final String btcUnit = (String) mService.getUserConfig("unit");
-        bitcoinDenomination.setSummary(btcUnit == null ? "bits" : btcUnit);
+        bitcoinDenomination.setSummary(mService.getBitcoinUnit());
 
         fiatCurrency.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override

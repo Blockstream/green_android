@@ -21,6 +21,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.greenaddress.greenbits.GaService;
 
+import org.bitcoinj.core.Coin;
+
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -265,6 +267,20 @@ public abstract class UI {
                                    LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
+    }
+
+    public static String setCoinText(final GaService service,
+                                     final TextView symbol, final TextView v,
+                                     final Coin value, boolean reformat) {
+        final String btcUnit = service.getBitcoinUnit();
+        if (symbol != null)
+            symbol.setText(CurrencyMapper.getUnit(btcUnit));
+        final String formattedValue = value == null? null : AmountFields.formatValue(value, btcUnit);
+        if (reformat && value != null)
+            return setAmountText(v, formattedValue);
+        if (v != null)
+            v.setText(formattedValue);
+        return formattedValue;
     }
 
     public static String setAmountText(final TextView v, final String d) {

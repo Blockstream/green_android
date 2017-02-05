@@ -49,30 +49,24 @@ public class MainFragment extends SubaccountFragment {
         if (service.getLoginData() == null || balance == null)
             return;
 
-        final String btcUnit = (String) service.getUserConfig("unit");
         final TextView balanceUnit = UI.find(mView, R.id.mainBalanceUnit);
-        balanceUnit.setText(CurrencyMapper.getUnit(btcUnit));
+        final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
+        UI.setCoinText(service, balanceUnit, balanceText, balance, true);
 
-        final String btcBalance = AmountFields.formatValue(balance, btcUnit);
         final Coin verifiedBalance = service.getSPVVerifiedBalance(mSubaccount);
-        final String btcVerifiedBalance = AmountFields.formatValue(verifiedBalance, btcUnit);
 
         final String fiatBalance =
                 MonetaryFormat.FIAT.minDecimals(2).noCode().format(
-                        service.getFiatBalance(mSubaccount))
-                        .toString();
+                        service.getFiatBalance(mSubaccount)).toString();
 
         // Hide balance question mark if we know our balance is verified
         // (or we are in watch only mode and so have no SPV to verify it with)
+        final boolean verified = balance.equals(verifiedBalance) || !service.isSPVEnabled();
         final TextView balanceQuestionMark = UI.find(mView, R.id.mainBalanceQuestionMark);
-        final boolean verified = btcBalance.equals(btcVerifiedBalance) ||
-                                 !service.isSPVEnabled();
         UI.hideIf(verified, balanceQuestionMark);
 
-        final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
         final TextView balanceFiatText = UI.find(mView, R.id.mainLocalBalanceText);
         final FontAwesomeTextView balanceFiatIcon = UI.find(mView, R.id.mainLocalBalanceIcon);
-        UI.setAmountText(balanceText, btcBalance);
 
         final int nChars = balanceText.getText().length() + balanceQuestionMark.getText().length() + balanceUnit.getText().length();
         final int size = Math.min(50 - nChars, 34);

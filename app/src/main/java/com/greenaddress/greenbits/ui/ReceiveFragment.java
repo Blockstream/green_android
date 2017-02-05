@@ -176,7 +176,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 return mQrCodeBitmap == null ? null : resetBitmap(mCurrentAddress);
 
             try {
-                final String btcUnit = (String) getGAService().getUserConfig("unit");
+                final String btcUnit = getGAService().getBitcoinUnit();
                 mCurrentAmount = AmountFields.parseValue(amount, btcUnit);
 
                 final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);

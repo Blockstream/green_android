@@ -24,14 +24,12 @@ public class ListTransactionsAdapter extends
     private final static int REQUEST_TX_DETAILS = 4;
 
     private final List<TransactionItem> mTxItems;
-    private final String mBtcUnit;
     private final Activity mActivity;
     private final GaService mService;
 
     public ListTransactionsAdapter(final Activity activity, final GaService service,
                                    final List<TransactionItem> txItems) {
         mTxItems = txItems;
-        mBtcUnit = (String) service.getUserConfig("unit");
         mActivity = activity;
         mService = service;
     }
@@ -45,12 +43,8 @@ public class ListTransactionsAdapter extends
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final TransactionItem txItem = mTxItems.get(position);
-
-        holder.unitText.setText(CurrencyMapper.getUnit(mBtcUnit));
-
         final Coin coin = Coin.valueOf(txItem.amount);
-        final String btcBalance = AmountFields.formatValue(coin, mBtcUnit);
-        UI.setAmountText(holder.textValue, btcBalance);
+        UI.setCoinText(mService, holder.unitText, holder.textValue, coin, true);
 
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV to verify it with)

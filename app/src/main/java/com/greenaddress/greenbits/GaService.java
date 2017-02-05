@@ -145,6 +145,11 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getSigningWallet();
     }
 
+    public String getBitcoinUnit() {
+        final Object unit = getUserConfig("unit");
+        return unit == null ? "bits" : (String) unit;
+    }
+
     public int getAutoLogoutMinutes() {
         try {
             return (int)getUserConfig("altimeout");
