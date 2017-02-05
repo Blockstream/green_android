@@ -44,14 +44,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
 
     private void onDisplayBalance(final Item holder, final int position) {
         final String btcUnit = (String) mService.getUserConfig("unit");
-        if (btcUnit == null || btcUnit.equals("bits")) {
-            holder.mBalanceDenomination.setText("bits ");
-            holder.mBalanceDenominationIcon.setText("");
-        } else {
-            holder.mBalanceDenomination.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
-            holder.mBalanceDenominationIcon.setText(R.string.fa_btc_space);
-        }
-
+        holder.mUnit.setText(CurrencyMapper.getUnit(btcUnit));
         final Coin balance = mService.getCoinBalance(mPointers.get(position));
         final String btcBalance = AmountFields.formatValue(balance, btcUnit);
         UI.setAmountText(holder.mBalance, btcBalance);
@@ -83,23 +76,19 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
 
     public static class Item extends RecyclerView.ViewHolder {
 
-        final RadioButton mRadio;
-        final TextView mBalance;
-        final TextView mBalanceDenomination;
-        final TextView mBalanceDenominationIcon;
-
         final View mView;
-
+        final RadioButton mRadio;
         final TextView mName;
+        final TextView mUnit;
+        final TextView mBalance;
 
         public Item(final View v) {
             super(v);
             mView = v;
             mRadio = UI.find(v, R.id.radio);
             mName = UI.find(v, R.id.name);
+            mUnit = UI.find(v, R.id.mainBalanceUnit);
             mBalance = UI.find(v, R.id.mainBalanceText);
-            mBalanceDenominationIcon = UI.find(v, R.id.mainBalanceBitcoinIcon);
-            mBalanceDenomination = UI.find(v, R.id.mainBitcoinScaleText);
         }
     }
 }

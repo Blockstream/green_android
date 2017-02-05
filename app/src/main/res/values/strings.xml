@@ -244,11 +244,13 @@
 
     <!-- FontAwesome Glyphs -->
     <string name="fa_arrow_down" translatable="false">&#xf063;</string>
+    <string name="fa_bits_space" translatable="false">bits\u0020</string>
     <string name="fa_btc" translatable="false">&#xf15a;</string>
     <string name="fa_btc_space" translatable="false">&#xf15a;\u0020</string>
     <string name="fa_camera" translatable="false">&#xf030;</string>
     <string name="fa_clock_o" translatable="false">&#xf017;</string>
     <string name="fa_copy" translatable="false">&#xf0c5;</string>
+    <string name="fa_mbtc_space" translatable="false">m&#xf15a;\u0020</string>
     <string name="fa_pencil" translatable="false">&#xf040;</string>
     <string name="fa_plus" translatable="false">&#xf067;</string>
     <string name="fa_qrcode" translatable="false">&#xf029;</string>
@@ -256,6 +258,8 @@
     <string name="fa_sign_in" translatable="false">&#xf090;</string>
     <string name="fa_sign_out" translatable="false">&#xf08b;</string>
     <string name="fa_usd" translatable="false">&#xf155;</string>
+    <string name="fa_ubtc_space" translatable="false">\u00b5&#xf15a;\u0020</string>
+
     <string name="transactionCompleted">Transaction successfully completed</string>
     <string name="unable_to_connect_to_service">GreenBits is unable to connect, please verify your internet connection</string>
     <string name="nfcDialogMessage">Hold your NFC tag close to the device</string>

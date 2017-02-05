@@ -7,6 +7,16 @@ class CurrencyMapper {
     private static final String MICRO_BTC = "\u00B5BTC";
     private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
 
+    public static int getUnit(final String btcUnit) {
+        if (MonetaryFormat.CODE_BTC.equals(btcUnit))
+            return R.string.fa_btc_space;
+        if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
+            return R.string.fa_mbtc_space;
+        if (MICRO_BTC.equals(btcUnit))
+            return R.string.fa_ubtc_space;
+        return R.string.fa_bits_space;
+    }
+
     public static String mapBtcUnitToPrefix(final String btcUnit) {
         if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
             return "m";
