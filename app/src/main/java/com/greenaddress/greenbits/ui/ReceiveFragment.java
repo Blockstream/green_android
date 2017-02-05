@@ -176,8 +176,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 return mQrCodeBitmap == null ? null : resetBitmap(mCurrentAddress);
 
             try {
-                final String btcUnit = getGAService().getBitcoinUnit();
-                mCurrentAmount = AmountFields.parseValue(amount, btcUnit);
+                mCurrentAmount = UI.parseCoinValue(getGAService(), amount);
 
                 final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
                 final String qrCodeText = BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);

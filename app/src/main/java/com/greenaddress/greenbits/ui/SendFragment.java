@@ -31,7 +31,6 @@ import com.greenaddress.greenbits.GaService;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -305,8 +304,7 @@ public class SendFragment extends SubaccountFragment {
 
                 Coin nonFinalAmount;
                 try {
-                    final String btcUnit = service.getBitcoinUnit();
-                    nonFinalAmount = AmountFields.parseValue(UI.getText(mAmountEdit), btcUnit);
+                    nonFinalAmount = UI.parseCoinValue(service, UI.getText(mAmountEdit));
                 } catch (final IllegalArgumentException e) {
                     nonFinalAmount = Coin.ZERO;
                 }

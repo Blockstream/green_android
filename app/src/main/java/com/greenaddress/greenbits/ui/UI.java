@@ -285,7 +285,7 @@ public abstract class UI {
         return R.string.fa_bits_space;
     }
 
-    public static MonetaryFormat getUnitFormat(final String btcUnit) {
+    private static MonetaryFormat getUnitFormat(final String btcUnit) {
         if (MonetaryFormat.CODE_BTC.equals(btcUnit))
             return MonetaryFormat.BTC;
         if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
@@ -295,13 +295,20 @@ public abstract class UI {
         return MonetaryFormat.UBTC.code(6, "bits");
     }
 
+    public static String formatCoinValue(final GaService service, final Coin value) {
+        return getUnitFormat(service.getBitcoinUnit()).noCode().format(value).toString();
+    }
+
+    public static Coin parseCoinValue(final GaService service, final String value) {
+        return getUnitFormat(service.getBitcoinUnit()).parse(value);
+    }
+
     public static String setCoinText(final GaService service,
                                      final TextView symbol, final TextView v,
                                      final Coin value, boolean reformat) {
-        final String btcUnit = service.getBitcoinUnit();
         if (symbol != null)
-            symbol.setText(getUnitSymbol(btcUnit));
-        final String formattedValue = value == null? null : AmountFields.formatValue(value, btcUnit);
+            symbol.setText(getUnitSymbol(service.getBitcoinUnit()));
+        final String formattedValue = value == null? null : formatCoinValue(service, value);
         if (reformat && value != null)
             return setAmountText(v, formattedValue);
         if (v != null)

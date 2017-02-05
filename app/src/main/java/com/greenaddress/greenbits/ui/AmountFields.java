@@ -12,7 +12,6 @@ import com.greenaddress.greenbits.GaService;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.ExchangeRate;
 import org.bitcoinj.utils.Fiat;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import java.math.BigDecimal;
 
@@ -94,18 +93,6 @@ class AmountFields {
         fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
     }
 
-    private MonetaryFormat getFormat() {
-        return UI.getUnitFormat(mGaService.getBitcoinUnit());
-    }
-
-    public static Coin parseValue(final String value, final String unit) {
-        return UI.getUnitFormat(unit).parse(value);
-    }
-
-    public static String formatValue(final Coin value, final String unit) {
-        return UI.getUnitFormat(unit).noCode().format(value).toString();
-    }
-
     void convertBtcToFiat() {
         convertBtcToFiat(mGaService.getFiatRate());
     }
@@ -120,7 +107,7 @@ class AmountFields {
 
         try {
             final ExchangeRate rate = new ExchangeRate(exchangeFiat);
-            final Coin btcValue = getFormat().parse(UI.getText(mAmountEdit));
+            final Coin btcValue = UI.parseCoinValue(mGaService, UI.getText(mAmountEdit));
             Fiat fiatValue = rate.coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
@@ -146,7 +133,7 @@ class AmountFields {
         final ExchangeRate rate = new ExchangeRate(exchangeFiat);
         try {
             final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(mAmountFiatEdit));
-            mAmountEdit.setText(getFormat().noCode().format(rate.fiatToCoin(fiatValue)));
+            mAmountEdit.setText(UI.formatCoinValue(mGaService, rate.fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
             mAmountEdit.setText("");
         }

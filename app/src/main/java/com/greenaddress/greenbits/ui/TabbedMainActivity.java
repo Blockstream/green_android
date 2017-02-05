@@ -131,9 +131,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private String formatValuePostfix(final Coin value) {
-        final String btcUnit = mService.getBitcoinUnit();
-        final String btcValue = AmountFields.formatValue(value, btcUnit);
-        return String.format("%s %s", UI.setAmountText(null, btcValue), btcUnit);
+        final String btcValue = UI.formatCoinValue(mService, value);
+        return String.format("%s %s", UI.setAmountText(null, btcValue),
+                             mService.getBitcoinUnit());
     }
 
     private void setAccountTitle(final int subAccount) {
