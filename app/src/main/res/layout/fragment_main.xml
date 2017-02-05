@@ -17,14 +17,8 @@
             android:gravity="end"
             android:paddingRight="@dimen/activity_horizontal_margin">
 
-            <TextView
-                android:id="@+id/mainBitcoinScaleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/textColor"
-                android:textSize="34sp" />
             <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                android:id="@+id/mainBalanceBitcoinIcon"
+                android:id="@+id/mainBalanceUnit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/textColor"

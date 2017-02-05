@@ -50,15 +50,8 @@ public class MainFragment extends SubaccountFragment {
             return;
 
         final String btcUnit = (String) service.getUserConfig("unit");
-        final TextView balanceBitcoinIcon = UI.find(mView, R.id.mainBalanceBitcoinIcon);
-        final TextView bitcoinScale = UI.find(mView, R.id.mainBitcoinScaleText);
-        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
-        if (btcUnit == null || btcUnit.equals("bits")) {
-            balanceBitcoinIcon.setText("");
-            bitcoinScale.setText("bits ");
-        } else {
-            balanceBitcoinIcon.setText(R.string.fa_btc_space);
-        }
+        final TextView balanceUnit = UI.find(mView, R.id.mainBalanceUnit);
+        balanceUnit.setText(CurrencyMapper.getUnit(btcUnit));
 
         final String btcBalance = AmountFields.formatValue(balance, btcUnit);
         final Coin verifiedBalance = service.getSPVVerifiedBalance(mSubaccount);
@@ -81,18 +74,17 @@ public class MainFragment extends SubaccountFragment {
         final FontAwesomeTextView balanceFiatIcon = UI.find(mView, R.id.mainLocalBalanceIcon);
         UI.setAmountText(balanceText, btcBalance);
 
-        final int nChars = balanceText.getText().length() + balanceQuestionMark.getText().length() + bitcoinScale.getText().length() + balanceBitcoinIcon.getText().length();
+        final int nChars = balanceText.getText().length() + balanceQuestionMark.getText().length() + balanceUnit.getText().length();
         final int size = Math.min(50 - nChars, 34);
         balanceText.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-        bitcoinScale.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-        balanceBitcoinIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        balanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 
         UI.setAmountText(balanceFiatText, fiatBalance);
 
         AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
 
         if (service.showBalanceInTitle())
-            UI.hide(bitcoinScale, balanceText, balanceBitcoinIcon);
+            UI.hide(balanceText, balanceUnit);
     }
 
     @Override
