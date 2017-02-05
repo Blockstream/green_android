@@ -205,7 +205,7 @@
   <string name="remember_watch_only">Recordar usuario</string>
   <string name="remember_warn_title">Advertencia: El nombre de usuario será guardado en el dispositivo.</string>
   <string name="remember_warn_content">Guardar el nombre de usuario en el dispositivo puede ser peligroso, si alguien accede a la memoria puede saber tu nombre de usuario. Si quiere continuar pulse "Aceptar".</string>
-  <string name="generating_address">Generando dirección...</string>
-  <string name="loading_transactions">Cargando transacciones...</string>
+  <string name="generating_address">Generando dirección…</string>
+  <string name="loading_transactions">Cargando transacciones…</string>
     
 </resources>

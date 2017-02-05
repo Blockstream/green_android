@@ -193,8 +193,8 @@
   <string name="remember_watch_only">Ricorda nome utente</string>
   <string name="remember_warn_title">Attenzione: Il nome utente verrà salvato nel dispositivo.</string>
   <string name="remember_warn_content">Lasciare il nome utente sul dispositivo potrebbe essere un problema; se qualcuno ha accesso alla vostra memoria potrebbe leggere il vostro nome utente in chiaro. Se decidi di continuare premi "OK".</string>
-  <string name="generating_address">Generazione indirizzo...</string>
-  <string name="loading_transactions">Caricamento transazioni...</string>
+  <string name="generating_address">Generazione indirizzo…</string>
+  <string name="loading_transactions">Caricamento transazioni…</string>
   <string name="transactionCompleted">Transazione completata con successo</string>
   <string name="unable_to_connect_to_service">GreenBits non riesce a collegarsi, per favore verifica la connessione a internet</string>
   <string name="nfcDialogMessage">Tieni la tag NFC vicino al dispositivo</string>

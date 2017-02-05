@@ -239,8 +239,8 @@
     <string name="remember_watch_only">Remember username</string>
     <string name="remember_warn_title">Warning: The username will be saved on device</string>
     <string name="remember_warn_content">Saving the username on the device can be dangerous; if someone can access your memory they will have access to your username in clear text. If you choose to continue, please press "OK".</string>
-    <string name="generating_address">Generating address...</string>
-    <string name="loading_transactions">Loading transactions...</string>
+    <string name="generating_address">Generating address…</string>
+    <string name="loading_transactions">Loading transactions…</string>
 
     <!-- FontAwesome Glyphs -->
     <string name="fa_arrow_down" translatable="false">&#xf063;</string>
