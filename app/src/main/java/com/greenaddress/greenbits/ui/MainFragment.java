@@ -31,7 +31,7 @@ import java.util.Observer;
 public class MainFragment extends SubaccountFragment {
     private static final String TAG = MainFragment.class.getSimpleName();
 
-    private MaterialDialog mUnconfirmedDialog = null;
+    private MaterialDialog mUnconfirmedDialog;
     private List<TransactionItem> mTxItems;
     private Map<Sha256Hash, List<Sha256Hash> > replacedTxs;
     private int mSubaccount;

@@ -40,22 +40,22 @@ import nordpol.android.TagDispatcher;
 public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredTagListener, AmountFields.OnConversionFinishListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
-    private FutureCallback<QrBitmap> mNewAddressCallback = null;
-    private QrBitmap mQrCodeBitmap = null;
-    private int mSubaccount = 0;
-    private Dialog mQrCodeDialog = null;
-    private TagDispatcher mTagDispatcher = null;
-    private TextView mAddressText = null;
-    private ImageView mAddressImage = null;
-    private TextView mCopyIcon = null;
+    private FutureCallback<QrBitmap> mNewAddressCallback;
+    private QrBitmap mQrCodeBitmap;
+    private int mSubaccount;
+    private Dialog mQrCodeDialog;
+    private TagDispatcher mTagDispatcher;
+    private TextView mAddressText;
+    private ImageView mAddressImage;
+    private TextView mCopyIcon;
     private final Runnable mDialogCB = new Runnable() { public void run() { mQrCodeDialog = null; } };
 
     private EditText mAmountEdit;
     private EditText mAmountFiatEdit;
     private String mCurrentAddress = "";
-    private Coin mCurrentAmount = null;
+    private Coin mCurrentAmount;
     private BitmapWorkerTask mBitmapWorkerTask;
-    private AmountFields mAmountFields = null;
+    private AmountFields mAmountFields;
 
     @Override
     public void onResume() {

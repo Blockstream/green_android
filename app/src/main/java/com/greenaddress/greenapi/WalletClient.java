@@ -75,14 +75,14 @@ public class WalletClient {
     private final INotificationHandler mNotificationHandler;
     private SocketAddress mProxyAddress;
     private final OkHttpClient mHttpClient = new OkHttpClient();
-    private boolean mTorEnabled = false;
+    private boolean mTorEnabled;
     private WampClient mConnection;
     private LoginData mLoginData;
     private Map<String, Object> mFeeEstimates;
     private ISigningWallet mHDParent;
-    private String mWatchOnlyUsername = null;
-    private String mWatchOnlyPassword = null;
-    private String mMnemonics = null;
+    private String mWatchOnlyUsername;
+    private String mWatchOnlyPassword;
+    private String mMnemonics;
 
     private String h(final byte[] data) { return Wally.hex_from_bytes(data); }
 
@@ -493,8 +493,8 @@ public class WalletClient {
                     .observeOn(mScheduler)
                     .subscribe(new Action1<WampClient.State>() {
 
-                        boolean initialDisconnectedStateSeen = false;
-                        boolean connected = false;
+                        boolean initialDisconnectedStateSeen;
+                        boolean connected;
 
                         @Override
                         public void call(final WampClient.State newStatus) {

@@ -29,7 +29,7 @@ public class HDKey {
     public static final int BRANCH_REGULAR = 1;
 
     private static final SparseArray<DeterministicKey> mServerKeys = new SparseArray<>();
-    private static int[] mGaUserPath = null;
+    private static int[] mGaUserPath;
 
     private static boolean isMain() {
         return NetworkParameters.fromID(NetworkParameters.ID_MAINNET).equals(Network.NETWORK);

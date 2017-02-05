@@ -54,12 +54,12 @@ public class SendFragment extends SubaccountFragment {
     private Switch mMaxButton;
     private TextView mMaxLabel;
     private TextView mScanIcon;
-    private Map<?, ?> mPayreqData = null;
-    private boolean mFromIntentURI = false;
+    private Map<?, ?> mPayreqData;
+    private boolean mFromIntentURI;
 
 
     private int mSubaccount;
-    private AmountFields mAmountFields = null;
+    private AmountFields mAmountFields;
 
     private void showTransactionSummary(final String method, final Coin fee, final Coin amount, final String recipient, final PreparedTransaction ptx) {
         Log.i(TAG, "showTransactionSummary( params " + method + " " + fee + " " + amount + " " + recipient + ")");

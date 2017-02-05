@@ -38,7 +38,7 @@ public class SignUpActivity extends LoginActivity {
     private static final String TAG = SignUpActivity.class.getSimpleName();
     private static final int PINSAVE = 1337;
 
-    private boolean mWriteMode = false;
+    private boolean mWriteMode;
     private Dialog mMnemonicDialog;
     private Dialog mNfcDialog;
     private NfcAdapter mNfcAdapter;
@@ -50,7 +50,7 @@ public class SignUpActivity extends LoginActivity {
     private CheckBox mAcceptCheckBox;
     private CircularProgressButton mContinueButton;
 
-    private ListenableFuture<LoginData> mOnSignUp = null;
+    private ListenableFuture<LoginData> mOnSignUp;
     private final Runnable mDialogCB = new Runnable() { public void run() { mWriteMode = false; } };
 
     @Override

@@ -70,7 +70,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private ViewPager mViewPager;
     private Menu mMenu;
     private Boolean mInternalQr = false;
-    private MaterialDialog mSegwitDialog = null;
+    private MaterialDialog mSegwitDialog;
     private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
 
     private final Observer mTwoFactorObserver = new Observer() {

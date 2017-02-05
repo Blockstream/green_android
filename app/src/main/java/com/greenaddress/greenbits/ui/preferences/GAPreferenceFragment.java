@@ -10,7 +10,7 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
 public class GAPreferenceFragment extends PreferenceFragment {
-    protected GaService mService = null;
+    protected GaService mService;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {

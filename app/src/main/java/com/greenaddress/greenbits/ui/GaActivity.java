@@ -25,8 +25,8 @@ public abstract class GaActivity extends AppCompatActivity {
     // mService is available to all derived classes as soon as
     // onCreateWithService() is called. Once assigned it does not
     // change so may be read from background threads.
-    private boolean mResumed = false;
-    protected GaService mService = null;
+    private boolean mResumed;
+    protected GaService mService;
 
     protected GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();

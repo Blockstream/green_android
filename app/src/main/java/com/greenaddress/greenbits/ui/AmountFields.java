@@ -20,18 +20,18 @@ import java.math.BigDecimal;
  * by inbitcoin
  */
 class AmountFields {
-    private EditText mAmountEdit;
-    private EditText mAmountFiatEdit;
-    private boolean mConverting = false;
-    private GaService mGaService;
-    private Context mContext;
+    private final EditText mAmountEdit;
+    private final EditText mAmountFiatEdit;
+    private boolean mConverting;
+    private final GaService mGaService;
+    private final Context mContext;
     private Boolean mIsPausing = false;
 
     interface OnConversionFinishListener {
         void conversionFinish();
     }
 
-    private OnConversionFinishListener mOnConversionFinishListener;
+    private final OnConversionFinishListener mOnConversionFinishListener;
 
     AmountFields(GaService gaService, Context context, View view, OnConversionFinishListener onConversionFinishListener) {
         mGaService = gaService;

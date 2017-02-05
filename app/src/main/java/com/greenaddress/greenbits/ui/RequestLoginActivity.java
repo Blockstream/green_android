@@ -51,8 +51,8 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
-    private Dialog mBTChipDialog = null;
-    private BTChipHWWallet mHwWallet = null;
+    private Dialog mBTChipDialog;
+    private BTChipHWWallet mHwWallet;
     private TagDispatcher mTagDispatcher;
     private Tag mTag;
     private SettableFuture<BTChipTransport> mTransportFuture;

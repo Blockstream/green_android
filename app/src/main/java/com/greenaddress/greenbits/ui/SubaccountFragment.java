@@ -18,14 +18,14 @@ public abstract class SubaccountFragment extends GAFragment {
 
     private static final String TAG = SubaccountFragment.class.getSimpleName();
 
-    private BroadcastReceiver mBroadcastReceiver = null;
-    private MaterialDialog mWaitDialog = null;
-    private Observer mBalanceObserver = null;
-    private int mBalanceObserverSubaccount = 0;
-    private boolean mIsSelected = false;
-    private boolean mBlockWaitDialog = false;
-    private boolean mIsDirty = false;
-    protected View mView = null;
+    private BroadcastReceiver mBroadcastReceiver;
+    private MaterialDialog mWaitDialog;
+    private Observer mBalanceObserver;
+    private int mBalanceObserverSubaccount;
+    private boolean mIsSelected;
+    private boolean mBlockWaitDialog;
+    private boolean mIsDirty;
+    protected View mView;
     private final Runnable mDialogCB = new Runnable() { public void run() { mWaitDialog = null; } };
 
     protected boolean IsPageSelected() {

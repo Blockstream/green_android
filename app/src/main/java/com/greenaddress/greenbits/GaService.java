@@ -112,9 +112,9 @@ public class GaService extends Service implements INotificationHandler {
     private final SparseArray<GaObservable> mBalanceObservables = new SparseArray<>();
     private final GaObservable mNewTxObservable = new GaObservable();
     private final GaObservable mVerifiedTxObservable = new GaObservable();
-    private String mSignUpMnemonics = null;
-    private Bitmap mSignUpQRCode = null;
-    private int mCurrentBlock = 0;
+    private String mSignUpMnemonics;
+    private Bitmap mSignUpQRCode;
+    private int mCurrentBlock;
 
     private boolean mAutoReconnect = true;
     // cache
@@ -131,7 +131,7 @@ public class GaService extends Service implements INotificationHandler {
     private Map<?, ?> mTwoFactorConfig;
     private final GaObservable mTwoFactorConfigObservable = new GaObservable();
     private String mDeviceId;
-    private boolean mUserCancelledPINEntry = false;
+    private boolean mUserCancelledPINEntry;
 
     public final SPV mSPV = new SPV(this);
 
@@ -1025,12 +1025,12 @@ public class GaService extends Service implements INotificationHandler {
     public void addConnectionObserver(Observer o) { mState.addObserver(o); }
     public void deleteConnectionObserver(Observer o) { mState.deleteObserver(o); }
 
-    private ScheduledThreadPoolExecutor mTimerExecutor = null;
+    private ScheduledThreadPoolExecutor mTimerExecutor;
     private BroadcastReceiver mNetConnectivityReceiver;
-    private ScheduledFuture<?> mDisconnectTimer = null;
-    private ScheduledFuture<?> mReconnectTimer = null;
-    private int mReconnectDelay = 0;
-    private int mRefCount = 0; // Number of non-paused activities using us
+    private ScheduledFuture<?> mDisconnectTimer;
+    private ScheduledFuture<?> mReconnectTimer;
+    private int mReconnectDelay;
+    private int mRefCount; // Number of non-paused activities using us
 
     public void incRef() {
         ++mRefCount;
