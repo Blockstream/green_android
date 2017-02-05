@@ -300,28 +300,22 @@ public class SendFragment extends SubaccountFragment {
                     return;
                 }
                 final String recipient = UI.getText(mRecipientEdit);
-                final Coin amount;
-                Coin nonFinalAmount;
-                try {
-                    final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
-                    nonFinalAmount = mf.parse(UI.getText(mAmountEdit));
-                } catch (final IllegalArgumentException e) {
-                    nonFinalAmount = Coin.ZERO;
-                }
-                amount = nonFinalAmount;
-
                 if (recipient.isEmpty()) {
                     gaActivity.toast(R.string.err_send_need_recipient);
                     return;
                 }
 
-                final boolean validAddress = GaService.isValidAddress(recipient);
+                Coin nonFinalAmount;
+                try {
+                    nonFinalAmount = AmountFields.parseValue(UI.getText(mAmountEdit), mBitcoinUnit);
+                } catch (final IllegalArgumentException e) {
+                    nonFinalAmount = Coin.ZERO;
+                }
+                final Coin amount = nonFinalAmount;
 
-                final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0) || mMaxButton.isChecked();
                 String message = null;
 
                 final Map<String, Object> privateData = new HashMap<>();
-
                 final String memo = UI.getText(mNoteText);
                 if (!memo.isEmpty())
                     privateData.put("memo", memo);
@@ -334,6 +328,9 @@ public class SendFragment extends SubaccountFragment {
 
                 ListenableFuture<PreparedTransaction> ptxFn;
                 if (mPayreqData == null) {
+                    final boolean validAddress = GaService.isValidAddress(recipient);
+                    final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0) || mMaxButton.isChecked();
+
                     if (!validAddress && !validAmount) {
                         message = gaActivity.getString(R.string.invalidAmountAndAddress);
                     } else if (!validAddress) {

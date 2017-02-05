@@ -32,7 +32,6 @@ import com.greenaddress.greenbits.QrBitmap;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
@@ -178,8 +177,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
             try {
                 final String btcUnit = (String) getGAService().getUserConfig("unit");
-                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-                mCurrentAmount = mf.parse(amount);
+                mCurrentAmount = AmountFields.parseValue(amount, btcUnit);
 
                 final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
                 final String qrCodeText = BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);

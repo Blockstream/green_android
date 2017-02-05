@@ -64,11 +64,6 @@ class AmountFields {
         });
     }
 
-    private MonetaryFormat getFormat() {
-        final String btcUnit = (String) mGaService.getUserConfig("unit");
-        return CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-    }
-
     void setIsPausing(Boolean isPausing) {
         mIsPausing = isPausing;
     }
@@ -100,9 +95,20 @@ class AmountFields {
         fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
     }
 
+    private MonetaryFormat getFormat() {
+        return getFormat((String) mGaService.getUserConfig("unit"));
+    }
+
+    private static MonetaryFormat getFormat(final String unit) {
+        return CurrencyMapper.mapBtcUnitToFormat(unit);
+    }
+
+    public static Coin parseValue(final String value, final String unit) {
+        return getFormat(unit).parse(value);
+    }
+
     public static String formatValue(final Coin value, final String unit) {
-        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(unit);
-        return mf.noCode().format(value).toString();
+        return getFormat(unit).noCode().format(value).toString();
     }
 
     void convertBtcToFiat() {
