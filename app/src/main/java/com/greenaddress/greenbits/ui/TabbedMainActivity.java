@@ -131,19 +131,18 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private String formatValuePostfix(final Coin value) {
-        final String btcValue = UI.formatCoinValue(mService, value);
-        return String.format("%s %s", UI.setAmountText(null, btcValue),
-                             mService.getBitcoinUnit());
+        final String formatted = UI.setCoinText(mService, null, null, value);
+        return String.format("%s %s", formatted, mService.getBitcoinUnit());
     }
 
     private void setAccountTitle(final int subAccount) {
         String suffix = "";
 
         if (mService.showBalanceInTitle()) {
-            Coin rawBalance = mService.getCoinBalance(subAccount);
-            if (rawBalance == null)
-                rawBalance = Coin.valueOf(0);
-            suffix = formatValuePostfix(rawBalance);
+            Coin balance = mService.getCoinBalance(subAccount);
+            if (balance == null)
+                balance = Coin.valueOf(0);
+            suffix = formatValuePostfix(balance);
         } else if (mService.haveSubaccounts()) {
             final Map<String, ?> m = mService.findSubaccount(subAccount);
             if (m == null)

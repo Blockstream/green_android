@@ -276,22 +276,22 @@ public abstract class UI {
         dialog.show();
     }
 
-    private static int getUnitSymbol(final String btcUnit) {
-        if (MonetaryFormat.CODE_BTC.equals(btcUnit))
+    private static int getUnitSymbol(final String unit) {
+        if (MonetaryFormat.CODE_BTC.equals(unit))
             return R.string.fa_btc_space;
-        if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
+        if (MonetaryFormat.CODE_MBTC.equals(unit))
             return R.string.fa_mbtc_space;
-        if (MICRO_BTC.equals(btcUnit))
+        if (MICRO_BTC.equals(unit))
             return R.string.fa_ubtc_space;
         return R.string.fa_bits_space;
     }
 
-    private static MonetaryFormat getUnitFormat(final String btcUnit) {
-        if (MonetaryFormat.CODE_BTC.equals(btcUnit))
+    private static MonetaryFormat getUnitFormat(final String unit) {
+        if (MonetaryFormat.CODE_BTC.equals(unit))
             return MonetaryFormat.BTC;
-        if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
+        if (MonetaryFormat.CODE_MBTC.equals(unit))
             return MBTC;
-        if (MICRO_BTC.equals(btcUnit))
+        if (MICRO_BTC.equals(unit))
             return MonetaryFormat.UBTC;
         return MonetaryFormat.UBTC.code(6, "bits");
     }
@@ -314,12 +314,12 @@ public abstract class UI {
         return setAmountText(v, formatCoinValue(service, value));
     }
 
-    public static String setAmountText(final TextView v, final String amount) {
+    public static String setAmountText(final TextView v, final String value) {
         String res;
         try {
-            res = mDecimalFmt.format(Double.valueOf(amount));
+            res = mDecimalFmt.format(Double.valueOf(value));
         } catch (final NumberFormatException e) {
-            res = amount;
+            res = value;
         }
 
         if (v != null)
