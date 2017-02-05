@@ -280,15 +280,10 @@ public class SendFragment extends SubaccountFragment {
         mRecipientEdit = UI.find(mView, R.id.sendToEditText);
         mScanIcon = UI.find(mView, R.id.sendScanIcon);
 
-        final TextView bitcoinScale = UI.find(mView, R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
 
         mBitcoinUnit = (String) service.getUserConfig("unit");
-        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(mBitcoinUnit));
-        if (mBitcoinUnit == null || mBitcoinUnit.equals("bits"))
-            bitcoinUnitText.setText("bits ");
-        else
-            bitcoinUnitText.setText(R.string.fa_btc_space);
+        bitcoinUnitText.setText(CurrencyMapper.getUnit(mBitcoinUnit));
 
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
             final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);

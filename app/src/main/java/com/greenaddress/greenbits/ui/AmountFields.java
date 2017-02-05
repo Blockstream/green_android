@@ -42,17 +42,11 @@ class AmountFields {
         mAmountEdit = UI.find(view, R.id.sendAmountEditText);
         mAmountFiatEdit = UI.find(view, R.id.sendAmountFiatEditText);
 
-        final TextView bitcoinScale = UI.find(view, R.id.sendBitcoinScaleText);
         final TextView bitcoinUnitText = UI.find(view, R.id.sendBitcoinUnitText);
-        final FontAwesomeTextView fiatView = UI.find(view, R.id.sendFiatIcon);
         final String btcUnit = (String) mGaService.getUserConfig("unit");
+        bitcoinUnitText.setText(CurrencyMapper.getUnit(btcUnit));
 
-        bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
-        if (btcUnit == null || btcUnit.equals("bits"))
-            bitcoinUnitText.setText("bits ");
-        else
-            bitcoinUnitText.setText(R.string.fa_btc_space);
-
+        final FontAwesomeTextView fiatView = UI.find(view, R.id.sendFiatIcon);
         changeFiatIcon(fiatView, mGaService.getFiatCurrency());
 
         mAmountFiatEdit.addTextChangedListener(new UI.TextWatcher() {
