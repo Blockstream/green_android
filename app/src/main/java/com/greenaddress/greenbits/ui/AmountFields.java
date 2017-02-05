@@ -95,19 +95,15 @@ class AmountFields {
     }
 
     private MonetaryFormat getFormat() {
-        return getFormat(mGaService.getBitcoinUnit());
-    }
-
-    private static MonetaryFormat getFormat(final String unit) {
-        return CurrencyMapper.mapBtcUnitToFormat(unit);
+        return UI.getUnitFormat(mGaService.getBitcoinUnit());
     }
 
     public static Coin parseValue(final String value, final String unit) {
-        return getFormat(unit).parse(value);
+        return UI.getUnitFormat(unit).parse(value);
     }
 
     public static String formatValue(final Coin value, final String unit) {
-        return getFormat(unit).noCode().format(value).toString();
+        return UI.getUnitFormat(unit).noCode().format(value).toString();
     }
 
     void convertBtcToFiat() {

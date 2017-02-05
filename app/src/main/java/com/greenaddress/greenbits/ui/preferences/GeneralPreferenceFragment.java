@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.ui.CB;
@@ -99,14 +98,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         }
 
         // -- handle currency and bitcoin denomination
-        final ListPreference fiatCurrency = find("fiat_key");
         final ListPreference bitcoinDenomination = find("denomination_key");
-        // FIXME: This belongs whereever CurrencyMapper code ends up
-        final ArrayList<String> units;
-        units = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
-
-        bitcoinDenomination.setEntries(units.toArray(new String[4]));
-        bitcoinDenomination.setEntryValues(units.toArray(new String[4]));
+        bitcoinDenomination.setEntries(UI.UNITS.toArray(new String[4]));
+        bitcoinDenomination.setEntryValues(UI.UNITS.toArray(new String[4]));
         bitcoinDenomination.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object o) {
@@ -117,6 +111,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         });
         bitcoinDenomination.setSummary(mService.getBitcoinUnit());
 
+        final ListPreference fiatCurrency = find("fiat_key");
         fiatCurrency.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object o) {

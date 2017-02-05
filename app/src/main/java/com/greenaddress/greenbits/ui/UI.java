@@ -19,11 +19,14 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.google.common.collect.Lists;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +34,9 @@ import java.util.Map;
 
 public abstract class UI {
     public static final int INVALID_RESOURCE_ID = 0;
+    public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
+    private static final String MICRO_BTC = "\u00B5BTC";
+    private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
 
     // Class to unify cancel and dismiss handling */
     private static class DialogCloseHandler implements DialogInterface.OnCancelListener,
@@ -269,12 +275,32 @@ public abstract class UI {
         dialog.show();
     }
 
+    private static int getUnitSymbol(final String btcUnit) {
+        if (MonetaryFormat.CODE_BTC.equals(btcUnit))
+            return R.string.fa_btc_space;
+        if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
+            return R.string.fa_mbtc_space;
+        if (MICRO_BTC.equals(btcUnit))
+            return R.string.fa_ubtc_space;
+        return R.string.fa_bits_space;
+    }
+
+    public static MonetaryFormat getUnitFormat(final String btcUnit) {
+        if (MonetaryFormat.CODE_BTC.equals(btcUnit))
+            return MonetaryFormat.BTC;
+        if (MonetaryFormat.CODE_MBTC.equals(btcUnit))
+            return MBTC;
+        if (MICRO_BTC.equals(btcUnit))
+            return MonetaryFormat.UBTC;
+        return MonetaryFormat.UBTC.code(6, "bits");
+    }
+
     public static String setCoinText(final GaService service,
                                      final TextView symbol, final TextView v,
                                      final Coin value, boolean reformat) {
         final String btcUnit = service.getBitcoinUnit();
         if (symbol != null)
-            symbol.setText(CurrencyMapper.getUnit(btcUnit));
+            symbol.setText(getUnitSymbol(btcUnit));
         final String formattedValue = value == null? null : AmountFields.formatValue(value, btcUnit);
         if (reformat && value != null)
             return setAmountText(v, formattedValue);
