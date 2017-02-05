@@ -140,13 +140,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/txBitcoinScale"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/accent"
-                    android:textSize="20sp" />
-
                 <com.greenaddress.greenbits.ui.FontAwesomeTextView
                     android:id="@+id/txBitcoinUnit"
                     android:layout_width="wrap_content"
@@ -261,13 +254,6 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/txFeeScale"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/accent"
-                    android:textSize="20sp" />
 
                 <com.greenaddress.greenbits.ui.FontAwesomeTextView
                     android:id="@+id/txFeeUnit"

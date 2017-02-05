@@ -71,29 +71,17 @@ public class SendFragment extends SubaccountFragment {
         final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
         final TextView amountText = UI.find(v, R.id.newTxAmountText);
-        final TextView amountScale = UI.find(v, R.id.newTxAmountScaleText);
         final TextView amountUnit = UI.find(v, R.id.newTxAmountUnitText);
         final TextView feeText = UI.find(v, R.id.newTxFeeText);
-        final TextView feeScale = UI.find(v, R.id.newTxFeeScale);
         final TextView feeUnit = UI.find(v, R.id.newTxFeeUnit);
 
         final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 
-        final String prefix = CurrencyMapper.mapBtcUnitToPrefix(mBitcoinUnit);
-        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBitcoinUnit);
-
-        amountScale.setText(prefix);
-        feeScale.setText(prefix);
-        if (mf.code().equals("bits")) {
-            amountUnit.setText("bits ");
-            feeUnit.setText("bits ");
-        } else {
-            amountUnit.setText(R.string.fa_btc_space);
-            feeUnit.setText(R.string.fa_btc_space);
-        }
+        amountUnit.setText(CurrencyMapper.getUnit(mBitcoinUnit));
         amountText.setText(AmountFields.formatValue(amount, mBitcoinUnit));
+        feeUnit.setText(CurrencyMapper.getUnit(mBitcoinUnit));
         feeText.setText(AmountFields.formatValue(fee, mBitcoinUnit));
 
         if (mPayreqData != null)

@@ -131,7 +131,6 @@ public class TransactionActivity extends GaActivity {
             final TextView hashText = UI.find(v, R.id.txHashText);
 
             final TextView amount = UI.find(v, R.id.txAmountText);
-            final TextView bitcoinScale = UI.find(v, R.id.txBitcoinScale);
             final TextView bitcoinUnit = UI.find(v, R.id.txBitcoinUnit);
 
             final TextView dateText = UI.find(v, R.id.txDateText);
@@ -155,7 +154,6 @@ public class TransactionActivity extends GaActivity {
             final Button unconfirmedIncreaseFee = UI.find(v, R.id.txUnconfirmedIncreaseFee);
             final Button saveMemo = UI.find(v, R.id.saveMemo);
 
-            final TextView feeScale = UI.find(v, R.id.txFeeScale);
             final TextView feeUnit = UI.find(v, R.id.txFeeUnit);
             final TextView feeInfoText = UI.find(v, R.id.txFeeInfoText);
 
@@ -234,16 +232,9 @@ public class TransactionActivity extends GaActivity {
             }
 
             final String btcUnit = (String) service.getUserConfig("unit");
+            bitcoinUnit.setText(CurrencyMapper.getUnit(btcUnit));
+            feeUnit.setText(CurrencyMapper.getUnit(btcUnit));
             final Coin coin = Coin.valueOf(txItem.amount);
-            bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
-            feeScale.setText(CurrencyMapper.mapBtcUnitToPrefix(btcUnit));
-            if (btcUnit == null || btcUnit.equals("bits")) {
-                bitcoinUnit.setText("bits ");
-                feeUnit.setText("bits ");
-            } else {
-                bitcoinUnit.setText(R.string.fa_btc_space);
-                feeUnit.setText(R.string.fa_btc_space);
-            }
             final String btcBalance = AmountFields.formatValue(coin, btcUnit);
             UI.setAmountText(amount, btcBalance);
 
@@ -662,12 +653,10 @@ public class TransactionActivity extends GaActivity {
             final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);
             amountLabel.setText(R.string.newFeeText);
             final TextView amountText = UI.find(v, R.id.newTxAmountText);
-            final TextView amountScale = UI.find(v, R.id.newTxAmountScaleText);
             final TextView amountUnit = UI.find(v, R.id.newTxAmountUnitText);
             final TextView feeLabel = UI.find(v, R.id.newTxFeeLabel);
             feeLabel.setText(R.string.oldFeeText);
             final TextView feeText = UI.find(v, R.id.newTxFeeText);
-            final TextView feeScale = UI.find(v, R.id.newTxFeeScale);
             final TextView feeUnit = UI.find(v, R.id.newTxFeeUnit);
 
             UI.hide((View) UI.find(v, R.id.newTxRecipientLabel),
@@ -676,18 +665,10 @@ public class TransactionActivity extends GaActivity {
             final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 
             final String btcUnit = (String) service.getUserConfig("unit");
-            final String prefix = CurrencyMapper.mapBtcUnitToPrefix(btcUnit);
-
-            amountScale.setText(prefix);
-            feeScale.setText(prefix);
-            if (btcUnit == null || btcUnit.equals("bits")) {
-                amountUnit.setText("bits ");
-                feeUnit.setText("bits ");
-            } else {
-                amountUnit.setText(R.string.fa_btc_space);
-                feeUnit.setText(R.string.fa_btc_space);
-            }
+            amountUnit.setText(CurrencyMapper.getUnit(btcUnit));
             amountText.setText(AmountFields.formatValue(newFee, btcUnit));
+
+            feeUnit.setText(CurrencyMapper.getUnit(btcUnit));
             feeText.setText(AmountFields.formatValue(oldFee, btcUnit));
 
             final Map<String, Object> twoFacData;

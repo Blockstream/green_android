@@ -19,14 +19,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="end">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/newTxAmountScaleText"
-            android:text="m"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            />
         <com.greenaddress.greenbits.ui.FontAwesomeTextView
             android:id="@+id/newTxAmountUnitText"
             android:layout_width="wrap_content"
@@ -59,14 +51,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="end">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/newTxFeeScale"
-            android:text="m"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            />
         <com.greenaddress.greenbits.ui.FontAwesomeTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
