@@ -45,7 +45,6 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.TransactionSignature;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,20 +130,20 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
     }
 
+    private String formatValuePostfix(final Coin value) {
+        final String btcUnit = (String) mService.getUserConfig("unit");
+        final String btcValue = AmountFields.formatValue(value, btcUnit);
+        return String.format("%s %s", UI.setAmountText(null, btcValue), btcUnit);
+    }
+
     private void setAccountTitle(final int subAccount) {
         String suffix = "";
 
         if (mService.showBalanceInTitle()) {
-            final Coin rawBalance = mService.getCoinBalance(subAccount);
-            if (rawBalance != null) {
-                // We have a balance, i.e. our login callbacks have finished.
-                // This check is only needed until login returns balances atomically.
-                final String btcUnit = (String) mService.getUserConfig("unit");
-                final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
-
-                final String btcBalance = mf.noCode().format(rawBalance).toString();
-                suffix = String.format("%s %s", UI.setAmountText(null, btcBalance), mf.code());
-            }
+            Coin rawBalance = mService.getCoinBalance(subAccount);
+            if (rawBalance == null)
+                rawBalance = Coin.valueOf(0);
+            suffix = formatValuePostfix(rawBalance);
         } else if (mService.haveSubaccounts()) {
             final Map<String, ?> m = mService.findSubaccount(subAccount);
             if (m == null)
@@ -400,13 +399,12 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         if (keyNonBip38 != null) {
                             UI.hide(passwordPrompt, passwordEdit);
                             txNonBip38 = getSweepTx(sweepResult);
-                            final String btcUnit = (String) mService.getUserConfig("unit");
-                            final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(btcUnit);
                             Coin outputsValue = Coin.ZERO;
                             for (final TransactionOutput output : txNonBip38.getOutputs())
                                 outputsValue = outputsValue.add(output.getValue());
+                            final String valueStr = formatValuePostfix(outputsValue);
                             mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> ("
-                                    + mf.postfixCode().format(outputsValue) + ") funds from the address below?"));
+                                    + valueStr + ") funds from the address below?"));
                             address = keyNonBip38.toAddress(Network.NETWORK).toString();
                         } else {
                             passwordPrompt.setText(R.string.sweep_bip38_passphrase_prompt);
