@@ -94,20 +94,11 @@
 
                     android:textColor="@color/textColor">
 
-                    <TextView
-                        android:id="@+id/listBitcoinScaleText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="m"
-                        android:textColor="@color/secondaryTextColor"
-                        android:textSize="20sp" />
-
                     <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                        android:id="@+id/listBitcoinIcon"
+                        android:id="@+id/listBitcoinUnitText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fa_btc_space"
-
                         android:textColor="@color/secondaryTextColor"
                         android:textSize="20sp" />
 

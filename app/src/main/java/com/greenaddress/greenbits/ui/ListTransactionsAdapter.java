@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import java.util.List;
 
@@ -47,18 +46,10 @@ public class ListTransactionsAdapter extends
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final TransactionItem txItem = mTxItems.get(position);
 
+        holder.unitText.setText(CurrencyMapper.getUnit(mBtcUnit));
 
         final Coin coin = Coin.valueOf(txItem.amount);
-        final MonetaryFormat mf = CurrencyMapper.mapBtcUnitToFormat(mBtcUnit);
-        holder.bitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(mBtcUnit));
-        if (mBtcUnit == null || mBtcUnit.equals("bits")) {
-            holder.bitcoinIcon.setText("");
-            holder.bitcoinScale.setText("bits ");
-        } else {
-            holder.bitcoinIcon.setText(R.string.fa_btc_space);
-        }
-
-        final String btcBalance = mf.noCode().format(coin).toString();
+        final String btcBalance = AmountFields.formatValue(coin, mBtcUnit);
         UI.setAmountText(holder.textValue, btcBalance);
 
         // Hide question mark if we know this tx is verified
@@ -157,10 +148,9 @@ public class ListTransactionsAdapter extends
         public final TextView textValue;
         public final TextView textWhen;
         public final TextView textReplaceable;
-        public final TextView bitcoinIcon;
+        public final TextView unitText;
         public final TextView textWho;
         public final TextView inOutIcon;
-        public final TextView bitcoinScale;
         public final TextView textValueQuestionMark;
         public final LinearLayout mainLayout;
 
@@ -175,8 +165,7 @@ public class ListTransactionsAdapter extends
             textWho = UI.find(v, R.id.listWhoText);
             inOutIcon = UI.find(v, R.id.listInOutIcon);
             mainLayout = UI.find(v, R.id.list_item_layout);
-            bitcoinIcon = UI.find(v, R.id.listBitcoinIcon);
-            bitcoinScale = UI.find(v, R.id.listBitcoinScaleText);
+            unitText = UI.find(v, R.id.listBitcoinUnitText);
             listNumberConfirmation = UI.find(v, R.id.listNumberConfirmation);
         }
     }
