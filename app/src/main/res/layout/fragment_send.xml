@@ -31,13 +31,6 @@
                     android:gravity="end"
                     android:orientation="horizontal"
                     android:paddingBottom="8dp">
-                    <TextView
-                        android:id="@+id/sendSubAccountBitcoinScale"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="m"
-                        android:textColor="@color/textColor"
-                        android:textSize="34sp" />
 
                     <com.greenaddress.greenbits.ui.FontAwesomeTextView
                         android:id="@+id/sendSubAccountBalanceUnit"

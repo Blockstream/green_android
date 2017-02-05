@@ -491,27 +491,20 @@ public class SendFragment extends SubaccountFragment {
 
     @Override
     protected void onBalanceUpdated() {
-        final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
         final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
-        final TextView sendSubAccountBitcoinScale = UI.find(mView, R.id.sendSubAccountBitcoinScale);
-        sendSubAccountBitcoinScale.setText(CurrencyMapper.mapBtcUnitToPrefix(mBitcoinUnit));
-        if (mBitcoinUnit == null || mBitcoinUnit.equals("bits")) {
-            sendSubAccountBalanceUnit.setText("");
-            sendSubAccountBitcoinScale.setText("bits ");
-        } else {
-            sendSubAccountBalanceUnit.setText(R.string.fa_btc_space);
-        }
+        sendSubAccountBalanceUnit.setText(CurrencyMapper.getUnit(mBitcoinUnit));
+
+        final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
         final Coin balance = getGAService().getCoinBalance(mSubaccount);
         final String btcBalance = AmountFields.formatValue(balance, mBitcoinUnit);
         UI.setAmountText(sendSubAccountBalance, btcBalance);
 
-        final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBalanceUnit.getText().length() + sendSubAccountBitcoinScale.getText().length();
+        final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBalanceUnit.getText().length();
         final int size = Math.min(50 - nChars, 34);
         sendSubAccountBalance.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         sendSubAccountBalanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-        sendSubAccountBitcoinScale.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         if (getGAService().showBalanceInTitle())
-            UI.hide(sendSubAccountBalance, sendSubAccountBalanceUnit, sendSubAccountBitcoinScale);
+            UI.hide(sendSubAccountBalance, sendSubAccountBalanceUnit);
     }
 
     @Override
