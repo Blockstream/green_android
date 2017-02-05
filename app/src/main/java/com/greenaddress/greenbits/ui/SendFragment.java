@@ -77,8 +77,8 @@ public class SendFragment extends SubaccountFragment {
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 
-        UI.setCoinText(service, amountUnit, amountText, amount, false);
-        UI.setCoinText(service, feeUnit, feeText, fee, false);
+        UI.setCoinText(service, amountUnit, amountText, amount);
+        UI.setCoinText(service, feeUnit, feeText, fee);
 
         if (mPayreqData != null)
             recipientText.setText(recipient);
@@ -172,7 +172,7 @@ public class SendFragment extends SubaccountFragment {
                                 amount += ((Number) out.get("amount")).longValue();
                             final CharSequence amountStr;
                             if (amount > 0) {
-                                amountStr = UI.setCoinText(service, null, null, Coin.valueOf(amount), false);
+                                amountStr = UI.setCoinText(service, null, null, Coin.valueOf(amount));
                             } else
                                 amountStr = "";
 
@@ -216,7 +216,7 @@ public class SendFragment extends SubaccountFragment {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
                                 final Coin uriAmount = URI.getAmount();
-                                UI.setCoinText(service, null, mAmountEdit, uriAmount, false);
+                                UI.setCoinText(service, null, mAmountEdit, uriAmount);
 
                                 final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
                                 mAmountFields.convertBtcToFiat(fiatRate);
@@ -268,7 +268,7 @@ public class SendFragment extends SubaccountFragment {
 
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
 
-        UI.setCoinText(service, bitcoinUnitText, null, null, false);
+        UI.setCoinText(service, bitcoinUnitText, null, null);
 
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
             final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);
@@ -489,7 +489,7 @@ public class SendFragment extends SubaccountFragment {
         final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
         final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
         final Coin balance = service.getCoinBalance(mSubaccount);
-        UI.setCoinText(service, sendSubAccountBalanceUnit, sendSubAccountBalance, balance, true);
+        UI.setCoinText(service, sendSubAccountBalanceUnit, sendSubAccountBalance, balance);
 
         final int nChars = sendSubAccountBalance.getText().length() + sendSubAccountBalanceUnit.getText().length();
         final int size = Math.min(50 - nChars, 34);

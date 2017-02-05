@@ -44,7 +44,7 @@ public class ListTransactionsAdapter extends
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final TransactionItem txItem = mTxItems.get(position);
         final Coin coin = Coin.valueOf(txItem.amount);
-        UI.setCoinText(mService, holder.unitText, holder.textValue, coin, true);
+        UI.setCoinText(mService, holder.unitText, holder.textValue, coin);
 
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV to verify it with)

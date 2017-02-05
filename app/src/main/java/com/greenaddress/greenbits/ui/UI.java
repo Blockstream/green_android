@@ -37,6 +37,7 @@ public abstract class UI {
     public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
     private static final String MICRO_BTC = "\u00B5BTC";
     private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
+    private static final DecimalFormat mDecimalFmt = new DecimalFormat("#,###.########");
 
     // Class to unify cancel and dismiss handling */
     private static class DialogCloseHandler implements DialogInterface.OnCancelListener,
@@ -305,24 +306,20 @@ public abstract class UI {
 
     public static String setCoinText(final GaService service,
                                      final TextView symbol, final TextView v,
-                                     final Coin value, boolean reformat) {
+                                     final Coin value) {
         if (symbol != null)
             symbol.setText(getUnitSymbol(service.getBitcoinUnit()));
-        final String formattedValue = value == null? null : formatCoinValue(service, value);
-        if (reformat && value != null)
-            return setAmountText(v, formattedValue);
-        if (v != null)
-            v.setText(formattedValue);
-        return formattedValue;
+        if (value == null)
+            return null;
+        return setAmountText(v, formatCoinValue(service, value));
     }
 
-    public static String setAmountText(final TextView v, final String d) {
+    public static String setAmountText(final TextView v, final String amount) {
         String res;
         try {
-            final DecimalFormat formatter = new DecimalFormat("#,###.########");
-            res = formatter.format(Double.valueOf(d));
+            res = mDecimalFmt.format(Double.valueOf(amount));
         } catch (final NumberFormatException e) {
-            res = d;
+            res = amount;
         }
 
         if (v != null)

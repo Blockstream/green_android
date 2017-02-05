@@ -51,7 +51,7 @@ public class MainFragment extends SubaccountFragment {
 
         final TextView balanceUnit = UI.find(mView, R.id.mainBalanceUnit);
         final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
-        UI.setCoinText(service, balanceUnit, balanceText, balance, true);
+        UI.setCoinText(service, balanceUnit, balanceText, balance);
 
         final Coin verifiedBalance = service.getSPVVerifiedBalance(mSubaccount);
 

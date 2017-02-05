@@ -232,11 +232,11 @@ public class TransactionActivity extends GaActivity {
             }
 
             final Coin coin = Coin.valueOf(txItem.amount);
-            UI.setCoinText(service, bitcoinUnit, amountText, coin, true);
+            UI.setCoinText(service, bitcoinUnit, amountText, coin);
 
-            feeInfoText.setText(UI.setCoinText(service, feeUnit, null, fee, true) +
+            feeInfoText.setText(UI.setCoinText(service, feeUnit, null, fee) +
                                 " / " + String.valueOf(txItem.size) + " / " +
-                                UI.setCoinText(service, feeUnit, null, feePerKb, true));
+                                UI.setCoinText(service, feeUnit, null, feePerKb));
 
             dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));
             if (txItem.memo != null && txItem.memo.length() > 0) {
@@ -656,8 +656,8 @@ public class TransactionActivity extends GaActivity {
             final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
             final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 
-            UI.setCoinText(service, amountUnit, amountText, newFee, false);
-            UI.setCoinText(service, feeUnit, feeText, oldFee, false);
+            UI.setCoinText(service, amountUnit, amountText, newFee);
+            UI.setCoinText(service, feeUnit, feeText, oldFee);
 
             final Map<String, Object> twoFacData;
             if (method == null) {

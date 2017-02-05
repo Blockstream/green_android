@@ -42,7 +42,7 @@ class AmountFields {
         mAmountFiatEdit = UI.find(view, R.id.sendAmountFiatEditText);
 
         final TextView bitcoinUnitText = UI.find(view, R.id.sendBitcoinUnitText);
-        UI.setCoinText(mGaService, bitcoinUnitText, null, null, true);
+        UI.setCoinText(mGaService, bitcoinUnitText, null, null);
 
         final FontAwesomeTextView fiatView = UI.find(view, R.id.sendFiatIcon);
         changeFiatIcon(fiatView, mGaService.getFiatCurrency());

@@ -44,7 +44,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
 
     private void onDisplayBalance(final Item holder, final int position) {
         final Coin balance = mService.getCoinBalance(mPointers.get(position));
-        UI.setCoinText(mService, holder.mUnit, holder.mBalance, balance, true);
+        UI.setCoinText(mService, holder.mUnit, holder.mBalance, balance);
     }
 
     @SuppressLint("SetTextI18n")
