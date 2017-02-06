@@ -209,7 +209,7 @@ public class SPV {
         return mVerifiedCoinBalances.get(subAccount);
     }
 
-    public boolean isUnspentOutpoint(final Sha256Hash txHash) {
+    private boolean isUnspentOutpoint(final Sha256Hash txHash) {
         return mUnspentOutpoints.containsKey(txHash);
     }
 
@@ -618,7 +618,7 @@ public class SPV {
         }
     }
 
-    final TransactionReceivedInBlockListener mTxListner = new TransactionReceivedInBlockListener() {
+    private final TransactionReceivedInBlockListener mTxListner = new TransactionReceivedInBlockListener() {
         @Override
         public void receiveFromBlock(final Transaction tx, final StoredBlock block, final BlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
             getService().notifyObservers(tx.getHash());
@@ -724,7 +724,7 @@ public class SPV {
         mExecutor.execute(new Runnable() { public void run() { stopSync(); } });
     }
 
-    public void stopSync() {
+    private void stopSync() {
         synchronized (mStateLock) {
             Log.d(TAG, "stopSync: " + Var("isEnabled", isEnabled()));
 
@@ -812,7 +812,7 @@ public class SPV {
         });
     }
 
-    public void reset(final boolean deleteAllData, final boolean deleteUnspent) {
+    private void reset(final boolean deleteAllData, final boolean deleteUnspent) {
         synchronized (mStateLock) {
             Log.d(TAG, "reset: " + Var("deleteAllData", deleteAllData) +
                   Var("deleteUnspent", deleteUnspent));

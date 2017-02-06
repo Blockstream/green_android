@@ -28,7 +28,7 @@ public abstract class GaActivity extends AppCompatActivity {
     private boolean mResumed;
     protected GaService mService;
 
-    protected GreenAddressApplication getGAApp() {
+    private GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
 

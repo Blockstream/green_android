@@ -91,7 +91,7 @@ public class PinSaveActivity extends GaActivity {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    void tryEncrypt() {
+    private void tryEncrypt() {
         try {
             setPin(KeyStoreAES.tryEncrypt(mService), true);
         } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {

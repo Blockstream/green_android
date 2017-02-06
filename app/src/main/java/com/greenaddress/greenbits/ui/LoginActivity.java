@@ -12,7 +12,7 @@ public abstract class LoginActivity extends GaActivity {
     }
 
     @Override
-    public void onResumeWithService() {
+    protected void onResumeWithService() {
         if (mService.isLoggedOrLoggingIn()) {
             // already logged in, could be from different app via intent
             onLoginSuccess();

@@ -369,7 +369,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     }
 
 
-    final FutureCallback<LoginData> mOnLoggedIn = new FutureCallback<LoginData>() {
+    private final FutureCallback<LoginData> mOnLoggedIn = new FutureCallback<LoginData>() {
         @Override
         public void onSuccess(final LoginData result) {
             if (result != null)

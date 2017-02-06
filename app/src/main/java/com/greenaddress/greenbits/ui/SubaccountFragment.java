@@ -115,7 +115,7 @@ public abstract class SubaccountFragment extends GAFragment {
         getGAService().addBalanceObserver(mBalanceObserverSubaccount, mBalanceObserver);
     }
 
-    protected void deleteBalanceObserver() {
+    private void deleteBalanceObserver() {
         if (mBalanceObserver == null)
             return;
         getGAService().deleteBalanceObserver(mBalanceObserverSubaccount, mBalanceObserver);

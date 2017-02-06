@@ -133,7 +133,7 @@ public class GaService extends Service implements INotificationHandler {
     private String mDeviceId;
     private boolean mUserCancelledPINEntry;
 
-    public final SPV mSPV = new SPV(this);
+    private final SPV mSPV = new SPV(this);
 
     private WalletClient mClient;
 
@@ -260,9 +260,9 @@ public class GaService extends Service implements INotificationHandler {
 
     public String getProxyHost() { return cfg().getString("proxy_host", ""); }
     public String getProxyPort() { return cfg().getString("proxy_port", ""); }
-    public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
+    private boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
     public boolean isSegwitUnlocked() { return !cfgIn("CONFIG").getBoolean("sw_locked", false); }
-    public void setSegwitLocked() { cfgInEdit("CONFIG").putBoolean("sw_locked", true).apply(); }
+    private void setSegwitLocked() { cfgInEdit("CONFIG").putBoolean("sw_locked", true).apply(); }
     public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
     public int getCurrentSubAccount() { return cfgIn("CONFIG").getInt("current_subaccount", 0); }
     public void setCurrentSubAccount(final int subAccount) { cfgInEdit("CONFIG").putInt("current_subaccount", subAccount).apply(); }
@@ -487,7 +487,7 @@ public class GaService extends Service implements INotificationHandler {
         return login(new SWWallet(mnemonics), mnemonics);
     }
 
-    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics) {
+    private ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics) {
         return loginImpl(mClient.login(signingWallet, mDeviceId, mnemonics));
     }
 

@@ -74,7 +74,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         nlockCB.setEnabled(emailCB.isChecked());
     }
 
-    final boolean isNlocktimeConfig(final Boolean enabled) {
+    private boolean isNlocktimeConfig(final Boolean enabled) {
         Boolean b = false;
         final Map<String, Object> outer;
         outer = (Map) mService.getUserConfig("notifications_settings");
