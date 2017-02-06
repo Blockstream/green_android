@@ -261,7 +261,7 @@ public class GaService extends Service implements INotificationHandler {
     public String getProxyHost() { return cfg().getString("proxy_host", ""); }
     public String getProxyPort() { return cfg().getString("proxy_port", ""); }
     public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
-    public boolean isSegwitLocked() { return cfgIn("CONFIG").getBoolean("sw_locked", false); }
+    public boolean isSegwitUnlocked() { return !cfgIn("CONFIG").getBoolean("sw_locked", false); }
     public void setSegwitLocked() { cfgInEdit("CONFIG").putBoolean("sw_locked", true).apply(); }
     public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
     public int getCurrentSubAccount() { return cfgIn("CONFIG").getInt("current_subaccount", 0); }
@@ -724,7 +724,7 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<Map> getNewAddress(final int subAccount) {
         final boolean userSegwit = isSegwitEnabled();
-        if (userSegwit && !isSegwitLocked())
+        if (userSegwit && isSegwitUnlocked())
             setSegwitLocked(); // Locally store that we have generated a SW address
         return mClient.getNewAddress(subAccount, userSegwit ? "p2wsh" : "p2sh");
     }

@@ -255,7 +255,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         mToggleSW.setTitle(userSegwit ? R.string.segwit_disable : R.string.segwit_enable);
 
         if (segwit &&
-            (!userSegwit || !mService.isSegwitLocked())) {
+            (!userSegwit || mService.isSegwitUnlocked())) {
             // User hasn't enabled segwit, or they have but we haven't
             // generated a segwit address yet (that we know of).
             mToggleSW.setEnabled(true);
