@@ -72,6 +72,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private Boolean mInternalQr = false;
     private MaterialDialog mSegwitDialog;
     private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
+    private MaterialDialog mSubaccountDialog;
+    private final Runnable mSubaccountCB = new Runnable() { public void run() { mSubaccountDialog = null; } };
 
     private final Observer mTwoFactorObserver = new Observer() {
         @Override
@@ -188,16 +190,16 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 }
 
                 final AccountItemAdapter adapter = new AccountItemAdapter(names, pointers, mService);
-                final MaterialDialog dialog = new MaterialDialog.Builder(TabbedMainActivity.this)
+                mSubaccountDialog = new MaterialDialog.Builder(TabbedMainActivity.this)
                         .title(R.string.footerAccount)
                         .adapter(adapter, null)
                         .show();
-                UI.setDialogCloseHandler(dialog, mDialogCB);
+                UI.setDialogCloseHandler(mSubaccountDialog, mDialogCB);
 
                 adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
                     @Override
                     public void onAccountSelected(final int account) {
-                        dialog.dismiss();
+                        mSubaccountDialog.dismiss();
                         final int pointer = pointers.get(account);
                         if (pointer == mService.getCurrentSubAccount())
                             return;
@@ -325,6 +327,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     public void onPauseWithService() {
         mService.deleteTwoFactorObserver(mTwoFactorObserver);
         mService.deleteConnectionObserver(this);
+        if (mSubaccountDialog != null)
+            mSubaccountDialog.dismiss();
+        if (mSegwitDialog != null)
+            mSegwitDialog.dismiss();
     }
 
     private final static int BIP38_FLAGS = (NetworkParameters.fromID(NetworkParameters.ID_MAINNET).equals(Network.NETWORK)
