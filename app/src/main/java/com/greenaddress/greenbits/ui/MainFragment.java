@@ -208,7 +208,7 @@ public class MainFragment extends SubaccountFragment {
         txView.getAdapter().notifyDataSetChanged();
     }
 
-    private void showTxView(boolean doShow) {
+    private void showTxView(final boolean doShow) {
         UI.showIf(doShow, (View) UI.find(mView, R.id.mainTransactionList));
         UI.hideIf(doShow, (View) UI.find(mView, R.id.mainEmptyTransText));
     }
@@ -266,17 +266,17 @@ public class MainFragment extends SubaccountFragment {
                         mTxItems.clear();
                         replacedTxs.clear();
 
-                        for (Object tx : txList) {
+                        for (final Object tx : txList) {
                             try {
-                                Map<String, Object> txJSON = (Map) tx;
-                                ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
+                                final Map<String, Object> txJSON = (Map) tx;
+                                final ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
                                     mTxItems.add(new TransactionItem(service, txJSON, currentBlock));
                                     continue;
                                 }
 
-                                for (String replacedBy : replacedList) {
+                                for (final String replacedBy : replacedList) {
                                     final Sha256Hash replacedHash = Sha256Hash.wrap(replacedBy);
                                     if (!replacedTxs.containsKey(replacedHash))
                                         replacedTxs.put(replacedHash, new ArrayList<Sha256Hash>());
@@ -288,9 +288,9 @@ public class MainFragment extends SubaccountFragment {
                             }
                         }
 
-                        for (TransactionItem txItem : mTxItems) {
+                        for (final TransactionItem txItem : mTxItems) {
                             if (replacedTxs.containsKey(txItem.txHash))
-                                for (Sha256Hash replaced : replacedTxs.get(txItem.txHash))
+                                for (final Sha256Hash replaced : replacedTxs.get(txItem.txHash))
                                     txItem.replacedHashes.add(replaced);
                         }
 

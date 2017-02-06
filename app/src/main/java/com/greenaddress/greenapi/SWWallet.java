@@ -88,7 +88,7 @@ public class SWWallet extends ISigningWallet {
         // Derive the private key for signing the challenge from the path
         DeterministicKey key = mRootKey;
         for (int i = 0; i < path.length / 2; ++i) {
-            int step = u8(path[i * 2]) * 256 + u8(path[i * 2 + 1]);
+            final int step = u8(path[i * 2]) * 256 + u8(path[i * 2 + 1]);
             key = HDKey.deriveChildKey(key, step);
         }
 
@@ -116,5 +116,5 @@ public class SWWallet extends ISigningWallet {
         return parent;
     }
 
-    private int u8(int i) { return i < 0 ? 256 + i : i; }
+    private int u8(final int i) { return i < 0 ? 256 + i : i; }
 }

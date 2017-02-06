@@ -33,7 +33,7 @@ class AmountFields {
 
     private final OnConversionFinishListener mOnConversionFinishListener;
 
-    AmountFields(GaService gaService, Context context, View view, OnConversionFinishListener onConversionFinishListener) {
+    AmountFields(final GaService gaService, final Context context, final View view, final OnConversionFinishListener onConversionFinishListener) {
         mGaService = gaService;
         mContext = context;
         mOnConversionFinishListener = onConversionFinishListener;
@@ -62,7 +62,7 @@ class AmountFields {
         });
     }
 
-    void setIsPausing(Boolean isPausing) {
+    void setIsPausing(final Boolean isPausing) {
         mIsPausing = isPausing;
     }
 

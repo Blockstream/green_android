@@ -16,7 +16,7 @@ import com.greenaddress.greenbits.ui.R;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class NetworkPreferenceFragment extends GAPreferenceFragment {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_network);
         setHasOptionsMenu(true);

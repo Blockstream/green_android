@@ -10,8 +10,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 public final class CB {
 
-    public static <T> void after(ListenableFuture<T> f,
-                                 FutureCallback<? super T> cb) {
+    public static <T> void after(final ListenableFuture<T> f,
+                                 final FutureCallback<? super T> cb) {
         Futures.addCallback(f, cb);
     }
 

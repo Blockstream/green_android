@@ -82,7 +82,7 @@ public class SPV {
     private final String SPENDABLE = "verified_utxo_spendable_value_";
 
     class AccountInfo extends Pair<Integer, Integer> {
-        public AccountInfo(Integer subAccount, final Integer pointer) { super(subAccount, pointer); }
+        public AccountInfo(final Integer subAccount, final Integer pointer) { super(subAccount, pointer); }
         public Integer getSubAccount() { return first; }
         public Integer getPointer() { return second; }
     }
@@ -539,13 +539,13 @@ public class SPV {
                         }
 
                         @Override
-                        protected void startDownload(int blocks) {
+                        protected void startDownload(final int blocks) {
                             Log.d(TAG, "startDownload");
                             updateNotification(100, 0);
                         }
 
                         @Override
-                        protected void progress(double percent, int blocksSoFar, Date date) {
+                        protected void progress(final double percent, final int blocksSoFar, final Date date) {
                             //Log.d(TAG, "progress: " + Var("percent", percent));
                             mNotificationBuilder.setContentText("Sync in progress...");
                             updateNotification(100, (int) percent);

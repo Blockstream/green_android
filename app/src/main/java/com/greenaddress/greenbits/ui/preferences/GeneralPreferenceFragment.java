@@ -46,7 +46,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         setHasOptionsMenu(true);
 
         // -- handle timeout
-        int timeout = mService.getAutoLogoutMinutes();
+        final int timeout = mService.getAutoLogoutMinutes();
         getPreferenceManager().getSharedPreferences().edit()
                               .putString("altime", Integer.toString(timeout))
                               .apply();
@@ -155,7 +155,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
                                         mService.disableWatchOnly();
                                         UI.toast(getActivity(), R.string.watchOnlyLoginDisabled, Toast.LENGTH_LONG);
                                         watchOnlyLogin.setSummary(R.string.watchOnlyLoginSetup);
-                                    } catch (Exception e) {
+                                    } catch (final Exception e) {
                                         e.printStackTrace();
                                     }
                                     return;

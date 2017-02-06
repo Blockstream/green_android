@@ -96,7 +96,7 @@ public class TransactionActivity extends GaActivity {
             textView.setText(identifier);
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
 
                     String domain = url;
                     try {
@@ -181,7 +181,8 @@ public class TransactionActivity extends GaActivity {
                             unconfirmedEstimatedBlocks);
                 } else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT) {
                     // unconfirmed outgoing output/redeposit - can be RBF'd
-                    int currentEstimate = 25, bestEstimate;
+                    int currentEstimate = 25;
+                    final int bestEstimate;
                     final Map<String, Object> feeEstimates = service.getFeeEstimates();
                     final String checkValues[] = {"1", "3", "6"};
                     for (final String value : checkValues) {
@@ -351,7 +352,7 @@ public class TransactionActivity extends GaActivity {
             // by at most 4 bytes per input (signatures have variable lengths)
             if (txSize == null)
                 txSize = tx.getMessageSize();
-            long requiredFeeDelta = txSize + tx.getInputs().size() * 4;
+            final long requiredFeeDelta = txSize + tx.getInputs().size() * 4;
             final List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
             tx.clearInputs();
             for (int i = 0; i < txItem.eps.size(); ++i) {
@@ -389,7 +390,7 @@ public class TransactionActivity extends GaActivity {
                             ep.get("subaccount").equals(subAccount))
                         change_pointer = (Integer) ep.get("pubkey_pointer");
                     // change/redeposit
-                    long value = Long.valueOf((String) ep.get("value"));
+                    final long value = Long.valueOf((String) ep.get("value"));
                     if (Coin.valueOf(value).compareTo(remainingFeeDelta) <= 0) {
                         // smaller than remaining fee -- get rid of this output
                         remainingFeeDelta = remainingFeeDelta.subtract(
@@ -432,7 +433,7 @@ public class TransactionActivity extends GaActivity {
                         // Funds available exactly match the required value
                         CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
                             @Override
-                            public void onSuccess(List<byte[]> morePrevouts) {
+                            public void onSuccess(final List<byte[]> morePrevouts) {
                                 doReplaceByFee(txItem, feerate, tx, null, subAccount,
                                                oldFee, moreInputs, morePrevouts, level);
                             }
@@ -457,7 +458,7 @@ public class TransactionActivity extends GaActivity {
                                          Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script)));
                             CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(gaActivity) {
                                 @Override
-                                public void onSuccess(List<byte[]> morePrevouts) {
+                                public void onSuccess(final List<byte[]> morePrevouts) {
                                     doReplaceByFee(txItem, feerate, tx, (Integer) result.get("pointer"),
                                                    subAccount, oldFee, moreInputs, morePrevouts, level);
                                 }

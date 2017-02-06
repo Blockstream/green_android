@@ -350,7 +350,7 @@ public class MnemonicActivity extends LoginActivity {
             CB.after(askForPassphrase(), new CB.Op<String>() {
                 @Override
                 public void onSuccess(final String passphrase) {
-                    String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(getNFCPayload(intent), passphrase);
+                    final String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(getNFCPayload(intent), passphrase);
                     mMnemonicText.setText(mnemonics);
                     loginOnUiThread(mnemonics);
                 }

@@ -60,7 +60,7 @@ public class FirstScreenActivity extends LoginActivity {
             public Object call() {
                 transportFactory = new LedgerTransportTEEProxyFactory(getApplicationContext());
                 final LedgerTransportTEEProxy teeTransport = (LedgerTransportTEEProxy) transportFactory.getTransport();
-                byte[] nvm = teeTransport.loadNVM(NVM_PATH);
+                final byte[] nvm = teeTransport.loadNVM(NVM_PATH);
                 teeTransport.setDebug(BuildConfig.DEBUG);
                 if (nvm != null) {
                     teeTransport.setNVM(nvm);

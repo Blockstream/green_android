@@ -11,7 +11,7 @@ public class NetworkSettingsActivity extends GaPreferenceActivity {
 
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
+    public void onBuildHeaders(final List<Header> target) {
         loadHeadersFromResource(R.xml.pref_networkheaders, target);
     }
 }

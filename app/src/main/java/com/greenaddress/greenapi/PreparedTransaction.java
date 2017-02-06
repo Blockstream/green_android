@@ -103,7 +103,7 @@ public class PreparedTransaction {
             txs = (Map<String, String>) pte.mValues.get("prevout_rawtxs");
             // if txs is null, the caller passed 'skip' to avoid returning previous txs
             if (txs != null)
-                for (String txHash : txs.keySet())
+                for (final String txHash : txs.keySet())
                     mPrevoutRawTxs.put(txHash, GaService.buildTransaction(txs.get(txHash)));
             return;
         }

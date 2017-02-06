@@ -149,7 +149,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         });
         mAmountEdit = UI.find(mView, R.id.sendAmountEditText);
         mAmountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
-        View amountFields = UI.find(mView, R.id.amountFields);
+        final View amountFields = UI.find(mView, R.id.amountFields);
         UI.showIf(getGAService().cfg().getBoolean("showAmountInReceive", false), amountFields);
 
         registerReceiver();
@@ -167,7 +167,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
 
         @Override
-        protected Bitmap doInBackground(Object... integers) {
+        protected Bitmap doInBackground(final Object... integers) {
             final String amount = UI.getText(mAmountEdit);
             mCurrentAmount = null;
             if (amount.isEmpty())

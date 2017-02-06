@@ -15,7 +15,7 @@ public class CryptoHelper {
     private final static int BL = Wally.AES_BLOCK_LEN;
     private final static Object WL = Wally.bip39_get_wordlist("en");
 
-    public static byte[] randomBytes(int len) {
+    public static byte[] randomBytes(final int len) {
         final byte[] b = new byte[len];
         new SecureRandom().nextBytes(b);
         return b;

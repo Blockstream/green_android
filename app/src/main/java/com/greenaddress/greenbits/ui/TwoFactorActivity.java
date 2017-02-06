@@ -213,7 +213,7 @@ public class TwoFactorActivity extends GaActivity {
 
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 final Map<String, String> twoFacData = make2FAData("proxy", proxyCode);
                 mContinueButton.setEnabled(false);
                 CB.after(mService.enableTwoFactor("gauth", UI.getText(mCodeText).trim(), twoFacData),
@@ -246,7 +246,7 @@ public class TwoFactorActivity extends GaActivity {
                 CB.after(mService.enableTwoFactor(mMethod, enteredCode, null),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
-                    public void onSuccess(Boolean result) {
+                    public void onSuccess(final Boolean result) {
                         setResult(RESULT_OK);
                         finishOnUiThread();
                     }

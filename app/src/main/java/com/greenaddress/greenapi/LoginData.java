@@ -22,7 +22,7 @@ public class LoginData {
         return (T) mRawData.get(name);
     }
 
-    private int u8(int i) { return i < 0 ? 256 + i : i; }
+    private int u8(final int i) { return i < 0 ? 256 + i : i; }
 
     private int[] getPath(final String pathHex) {
         if (pathHex == null)

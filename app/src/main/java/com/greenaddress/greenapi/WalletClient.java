@@ -433,7 +433,7 @@ public class WalletClient {
     private NettyWampConnectionConfig getNettyConfig() throws SSLException {
         final int TWO_MB = 2 * 1024 * 1024; // Max message size in bytes
 
-        NettyWampConnectionConfig.Builder configBuilder;
+        final NettyWampConnectionConfig.Builder configBuilder;
         configBuilder = new NettyWampConnectionConfig.Builder()
                                                      .withMaxFramePayloadLength(TWO_MB);
 
@@ -705,7 +705,7 @@ public class WalletClient {
         return simpleCall("vault.process_bip0070_url", Map.class, url);
     }
 
-    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, Map<?, ?> data, final Map<String, Object> privateData) {
+    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final Map<String, Object> privateData) {
 
         final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
 
@@ -788,7 +788,7 @@ public class WalletClient {
 
     private void updateMap(final Map<String, Object> dest, final Map<String, Object> src,
                            final Set<String> keys) {
-        for (String k : keys)
+        for (final String k : keys)
             dest.put(k, src.get(k));
     }
 

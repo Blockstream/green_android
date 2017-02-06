@@ -256,9 +256,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 if (Build.VERSION.SDK_INT > 16) {
                     final Parcelable[] rawMessages;
                     rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                    for (Parcelable parcel : rawMessages) {
+                    for (final Parcelable parcel : rawMessages) {
                         final NdefMessage ndefMsg = (NdefMessage) parcel;
-                        for (NdefRecord record : ndefMsg.getRecords())
+                        for (final NdefRecord record : ndefMsg.getRecords())
                             if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN &&
                                     Arrays.equals(record.getType(), NdefRecord.RTD_URI)) {
                                 mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
@@ -276,7 +276,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         mViewPager.setAdapter(sectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
-            public void onPageSelected(int index) {
+            public void onPageSelected(final int index) {
                 sectionsPagerAdapter.onViewPageSelected(index);
             }
         });
@@ -552,7 +552,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         setMenuItemVisible(mMenu, R.id.network_unavailable, !state.isLoggedIn());
     }
 
-    private void handlePermissionResult(final int[] granted, int action, int msgId) {
+    private void handlePermissionResult(final int[] granted, final int action, final int msgId) {
         if (granted[0] == PackageManager.PERMISSION_GRANTED)
             startActivityForResult(new Intent(this, ScanActivity.class), action);
         else
@@ -595,7 +595,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int index) {
+        public Object instantiateItem(final ViewGroup container, final int index) {
             Log.d(TAG, "SectionsPagerAdapter -> instantiateItem " + index);
 
             mFragments[index] = (SubaccountFragment) super.instantiateItem(container, index);
@@ -611,7 +611,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int index, Object object) {
+        public void destroyItem(final ViewGroup container, final int index, final Object object) {
             Log.d(TAG, "SectionsPagerAdapter -> destroyItem " + index);
             if (index >=0 && index <=2 && mFragments[index] != null) {
                 // Make sure the fragment is not kept alive and does not
@@ -662,7 +662,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         }
 
         public void setBlockWaitDialog(final boolean doBlock) {
-            for (SubaccountFragment fragment : mFragments)
+            for (final SubaccountFragment fragment : mFragments)
                 if (fragment != null)
                     fragment.setBlockWaitDialog(doBlock);
         }

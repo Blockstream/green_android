@@ -44,7 +44,7 @@ public class MnemonicHelper {
         final byte[] derived = new byte[64];
         Wally.scrypt(normalizedPassphrase.getBytes(Charsets.UTF_8), salt, 16384, 8, 8, derived);
         final byte[] key = Arrays.copyOfRange(derived, 32, 64);
-        byte[] decrypted = new byte[32];
+        final byte[] decrypted = new byte[32];
 
         Wally.aes(key, encrypted, Wally.AES_FLAG_DECRYPT, decrypted);
         for (int i = 0; i < 32; ++i)

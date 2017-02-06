@@ -52,7 +52,7 @@ public class PinData {
         out.put("mnemonic", mnemonic);
         out.put("seed", Wally.hex_from_bytes(seed));
 
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        final ByteArrayOutputStream b = new ByteArrayOutputStream();
         try {
             new MappingJsonFactory().getCodec().writeValue(b, out);
         } catch (final IOException e) {

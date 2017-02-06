@@ -58,7 +58,7 @@ public class HDKey {
     // Get the 2of3 backup key (plus parent)
     // This is the users key to reedeem 2of3 funds in the event that GA becomes unavailable
     public static DeterministicKey[] getRecoveryKeys(final byte[] chainCode, final byte[] publicKey, final Integer pointer) {
-        DeterministicKey[] ret = new DeterministicKey[2];
+        final DeterministicKey[] ret = new DeterministicKey[2];
         ret[0] = deriveChildKey(createMasterKey(chainCode, publicKey), 1); // Parent
         ret[1] = deriveChildKey(ret[0], pointer); // Child
         return ret;
@@ -71,7 +71,7 @@ public class HDKey {
     // Get the key derived from the servers public key/chaincode plus the users path (plus parent).
     // This is the key used on the servers side of 2of2/2of3 transactions.
     public static DeterministicKey[] getGAPublicKeys(final int subAccount, final Integer pointer) {
-        DeterministicKey[] ret = new DeterministicKey[2];
+        final DeterministicKey[] ret = new DeterministicKey[2];
         synchronized (mServerKeys) {
             // Fetch the parent key. This is expensive so we cache it
             if ((ret[0] = mServerKeys.get(subAccount)) == null)
@@ -96,15 +96,15 @@ public class HDKey {
         if (reconcile) {
             k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
             k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
-            for (int i : mGaUserPath)
+            for (final int i : mGaUserPath)
                 k = deriveChildKey(k, i);
             if (subAccount != 0)
                 k = deriveChildKey(k, subAccount);
         }
 
-        Object master = Wally.bip32_key_init(VER_PUBLIC, 0, 0,
-                                             h(Network.depositChainCode), h(Network.depositPubkey),
-                                             null, null, null);
+        final Object master = Wally.bip32_key_init(VER_PUBLIC, 0, 0,
+                                                   h(Network.depositChainCode), h(Network.depositPubkey),
+                                                   null, null, null);
         final int[] path = new int[mGaUserPath.length + (subAccount == 0 ? 1 : 2)];
         path[0] = subAccount == 0 ? 1 : 3;
         System.arraycopy(mGaUserPath, 0, path, 1, mGaUserPath.length);
@@ -112,11 +112,11 @@ public class HDKey {
             path[mGaUserPath.length + 1] = subAccount;
 
         final int flags = BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH;
-        Object derived = Wally.bip32_key_from_parent_path(master, path, flags);
+        final Object derived = Wally.bip32_key_from_parent_path(master, path, flags);
 
         final DeterministicKey key;
         final ArrayList<ChildNumber> childNumbers = new ArrayList<>(path.length);
-        for (int i : path)
+        for (final int i : path)
             childNumbers.add(new ChildNumber(i));
         key = new DeterministicKey(ImmutableList.<ChildNumber>builder().addAll(childNumbers).build(),
                                    Wally.bip32_key_get_chain_code(derived),

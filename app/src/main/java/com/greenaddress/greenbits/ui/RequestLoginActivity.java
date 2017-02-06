@@ -90,7 +90,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                             final int ii = i;
                             buttons[i].setOnClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onClick(View v) {
+                                public void onClick(final View v) {
                                     pinValue.setText(UI.getText(pinValue) + (ii + 1));
                                     pinValue.setSelection(UI.getText(pinValue).length());
                                 }
@@ -125,7 +125,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                                 .customView(v, true)
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
-                                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
                                         ret.set(UI.getText(passphraseValue));
                                     }
                                 }).build().show();
@@ -219,7 +219,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final Void nada) throws Exception {
-                        BTChipTransport transport;
+                        final BTChipTransport transport;
                         if (device != null) {
                             final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
                             transport = BTChipTransportAndroid.open(manager, device);

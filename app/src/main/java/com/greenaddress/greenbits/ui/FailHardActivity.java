@@ -12,7 +12,7 @@ public class FailHardActivity extends AppCompatActivity {
     private final static String TAG = FailHardActivity.class.getSimpleName();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fail_hard);
     }

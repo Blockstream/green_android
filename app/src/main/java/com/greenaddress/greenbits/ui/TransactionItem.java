@@ -92,7 +92,7 @@ public class TransactionItem implements Serializable {
             final Map<String, Object> ep = (Map) eps.get(i);
             final boolean isSocial = ep.get("social_destination") != null;
             if (isSocial) {
-                Map<String, Object> socialDestination = mapVal(ep, "social_destination");
+                final Map<String, Object> socialDestination = mapVal(ep, "social_destination");
                 if (socialDestination != null) {
                     tmpCounterparty = socialDestination.get("type").equals("voucher") ?
                             "Voucher" : (String) socialDestination.get("name");

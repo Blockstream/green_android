@@ -420,7 +420,7 @@ public class GaService extends Service implements INotificationHandler {
         // login processing is completed.
         final ListenableFuture fn = Futures.transform(loginFn, new Function<LoginData, LoginData>() {
             @Override
-            public LoginData apply(LoginData loginData) {
+            public LoginData apply(final LoginData loginData) {
                 onPostLogin(loginData);
                 return loginData;
             }
@@ -1022,8 +1022,8 @@ public class GaService extends Service implements INotificationHandler {
     public boolean isLoggedOrLoggingIn() { return mState.isLoggedOrLoggingIn(); }
     public boolean isConnected() { return mState.isConnected(); }
 
-    public void addConnectionObserver(Observer o) { mState.addObserver(o); }
-    public void deleteConnectionObserver(Observer o) { mState.deleteObserver(o); }
+    public void addConnectionObserver(final Observer o) { mState.addObserver(o); }
+    public void deleteConnectionObserver(final Observer o) { mState.deleteObserver(o); }
 
     private ScheduledThreadPoolExecutor mTimerExecutor;
     private BroadcastReceiver mNetConnectivityReceiver;

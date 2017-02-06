@@ -126,10 +126,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     }
 
     @Override
-    public synchronized void onPeerDisconnected(final Peer peer, int peerCount) {
+    public synchronized void onPeerDisconnected(final Peer peer, final int peerCount) {
         runOnUiThread(new Runnable() {
             public void run() {
-                for (Iterator<PrettyPeer> it = mPeers.iterator(); it.hasNext(); ) {
+                for (final Iterator<PrettyPeer> it = mPeers.iterator(); it.hasNext(); ) {
                     if (peer == it.next().mPeer)
                         it.remove();
                 }

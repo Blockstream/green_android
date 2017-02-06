@@ -29,7 +29,7 @@ public class PinSaveActivity extends GaActivity {
     private Button mSkipButton;
     private CircularProgressButton mSaveButton;
 
-    static public Intent createIntent(Context ctx, final String mnemonic) {
+    static public Intent createIntent(final Context ctx, final String mnemonic) {
         final Intent intent = new Intent(ctx, PinSaveActivity.class);
         intent.putExtra(NEW_PIN_MNEMONIC, mnemonic);
         return intent;

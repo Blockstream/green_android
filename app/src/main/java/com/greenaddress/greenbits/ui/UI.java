@@ -145,7 +145,7 @@ public abstract class UI {
 
         // Return a pop up dialog to let the user choose.
         final Map<String, String> localizedMap = getTwoFactorLookup(a.getResources());
-        String[] localizedMethods = new String[methods.size()];
+        final String[] localizedMethods = new String[methods.size()];
         for (int i = 0; i < methods.size(); i++)
             localizedMethods[i] = localizedMap.get(methods.get(i));
 
@@ -153,7 +153,7 @@ public abstract class UI {
                 .items(localizedMethods)
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
-                    public boolean onSelection(MaterialDialog dialog, View v, int which, CharSequence text) {
+                    public boolean onSelection(final MaterialDialog dialog, final View v, final int which, final CharSequence text) {
                         callback.run(methods.get(which));
                         return true;
                     }
@@ -222,7 +222,7 @@ public abstract class UI {
 
     // Show/Hide controls
     public static void showIf(final boolean condition, final View... views) {
-        for (View v: views)
+        for (final View v: views)
             v.setVisibility(condition ? View.VISIBLE : View.GONE);
     }
 
@@ -236,7 +236,7 @@ public abstract class UI {
 
     // Enable/Disable controls
     public static void enableIf(final boolean condition, final View... views) {
-        for (View v: views)
+        for (final View v: views)
             v.setEnabled(condition);
     }
 
@@ -248,15 +248,15 @@ public abstract class UI {
 
     public static void disable(final View... views) { enableIf(false, views); }
 
-    public static String getText(TextView text) {
+    public static String getText(final TextView text) {
         return text.getText().toString();
     }
 
-    public static <T> T find(final Activity activity, int id) {
+    public static <T> T find(final Activity activity, final int id) {
         return (T) activity.findViewById(id);
     }
 
-    public static <T> T find(final View v, int id) {
+    public static <T> T find(final View v, final int id) {
         return (T) v.findViewById(id);
     }
 

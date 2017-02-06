@@ -323,7 +323,7 @@ public class SendFragment extends SubaccountFragment {
                 if (mInstantConfirmationCheckbox.isChecked())
                     privateData.put("instant", true);
 
-                ListenableFuture<PreparedTransaction> ptxFn;
+                final ListenableFuture<PreparedTransaction> ptxFn;
                 if (mPayreqData == null) {
                     final boolean validAddress = GaService.isValidAddress(recipient);
                     final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0) || mMaxButton.isChecked();
@@ -410,7 +410,7 @@ public class SendFragment extends SubaccountFragment {
         mMaxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
-            public void onCheckedChanged(CompoundButton v, boolean isChecked) {
+            public void onCheckedChanged(final CompoundButton v, final boolean isChecked) {
                 if (isChecked) {
                     mAmountEdit.setEnabled(false);
                     mAmountFiatEdit.setEnabled(false);
