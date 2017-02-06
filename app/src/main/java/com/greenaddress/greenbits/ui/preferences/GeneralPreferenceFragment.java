@@ -163,7 +163,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
                                 try {
                                     mService.registerWatchOnly(username, password);
                                     watchOnlyLogin.setSummary(getString(R.string.watchOnlyLoginStatus, username));
-
                                 } catch (final Exception e) {
                                     UI.toast(getActivity(), R.string.error_username_not_available, Toast.LENGTH_LONG);
                                 }

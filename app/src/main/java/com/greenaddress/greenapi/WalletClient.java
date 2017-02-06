@@ -586,12 +586,10 @@ public class WalletClient {
         return !TextUtils.isEmpty(mWatchOnlyUsername) && !TextUtils.isEmpty(mWatchOnlyPassword);
     }
 
-    public boolean registerWatchOnly(final String username, final String password) throws Exception {
+    public void registerWatchOnly(final String username, final String password) throws Exception {
 
-        final boolean res = syncCall("addressbook.sync_custom", Boolean.class, username , password);
-        if (res)
-            mWatchOnlyUsername = username;
-        return res;
+        syncCall("addressbook.sync_custom", Boolean.class, username , password);
+        mWatchOnlyUsername = username;
     }
 
     public String getWatchOnlyUsername() throws Exception {

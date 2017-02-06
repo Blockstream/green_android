@@ -408,8 +408,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getWatchOnlyUsername();
     }
 
-    public boolean registerWatchOnly(final String username, final String password) throws Exception {
-        return mClient.registerWatchOnly(username, password);
+    public void registerWatchOnly(final String username, final String password) throws Exception {
+        mClient.registerWatchOnly(username, password);
     }
 
     private ListenableFuture<LoginData> loginImpl(final ListenableFuture<LoginData> loginFn) {
