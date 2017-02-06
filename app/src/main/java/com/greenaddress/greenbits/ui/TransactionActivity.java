@@ -173,13 +173,13 @@ public class TransactionActivity extends GaActivity {
 
             final boolean isWatchOnly = service.isWatchOnly();
 
-            if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT) || txItem.isSpent) {
+            if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT || txItem.isSpent) {
                 if (txItem.getConfirmations() > 0) {
                     // confirmed - hide unconfirmed widgets
                     UI.hide((View) UI.find(v, R.id.txUnconfirmed),
                             unconfirmedRecommendation, unconfirmedIncreaseFee,
                             unconfirmedEstimatedBlocks);
-                } else if (txItem.type.equals(TransactionItem.TYPE.OUT) || txItem.type.equals(TransactionItem.TYPE.REDEPOSIT)) {
+                } else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT) {
                     // unconfirmed outgoing output/redeposit - can be RBF'd
                     int currentEstimate = 25, bestEstimate;
                     final Map<String, Object> feeEstimates = service.getFeeEstimates();

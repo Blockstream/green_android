@@ -992,7 +992,7 @@ public class GaService extends Service implements INotificationHandler {
         }
 
         private void transitionTo(final ConnState newState) {
-            if (mConnState.equals(newState))
+            if (mConnState == newState)
                 return; // Nothing to do
 
             if (newState == ConnState.OFFLINE) {

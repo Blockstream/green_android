@@ -49,7 +49,7 @@ public class ListTransactionsAdapter extends
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV to verify it with)
         final boolean verified = txItem.spvVerified || txItem.isSpent ||
-                                 txItem.type.equals(TransactionItem.TYPE.OUT) ||
+                                 txItem.type == TransactionItem.TYPE.OUT ||
                                  !mService.isSPVEnabled();
         UI.hideIf(verified, holder.textValueQuestionMark);
 
@@ -76,9 +76,9 @@ public class ListTransactionsAdapter extends
 
         UI.showIf(txItem.replaceable, holder.textReplaceable);
 
-        final boolean humanCpty = txItem.type.equals(TransactionItem.TYPE.OUT)
-                && txItem.counterparty != null && txItem.counterparty.length() > 0
-                && !GaService.isValidAddress(txItem.counterparty);
+        final boolean humanCpty = txItem.type == TransactionItem.TYPE.OUT &&
+                txItem.counterparty != null && txItem.counterparty.length() > 0 &&
+                !GaService.isValidAddress(txItem.counterparty);
 
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
