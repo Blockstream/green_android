@@ -389,7 +389,7 @@ public class MnemonicActivity extends LoginActivity {
             spannable.setSpan(s, start, end, 0);
     }
 
-    class Spans {
+    static class Spans {
         final String word;
         final List<Object> spans = new ArrayList<>(4);
         Spans(final String word) {

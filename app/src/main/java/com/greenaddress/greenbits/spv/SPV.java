@@ -81,7 +81,7 @@ public class SPV {
     private final String VERIFIED = "verified_utxo_";
     private final String SPENDABLE = "verified_utxo_spendable_value_";
 
-    class AccountInfo extends Pair<Integer, Integer> {
+    static class AccountInfo extends Pair<Integer, Integer> {
         public AccountInfo(final Integer subAccount, final Integer pointer) { super(subAccount, pointer); }
         public Integer getSubAccount() { return first; }
         public Integer getPointer() { return second; }
