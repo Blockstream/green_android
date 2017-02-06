@@ -132,7 +132,7 @@ public class TransactionItem implements Serializable {
                     recip_eps.add(ep);
                 }
             }
-            if (recip_eps.size() > 0) {
+            if (!recip_eps.isEmpty()) {
                 type = TransactionItem.TYPE.OUT;
                 if (tmpCounterparty == null)
                     tmpCounterparty = (String) recip_eps.get(0).get("ad");

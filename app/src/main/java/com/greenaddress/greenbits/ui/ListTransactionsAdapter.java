@@ -77,7 +77,7 @@ public class ListTransactionsAdapter extends
         UI.showIf(txItem.replaceable, holder.textReplaceable);
 
         final boolean humanCpty = txItem.type == TransactionItem.TYPE.OUT &&
-                txItem.counterparty != null && txItem.counterparty.length() > 0 &&
+                txItem.counterparty != null && !txItem.counterparty.isEmpty() &&
                 !GaService.isValidAddress(txItem.counterparty);
 
         final String message;

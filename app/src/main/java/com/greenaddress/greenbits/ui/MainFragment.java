@@ -260,9 +260,9 @@ public class MainFragment extends SubaccountFragment {
                             return;
                         }
 
-                        showTxView(txList.size() > 0);
+                        showTxView(!txList.isEmpty());
 
-                        final Sha256Hash oldTop = mTxItems.size() > 0 ? mTxItems.get(0).txHash : null;
+                        final Sha256Hash oldTop = !mTxItems.isEmpty() ? mTxItems.get(0).txHash : null;
                         mTxItems.clear();
                         replacedTxs.clear();
 
@@ -296,7 +296,7 @@ public class MainFragment extends SubaccountFragment {
 
                         txView.getAdapter().notifyDataSetChanged();
 
-                        final Sha256Hash newTop = mTxItems.size() > 0 ? mTxItems.get(0).txHash : null;
+                        final Sha256Hash newTop = !mTxItems.isEmpty() ? mTxItems.get(0).txHash : null;
                         if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
                             // A new tx has arrived; scroll to the top to show it
                             txView.smoothScrollToPosition(0);

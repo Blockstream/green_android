@@ -98,7 +98,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             mPeers.add(new PrettyPeer(peer));
 
         final String bloomDetails;
-        if (mPeers.size() > 0)
+        if (!mPeers.isEmpty())
             bloomDetails = mPeers.get(0).mPeer.getBloomFilter().toString();
         else
             bloomDetails = getString(R.string.network_monitor_bloom_info);
