@@ -40,12 +40,14 @@ public abstract class SubaccountFragment extends GAFragment {
 
     // Returns true if we are being restored without an activity or service
     protected boolean isZombieNoView() {
-        return getZombieStatus(getActivity() == null || getGAService() == null);
+        return getZombieStatus(getActivity() == null || getGAService() == null ||
+                               !getGAService().isLoggedIn());
     }
 
     // Returns true if we are being restored without an activity, service or view
     protected boolean isZombie() {
-        return getZombieStatus(getActivity() == null || getGAService() == null || mView == null);
+        return getZombieStatus(getActivity() == null || getGAService() == null ||
+                               !getGAService().isLoggedIn() || mView == null);
     }
 
     // Must be called by subclasses at the end of onCreateView()
