@@ -1,11 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference android:key="mnemonic_passphrase"
-                android:title="@string/mnemonic_passphrase"
-                android:summary="@string/mnemonic_passphrase_not_available"/>
-    <Preference android:key="reset_pin"
-        android:title="@string/setPin">
-    </Preference>
+    <Preference
+        android:key="mnemonic_passphrase"
+        android:title="@string/mnemonic_passphrase"
+        android:summary="@string/mnemonic_passphrase_not_available" />
+    <Preference
+        android:key="reset_pin"
+        android:title="@string/setPin"></Preference>
 
     <ListPreference
         android:key="fiat_key"
@@ -15,28 +16,33 @@
         android:key="denomination_key"
         android:title="@string/settings_denomination" />
 
-    <CheckBoxPreference android:key="show_balance_in_title"
+    <CheckBoxPreference
+        android:key="show_balance_in_title"
         android:title="@string/show_balance_in_title"
-        android:summary="@string/show_balance_in_title_sum"/>
+        android:summary="@string/show_balance_in_title_sum" />
 
-    <EditTextPreference android:key="altime"
-                        android:title="@string/autologout_time"
-                        android:inputType="number"
-                        android:hint="5"/>
+    <EditTextPreference
+        android:key="altime"
+        android:title="@string/autologout_time"
+        android:inputType="number"
+        android:hint="5" />
 
-    <CheckBoxPreference android:key="optin_rbf"
-                        android:title="@string/optin_rbf" />
+    <CheckBoxPreference
+        android:key="optin_rbf"
+        android:title="@string/optin_rbf" />
 
-    <Preference android:key="watch_only_login"
-        android:title="@string/watchOnlyLogin">
-    </Preference>
+    <Preference
+        android:key="watch_only_login"
+        android:title="@string/watchOnlyLogin"></Preference>
 
-    <CheckBoxPreference android:key="showAmountInReceive"
+    <CheckBoxPreference
+        android:key="showAmountInReceive"
         android:title="@string/showAmountInReceive"
-        android:summary="@string/showAmountInReceiveDetail"/>
+        android:summary="@string/showAmountInReceiveDetail" />
 
-    <Preference android:key="toggle_segwit"
+    <Preference
+        android:key="toggle_segwit"
         android:title="@string/segwit_disable"
-        android:enabled="false"/>
+        android:enabled="false" />
 
 </PreferenceScreen>

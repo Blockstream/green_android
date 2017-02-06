@@ -69,7 +69,7 @@
                 android:textColor="@color/secondaryTextColor"
                 android:textSize="24sp"
                 android:layout_weight="0"
-                android:layout_gravity="top"/>
+                android:layout_gravity="top" />
         </LinearLayout>
 
     </LinearLayout>
@@ -85,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" />
 
         <LinearLayout
             android:gravity="center"
@@ -102,7 +102,7 @@
                 android:gravity="center"
                 android:padding="16dp"
                 android:text="@string/noBalanceFirstLine"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/mainSecondParagraphText"
@@ -111,7 +111,7 @@
                 android:gravity="center"
                 android:padding="16dp"
                 android:text="@string/noBalanceSecondLine"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/mainThirdParagraphText"

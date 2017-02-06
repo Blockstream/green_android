@@ -1,20 +1,26 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference android:key="hideTwoFacWarning"
-                        android:title="@string/hideTwoFacWarning"/>
+    <CheckBoxPreference
+        android:key="hideTwoFacWarning"
+        android:title="@string/hideTwoFacWarning" />
 
-    <CheckBoxPreference android:key="twoFacEmail"
-                        android:title="@string/twoFacEmail"/>
+    <CheckBoxPreference
+        android:key="twoFacEmail"
+        android:title="@string/twoFacEmail" />
 
-    <CheckBoxPreference android:key="twoFacGauth"
-                        android:title="@string/twoFacGauth"/>
+    <CheckBoxPreference
+        android:key="twoFacGauth"
+        android:title="@string/twoFacGauth" />
 
-    <CheckBoxPreference android:key="twoFacSMS"
-                        android:title="@string/twoFacSMS"/>
+    <CheckBoxPreference
+        android:key="twoFacSMS"
+        android:title="@string/twoFacSMS" />
 
-    <CheckBoxPreference android:key="twoFacPhone"
-                        android:title="@string/twoFacPhoneCall"/>
+    <CheckBoxPreference
+        android:key="twoFacPhone"
+        android:title="@string/twoFacPhoneCall" />
 
-    <CheckBoxPreference android:key="twoFacNLocktimeEmails"
-                        android:title="@string/enable_nlocktime_emails"/>
+    <CheckBoxPreference
+        android:key="twoFacNLocktimeEmails"
+        android:title="@string/enable_nlocktime_emails" />
 
 </PreferenceScreen>

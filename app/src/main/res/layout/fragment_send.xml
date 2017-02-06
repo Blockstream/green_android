@@ -4,13 +4,12 @@
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
-    tools:context="com.greenaddress.greenbits.ui.SendFragment"
-    >
+    tools:context="com.greenaddress.greenbits.ui.SendFragment">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -20,30 +19,30 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin">
 
-                <LinearLayout
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout_gravity="end"
+                android:gravity="end"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp">
+
+                <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                    android:id="@+id/sendSubAccountBalanceUnit"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:layout_gravity="end"
                     android:gravity="end"
-                    android:orientation="horizontal"
-                    android:paddingBottom="8dp">
+                    android:text="@string/fa_btc_space"
+                    android:textColor="@color/textColor"
+                    android:textSize="34sp" />
 
-                    <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                        android:id="@+id/sendSubAccountBalanceUnit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:text="@string/fa_btc_space"
-                        android:textColor="@color/textColor"
-                        android:textSize="34sp" />
-
-                    <TextView
-                        android:id="@+id/sendSubAccountBalance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/textColor"
-                        android:textSize="34sp" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/sendSubAccountBalance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor"
+                    android:textSize="34sp" />
+            </LinearLayout>
 
             <TextView
                 android:visibility="gone"
@@ -82,12 +81,13 @@
                     android:hint="@string/sendPayTo"
                     android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                     android:textSize="24sp" />
+
                 <ProgressBar
                     android:id="@+id/sendBip70ProgressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
             </RelativeLayout>
 
@@ -110,6 +110,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_weight="1">
+
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
@@ -154,19 +155,19 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_gravity="end">
+
                         <TextView
                             android:id="@+id/sendMaxLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="MAX"
-                            />
+                            android:text="MAX" />
+
                         <Switch
                             android:id="@+id/sendMaxButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textOff="MAX"
-                            android:textOn="MAX"
-                            />
+                            android:textOn="MAX" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -259,16 +260,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center">
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/instantConfirmation"
-                android:id="@+id/instantConfirmationCheckBox"
-                android:checked="false" />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/instantConfirmation"
+                    android:id="@+id/instantConfirmationCheckBox"
+                    android:checked="false" />
             </LinearLayout>
+
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="8dp" />
+
             <Button
                 android:id="@+id/sendSendButton"
                 style="@style/myButton"
@@ -278,6 +282,7 @@
                 android:layout_gravity="center_horizontal"
                 android:text="@string/sendSendButton"
                 android:textColor="@color/white" />
+
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="8dp" />

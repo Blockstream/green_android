@@ -33,7 +33,7 @@
         <item>שיחת טלפון</item>
         <item>מאמת גוגל</item>
     </string-array>
-    <string-array name="timesStrings" >
+    <string-array name="timesStrings">
         <item>שנה</item>
         <item>חודש</item>
         <item>יום</item>
@@ -41,7 +41,7 @@
         <item>דקה</item>
         <item>שניה</item>
     </string-array>
-    <string-array name="timesStringPlurals" >
+    <string-array name="timesStringPlurals">
         <item>שנים</item>
         <item>חודשים</item>
         <item>ימים</item>

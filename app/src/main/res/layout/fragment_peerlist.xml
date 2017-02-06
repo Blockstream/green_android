@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ListView
@@ -10,19 +11,20 @@
         android:textColor="@android:color/black"
         android:id="@+id/peerlistview"
         android:divider="@android:color/darker_gray"
-        android:dividerHeight="10.0sp"/>
+        android:dividerHeight="10.0sp" />
+
     <TextView
         android:id="@+id/empty_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/no_peers_connected"
         android:gravity="center"
-        android:textSize="@dimen/font_size_large"/>
+        android:textSize="@dimen/font_size_large" />
 
     <TextView
         android:id="@+id/bloominfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"/>
+        android:gravity="center" />
 
 </LinearLayout>

@@ -1,179 +1,179 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="action_settings">الإعدادات</string>
-  <string name="title_activity_mnemonic">تسجيل الدخول</string>
-  <string name="sendToText">إلى</string>
-  <string name="sendAmountText">مبلغ</string>
-  <string name="sendSendButton">إرسال</string>
-  <string name="pinSaveText">حفظ</string>
-  <string name="pinLoginText">تسجيل الدخول</string>
-  <string name="title_activity_qr_scanner">ماسح كيو آر كود</string>
-  <string name="title_activity_sign_up">سجل نفسك</string>
-  <string name="signupContinueButtonText">تابع</string>
-  <string name="signupCheckBoxText">قمت بتأمين عبارة المرور ولقد قرأت شروط الخدمة</string>
-  <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">>شروط الخدمة</a></string>
-  <string name="firstSignUpText">سجل نفسك</string>
-  <string name="firstLogInText">تسجيل الدخول</string>
-  <string name="receive_title">إستلام</string>
-  <string name="main_title">كل</string>
-  <string name="send_title">ارسال</string>
-  <string name="pinTitleText">رقم PIN</string>
-  <string name="network_unavailable">خروج</string>
-  <string name="newTxTitle">معاملة جديدة</string>
-  <string name="sweepAddressTitle">أموال الاجتياح</string>
-  <string name="twoFactorChoicesTitle">اختيار طريقتين للتحقق </string>
-  <string name="choose">اختيار</string>
-  <string name="cancel">إلغاء</string>
-  <string name="attemptsLeft">%1$d  محاولة متبقية</string>
-  <string-array name="twoFactorChoices">
-    <item>البريد الإلكتروني</item>
-    <item>الرسائل القصيرة</item>
-    <item>مكالمة</item>
-    <item>مصادقة جوجل </item>
-  </string-array>
-  <string-array name="timesStrings">
-    <item>سنة</item>
-    <item>شهر </item>
-    <item>يوم </item>
-    <item>ساعة </item>
-    <item>دقيقة </item>
-    <item>ثانية </item>
-  </string-array>
-  <string-array name="timesStringPlurals">
-    <item>سنة</item>
-    <item>شهر </item>
-    <item>يوم </item>
-    <item>ساعة </item>
-    <item>دقيقة </item>
-    <item>ثانية </item>
-  </string-array>
-  <string name="send">ارسال</string>
-  <string name="sweep">الاجتياح</string>
-  <string name="sweep_bip38_passphrase_prompt">يرجى تقديم كلمة المرور BIP38:</string>
-  <string name="invalid_passphrase">كلمة المرور خاطئة</string>
-  <string name="invalid_key">المفتاح غير صالح</string>
-  <string name="warning">تحذير!</string>
-  <string name="save_password_now">يجب حفظ عبارة المرور هذه  الآن</string>
-  <string name="greenaddress_headline">أسهل، أكثر أمانا وأسرع محفظة بيتكوين</string>
-  <string name="pinSkipText">مرور</string>
-  <string name="sendOptionalMemo">مذكرة اختيارية</string>
-  <string name="madeBy">من قبل GreenAddress</string>
-  <string name="welcomeGreenBits">مرحبا بكم في GreenBits</string>
-  <string name="attemptsFinished">رقم PIN غير صالح، ليس لديك أي محاولة متبقية. يرجى تسجيل الدخول باستخدام عبارة المرور الخاصة بك.</string>
-  <string name="attemptsLeftLong">رقم PIN غير صالح، لديك %s محاولات متبقية</string>
-  <string name="warnOnPaste">كن على علم، يمكن لتطبيقات الأخرى قراءة ذاكرة النصوص</string>
-  <string name="toastOnCopyAddress">العنوان نسخ إلى الحافظة.</string>
-  <string name="receiveAddressSubTitle">عنوان</string>
-  <string name="sendPayTo">دفع إلى</string>
-  <string name="action_sweep">الاجتياح</string>
-  <string name="action_logout">Log out</string>
-  <string name="txTypeIn">الإيداع</string>
-  <string name="txTypeOut">سحب</string>
-  <string name="txTypeRedeposit">إعادة الإيداع</string>
-  <string name="mnemonicHint">اكتب عبارة المرور GreenAddress الخاص بك أو إمسح رمز الاستجابة السريعة (QR CODE)</string>
-  <string name="title_activity_settings">الإعدادات</string>
-  <string name="txSubTitle">تفاصيل المعاملات</string>
-  <string name="txHashText">مزيج</string>
-  <string name="txRecipientText">المستفيد</string>
-  <string name="txMemoText">مذكرة</string>
-  <!--Example settings for Notifications-->
-  <string name="txDateText">التاريخ</string>
-  <string name="txAmountText">مبلغ</string>
-  <string name="newTxAmount">مبلغ</string>
-  <string name="newTxRecipient">المستلم:</string>
-  <string name="newTxFee">الرسوم:</string>
-  <string name="invalidAmountAndAddress">مبلغ و عنوان غير صالحان </string>
-  <string name="invalidAddress">عنوان غير صالح</string>
-  <string name="invalidAmount">مبلغ غير صالح</string>
-  <string name="noBalanceFirstLine">إبدء <a href="https://bitcoin.org/ar/getting-started">مع</a> بيتكوين</string>
-  <string name="noBalanceSecondLine">أين <a href="http://howtobuybitcoins.info/">يمكن</a> شرائهم</string>
-  <string name="noBalanceThirdLine">اقرأ <a href="https://greenaddress.it/faq">FAQ</a></string>
-  <string name="trezor_headline">يرجى اتباع التعليمات التي تظهر على Hardware Wallet الخاص بك</string>
-  <string name="trezorProvidePin">يرجى تقديم Hardware Wallet PIN الخاص بك. انظر إلى الجهاز لمعرفة رقم الموقع :</string>
-  <string name="trezorProvidePassphrase">يرجى تقديم عبارة المرور Hardware Wallet  الخاصة بك.</string>
-  <string name="main_account">الصفحة الرئيسية</string>
-  <string name="footerAccount">الحساب</string>
-  <string name="btchipProvidePIN">يرجى تقديم BTChip PIN الخاص بك:</string>
-  <string name="firstLoginRequestedInstructionsOldTrezor">نظام تشغيل Hardware Wallet قديم . الرجاء الترقية إلى 1.3.0 على الأقل في http://mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
-  <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>
-  <string name="btchipNotSetup">لم يتم تعيين BTChip . يرجى إعداده باستخدام عميل سطح المكتب ليكون قادرا على استخدامها.</string>
-  <string name="instantConfirmation">تأكيد فوري</string>
-  <string name="trezor_login_failed">فشل تسجيل دخول Hardware Wallet</string>
-  <string name="trezor_login_failed_details">هذا يعني ربما تحتاج إلى إقران جهاز Hardware Wallet الخاص بك مع GreenAddress باستخدام تطبيق سطح المكتب.</string>
-  <string name="mnemonic_passphrase">عبارة المرور المتعلق بالذاكرة</string>
-  <string name="mnemonic_passphrase_not_available">عبارة المرور غير متاحة</string>
-  <string name="autologout_time">مهلة الخروج التلقائي </string>
-  <string name="autologout_time_default">دقائق</string>
-  <string name="touch_to_display">إلمس للعرض</string>
-  <string name="txUnconfirmedTx">الصفقة لم تؤكد. يرجى انتظاركتلة التأكيد لإكتساب الثقة في هذه الصفقة.</string>
-  <string name="txUnverifiedTx">لم يتم التحقق من الصفقة . يرجى الانتظار التزامن لكسب الثقة في هذه الصفقة. كتل المتبقية:</string>
-  <string name="unconfirmedBalanceTitle">الرصيد غير مؤكد</string>
-  <string name="unconfirmedBalanceText">لم يتم تأكيد رصيدك. وهذا يعني إما أن لديك بعض المعاملات الواردة غير مؤكدة، أو التحقق SPV لم ينته.</string>
-  <string name="spvNoWiFiTitle">تزامن SPV</string>
-  <string name="enableSPV">تفعيل SPV</string>
-  <string name="enableSPVSummary">التحقق من الدفع بسيط يسمح الثقة في المعاملات الخاصة بك والتوازن بفضل التزامن مع شبكة بيتكوين. وتضيف متطلبات عرض النطاق الترددي والتجهيز، لذلك قد ترغب في إطفائه إذا كان على اتصالات الظعيفة أو الهواتف المنخفضة التكلفة.</string>
-  <string name="noTwoFactorWarning">ليس لديك تحقق مزدوجn!\nيرجى الإنتقال إلى إعدادات إنشائه!</string>
-  <string name="scan_camera_problem_dialog_message">مشكلة في الكاميرا . ربما كنت تحتاج إلى إعادة تشغيل الجهاز.</string>
-  <string name="scan_camera_problem_dialog_title">مشكلة في الكاميرا</string>
-  <string name="providePassphrase">يرجى تقديم عبارة المرور الخاص بك:</string>
-  <string name="pref_header_twofactor">تحقق مزدوج</string>
-  <string name="twoFacPhoneCall">مكالمة هاتفية</string>
-  <string name="twoFacSMS">رسالة قصيرة</string>
-  <string name="twoFacGauth">أداة مصادقة Google</string>
-  <string name="twoFacEmail">البريد الإلكتروني</string>
-  <string name="hideTwoFacWarning">إخفاء تحذير 2FA</string>
-  <string name="twoFacSetupHeader">%s الإعداد 2FA</string>
-  <string name="progress">التقدم:</string>
-  <string name="twoFacStep1Description">أولا، تحتاج إلى توفير رمز المصادقة من إحدى الإعدادين  الخاصان بك. وهذا لمنع المستخدمين المتطفلين من تغيير إعدادات 2FA الخاص بك دون موافقتك.</string>
-  <string name="twoFacStep1SelectExisting">تحديد طريقة 2FA الحاليين لمصادقة إنشاء واحدة جديدة:</string>
-  <string name="twoFacProvideGauthDetailsDescription">تحتاج إلى توفير كود واحد من أداة مصادقة Google الجديد الخاص بك. يمكنك الحصول عليه عن طريق مسح رمز الاستجابة السريعة (QR code ) أدناه في أداة المصادقة Google.</string>
-  <string name="twoFacProvideGauthDetails">يرجى تقديم أكواد أداة المصادقة Google.</string>
-  <string name="twoFacProvideDetails">يرجى تقديم ال%s. الخاصة بك.</string>
-  <string name="twoFacEmailChangeNotice">توفير البريد الإلكتروني تمكن الإخطار و استعادة المعاملات</string>
-  <string name="twoFacEmailConfirmNotice">سوف تحتاج إلى تأكيد البريد الإلكتروني الخاص بك في الخطوة التالية، وإلا فإنك لن تتلقى أي إخطارات.</string>
-  <string name="twoFacProvideConfirmationCodeDescription">تحتاج إلى توفير رمز التأكيد و هذا للتأكد من حقك  للوصول إلى عاملين مصادقة جديدين. بعد تقديم رمز، سيتم تمكين هذه الطريقة.</string>
-  <string name="twoFacProvideConfirmationCode">يرجى تقديم كود %s الخاص بك.</string>
-  <string name="continueText">إستمرار</string>
-  <string name="twoFacProvideAuthCodeDescription">تحتاج القائمة  إلى توفيرعاملان رمز التوثيق. وهذا لمنع المستخدمين المتطفلين من تغيير إعدادات 2FA الخاص بك دون موافقتك.</string>
-  <string name="recoveryAndNotifications">الاسترداد والإشعارات</string>
-  <string name="emailAddress">عنوان البريد الإلكتروني</string>
-  <string name="phoneNumber">رقم الهاتف</string>
-  <string name="newAddress">جديد</string>
-  <string name="copyAddress">نسخ</string>
-  <string name="txReceivedOn">الاستلام في</string>
-  <string name="twoFacGauthTextCode">أو يمكنك استخدام التعليمات البرمجية التالية: %s.لحفظ نسخة احتياطية منه!</string>
-  <string name="trustedspv">Only connect to a trusted peer for SPV</string>
-  <string name="enterValidAddressTitle">Not a valid address!</string>
-  <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
-  <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
-  <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
-  <string name="action_network">Network monitor</string>
-  <string name="action_about">About</string>
-  <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
-  <string name="useNativeAuthentication">Use Android\'s authentication</string>
-  <string name="genericsettings">Info &amp; settings</string>
-  <string name="txFeeInfo">Fee / Size (bytes) / Fee per kB</string>
-  <string name="doubleSpend">double spend</string>
-  <string name="txDoubleSpentBy">Double spend by</string>
-  <string name="updated">updated</string>
-  <string name="malleated">malleated</string>
-  <string name="replaceable">replaceable</string>
-  <string name="pref_header_network">Http Proxy</string>
+    <string name="action_settings">الإعدادات</string>
+    <string name="title_activity_mnemonic">تسجيل الدخول</string>
+    <string name="sendToText">إلى</string>
+    <string name="sendAmountText">مبلغ</string>
+    <string name="sendSendButton">إرسال</string>
+    <string name="pinSaveText">حفظ</string>
+    <string name="pinLoginText">تسجيل الدخول</string>
+    <string name="title_activity_qr_scanner">ماسح كيو آر كود</string>
+    <string name="title_activity_sign_up">سجل نفسك</string>
+    <string name="signupContinueButtonText">تابع</string>
+    <string name="signupCheckBoxText">قمت بتأمين عبارة المرور ولقد قرأت شروط الخدمة</string>
+    <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">>شروط الخدمة</a></string>
+    <string name="firstSignUpText">سجل نفسك</string>
+    <string name="firstLogInText">تسجيل الدخول</string>
+    <string name="receive_title">إستلام</string>
+    <string name="main_title">كل</string>
+    <string name="send_title">ارسال</string>
+    <string name="pinTitleText">رقم PIN</string>
+    <string name="network_unavailable">خروج</string>
+    <string name="newTxTitle">معاملة جديدة</string>
+    <string name="sweepAddressTitle">أموال الاجتياح</string>
+    <string name="twoFactorChoicesTitle">اختيار طريقتين للتحقق </string>
+    <string name="choose">اختيار</string>
+    <string name="cancel">إلغاء</string>
+    <string name="attemptsLeft">%1$d  محاولة متبقية</string>
+    <string-array name="twoFactorChoices">
+        <item>البريد الإلكتروني</item>
+        <item>الرسائل القصيرة</item>
+        <item>مكالمة</item>
+        <item>مصادقة جوجل </item>
+    </string-array>
+    <string-array name="timesStrings">
+        <item>سنة</item>
+        <item>شهر </item>
+        <item>يوم </item>
+        <item>ساعة </item>
+        <item>دقيقة </item>
+        <item>ثانية </item>
+    </string-array>
+    <string-array name="timesStringPlurals">
+        <item>سنة</item>
+        <item>شهر </item>
+        <item>يوم </item>
+        <item>ساعة </item>
+        <item>دقيقة </item>
+        <item>ثانية </item>
+    </string-array>
+    <string name="send">ارسال</string>
+    <string name="sweep">الاجتياح</string>
+    <string name="sweep_bip38_passphrase_prompt">يرجى تقديم كلمة المرور BIP38:</string>
+    <string name="invalid_passphrase">كلمة المرور خاطئة</string>
+    <string name="invalid_key">المفتاح غير صالح</string>
+    <string name="warning">تحذير!</string>
+    <string name="save_password_now">يجب حفظ عبارة المرور هذه  الآن</string>
+    <string name="greenaddress_headline">أسهل، أكثر أمانا وأسرع محفظة بيتكوين</string>
+    <string name="pinSkipText">مرور</string>
+    <string name="sendOptionalMemo">مذكرة اختيارية</string>
+    <string name="madeBy">من قبل GreenAddress</string>
+    <string name="welcomeGreenBits">مرحبا بكم في GreenBits</string>
+    <string name="attemptsFinished">رقم PIN غير صالح، ليس لديك أي محاولة متبقية. يرجى تسجيل الدخول باستخدام عبارة المرور الخاصة بك.</string>
+    <string name="attemptsLeftLong">رقم PIN غير صالح، لديك %s محاولات متبقية</string>
+    <string name="warnOnPaste">كن على علم، يمكن لتطبيقات الأخرى قراءة ذاكرة النصوص</string>
+    <string name="toastOnCopyAddress">العنوان نسخ إلى الحافظة.</string>
+    <string name="receiveAddressSubTitle">عنوان</string>
+    <string name="sendPayTo">دفع إلى</string>
+    <string name="action_sweep">الاجتياح</string>
+    <string name="action_logout">Log out</string>
+    <string name="txTypeIn">الإيداع</string>
+    <string name="txTypeOut">سحب</string>
+    <string name="txTypeRedeposit">إعادة الإيداع</string>
+    <string name="mnemonicHint">اكتب عبارة المرور GreenAddress الخاص بك أو إمسح رمز الاستجابة السريعة (QR CODE)</string>
+    <string name="title_activity_settings">الإعدادات</string>
+    <string name="txSubTitle">تفاصيل المعاملات</string>
+    <string name="txHashText">مزيج</string>
+    <string name="txRecipientText">المستفيد</string>
+    <string name="txMemoText">مذكرة</string>
+    <!--Example settings for Notifications-->
+    <string name="txDateText">التاريخ</string>
+    <string name="txAmountText">مبلغ</string>
+    <string name="newTxAmount">مبلغ</string>
+    <string name="newTxRecipient">المستلم:</string>
+    <string name="newTxFee">الرسوم:</string>
+    <string name="invalidAmountAndAddress">مبلغ و عنوان غير صالحان </string>
+    <string name="invalidAddress">عنوان غير صالح</string>
+    <string name="invalidAmount">مبلغ غير صالح</string>
+    <string name="noBalanceFirstLine">إبدء <a href="https://bitcoin.org/ar/getting-started">مع</a> بيتكوين</string>
+    <string name="noBalanceSecondLine">أين <a href="http://howtobuybitcoins.info/">يمكن</a> شرائهم</string>
+    <string name="noBalanceThirdLine">اقرأ <a href="https://greenaddress.it/faq">FAQ</a></string>
+    <string name="trezor_headline">يرجى اتباع التعليمات التي تظهر على Hardware Wallet الخاص بك</string>
+    <string name="trezorProvidePin">يرجى تقديم Hardware Wallet PIN الخاص بك. انظر إلى الجهاز لمعرفة رقم الموقع :</string>
+    <string name="trezorProvidePassphrase">يرجى تقديم عبارة المرور Hardware Wallet  الخاصة بك.</string>
+    <string name="main_account">الصفحة الرئيسية</string>
+    <string name="footerAccount">الحساب</string>
+    <string name="btchipProvidePIN">يرجى تقديم BTChip PIN الخاص بك:</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">نظام تشغيل Hardware Wallet قديم . الرجاء الترقية إلى 1.3.0 على الأقل في http://mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
+    <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>
+    <string name="btchipNotSetup">لم يتم تعيين BTChip . يرجى إعداده باستخدام عميل سطح المكتب ليكون قادرا على استخدامها.</string>
+    <string name="instantConfirmation">تأكيد فوري</string>
+    <string name="trezor_login_failed">فشل تسجيل دخول Hardware Wallet</string>
+    <string name="trezor_login_failed_details">هذا يعني ربما تحتاج إلى إقران جهاز Hardware Wallet الخاص بك مع GreenAddress باستخدام تطبيق سطح المكتب.</string>
+    <string name="mnemonic_passphrase">عبارة المرور المتعلق بالذاكرة</string>
+    <string name="mnemonic_passphrase_not_available">عبارة المرور غير متاحة</string>
+    <string name="autologout_time">مهلة الخروج التلقائي </string>
+    <string name="autologout_time_default">دقائق</string>
+    <string name="touch_to_display">إلمس للعرض</string>
+    <string name="txUnconfirmedTx">الصفقة لم تؤكد. يرجى انتظاركتلة التأكيد لإكتساب الثقة في هذه الصفقة.</string>
+    <string name="txUnverifiedTx">لم يتم التحقق من الصفقة . يرجى الانتظار التزامن لكسب الثقة في هذه الصفقة. كتل المتبقية:</string>
+    <string name="unconfirmedBalanceTitle">الرصيد غير مؤكد</string>
+    <string name="unconfirmedBalanceText">لم يتم تأكيد رصيدك. وهذا يعني إما أن لديك بعض المعاملات الواردة غير مؤكدة، أو التحقق SPV لم ينته.</string>
+    <string name="spvNoWiFiTitle">تزامن SPV</string>
+    <string name="enableSPV">تفعيل SPV</string>
+    <string name="enableSPVSummary">التحقق من الدفع بسيط يسمح الثقة في المعاملات الخاصة بك والتوازن بفضل التزامن مع شبكة بيتكوين. وتضيف متطلبات عرض النطاق الترددي والتجهيز، لذلك قد ترغب في إطفائه إذا كان على اتصالات الظعيفة أو الهواتف المنخفضة التكلفة.</string>
+    <string name="noTwoFactorWarning">ليس لديك تحقق مزدوجn!\nيرجى الإنتقال إلى إعدادات إنشائه!</string>
+    <string name="scan_camera_problem_dialog_message">مشكلة في الكاميرا . ربما كنت تحتاج إلى إعادة تشغيل الجهاز.</string>
+    <string name="scan_camera_problem_dialog_title">مشكلة في الكاميرا</string>
+    <string name="providePassphrase">يرجى تقديم عبارة المرور الخاص بك:</string>
+    <string name="pref_header_twofactor">تحقق مزدوج</string>
+    <string name="twoFacPhoneCall">مكالمة هاتفية</string>
+    <string name="twoFacSMS">رسالة قصيرة</string>
+    <string name="twoFacGauth">أداة مصادقة Google</string>
+    <string name="twoFacEmail">البريد الإلكتروني</string>
+    <string name="hideTwoFacWarning">إخفاء تحذير 2FA</string>
+    <string name="twoFacSetupHeader">%s الإعداد 2FA</string>
+    <string name="progress">التقدم:</string>
+    <string name="twoFacStep1Description">أولا، تحتاج إلى توفير رمز المصادقة من إحدى الإعدادين  الخاصان بك. وهذا لمنع المستخدمين المتطفلين من تغيير إعدادات 2FA الخاص بك دون موافقتك.</string>
+    <string name="twoFacStep1SelectExisting">تحديد طريقة 2FA الحاليين لمصادقة إنشاء واحدة جديدة:</string>
+    <string name="twoFacProvideGauthDetailsDescription">تحتاج إلى توفير كود واحد من أداة مصادقة Google الجديد الخاص بك. يمكنك الحصول عليه عن طريق مسح رمز الاستجابة السريعة (QR code ) أدناه في أداة المصادقة Google.</string>
+    <string name="twoFacProvideGauthDetails">يرجى تقديم أكواد أداة المصادقة Google.</string>
+    <string name="twoFacProvideDetails">يرجى تقديم ال%s. الخاصة بك.</string>
+    <string name="twoFacEmailChangeNotice">توفير البريد الإلكتروني تمكن الإخطار و استعادة المعاملات</string>
+    <string name="twoFacEmailConfirmNotice">سوف تحتاج إلى تأكيد البريد الإلكتروني الخاص بك في الخطوة التالية، وإلا فإنك لن تتلقى أي إخطارات.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">تحتاج إلى توفير رمز التأكيد و هذا للتأكد من حقك  للوصول إلى عاملين مصادقة جديدين. بعد تقديم رمز، سيتم تمكين هذه الطريقة.</string>
+    <string name="twoFacProvideConfirmationCode">يرجى تقديم كود %s الخاص بك.</string>
+    <string name="continueText">إستمرار</string>
+    <string name="twoFacProvideAuthCodeDescription">تحتاج القائمة  إلى توفيرعاملان رمز التوثيق. وهذا لمنع المستخدمين المتطفلين من تغيير إعدادات 2FA الخاص بك دون موافقتك.</string>
+    <string name="recoveryAndNotifications">الاسترداد والإشعارات</string>
+    <string name="emailAddress">عنوان البريد الإلكتروني</string>
+    <string name="phoneNumber">رقم الهاتف</string>
+    <string name="newAddress">جديد</string>
+    <string name="copyAddress">نسخ</string>
+    <string name="txReceivedOn">الاستلام في</string>
+    <string name="twoFacGauthTextCode">أو يمكنك استخدام التعليمات البرمجية التالية: %s.لحفظ نسخة احتياطية منه!</string>
+    <string name="trustedspv">Only connect to a trusted peer for SPV</string>
+    <string name="enterValidAddressTitle">Not a valid address!</string>
+    <string name="enterValidAddressText">Please enter a valid .onion or IP address. (.onion preferred)</string>
+    <string name="changingWarnOnionTitle">Warning: Non-.onion address detected!</string>
+    <string name="changingWarnOnionText">Connecting to Tor (.onion) nodes allows maximum privacy and security. If you choose to continue, please press "OK".</string>
+    <string name="action_network">Network monitor</string>
+    <string name="action_about">About</string>
+    <string name="enterValidAddressTitleTorDisabled">Tor Connectivity Disabled!</string>
+    <string name="useNativeAuthentication">Use Android\'s authentication</string>
+    <string name="genericsettings">Info &amp; settings</string>
+    <string name="txFeeInfo">Fee / Size (bytes) / Fee per kB</string>
+    <string name="doubleSpend">double spend</string>
+    <string name="txDoubleSpentBy">Double spend by</string>
+    <string name="updated">updated</string>
+    <string name="malleated">malleated</string>
+    <string name="replaceable">replaceable</string>
+    <string name="pref_header_network">Http Proxy</string>
 
-  <string name="pref_title_display_hostname">Hostname</string>
-  <string name="pref_title_display_port">Port</string>
-  <string name="optin_rbf">Enable transaction replacement</string>
-  <string name="willConfirmAfter">Will confirm after blocks (estimated): %s</string>
-  <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %s blocks.</string>
-  <string name="recommendationSingleBlock">If you increase the fee now to the recommended level, the transaction will be expected to confirm after 1 block.</string>
-  <string name="increaseFee">Increase fee</string>
-  <string name="newFeeText">New Fee:</string>
-  <string name="oldFeeText">Old Fee:</string>
-  <string name="feeIncreaseTitle">Fee increase</string>
-  <string name="insufficientFundsText">Insufficient funds</string>
-  <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
-  <string name="app_description">GreenAddress Logo</string>
-  <string name="setPin">Setup PIN</string>
-  <string name="set2FA">SETUP 2FA</string>
-  <string name="resetSPV">Reset SPV</string>
+    <string name="pref_title_display_hostname">Hostname</string>
+    <string name="pref_title_display_port">Port</string>
+    <string name="optin_rbf">Enable transaction replacement</string>
+    <string name="willConfirmAfter">Will confirm after blocks (estimated): %s</string>
+    <string name="recommendationBlocks">If you increase the fee now to the recommended level, the transaction will be expected to confirm after %s blocks.</string>
+    <string name="recommendationSingleBlock">If you increase the fee now to the recommended level, the transaction will be expected to confirm after 1 block.</string>
+    <string name="increaseFee">Increase fee</string>
+    <string name="newFeeText">New Fee:</string>
+    <string name="oldFeeText">Old Fee:</string>
+    <string name="feeIncreaseTitle">Fee increase</string>
+    <string name="insufficientFundsText">Insufficient funds</string>
+    <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
+    <string name="app_description">GreenAddress Logo</string>
+    <string name="setPin">Setup PIN</string>
+    <string name="set2FA">SETUP 2FA</string>
+    <string name="resetSPV">Reset SPV</string>
 </resources>

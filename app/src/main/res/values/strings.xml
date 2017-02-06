@@ -274,4 +274,4 @@
     <string name="segwit_dialog_content">Your account has been automatically updated to enable segregated witness. You can disable this upgrade in settings only until you generate the next address to receive funds.</string>
     <string name="segwit_disable">Disable Segwit</string>
     <string name="segwit_enable">Enable Segwit</string>
- </resources>
+</resources>

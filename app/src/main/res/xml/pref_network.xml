@@ -7,7 +7,7 @@
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_title_display_hostname"/>
+        android:title="@string/pref_title_display_hostname" />
 
     <EditTextPreference
         android:hint="@string/pref_default_port"
@@ -16,10 +16,11 @@
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_title_display_port"/>
+        android:title="@string/pref_title_display_port" />
 
-    <CheckBoxPreference android:key="tor_enabled"
+    <CheckBoxPreference
+        android:key="tor_enabled"
         android:dependency="proxy_host"
-        android:title="@string/enableTor"/>
+        android:title="@string/enableTor" />
 
 </PreferenceScreen>

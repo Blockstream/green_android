@@ -57,6 +57,6 @@
             app:cpb_colorIndicator="@color/accent"
             app:cpb_selectorIdle="@drawable/buttonprogressselector"
             app:cpb_textIdle="@string/pinLoginText" />
-        
+
     </LinearLayout>
 </ScrollView>

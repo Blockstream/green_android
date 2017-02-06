@@ -5,9 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.greenaddress.greenbits.ui.SignUpActivity">
+
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -15,8 +17,8 @@
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            >
+            android:paddingTop="@dimen/activity_vertical_margin">
+
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -36,8 +38,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                >
+                android:paddingBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="72dp"
@@ -48,6 +49,7 @@
 
                     android:padding="8dp"
                     android:orientation="vertical">
+
                     <com.greenaddress.greenbits.ui.FontAwesomeTextView
                         android:id="@+id/signupQrCodeIcon"
                         android:layout_width="fill_parent"
@@ -57,6 +59,7 @@
                         android:text="@string/fa_qrcode"
                         android:textColor="@color/accent"
                         android:textSize="36sp" />
+
                     <ImageView
                         android:id="@+id/signupNfcIcon"
                         android:padding="12dp"
@@ -64,8 +67,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_nfc_48px_accent"
-                        android:gravity="center"
-                        />
+                        android:gravity="center" />
                 </LinearLayout>
 
                 <TextView
@@ -83,8 +85,6 @@
 
 
             </RelativeLayout>
-
-
 
 
             <LinearLayout

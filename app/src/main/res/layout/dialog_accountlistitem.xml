@@ -10,7 +10,7 @@
         android:layout_height="@dimen/account_item_height"
         android:layout_alignParentStart="true"
         android:paddingBottom="@dimen/md_content_padding_bottom"
-        android:layout_marginStart="@dimen/md_listitem_control_margin"/>
+        android:layout_marginStart="@dimen/md_listitem_control_margin" />
 
 
     <TextView
@@ -42,7 +42,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/secondaryTextColor"
-            android:textSize="@dimen/font_size_medium"  />
+            android:textSize="@dimen/font_size_medium" />
     </LinearLayout>
-    <View style="@style/Divider"/>
+
+    <View style="@style/Divider" />
 </RelativeLayout>

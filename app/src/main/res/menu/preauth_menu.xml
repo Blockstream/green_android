@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/network_preferences"
-        android:title="@string/pref_header_network"/>
+        android:title="@string/pref_header_network" />
     <item
         android:id="@+id/watchonly_preference"
         android:title="@string/watchOnlyLogin" />

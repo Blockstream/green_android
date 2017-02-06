@@ -45,7 +45,6 @@
         android:text="@string/useNativeAuthentication" />
 
 
-
     <View
         android:layout_width="fill_parent"
         android:layout_height="20dp" />
@@ -64,8 +63,7 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/pinSkipText"
             android:textColor="@color/accent"
-            android:background="@color/hide"
-            />
+            android:background="@color/hide" />
 
         <com.dd.CircularProgressButton
             android:id="@+id/pinSaveButton"

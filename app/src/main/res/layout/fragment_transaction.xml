@@ -215,8 +215,7 @@
                 android:hint="@string/sendOptionalMemo"
                 android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                 android:textColor="@color/textColor"
-                android:textSize="24sp"
-                />
+                android:textSize="24sp" />
 
             <View
                 android:id="@+id/txReceivedOnMargin"

@@ -37,6 +37,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_weight="1">
+
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -122,6 +123,7 @@
             </RelativeLayout>
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -152,6 +154,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="10dp">
+
                     <com.greenaddress.greenbits.ui.FontAwesomeTextView
                         android:id="@+id/receiveCopyIcon"
                         android:layout_width="fill_parent"
@@ -161,13 +164,14 @@
                         android:text="@string/fa_copy"
                         android:textColor="@color/accent"
                         android:textSize="34sp" />
+
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:singleLine="true"
                         android:textColor="@color/accent"
-                        android:text="@string/copyAddress"/>
+                        android:text="@string/copyAddress" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -175,6 +179,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="10dp">
+
                     <com.greenaddress.greenbits.ui.FontAwesomeTextView
                         android:id="@+id/receiveNewAddressIcon"
                         android:layout_width="fill_parent"
@@ -184,13 +189,14 @@
                         android:text="@string/fa_plus"
                         android:textColor="@color/accent"
                         android:textSize="34sp" />
+
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textColor="@color/accent"
                         android:singleLine="true"
-                        android:text="@string/newAddress"/>
+                        android:text="@string/newAddress" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -198,6 +204,7 @@
 
         </LinearLayout>
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

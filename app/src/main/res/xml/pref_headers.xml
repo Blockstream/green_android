@@ -3,17 +3,17 @@
     <header
         android:fragment="com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/genericsettings"/>
+        android:title="@string/genericsettings" />
 
 
     <header
         android:fragment="com.greenaddress.greenbits.ui.preferences.TwoFactorPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/pref_header_twofactor"/>
+        android:title="@string/pref_header_twofactor" />
 
     <header
         android:fragment="com.greenaddress.greenbits.ui.preferences.SPVPreferenceFragment"
         android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/spvNoWiFiTitle"/>
+        android:title="@string/spvNoWiFiTitle" />
 
 </preference-headers>

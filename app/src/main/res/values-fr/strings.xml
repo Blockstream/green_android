@@ -1,187 +1,187 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="action_settings">Paramètres</string>
-  <string name="title_activity_mnemonic">Restaurer</string>
-  <string name="sendToText">À</string>
-  <string name="sendAmountText">Montant</string>
-  <string name="sendSendButton">Valider &amp; Envoyer</string>
-  <string name="pinSaveText">Enregistrer</string>
-  <string name="pinLoginText">Entrer</string>
-  <string name="title_activity_qr_scanner">Numériser code QR</string>
-  <string name="title_activity_sign_up">Créer</string>
-  <string name="signupContinueButtonText">CONTINUER</string>
-  <string name="signupCheckBoxText">J\'ai sécurisé la phrase de récupération et j\'ai lu les CGU</string>
-  <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">CGU</a></string>
-  <string name="firstSignUpText">CRÉER</string>
-  <string name="firstLogInText">RESTAURER</string>
-  <string name="receive_title">Recevoir</string>
-  <string name="main_title">ACTIVITÉ</string>
-  <string name="send_title">Envoyer</string>
-  <string name="pinTitleText">Code PIN</string>
-  <string name="network_unavailable">Déconnecté</string>
-  <string name="newTxTitle">Nouvelle transaction</string>
-  <string name="sweepAddressTitle">Balayer les fonds</string>
-  <string name="twoFactorChoicesTitle">Choisir la méthode d\'authentification à 2 facteurs</string>
-  <string name="choose">CHOISIR</string>
-  <string name="cancel">ANNULER</string>
-  <string name="attemptsLeft">%1$d tentatives restantes</string>
-  <string-array name="twoFactorChoices">
-    <item>Email</item>
-    <item>SMS</item>
-    <item>Appel</item>
-    <item>Google Auth</item>
-  </string-array>
-  <string-array name="timesStrings">
-    <item>année</item>
-    <item>mois</item>
-    <item>jour</item>
-    <item>heure</item>
-    <item>minute</item>
-    <item>seconde</item>
-  </string-array>
-  <string-array name="timesStringPlurals">
-    <item>années</item>
-    <item>mois</item>
-    <item>jours</item>
-    <item>heures</item>
-    <item>minutes</item>
-    <item>secondes</item>
-  </string-array>
-  <string name="send">ENVOYER</string>
-  <string name="sweep">BALAYER</string>
-  <string name="sweep_bip38_passphrase_prompt">Veuillez saisir le mot de passe BIP38 :</string>
-  <string name="invalid_passphrase">Mot de passe incorrect</string>
-  <string name="invalid_key">Clé invalide</string>
-  <string name="warning">Attention !</string>
-  <string name="save_password_now">Vous DEVEZ enregistrer votre phrase de récupération MAINTENANT</string>
-  <string name="greenaddress_headline">Le portefeuille bitcoin le plus simple, sécurisé et rapide</string>
-  <string name="pinSkipText">PASSER</string>
-  <string name="sendOptionalMemo">Note optionnelle</string>
-  <string name="madeBy">par GreenAddress</string>
-  <string name="welcomeGreenBits">Bienvenue sur GreenBits</string>
-  <string name="attemptsFinished">Code PIN invalide, vous n\'avez plus de tentatives restantes. Connectez-vous en utilisant votre phrase de récupération.</string>
-  <string name="attemptsLeftLong">Code PIN invalide, vous avez %1$d tentatives restantes</string>
-  <string name="warnOnPaste">Attention, d\'autres applications peuvent lire ou modifier votre presse-papier</string>
-  <string name="toastOnCopyAddress">Adresse copiée dans le presse-papier.</string>
-  <string name="receiveAddressSubTitle">Adresse</string>
-  <string name="sendPayTo">Payer à</string>
-  <string name="action_sweep">Balayer</string>
-  <string name="action_logout">Se déconnecter</string>
-  <string name="txTypeIn">Reçus</string>
-  <string name="txTypeOut">Envoyés</string>
-  <string name="txTypeRedeposit">Déplacés</string>
-  <string name="mnemonicHint">Écrivez votre phrase de récupération GreenAddress ou numérisez son code QR</string>
-  <string name="title_activity_settings">Paramètres</string>
-  <string name="ago">il y a %1$d %2$s</string>
-  <string name="txSubTitle">Détails de la transaction</string>
-  <string name="txRecipientText">Destinataire</string>
-  <string name="txMemoText">Note</string>
-  <string name="action_network">Moniteur Réseau</string>
-  <string name="action_about">À propos</string>
-  <!--Example settings for Notifications-->
-  <string name="txDateText">Date</string>
-  <string name="txAmountText">Montant</string>
-  <string name="newTxAmount">Montant : </string>
-  <string name="newTxRecipient">Destinataire : </string>
-  <string name="newTxFee">Frais :</string>
-  <string name="invalidAmountAndAddress">Montant et adresse invalides</string>
-  <string name="invalidAddress">Adresse invalide</string>
-  <string name="invalidAmount">Montant invalide</string>
-  <string name="noBalanceFirstLine"><a href="https://bitcoin.org/fr/debuter">Débuter</a> avec Bitcoin</string>
-  <string name="noBalanceSecondLine">Où <a href="http://howtobuybitcoins.info/">acheter</a> des bitcoins</string>
-  <string name="noBalanceThirdLine">Lisez notre <a href="https://greenaddress.it/faq">FAQ</a></string>
-  <string name="trezor_headline">Veuillez suivre les instructions sur votre portefeuille matériel</string>
-  <string name="trezorProvidePin">Veuillez saisir le code PIN de votre portefeuille matériel. Regardez l\'appareil pour avoir la position des numéros :</string>
-  <string name="trezorProvidePassphrase">Veuillez saisir la phrase de récupération de votre portefeuille matériel.</string>
-  <string name="main_account">Principal</string>
-  <string name="footerAccount">Compte</string>
-  <string name="btchipProvidePIN">Veuillez saisir le code PIN de votre BTChip :</string>
-  <string name="firstLoginRequestedInstructionsOldTrezor">Le micrologiciel du portefeuille matériel est dépassé. Veuillez au moins le mettre à jour vers la version 1.3.0 sur http://mytrezor.com/ depuis votre ordinateur.</string>
-  <string name="btchipInvalidPIN">Code PIN incorrect. Tentatives restantes : %d. Veuillez reconnecter votre BTChip avant de recommencer.</string>
-  <string name="btchipNotSetup">Votre BTChip n\'est pas initialisé. Veuillez l\'initialiser depuis votre ordinateur pour l\'utiliser.</string>
-  <string name="instantConfirmation">Confirmation instantanée</string>
-  <string name="trezor_login_failed">La connexion au portefeuille matériel a échoué</string>
-  <string name="trezor_login_failed_details">Cela signifie probablement que vous devez relier votre portefeuille matériel avec GreenAddress en utilisant l\'application de bureau.</string>
-  <string name="mnemonic_passphrase">Phrase de récupération mnémonique</string>
-  <string name="mnemonic_passphrase_not_available">Phrase de récupération non disponible</string>
-  <string name="autologout_time">Timeout de déconnexion</string>
-  <string name="autologout_time_default"> minutes</string>
-  <string name="touch_to_display">Tapez pour afficher</string>
-  <string name="txUnconfirmedTx">Transaction non confirmée. Veuillez attendre une confirmation de bloc pour faire confiance à cette transaction.</string>
-  <string name="txUnverifiedTx">Transaction non vérifiée. Veuillez attendre la synchronisation pour gagner de la confiance en cette transaction. Blocs restants :</string>
-  <string name="unconfirmedBalanceTitle">Solde non confirmé</string>
-  <string name="unconfirmedBalanceText">Votre solde n\'est pas confirmé. Cela signifie que vous avez des transactions entrantes non confirmées, ou que la vérification SPV n\'est pas terminée.</string>
-  <string name="spvNoWiFiTitle">Synchronisation SPV</string>
-  <string name="enableSPV">Autoriser SPV</string>
-  <string name="enableSPVSummary">La vérification simplifiée de paiement (SPV) permet d\'attester de la fiabilité de vos transactions et de votre solde grâce à la synchronisation avec le réseau Bitcoin. Elle demande des ressources réseaux et de traitements, désactivez-la sur des appareils lents ou qui ne disposent pas d\'une bonne connexion.</string>
-  <string name="noTwoFactorWarning">Vous n\'avez pas l\'authentification à deux facteurs !</string>
-  <string name="scan_camera_problem_dialog_message">L\'appareil photo a un problème. Vous devriez redémarrer votre appareil.</string>
-  <string name="scan_camera_problem_dialog_title">Problème d\'appareil photo</string>
-  <string name="providePassphrase">Veuillez saisir votre phrase de récupération :</string>
-  <string name="pref_header_twofactor">Authentification à deux facteurs</string>
-  <string name="twoFacPhoneCall">Appel téléphonique</string>
-  <string name="hideTwoFacWarning">Retirer l\'avertissement 2FA</string>
-  <string name="twoFacSetupHeader">%s 2FA setup</string>
-  <string name="progress">Progression :</string>
-  <string name="twoFacStep1Description">Avant tout, vous devez saisir un code d’authentification depuis une de vos actuelles méthodes d\'authentification à deux facteurs. Ceci permet de se prémunir d\'utilisateurs malveillants en évitant le changement de vos paramètres 2FA sans votre consentement.</string>
-  <string name="twoFacStep1SelectExisting">Sélectionnez une méthode d\'authentification 2FA existante pour en définir une nouvelle :</string>
-  <string name="twoFacProvideGauthDetailsDescription">Vous devez saisir un code à partir de votre nouveau Google Authenticator. Vous pouvez l\'obtenir en scannant le code QR ci-dessous dans l\'application Google Authenticator.</string>
-  <string name="twoFacProvideGauthDetails">Veuillez saisir votre code Google Authenticator.</string>
-  <string name="twoFacProvideDetails">Veuillez saisir votre %s.</string>
-  <string name="twoFacEmailChangeNotice">Fournir un e-mail permet d\'activer les notifications et la récupération des transactions</string>
-  <string name="twoFacEmailConfirmNotice">Vous devrez confirmer votre e-mail à l\'étape suivante, sinon vous ne recevrez pas de notifications.</string>
-  <string name="twoFacProvideConfirmationCodeDescription">Vous devez saisir le code de confirmation pour vous assurer que vous avez accès à la nouvelle méthode d\'authentification à deux facteurs. La méthode sera activée uniquement après vous avoir donné le code.</string>
-  <string name="twoFacProvideConfirmationCode">Veuillez saisir votre code %s.</string>
-  <string name="continueText">Continuer</string>
-  <string name="twoFacProvideAuthCodeDescription">Vous devez saisir un code d’authentification 2FA existant. Ceci permet de se prémunir d\'utilisateurs malveillants en évitant le changement de vos paramètres 2FA sans votre consentement.</string>
-  <string name="recoveryAndNotifications">Récupération et notifications</string>
-  <string name="emailAddress">adresse e-mail</string>
-  <string name="phoneNumber">numéro de téléphone</string>
-  <string name="newAddress">Nouvelle</string>
-  <string name="copyAddress">Copier</string>
-  <string name="txReceivedOn">Reçue par</string>
-  <string name="twoFacGauthTextCode">Ou vous pouvez utiliser le code suivant (touchez pour copier) :  %s. N\'oubliez pas de sauvegarder !</string>
-  <string name="trustedspv">Se connecter uniquement à un pair de confiance pour SPV</string>
-  <string name="enterValidAddressTitle">L\'adresse n\'est pas valide !</string>
-  <string name="enterValidAddressText">Veuillez saisir une adresse .onion ou IP valide (.onion préféré)</string>
-  <string name="changingWarnOnionTitle">Attention : adresse non-.onion découverte !</string>
-  <string name="changingWarnOnionText">La connexion aux nœuds Tor (.onion) permet une confidentialité et une sécurité maximales. Si vous choisissez de continuer, appuyez sur \"OK\".</string>
-  <string name="enterValidAddressTitleTorDisabled">La connectivité de Tor est désactivée !</string>
-  <string name="useNativeAuthentication">Utiliser l\'authentification Android</string>
-  <string name="genericsettings">Info &amp; paramètres</string>
-  <string name="txFeeInfo">Frais / Taille (octets) / Frais par kO</string>
-  <string name="doubleSpend">double dépense</string>
-  <string name="txDoubleSpentBy">Double dépense par</string>
-  <string name="updated">mis à jour</string>
-  <string name="malleated">modifié</string>
-  <string name="replaceable">remplaçable</string>
-  <string name="pref_header_network">Proxy Http</string>
-  <string name="pref_title_display_hostname">Nom d\'hôte</string>
-  <string name="pref_title_display_port">Port</string>
-  <string name="optin_rbf">Activer le remplacement de transaction</string>
-  <string name="willConfirmAfter">Se confirmera après %s blocs (estimation)</string>
-  <string name="recommendationBlocks">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après %s blocs.</string>
-  <string name="recommendationSingleBlock">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après 1 bloc.</string>
-  <string name="increaseFee">Augmenter les frais</string>
-  <string name="newFeeText">Nouveaux frais :</string>
-  <string name="oldFeeText">Anciens frais :</string>
-  <string name="feeIncreaseTitle">Augmentation des frais</string>
-  <string name="insufficientFundsText">Fonds insuffisants </string>
-  <string name="invalidWord">\'%1$s\' est un mot invalide, voulez-vous le corriger par %2$s ?</string>
-  <string name="setPin">Configurer le code PIN</string>
-  <string name="set2FA">CONFIGURER 2FA</string>
-  <string name="resetSPV">Réinitialiser SPV</string>
-  <string name="err_send_invalid_bitcoin_uri">URI Bitcoin invalide</string>
-  <string name="err_send_not_connected_will_resume">Non connecté, la connexion reprendra automatiquement</string>
-  <string name="err_send_need_recipient">Veuillez saisir un bénéficiaire </string>
-  <string name="err_request_login_no_pin">Aucun code PIN fourni, sortie.</string>
-  <string name="err_tabbed_sweep_failed">La vérification a échoué : Adresse de sortie invalide</string>
-  <string name="err_tabbed_sweep_requires_camera_permissions">Veuillez autoriser l\'accès à l\'appareil photo pour utiliser le balayage.</string>
-  <string name="err_qrscan_requires_camera_permissions">Veuillez autoriser l\'accès à l\'appareil photo pour utiliser la numérisation.</string>
-  <string name="err_mnemonic_activity_logout_required">Vous devez d\'abord vous déconnecter avant de vous connecter.</string>
-  <string name="err_mnemonic_activity_invalid_mnemonic">Phrase de récupération invalide (doit avoir 24 ou 27 mots)</string>
-  <string name="err_pin_save_wrong_length">Le code PIN doit avoir entre 4 et 15 chiffres</string>
-  <string name="send_max_amount">MAX</string>
-  <string name="err_sign_up_nfc_not_writable">Erreur : tag non accessible en écriture</string>
-  <string name="err_sign_up_nfc_too_small">Erreur : tag trop petit</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="title_activity_mnemonic">Restaurer</string>
+    <string name="sendToText">À</string>
+    <string name="sendAmountText">Montant</string>
+    <string name="sendSendButton">Valider &amp; Envoyer</string>
+    <string name="pinSaveText">Enregistrer</string>
+    <string name="pinLoginText">Entrer</string>
+    <string name="title_activity_qr_scanner">Numériser code QR</string>
+    <string name="title_activity_sign_up">Créer</string>
+    <string name="signupContinueButtonText">CONTINUER</string>
+    <string name="signupCheckBoxText">J\'ai sécurisé la phrase de récupération et j\'ai lu les CGU</string>
+    <string name="termsofservice"><a href="https://greenaddress.it/en/tos/">CGU</a></string>
+    <string name="firstSignUpText">CRÉER</string>
+    <string name="firstLogInText">RESTAURER</string>
+    <string name="receive_title">Recevoir</string>
+    <string name="main_title">ACTIVITÉ</string>
+    <string name="send_title">Envoyer</string>
+    <string name="pinTitleText">Code PIN</string>
+    <string name="network_unavailable">Déconnecté</string>
+    <string name="newTxTitle">Nouvelle transaction</string>
+    <string name="sweepAddressTitle">Balayer les fonds</string>
+    <string name="twoFactorChoicesTitle">Choisir la méthode d\'authentification à 2 facteurs</string>
+    <string name="choose">CHOISIR</string>
+    <string name="cancel">ANNULER</string>
+    <string name="attemptsLeft">%1$d tentatives restantes</string>
+    <string-array name="twoFactorChoices">
+        <item>Email</item>
+        <item>SMS</item>
+        <item>Appel</item>
+        <item>Google Auth</item>
+    </string-array>
+    <string-array name="timesStrings">
+        <item>année</item>
+        <item>mois</item>
+        <item>jour</item>
+        <item>heure</item>
+        <item>minute</item>
+        <item>seconde</item>
+    </string-array>
+    <string-array name="timesStringPlurals">
+        <item>années</item>
+        <item>mois</item>
+        <item>jours</item>
+        <item>heures</item>
+        <item>minutes</item>
+        <item>secondes</item>
+    </string-array>
+    <string name="send">ENVOYER</string>
+    <string name="sweep">BALAYER</string>
+    <string name="sweep_bip38_passphrase_prompt">Veuillez saisir le mot de passe BIP38 :</string>
+    <string name="invalid_passphrase">Mot de passe incorrect</string>
+    <string name="invalid_key">Clé invalide</string>
+    <string name="warning">Attention !</string>
+    <string name="save_password_now">Vous DEVEZ enregistrer votre phrase de récupération MAINTENANT</string>
+    <string name="greenaddress_headline">Le portefeuille bitcoin le plus simple, sécurisé et rapide</string>
+    <string name="pinSkipText">PASSER</string>
+    <string name="sendOptionalMemo">Note optionnelle</string>
+    <string name="madeBy">par GreenAddress</string>
+    <string name="welcomeGreenBits">Bienvenue sur GreenBits</string>
+    <string name="attemptsFinished">Code PIN invalide, vous n\'avez plus de tentatives restantes. Connectez-vous en utilisant votre phrase de récupération.</string>
+    <string name="attemptsLeftLong">Code PIN invalide, vous avez %1$d tentatives restantes</string>
+    <string name="warnOnPaste">Attention, d\'autres applications peuvent lire ou modifier votre presse-papier</string>
+    <string name="toastOnCopyAddress">Adresse copiée dans le presse-papier.</string>
+    <string name="receiveAddressSubTitle">Adresse</string>
+    <string name="sendPayTo">Payer à</string>
+    <string name="action_sweep">Balayer</string>
+    <string name="action_logout">Se déconnecter</string>
+    <string name="txTypeIn">Reçus</string>
+    <string name="txTypeOut">Envoyés</string>
+    <string name="txTypeRedeposit">Déplacés</string>
+    <string name="mnemonicHint">Écrivez votre phrase de récupération GreenAddress ou numérisez son code QR</string>
+    <string name="title_activity_settings">Paramètres</string>
+    <string name="ago">il y a %1$d %2$s</string>
+    <string name="txSubTitle">Détails de la transaction</string>
+    <string name="txRecipientText">Destinataire</string>
+    <string name="txMemoText">Note</string>
+    <string name="action_network">Moniteur Réseau</string>
+    <string name="action_about">À propos</string>
+    <!--Example settings for Notifications-->
+    <string name="txDateText">Date</string>
+    <string name="txAmountText">Montant</string>
+    <string name="newTxAmount">Montant : </string>
+    <string name="newTxRecipient">Destinataire : </string>
+    <string name="newTxFee">Frais :</string>
+    <string name="invalidAmountAndAddress">Montant et adresse invalides</string>
+    <string name="invalidAddress">Adresse invalide</string>
+    <string name="invalidAmount">Montant invalide</string>
+    <string name="noBalanceFirstLine"><a href="https://bitcoin.org/fr/debuter">Débuter</a> avec Bitcoin</string>
+    <string name="noBalanceSecondLine">Où <a href="http://howtobuybitcoins.info/">acheter</a> des bitcoins</string>
+    <string name="noBalanceThirdLine">Lisez notre <a href="https://greenaddress.it/faq">FAQ</a></string>
+    <string name="trezor_headline">Veuillez suivre les instructions sur votre portefeuille matériel</string>
+    <string name="trezorProvidePin">Veuillez saisir le code PIN de votre portefeuille matériel. Regardez l\'appareil pour avoir la position des numéros :</string>
+    <string name="trezorProvidePassphrase">Veuillez saisir la phrase de récupération de votre portefeuille matériel.</string>
+    <string name="main_account">Principal</string>
+    <string name="footerAccount">Compte</string>
+    <string name="btchipProvidePIN">Veuillez saisir le code PIN de votre BTChip :</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">Le micrologiciel du portefeuille matériel est dépassé. Veuillez au moins le mettre à jour vers la version 1.3.0 sur http://mytrezor.com/ depuis votre ordinateur.</string>
+    <string name="btchipInvalidPIN">Code PIN incorrect. Tentatives restantes : %d. Veuillez reconnecter votre BTChip avant de recommencer.</string>
+    <string name="btchipNotSetup">Votre BTChip n\'est pas initialisé. Veuillez l\'initialiser depuis votre ordinateur pour l\'utiliser.</string>
+    <string name="instantConfirmation">Confirmation instantanée</string>
+    <string name="trezor_login_failed">La connexion au portefeuille matériel a échoué</string>
+    <string name="trezor_login_failed_details">Cela signifie probablement que vous devez relier votre portefeuille matériel avec GreenAddress en utilisant l\'application de bureau.</string>
+    <string name="mnemonic_passphrase">Phrase de récupération mnémonique</string>
+    <string name="mnemonic_passphrase_not_available">Phrase de récupération non disponible</string>
+    <string name="autologout_time">Timeout de déconnexion</string>
+    <string name="autologout_time_default"> minutes</string>
+    <string name="touch_to_display">Tapez pour afficher</string>
+    <string name="txUnconfirmedTx">Transaction non confirmée. Veuillez attendre une confirmation de bloc pour faire confiance à cette transaction.</string>
+    <string name="txUnverifiedTx">Transaction non vérifiée. Veuillez attendre la synchronisation pour gagner de la confiance en cette transaction. Blocs restants :</string>
+    <string name="unconfirmedBalanceTitle">Solde non confirmé</string>
+    <string name="unconfirmedBalanceText">Votre solde n\'est pas confirmé. Cela signifie que vous avez des transactions entrantes non confirmées, ou que la vérification SPV n\'est pas terminée.</string>
+    <string name="spvNoWiFiTitle">Synchronisation SPV</string>
+    <string name="enableSPV">Autoriser SPV</string>
+    <string name="enableSPVSummary">La vérification simplifiée de paiement (SPV) permet d\'attester de la fiabilité de vos transactions et de votre solde grâce à la synchronisation avec le réseau Bitcoin. Elle demande des ressources réseaux et de traitements, désactivez-la sur des appareils lents ou qui ne disposent pas d\'une bonne connexion.</string>
+    <string name="noTwoFactorWarning">Vous n\'avez pas l\'authentification à deux facteurs !</string>
+    <string name="scan_camera_problem_dialog_message">L\'appareil photo a un problème. Vous devriez redémarrer votre appareil.</string>
+    <string name="scan_camera_problem_dialog_title">Problème d\'appareil photo</string>
+    <string name="providePassphrase">Veuillez saisir votre phrase de récupération :</string>
+    <string name="pref_header_twofactor">Authentification à deux facteurs</string>
+    <string name="twoFacPhoneCall">Appel téléphonique</string>
+    <string name="hideTwoFacWarning">Retirer l\'avertissement 2FA</string>
+    <string name="twoFacSetupHeader">%s 2FA setup</string>
+    <string name="progress">Progression :</string>
+    <string name="twoFacStep1Description">Avant tout, vous devez saisir un code d’authentification depuis une de vos actuelles méthodes d\'authentification à deux facteurs. Ceci permet de se prémunir d\'utilisateurs malveillants en évitant le changement de vos paramètres 2FA sans votre consentement.</string>
+    <string name="twoFacStep1SelectExisting">Sélectionnez une méthode d\'authentification 2FA existante pour en définir une nouvelle :</string>
+    <string name="twoFacProvideGauthDetailsDescription">Vous devez saisir un code à partir de votre nouveau Google Authenticator. Vous pouvez l\'obtenir en scannant le code QR ci-dessous dans l\'application Google Authenticator.</string>
+    <string name="twoFacProvideGauthDetails">Veuillez saisir votre code Google Authenticator.</string>
+    <string name="twoFacProvideDetails">Veuillez saisir votre %s.</string>
+    <string name="twoFacEmailChangeNotice">Fournir un e-mail permet d\'activer les notifications et la récupération des transactions</string>
+    <string name="twoFacEmailConfirmNotice">Vous devrez confirmer votre e-mail à l\'étape suivante, sinon vous ne recevrez pas de notifications.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">Vous devez saisir le code de confirmation pour vous assurer que vous avez accès à la nouvelle méthode d\'authentification à deux facteurs. La méthode sera activée uniquement après vous avoir donné le code.</string>
+    <string name="twoFacProvideConfirmationCode">Veuillez saisir votre code %s.</string>
+    <string name="continueText">Continuer</string>
+    <string name="twoFacProvideAuthCodeDescription">Vous devez saisir un code d’authentification 2FA existant. Ceci permet de se prémunir d\'utilisateurs malveillants en évitant le changement de vos paramètres 2FA sans votre consentement.</string>
+    <string name="recoveryAndNotifications">Récupération et notifications</string>
+    <string name="emailAddress">adresse e-mail</string>
+    <string name="phoneNumber">numéro de téléphone</string>
+    <string name="newAddress">Nouvelle</string>
+    <string name="copyAddress">Copier</string>
+    <string name="txReceivedOn">Reçue par</string>
+    <string name="twoFacGauthTextCode">Ou vous pouvez utiliser le code suivant (touchez pour copier) :  %s. N\'oubliez pas de sauvegarder !</string>
+    <string name="trustedspv">Se connecter uniquement à un pair de confiance pour SPV</string>
+    <string name="enterValidAddressTitle">L\'adresse n\'est pas valide !</string>
+    <string name="enterValidAddressText">Veuillez saisir une adresse .onion ou IP valide (.onion préféré)</string>
+    <string name="changingWarnOnionTitle">Attention : adresse non-.onion découverte !</string>
+    <string name="changingWarnOnionText">La connexion aux nœuds Tor (.onion) permet une confidentialité et une sécurité maximales. Si vous choisissez de continuer, appuyez sur \"OK\".</string>
+    <string name="enterValidAddressTitleTorDisabled">La connectivité de Tor est désactivée !</string>
+    <string name="useNativeAuthentication">Utiliser l\'authentification Android</string>
+    <string name="genericsettings">Info &amp; paramètres</string>
+    <string name="txFeeInfo">Frais / Taille (octets) / Frais par kO</string>
+    <string name="doubleSpend">double dépense</string>
+    <string name="txDoubleSpentBy">Double dépense par</string>
+    <string name="updated">mis à jour</string>
+    <string name="malleated">modifié</string>
+    <string name="replaceable">remplaçable</string>
+    <string name="pref_header_network">Proxy Http</string>
+    <string name="pref_title_display_hostname">Nom d\'hôte</string>
+    <string name="pref_title_display_port">Port</string>
+    <string name="optin_rbf">Activer le remplacement de transaction</string>
+    <string name="willConfirmAfter">Se confirmera après %s blocs (estimation)</string>
+    <string name="recommendationBlocks">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après %s blocs.</string>
+    <string name="recommendationSingleBlock">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après 1 bloc.</string>
+    <string name="increaseFee">Augmenter les frais</string>
+    <string name="newFeeText">Nouveaux frais :</string>
+    <string name="oldFeeText">Anciens frais :</string>
+    <string name="feeIncreaseTitle">Augmentation des frais</string>
+    <string name="insufficientFundsText">Fonds insuffisants </string>
+    <string name="invalidWord">\'%1$s\' est un mot invalide, voulez-vous le corriger par %2$s ?</string>
+    <string name="setPin">Configurer le code PIN</string>
+    <string name="set2FA">CONFIGURER 2FA</string>
+    <string name="resetSPV">Réinitialiser SPV</string>
+    <string name="err_send_invalid_bitcoin_uri">URI Bitcoin invalide</string>
+    <string name="err_send_not_connected_will_resume">Non connecté, la connexion reprendra automatiquement</string>
+    <string name="err_send_need_recipient">Veuillez saisir un bénéficiaire </string>
+    <string name="err_request_login_no_pin">Aucun code PIN fourni, sortie.</string>
+    <string name="err_tabbed_sweep_failed">La vérification a échoué : Adresse de sortie invalide</string>
+    <string name="err_tabbed_sweep_requires_camera_permissions">Veuillez autoriser l\'accès à l\'appareil photo pour utiliser le balayage.</string>
+    <string name="err_qrscan_requires_camera_permissions">Veuillez autoriser l\'accès à l\'appareil photo pour utiliser la numérisation.</string>
+    <string name="err_mnemonic_activity_logout_required">Vous devez d\'abord vous déconnecter avant de vous connecter.</string>
+    <string name="err_mnemonic_activity_invalid_mnemonic">Phrase de récupération invalide (doit avoir 24 ou 27 mots)</string>
+    <string name="err_pin_save_wrong_length">Le code PIN doit avoir entre 4 et 15 chiffres</string>
+    <string name="send_max_amount">MAX</string>
+    <string name="err_sign_up_nfc_not_writable">Erreur : tag non accessible en écriture</string>
+    <string name="err_sign_up_nfc_too_small">Erreur : tag trop petit</string>
 </resources>

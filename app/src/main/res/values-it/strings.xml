@@ -1,212 +1,212 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="action_settings">Configurazione</string>
-  <string name="title_activity_mnemonic">Ripristina</string>
-  <string name="sendToText">A</string>
-  <string name="sendAmountText">Ammontare</string>
-  <string name="sendSendButton">VERIFICA &amp; INVIA</string>
-  <string name="pinSaveText">Salva</string>
-  <string name="pinLoginText">Entra</string>
-  <string name="title_activity_sign_up">Nuovo</string>
-  <string name="signupContinueButtonText">CONTINUA</string>
-  <string name="signupCheckBoxText">Ho custodito la passphrase e ho letto le condizioni</string>
-  <string name="termsofservice"><a href="https://greenaddress.it/it/tos/">Condizioni d\'utilizzo</a></string>
+    <string name="action_settings">Configurazione</string>
+    <string name="title_activity_mnemonic">Ripristina</string>
+    <string name="sendToText">A</string>
+    <string name="sendAmountText">Ammontare</string>
+    <string name="sendSendButton">VERIFICA &amp; INVIA</string>
+    <string name="pinSaveText">Salva</string>
+    <string name="pinLoginText">Entra</string>
+    <string name="title_activity_sign_up">Nuovo</string>
+    <string name="signupContinueButtonText">CONTINUA</string>
+    <string name="signupCheckBoxText">Ho custodito la passphrase e ho letto le condizioni</string>
+    <string name="termsofservice"><a href="https://greenaddress.it/it/tos/">Condizioni d\'utilizzo</a></string>
 
-  <string name="firstSignUpText">NUOVO</string>
-  <string name="firstLogInText">RIPRISTINA</string>
-  <string name="receive_title">RICEVI</string>
-  <string name="main_title">BILANCIO</string>
-  <string name="send_title">INVIA</string>
-  <string name="network_unavailable">Disconnesso</string>
-  <string name="newTxTitle">Nuova transazione</string>
-  <string name="sweepAddressTitle">Preleva tutto da qrcode</string>
-  <string name="twoFactorChoicesTitle">Scegli l\'autenticazione a due fattori</string>
-  <string name="choose">SCEGLI</string>
-  <string name="cancel">ANNULLA</string>
-  <string name="attemptsLeft">%1$d tentativi rimasti</string>
-  <string-array name="twoFactorChoices">
-    <item>Email</item>
-    <item>SMS</item>
-    <item>Chiamata</item>
-    <item>Google Auth</item>
-  </string-array>
-  <string-array name="timesStrings">
-    <item>anno</item>
-    <item>mese</item>
-    <item>giorno</item>
-    <item>ora</item>
-    <item>minuto</item>
-    <item>secondo</item>
-  </string-array>
-  <string-array name="timesStringPlurals">
-    <item>anni</item>
-    <item>mesi</item>
-    <item>giorni</item>
-    <item>ore</item>
-    <item>minuti</item>
-    <item>secondi</item>
-  </string-array>
-  <string name="send">INVIA</string>
-  <string name="sweep">PRELEVA</string>
-  <string name="sweep_bip38_passphrase_prompt">Per piacere inserisci la password BIP38:</string>
-  <string name="invalid_passphrase">Password incorretta</string>
-  <string name="invalid_key">Chiave invalida</string>
-  <string name="warning">Attenzione!</string>
-  <string name="save_password_now">Devi salvarti la passphrase, adesso.</string>
-  <string name="greenaddress_headline">il più semplice, sicuro e veloce wallet bitcoin</string>
-  <string name="pinSkipText">SALTA</string>
-  <string name="sendOptionalMemo">Memo opzionale</string>
-  <string name="madeBy">da GreenAddress</string>
-  <string name="welcomeGreenBits">Benvenuti in GreenBits</string>
-  <string name="attemptsFinished">PIN non valido, non sono rimasti tentativi. Per piacere accedi con la passphrase.</string>
-  <string name="attemptsLeftLong">PIN non valido, hai %1$d tentativi rimanenti</string>
-  <string name="warnOnPaste">Agire con cautela, altre applicazioni posso leggere o cambiare la clipboard</string>
-  <string name="toastOnCopyAddress">Indirizzo copiato.</string>
-  <string name="receiveAddressSubTitle">Indirizzo</string>
-  <string name="sendPayTo">Paga a</string>
-  <string name="txTypeIn">Ricevuto</string>
-  <string name="txTypeOut">Mandato</string>
-  <string name="txTypeRedeposit">Giroconto</string>
-  <string name="mnemonicHint">Inserisci la tua passphrase GreenAddress o fai lo scan del qrcode</string>
-  <string name="title_activity_settings">Configurazione</string>
-  <string name="ago">%1$d %2$s fa</string>
-  <string name="txSubTitle">Dettagli transazione</string>
-  <string name="txRecipientText">Destinatario</string>
-  <!--Example settings for Notifications-->
-  <string name="txDateText">Data</string>
-  <string name="txAmountText">Importo</string>
-  <string name="newTxAmount">Importo: </string>
-  <string name="newTxRecipient">Destinatario: </string>
-  <string name="newTxFee">Commissione: </string>
-  <string name="invalidAmountAndAddress">Indirizzo ed importo non validi</string>
-  <string name="invalidAddress">Indirizzo non valido</string>
-  <string name="invalidAmount">Importo non valido</string>
-  <string name="noBalanceFirstLine">Iniziare con i <a href="https://bitcoin.org/it/getting-started">Bitcoin</a></string>
-  <string name="noBalanceSecondLine">Dove <a href="http://howtobuybitcoins.info/">comprare</a></string>
-  <string name="noBalanceThirdLine">Leggi le nostre <a href="https://greenaddress.it/it/faq">FAQ</a></string>
-  <string name="trezor_headline">Per piacere segui le istruzioni sul Hardware Wallet</string>
-  <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Hardware Wallet per la posizione dei tasti:</string>
-  <string name="trezorProvidePassphrase">Per piacere inserisci la passphrase del tuo Hardware Wallet</string>
-  <string name="main_account">Principale</string>
-  <string name="footerAccount">Conto</string>
-  <string name="btchipProvidePIN">Digita il tuo PIN per BTChip:</string>
-  <string name="firstLoginRequestedInstructionsOldTrezor">Rilevato Hardware Wallet firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.3.0 da http://mytrezor.com/ dal tuo PC.</string>
-  <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
-  <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
-  <string name="instantConfirmation">Conferma istantanea</string>
-  <string name="trezor_login_failed">Hardware Wallet accesso fallito</string>
-  <string name="trezor_login_failed_details">Probabilmente significa che devi usare l\'app su desktop per configurare Hardware Wallet con GreenAddress.</string>
-  <string name="mnemonic_passphrase">Passphrase mnemonica</string>
-  <string name="mnemonic_passphrase_not_available">Passphrase non disponibile</string>
-  <string name="autologout_time">Logout automatico</string>
-  <string name="autologout_time_default"> minuti</string>
-  <string name="touch_to_display">Tocca per mostrare</string>
-  <string name="txUnconfirmedTx">Transazione non confermata. Per piacere aspetta per conferme per fidarti di questa transazione.</string>
-  <string name="txUnverifiedTx">Transazione non verificata. Per piacere aspetta la sicronizzazione per fidarti di questa transazione. Blocchi rimanenti:</string>
-  <string name="unconfirmedBalanceTitle">Bilancio non confermato</string>
-  <string name="unconfirmedBalanceText">Il tuo bilancio non è confermato. Significa che forse hai delle transazione appena ricevute o che comunque la verifica SPV non è finita.</string>
-  <string name="spvNoWiFiTitle">Sincronizzazione SPV</string>
-  <string name="enableSPV">Abilita SPV</string>
-  <string name="enableSPVSummary">Simple Payment Verification (Verifica Semplice di Pagamento) permette di fidarsi del saldo e delle proprie transazioni grazie alla sincronizzazione con il network Bitcoin. Richiede banda ed elaborazione, quindi si consiglia di spegnerlo se non si ha una buona connessione o si faccia uso di telefoni di fascia bassa.</string>
-  <string name="noTwoFactorWarning">Non hai impostato nessuna autenticazione a due fattori! Per favore, vai nelle impostazioni a configurarlo!</string>
-  <string name="scan_camera_problem_dialog_message">La fotocamera ha un problema. Probabilmente c\'è bisogno di riavviare il dispositivo.</string>
-  <string name="scan_camera_problem_dialog_title">Problema fotocamera</string>
-  <string name="pref_header_twofactor">Autenticazione a due fattori</string>
-  <string name="twoFacPhoneCall">Chiamata telefonica</string>
-  <string name="hideTwoFacWarning">Nascondi avviso 2FA</string>
+    <string name="firstSignUpText">NUOVO</string>
+    <string name="firstLogInText">RIPRISTINA</string>
+    <string name="receive_title">RICEVI</string>
+    <string name="main_title">BILANCIO</string>
+    <string name="send_title">INVIA</string>
+    <string name="network_unavailable">Disconnesso</string>
+    <string name="newTxTitle">Nuova transazione</string>
+    <string name="sweepAddressTitle">Preleva tutto da qrcode</string>
+    <string name="twoFactorChoicesTitle">Scegli l\'autenticazione a due fattori</string>
+    <string name="choose">SCEGLI</string>
+    <string name="cancel">ANNULLA</string>
+    <string name="attemptsLeft">%1$d tentativi rimasti</string>
+    <string-array name="twoFactorChoices">
+        <item>Email</item>
+        <item>SMS</item>
+        <item>Chiamata</item>
+        <item>Google Auth</item>
+    </string-array>
+    <string-array name="timesStrings">
+        <item>anno</item>
+        <item>mese</item>
+        <item>giorno</item>
+        <item>ora</item>
+        <item>minuto</item>
+        <item>secondo</item>
+    </string-array>
+    <string-array name="timesStringPlurals">
+        <item>anni</item>
+        <item>mesi</item>
+        <item>giorni</item>
+        <item>ore</item>
+        <item>minuti</item>
+        <item>secondi</item>
+    </string-array>
+    <string name="send">INVIA</string>
+    <string name="sweep">PRELEVA</string>
+    <string name="sweep_bip38_passphrase_prompt">Per piacere inserisci la password BIP38:</string>
+    <string name="invalid_passphrase">Password incorretta</string>
+    <string name="invalid_key">Chiave invalida</string>
+    <string name="warning">Attenzione!</string>
+    <string name="save_password_now">Devi salvarti la passphrase, adesso.</string>
+    <string name="greenaddress_headline">il più semplice, sicuro e veloce wallet bitcoin</string>
+    <string name="pinSkipText">SALTA</string>
+    <string name="sendOptionalMemo">Memo opzionale</string>
+    <string name="madeBy">da GreenAddress</string>
+    <string name="welcomeGreenBits">Benvenuti in GreenBits</string>
+    <string name="attemptsFinished">PIN non valido, non sono rimasti tentativi. Per piacere accedi con la passphrase.</string>
+    <string name="attemptsLeftLong">PIN non valido, hai %1$d tentativi rimanenti</string>
+    <string name="warnOnPaste">Agire con cautela, altre applicazioni posso leggere o cambiare la clipboard</string>
+    <string name="toastOnCopyAddress">Indirizzo copiato.</string>
+    <string name="receiveAddressSubTitle">Indirizzo</string>
+    <string name="sendPayTo">Paga a</string>
+    <string name="txTypeIn">Ricevuto</string>
+    <string name="txTypeOut">Mandato</string>
+    <string name="txTypeRedeposit">Giroconto</string>
+    <string name="mnemonicHint">Inserisci la tua passphrase GreenAddress o fai lo scan del qrcode</string>
+    <string name="title_activity_settings">Configurazione</string>
+    <string name="ago">%1$d %2$s fa</string>
+    <string name="txSubTitle">Dettagli transazione</string>
+    <string name="txRecipientText">Destinatario</string>
+    <!--Example settings for Notifications-->
+    <string name="txDateText">Data</string>
+    <string name="txAmountText">Importo</string>
+    <string name="newTxAmount">Importo: </string>
+    <string name="newTxRecipient">Destinatario: </string>
+    <string name="newTxFee">Commissione: </string>
+    <string name="invalidAmountAndAddress">Indirizzo ed importo non validi</string>
+    <string name="invalidAddress">Indirizzo non valido</string>
+    <string name="invalidAmount">Importo non valido</string>
+    <string name="noBalanceFirstLine">Iniziare con i <a href="https://bitcoin.org/it/getting-started">Bitcoin</a></string>
+    <string name="noBalanceSecondLine">Dove <a href="http://howtobuybitcoins.info/">comprare</a></string>
+    <string name="noBalanceThirdLine">Leggi le nostre <a href="https://greenaddress.it/it/faq">FAQ</a></string>
+    <string name="trezor_headline">Per piacere segui le istruzioni sul Hardware Wallet</string>
+    <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Hardware Wallet per la posizione dei tasti:</string>
+    <string name="trezorProvidePassphrase">Per piacere inserisci la passphrase del tuo Hardware Wallet</string>
+    <string name="main_account">Principale</string>
+    <string name="footerAccount">Conto</string>
+    <string name="btchipProvidePIN">Digita il tuo PIN per BTChip:</string>
+    <string name="firstLoginRequestedInstructionsOldTrezor">Rilevato Hardware Wallet firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.3.0 da http://mytrezor.com/ dal tuo PC.</string>
+    <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
+    <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
+    <string name="instantConfirmation">Conferma istantanea</string>
+    <string name="trezor_login_failed">Hardware Wallet accesso fallito</string>
+    <string name="trezor_login_failed_details">Probabilmente significa che devi usare l\'app su desktop per configurare Hardware Wallet con GreenAddress.</string>
+    <string name="mnemonic_passphrase">Passphrase mnemonica</string>
+    <string name="mnemonic_passphrase_not_available">Passphrase non disponibile</string>
+    <string name="autologout_time">Logout automatico</string>
+    <string name="autologout_time_default"> minuti</string>
+    <string name="touch_to_display">Tocca per mostrare</string>
+    <string name="txUnconfirmedTx">Transazione non confermata. Per piacere aspetta per conferme per fidarti di questa transazione.</string>
+    <string name="txUnverifiedTx">Transazione non verificata. Per piacere aspetta la sicronizzazione per fidarti di questa transazione. Blocchi rimanenti:</string>
+    <string name="unconfirmedBalanceTitle">Bilancio non confermato</string>
+    <string name="unconfirmedBalanceText">Il tuo bilancio non è confermato. Significa che forse hai delle transazione appena ricevute o che comunque la verifica SPV non è finita.</string>
+    <string name="spvNoWiFiTitle">Sincronizzazione SPV</string>
+    <string name="enableSPV">Abilita SPV</string>
+    <string name="enableSPVSummary">Simple Payment Verification (Verifica Semplice di Pagamento) permette di fidarsi del saldo e delle proprie transazioni grazie alla sincronizzazione con il network Bitcoin. Richiede banda ed elaborazione, quindi si consiglia di spegnerlo se non si ha una buona connessione o si faccia uso di telefoni di fascia bassa.</string>
+    <string name="noTwoFactorWarning">Non hai impostato nessuna autenticazione a due fattori! Per favore, vai nelle impostazioni a configurarlo!</string>
+    <string name="scan_camera_problem_dialog_message">La fotocamera ha un problema. Probabilmente c\'è bisogno di riavviare il dispositivo.</string>
+    <string name="scan_camera_problem_dialog_title">Problema fotocamera</string>
+    <string name="pref_header_twofactor">Autenticazione a due fattori</string>
+    <string name="twoFacPhoneCall">Chiamata telefonica</string>
+    <string name="hideTwoFacWarning">Nascondi avviso 2FA</string>
 
-  <string name="twoFacSetupHeader">%s configurazione 2FA</string>
-  <string name="progress">Progresso:</string>
-  <string name="twoFacStep1Description">Per prima cosa, devi fornire un codice di autenticazione da uno dei tuoi già impostati metodi di autenticazione a due fattori. Questo per evitare che utenti malintenzionati possano modificare le impostazioni 2FA senza il tuo consenso.</string>
-  <string name="twoFacStep1SelectExisting">Seleziona un metodo 2FA pre-impostato per autenticare l\'impostazione di uno nuovo.</string>
-  <string name="twoFacProvideGauthDetailsDescription">C\'è bisogno che fornisci un codice dal tuo nuovo Google Authenticator. Puoi ottenerlo scansionando il codice QR qui sotto con l\'app Google Authenticator.</string>
-  <string name="twoFacProvideGauthDetails">Per piacere fornisci il codice Google Authenticator.</string>
-  <string name="twoFacProvideDetails">Prego, inserisci il tuo codice %s.</string>
-  <string name="twoFacEmailChangeNotice">Fornire un email abilita le notifiche e aumenta la sicurezza.</string>
-  <string name="twoFacEmailConfirmNotice">Dovrai confermare l\'email nel prossimo passaggio, altrimenti non riceverai nessuna notifica.</string>
-  <string name="twoFacProvideConfirmationCodeDescription">Devi fornire il codice di conferma per essere sicuri che tu abbia accesso al nuovo metodo di autenticazione a due fattori. Solo dopo che hai fornito il codice, il metodo verrà abilitato.</string>
-  <string name="twoFacProvideConfirmationCode">Per piacere fornisci il codice %s.</string>
-  <string name="continueText">Continua</string>
-  <string name="twoFacProvideAuthCodeDescription">È necessario fornire un codice di autenticazione a due fattori esistente. Questo per evitare che utenti malintenzionati possano modificare le impostazioni 2FA senza il tuo consenso.</string>
-  <string name="recoveryAndNotifications">Notifiche e backup</string>
-  <string name="emailAddress">indirizzo email</string>
-  <string name="phoneNumber">numero telefonico</string>
-  <string name="newAddress">Nuovo</string>
-  <string name="txReceivedOn">Ricevuto su</string>
+    <string name="twoFacSetupHeader">%s configurazione 2FA</string>
+    <string name="progress">Progresso:</string>
+    <string name="twoFacStep1Description">Per prima cosa, devi fornire un codice di autenticazione da uno dei tuoi già impostati metodi di autenticazione a due fattori. Questo per evitare che utenti malintenzionati possano modificare le impostazioni 2FA senza il tuo consenso.</string>
+    <string name="twoFacStep1SelectExisting">Seleziona un metodo 2FA pre-impostato per autenticare l\'impostazione di uno nuovo.</string>
+    <string name="twoFacProvideGauthDetailsDescription">C\'è bisogno che fornisci un codice dal tuo nuovo Google Authenticator. Puoi ottenerlo scansionando il codice QR qui sotto con l\'app Google Authenticator.</string>
+    <string name="twoFacProvideGauthDetails">Per piacere fornisci il codice Google Authenticator.</string>
+    <string name="twoFacProvideDetails">Prego, inserisci il tuo codice %s.</string>
+    <string name="twoFacEmailChangeNotice">Fornire un email abilita le notifiche e aumenta la sicurezza.</string>
+    <string name="twoFacEmailConfirmNotice">Dovrai confermare l\'email nel prossimo passaggio, altrimenti non riceverai nessuna notifica.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">Devi fornire il codice di conferma per essere sicuri che tu abbia accesso al nuovo metodo di autenticazione a due fattori. Solo dopo che hai fornito il codice, il metodo verrà abilitato.</string>
+    <string name="twoFacProvideConfirmationCode">Per piacere fornisci il codice %s.</string>
+    <string name="continueText">Continua</string>
+    <string name="twoFacProvideAuthCodeDescription">È necessario fornire un codice di autenticazione a due fattori esistente. Questo per evitare che utenti malintenzionati possano modificare le impostazioni 2FA senza il tuo consenso.</string>
+    <string name="recoveryAndNotifications">Notifiche e backup</string>
+    <string name="emailAddress">indirizzo email</string>
+    <string name="phoneNumber">numero telefonico</string>
+    <string name="newAddress">Nuovo</string>
+    <string name="txReceivedOn">Ricevuto su</string>
     <string name="copyAddress">Copia</string>
-  <string name="trustedspv">Collegati solo ad un nodo fidato per SPV</string>
-  <string name="enterValidAddressTitle">Indirizzo invalido</string>
-  <string name="enterValidAddressText">Per piacere inserisci un indirizzo valido .onion on un indirizzo IP (.onion preferibilmente)</string>
-  <string name="changingWarnOnionTitle">Attenzione: Indirizzo non-.onion rilevato!</string>
-  <string name="changingWarnOnionText">La connessione via nodi Tor (.onion) permette migliore privacy e sicurezza. Se scegli di continuare premi "OK".</string>
-  <string name="enterValidAddressTitleTorDisabled">Tor non è attivabile!</string>
-  <string name="enterValidAddressTextTorDisabled">Devi configurare prima il proxy (Orbot Sock5) per abilitare Tor.</string>
-  <string name="useNativeAuthentication">Riusa l\'autenticazione Android</string>
-  <string name="genericsettings">Info &amp; configurazione</string>
-  <string name="txFeeInfo">Commissione / Dimensione (bytes) / Commissione per kB</string>
-  <string name="doubleSpend">doppio spesa</string>
-  <string name="txDoubleSpentBy">Doppio spesa da</string>
-  <string name="updated">aggiornata</string>
-  <string name="malleated">modificata</string>
-  <string name="replaceable">sostituibile</string>
-  <string name="pref_title_display_hostname">Indirizzo</string>
-  <string name="pref_title_display_port">Porta</string>
-  <string name="optin_rbf">Abilita sostituisci transazione</string>
-  <string name="app_version">Versione %1$s %2$s</string>
-  <string name="invalidWord">La parola \'%1$s\' non è valida, vuoi che sia corretta con %2$s?</string>
-  <string name="setPin">Configura PIN</string>
-  <string name="set2FA">Configura 2FA</string>
-  <string name="resetSPV">Azzera SPV</string>
-  <string name="err_send_invalid_bitcoin_uri">Indirizzo Bitcoin invalido</string>
-  <string name="err_send_not_connected_will_resume">Disonnessi dal server, connessione in corso.</string>
-  <string name="err_send_need_recipient">Per piacere fornisci un destinatario</string>
-  <string name="err_request_login_no_pin">PIN necessario, grazie.</string>
-  <string name="err_tabbed_sweep_failed">Validazione fallita: indirizzo invalido</string>
-  <string name="err_tabbed_sweep_requires_camera_permissions">Per piacere consenti l\'utilizzo della fotocamera per prelevare.</string>
-  <string name="err_qrscan_requires_camera_permissions">Per piacere consenti l\'utilizzo della fotocamera per fare lo scan dei qrcode.</string>
-  <string name="err_mnemonic_activity_logout_required">Occure fare il logout prima dell\'accesso.</string>
-  <string name="err_mnemonic_activity_invalid_mnemonic">Frase mnemonica invalida (deve essere di 24 o 27 parole)</string>
-  <string name="err_pin_save_wrong_length">Il deve essere tra 4 e 15 numeri</string>
-  <string name="send_max_amount">TOTALE</string>
-  <string name="err_sign_up_nfc_not_writable">Errore: tag nfc non scrivibile</string>
-  <string name="err_sign_up_nfc_too_small">Errore: tag nfc troppo piccola</string>
-  <string name="network_monitor_peer_addr">Indirizzo: %1$s</string>
-  <string name="network_monitor_peer_version">Versione: %1$s</string>
-  <string name="network_monitor_peer_block">Blocchi: %1$d</string>
-  <string name="network_monitor_peer_ping">Ultimo ping: %1$d ms</string>
-  <string name="network_monitor_bloom_info">Non ci sono informazioni sul filtro bloom.</string>
-  <string name="network_monitor_banner">%1$s Blocchi rimanenti %2$d</string>
-  <string name="trustedspvExample">Per esempio: 8.90.14.2:8333,40.116.12.85:8333</string>
-  <string name="view_block_explorer">Sei sicuro di voler mandare al block explorer %1$s i dettagli?</string>
-  <string name="no_peers_connected">Nessun Nodo Connesso</string>
-  <string name="watchOnlyLoginStatus">Abilitato: %1$s</string>
-  <string name="watchOnlyLoginSetup">Tocca per configurare</string>
-  <string name="watchOnlyLoginDisabled">Watch Only disabilitato</string>
-  <string name="enter_valid_username">Per piacere inserisci un valido username</string>
-  <string name="enter_valid_password">La password non deve essere vuota</string>
-  <string name="error_username_not_found_or_wrong_password">Utente inesistente o password non corretta</string>
-  <string name="error_username_not_available">Username non disponibile</string>
-  <string name="enableTor">Abilita Tor</string>
-  <string name="torSummary">Tor userà %1$s e funzionerà solo se il proxy usato è Orbot o supporta Tor</string>
-  <string name="show_balance_in_title">Visualizza il bilancio nel titolo</string>
-  <string name="show_balance_in_title_sum">Questa opzione nasconde il bilancio nelle schermate normali e la visualizza nel titolo al posto del nome del subaccount</string>
-  <string name="remember_watch_only">Ricorda nome utente</string>
-  <string name="remember_warn_title">Attenzione: Il nome utente verrà salvato nel dispositivo.</string>
-  <string name="remember_warn_content">Lasciare il nome utente sul dispositivo potrebbe essere un problema; se qualcuno ha accesso alla vostra memoria potrebbe leggere il vostro nome utente in chiaro. Se decidi di continuare premi "OK".</string>
-  <string name="generating_address">Generazione indirizzo…</string>
-  <string name="loading_transactions">Caricamento transazioni…</string>
-  <string name="transactionCompleted">Transazione completata con successo</string>
-  <string name="unable_to_connect_to_service">GreenBits non riesce a collegarsi, per favore verifica la connessione a internet</string>
-  <string name="nfcDialogMessage">Tieni la tag NFC vicino al dispositivo</string>
-  <string name="securePassphraseMsg">Metti al sicuro la passphrase e conferma di accettare i Termini di Servizio</string>
-  <string name="signupInProgress">Registrazione in corso</string>
-  <string name="notConnected">Non sei connesso, si prega di attendere</string>
-  <string name="pinErrorLength">Il PIN deve essere compreso tra 4 e 15 numeri</string>
-  <string name="problemWithKey">Problemi con la chiave %s</string>
-  <string name="showAmountInReceive">Campi per l\'importo in ricevi</string>
-  <string name="showAmountInReceiveDetail">Mostra i campi per l\'importo nella tab ricevi</string>
-  <string name="segwit_dialog_title">Wallet aggiornato</string>
-  <string name="segwit_dialog_content">Il tuo wallet è stato automaticamente aggiornato a segregated witness. Puoi disabilitare l\'aggiornamento in configurazione solo prima di aver generato il prossimo indirizzo.</string>
-  <string name="segwit_disable">Disabilita Segwit</string>
-  <string name="segwit_enable">Abilita Segwit</string>
+    <string name="trustedspv">Collegati solo ad un nodo fidato per SPV</string>
+    <string name="enterValidAddressTitle">Indirizzo invalido</string>
+    <string name="enterValidAddressText">Per piacere inserisci un indirizzo valido .onion on un indirizzo IP (.onion preferibilmente)</string>
+    <string name="changingWarnOnionTitle">Attenzione: Indirizzo non-.onion rilevato!</string>
+    <string name="changingWarnOnionText">La connessione via nodi Tor (.onion) permette migliore privacy e sicurezza. Se scegli di continuare premi "OK".</string>
+    <string name="enterValidAddressTitleTorDisabled">Tor non è attivabile!</string>
+    <string name="enterValidAddressTextTorDisabled">Devi configurare prima il proxy (Orbot Sock5) per abilitare Tor.</string>
+    <string name="useNativeAuthentication">Riusa l\'autenticazione Android</string>
+    <string name="genericsettings">Info &amp; configurazione</string>
+    <string name="txFeeInfo">Commissione / Dimensione (bytes) / Commissione per kB</string>
+    <string name="doubleSpend">doppio spesa</string>
+    <string name="txDoubleSpentBy">Doppio spesa da</string>
+    <string name="updated">aggiornata</string>
+    <string name="malleated">modificata</string>
+    <string name="replaceable">sostituibile</string>
+    <string name="pref_title_display_hostname">Indirizzo</string>
+    <string name="pref_title_display_port">Porta</string>
+    <string name="optin_rbf">Abilita sostituisci transazione</string>
+    <string name="app_version">Versione %1$s %2$s</string>
+    <string name="invalidWord">La parola \'%1$s\' non è valida, vuoi che sia corretta con %2$s?</string>
+    <string name="setPin">Configura PIN</string>
+    <string name="set2FA">Configura 2FA</string>
+    <string name="resetSPV">Azzera SPV</string>
+    <string name="err_send_invalid_bitcoin_uri">Indirizzo Bitcoin invalido</string>
+    <string name="err_send_not_connected_will_resume">Disonnessi dal server, connessione in corso.</string>
+    <string name="err_send_need_recipient">Per piacere fornisci un destinatario</string>
+    <string name="err_request_login_no_pin">PIN necessario, grazie.</string>
+    <string name="err_tabbed_sweep_failed">Validazione fallita: indirizzo invalido</string>
+    <string name="err_tabbed_sweep_requires_camera_permissions">Per piacere consenti l\'utilizzo della fotocamera per prelevare.</string>
+    <string name="err_qrscan_requires_camera_permissions">Per piacere consenti l\'utilizzo della fotocamera per fare lo scan dei qrcode.</string>
+    <string name="err_mnemonic_activity_logout_required">Occure fare il logout prima dell\'accesso.</string>
+    <string name="err_mnemonic_activity_invalid_mnemonic">Frase mnemonica invalida (deve essere di 24 o 27 parole)</string>
+    <string name="err_pin_save_wrong_length">Il deve essere tra 4 e 15 numeri</string>
+    <string name="send_max_amount">TOTALE</string>
+    <string name="err_sign_up_nfc_not_writable">Errore: tag nfc non scrivibile</string>
+    <string name="err_sign_up_nfc_too_small">Errore: tag nfc troppo piccola</string>
+    <string name="network_monitor_peer_addr">Indirizzo: %1$s</string>
+    <string name="network_monitor_peer_version">Versione: %1$s</string>
+    <string name="network_monitor_peer_block">Blocchi: %1$d</string>
+    <string name="network_monitor_peer_ping">Ultimo ping: %1$d ms</string>
+    <string name="network_monitor_bloom_info">Non ci sono informazioni sul filtro bloom.</string>
+    <string name="network_monitor_banner">%1$s Blocchi rimanenti %2$d</string>
+    <string name="trustedspvExample">Per esempio: 8.90.14.2:8333,40.116.12.85:8333</string>
+    <string name="view_block_explorer">Sei sicuro di voler mandare al block explorer %1$s i dettagli?</string>
+    <string name="no_peers_connected">Nessun Nodo Connesso</string>
+    <string name="watchOnlyLoginStatus">Abilitato: %1$s</string>
+    <string name="watchOnlyLoginSetup">Tocca per configurare</string>
+    <string name="watchOnlyLoginDisabled">Watch Only disabilitato</string>
+    <string name="enter_valid_username">Per piacere inserisci un valido username</string>
+    <string name="enter_valid_password">La password non deve essere vuota</string>
+    <string name="error_username_not_found_or_wrong_password">Utente inesistente o password non corretta</string>
+    <string name="error_username_not_available">Username non disponibile</string>
+    <string name="enableTor">Abilita Tor</string>
+    <string name="torSummary">Tor userà %1$s e funzionerà solo se il proxy usato è Orbot o supporta Tor</string>
+    <string name="show_balance_in_title">Visualizza il bilancio nel titolo</string>
+    <string name="show_balance_in_title_sum">Questa opzione nasconde il bilancio nelle schermate normali e la visualizza nel titolo al posto del nome del subaccount</string>
+    <string name="remember_watch_only">Ricorda nome utente</string>
+    <string name="remember_warn_title">Attenzione: Il nome utente verrà salvato nel dispositivo.</string>
+    <string name="remember_warn_content">Lasciare il nome utente sul dispositivo potrebbe essere un problema; se qualcuno ha accesso alla vostra memoria potrebbe leggere il vostro nome utente in chiaro. Se decidi di continuare premi "OK".</string>
+    <string name="generating_address">Generazione indirizzo…</string>
+    <string name="loading_transactions">Caricamento transazioni…</string>
+    <string name="transactionCompleted">Transazione completata con successo</string>
+    <string name="unable_to_connect_to_service">GreenBits non riesce a collegarsi, per favore verifica la connessione a internet</string>
+    <string name="nfcDialogMessage">Tieni la tag NFC vicino al dispositivo</string>
+    <string name="securePassphraseMsg">Metti al sicuro la passphrase e conferma di accettare i Termini di Servizio</string>
+    <string name="signupInProgress">Registrazione in corso</string>
+    <string name="notConnected">Non sei connesso, si prega di attendere</string>
+    <string name="pinErrorLength">Il PIN deve essere compreso tra 4 e 15 numeri</string>
+    <string name="problemWithKey">Problemi con la chiave %s</string>
+    <string name="showAmountInReceive">Campi per l\'importo in ricevi</string>
+    <string name="showAmountInReceiveDetail">Mostra i campi per l\'importo nella tab ricevi</string>
+    <string name="segwit_dialog_title">Wallet aggiornato</string>
+    <string name="segwit_dialog_content">Il tuo wallet è stato automaticamente aggiornato a segregated witness. Puoi disabilitare l\'aggiornamento in configurazione solo prima di aver generato il prossimo indirizzo.</string>
+    <string name="segwit_disable">Disabilita Segwit</string>
+    <string name="segwit_enable">Abilita Segwit</string>
 </resources>

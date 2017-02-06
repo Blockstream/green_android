@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-	<fragment android:name="com.greenaddress.greenbits.ui.monitor.PeerListFragment"
-		android:layout_width="match_parent"
-		android:id="@+id/peer_list_fragment"
-		android:layout_height="match_parent"
-		/>
+    <fragment
+        android:name="com.greenaddress.greenbits.ui.monitor.PeerListFragment"
+        android:layout_width="match_parent"
+        android:id="@+id/peer_list_fragment"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

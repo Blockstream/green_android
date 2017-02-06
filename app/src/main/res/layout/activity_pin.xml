@@ -34,7 +34,7 @@
         android:textSize="34sp"
         android:inputType="numberPassword">
 
-            <requestFocus />
+        <requestFocus />
 
     </com.maksim88.passwordedittext.PasswordEditText>
 
