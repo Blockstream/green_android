@@ -28,15 +28,18 @@ public class NetworkPreferenceFragment extends GAPreferenceFragment {
         port.setSummary(mService.getProxyPort());
         port.setOnPreferenceChangeListener(mListener);
         final Preference torEnabled  = findPreference("tor_enabled");
-        torEnabled.setSummary(getString(R.string.torSummary, Network.GAIT_ONION));
-        torEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object o) {
-                mService.disconnect(true);
-                return true;
-            }
-        });
+        if (Network.GAIT_ONION == null)
+            torEnabled.setEnabled(false);
+        else {
+            torEnabled.setSummary(getString(R.string.torSummary, Network.GAIT_ONION));
+            torEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(final Preference preference, final Object o) {
+                    mService.disconnect(true);
+                    return true;
+                }
+            });
+        }
 }
 
     private final Preference.OnPreferenceChangeListener mListener = new Preference.OnPreferenceChangeListener() {
