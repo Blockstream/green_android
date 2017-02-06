@@ -500,19 +500,19 @@ public class SendFragment extends SubaccountFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume -> " + TAG);
+        if (mAmountFields != null)
+            mAmountFields.setIsPausing(false);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
         if (mAmountFields != null)
             mAmountFields.setIsPausing(true);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart -> " + TAG);
-        if (mAmountFields != null)
-            mAmountFields.setIsPausing(false);
     }
 
     @Override

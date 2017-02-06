@@ -59,9 +59,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume -> " + TAG);
         if (mAmountFields != null)
             mAmountFields.setIsPausing(false);
-        Log.d(TAG, "onResume -> " + TAG);
     }
 
     @Override
