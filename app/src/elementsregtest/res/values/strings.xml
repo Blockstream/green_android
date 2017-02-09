@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">GreenBits (elements)</string>
+    <string name="title_activity_mnemonic">Log in (elements)</string>
+    <string name="title_activity_sign_up">Sign up (elements)</string>
+    <!-- FIXME: Add a faucet link if/when one becomes available -->
+    <string name="noBalanceSecondLine"></string>
+</resources>
