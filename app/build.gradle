@@ -111,15 +111,15 @@ android {
             applicationId "com.greenaddress.greenbits_android_wallet.regtest"
             versionName String.format("%s_regtest", defaultConfig.getProperty("versionName"))
         }
-        alpha {
-            applicationId "com.greenaddress.greenbits_android_wallet.alpha"
-            versionName String.format("%s_alpha", defaultConfig.getProperty("versionName"))
-        }
-        alpha_21 {
-            minSdkVersion 21
-            applicationId "com.greenaddress.greenbits_android_wallet.alpha"
-            versionName String.format("%s_alpha", defaultConfig.getProperty("versionName"))
-        }
+//        alpha {
+//            applicationId "com.greenaddress.greenbits_android_wallet.alpha"
+//            versionName String.format("%s_alpha", defaultConfig.getProperty("versionName"))
+//        }
+//        alpha_21 {
+//            minSdkVersion 21
+//            applicationId "com.greenaddress.greenbits_android_wallet.alpha"
+//            versionName String.format("%s_alpha", defaultConfig.getProperty("versionName"))
+//        }
     }
 
     sourceSets {
@@ -142,11 +142,11 @@ android {
             assets { srcDir 'src/regtest/assets' }
             res { srcDir 'src/regtest/res' }
         }
-        alpha_21 {
-            java { srcDir 'src/alpha/java' }
-            assets { srcDir 'src/alpha/assets' }
-            res { srcDir 'src/alpha/res' }
-        }
+//        alpha_21 {
+//            java { srcDir 'src/alpha/java' }
+//            assets { srcDir 'src/alpha/assets' }
+//            res { srcDir 'src/alpha/res' }
+//        }
      }
 
     dexOptions {
