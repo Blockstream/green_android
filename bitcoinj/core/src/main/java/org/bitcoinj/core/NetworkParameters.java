@@ -55,6 +55,8 @@ public abstract class NetworkParameters {
     public static final String ID_MAINNET = "org.bitcoin.production";
     /** The string returned by getId() for the testnet. */
     public static final String ID_TESTNET = "org.bitcoin.test";
+    /** The string returned by getId() for the segnet. */
+    public static final String ID_SEGNET = "org.bitcoin.segnet";
     /** The string returned by getId() for regtest mode. */
     public static final String ID_REGTEST = "org.bitcoin.regtest";
     /** Unit test network. */
@@ -76,6 +78,8 @@ public abstract class NetworkParameters {
     protected long packetMagic;  // Indicates message origin network and is used to seek to the next message when stream state is unknown.
     protected int addressHeader;
     protected int p2shHeader;
+    protected int p2wpkhHeader;
+    protected int p2wshHeader;
     protected int dumpedPrivateKeyHeader;
     protected int interval;
     protected int targetTimespan;
@@ -145,7 +149,7 @@ public abstract class NetworkParameters {
      * mined upon and thus will be quickly re-orged out as long as the majority are enforcing the rule.
      */
     public static final int BIP16_ENFORCE_TIME = 1333238400;
-    
+
     /**
      * The maximum number of coins to be generated
      */
@@ -330,6 +334,14 @@ public abstract class NetworkParameters {
      */
     public int getP2SHHeader() {
         return p2shHeader;
+    }
+
+    public int getP2WPKHHeader() {
+        return p2wpkhHeader;
+    }
+
+    public int getP2WSHHeader() {
+        return p2wshHeader;
     }
 
     /** First byte of a base58 encoded dumped private key. See {@link org.bitcoinj.core.DumpedPrivateKey}. */
@@ -527,7 +539,8 @@ public abstract class NetworkParameters {
         MINIMUM(70000),
         PONG(60001),
         BLOOM_FILTER(70000),
-        CURRENT(70001);
+        WITNESS_VERSION(70012),
+        CURRENT(70012);
 
         private final int bitcoinProtocol;
 

@@ -39,6 +39,8 @@ public class TransactionOutPoint extends ChildMessage {
     private Sha256Hash hash;
     /** Which output of that transaction we are talking about. */
     private long index;
+    /** Value of previous output. */
+    private Coin value;
 
     // This is not part of bitcoin serialization. It points to the connected transaction.
     Transaction fromTx;
@@ -66,8 +68,20 @@ public class TransactionOutPoint extends ChildMessage {
         length = MESSAGE_LENGTH;
     }
 
+    public TransactionOutPoint(NetworkParameters params, long index, Sha256Hash hash, Coin value) {
+        super(params);
+        this.index = index;
+        this.hash = hash;
+        this.value = value;
+        length = MESSAGE_LENGTH;
+    }
+
     public TransactionOutPoint(NetworkParameters params, TransactionOutput connectedOutput) {
-        this(params, connectedOutput.getIndex(), connectedOutput.getParentTransactionHash());
+        this(
+            params,
+            connectedOutput.getIndex(),
+            connectedOutput.getParentTransactionHash(),
+            connectedOutput.getValue());
         this.connectedOutput = connectedOutput;
     }
 
@@ -201,6 +215,14 @@ public class TransactionOutPoint extends ChildMessage {
     
     public void setIndex(long index) {
         this.index = index;
+    }
+
+    public Coin getValue() {
+        return value;
+    }
+
+    public void setValue(Coin value) {
+        this.value = value;
     }
 
     @Override

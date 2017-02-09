@@ -43,8 +43,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Address extends VersionedChecksummedBytes {
     /**
-     * An address is a RIPEMD160 hash of a public key, therefore is always 160 bits or 20 bytes.
+     * <p>A regular address is a RIPEMD160 hash of a public key, therefore is always 160 bits or 20 bytes.</p>
+     * <p>This does not apply to SegWit addresses. Parameter remains for compatibility reasons.</p>
      */
+    @Deprecated
     public static final int LENGTH = 20;
 
     private transient NetworkParameters params;
@@ -54,12 +56,14 @@ public class Address extends VersionedChecksummedBytes {
      *
      * <pre>new Address(MainNetParams.get(), NetworkParameters.getAddressHeader(), Hex.decode("4a22c3c4cbb31e4d03b15550636762bda0baf85a"));</pre>
      */
-    public Address(NetworkParameters params, int version, byte[] hash160) throws WrongNetworkException {
-        super(version, hash160);
+    public Address(NetworkParameters params, int version, byte[] hash)
+        throws WrongNetworkException, WrongLengthException {
+        super(version, getBytes(params, version, hash));
         checkNotNull(params);
-        checkArgument(hash160.length == 20, "Addresses are 160-bit hashes, so you must provide 20 bytes");
         if (!isAcceptableVersion(params, version))
             throw new WrongNetworkException(version, params.getAcceptableAddressCodes());
+        if (!isAcceptableLength(params, version, hash.length))
+            throw new WrongLengthException(hash.length);
         this.params = params;
     }
 
@@ -72,10 +76,32 @@ public class Address extends VersionedChecksummedBytes {
         }
     }
 
-    /** Returns an Address that represents the script hash extracted from the given scriptPubKey */
+    /** Returns an Address that represents the script hash extracted from the given scriptPubKey. */
     public static Address fromP2SHScript(NetworkParameters params, Script scriptPubKey) {
         checkArgument(scriptPubKey.isPayToScriptHash(), "Not a P2SH script");
         return fromP2SHHash(params, scriptPubKey.getPubKeyHash());
+    }
+
+    /** Returns an Address that represents the given P2WSH script hash. */
+    public static Address fromP2WSHHash(NetworkParameters params, byte[] hash) {
+        try {
+            return new Address(params, params.getP2WSHHeader(), hash);
+        } catch (WrongNetworkException e) {
+            throw new RuntimeException(e);
+        } catch (WrongLengthException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** Returns an Address that represents the given P2WPKH public key hash. */
+    public static Address fromP2WPKHHash(NetworkParameters params, byte[] hash) {
+        try {
+            return new Address(params, params.getP2WPKHHeader(), hash);
+        } catch (WrongNetworkException e) {
+            throw new RuntimeException(e);
+        } catch (WrongLengthException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -112,11 +138,15 @@ public class Address extends VersionedChecksummedBytes {
             if (!isAcceptableVersion(params, version)) {
                 throw new WrongNetworkException(version, params.getAcceptableAddressCodes());
             }
+            final byte[] hash = getHash();
+            if (!isAcceptableLength(params, version, hash.length)) {
+                throw new WrongLengthException(hash.length);
+            }
             this.params = params;
         } else {
             NetworkParameters paramsFound = null;
             for (NetworkParameters p : Networks.get()) {
-                if (isAcceptableVersion(p, version)) {
+                if (isAcceptableVersion(p, version) && isAcceptableLength(p, version, getHash(p).length)) {
                     paramsFound = p;
                     break;
                 }
@@ -130,7 +160,25 @@ public class Address extends VersionedChecksummedBytes {
 
     /** The (big endian) 20 byte hash that is the core of a Bitcoin address. */
     public byte[] getHash160() {
-        return bytes;
+        final byte[] hash = getHash();
+        checkArgument(hash.length == 20, "Expcted RIPMED160 hash does not have 20 bytes");
+        return hash;
+    }
+
+    /** Get hash of Bitcoin address. */
+    public byte[] getHash() {
+        return getHash(params);
+    }
+
+    /** Get hash embedded in address. */
+    private byte[] getHash(NetworkParameters params) {
+        if (bytes.length == 20)
+            return bytes;
+        else {
+            final byte[] hash = new byte[bytes.length - 2];
+            System.arraycopy(bytes, 2, hash, 0, bytes.length - 2);
+            return hash;
+        }
     }
 
     /**
@@ -140,6 +188,24 @@ public class Address extends VersionedChecksummedBytes {
     public boolean isP2SHAddress() {
         final NetworkParameters parameters = getParameters();
         return parameters != null && this.version == parameters.p2shHeader;
+    }
+
+    /**
+     * Returns true if this address is a Pay-To-Witness-Public-Key-Hash (P2WPKH) address.
+     * See also https://github.com/bitcoin/bips/blob/master/bip-0142.mediawiki: Address Format for Segregated Witness
+     */
+    public boolean isP2WPKHAddress() {
+        final NetworkParameters parameters = getParameters();
+        return parameters != null && this.version == parameters.p2wpkhHeader;
+    }
+
+    /**
+     * Returns true if this address is a Pay-To-Witness-Script-Hash (P2WSH) address.
+     * See also https://github.com/bitcoin/bips/blob/master/bip-0142.mediawiki: Address Format for Segregated Witness
+     */
+    public boolean isP2WSHAddress() {
+        final NetworkParameters parameters = getParameters();
+        return parameters != null && this.version == parameters.p2wshHeader;
     }
 
     /**
@@ -182,6 +248,17 @@ public class Address extends VersionedChecksummedBytes {
     }
 
     /**
+     * Check the length of an address.
+     */
+    private static boolean isAcceptableLength(NetworkParameters params, int version, int length) {
+        switch (length) {
+            case 20: return (version != params.getP2WSHHeader());
+            case 32: return (version == params.getP2WSHHeader());
+            default: return false;
+        }
+    }
+
+    /**
      * This implementation narrows the return type to <code>Address</code>.
      */
     @Override
@@ -199,5 +276,18 @@ public class Address extends VersionedChecksummedBytes {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         params = NetworkParameters.fromID(in.readUTF());
+    }
+
+    private static byte[] getBytes(final NetworkParameters params, final int version, final byte[] hash) {
+        if (version == params.getAddressHeader())
+            return hash;
+        if (version == params.getP2SHHeader())
+            return hash;
+        if (version == params.getP2WPKHHeader() || version == params.getP2WSHHeader()) {
+            final byte[] bytes = new byte[hash.length + 2];
+            System.arraycopy(hash, 0, bytes, 2, hash.length);
+            return bytes;
+        }
+        throw new IllegalArgumentException("Could not figure out how to serialize address");
     }
 }
