@@ -55,6 +55,12 @@ public class TransactionActivity extends GaActivity {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
     private Menu mMenu;
+    private View mMemoView;
+    private View mMemoTitle;
+    private TextView mMemoIcon;
+    private TextView mMemoText;
+    private TextView mMemoEditText;
+    private Button mMemoSaveButton;
     private Dialog mSummary;
     private Dialog mTwoFactor;
 
@@ -69,10 +75,13 @@ public class TransactionActivity extends GaActivity {
         final TextView amountText = UI.find(this, R.id.txAmountText);
 
         final TextView dateText = UI.find(this, R.id.txDateText);
-        final TextView memoText = UI.find(this, R.id.txMemoText);
 
-        final TextView memoEdit = UI.find(this, R.id.sendToNoteIcon);
-        final EditText memoEditText = UI.find(this, R.id.sendToNoteText);
+        mMemoView = UI.find(this, R.id.txMemoMargin);
+        mMemoTitle = UI.find(this, R.id.txMemoTitle);
+        mMemoIcon = UI.find(this, R.id.sendToNoteIcon);
+        mMemoText = UI.find(this, R.id.txMemoText);
+        mMemoEditText = UI.find(this, R.id.sendToNoteText);
+        mMemoSaveButton = UI.find(this, R.id.saveMemo);
 
         final TextView doubleSpentByText = UI.find(this, R.id.txDoubleSpentByText);
         final TextView doubleSpentByTitle = UI.find(this, R.id.txDoubleSpentByTitle);
@@ -87,7 +96,6 @@ public class TransactionActivity extends GaActivity {
         final TextView unconfirmedEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
         final TextView unconfirmedRecommendation = UI.find(this, R.id.txUnconfirmedRecommendation);
         final Button unconfirmedIncreaseFee = UI.find(this, R.id.txUnconfirmedIncreaseFee);
-        final Button saveMemo = UI.find(this, R.id.saveMemo);
 
         final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
         final TextView feeInfoText = UI.find(this, R.id.txFeeInfoText);
@@ -173,15 +181,7 @@ public class TransactionActivity extends GaActivity {
                             UI.setCoinText(mService, feeUnit, null, feePerKb));
 
         dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));
-        if (txItem.memo != null && txItem.memo.length() > 0) {
-            memoText.setText(txItem.memo);
-            if (isWatchOnly)
-                UI.hide(memoEdit);
-        } else {
-            UI.hide(memoText, (View) UI.find(this, R.id.txMemoMargin));
-            if (isWatchOnly)
-                UI.hide((View) UI.find(this, R.id.txMemoTitle), memoEdit);
-        }
+
         // FIXME: use a list instead of reusing a TextView to show all double spends to allow
         // for a warning to be shown before the browser is open
         // this is to prevent to accidentally leak to block explorers your addresses
@@ -210,13 +210,13 @@ public class TransactionActivity extends GaActivity {
             UI.hide(doubleSpentByText, doubleSpentByTitle,
                     (View) UI.find(this, R.id.txDoubleSpentByMargin));
 
-        if (txItem.counterparty != null && txItem.counterparty.length() > 0)
+        if (!TextUtils.isEmpty(txItem.counterparty))
             recipientText.setText(txItem.counterparty);
         else
             UI.hide(recipientText, recipientTitle,
                    (View) UI.find(this, R.id.txRecipientMargin));
 
-        if (txItem.receivedOn != null && txItem.receivedOn.length() > 0)
+        if (!TextUtils.isEmpty(txItem.receivedOn))
             openInBrowser(receivedOnText, txItem.receivedOn, Network.BLOCKEXPLORER_ADDRESS);
         else
             UI.hide(receivedOnText, receivedOnTitle,
@@ -225,46 +225,28 @@ public class TransactionActivity extends GaActivity {
         if (isWatchOnly)
             return;
 
-        memoEdit.setOnClickListener(new View.OnClickListener() {
+        // Memo
+        if (!TextUtils.isEmpty(txItem.memo)) {
+            mMemoText.setText(txItem.memo);
+            UI.hideIf(isWatchOnly, mMemoIcon);
+        } else {
+            UI.hide(mMemoText, mMemoView);
+            UI.hideIf(isWatchOnly, mMemoTitle, mMemoIcon);
+        }
+        mMemoIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final boolean editVisible = memoEditText.getVisibility() == View.VISIBLE;
-                memoEditText.setText(UI.getText(memoText));
-                UI.hideIf(editVisible, memoEditText, saveMemo);
-                UI.showIf(editVisible, memoText);
+                final boolean editInProgress = mMemoEditText.getVisibility() == View.VISIBLE;
+                mMemoEditText.setText(UI.getText(mMemoText));
+                UI.hideIf(editInProgress, mMemoEditText, mMemoSaveButton);
+                UI.showIf(editInProgress, mMemoText);
             }
         });
 
-        saveMemo.setOnClickListener(new View.OnClickListener() {
-
-            private void onDisableEdit() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        memoText.setText(UI.getText(memoEditText));
-                        UI.hide(saveMemo, memoEditText);
-                        if (UI.getText(memoText).isEmpty())
-                            UI.hide(memoText, (View) UI.find(TransactionActivity.this, R.id.txMemoMargin));
-                        else
-                            UI.show((View) UI.find(TransactionActivity.this, R.id.txMemoMargin), memoText);
-                    }
-                });
-            }
-
+        mMemoSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final String edited = UI.getText(memoEditText);
-                if (!edited.equals(UI.getText(memoText))) {
-                    CB.after(mService.changeMemo(txItem.txHash, edited),
-                            new CB.Toast<Boolean>(TransactionActivity.this) {
-                                @Override
-                                public void onSuccess(final Boolean result) {
-                                    onDisableEdit();
-                                }
-                            });
-                } else {
-                    onDisableEdit();
-                }
+                saveMemo(txItem.txHash);
             }
         });
 
@@ -311,6 +293,34 @@ public class TransactionActivity extends GaActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void onFinishedSavingMemo() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mMemoText.setText(UI.getText(mMemoEditText));
+                UI.hide(mMemoEditText, mMemoSaveButton);
+                UI.hideIf(UI.getText(mMemoText).isEmpty(),
+                          mMemoText, mMemoView);
+            }
+        });
+    }
+
+    private void saveMemo(final Sha256Hash txHash) {
+        final String newMemo = UI.getText(mMemoEditText);
+        if (newMemo.equals(UI.getText(mMemoText))) {
+            onFinishedSavingMemo();
+            return;
+        }
+
+        CB.after(mService.changeMemo(txHash, newMemo),
+                new CB.Toast<Boolean>(this) {
+                    @Override
+                    public void onSuccess(final Boolean result) {
+                        onFinishedSavingMemo();
+                    }
+                });
     }
 
     private void openInBrowser(final TextView textView, final String identifier, final String url) {
