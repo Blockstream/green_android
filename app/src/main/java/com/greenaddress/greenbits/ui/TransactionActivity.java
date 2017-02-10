@@ -54,6 +54,7 @@ import java.util.Map;
 public class TransactionActivity extends GaActivity {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
+    private Menu mMenu;
     private Dialog mSummary;
     private Dialog mTwoFactor;
 
@@ -279,7 +280,7 @@ public class TransactionActivity extends GaActivity {
             return;
         }
 
-        //FIXME: setMenuItemVisible(mMenu, R.id.action_share, !mService.isLoggedIn());
+        setMenuItemVisible(mMenu, R.id.action_share, !mService.isLoggedIn());
     }
 
     @Override
@@ -293,7 +294,7 @@ public class TransactionActivity extends GaActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_transaction, menu);
-        //FIXME: mMenu = menu;
+        mMenu = menu;
         return true;
     }
 
