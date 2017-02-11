@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 import com.greenaddress.greenbits.GaService;
 
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
@@ -149,5 +150,9 @@ public class TransactionItem implements Serializable {
         final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         date = df.parse(strVal(txJSON, "created_at"));
+    }
+
+    final Coin getFeePerKilobyte() {
+        return size > 0 ? Coin.valueOf(1000 * fee / size) : Coin.valueOf(0);
     }
 }

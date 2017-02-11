@@ -54,6 +54,7 @@ import java.util.Map;
 public class TransactionActivity extends GaActivity {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
+    private final String FEE_BLOCK_NUMBERS[] = {"1", "3", "6"};
     private Menu mMenu;
     private View mMemoView;
     private View mMemoTitle;
@@ -69,7 +70,8 @@ public class TransactionActivity extends GaActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        final TextView hashText = UI.find(this, R.id.txHashText);
+        setResult(RESULT_OK);
+
 
         final TextView dateText = UI.find(this, R.id.txDateText);
 
@@ -86,25 +88,17 @@ public class TransactionActivity extends GaActivity {
         final TextView recipientText = UI.find(this, R.id.txRecipientText);
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);
 
-        final TextView receivedOnText = UI.find(this, R.id.txReceivedOnText);
-        final TextView receivedOnTitle = UI.find(this, R.id.txReceivedOnTitle);
-
         final TextView unconfirmedText = UI.find(this, R.id.txUnconfirmedText);
         final TextView unconfirmedEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
         final TextView unconfirmedRecommendation = UI.find(this, R.id.txUnconfirmedRecommendation);
         final Button unconfirmedIncreaseFee = UI.find(this, R.id.txUnconfirmedIncreaseFee);
 
         final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
+
+        final TextView hashText = UI.find(this, R.id.txHashText);
         openInBrowser(hashText, txItem.txHash.toString(), Network.BLOCKEXPLORER_TX);
 
-        final Coin fee = Coin.valueOf(txItem.fee);
-        final Coin feePerKb;
-        if (txItem.size > 0) {
-            feePerKb = Coin.valueOf(1000 * txItem.fee / txItem.size);
-        } else {
-            // shouldn't happen, but just in case let's avoid division by zero
-            feePerKb = Coin.valueOf(0);
-        }
+        final Coin feePerKb = txItem.getFeePerKilobyte();
 
         final boolean isWatchOnly = mService.isWatchOnly();
 
@@ -116,18 +110,15 @@ public class TransactionActivity extends GaActivity {
                         unconfirmedEstimatedBlocks);
             } else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT) {
                 // unconfirmed outgoing output/redeposit - can be RBF'd
-                int currentEstimate = 25;
-                final int bestEstimate;
                 final Map<String, Object> feeEstimates = mService.getFeeEstimates();
-                final String checkValues[] = {"1", "3", "6"};
-                for (final String value : checkValues) {
-                    final double feerate = Double.parseDouble(((Map)feeEstimates.get(value)).get("feerate").toString());
-                    if (feePerKb.compareTo(Coin.valueOf((long)(feerate*1000*1000*100))) >= 0) {
-                        currentEstimate = (Integer)((Map)feeEstimates.get(value)).get("blocks");
+                int currentEstimate = 25;
+                for (final String atBlock : FEE_BLOCK_NUMBERS)
+                    if (feePerKb.compareTo(getFeeEstimate(feeEstimates, atBlock)) >= 0) {
+                        currentEstimate = (Integer) ((Map) feeEstimates.get(atBlock)).get("blocks");
                         break;
                     }
-                }
-                bestEstimate = (Integer)((Map)feeEstimates.get("1")).get("blocks");
+
+                final int bestEstimate = (Integer) ((Map) feeEstimates.get("1")).get("blocks");
                 unconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
                 if (bestEstimate < currentEstimate && txItem.replaceable && !isWatchOnly) {
                     if (bestEstimate == 1)
@@ -137,9 +128,7 @@ public class TransactionActivity extends GaActivity {
                     unconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View v) {
-                            final double feerate = Double.parseDouble(((Map) feeEstimates.get("1")).get("feerate").toString());
-                            final Coin feerateCoin = Coin.valueOf((long) (feerate * 1000 * 1000 * 100));
-                            replaceByFee(txItem, feerateCoin, null, 0);
+                            replaceByFee(txItem, getFeeEstimate(feeEstimates, "1"), null, 0);
                         }
                     });
                 } else
@@ -172,7 +161,7 @@ public class TransactionActivity extends GaActivity {
 
         final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
         final TextView feeInfoText = UI.find(this, R.id.txFeeInfoText);
-        feeInfoText.setText(UI.setCoinText(mService, feeUnit, null, fee) +
+        feeInfoText.setText(UI.setCoinText(mService, feeUnit, null, Coin.valueOf(txItem.fee)) +
                             " / " + String.valueOf(txItem.size) + " / " +
                             UI.setCoinText(mService, feeUnit, null, feePerKb));
 
@@ -212,14 +201,14 @@ public class TransactionActivity extends GaActivity {
             UI.hide(recipientText, recipientTitle,
                    (View) UI.find(this, R.id.txRecipientMargin));
 
+        final TextView receivedOnText = UI.find(this, R.id.txReceivedOnText);
         if (!TextUtils.isEmpty(txItem.receivedOn))
             openInBrowser(receivedOnText, txItem.receivedOn, Network.BLOCKEXPLORER_ADDRESS);
-        else
-            UI.hide(receivedOnText, receivedOnTitle,
-                    (View) UI.find(this, R.id.txReceivedOnMargin));
-
-        if (isWatchOnly)
-            return;
+        else {
+            final View receivedOnTitle = UI.find(this, R.id.txReceivedOnTitle);
+            final View receivedOnMargin = UI.find(this, R.id.txReceivedOnMargin);
+            UI.hide(receivedOnText, receivedOnTitle, receivedOnMargin);
+        }
 
         // Memo
         if (!TextUtils.isEmpty(txItem.memo)) {
@@ -229,6 +218,10 @@ public class TransactionActivity extends GaActivity {
             UI.hide(mMemoText, mMemoView);
             UI.hideIf(isWatchOnly, mMemoTitle, mMemoIcon);
         }
+
+        if (isWatchOnly)
+            return;
+
         mMemoIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -245,8 +238,6 @@ public class TransactionActivity extends GaActivity {
                 saveMemo(txItem.txHash);
             }
         });
-
-        setResult(RESULT_OK); // FIXME: Needed?
     }
 
     @Override
@@ -318,6 +309,11 @@ public class TransactionActivity extends GaActivity {
                         onFinishedSavingMemo();
                     }
                 });
+    }
+
+    final Coin getFeeEstimate(final Map<String, Object> feeEstimates, final String atBlock) {
+        final double rate = Double.parseDouble(((Map)feeEstimates.get(atBlock)).get("feerate").toString());
+        return Coin.valueOf((long) (rate * 1000 * 1000 * 100));
     }
 
     private void openInBrowser(final TextView textView, final String identifier, final String url) {
