@@ -13,7 +13,6 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -74,9 +73,7 @@ public class PinActivity extends LoginActivity implements Observer {
 
         mPinLoginButton.setProgress(50);
         mPinText.setEnabled(false);
-
-        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mPinText.getWindowToken(), 0);
+        hideKeyboardFrom(mPinText);
 
         setUpLogin(UI.getText(mPinText), new Runnable() {
              public void run() {

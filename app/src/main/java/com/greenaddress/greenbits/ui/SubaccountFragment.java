@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -81,16 +80,9 @@ public abstract class SubaccountFragment extends GAFragment {
     }
 
     protected void hideKeyboard() {
-        if (getActivity() == null)
-            return;
-
-        final View v = getActivity().getCurrentFocus();
-        if (v == null)
-            return;
-
-        final InputMethodManager imm;
-        imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        final GaActivity activity = getGaActivity();
+        if (activity != null)
+            activity.hideKeyboardFrom(null); // Current focus
     }
 
     public void attachObservers() {}

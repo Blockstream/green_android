@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -42,14 +41,14 @@ public class PinSaveActivity extends GaActivity {
             return;
         }
 
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mPinText.getWindowToken(), 0);
-        final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
+        hideKeyboardFrom(mPinText);
+        mPinText.setEnabled(false);
 
         mSaveButton.setIndeterminateProgressMode(true);
         mSaveButton.setProgress(50);
-        mPinText.setEnabled(false);
         UI.hide(mSkipButton);
+
+        final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
         Futures.addCallback(mService.setPin(mnemonic, pin),
                 new FutureCallback<Void>() {
                     @Override

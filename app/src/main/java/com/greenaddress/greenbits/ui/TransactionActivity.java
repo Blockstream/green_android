@@ -303,6 +303,7 @@ public class TransactionActivity extends GaActivity {
                 UI.hide(mMemoEditText, mMemoSaveButton);
                 UI.hideIf(UI.getText(mMemoText).isEmpty(),
                           mMemoText, mMemoView);
+                hideKeyboardFrom(mMemoEditText);
             }
         });
     }

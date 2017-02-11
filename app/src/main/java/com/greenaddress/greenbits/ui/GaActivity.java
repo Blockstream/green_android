@@ -1,10 +1,13 @@
 package com.greenaddress.greenbits.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.Futures;
@@ -117,6 +120,15 @@ public abstract class GaActivity extends AppCompatActivity {
                     item.setVisible(visible);
             }
         });
+    }
+
+    protected void hideKeyboardFrom(final View v) {
+        final View toHideFrom = v == null ? getCurrentFocus() : v;
+        if (toHideFrom != null) {
+            final InputMethodManager imm;
+            imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(toHideFrom.getWindowToken(), 0);
+        }
     }
 
     public void toast(final Throwable t) { UI.toast(this, t, null); }
