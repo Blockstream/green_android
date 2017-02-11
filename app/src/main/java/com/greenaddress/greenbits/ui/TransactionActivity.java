@@ -71,9 +71,6 @@ public class TransactionActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         final TextView hashText = UI.find(this, R.id.txHashText);
 
-        final TextView bitcoinUnit = UI.find(this, R.id.txBitcoinUnit);
-        final TextView amountText = UI.find(this, R.id.txAmountText);
-
         final TextView dateText = UI.find(this, R.id.txDateText);
 
         mMemoView = UI.find(this, R.id.txMemoMargin);
@@ -96,9 +93,6 @@ public class TransactionActivity extends GaActivity {
         final TextView unconfirmedEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
         final TextView unconfirmedRecommendation = UI.find(this, R.id.txUnconfirmedRecommendation);
         final Button unconfirmedIncreaseFee = UI.find(this, R.id.txUnconfirmedIncreaseFee);
-
-        final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
-        final TextView feeInfoText = UI.find(this, R.id.txFeeInfoText);
 
         final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
         openInBrowser(hashText, txItem.txHash.toString(), Network.BLOCKEXPLORER_TX);
@@ -174,8 +168,10 @@ public class TransactionActivity extends GaActivity {
         }
 
         final Coin coin = Coin.valueOf(txItem.amount);
-        UI.setCoinText(mService, bitcoinUnit, amountText, coin);
+        UI.setCoinText(this, R.id.txBitcoinUnit, R.id.txAmountText, coin);
 
+        final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
+        final TextView feeInfoText = UI.find(this, R.id.txFeeInfoText);
         feeInfoText.setText(UI.setCoinText(mService, feeUnit, null, fee) +
                             " / " + String.valueOf(txItem.size) + " / " +
                             UI.setCoinText(mService, feeUnit, null, feePerKb));
@@ -650,20 +646,16 @@ public class TransactionActivity extends GaActivity {
 
         final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);
         amountLabel.setText(R.string.newFeeText);
-        final TextView amountText = UI.find(v, R.id.newTxAmountText);
-        final TextView amountUnit = UI.find(v, R.id.newTxAmountUnitText);
         final TextView feeLabel = UI.find(v, R.id.newTxFeeLabel);
         feeLabel.setText(R.string.oldFeeText);
-        final TextView feeText = UI.find(v, R.id.newTxFeeText);
-        final TextView feeUnit = UI.find(v, R.id.newTxFeeUnit);
 
         UI.hide((View) UI.find(v, R.id.newTxRecipientLabel),
                 (View) UI.find(v, R.id.newTxRecipientText));
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 
-        UI.setCoinText(mService, amountUnit, amountText, newFee);
-        UI.setCoinText(mService, feeUnit, feeText, oldFee);
+        UI.setCoinText(mService, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, newFee);
+        UI.setCoinText(mService, v, R.id.newTxFeeUnit, R.id.newTxFeeText, oldFee);
 
         final Map<String, Object> twoFacData;
         if (method == null) {

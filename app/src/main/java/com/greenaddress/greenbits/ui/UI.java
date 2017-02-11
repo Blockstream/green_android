@@ -305,13 +305,27 @@ public abstract class UI {
     }
 
     public static String setCoinText(final GaService service,
-                                     final TextView symbol, final TextView v,
+                                     final TextView symbol, final TextView amount,
                                      final Coin value) {
         if (symbol != null)
             symbol.setText(getUnitSymbol(service.getBitcoinUnit()));
         if (value == null)
             return null;
-        return setAmountText(v, formatCoinValue(service, value));
+        return setAmountText(amount, formatCoinValue(service, value));
+    }
+
+    public static String setCoinText(final GaService service, final View v,
+                                     final int symbolId, final int amountId,
+                                     final Coin value) {
+        return setCoinText(service, (TextView) find(v, symbolId),
+                           (TextView) find(v, amountId), value);
+    }
+
+    public static String setCoinText(final GaActivity activity,
+                                     final int symbolId, final int amountId,
+                                     final Coin value) {
+        return setCoinText(activity.mService, (TextView) find(activity, symbolId),
+                           (TextView) find(activity, amountId), value);
     }
 
     public static String setAmountText(final TextView v, final String value) {

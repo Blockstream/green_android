@@ -68,17 +68,12 @@ public class SendFragment extends SubaccountFragment {
 
         final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
-        final TextView amountText = UI.find(v, R.id.newTxAmountText);
-        final TextView amountUnit = UI.find(v, R.id.newTxAmountUnitText);
-        final TextView feeText = UI.find(v, R.id.newTxFeeText);
-        final TextView feeUnit = UI.find(v, R.id.newTxFeeUnit);
+        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
+        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
 
         final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
-
-        UI.setCoinText(service, amountUnit, amountText, amount);
-        UI.setCoinText(service, feeUnit, feeText, fee);
 
         if (mPayreqData != null)
             recipientText.setText(recipient);
