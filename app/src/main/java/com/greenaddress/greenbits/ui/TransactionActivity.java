@@ -56,6 +56,10 @@ public class TransactionActivity extends GaActivity {
     private static final String TAG = TransactionActivity.class.getSimpleName();
     private final String FEE_BLOCK_NUMBERS[] = {"1", "3", "6"};
     private Menu mMenu;
+    private TextView mUnconfirmedText;
+    private TextView mUnconfirmedEstimatedBlocks;
+    private TextView mUnconfirmedRecommendation;
+    private Button mUnconfirmedIncreaseFee;
     private View mMemoView;
     private View mMemoTitle;
     private TextView mMemoIcon;
@@ -72,15 +76,16 @@ public class TransactionActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setResult(RESULT_OK);
 
-
-        final TextView dateText = UI.find(this, R.id.txDateText);
-
         mMemoView = UI.find(this, R.id.txMemoMargin);
         mMemoTitle = UI.find(this, R.id.txMemoTitle);
         mMemoIcon = UI.find(this, R.id.sendToNoteIcon);
         mMemoText = UI.find(this, R.id.txMemoText);
         mMemoEditText = UI.find(this, R.id.sendToNoteText);
         mMemoSaveButton = UI.find(this, R.id.saveMemo);
+        mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
+        mUnconfirmedEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
+        mUnconfirmedRecommendation = UI.find(this, R.id.txUnconfirmedRecommendation);
+        mUnconfirmedIncreaseFee = UI.find(this, R.id.txUnconfirmedIncreaseFee);
 
         final TextView doubleSpentByText = UI.find(this, R.id.txDoubleSpentByText);
         final TextView doubleSpentByTitle = UI.find(this, R.id.txDoubleSpentByTitle);
@@ -88,10 +93,8 @@ public class TransactionActivity extends GaActivity {
         final TextView recipientText = UI.find(this, R.id.txRecipientText);
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);
 
-        final TextView unconfirmedText = UI.find(this, R.id.txUnconfirmedText);
-        final TextView unconfirmedEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
-        final TextView unconfirmedRecommendation = UI.find(this, R.id.txUnconfirmedRecommendation);
-        final Button unconfirmedIncreaseFee = UI.find(this, R.id.txUnconfirmedIncreaseFee);
+        // Hide outgoing-only widgets by default
+        UI.hide(mUnconfirmedRecommendation, mUnconfirmedEstimatedBlocks, mUnconfirmedIncreaseFee);
 
         final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
 
@@ -103,45 +106,12 @@ public class TransactionActivity extends GaActivity {
         final boolean isWatchOnly = mService.isWatchOnly();
 
         if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT || txItem.isSpent) {
-            if (txItem.getConfirmations() > 0) {
-                // confirmed - hide unconfirmed widgets
-                UI.hide((View) UI.find(this, R.id.txUnconfirmed),
-                        unconfirmedRecommendation, unconfirmedIncreaseFee,
-                        unconfirmedEstimatedBlocks);
-            } else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT) {
-                // unconfirmed outgoing output/redeposit - can be RBF'd
-                final Map<String, Object> feeEstimates = mService.getFeeEstimates();
-                int currentEstimate = 25;
-                for (final String atBlock : FEE_BLOCK_NUMBERS)
-                    if (feePerKb.compareTo(getFeeEstimate(feeEstimates, atBlock)) >= 0) {
-                        currentEstimate = (Integer) ((Map) feeEstimates.get(atBlock)).get("blocks");
-                        break;
-                    }
-
-                final int bestEstimate = (Integer) ((Map) feeEstimates.get("1")).get("blocks");
-                unconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
-                if (bestEstimate < currentEstimate && txItem.replaceable && !isWatchOnly) {
-                    if (bestEstimate == 1)
-                        unconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
-                    else
-                        unconfirmedRecommendation.setText(String.format(getResources().getString(R.string.recommendationBlocks), bestEstimate));
-                    unconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(final View v) {
-                            replaceByFee(txItem, getFeeEstimate(feeEstimates, "1"), null, 0);
-                        }
-                    });
-                } else
-                    UI.hide(unconfirmedIncreaseFee, unconfirmedRecommendation);
-            } else
-                // incoming spent - hide outgoing-only widgets
-                UI.hide(unconfirmedRecommendation, unconfirmedIncreaseFee,
-                        unconfirmedEstimatedBlocks);
+            if (txItem.getConfirmations() > 0)
+                UI.hide((View) UI.find(this, R.id.txUnconfirmed)); // Confirmed: hide warning
+            else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT)
+                showUnconfirmed(txItem, feePerKb);
         } else {
             // unspent incoming output
-            // incoming - hide outgoing-only widgets
-            UI.hide(unconfirmedRecommendation, unconfirmedIncreaseFee,
-                    unconfirmedEstimatedBlocks);
             if (txItem.getConfirmations() > 0)
                 if (isWatchOnly || txItem.spvVerified)
                     UI.hide((View) UI.find(this, R.id.txUnconfirmed));
@@ -149,15 +119,15 @@ public class TransactionActivity extends GaActivity {
                     final int blocksLeft = mService.getSPVBlocksRemaining();
                     final String message = getResources().getString(R.string.txUnverifiedTx);
                     if (blocksLeft != Integer.MAX_VALUE)
-                        unconfirmedText.setText(String.format("%s %s", message, blocksLeft));
+                        mUnconfirmedText.setText(String.format("%s %s", message, blocksLeft));
                     else
-                        unconfirmedText.setText(String.format("%s %s", message,
-                                                "Not yet connected to SPV!"));
+                        mUnconfirmedText.setText(String.format("%s %s", message,
+                                                 "Not yet connected to SPV!"));
                 }
         }
 
-        final Coin coin = Coin.valueOf(txItem.amount);
-        UI.setCoinText(this, R.id.txBitcoinUnit, R.id.txAmountText, coin);
+        UI.setCoinText(this, R.id.txBitcoinUnit, R.id.txAmountText,
+                       Coin.valueOf(txItem.amount));
 
         final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
         final TextView feeInfoText = UI.find(this, R.id.txFeeInfoText);
@@ -165,6 +135,7 @@ public class TransactionActivity extends GaActivity {
                             " / " + String.valueOf(txItem.size) + " / " +
                             UI.setCoinText(mService, feeUnit, null, feePerKb));
 
+        final TextView dateText = UI.find(this, R.id.txDateText);
         dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));
 
         // FIXME: use a list instead of reusing a TextView to show all double spends to allow
@@ -238,6 +209,32 @@ public class TransactionActivity extends GaActivity {
                 saveMemo(txItem.txHash);
             }
         });
+    }
+
+    private void showUnconfirmed(final TransactionItem txItem, final Coin feePerKb) {
+        UI.show(mUnconfirmedRecommendation, mUnconfirmedEstimatedBlocks, mUnconfirmedIncreaseFee);
+        final Map<String, Object> feeEstimates = mService.getFeeEstimates();
+        int currentEstimate = 25;
+        for (final String atBlock : FEE_BLOCK_NUMBERS)
+            if (feePerKb.compareTo(getFeeEstimate(feeEstimates, atBlock)) >= 0) {
+                currentEstimate = (Integer) ((Map) feeEstimates.get(atBlock)).get("blocks");
+                break;
+            }
+
+        final int bestEstimate = (Integer) ((Map) feeEstimates.get("1")).get("blocks");
+        mUnconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
+        if (bestEstimate < currentEstimate && txItem.replaceable && !mService.isWatchOnly()) {
+            if (bestEstimate == 1)
+                mUnconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
+            else
+                mUnconfirmedRecommendation.setText(String.format(getResources().getString(R.string.recommendationBlocks), bestEstimate));
+            mUnconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    replaceByFee(txItem, getFeeEstimate(feeEstimates, "1"), null, 0);
+                }
+            });
+        }
     }
 
     @Override
@@ -372,12 +369,12 @@ public class TransactionActivity extends GaActivity {
             newInput.setSequenceNumber(0);
             tx.addInput(newInput);
         }
+        final Coin oldFee = tx.getFee();
         final Coin newFeeWithRate = feerate.multiply(txSize).divide(1000);
         final Coin feeDelta = Coin.valueOf(Math.max(
-                newFeeWithRate.subtract(tx.getFee()).longValue(),
+                newFeeWithRate.subtract(oldFee).longValue(),
                 requiredFeeDelta
         ));
-        final Coin oldFee = tx.getFee();
         Coin remainingFeeDelta = feeDelta;
         final List<TransactionOutput> origOuts = new ArrayList<>(tx.getOutputs());
         tx.clearOutputs();
