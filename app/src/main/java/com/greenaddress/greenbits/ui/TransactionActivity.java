@@ -34,6 +34,7 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
@@ -56,6 +57,11 @@ public class TransactionActivity extends GaActivity {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
     private final String FEE_BLOCK_NUMBERS[] = {"1", "3", "6"};
+
+    // For debug regtest builds, always allow RBF (Useful for development/testing)
+    private static final boolean ALWAYS_ALLOW_RBF = BuildConfig.DEBUG &&
+        Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST));
+
     private Menu mMenu;
     private TextView mUnconfirmedText;
     private TextView mUnconfirmedEstimatedBlocks;
@@ -222,13 +228,16 @@ public class TransactionActivity extends GaActivity {
                 break;
             }
 
-        final int bestEstimate = (Integer) ((Map) feeEstimates.get("1")).get("blocks");
         mUnconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
-        if (bestEstimate < currentEstimate && txItem.replaceable && !mService.isWatchOnly()) {
+        if (mService.isWatchOnly())
+            return;
+
+        final int bestEstimate = (Integer) ((Map) feeEstimates.get("1")).get("blocks");
+        if (ALWAYS_ALLOW_RBF || (bestEstimate < currentEstimate && txItem.replaceable)) {
             if (bestEstimate == 1)
                 mUnconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
             else
-                mUnconfirmedRecommendation.setText(String.format(getResources().getString(R.string.recommendationBlocks), bestEstimate));
+                mUnconfirmedRecommendation.setText(getString(R.string.recommendationBlocks, bestEstimate));
             mUnconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
