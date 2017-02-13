@@ -285,7 +285,7 @@ public class GaService extends Service implements INotificationHandler {
     public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }
     public Coin getSPVVerifiedBalance(final int subAccount) {
         final Coin balance = mSPV.getVerifiedBalance(subAccount);
-        return balance == null ? Coin.valueOf(0) : balance;
+        return balance == null ? Coin.ZERO : balance;
     }
 
     public boolean isSPVVerified(final Sha256Hash txHash) { return mSPV.isVerified(txHash); }

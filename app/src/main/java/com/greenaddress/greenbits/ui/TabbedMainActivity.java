@@ -143,7 +143,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         if (mService.showBalanceInTitle()) {
             Coin balance = mService.getCoinBalance(subAccount);
             if (balance == null)
-                balance = Coin.valueOf(0);
+                balance = Coin.ZERO;
             suffix = formatValuePostfix(balance);
         } else if (mService.haveSubaccounts()) {
             final Map<String, ?> m = mService.findSubaccount(subAccount);

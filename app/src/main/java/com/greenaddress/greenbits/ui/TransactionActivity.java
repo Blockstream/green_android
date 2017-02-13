@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.Network;
+import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
@@ -355,16 +356,16 @@ public class TransactionActivity extends GaActivity {
         final long requiredFeeDelta = txSize + tx.getInputs().size() * 4;
         final List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
         tx.clearInputs();
-        for (int i = 0; i < txItem.eps.size(); ++i) {
-            final Map<String, Object> ep = (Map) txItem.eps.get(i);
-            if (((Boolean) ep.get("is_credit"))) continue;
-            final TransactionInput oldInput = oldInputs.get((Integer) ep.get("pt_idx"));
+        for (final JSONMap ep : txItem.eps) {
+            if (ep.getBool("is_credit"))
+                continue;
+            final TransactionInput oldInput = oldInputs.get(ep.getInt("pt_idx"));
             final TransactionInput newInput = new TransactionInput(
                     Network.NETWORK,
                     null,
                     oldInput.getScriptBytes(),
                     oldInput.getOutpoint(),
-                    Coin.valueOf(Long.valueOf((String) ep.get("value")))
+                    ep.getCoin("value")
             );
             newInput.setSequenceNumber(0);
             tx.addInput(newInput);
@@ -378,27 +379,27 @@ public class TransactionActivity extends GaActivity {
         Coin remainingFeeDelta = feeDelta;
         final List<TransactionOutput> origOuts = new ArrayList<>(tx.getOutputs());
         tx.clearOutputs();
-        for (int i = 0; i < txItem.eps.size(); ++i) {
-            final Map<String, Object> ep = (Map) txItem.eps.get(i);
-            if (!((Boolean) ep.get("is_credit"))) continue;
 
-            if (!((Boolean) ep.get("is_relevant")))
+        for (final JSONMap ep : txItem.eps) {
+            if (!ep.getBool("is_credit"))
+                continue;
+
+            if (!ep.getBool("is_relevant"))
                 // keep non-change/non-redeposit intact
-                tx.addOutput(origOuts.get((Integer)ep.get("pt_idx")));
+                tx.addOutput(origOuts.get(ep.getInt("pt_idx")));
             else {
-                if ((ep.get("subaccount") == null && subAccount == 0) ||
-                        ep.get("subaccount").equals(subAccount))
-                    change_pointer = (Integer) ep.get("pubkey_pointer");
+                final Integer epSubaccount = ep.get("subaccount");
+                if ((epSubaccount == null && subAccount == 0) ||
+                    epSubaccount.equals(subAccount))
+                    change_pointer = ep.getInt("pubkey_pointer");
                 // change/redeposit
-                final long value = Long.valueOf((String) ep.get("value"));
-                if (Coin.valueOf(value).compareTo(remainingFeeDelta) <= 0) {
+                final Coin value = ep.getCoin("value");
+                if (value.compareTo(remainingFeeDelta) <= 0) {
                     // smaller than remaining fee -- get rid of this output
-                    remainingFeeDelta = remainingFeeDelta.subtract(
-                            Coin.valueOf(value)
-                    );
+                    remainingFeeDelta = remainingFeeDelta.subtract(value);
                 } else {
                     // larger than remaining fee -- subtract the remaining fee
-                    final TransactionOutput out = origOuts.get((Integer)ep.get("pt_idx"));
+                    final TransactionOutput out = origOuts.get(ep.getInt("pt_idx"));
                     out.setValue(out.getValue().subtract(remainingFeeDelta));
                     tx.addOutput(out);
                     remainingFeeDelta = Coin.ZERO;
@@ -418,11 +419,12 @@ public class TransactionActivity extends GaActivity {
             public void onSuccess(final ArrayList result) {
                 Coin remaining = finalRemaining;
                 final List<ListenableFuture<byte[]>> scripts = new ArrayList<>();
-                final List<Map<String, Object>> moreInputs = new ArrayList<>();
-                for (final Object utxo_ : result) {
-                    final Map<String, Object> utxo = (Map) utxo_;
-                    remaining = remaining.subtract(Coin.valueOf(Long.valueOf((String)utxo.get("value"))));
-                    scripts.add(mService.createOutScript((Integer)utxo.get("subaccount"), (Integer)utxo.get("pointer")));
+                final List<JSONMap> moreInputs = new ArrayList<>();
+
+                for (final Object o : result) {
+                    final JSONMap utxo = new JSONMap((Map<String, Object>) o);
+                    remaining = remaining.subtract(utxo.getCoin("value"));
+                    scripts.add(mService.createOutScript(utxo.getInt("subaccount"), utxo.getInt("pointer")));
                     moreInputs.add(utxo);
                     if (remaining.compareTo(Coin.ZERO) <= 0)
                         break;
@@ -472,16 +474,16 @@ public class TransactionActivity extends GaActivity {
     private void doReplaceByFee(final TransactionItem txItem, final Coin feerate,
                                 final Transaction tx,
                                 final Integer change_pointer, final int subAccount,
-                                final Coin oldFee, final List<Map<String, Object>> moreInputs,
+                                final Coin oldFee, final List<JSONMap> moreInputs,
                                 final List<byte[]> morePrevouts, final int level) {
         final PreparedTransaction ptx;
         ptx = new PreparedTransaction(change_pointer, subAccount, tx,
                                       mService.findSubaccountByType(subAccount, "2of3"));
 
-        for (final Map<String, Object> ep : (List<Map>)txItem.eps) {
-            if (((Boolean) ep.get("is_credit")))
+        for (final JSONMap ep : txItem.eps) {
+            if (ep.getBool("is_credit"))
                 continue;
-            final Integer prevIndex = ((Integer) ep.get("pt_idx"));
+            final Integer prevIndex = ep.get("pt_idx");
             final TransactionInput oldInput = tx.getInput(prevIndex);
             ptx.mPrevOutputs.add(new Output(
                     (Integer) ep.get("subaccount"),
@@ -495,14 +497,14 @@ public class TransactionActivity extends GaActivity {
 
         int i = 0;
         if (moreInputs != null) {
-            for (final Map<String, Object> ep : moreInputs) {
+            for (final JSONMap ep : moreInputs) {
                 ptx.mPrevOutputs.add(new Output(
-                        (Integer) ep.get("subaccount"),
-                        (Integer) ep.get("pointer"),
+                        ep.getInt("subaccount"),
+                        ep.getInt("pointer"),
                         1,
                         TransactionItem.P2SH_FORTIFIED_OUT,
                         Wally.hex_from_bytes(morePrevouts.get(i)),
-                        Long.valueOf((String) ep.get("value"))
+                        ep.getLong("value")
                 ));
                 tx.addInput(
                         new TransactionInput(
@@ -523,10 +525,10 @@ public class TransactionActivity extends GaActivity {
                                 ).build().getProgram(),
                                 new TransactionOutPoint(
                                         Network.NETWORK,
-                                        (Integer) ep.get("pt_idx"),
-                                        Sha256Hash.wrap((String) ep.get("txhash"))
+                                        ep.getInt("pt_idx"),
+                                        ep.getHash("txhash")
                                 ),
-                                Coin.valueOf(Long.valueOf((String) ep.get("value")))
+                                ep.getCoin("value")
                         )
                 );
                 i++;
