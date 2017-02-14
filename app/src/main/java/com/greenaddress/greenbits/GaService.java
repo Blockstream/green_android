@@ -365,22 +365,17 @@ public class GaService extends Service implements INotificationHandler {
             reconnect();
     }
 
-    public ListenableFuture<byte[]> createOutScript(final int subAccount, final Integer pointer) {
+    public byte[] createOutScript(final int subAccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
         pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
         pubkeys.add(mClient.getSigningWallet().getMyPublicKey(subAccount, pointer));
 
-        return mExecutor.submit(new Callable<byte[]>() {
-            public byte[] call() {
+        final Map<String, ?> m = findSubaccountByType(subAccount, "2of3");
+        if (m != null)
+            pubkeys.add(HDKey.getRecoveryKeys((String) m.get("2of3_backup_chaincode"),
+                                              (String) m.get("2of3_backup_pubkey"), pointer)[1]);
 
-                final Map<String, ?> m = findSubaccountByType(subAccount, "2of3");
-                if (m != null)
-                    pubkeys.add(HDKey.getRecoveryKeys((String) m.get("2of3_backup_chaincode"),
-                                                      (String) m.get("2of3_backup_pubkey"), pointer)[1]);
-
-                return Script.createMultiSigOutputScript(2, pubkeys);
-            }
-        });
+        return Script.createMultiSigOutputScript(2, pubkeys);
     }
 
     private ListenableFuture<Boolean> verifyP2SHSpendableBy(final Script scriptHash, final int subAccount, final Integer pointer) {
@@ -388,13 +383,13 @@ public class GaService extends Service implements INotificationHandler {
             return Futures.immediateFuture(false);
         final byte[] gotP2SH = scriptHash.getPubKeyHash();
 
-        return Futures.transform(createOutScript(subAccount, pointer), new Function<byte[], Boolean>() {
+        return mExecutor.submit(new Callable<Boolean>() {
             @Override
-            public Boolean apply(final byte[] multisig) {
+            public Boolean call() {
+                final byte[] multisig = createOutScript(subAccount, pointer);
                 if (isSegwitEnabled() &&
                     Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig))))
                     return true;
-
                 return Arrays.equals(gotP2SH, Utils.sha256hash160(multisig));
             }
         });

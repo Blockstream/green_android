@@ -20,6 +20,8 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Bytes;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -40,7 +42,9 @@ import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.TransactionWitness;
 import org.bitcoinj.core.Utils;
+import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.script.ScriptChunk;
 
@@ -56,7 +60,8 @@ import java.util.Map;
 public class TransactionActivity extends GaActivity {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
-    private final String FEE_BLOCK_NUMBERS[] = {"1", "3", "6"};
+    private static final String FEE_BLOCK_NUMBERS[] = {"1", "3", "6"};
+    private static final List<byte[]> EMPTY_SIGS = ImmutableList.of(new byte[71], new byte[71]);
 
     // For debug regtest builds, always allow RBF (Useful for development/testing)
     private static final boolean ALWAYS_ALLOW_RBF = BuildConfig.DEBUG &&
@@ -365,6 +370,7 @@ public class TransactionActivity extends GaActivity {
         final long requiredFeeDelta = txSize + tx.getInputs().size() * 4;
         final List<TransactionInput> oldInputs = new ArrayList<>(tx.getInputs());
         tx.clearInputs();
+        final List<JSONMap> tx_eps = new ArrayList<>();
         for (final JSONMap ep : txItem.eps) {
             if (ep.getBool("is_credit"))
                 continue;
@@ -378,6 +384,7 @@ public class TransactionActivity extends GaActivity {
             );
             newInput.setSequenceNumber(0);
             tx.addInput(newInput);
+            tx_eps.add(ep);
         }
         final Coin oldFee = tx.getFee();
         final Coin newFeeWithRate = feerate.multiply(txSize).divide(1000);
@@ -417,7 +424,7 @@ public class TransactionActivity extends GaActivity {
         }
 
         if (remainingFeeDelta.compareTo(Coin.ZERO) <= 0) {
-            doReplaceByFee(txItem, feerate, tx, change_pointer, subAccount, oldFee, null, null, level);
+            doReplaceByFee(txItem, feerate, tx, tx_eps, change_pointer, subAccount, oldFee, null, level);
             return;
         }
 
@@ -427,34 +434,27 @@ public class TransactionActivity extends GaActivity {
             @Override
             public void onSuccess(final ArrayList result) {
                 Coin remaining = finalRemaining;
-                final List<ListenableFuture<byte[]>> scripts = new ArrayList<>();
                 final List<JSONMap> moreInputs = new ArrayList<>();
 
                 for (final Object o : result) {
                     final JSONMap utxo = new JSONMap((Map<String, Object>) o);
                     remaining = remaining.subtract(utxo.getCoin("value"));
-                    scripts.add(mService.createOutScript(utxo.getInt("subaccount"), utxo.getInt("pointer")));
                     moreInputs.add(utxo);
                     if (remaining.compareTo(Coin.ZERO) <= 0)
                         break;
                 }
 
                 final int remainingCmp = remaining.compareTo(Coin.ZERO);
-                if (remainingCmp == 0) {
-                    // Funds available exactly match the required value
-                    CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(TransactionActivity.this) {
-                        @Override
-                        public void onSuccess(final List<byte[]> morePrevouts) {
-                            doReplaceByFee(txItem, feerate, tx, null, subAccount,
-                                           oldFee, moreInputs, morePrevouts, level);
-                        }
-                    });
-                    return;
-                }
-
                 if (remainingCmp > 0) {
                     // Not enough funds
                     TransactionActivity.this.toast(R.string.insufficientFundsText);
+                    return;
+                }
+
+                if (remainingCmp == 0) {
+                    // Funds available exactly match the required value
+                    doReplaceByFee(txItem, feerate, tx, tx_eps, null, subAccount,
+                                   oldFee, moreInputs, level);
                     return;
                 }
 
@@ -467,24 +467,45 @@ public class TransactionActivity extends GaActivity {
                         final byte[] script = Wally.hex_to_bytes((String) result.get("script"));
                         tx.addOutput(changeValue,
                                      Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script)));
-                        CB.after(Futures.allAsList(scripts), new CB.Toast<List<byte[]>>(TransactionActivity.this) {
-                            @Override
-                            public void onSuccess(final List<byte[]> morePrevouts) {
-                                doReplaceByFee(txItem, feerate, tx, (Integer) result.get("pointer"),
-                                               subAccount, oldFee, moreInputs, morePrevouts, level);
-                            }
-                        });
+                        doReplaceByFee(txItem, feerate, tx, tx_eps, (Integer) result.get("pointer"),
+                                       subAccount, oldFee, moreInputs, level);
                     }
                 });
             }
         });
     }
 
+    private Integer getOutScriptType(final int scriptType) {
+        switch (scriptType) {
+            case TransactionItem.REDEEM_P2SH_FORTIFIED:
+                return TransactionItem.P2SH_FORTIFIED_OUT;
+            case TransactionItem.REDEEM_P2SH_P2WSH_FORTIFIED:
+                return TransactionItem.P2SH_P2WSH_FORTIFIED_OUT;
+            default:
+                return scriptType;
+        }
+    }
+
+    private byte[] createOutScript(final JSONMap ep, final int scriptType) {
+        final Integer outScriptType = getOutScriptType(scriptType);
+        final String k = ep.containsKey("pubkey_pointer") ? "pubkey_pointer" : "pointer";
+        final Integer sa = ep.getInt("subaccount");
+        return mService.createOutScript(sa == null ? 0 : sa, ep.getInt(k));
+    }
+
+    private byte[] createInScript(final List<byte[]> sigs, final byte[] outScript,
+                                  final int scriptType) {
+        if (scriptType == TransactionItem.REDEEM_P2SH_FORTIFIED)
+            return ScriptBuilder.createMultiSigInputScriptBytes(sigs, outScript).getProgram();
+        // REDEEM_P2SH_P2WSH_FORTIFIED: PUSH(OP_0 PUSH(sha256(outScript)))
+        return Bytes.concat(Wally.hex_to_bytes("220020"), Wally.sha256(outScript));
+    }
+
     private void doReplaceByFee(final TransactionItem txItem, final Coin feerate,
-                                final Transaction tx,
+                                final Transaction tx, final List<JSONMap> tx_eps,
                                 final Integer change_pointer, final int subAccount,
                                 final Coin oldFee, final List<JSONMap> moreInputs,
-                                final List<byte[]> morePrevouts, final int level) {
+                                final int level) {
         final PreparedTransaction ptx;
         ptx = new PreparedTransaction(change_pointer, subAccount, tx,
                                       mService.findSubaccountByType(subAccount, "2of3"));
@@ -494,44 +515,34 @@ public class TransactionActivity extends GaActivity {
                 continue;
             final Integer prevIndex = ep.get("pt_idx");
             final TransactionInput oldInput = tx.getInput(prevIndex);
+            final int scriptType = ep.getInt("script_type");
             ptx.mPrevOutputs.add(new Output(
                     (Integer) ep.get("subaccount"),
                     (Integer) ep.get("pubkey_pointer"),
-                    1,
-                    (Integer) ep.get("script_type"),
-                    Wally.hex_from_bytes(oldInput.getScriptSig().getChunks().get(3).data),
+                    1, // HDKey.BRANCH_REGULAR
+                    getOutScriptType(scriptType),
+                    Wally.hex_from_bytes(createOutScript(ep, scriptType)),
                     oldInput.getValue().longValue()
             ));
         }
 
-        int i = 0;
         if (moreInputs != null) {
             for (final JSONMap ep : moreInputs) {
+                final int scriptType = ep.getInt("script_type");
+                final byte[] outscript = createOutScript(ep, scriptType);
                 ptx.mPrevOutputs.add(new Output(
                         ep.getInt("subaccount"),
                         ep.getInt("pointer"),
                         1,
-                        TransactionItem.P2SH_FORTIFIED_OUT,
-                        Wally.hex_from_bytes(morePrevouts.get(i)),
+                        getOutScriptType(scriptType),
+                        Wally.hex_from_bytes(outscript),
                         ep.getLong("value")
                 ));
                 tx.addInput(
                         new TransactionInput(
                                 Network.NETWORK,
                                 null,
-                                new ScriptBuilder().addChunk(
-                                        // OP_0
-                                        new ScriptChunk(0, new byte[0])
-                                ).data(
-                                        // GA sig:
-                                        new byte[71]
-                                ).data(
-                                        // our sig:
-                                        new byte[71]
-                                ).data(
-                                        // the original outscript
-                                        morePrevouts.get(i)
-                                ).build().getProgram(),
+                                createInScript(EMPTY_SIGS, outscript, scriptType),
                                 new TransactionOutPoint(
                                         Network.NETWORK,
                                         ep.getInt("pt_idx"),
@@ -540,7 +551,7 @@ public class TransactionActivity extends GaActivity {
                                 ep.getCoin("value")
                         )
                 );
-                i++;
+                tx_eps.add(ep);
             }
         }
 
@@ -584,27 +595,26 @@ public class TransactionActivity extends GaActivity {
             }
         });
 
+        final boolean isSegwitEnabled = mService.isSegwitEnabled();
+
         CB.after(signed, new CB.Toast<List<byte[]>>(TransactionActivity.this) {
             @Override
             public void onSuccess(final List<byte[]> signatures) {
                 int i = 0;
                 for (final byte[] sig : signatures) {
-                    final TransactionInput input = tx.getInput(i++);
-                    input.setScriptSig(
-                            new ScriptBuilder().addChunk(
-                                    // OP_0
-                                    input.getScriptSig().getChunks().get(0)
-                            ).data(
-                                    // GA sig:
-                                    new byte[] {0}
-                            ).data(
-                                    // our sig:
-                                    sig
-                            ).addChunk(
-                                    // the original outscript
-                                    input.getScriptSig().getChunks().get(3)
-                            ).build()
-                    );
+                    final JSONMap ep = tx_eps.get(i);
+                    final int scriptType = ep.getInt("script_type");
+                    final byte[] outscript = createOutScript(ep, scriptType);
+                    final List<byte[]> userSigs = ImmutableList.of(new byte[]{0}, sig);
+                    final byte[] inscript = createInScript(userSigs, outscript, scriptType);
+
+                    tx.getInput(i).setScriptSig(new Script(inscript));
+                    if (isSegwitEnabled && scriptType == TransactionItem.REDEEM_P2SH_P2WSH_FORTIFIED) {
+                        final TransactionWitness witness = new TransactionWitness(1);
+                        witness.setPush(0, sig);
+                        tx.setWitness(i, witness);
+                    }
+                    i++;
                 }
                 final Map<String, Object> twoFacData = new HashMap<>();
                 twoFacData.put("try_under_limits_bump", tx.getFee().subtract(oldFee).longValue());
