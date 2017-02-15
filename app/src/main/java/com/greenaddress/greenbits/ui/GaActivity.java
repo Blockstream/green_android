@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.Futures;
@@ -133,6 +134,7 @@ public abstract class GaActivity extends AppCompatActivity {
 
     public void toast(final Throwable t) { UI.toast(this, t, null); }
     public void toast(final int id) { UI.toast(this, id, Toast.LENGTH_LONG); }
+    public void toast(final int id, final Button reenable) { UI.toast(this, getString(id), reenable); }
     public void toast(final String s) { UI.toast(this, s, Toast.LENGTH_LONG); }
     public void shortToast(final int id) { UI.toast(this, id, Toast.LENGTH_SHORT); }
     public void shortToast(final String s) { UI.toast(this, s, Toast.LENGTH_SHORT); }

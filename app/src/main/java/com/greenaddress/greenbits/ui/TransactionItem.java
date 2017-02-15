@@ -1,4 +1,5 @@
 package com.greenaddress.greenbits.ui;
+import com.greenaddress.greenapi.GATx;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenbits.GaService;
 
@@ -13,12 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TransactionItem implements Serializable {
-
-    // Script types in end points
-    public static final int P2SH_FORTIFIED_OUT = 10;
-    public static final int P2SH_P2WSH_FORTIFIED_OUT = 14;
-    public static final int REDEEM_P2SH_FORTIFIED = 150;
-    public static final int REDEEM_P2SH_P2WSH_FORTIFIED = 159;
 
     public enum TYPE {
         OUT,
@@ -92,8 +87,8 @@ public class TransactionItem implements Serializable {
             boolean externalSocial = false;
             if (socialDestination != null) {
                 final Integer scriptType = ep.get("script_type");
-                externalSocial = scriptType != P2SH_FORTIFIED_OUT &&
-                                 scriptType != P2SH_P2WSH_FORTIFIED_OUT;
+                externalSocial = scriptType != GATx.P2SH_FORTIFIED_OUT &&
+                                 scriptType != GATx.P2SH_P2WSH_FORTIFIED_OUT;
 
                 final JSONMap socialMap = m.getMap("social_destination");
                 if (socialMap == null) {

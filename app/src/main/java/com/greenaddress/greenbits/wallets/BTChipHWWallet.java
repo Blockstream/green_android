@@ -251,6 +251,11 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
+    public List<byte[]> signTransaction(final Transaction tx, final List<Output> prevOuts) {
+        throw new RuntimeException("FIXME: No HW Wallet signing for client side transactions yet");
+    }
+
+    @Override
     public DeterministicKey getPubKey() {
         try {
             return internalGetPubKey();

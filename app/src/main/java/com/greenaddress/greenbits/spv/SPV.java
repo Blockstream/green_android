@@ -34,7 +34,6 @@ import org.bitcoinj.core.BloomFilter;
 import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.FilteredBlock;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
 import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.PeerGroup;
@@ -47,6 +46,7 @@ import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.core.listeners.TransactionReceivedInBlockListener;
 import org.bitcoinj.net.BlockingClientManager;
 import org.bitcoinj.net.discovery.DnsDiscovery;
+import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
@@ -655,7 +655,7 @@ public class SPV {
                 Log.d(TAG, "Creating block store");
                 mBlockStore = new SPVBlockStore(Network.NETWORK, mService.getSPVChainFile());
                 final StoredBlock storedBlock = mBlockStore.getChainHead(); // detect corruptions as early as possible
-                if (storedBlock.getHeight() == 0 && !Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
+                if (storedBlock.getHeight() == 0 && Network.NETWORK != RegTestParams.get()) {
                     InputStream is = null;
                     try {
                         is = mService.getAssets().open("checkpoints");

@@ -35,6 +35,7 @@ import com.greenaddress.greenapi.INotificationHandler;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.Network;
+import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PinData;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenapi.SWWallet;
@@ -49,11 +50,11 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.Fiat;
@@ -83,6 +84,7 @@ import java.util.concurrent.TimeUnit;
 
 public class GaService extends Service implements INotificationHandler {
     private static final String TAG = GaService.class.getSimpleName();
+    public static final boolean IS_ELEMENTS = Network.NETWORK == ElementsRegTestParams.get();
 
     private enum ConnState {
         OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
@@ -129,6 +131,8 @@ public class GaService extends Service implements INotificationHandler {
     private String mFiatExchange;
     private ArrayList<Map<String, ?>> mSubAccounts;
     private String mReceivingId;
+    private Coin mDustThreshold = Coin.valueOf(546); // Per 0.13.0, updated on login
+    private Coin mMinFee = Coin.valueOf(1000); // Per 0.12.0, updated on login
     private Map<?, ?> mTwoFactorConfig;
     private final GaObservable mTwoFactorConfigObservable = new GaObservable();
     private String mDeviceId;
@@ -451,6 +455,12 @@ public class GaService extends Service implements INotificationHandler {
         mFiatExchange = loginData.get("exchange");
         mSubAccounts = loginData.mSubAccounts;
         mReceivingId = loginData.get("receiving_id");
+
+        if (loginData.mRawData.containsKey("min_fee"))
+            mMinFee = Coin.valueOf((long)((int) loginData.get("min_fee")));
+        if (loginData.mRawData.containsKey("dust"))
+            mDustThreshold = Coin.valueOf((long) ((int) loginData.get("dust")));
+
         HDKey.resetCache(loginData.mGaitPath);
 
         mBalanceObservables.put(0, new GaObservable());
@@ -534,6 +544,14 @@ public class GaService extends Service implements INotificationHandler {
 
     public Map<String, Object> getFeeEstimates() {
         return mClient.getFeeEstimates();
+    }
+
+    public Coin getMinFee() {
+        return mMinFee;
+    }
+
+    public Coin getDustThreshold() {
+        return mDustThreshold;
     }
 
     public void disconnect(final boolean autoReconnect) {
@@ -646,7 +664,7 @@ public class GaService extends Service implements INotificationHandler {
                 !verifiedBalance.equals(getCoinBalance(subAccount)) ||
                 mClient.getSigningWallet().requiresPrevoutRawTxs();
 
-        final boolean isRegTest = Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST));
+        final boolean isRegTest = Network.NETWORK == RegTestParams.get();
         final String fetchMode = isRegTest ? "" : "http"; // Fetch inline for regtest
         privateData.put("prevouts_mode", fetchPrev ? fetchMode : "skip");
 
@@ -657,6 +675,10 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<List<byte[]>> signTransaction(final PreparedTransaction ptx) {
         return mClient.signTransaction(mClient.getSigningWallet(), ptx);
+    }
+
+    public List<byte[]> signTransaction(final Transaction tx, final List<Output> prevOuts) {
+        return mClient.getSigningWallet().signTransaction(tx, prevOuts);
     }
 
     public ListenableFuture<Coin>
@@ -699,6 +721,10 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getRawOutput(txHash);
     }
 
+    public String getRawOutputHex(final Sha256Hash txHash) throws Exception {
+        return mClient.getRawOutputHex(txHash);
+    }
+
     public ListenableFuture<Boolean> changeMemo(final Sha256Hash txHash, final String memo) {
         return mClient.changeMemo(txHash, memo);
     }
@@ -718,7 +744,7 @@ public class GaService extends Service implements INotificationHandler {
         return bits.toByteArray();
     }
 
-    public ListenableFuture<Map> getNewAddress(final int subAccount) {
+    public Map<?, ?> getNewAddress(final int subAccount) throws Exception {
         final boolean userSegwit = isSegwitEnabled();
         if (userSegwit && isSegwitUnlocked())
             setSegwitLocked(); // Locally store that we have generated a SW address
@@ -726,6 +752,13 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {
+        final ListenableFuture<Map> addrFn = mExecutor.submit(new Callable<Map>() {
+            @Override
+            public Map call() throws Exception {
+                return getNewAddress(subAccount);
+            }
+        });
+
         final AsyncFunction<Map, QrBitmap> verifyAddress = new AsyncFunction<Map, QrBitmap>() {
             @Override
             public ListenableFuture<QrBitmap> apply(final Map input) throws Exception {
@@ -758,7 +791,7 @@ public class GaService extends Service implements INotificationHandler {
                 });
             }
         };
-        return Futures.transform(getNewAddress(subAccount), verifyAddress, mExecutor);
+        return Futures.transform(addrFn, verifyAddress, mExecutor);
     }
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {

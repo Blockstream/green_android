@@ -19,12 +19,13 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.Bytes;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.GAException;
+import com.greenaddress.greenapi.GATx;
+import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.Output;
@@ -34,16 +35,14 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
-import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.TransactionWitness;
 import org.bitcoinj.core.Utils;
+import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.script.Script;
-import org.bitcoinj.script.ScriptBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,11 +57,10 @@ public class TransactionActivity extends GaActivity {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
     private static final String FEE_BLOCK_NUMBERS[] = {"1", "3", "6"};
-    private static final List<byte[]> EMPTY_SIGS = ImmutableList.of(new byte[71], new byte[71]);
 
     // For debug regtest builds, always allow RBF (Useful for development/testing)
     private static final boolean ALWAYS_ALLOW_RBF = BuildConfig.DEBUG &&
-        Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST));
+        Network.NETWORK == RegTestParams.get();
 
     private Menu mMenu;
     private TextView mUnconfirmedText;
@@ -150,17 +148,17 @@ public class TransactionActivity extends GaActivity {
         // FIXME: use a list instead of reusing a TextView to show all double spends to allow
         // for a warning to be shown before the browser is open
         // this is to prevent to accidentally leak to block explorers your addresses
-        if (txItem.doubleSpentBy != null || txItem.replacedHashes.size() > 0) {
+        if (txItem.doubleSpentBy != null || !txItem.replacedHashes.isEmpty()) {
             CharSequence res = "";
             if (txItem.doubleSpentBy != null) {
                 if (txItem.doubleSpentBy.equals("malleability") || txItem.doubleSpentBy.equals("update"))
                     res = txItem.doubleSpentBy;
                 else
                     res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + txItem.doubleSpentBy + "\">" + txItem.doubleSpentBy + "</a>");
-                if (txItem.replacedHashes.size() > 0)
+                if (!txItem.replacedHashes.isEmpty())
                     res = TextUtils.concat(res, "; ");
             }
-            if (txItem.replacedHashes.size() > 0) {
+            if (!txItem.replacedHashes.isEmpty()) {
                 res = TextUtils.concat(res, Html.fromHtml("replaces transactions:<br/>"));
                 for (int i = 0; i < txItem.replacedHashes.size(); ++i) {
                     if (i > 0)
@@ -320,7 +318,7 @@ public class TransactionActivity extends GaActivity {
                 });
     }
 
-    final Coin getFeeEstimate(final Map<String, Object> feeEstimates, final String atBlock) {
+    private static Coin getFeeEstimate(final Map<String, Object> feeEstimates, final String atBlock) {
         final double rate = Double.parseDouble(((Map)feeEstimates.get(atBlock)).get("feerate").toString());
         return Coin.valueOf((long) (rate * 1000 * 1000 * 100));
     }
@@ -379,7 +377,7 @@ public class TransactionActivity extends GaActivity {
                     oldInput.getOutpoint(),
                     ep.getCoin("value")
             );
-            newInput.setSequenceNumber(0);
+            newInput.setSequenceNumber(0); // This ensures nlocktime is recognized
             tx.addInput(newInput);
             tx_eps.add(ep);
         }
@@ -456,45 +454,21 @@ public class TransactionActivity extends GaActivity {
 
                 // Funds left over - add a new change output
                 final Coin changeValue = remaining.multiply(-1);
-                CB.after(mService.getNewAddress(subAccount),
-                         new CB.Toast<Map>(TransactionActivity.this) {
-                    @Override
-                    public void onSuccess(final Map result) {
-                        final byte[] script = Wally.hex_to_bytes((String) result.get("script"));
-                        tx.addOutput(changeValue,
-                                     Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script)));
-                        doReplaceByFee(txItem, feerate, tx, tx_eps, (Integer) result.get("pointer"),
-                                       subAccount, oldFee, moreInputs, level);
-                    }
-                });
+                final Map addr;
+                try {
+                    addr = mService.getNewAddress(subAccount);
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    UI.toast(TransactionActivity.this, e, null);
+                    return;
+                }
+                final byte[] script = Wally.hex_to_bytes((String) addr.get("script"));
+                tx.addOutput(changeValue,
+                             Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script)));
+                doReplaceByFee(txItem, feerate, tx, tx_eps, (Integer) addr.get("pointer"),
+                               subAccount, oldFee, moreInputs, level);
             }
         });
-    }
-
-    private Integer getOutScriptType(final int scriptType) {
-        switch (scriptType) {
-            case TransactionItem.REDEEM_P2SH_FORTIFIED:
-                return TransactionItem.P2SH_FORTIFIED_OUT;
-            case TransactionItem.REDEEM_P2SH_P2WSH_FORTIFIED:
-                return TransactionItem.P2SH_P2WSH_FORTIFIED_OUT;
-            default:
-                return scriptType;
-        }
-    }
-
-    private byte[] createOutScript(final JSONMap ep, final int scriptType) {
-        final Integer outScriptType = getOutScriptType(scriptType);
-        final String k = ep.containsKey("pubkey_pointer") ? "pubkey_pointer" : "pointer";
-        final Integer sa = ep.getInt("subaccount");
-        return mService.createOutScript(sa == null ? 0 : sa, ep.getInt(k));
-    }
-
-    private byte[] createInScript(final List<byte[]> sigs, final byte[] outScript,
-                                  final int scriptType) {
-        if (scriptType == TransactionItem.REDEEM_P2SH_FORTIFIED)
-            return ScriptBuilder.createMultiSigInputScriptBytes(sigs, outScript).getProgram();
-        // REDEEM_P2SH_P2WSH_FORTIFIED: PUSH(OP_0 PUSH(sha256(outScript)))
-        return Bytes.concat(Wally.hex_to_bytes("220020"), Wally.sha256(outScript));
     }
 
     private void doReplaceByFee(final TransactionItem txItem, final Coin feerate,
@@ -515,9 +489,9 @@ public class TransactionActivity extends GaActivity {
             ptx.mPrevOutputs.add(new Output(
                     (Integer) ep.get("subaccount"),
                     (Integer) ep.get("pubkey_pointer"),
-                    1, // HDKey.BRANCH_REGULAR
-                    getOutScriptType(scriptType),
-                    Wally.hex_from_bytes(createOutScript(ep, scriptType)),
+                    HDKey.BRANCH_REGULAR,
+                    GATx.getOutScriptType(scriptType),
+                    Wally.hex_from_bytes(GATx.createOutScript(mService, ep)),
                     oldInput.getValue().longValue()
             ));
         }
@@ -525,28 +499,16 @@ public class TransactionActivity extends GaActivity {
         if (moreInputs != null) {
             for (final JSONMap ep : moreInputs) {
                 final int scriptType = ep.getInt("script_type");
-                final byte[] outscript = createOutScript(ep, scriptType);
+                final byte[] outscript = GATx.createOutScript(mService, ep);
                 ptx.mPrevOutputs.add(new Output(
                         ep.getInt("subaccount"),
                         ep.getInt("pointer"),
                         1,
-                        getOutScriptType(scriptType),
+                        GATx.getOutScriptType(scriptType),
                         Wally.hex_from_bytes(outscript),
                         ep.getLong("value")
                 ));
-                tx.addInput(
-                        new TransactionInput(
-                                Network.NETWORK,
-                                null,
-                                createInScript(EMPTY_SIGS, outscript, scriptType),
-                                new TransactionOutPoint(
-                                        Network.NETWORK,
-                                        ep.getInt("pt_idx"),
-                                        ep.getHash("txhash")
-                                ),
-                                ep.getCoin("value")
-                        )
-                );
+                GATx.addInput(mService, tx, ep);
                 tx_eps.add(ep);
             }
         }
@@ -600,12 +562,12 @@ public class TransactionActivity extends GaActivity {
                 for (final byte[] sig : signatures) {
                     final JSONMap ep = tx_eps.get(i);
                     final int scriptType = ep.getInt("script_type");
-                    final byte[] outscript = createOutScript(ep, scriptType);
+                    final byte[] outscript = GATx.createOutScript(mService, ep);
                     final List<byte[]> userSigs = ImmutableList.of(new byte[]{0}, sig);
-                    final byte[] inscript = createInScript(userSigs, outscript, scriptType);
+                    final byte[] inscript = GATx.createInScript(userSigs, outscript, scriptType);
 
                     tx.getInput(i).setScriptSig(new Script(inscript));
-                    if (isSegwitEnabled && scriptType == TransactionItem.REDEEM_P2SH_P2WSH_FORTIFIED) {
+                    if (isSegwitEnabled && scriptType == GATx.REDEEM_P2SH_P2WSH_FORTIFIED) {
                         final TransactionWitness witness = new TransactionWitness(1);
                         witness.setPush(0, sig);
                         tx.setWitness(i, witness);

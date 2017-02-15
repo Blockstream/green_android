@@ -14,6 +14,8 @@ public abstract class ISigningWallet {
 
     public abstract DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer);
     public abstract List<byte[]> signTransaction(PreparedTransaction ptx);
+    public abstract List<byte[]> signTransaction(final Transaction tx, final List<Output> prevOuts);
+
     // FIXME: This is only needed until the challenge RPC is unified
     public abstract Object[] getChallengeArguments();
     public abstract String[] signChallenge(final String challengeString, final String[] challengePath);

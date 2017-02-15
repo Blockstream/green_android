@@ -7,8 +7,8 @@ import com.greenaddress.greenbits.GaService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.params.RegTestParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -96,7 +96,7 @@ public class PreparedTransaction {
         mRequiresTwoFactor = (Boolean) pte.mValues.get("requires_2factor");
         mDecoded = GaService.buildTransaction((String) pte.mValues.get("tx"));
 
-        if (Network.NETWORK.equals(NetworkParameters.fromID(NetworkParameters.ID_REGTEST))) {
+        if (Network.NETWORK == RegTestParams.get()) {
             // For REGTEST we fetch the previous outputs inline
             // FIXME: Do this for the other environments too after more testing
             final Map<String, String> txs;

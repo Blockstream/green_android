@@ -665,8 +665,8 @@ public class WalletClient {
         return syncCall("txs.get_list_v2", Map.class, null, null, null, null, subAccount);
     }
 
-    public ListenableFuture<Map> getNewAddress(final int subAccount, final String addrType) {
-        return simpleCall("vault.fund", Map.class, subAccount, true, addrType);
+    public Map<?, ?> getNewAddress(final int subAccount, final String addrType) throws Exception {
+        return syncCall("vault.fund", Map.class, subAccount, true, addrType);
     }
 
     public PinData setPin(final String mnemonic, final String pin, final String deviceName) throws Exception {
@@ -774,7 +774,7 @@ public class WalletClient {
         return !isSegwitUnconfirmed() && (Boolean) getUserConfig("use_segwit");
     }
 
-    private <T> ByteArrayOutputStream serializeJSON(final T src) throws GAException {
+    private static <T> ByteArrayOutputStream serializeJSON(final T src) throws GAException {
         final ByteArrayOutputStream b = new ByteArrayOutputStream();
         try {
             new MappingJsonFactory().getCodec().writeValue(b, src);
@@ -784,8 +784,8 @@ public class WalletClient {
         return b;
     }
 
-    private void updateMap(final Map<String, Object> dest, final Map<String, Object> src,
-                           final Set<String> keys) {
+    private static void updateMap(final Map<String, Object> dest, final Map<String, Object> src,
+                                  final Set<String> keys) {
         for (final String k : keys)
             dest.put(k, src.get(k));
     }
@@ -802,7 +802,7 @@ public class WalletClient {
             return Futures.immediateFailedFuture(e);
         }
 
-        final Map<String, Object> oldValues = new HashMap();
+        final Map<String, Object> oldValues = new HashMap<>();
         if (updateImmediately) {
             // Save old values and update current config
             updateMap(oldValues, mLoginData.mUserConfig, values.keySet());
@@ -856,8 +856,13 @@ public class WalletClient {
         return transactionCall("txs.get_raw_unspent_output", txHash.toString());
     }
 
+    // FIXME: Share this with getRawOutputHex/ un-async it
     public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
         return transactionCall("txs.get_raw_output", txHash.toString());
+    }
+
+    public String getRawOutputHex(final Sha256Hash txHash) throws Exception {
+        return syncCall("txs.get_raw_output", String.class, txHash.toString());
     }
 
     public ListenableFuture<Boolean> changeMemo(final Sha256Hash txHash, final String memo) {

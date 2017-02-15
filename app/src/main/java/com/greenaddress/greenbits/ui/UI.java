@@ -123,7 +123,7 @@ public abstract class UI {
     public static Map<String, String> getTwoFactorLookup(final Resources res) {
         final List<String> localized = Arrays.asList(res.getStringArray(R.array.twoFactorChoices));
         final List<String> methods = Arrays.asList(res.getStringArray(R.array.twoFactorMethods));
-        final Map<String, String> map = new HashMap();
+        final Map<String, String> map = new HashMap<>();
         for (int i = 0; i < localized.size(); i++)
             map.put(methods.get(i), localized.get(i));
         return map;
@@ -184,12 +184,16 @@ public abstract class UI {
     }
 
     public static void toast(final Activity activity, final Throwable t, final Button reenable) {
+        t.printStackTrace();
+        toast(activity, t.getMessage(), reenable);
+    }
+
+    public static void toast(final Activity activity, final String msg, final Button reenable) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (reenable != null)
                     reenable.setEnabled(true);
-                t.printStackTrace();
-                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
             }
         });
     }
