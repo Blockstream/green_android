@@ -252,6 +252,11 @@ public abstract class UI {
         return text.getText().toString();
     }
 
+    public static void clear(final TextView... views) {
+        for (final TextView v: views)
+            v.setText(R.string.empty);
+    }
+
     public static <T> T find(final Activity activity, final int id) {
         return (T) activity.findViewById(id);
     }

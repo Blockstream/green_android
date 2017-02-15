@@ -77,9 +77,9 @@ public class PinActivity extends LoginActivity implements Observer {
 
         setUpLogin(UI.getText(mPinText), new Runnable() {
              public void run() {
-                 mPinText.setText("");
+                 UI.clear(mPinText);
                  mPinLoginButton.setProgress(0);
-                 mPinText.setEnabled(true);
+                 UI.enable(mPinText);
                  UI.show(mPinError);
                  final int counter = mService.cfg("pin").getInt("counter", 1);
                  mPinError.setText(getString(R.string.attemptsLeft, 3 - counter));

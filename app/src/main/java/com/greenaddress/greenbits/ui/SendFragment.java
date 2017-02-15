@@ -118,15 +118,14 @@ public class SendFragment extends SubaccountFragment {
                                             return;
                                         }
 
-                                        mAmountEdit.setText("");
-                                        mRecipientEdit.setText("");
+                                        UI.clear(mAmountEdit, mRecipientEdit);
                                         UI.enable(mAmountEdit, mRecipientEdit);
                                         mMaxButton.setChecked(false);
                                         UI.show(mMaxButton, mMaxLabel);
 
                                         mNoteIcon.setText(R.string.fa_pencil);
-                                        mNoteText.setText("");
-                                        mNoteText.setVisibility(View.INVISIBLE);
+                                        UI.clear(mNoteText);
+                                        UI.hide(mNoteText);
 
                                         final ViewPager viewPager = UI.find(gaActivity, R.id.container);
                                         viewPager.setCurrentItem(1);
@@ -403,18 +402,10 @@ public class SendFragment extends SubaccountFragment {
         });
 
         mMaxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
             @Override
             public void onCheckedChanged(final CompoundButton v, final boolean isChecked) {
-                if (isChecked) {
-                    mAmountEdit.setEnabled(false);
-                    mAmountFiatEdit.setEnabled(false);
-                    mAmountEdit.setText(getString(R.string.send_max_amount));
-                } else {
-                    mAmountEdit.setText("");
-                    mAmountEdit.setEnabled(true);
-                    mAmountFiatEdit.setEnabled(true);
-                }
+                UI.disableIf(isChecked, mAmountEdit, mAmountFiatEdit);
+                mAmountEdit.setText(isChecked ? R.string.send_max_amount : R.string.empty);
             }
         });
 
@@ -441,8 +432,8 @@ public class SendFragment extends SubaccountFragment {
             public void onClick(final View v) {
                 if (mNoteText.getVisibility() == View.VISIBLE) {
                     mNoteIcon.setText(R.string.fa_pencil);
-                    mNoteText.setText("");
-                    mNoteText.setVisibility(View.INVISIBLE);
+                    UI.clear(mNoteText);
+                    UI.hide(mNoteText);
                 } else {
                     mNoteIcon.setText(R.string.fa_remove);
                     UI.show(mNoteText);

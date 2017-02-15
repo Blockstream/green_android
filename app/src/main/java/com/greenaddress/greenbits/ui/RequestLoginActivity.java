@@ -188,7 +188,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
 
     private void onLedger(final Intent intent) {
         final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-        edit.setText("");
+        UI.clear(edit);
         UI.hide(edit);
         // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
         if (mTag != null)

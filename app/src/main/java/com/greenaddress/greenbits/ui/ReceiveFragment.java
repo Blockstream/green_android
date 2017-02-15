@@ -209,8 +209,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
         if (isZombie())
             return;
-        mAmountEdit.setText("");
-        mAmountFiatEdit.setText("");
+        UI.clear(mAmountEdit, mAmountFiatEdit);
         mCurrentAddress = "";
         popupWaitDialog(R.string.generating_address);
         UI.disable(mCopyIcon);
@@ -223,12 +222,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Log.d(TAG, "Destroying address for subaccount " + mSubaccount);
         if (isZombie())
             return;
-        mAmountEdit.setText("");
-        mAmountFiatEdit.setText("");
         mCurrentAddress = "";
-        mAddressText.setText("");
+        UI.clear(mAmountEdit, mAmountFiatEdit, mAddressText);
         mAddressImage.setImageBitmap(null);
-        mView.setVisibility(View.GONE);
+        UI.hide(mView);
     }
 
     private void onCopyClicked() {
@@ -290,7 +287,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         hideWaitDialog();
         UI.enable(mCopyIcon);
-        mView.setVisibility(View.VISIBLE);
+        UI.show(mView);
     }
 
     @Override

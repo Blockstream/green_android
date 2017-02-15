@@ -117,7 +117,7 @@ class AmountFields {
             if (UI.getText(mAmountEdit).equals(maxAmount))
                 mAmountFiatEdit.setText(maxAmount);
             else
-                mAmountFiatEdit.setText("");
+                UI.clear(mAmountFiatEdit);
         }
         finishConversion();
     }
@@ -135,7 +135,7 @@ class AmountFields {
             final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(mAmountFiatEdit));
             mAmountEdit.setText(UI.formatCoinValue(mGaService, rate.fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            mAmountEdit.setText("");
+            UI.clear(mAmountEdit);
         }
         finishConversion();
     }
