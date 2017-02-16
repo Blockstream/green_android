@@ -38,11 +38,11 @@ public class TransactionOutput extends ChildMessage {
     private static final Logger log = LoggerFactory.getLogger(TransactionOutput.class);
 
     // The output's value is kept as a native type in order to save class instances.
-    private long value;
+    protected long value;
 
     // A transaction output has a script used for authenticating that the redeemer is allowed to spend
     // this output.
-    private byte[] scriptBytes;
+    public byte[] scriptBytes;
 
     // The script bytes are parsed and turned into a Script on demand.
     private Script scriptPubKey;
@@ -54,7 +54,7 @@ public class TransactionOutput extends ChildMessage {
     private boolean availableForSpending;
     @Nullable private TransactionInput spentBy;
 
-    private int scriptLen;
+    protected int scriptLen;
 
     /**
      * Deserializes a transaction output message. This is usually part of a transaction message.

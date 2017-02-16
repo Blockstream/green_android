@@ -58,7 +58,7 @@ public abstract class Message {
     protected MessageSerializer serializer;
 
     protected int protocolVersion;
-    protected int transactionOptions = TransactionOptions.ALL;
+    public int transactionOptions = TransactionOptions.ALL; // FIXME: Hacked for serialisation
 
     protected NetworkParameters params;
 

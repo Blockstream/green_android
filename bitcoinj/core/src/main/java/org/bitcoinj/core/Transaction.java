@@ -114,12 +114,12 @@ public class Transaction extends ChildMessage {
     public static final Coin MIN_NONDUST_OUTPUT = Coin.valueOf(2730); // satoshis
 
     // These are bitcoin serialized.
-    private long version;
+    protected long version;
     private ArrayList<TransactionInput> inputs;
-    private ArrayList<TransactionOutput> outputs;
-    private ArrayList<TransactionWitness> witnesses;
+    protected ArrayList<TransactionOutput> outputs;
+    protected ArrayList<TransactionWitness> witnesses;
 
-    private long lockTime;
+    protected long lockTime;
 
     // This is either the time the transaction was broadcast as measured from the local clock, or the time from the
     // block in which it was included. Note that this can be changed by re-orgs so the wallet may update this field.
@@ -147,7 +147,7 @@ public class Transaction extends ChildMessage {
     // MAX_BLOCK_SIZE must be compared to the optimal encoding, not the actual encoding, so when parsing, we keep track
     // of the size of the ideal encoding in addition to the actual message size (which Message needs) so that Blocks
     // can properly keep track of optimal encoded size
-    private int optimalEncodingMessageSize;
+    protected int optimalEncodingMessageSize;
 
     /**
      * This enum describes the underlying reason the transaction was created. It's useful for rendering wallet GUIs
@@ -261,7 +261,7 @@ public class Transaction extends ChildMessage {
      *
      * No verification is performed on this hash.
      */
-    void setHash(Sha256Hash hash) {
+    public void setHash(Sha256Hash hash) {
         this.hash = hash;
     }
 
@@ -631,7 +631,7 @@ public class Transaction extends ChildMessage {
         witnesses = witnesses == null ? new ArrayList<TransactionWitness>() : witnesses;
     }
 
-    private void readWitness() {
+    protected void readWitness() {
         witnesses = new ArrayList<TransactionWitness>(inputs.size());
         for (int i = 0; i < inputs.size(); i++) {
             long pushCount = readVarInt();
@@ -647,7 +647,7 @@ public class Transaction extends ChildMessage {
         }
     }
 
-    private void readOutputs() {
+    protected void readOutputs() {
         long numOutputs = readVarInt();
         optimalEncodingMessageSize += VarInt.sizeOf(numOutputs);
         outputs = new ArrayList<>((int) numOutputs);
@@ -660,7 +660,7 @@ public class Transaction extends ChildMessage {
         }
     }
 
-    private void readInputs() {
+    protected void readInputs() {
         long numInputs = readVarInt();
         optimalEncodingMessageSize += VarInt.sizeOf(numInputs);
         inputs = new ArrayList<TransactionInput>((int) numInputs);
