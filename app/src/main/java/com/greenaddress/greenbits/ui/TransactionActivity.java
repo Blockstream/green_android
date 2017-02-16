@@ -433,8 +433,7 @@ public class TransactionActivity extends GaActivity {
                 Coin remaining = finalRemaining;
                 final List<JSONMap> moreInputs = new ArrayList<>();
 
-                for (final Object o : result) {
-                    final JSONMap utxo = new JSONMap((Map<String, Object>) o);
+                for (final JSONMap utxo : JSONMap.fromList(result)) {
                     remaining = remaining.subtract(utxo.getCoin("value"));
                     moreInputs.add(utxo);
                     if (remaining.compareTo(Coin.ZERO) <= 0)

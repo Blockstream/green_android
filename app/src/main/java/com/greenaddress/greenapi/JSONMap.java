@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi;
 
+import com.blockstream.libwally.Wally;
+
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
 import org.codehaus.jackson.map.MappingJsonFactory;
@@ -8,7 +10,10 @@ import java.io.Serializable;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -21,11 +26,22 @@ public class JSONMap implements Serializable {
         return df;
     }
 
-    private final Map<String, Object> mData;
+    public final Map<String, Object> mData; // Public for setting only
 
     public JSONMap(final Map<String, Object> jsonMap) { mData = jsonMap; }
 
+    public static List<JSONMap> fromList(final List list) {
+        final List<JSONMap> result = new ArrayList<>(list.size());
+        for (final Object o : list)
+            result.add(new JSONMap((Map<String, Object>) o));
+        return result;
+    }
+
     public boolean containsKey(final String k) { return mData.containsKey(k); }
+
+    public String getKey(final String k, final String altKey) {
+        return containsKey(k) ? k : altKey;
+    }
 
     public <T> T get(final String k, final T def) {
         return containsKey(k) ? (T) mData.get(k) : def;
@@ -46,8 +62,19 @@ public class JSONMap implements Serializable {
         }
     }
 
-    public Boolean getBool(final String k) { return get(k); }
+    public boolean getBool(final String k) {
+        // Not present, present but null or false are false, otherwise true
+        if (!containsKey(k))
+            return false;
+        return Boolean.TRUE.equals(get(k));
+    }
     public Integer getInt(final String k) { return get(k); }
+    public Integer getInt(final String k, final Integer def) {
+       final Integer v = get(k, null);
+       return v != null ? v : def;
+    }
+
+    public String getString(final String k) { return get(k); }
 
     public Date getDate(final String k) throws ParseException {
         final String date = get(k);
@@ -66,6 +93,14 @@ public class JSONMap implements Serializable {
 
     public Coin getCoin(final String k) {
         return Coin.valueOf(getLong(k));
+    }
+
+    public BigInteger getBigInteger(final String k) {
+        return new BigInteger(String.valueOf(get(k)));
+    }
+
+    public byte[] getBytes(final String k) {
+        return Wally.hex_to_bytes(getString(k));
     }
 
     public String toString() {
