@@ -26,10 +26,12 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public abstract class UI {
@@ -37,7 +39,7 @@ public abstract class UI {
     public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
     private static final String MICRO_BTC = "\u00B5BTC";
     private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
-    private static final DecimalFormat mDecimalFmt = new DecimalFormat("#,###.########");
+    private static final DecimalFormat mDecimalFmt = new DecimalFormat("#,###.########", DecimalFormatSymbols.getInstance(Locale.US));
 
     // Class to unify cancel and dismiss handling */
     private static class DialogCloseHandler implements DialogInterface.OnCancelListener,
