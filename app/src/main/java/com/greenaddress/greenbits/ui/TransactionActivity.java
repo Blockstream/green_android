@@ -329,6 +329,9 @@ public class TransactionActivity extends GaActivity {
             @Override
             public void onClick(final View v) {
 
+                if (url == null)
+                    return;
+
                 String domain = url;
                 try {
                     domain = new URI(url).getHost();
