@@ -15,6 +15,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -45,7 +46,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_general);
         setHasOptionsMenu(true);
 
-        // -- handle timeout
+        // Timeout
         final int timeout = mService.getAutoLogoutMinutes();
         getPreferenceManager().getSharedPreferences().edit()
                               .putString("altime", Integer.toString(timeout))
@@ -67,8 +68,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
             }
         });
 
-        // -- handle mnemonics
-
+        // Mnemonics
         final String mnemonic = mService.getMnemonics();
         if (mnemonic != null) {
             final Preference passphrase = find("mnemonic_passphrase");
@@ -82,9 +82,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
             });
         }
 
-        // -- handle pin
+        // PIN
         final Preference resetPin = find("reset_pin");
-        if (mnemonic != null) {
+        if (mnemonic == null)
+            removePreference(resetPin);
+        else {
             resetPin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(final Preference preference) {
@@ -93,34 +95,39 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
                     return false;
                 }
             });
-        } else {
-            getPreferenceScreen().removePreference(resetPin);
         }
 
-        // -- handle currency and bitcoin denomination
+        // Currency and bitcoin denomination
         final ListPreference bitcoinDenomination = find("denomination_key");
-        bitcoinDenomination.setEntries(UI.UNITS.toArray(new String[4]));
-        bitcoinDenomination.setEntryValues(UI.UNITS.toArray(new String[4]));
-        bitcoinDenomination.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object o) {
-                mService.setUserConfig("unit", o.toString(), true);
-                bitcoinDenomination.setSummary(o.toString());
-                return true;
-            }
-        });
-        bitcoinDenomination.setSummary(mService.getBitcoinUnit());
+        if (GaService.IS_ELEMENTS)
+            removePreference(bitcoinDenomination);
+        else {
+            bitcoinDenomination.setEntries(UI.UNITS.toArray(new String[4]));
+            bitcoinDenomination.setEntryValues(UI.UNITS.toArray(new String[4]));
+            bitcoinDenomination.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(final Preference preference, final Object o) {
+                    mService.setUserConfig("unit", o.toString(), true);
+                    bitcoinDenomination.setSummary(o.toString());
+                    return true;
+                }
+            });
+            bitcoinDenomination.setSummary(mService.getBitcoinUnit());
+        }
 
         final ListPreference fiatCurrency = find("fiat_key");
-        fiatCurrency.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object o) {
-                final String[] split = o.toString().split(" ");
-                mService.setPricingSource(split[0], split[1]);
-                fiatCurrency.setSummary(o.toString());
-                return true;
-            }
-        });
+        if (GaService.IS_ELEMENTS)
+            removePreference(fiatCurrency);
+        else
+            fiatCurrency.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(final Preference preference, final Object o) {
+                    final String[] split = o.toString().split(" ");
+                    mService.setPricingSource(split[0], split[1]);
+                    fiatCurrency.setSummary(o.toString());
+                    return true;
+                }
+            });
         final Preference watchOnlyLogin = find("watch_only_login");
         try {
             final String username = mService.getWatchOnlyUsername();
@@ -199,11 +206,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
             }
         });
 
-        // -- handle opt-in rbf
+        // Opt-in RBF
         final CheckBoxPreference optInRbf = find("optin_rbf");
-        final boolean rbf = mService.getLoginData().get("rbf");
-        if (!rbf)
-            getPreferenceScreen().removePreference(optInRbf);
+        if (GaService.IS_ELEMENTS || !(boolean) mService.getLoginData().get("rbf"))
+            removePreference(optInRbf);
         else {
             optInRbf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -241,8 +247,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         }
 
         mToggleSW = find("toggle_segwit");
-        mToggleSW.setOnPreferenceClickListener(this);
-        setupSWToggle();
+        if (GaService.IS_ELEMENTS)
+            removePreference(mToggleSW);
+        else {
+            mToggleSW.setOnPreferenceClickListener(this);
+            setupSWToggle();
+        }
+
+        if (GaService.IS_ELEMENTS)
+            removePreference("settings_currency");
 
         getActivity().setResult(Activity.RESULT_OK, null);
     }

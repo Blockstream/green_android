@@ -45,7 +45,16 @@ public class GAPreferenceFragment extends PreferenceFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public <T> T find(final String preferenceName) {
+    protected <T> T find(final String preferenceName) {
         return (T) findPreference(preferenceName);
+    }
+
+    protected void removePreference(final Preference pref) {
+        if (pref != null)
+            getPreferenceScreen().removePreference(pref);
+    }
+
+    protected void removePreference(final String preferenceName) {
+        removePreference(findPreference(preferenceName));
     }
 }

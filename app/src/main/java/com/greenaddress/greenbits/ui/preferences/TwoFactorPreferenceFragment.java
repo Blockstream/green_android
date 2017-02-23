@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
@@ -70,8 +71,12 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         setupCheckbox(config, "Gauth");
         setupCheckbox(config, "SMS");
         setupCheckbox(config, "Phone");
-        final CheckBoxPreference nlockCB = setupCheckbox(config, NLOCKTIME_EMAILS);
-        nlockCB.setEnabled(emailCB.isChecked());
+        if (GaService.IS_ELEMENTS)
+            removePreference(getPref(NLOCKTIME_EMAILS));
+        else {
+            final CheckBoxPreference nlockCB = setupCheckbox(config, NLOCKTIME_EMAILS);
+            nlockCB.setEnabled(emailCB.isChecked());
+        }
     }
 
     private boolean isNlocktimeConfig(final Boolean enabled) {
@@ -85,7 +90,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
     }
 
     private void setNlocktimeConfig(final Boolean enabled) {
-        if (isNlocktimeConfig(enabled))
+        if (GaService.IS_ELEMENTS || isNlocktimeConfig(enabled))
             return; // Nothing to do
         final Map<String, Object> inner, outer;
         inner = ImmutableMap.of("email_incoming", (Object) enabled,

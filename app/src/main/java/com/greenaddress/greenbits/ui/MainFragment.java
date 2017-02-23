@@ -106,7 +106,10 @@ public class MainFragment extends SubaccountFragment {
         final TextView secondP = UI.find(mView, R.id.mainSecondParagraphText);
         final TextView thirdP = UI.find(mView, R.id.mainThirdParagraphText);
 
-        firstP.setMovementMethod(LinkMovementMethod.getInstance());
+        if (GaService.IS_ELEMENTS)
+            UI.hide(firstP); // Don't show a Bitcoin message for elements
+        else
+            firstP.setMovementMethod(LinkMovementMethod.getInstance());
         secondP.setMovementMethod(LinkMovementMethod.getInstance());
         thirdP.setMovementMethod(LinkMovementMethod.getInstance());
 

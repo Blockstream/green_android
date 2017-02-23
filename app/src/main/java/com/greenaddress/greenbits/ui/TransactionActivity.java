@@ -112,7 +112,9 @@ public class TransactionActivity extends GaActivity {
 
         final boolean isWatchOnly = mService.isWatchOnly();
 
-        if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT || txItem.isSpent) {
+        if (mService.IS_ELEMENTS) {
+            UI.hide((View) UI.find(this, R.id.txUnconfirmed));
+        } else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT || txItem.isSpent) {
             if (txItem.getConfirmations() > 0)
                 UI.hide((View) UI.find(this, R.id.txUnconfirmed)); // Confirmed: hide warning
             else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT)
@@ -219,7 +221,8 @@ public class TransactionActivity extends GaActivity {
     }
 
     private void showUnconfirmed(final TransactionItem txItem, final Coin feePerKb) {
-        UI.show(mUnconfirmedRecommendation, mUnconfirmedEstimatedBlocks, mUnconfirmedIncreaseFee);
+        UI.show(mUnconfirmedEstimatedBlocks);
+
         final Map<String, Object> feeEstimates = mService.getFeeEstimates();
         int currentEstimate = 25;
         for (final String atBlock : FEE_BLOCK_NUMBERS)
@@ -229,11 +232,12 @@ public class TransactionActivity extends GaActivity {
             }
 
         mUnconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
-        if (mService.isWatchOnly())
-            return;
+        if (mService.isWatchOnly() || GaService.IS_ELEMENTS || !txItem.replaceable)
+            return; // FIXME: Implement RBF for elements
 
         final int bestEstimate = (Integer) ((Map) feeEstimates.get("1")).get("blocks");
-        if (ALWAYS_ALLOW_RBF || (bestEstimate < currentEstimate && txItem.replaceable)) {
+        if (ALWAYS_ALLOW_RBF || (bestEstimate < currentEstimate)) {
+            UI.show(mUnconfirmedRecommendation, mUnconfirmedIncreaseFee);
             if (bestEstimate == 1)
                 mUnconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
             else

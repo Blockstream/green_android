@@ -238,13 +238,18 @@ public class SendFragment extends SubaccountFragment {
             }
         });
 
-        mMaxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton v, final boolean isChecked) {
-                UI.disableIf(isChecked, mAmountEdit, mAmountFiatEdit);
-                mAmountEdit.setText(isChecked ? R.string.send_max_amount : R.string.empty);
-            }
-        });
+        if (GaService.IS_ELEMENTS) {
+            UI.disable(mMaxButton); // FIXME: Sweeping not available in elements
+            UI.hide(mMaxButton, mMaxLabel, mInstantConfirmationCheckbox);
+        } else {
+            mMaxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(final CompoundButton v, final boolean isChecked) {
+                    UI.disableIf(isChecked, mAmountEdit, mAmountFiatEdit);
+                    mAmountEdit.setText(isChecked ? R.string.send_max_amount : R.string.empty);
+                }
+            });
+        }
 
         mScanIcon.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -299,7 +304,8 @@ public class SendFragment extends SubaccountFragment {
 
     private void hideInstantIf2of3() {
         if (getGAService().findSubaccountByType(mSubaccount, "2of3") == null) {
-            UI.show(mInstantConfirmationCheckbox);
+            if (!GaService.IS_ELEMENTS)
+                UI.show(mInstantConfirmationCheckbox);
             return;
         }
         UI.hide(mInstantConfirmationCheckbox);
@@ -575,8 +581,10 @@ public class SendFragment extends SubaccountFragment {
 
                 UI.clear(mAmountEdit, mRecipientEdit);
                 UI.enable(mAmountEdit, mRecipientEdit);
-                mMaxButton.setChecked(false);
-                UI.show(mMaxButton, mMaxLabel);
+                if (!GaService.IS_ELEMENTS) {
+                    mMaxButton.setChecked(false);
+                    UI.show(mMaxButton, mMaxLabel);
+                }
 
                 mNoteIcon.setText(R.string.fa_pencil);
                 UI.clear(mNoteText);

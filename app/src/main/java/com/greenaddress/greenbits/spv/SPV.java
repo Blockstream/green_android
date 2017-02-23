@@ -119,7 +119,8 @@ public class SPV {
     }
 
     public boolean isEnabled() {
-        return !mService.isWatchOnly() && mService.cfg("SPV").getBoolean("enabled", true);
+        return !mService.isWatchOnly() && mService.cfg("SPV").getBoolean("enabled", true) &&
+            !GaService.IS_ELEMENTS;
     }
 
     public void setEnabledAsync(final boolean enabled) {

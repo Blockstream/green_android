@@ -57,7 +57,7 @@ public class TransactionItem implements Serializable {
     public TransactionItem(final GaService service, final Map<String, Object> txJSON, final int currentBlock) throws ParseException {
         final JSONMap m = new JSONMap(txJSON);
 
-        replaceable = Boolean.TRUE.equals(m.getBool("rbf_optin"));
+        replaceable = !GaService.IS_ELEMENTS && m.getBool("rbf_optin");
         doubleSpentBy = m.get("double_spent_by");
 
         this.currentBlock = currentBlock;
