@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi;
 
+import android.util.Log;
+
 import com.blockstream.libwally.Wally;
 
 import java.security.KeyStore;
@@ -36,19 +38,20 @@ public class FingerprintTrustManagerFactorySHA256 extends SimpleTrustManagerFact
         }
 
         private void checkTrusted(String type, X509Certificate[] chain) throws CertificateException {
-            X509Certificate cert = chain[0];
-            byte[] fingerprint = fingerprint(cert);
             boolean found = false;
-            for (byte[] allowedFingerprint: fingerprints) {
-                if (Arrays.equals(fingerprint, allowedFingerprint)) {
-                    found = true;
-                    break;
+            for (X509Certificate cert : chain) {
+                for (byte[] allowedFingerprint: fingerprints) {
+                    if (Arrays.equals(fingerprint(cert), allowedFingerprint)) {
+                        found = true;
+                        break;
+                    }
                 }
             }
 
             if (!found) {
+                Log.e("SSL", type + " certificate with unknown fingerprint: " + chain[0].getSubjectDN());
                 throw new CertificateException(
-                        type + " certificate with unknown fingerprint: " + cert.getSubjectDN());
+                        type + " certificate with unknown fingerprint: " + chain[0].getSubjectDN());
             }
         }
 
