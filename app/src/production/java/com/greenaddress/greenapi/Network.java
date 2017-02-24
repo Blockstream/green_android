@@ -6,8 +6,10 @@ public abstract class Network {
     public final static NetworkParameters NETWORK = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
     public final static String GAIT_WAMP_URL = "wss://prodwss.greenaddress.it/v2/ws/";
     public final static String[] GAIT_WAMP_CERT_PINS = {
-        "38:6B:44:0D:E8:26:C4:36:E4:39:A0:D4:3F:D2:15:CE:E2:5B:C5:64:2A:54:87:E7:34:A0:CD:0B:B5:5A:FB:A2",
-        "91:0E:75:35:FB:21:88:C2:88:9B:89:06:BF:92:06:31:25:DC:1E:28:A7:EA:85:D3:E6:05:FC:63:35:B4:68:27"
+        // Let’s Encrypt Authority X3:
+        "25:84:7D:66:8E:B4:F0:4F:DD:40:B1:2B:6B:07:40:C5:67:DA:7D:02:43:08:EB:6C:2C:96:FE:41:D9:DE:21:8D",
+        // Let’s Encrypt Authority X4: (backup)
+        "A7:4B:0C:32:B6:5B:95:FE:2C:4F:8F:09:89:47:A6:8B:69:50:33:BE:D0:B5:1D:D8:B9:84:EC:AE:89:57:1B:B6"
     };
     public final static String BLOCKEXPLORER_ADDRESS = "https://www.smartbit.com.au/address/";
     public final static String BLOCKEXPLORER_TX = "https://www.smartbit.com.au/tx/";
