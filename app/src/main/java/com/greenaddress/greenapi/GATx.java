@@ -78,14 +78,16 @@ public class GATx {
     /* Add a new change output to a tx */
     public static TransactionOutput addChangeOutput(final GaService service, final Transaction tx,
                                                     final int subaccount) {
-            final Map addr;
-            try {
-                addr = service.getNewAddress(subaccount);
-            } catch (final Exception e) {
-                e.printStackTrace();
+            final JSONMap addr = service.getNewAddress(subaccount);
+            if (addr == null)
                 return null;
+            final byte[] script;
+            if (addr.getString("addr_type").equals("p2wsh")) {
+                script = ScriptBuilder.createP2WSHOutputScript(
+                        Wally.sha256(addr.getBytes("script"))).getProgram();
+            } else {
+                script = addr.getBytes("script");
             }
-            final byte[] script = Wally.hex_to_bytes((String) addr.get("script"));
             return tx.addOutput(Coin.ZERO, Address.fromP2SHHash(Network.NETWORK,
                                                                 Utils.sha256hash160(script)));
     }

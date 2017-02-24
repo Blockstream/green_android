@@ -661,12 +661,19 @@ public class WalletClient {
         return password.getBytes();
     }
 
+
     public Map<?, ?> getMyTransactions(final int subAccount) throws Exception {
         return syncCall("txs.get_list_v2", Map.class, null, null, null, null, subAccount);
     }
 
-    public Map<?, ?> getNewAddress(final int subAccount, final String addrType) throws Exception {
-        return syncCall("vault.fund", Map.class, subAccount, true, addrType);
+    public JSONMap getNewAddress(final int subAccount, final String addrType) {
+        try {
+            final JSONMap m = new JSONMap((Map<String, Object>) syncCall("vault.fund", Map.class, subAccount, true, addrType));
+            return m.mData == null ? null : m;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public PinData setPin(final String mnemonic, final String pin, final String deviceName) throws Exception {

@@ -33,6 +33,7 @@ import com.greenaddress.greenapi.ElementsRegTestParams;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.INotificationHandler;
 import com.greenaddress.greenapi.ISigningWallet;
+import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
@@ -744,7 +745,7 @@ public class GaService extends Service implements INotificationHandler {
         return bits.toByteArray();
     }
 
-    public Map<?, ?> getNewAddress(final int subAccount) throws Exception {
+    public JSONMap getNewAddress(final int subAccount) {
         final boolean userSegwit = isSegwitEnabled();
         if (userSegwit && isSegwitUnlocked())
             setSegwitLocked(); // Locally store that we have generated a SW address
@@ -752,18 +753,21 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {
-        final ListenableFuture<Map> addrFn = mExecutor.submit(new Callable<Map>() {
+        final ListenableFuture<JSONMap> addrFn = mExecutor.submit(new Callable<JSONMap>() {
             @Override
-            public Map call() throws Exception {
+            public JSONMap call() throws Exception {
                 return getNewAddress(subAccount);
             }
         });
 
-        final AsyncFunction<Map, QrBitmap> verifyAddress = new AsyncFunction<Map, QrBitmap>() {
+        final AsyncFunction<JSONMap, QrBitmap> verifyAddress = new AsyncFunction<JSONMap, QrBitmap>() {
             @Override
-            public ListenableFuture<QrBitmap> apply(final Map input) throws Exception {
-                final Integer pointer = ((Integer) input.get("pointer"));
-                final byte[] script = Wally.hex_to_bytes((String) input.get("script"));
+            public ListenableFuture<QrBitmap> apply(final JSONMap input) throws Exception {
+                if (input == null)
+                    throw new IllegalArgumentException("Failed to generate a new address");
+
+                final Integer pointer = input.getInt("pointer");
+                final byte[] script = input.getBytes("script");
                 final byte[] scriptHash;
                 if (isSegwitEnabled())
                     scriptHash = Utils.sha256hash160(getSegWitScript(script));

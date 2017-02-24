@@ -457,18 +457,15 @@ public class TransactionActivity extends GaActivity {
 
                 // Funds left over - add a new change output
                 final Coin changeValue = remaining.multiply(-1);
-                final Map addr;
-                try {
-                    addr = mService.getNewAddress(subAccount);
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                    UI.toast(TransactionActivity.this, e, null);
+                final JSONMap addr = mService.getNewAddress(subAccount);
+                if (addr == null) {
+                    TransactionActivity.this.toast(R.string.unable_to_create_change);
                     return;
                 }
-                final byte[] script = Wally.hex_to_bytes((String) addr.get("script"));
+                final byte[] script = addr.getBytes("script");
                 tx.addOutput(changeValue,
                              Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script)));
-                doReplaceByFee(txItem, feerate, tx, tx_eps, (Integer) addr.get("pointer"),
+                doReplaceByFee(txItem, feerate, tx, tx_eps, addr.getInt("pointer"),
                                subAccount, oldFee, moreInputs, level);
             }
         });

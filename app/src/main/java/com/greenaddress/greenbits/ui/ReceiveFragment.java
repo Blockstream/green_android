@@ -143,7 +143,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         newAddressIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                getNewAddress();
+                generateNewAddress();
             }
         });
         mAmountEdit = UI.find(mView, R.id.sendAmountEditText);
@@ -205,7 +205,11 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         }
     }
 
-    private void getNewAddress() {
+    private void generateNewAddress() {
+        generateNewAddress(true, null);
+    }
+
+    private void generateNewAddress(boolean clear, FutureCallback<Void> onDone) {
         Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
         if (isZombie())
             return;
@@ -312,7 +316,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     protected void onSubaccountChanged(final int newSubAccount) {
         mSubaccount = newSubAccount;
         if (IsPageSelected())
-            getNewAddress();
+            generateNewAddress();
         else
             destroyCurrentAddress();
     }
@@ -344,7 +348,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final boolean needToRegenerate = isSelected && !IsPageSelected();
         super.setPageSelected(isSelected);
         if (needToRegenerate)
-            getNewAddress();
+            generateNewAddress();
         else if (!isSelected)
             destroyCurrentAddress();
     }
