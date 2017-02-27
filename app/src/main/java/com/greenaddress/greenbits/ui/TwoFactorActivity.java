@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -119,6 +120,13 @@ public class TwoFactorActivity extends GaActivity {
         mProgressBar.setMax(numSteps);
 
         final TextView detailsText = UI.find(this, R.id.details);
+
+        detailsText.setInputType(
+                isEmail ?
+                        InputType.TYPE_CLASS_TEXT :
+                        InputType.TYPE_CLASS_PHONE
+        );
+
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
