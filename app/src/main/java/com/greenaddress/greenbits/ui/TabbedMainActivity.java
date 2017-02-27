@@ -61,7 +61,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
 
-    private static final int
+    public static final int
             REQUEST_SEND_QR_SCAN = 0,
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2,
@@ -70,6 +70,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private ViewPager mViewPager;
     private Menu mMenu;
     private Boolean mInternalQr = false;
+    private String mSendAmount = null;
     private MaterialDialog mSegwitDialog;
     private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private MaterialDialog mSubaccountDialog;
@@ -92,6 +93,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         final Intent intent = getIntent();
         mInternalQr = intent.getBooleanExtra("internal_qr", false);
+        mSendAmount = intent.getStringExtra("sendAmount");
         final boolean isBitcoinUri = isBitcoinScheme(intent) ||
                                      intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
                                      NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
@@ -272,6 +274,11 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             if (mInternalQr) {
                 mViewPager.setTag(R.id.internal_qr, "internal_qr");
             }
+            if (mSendAmount != null) {
+                mViewPager.setTag(R.id.tag_amount, mSendAmount);
+            }
+            mInternalQr = false;
+            mSendAmount = null;
         }
 
         // set adapter and tabs only after all setTag in ViewPager container
@@ -359,6 +366,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                     browsable.setData(Uri.parse(scanned));
                     browsable.addCategory(Intent.CATEGORY_BROWSABLE);
                     browsable.putExtra("internal_qr", true);
+                    if (data.getStringExtra("sendAmount") != null)
+                        browsable.putExtra("sendAmount", data.getStringExtra("sendAmount"));
                     // start new activity and finish old one
                     startActivity(browsable);
                     this.finish();

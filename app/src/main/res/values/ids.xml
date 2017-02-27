@@ -6,4 +6,7 @@
     <item
         type="id"
         name="internal_qr" />
+    <item
+        type="id"
+        name="tag_amount" />
 </resources>

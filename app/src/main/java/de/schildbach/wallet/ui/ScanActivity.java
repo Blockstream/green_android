@@ -193,6 +193,8 @@ public final class ScanActivity extends Activity implements SurfaceHolder.Callba
 
         final Intent result = new Intent();
         result.putExtra(INTENT_EXTRA_RESULT, scanResult.getText());
+        if (getIntent().getStringExtra("sendAmount") != null)
+            result.putExtra("sendAmount", getIntent().getStringExtra("sendAmount"));
         setResult(RESULT_OK, result);
 
         // delayed finish

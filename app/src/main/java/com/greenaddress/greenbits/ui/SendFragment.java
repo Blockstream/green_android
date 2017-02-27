@@ -200,6 +200,9 @@ public class SendFragment extends SubaccountFragment {
 
         UI.setCoinText(service, bitcoinUnitText, null, null);
 
+        if (container.getTag(R.id.tag_amount) != null)
+            mAmountEdit.setText((String) container.getTag(R.id.tag_amount));
+
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
             final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);
             BitcoinURI bitcoinUri = null;
@@ -253,9 +256,9 @@ public class SendFragment extends SubaccountFragment {
                                                 final int permsRequestCode = 100;
                                                 gaActivity.requestPermissions(perms, permsRequestCode);
                                             } else {
-
                                                 final Intent qrcodeScanner = new Intent(gaActivity, ScanActivity.class);
-                                                gaActivity.startActivityForResult(qrcodeScanner, REQUEST_SEND_QR_SCAN);
+                                                qrcodeScanner.putExtra("sendAmount", mAmountEdit.getText().toString());
+                                                gaActivity.startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
                                             }
                                         }
                                     }
