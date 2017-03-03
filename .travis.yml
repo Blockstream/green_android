@@ -23,7 +23,7 @@ script:
 before_install:
    - curl -O http://dl.google.com/android/repository/android-ndk-r14-linux-x86_64.zip
    - unzip -qq ./android-ndk-r14-linux-x86_64.zip
-   - export ANDROID_NDK=`pwd`/android-ndk-r13b
+   - export ANDROID_NDK=`pwd`/android-ndk-r14
    - rm -fr app/src/main/jniLibs && pushd app && ./prepare_fdroid.sh && popd
    - find app/src/main/jniLibs | xargs ls -laht
 
