@@ -253,8 +253,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
 
         mToggleSW.setTitle(userSegwit ? R.string.segwit_disable : R.string.segwit_enable);
 
-        if (segwit &&
-            (!userSegwit || mService.isSegwitUnlocked())) {
+        if (!segwit) {
+            // Server does not support segwit: Do not show the pref
+            getPreferenceScreen().removePreference(mToggleSW);
+        } else if (!userSegwit || mService.isSegwitUnlocked()) {
             // User hasn't enabled segwit, or they have but we haven't
             // generated a segwit address yet (that we know of).
             mToggleSW.setEnabled(true);
