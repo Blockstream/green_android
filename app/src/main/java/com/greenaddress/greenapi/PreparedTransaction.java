@@ -24,9 +24,9 @@ public class PreparedTransaction {
     public final Integer mChangePointer;
     public final int mSubAccount;
     public final Boolean mRequiresTwoFactor;
-    public final List<Output> mPrevOutputs = new ArrayList<>();
-    public final Transaction mDecoded;
-    public final Map<String, Transaction> mPrevoutRawTxs = new HashMap<>();
+    public List<Output> mPrevOutputs = new ArrayList<>();
+    public Transaction mDecoded;
+    public Map<String, Transaction> mPrevoutRawTxs = new HashMap<>();
     public final byte[] mTwoOfThreeBackupChaincode;
     public final byte[] mTwoOfThreeBackupPubkey;
 

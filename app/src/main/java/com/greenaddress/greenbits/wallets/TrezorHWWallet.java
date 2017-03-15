@@ -57,8 +57,10 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public List<byte[]> signTransaction(final Transaction tx, final List<Output> prevOuts) {
-        throw new RuntimeException("FIXME: No HW Wallet signing for client side transactions yet");
+    public List<byte[]> signTransaction(final Transaction tx, final PreparedTransaction ptx, final List<Output> prevOuts) {
+        ptx.mDecoded = tx;  // TODO: remove from PreparedTransaction
+        ptx.mPrevOutputs = prevOuts;  // TODO: remove this argument since it's part of ptx
+        return signTransaction(ptx);
     }
 
     @Override

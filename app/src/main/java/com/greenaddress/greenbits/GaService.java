@@ -678,8 +678,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.signTransaction(mClient.getSigningWallet(), ptx);
     }
 
-    public List<byte[]> signTransaction(final Transaction tx, final List<Output> prevOuts) {
-        return mClient.getSigningWallet().signTransaction(tx, prevOuts);
+    public List<byte[]> signTransaction(final Transaction tx, final PreparedTransaction ptx, final List<Output> prevOuts) {
+        return mClient.getSigningWallet().signTransaction(tx, ptx, prevOuts);
     }
 
     public ListenableFuture<Coin>

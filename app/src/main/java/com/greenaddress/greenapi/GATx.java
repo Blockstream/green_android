@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi;
 
+import android.util.Pair;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Bytes;
 import com.greenaddress.greenbits.GaService;
@@ -76,8 +78,8 @@ public class GATx {
     }
 
     /* Add a new change output to a tx */
-    public static TransactionOutput addChangeOutput(final GaService service, final Transaction tx,
-                                                    final int subaccount) {
+    public static Pair<TransactionOutput, Integer> addChangeOutput(final GaService service, final Transaction tx,
+                                                                   final int subaccount) {
             final JSONMap addr = service.getNewAddress(subaccount);
             if (addr == null)
                 return null;
@@ -88,8 +90,11 @@ public class GATx {
             } else {
                 script = addr.getBytes("script");
             }
-            return tx.addOutput(Coin.ZERO, Address.fromP2SHHash(Network.NETWORK,
-                                                                Utils.sha256hash160(script)));
+            return new Pair<>(
+                    tx.addOutput(Coin.ZERO, Address.fromP2SHHash(Network.NETWORK,
+                                                                Utils.sha256hash160(script))),
+                    addr.getInt("pointer")
+            );
     }
 
     /* Create previous outputs for tx construction from uxtos */

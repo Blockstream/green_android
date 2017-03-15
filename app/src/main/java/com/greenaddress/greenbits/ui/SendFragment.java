@@ -627,7 +627,8 @@ public class SendFragment extends SubaccountFragment {
 
         Coin total = Coin.ZERO;
         Coin fee;
-        TransactionOutput changeOutput = null;
+        boolean randomizedChange = false;
+        Pair<TransactionOutput, Integer> changeOutput = null;
 
         // First add inputs until we cover the amount to send
         while (total.isLessThan(amount) && !candidates.isEmpty())
@@ -667,20 +668,25 @@ public class SendFragment extends SubaccountFragment {
 
         if (changeOutput != null) {
             // Set the value of the change output
-            changeOutput.setValue(total.subtract(amount).subtract(fee));
-            GATx.randomizeChange(tx);
+            changeOutput.first.setValue(total.subtract(amount).subtract(fee));
+            randomizedChange = GATx.randomizeChange(tx);
         }
 
         // FIXME: tx.setLockTime(latestBlock); // Prevent fee sniping
 
         // Fetch previous outputs
         final List<Output> prevOuts = GATx.createPrevouts(service, used);
-        // FIXME: GATx.getPreviousTransactions() for Trezor signing
+        final PreparedTransaction ptx = new PreparedTransaction(
+                changeOutput.second, mSubaccount, tx, service.findSubaccountByType(mSubaccount, "2of3")
+        );
+        ptx.mPrevoutRawTxs = new HashMap<>();
+        for (final Transaction prevTx : GATx.getPreviousTransactions(service, tx))
+            ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(prevTx.getHash().getBytes()), prevTx);
 
         final boolean isSegwitEnabled = service.isSegwitEnabled();
 
         // Sign the tx
-        final List<byte[]> signatures = service.signTransaction(tx, prevOuts);
+        final List<byte[]> signatures = service.signTransaction(tx, ptx, prevOuts);
         for (int i = 0; i < signatures.size(); ++i) {
             final byte[] sig = signatures.get(i);
             // FIXME: Massive duplication with TransactionActivity

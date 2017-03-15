@@ -251,9 +251,9 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public List<byte[]> signTransaction(final Transaction tx, final List<Output> prevOuts) {
-        // only tx is required for BTChip:
-        PreparedTransaction ptx = new PreparedTransaction(0, 0, tx, null);
+    public List<byte[]> signTransaction(final Transaction tx, final PreparedTransaction ptx, final List<Output> prevOuts) {
+        // see TODOs in TrezorHWWallet.signTransaction
+        ptx.mDecoded = tx;
         ptx.mPrevOutputs = prevOuts;
         return signTransaction(ptx);
     }
