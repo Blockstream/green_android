@@ -539,7 +539,7 @@ public class TransactionActivity extends GaActivity {
                         new Function<Transaction, Void>() {
                             @Override
                             public Void apply(final Transaction input) {
-                                ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(hash.getBytes()), input);
+                                ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(hash.getReversedBytes()), input);
                                 return null;
                             }
                         }));
