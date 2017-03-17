@@ -118,7 +118,7 @@ public class GaService extends Service implements INotificationHandler {
     private final GaObservable mVerifiedTxObservable = new GaObservable();
     private String mSignUpMnemonics;
     private Bitmap mSignUpQRCode;
-    private int mCurrentBlock;
+    private int mCurrentBlock; // FIXME: Pass current block height back in login data.
 
     private boolean mAutoReconnect = true;
     // cache
@@ -335,6 +335,7 @@ public class GaService extends Service implements INotificationHandler {
     @Override
     public void onNewBlock(final int blockHeight) {
         Log.i(TAG, "onNewBlock");
+        setCurrentBlock(blockHeight);
         mSPV.onNewBlock(blockHeight);
         mNewTxObservable.doNotify();
     }
@@ -1001,7 +1002,11 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void setCurrentBlock(final int newBlock){
-        mCurrentBlock = newBlock;
+        // FIXME: In case a transaction list call races with a block
+        // notification, this could potentially go backwards. It can also
+        // go backwards following a reorg which is probably not handled well.
+        if (newBlock > mCurrentBlock)
+            mCurrentBlock = newBlock;
     }
 
     // FIXME: Operations should be atomic

@@ -697,7 +697,7 @@ public class SendFragment extends SubaccountFragment {
             tx.getOutputs().get(0).setValue(actualAmount);
         }
 
-        // FIXME: tx.setLockTime(latestBlock); // Prevent fee sniping
+        tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
 
         // Fetch previous outputs
         final List<Output> prevOuts = GATx.createPrevouts(service, used);
