@@ -698,26 +698,6 @@ public class WalletClient {
         return PinData.fromMnemonic(pinIdentifier, mnemonic, password);
     }
 
-    public ListenableFuture<PreparedTransaction> prepareTx(final long satoshis, final String destAddress, final String feesMode, final Map<String, Object> privateData) {
-        final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
-        clientCall(rpc, "vault.prepare_tx", Map.class, new CallHandler() {
-            public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map)prepared, privateData, mLoginData.mSubAccounts, mHttpClient));
-            }
-        }, satoshis, destAddress, feesMode, privateData);
-
-        return processPreparedTx(rpc);
-    }
-
-    private ListenableFuture<PreparedTransaction> processPreparedTx(final ListenableFuture<PreparedTransaction.PreparedData> rpc) {
-        return Futures.transform(rpc, new Function<PreparedTransaction.PreparedData, PreparedTransaction>() {
-            @Override
-            public PreparedTransaction apply(final PreparedTransaction.PreparedData ptxData) {
-                return new PreparedTransaction(ptxData);
-            }
-        }, mExecutor);
-    }
-
     public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
         return simpleCall("vault.process_bip0070_url", Map.class, url);
     }
@@ -740,7 +720,12 @@ public class WalletClient {
             }
         }, amount.longValue(), dataClone, privateData);
 
-        return processPreparedTx(rpc);
+        return Futures.transform(rpc, new Function<PreparedTransaction.PreparedData, PreparedTransaction>() {
+            @Override
+            public PreparedTransaction apply(final PreparedTransaction.PreparedData ptxData) {
+                return new PreparedTransaction(ptxData);
+            }
+        }, mExecutor);
     }
 
     public ListenableFuture<Map<?, ?>> prepareSweepSocial(final byte[] pubKey, final boolean useElectrum) {

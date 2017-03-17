@@ -698,16 +698,6 @@ public class GaService extends Service implements INotificationHandler {
         return mSPV.validateTx(ptx, recipientStr, amount);
     }
 
-    public ListenableFuture<PreparedTransaction> prepareTx(final Coin coinValue, final String recipient, final Map<String, Object> privateData) {
-        preparePrivData(privateData);
-        return mClient.prepareTx(coinValue.longValue(), recipient, "sender", privateData);
-    }
-
-    public ListenableFuture<PreparedTransaction> prepareSweepAll(final int subAccount, final String recipient, final Map<String, Object> privateData) {
-        preparePrivData(privateData);
-        return mClient.prepareTx(getCoinBalance(subAccount).longValue(), recipient, "receiver", privateData);
-    }
-
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
         return Futures.transform(signTransaction(ptx), new AsyncFunction<List<byte[]>, String>() {
             @Override
