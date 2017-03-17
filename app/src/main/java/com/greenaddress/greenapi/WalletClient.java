@@ -384,6 +384,14 @@ public class WalletClient {
         return simpleCall("login.available_currencies", Map.class);
     }
 
+    public void changeTxLimits(final long newTotalValue, final Map<String, String> twoFacData) throws Exception {
+        final Map<String, Object> limits = new HashMap<>();
+        limits.put("total", newTotalValue);
+        limits.put("per_tx", 0);
+        limits.put("is_fiat", false);
+        syncCall("login.change_settings", Boolean.class, "tx_limits", limits, twoFacData);
+    }
+
     private void onAuthenticationComplete(final Map<String,?> loginData, final ISigningWallet wallet, final String username, final String password) {
         mLoginData = new LoginData(loginData);
         if (loginData.containsKey("fee_estimates"))
@@ -674,6 +682,10 @@ public class WalletClient {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Map<?, ?> getMyTransactions(final String searchQuery, final int subAccount) throws Exception {
+        return syncCall("txs.get_list_v2", Map.class, null, searchQuery, null, null, subAccount);
     }
 
     public PinData setPin(final String mnemonic, final String pin, final String deviceName) throws Exception {

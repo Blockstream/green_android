@@ -627,6 +627,17 @@ public class GaService extends Service implements INotificationHandler {
         });
     }
 
+    public ListenableFuture<Map<?, ?>> getMyTransactions(final String searchQuery, final int subAccount) {
+        return mExecutor.submit(new Callable<Map<?, ?>>() {
+            @Override
+            public Map<?, ?> call() throws Exception {
+                final Map<?, ?> result = mClient.getMyTransactions(searchQuery, subAccount);
+                setCurrentBlock((Integer) result.get("cur_block"));
+                return result;
+            }
+        });
+    }
+
     public ListenableFuture<Void> setPin(final String mnemonic, final String pin) {
         return mExecutor.submit(new Callable<Void>() {
             @Override
@@ -971,6 +982,10 @@ public class GaService extends Service implements INotificationHandler {
                 return input;
             }
         });
+    }
+
+    public void changeTxLimits(final long newValue, final Map<String, String> twoFacData) throws Exception {
+        mClient.changeTxLimits(newValue, twoFacData);
     }
 
     public List<String> getEnabledTwoFactorMethods() {
