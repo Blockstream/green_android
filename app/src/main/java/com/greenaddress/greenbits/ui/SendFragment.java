@@ -429,8 +429,9 @@ public class SendFragment extends SubaccountFragment {
                 }
             });
         } else {
+            final boolean sendAll = mMaxButton.isChecked();
             final boolean validAddress = GaService.isValidAddress(recipient);
-            final boolean validAmount = !(amount.compareTo(Coin.ZERO) <= 0) || mMaxButton.isChecked();
+            final boolean validAmount = sendAll || amount.isGreaterThan(Coin.ZERO);
 
             int messageId = 0;
             if (!validAddress && !validAmount)
@@ -445,12 +446,11 @@ public class SendFragment extends SubaccountFragment {
                 return;
             }
 
-            // FIXME: support MAX button; old code did prepareSweepAll() for MAX
             UI.disable(mSendButton);
             CB.after(service.getAllUnspentOutputs(1, mSubaccount), new CB.Toast<ArrayList>(gaActivity, mSendButton) {
                 @Override
                 public void onSuccess(final ArrayList utxos) {
-                    createRawTransaction(utxos, recipient, amount);
+                    createRawTransaction(utxos, recipient, amount, sendAll);
                 }
             });
         }
@@ -621,10 +621,15 @@ public class SendFragment extends SubaccountFragment {
     }
 
     // FIXME: This uses a terrible utxo selection strategy
-    private void createRawTransaction(final ArrayList utxos,
-                                      final String recipient, final Coin amount) {
+    private void createRawTransaction(final ArrayList utxos, final String recipient,
+                                      final Coin amount, final boolean sendAll) {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
+
+        if (utxos.isEmpty()) {
+            gaActivity.toast(R.string.insufficientFundsText, mSendButton);
+            return;
+        }
 
         final List<JSONMap> candidates = JSONMap.fromList(utxos);
         final List<JSONMap> used = new ArrayList<>();
@@ -639,7 +644,7 @@ public class SendFragment extends SubaccountFragment {
         Pair<TransactionOutput, Integer> changeOutput = null;
 
         // First add inputs until we cover the amount to send
-        while (total.isLessThan(amount) && !candidates.isEmpty())
+        while ((sendAll || total.isLessThan(amount)) && !candidates.isEmpty())
             total = total.add(addUtxo(tx, candidates, used));
 
         // Then add inputs until we cover amount + fee/change
@@ -649,7 +654,7 @@ public class SendFragment extends SubaccountFragment {
                 fee = service.getMinFee();
 
             final Coin minChange = changeOutput == null ? Coin.ZERO : service.getDustThreshold();
-            final int cmp = total.compareTo(amount.add(fee).add(minChange));
+            final int cmp = sendAll ? 0 : total.compareTo(amount.add(fee).add(minChange));
             if (cmp < 0) {
                 // Need more inputs to cover amount + fee/change
                 if (candidates.isEmpty()) {
@@ -680,12 +685,25 @@ public class SendFragment extends SubaccountFragment {
             randomizedChange = GATx.randomizeChange(tx);
         }
 
+        final Coin actualAmount;
+        if (!sendAll)
+            actualAmount = amount;
+        else {
+            actualAmount = total.subtract(fee);
+            if (!actualAmount.isGreaterThan(Coin.ZERO)) {
+                gaActivity.toast(R.string.insufficientFundsText, mSendButton);
+                return;
+            }
+            tx.getOutputs().get(0).setValue(actualAmount);
+        }
+
         // FIXME: tx.setLockTime(latestBlock); // Prevent fee sniping
 
         // Fetch previous outputs
         final List<Output> prevOuts = GATx.createPrevouts(service, used);
         final PreparedTransaction ptx = new PreparedTransaction(
-                changeOutput.second, mSubaccount, tx, service.findSubaccountByType(mSubaccount, "2of3")
+                changeOutput == null ? null : changeOutput.second,
+                mSubaccount, tx, service.findSubaccountByType(mSubaccount, "2of3")
         );
         ptx.mPrevoutRawTxs = new HashMap<>();
         for (final Transaction prevTx : GATx.getPreviousTransactions(service, tx))
@@ -724,7 +742,7 @@ public class SendFragment extends SubaccountFragment {
                                                      new CB.Runnable1T<String>() {
                     @Override
                     public void run(final String method) {
-                        onTransactionValidated(null, tx, recipient, amount, method, sendFee);
+                        onTransactionValidated(null, tx, recipient, actualAmount, method, sendFee);
                     }
                 });
                 if (mTwoFactor != null)
