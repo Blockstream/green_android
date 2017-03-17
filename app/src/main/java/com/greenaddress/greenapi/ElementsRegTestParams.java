@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bitcoinj.params;
+package com.greenaddress.greenapi;
+
+import org.bitcoinj.core.BitcoinSerializer;
+import org.bitcoinj.params.TestNet3Params;
 
 /**
  * Parameters for elements.

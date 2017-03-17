@@ -18,9 +18,7 @@
 package org.bitcoinj.core;
 
 import com.google.common.base.Objects;
-import org.bitcoinj.core.Block;
-import org.bitcoinj.core.StoredBlock;
-import org.bitcoinj.core.VerificationException;
+
 import org.bitcoinj.net.discovery.*;
 import org.bitcoinj.params.*;
 import org.bitcoinj.script.*;
@@ -234,8 +232,6 @@ public abstract class NetworkParameters {
             return UnitTestParams.get();
         } else if (id.equals(ID_REGTEST)) {
             return RegTestParams.get();
-        } else if (id.equals(ID_ELEMENTS_REGTEST)) {
-            return ElementsRegTestParams.get();
         } else {
             return null;
         }
@@ -252,8 +248,6 @@ public abstract class NetworkParameters {
             return UnitTestParams.get();
         } else if (pmtProtocolId.equals(PAYMENT_PROTOCOL_ID_REGTEST)) {
             return RegTestParams.get();
-        } else if (pmtProtocolId.equals(PAYMENT_PROTOCOL_ID_ELEMENTS_REGTEST)) {
-            return ElementsRegTestParams.get();
         } else {
             return null;
         }

@@ -4,7 +4,7 @@ import org.bitcoinj.core.NetworkParameters;
 
 // FIXME: Needs updating when an environment is available
 public abstract class Network {
-    public final static NetworkParameters NETWORK = NetworkParameters.fromID(NetworkParameters.ID_ELEMENTS_REGTEST);
+    public final static NetworkParameters NETWORK = ElementsRegTestParams.get();
     public final static String GAIT_WAMP_URL = "wss://elementsregtestwss.greenaddress.it/v2/ws";
     public final static String[] GAIT_WAMP_CERT_PINS = null;
     public final static String BLOCKEXPLORER_ADDRESS = null;

@@ -29,6 +29,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.greenapi.CryptoHelper;
+import com.greenaddress.greenapi.ElementsRegTestParams;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.INotificationHandler;
 import com.greenaddress.greenapi.ISigningWallet;
