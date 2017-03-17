@@ -717,6 +717,7 @@ public class GaService extends Service implements INotificationHandler {
 
                 unblinded = unblindValue(ep);
                 ep.mData.put("value", UnsignedLongs.toString(unblinded.first));
+                ep.mData.put("confidential", true);
                 if (!Arrays.equals(mAssetId, unblinded.second.get(0)))
                     ep.mData.put("is_relevant", false);
             }
@@ -819,6 +820,10 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.sendRawTransaction(tx, twoFacData, returnErrorUri);
     }
 
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final Map<String, Object> privateData, final boolean returnErrorUri) {
+        return mClient.sendRawTransaction(tx, twoFacData, privateData, returnErrorUri);
+    }
+
     public ListenableFuture<ArrayList> getAllUnspentOutputs(final int confs, final Integer subAccount) {
         return mClient.getAllUnspentOutputs(confs, subAccount);
     }
@@ -916,7 +921,8 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount,
-                                                          final Callable<Void> waitFn) {
+                                                          final Callable<Void> waitFn,
+                                                          final Long amount) {
         // Fetch any cached address
         final JSONMap cachedAddress = getCachedAddress(subAccount);
 
@@ -974,7 +980,13 @@ public class GaService extends Service implements INotificationHandler {
                         } else
                             address = Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
 
-                        return new QrBitmap(address, 0 /* transparent background */);
+                        final String uri;
+                        if (amount != null)
+                            uri = "bitcoin:" + address + "?amount=" + Coin.valueOf(amount).toPlainString();
+                        else
+                            uri = address;
+
+                        return new QrBitmap(uri, 0 /* transparent background */);
                     }
                 });
             }

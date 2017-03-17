@@ -25,6 +25,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_exchanger"
+        android:orderInCategory="30"
+        android:title="@string/exchanger"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_sweep"
         android:orderInCategory="40"
         android:title="@string/action_sweep"

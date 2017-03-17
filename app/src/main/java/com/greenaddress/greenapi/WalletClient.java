@@ -752,6 +752,10 @@ public class WalletClient {
     }
 
     public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final boolean returnErrorUri) {
+        return sendRawTransaction(tx, twoFacData, null, returnErrorUri);
+    }
+
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final Map<String, Object> privateData, final boolean returnErrorUri) {
         final SettableFuture<Map<String, Object>> rpc = SettableFuture.create();
         final ErrorHandler errHandler = new ErrorHandler() {
             public void onError(final String uri, final String err) {
@@ -759,7 +763,7 @@ public class WalletClient {
             }
         };
         return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc),
-                          errHandler, h(tx.bitcoinSerialize()), twoFacData);
+                          errHandler, h(tx.bitcoinSerialize()), twoFacData, privateData);
     }
 
     public ListenableFuture<List<byte[]>> signTransaction(final ISigningWallet signingWallet, final PreparedTransaction ptx) {

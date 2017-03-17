@@ -209,4 +209,5 @@
     <string name="segwit_dialog_content">Il tuo wallet è stato automaticamente aggiornato a segregated witness. Puoi disabilitare l\'aggiornamento in configurazione solo prima di aver generato il prossimo indirizzo.</string>
     <string name="segwit_disable">Disabilita Segwit</string>
     <string name="segwit_enable">Abilita Segwit</string>
+    <string name="showQrCode">Mostra QR code</string>
 </resources>

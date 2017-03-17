@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.greenaddress.greenbits.ui.MainFragment">
+
+    <LinearLayout
+        android:id="@+id/mainBalanceLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:paddingRight="@dimen/activity_horizontal_margin">
+
+            <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                android:id="@+id/mainBalanceUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:textSize="34sp" />
+
+            <TextView
+                android:id="@+id/mainBalanceText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:textSize="34sp" />
+
+            <Button
+                style="@style/myButton"
+                android:layout_width="25sp"
+                android:layout_height="30sp"
+                android:text="\?"
+                android:id="@+id/mainBalanceQuestionMark"
+                android:textColor="@color/white"
+                android:padding="0dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin">
+
+
+            <com.greenaddress.greenbits.ui.FontAwesomeTextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="24sp"
+
+                android:id="@+id/mainLocalBalanceIcon"
+                android:layout_weight="0"
+                android:layout_gravity="top" />
+
+            <TextView
+                android:id="@+id/mainLocalBalanceText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="24sp"
+                android:layout_weight="0"
+                android:layout_gravity="top"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/mainBalanceLayout">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mainTransactionList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+</RelativeLayout>

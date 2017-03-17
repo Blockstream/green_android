@@ -15,6 +15,13 @@
         <item name="android:colorButtonNormal">@color/accent</item>
     </style>
 
+    <style name="AppThemeMark" parent="AppTheme.Base.Mark">
+        <item name="android:textColor">@color/textColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:colorButtonNormal">@color/markAccent</item>
+    </style>
+
     <style name="myButton">
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/listInOutRelative"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content">
+
+            <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                android:id="@+id/listInOutIcon"
+                android:layout_width="64dp"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="@string/fa_arrow_down"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="34sp" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:padding="6dp">
+
+                <TextView
+                    android:id="@+id/listNumberConfirmation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:background="@drawable/rounded_bg"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+
+                    android:text="1"
+                    android:textColor="@color/white"
+
+                    />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/listWhoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="2dp"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/listReplaceableText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:text="@string/replaceable"
+                android:textColor="#FF8000" />
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/listWhenText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:textColor="@color/tertiaryTextColor" />
+
+                <LinearLayout
+                    android:id="@+id/listRightElement"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="center_vertical|end"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+
+                    android:textColor="@color/textColor">
+
+                    <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                        android:id="@+id/listBitcoinUnitText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/fa_btc_space"
+
+                        android:textColor="@color/secondaryTextColor"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/listValueText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="123"
+
+                        android:textColor="@color/secondaryTextColor"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/listValueQuestionMark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="\?"
+                        android:textColor="@color/accent"
+                        android:textSize="17sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

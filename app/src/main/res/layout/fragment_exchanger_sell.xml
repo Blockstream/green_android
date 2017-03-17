@@ -1,0 +1,406 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:context="com.greenaddress.greenbits.ui.SendFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="end"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp"
+                    android:visibility="gone">
+
+                    <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                        android:id="@+id/sendSubAccountBalanceUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/fa_btc_space"
+                        android:textColor="@color/textColor"
+                        android:textSize="34sp" />
+
+                    <TextView
+                        android:id="@+id/sendSubAccountBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/textColor"
+                        android:textSize="34sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sendToText"
+                android:textSize="24sp"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+
+                <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                    android:id="@+id/sendScanIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="@string/fa_camera"
+                    android:textColor="@color/accent"
+                    android:textSize="24sp" />
+
+                <com.greenaddress.greenbits.ui.ClipboardEditText
+                    android:id="@+id/sendToEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@id/sendScanIcon"
+                    android:layout_toStartOf="@id/sendScanIcon"
+                    android:hint="@string/sellTo"
+                    android:inputType="textNoSuggestions|textVisiblePassword"
+                    android:maxLines="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="24sp" />
+
+                <ProgressBar
+                    android:id="@+id/sendBip70ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sendAmountText"
+                android:textSize="24sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/amountFields"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+
+                        <LinearLayout
+                            android:id="@+id/sendBitcoinGroup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="14dp">
+
+                            <TextView
+                                android:id="@+id/sendBitcoinScaleText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/accent" />
+
+                            <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                                android:id="@+id/sendBitcoinUnitText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/fa_btc"
+                                android:textColor="@color/accent"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+
+
+                        <com.greenaddress.greenbits.ui.FontFitEditText
+
+                            android:id="@+id/sendAmountEditText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal|center_vertical"
+                            android:layout_toEndOf="@id/sendBitcoinGroup"
+                            android:layout_toRightOf="@id/sendBitcoinGroup"
+                            android:hint="0.00"
+                            android:inputType="numberDecimal"
+                            android:paddingLeft="14dp"
+                            android:textColor="@color/textColor"
+                            android:textSize="24sp"
+                            app:textSizeMax="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/sendMaxLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="MAX" />
+
+                            <Switch
+                                android:id="@+id/sendMaxButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textOff="MAX"
+                                android:textOn="MAX" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:id="@+id/sendFiatGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="14dp">
+
+                        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+
+                            android:id="@+id/sendFiatIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/fa_usd"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="@color/accent"
+                            android:textSize="24sp" />
+
+                    </LinearLayout>
+
+                    <com.greenaddress.greenbits.ui.FontFitEditText
+                        android:id="@+id/sendAmountFiatEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:layout_toEndOf="@id/sendFiatGroup"
+                        android:layout_toRightOf="@id/sendFiatGroup"
+                        android:hint="0.00"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:textColor="@color/textColor"
+                        android:textSize="24sp"
+                        app:textSizeMax="30sp"
+                        app:textSizeMin="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+
+                <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                    android:id="@+id/sendToNoteIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="@string/fa_pencil"
+                    android:textColor="@color/accent"
+                    android:textSize="24sp" />
+
+                <EditText
+                    android:id="@+id/sendToNoteText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@id/sendToNoteIcon"
+                    android:layout_toStartOf="@id/sendToNoteIcon"
+                    android:hint="@string/sendOptionalMemo"
+                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+                    android:textColor="@color/textColor"
+                    android:textSize="24sp"
+                    android:visibility="invisible" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/instantConfirmationCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/instantConfirmation" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="8dp" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/totalWithCommissions" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:paddingLeft="14dp"
+                        android:id="@+id/commissionFiatColumn">
+
+                        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+
+                            android:id="@+id/commissionFiatIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingLeft="10dp"
+                            android:text="@string/fa_usd"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="@color/accent"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/amountFiatWithCommission"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:paddingLeft="14dp"
+                            android:text="0"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:paddingLeft="14dp">
+
+                        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+                            android:id="@+id/sendBitcoinUnitText2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/fa_btc"
+                            android:textColor="@color/accent"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/amountBtcWithCommission"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:paddingLeft="14dp"
+                            android:text="0"
+                            android:textSize="30sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="8dp" />
+
+            <android.support.v7.widget.GridLayout
+                android:id="@+id/gridLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                app:columnCount="3">
+
+            </android.support.v7.widget.GridLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/sendSendButton"
+                    style="@style/myButton"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="20dp"
+                    android:text="@string/sendSendButton"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

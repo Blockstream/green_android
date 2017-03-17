@@ -66,6 +66,7 @@ public class SendFragment extends SubaccountFragment {
     private Dialog mTwoFactor;
     private EditText mAmountEdit;
     private EditText mAmountFiatEdit;
+    private TextView mAmountBtcWithCommission;
     private EditText mRecipientEdit;
     private EditText mNoteText;
     private CheckBox mInstantConfirmationCheckbox;
@@ -81,11 +82,18 @@ public class SendFragment extends SubaccountFragment {
     private int mSubaccount;
     private AmountFields mAmountFields;
 
+    private boolean mIsExchanger;
+    private Exchanger mExchanger;
+
     private void processBitcoinURI(final BitcoinURI URI) {
+        processBitcoinURI(URI);
+    }
+
+    private void processBitcoinURI(final BitcoinURI URI, final String confidentialAddress, Coin amount) {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        if (URI.getPaymentRequestUrl() != null) {
+        if (URI != null && URI.getPaymentRequestUrl() != null) {
             final ProgressBar bip70Progress = UI.find(mView, R.id.sendBip70ProgressBar);
             UI.show(bip70Progress);
             mRecipientEdit.setEnabled(false);
@@ -142,16 +150,23 @@ public class SendFragment extends SubaccountFragment {
                         }
                     });
         } else {
-            mRecipientEdit.setText(URI.getAddress().toString());
-            if (URI.getAmount() == null)
+            if (confidentialAddress != null) {
+                mRecipientEdit.setText(confidentialAddress);
+            } else {
+                mRecipientEdit.setText(URI.getAddress().toString());
+                amount = URI.getAmount();
+            }
+            if (amount == null)
                 return;
+
+            final Coin uriAmount = amount;
 
             Futures.addCallback(service.getSubaccountBalance(mSubaccount), new CB.Op<Map<String, Object>>() {
                 @Override
                 public void onSuccess(final Map<String, Object> result) {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
-                                UI.setCoinText(service, null, mAmountEdit, URI.getAmount());
+                                UI.setCoinText(service, null, mAmountEdit, uriAmount);
                                 mAmountFields.convertBtcToFiat();
                                 UI.disable(mAmountEdit, mAmountFiatEdit);
                                 UI.hide(mMaxButton, mMaxLabel);
@@ -173,9 +188,18 @@ public class SendFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        mView = inflater.inflate(R.layout.fragment_send, container, false);
+        if (savedInstanceState != null)
+            mIsExchanger = savedInstanceState.getBoolean("isExchanger", false);
 
-        mAmountFields = new AmountFields(service, getContext(), mView, null);
+        final int viewId = mIsExchanger ? R.layout.fragment_exchanger_sell : R.layout.fragment_send;
+        mView = inflater.inflate(viewId, container, false);
+
+        if (mIsExchanger)
+            mExchanger = new Exchanger(getContext(), service, mView, false, null);
+        else
+            mExchanger = null;
+        mAmountFields = new AmountFields(service, getContext(), mView, mExchanger);
+
         if (savedInstanceState != null) {
             final Boolean pausing = savedInstanceState.getBoolean("pausing", false);
             mAmountFields.setIsPausing(pausing);
@@ -196,8 +220,15 @@ public class SendFragment extends SubaccountFragment {
 
         mAmountEdit = UI.find(mView, R.id.sendAmountEditText);
         mAmountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
+        if (mIsExchanger)
+            mAmountBtcWithCommission = UI.find(mView, R.id.amountBtcWithCommission);
         mRecipientEdit = UI.find(mView, R.id.sendToEditText);
         mScanIcon = UI.find(mView, R.id.sendScanIcon);
+
+        if (mIsExchanger && GaService.IS_ELEMENTS) {
+            mRecipientEdit.setHint(R.string.send_to_address);
+            UI.hide(mAmountFiatEdit);
+        }
 
         final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
 
@@ -209,13 +240,27 @@ public class SendFragment extends SubaccountFragment {
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
             final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);
             BitcoinURI bitcoinUri = null;
-            try {
-                bitcoinUri = new BitcoinURI(uri.toString());
-            } catch (final BitcoinURIParseException e) {
-                gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
+            if (GaService.IS_ELEMENTS) {
+                String addr = null;
+                Coin amount = null;
+                try {
+                    Pair<String, Coin> res = ConfidentialAddress.parseBitcoinURI(Network.NETWORK, uri.toString());
+                    addr = res.first;
+                    amount = res.second;
+                } catch (final BitcoinURIParseException e) {
+                    gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
+                }
+                if (addr != null)
+                    processBitcoinURI(null, addr, amount);
+            } else {
+                try {
+                    bitcoinUri = new BitcoinURI(uri.toString());
+                } catch (final BitcoinURIParseException e) {
+                    gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
+                }
+                if (bitcoinUri != null)
+                    processBitcoinURI(bitcoinUri);
             }
-            if (bitcoinUri != null)
-                processBitcoinURI(bitcoinUri);
             // set intent uri flag only if the call arrives from non internal qr scan
             if (container.getTag(R.id.internal_qr) == null) {
                 mFromIntentURI = true;
@@ -233,6 +278,7 @@ public class SendFragment extends SubaccountFragment {
                     return;
                 }
                 final String recipient = UI.getText(mRecipientEdit);
+
                 if (recipient.isEmpty()) {
                     gaActivity.toast(R.string.err_send_need_recipient);
                     return;
@@ -266,7 +312,10 @@ public class SendFragment extends SubaccountFragment {
                                             } else {
                                                 final Intent qrcodeScanner = new Intent(gaActivity, ScanActivity.class);
                                                 qrcodeScanner.putExtra("sendAmount", mAmountEdit.getText().toString());
-                                                gaActivity.startActivityForResult(qrcodeScanner, TabbedMainActivity.REQUEST_SEND_QR_SCAN);
+                                                int requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN;
+                                                if (mIsExchanger)
+                                                    requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN_EXCHANGER;
+                                                gaActivity.startActivityForResult(qrcodeScanner, requestCode);
                                             }
                                         }
                                     }
@@ -303,6 +352,8 @@ public class SendFragment extends SubaccountFragment {
         super.onViewStateRestored(savedInstanceState);
         if (mAmountFields != null)
             mAmountFields.setIsPausing(false);
+        if (mIsExchanger)
+            mExchanger.conversionFinish();
     }
 
     private void hideInstantIf2of3() {
@@ -352,6 +403,7 @@ public class SendFragment extends SubaccountFragment {
         super.onSaveInstanceState(outState);
         if (mAmountFields != null)
             outState.putBoolean("pausing", mAmountFields.isPausing());
+        outState.putBoolean("isExchanger", mIsExchanger);
     }
 
     public void onDestroyView() {
@@ -397,7 +449,8 @@ public class SendFragment extends SubaccountFragment {
 
     private Coin getSendAmount() {
         try {
-            return UI.parseCoinValue(getGAService(), UI.getText(mAmountEdit));
+            final TextView amountEdit = mIsExchanger ? mAmountBtcWithCommission : mAmountEdit;
+            return UI.parseCoinValue(getGAService(), UI.getText(amountEdit));
         } catch (final IllegalArgumentException e) {
             return Coin.ZERO;
         }
@@ -411,6 +464,9 @@ public class SendFragment extends SubaccountFragment {
         final String memo = UI.getText(mNoteText);
         if (!memo.isEmpty())
             privateData.put("memo", memo);
+
+        if (mIsExchanger)
+            privateData.put("memo", Exchanger.TAG_EXCHANGER_TX_MEMO);
 
         if (mSubaccount != 0)
             privateData.put("subaccount", mSubaccount);
@@ -428,7 +484,7 @@ public class SendFragment extends SubaccountFragment {
             CB.after(ptxFn, new CB.Toast<PreparedTransaction>(gaActivity, mSendButton) {
                 @Override
                 public void onSuccess(final PreparedTransaction ptx) {
-                    onTransactionPrepared(ptx, recipient, amount);
+                    onTransactionPrepared(ptx, recipient, amount, privateData);
                 }
             });
         } else {
@@ -455,17 +511,15 @@ public class SendFragment extends SubaccountFragment {
                      new CB.Toast<ArrayList>(gaActivity, mSendButton) {
                 @Override
                 public void onSuccess(final ArrayList utxos) {
-                    if (GaService.IS_ELEMENTS)
-                        createRawElementsTransaction(utxos, recipient, amount);
-                    else
-                        createRawTransaction(utxos, recipient, amount, sendAll);
+                    createRawTransaction(utxos, recipient, amount, privateData, sendAll);
                 }
             });
         }
     }
 
     private void onTransactionPrepared(final PreparedTransaction ptx,
-                                       final String recipient, final Coin amount) {
+                                       final String recipient, final Coin amount,
+                                       final Map<String, Object> privateData) {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
@@ -493,7 +547,8 @@ public class SendFragment extends SubaccountFragment {
                                                              new CB.Runnable1T<String>() {
                             @Override
                             public void run(final String method) {
-                                onTransactionValidated(ptx, null, recipient, sendAmount, method, sendFee, null);
+                                onTransactionValidated(ptx, null, recipient, sendAmount, method,
+                                                       sendFee, privateData, null);
                             }
                         });
                         if (mTwoFactor != null)
@@ -508,6 +563,7 @@ public class SendFragment extends SubaccountFragment {
                                         final Transaction signedRawTx,
                                         final String recipient, final Coin amount,
                                         final String method, final Coin fee,
+                                        final Map<String, Object> privateData,
                                         final Map<String, Object> underLimits) {
         Log.i(TAG, "onTransactionValidated( params " + method + ' ' + fee + ' ' + amount + ' ' + recipient + ')');
         final GaService service = getGAService();
@@ -564,7 +620,7 @@ public class SendFragment extends SubaccountFragment {
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
 
                         if (signedRawTx != null) {
-                            final ListenableFuture<Map<String,Object>> sendFuture = service.sendRawTransaction(signedRawTx, twoFacData, false);
+                            final ListenableFuture<Map<String,Object>> sendFuture = service.sendRawTransaction(signedRawTx, twoFacData, privateData, false);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity, mSendButton) {
                                 @Override
                                 public void onSuccess(final Map result) {
@@ -602,6 +658,11 @@ public class SendFragment extends SubaccountFragment {
             public void run() {
                 UI.toast(gaActivity, R.string.transactionCompleted, Toast.LENGTH_LONG);
 
+                if (mIsExchanger) {
+                    float fiatAmount = Float.valueOf(mAmountFiatEdit.getText().toString());
+                    mExchanger.sellBtc(fiatAmount);
+                }
+
                 if (mFromIntentURI) {
                     gaActivity.finish();
                     return;
@@ -618,8 +679,13 @@ public class SendFragment extends SubaccountFragment {
                 UI.clear(mNoteText);
                 UI.hide(mNoteText);
 
-                final ViewPager viewPager = UI.find(gaActivity, R.id.container);
-                viewPager.setCurrentItem(1);
+                if (!mIsExchanger) {
+                    final ViewPager viewPager = UI.find(gaActivity, R.id.container);
+                    viewPager.setCurrentItem(1);
+		} else {
+                    gaActivity.toast(R.string.transactionCompleted);
+                    gaActivity.finish();
+		}
             }
         });
     }
@@ -636,6 +702,8 @@ public class SendFragment extends SubaccountFragment {
         // A negative rate means we don't have a good estimate. Default to
         // 10000 satoshi per 1000 bytes to match the JS wallets.
         // FIXME: This results in overpaying fees
+        if (GaService.IS_ELEMENTS)
+            return Coin.valueOf(1);
         return Coin.valueOf(10000);
     }
 
@@ -682,10 +750,10 @@ public class SendFragment extends SubaccountFragment {
         return false;
     }
 
-    // FIXME: This uses a terrible utxo selection strategy
+    // FIXME: Use a better utxo selection strategy
     private void createRawTransaction(final ArrayList utxos, final String recipient,
-                                      final Coin amount, final boolean sendAll) {
-        final GaService service = getGAService();
+                                      final Coin amount, final Map<String, Object> privateData,
+                                      final boolean sendAll) {
         final GaActivity gaActivity = getGaActivity();
 
         if (utxos.isEmpty()) {
@@ -693,6 +761,12 @@ public class SendFragment extends SubaccountFragment {
             return;
         }
 
+        if (GaService.IS_ELEMENTS) {
+            createRawElementsTransaction(utxos, recipient, amount, privateData, sendAll);
+            return;
+        }
+
+        final GaService service = getGAService();
         final List<JSONMap> candidates = JSONMap.fromList(utxos);
         final List<JSONMap> used = new ArrayList<>();
         final Coin feeRate = getFeeEstimate(service, "1");
@@ -809,7 +883,7 @@ public class SendFragment extends SubaccountFragment {
                     @Override
                     public void run(final String method) {
                         onTransactionValidated(null, tx, recipient, actualAmount,
-                                               method, sendFee, underLimits);
+                                               method, sendFee, privateData, underLimits);
                     }
                 });
                 if (mTwoFactor != null)
@@ -822,8 +896,10 @@ public class SendFragment extends SubaccountFragment {
         System.arraycopy(src, 0, dest, src.length * i, src.length);
     }
 
-    private void createRawElementsTransaction(final ArrayList utxos,
-                                              final String recipient, final Coin amount) {
+    private void createRawElementsTransaction(final ArrayList utxos, final String recipient,
+                                              final Coin amount, final Map<String, Object> privateData,
+                                              final boolean sendAll) {
+        // FIXME: sendAll
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
@@ -834,12 +910,13 @@ public class SendFragment extends SubaccountFragment {
         final ElementsTransaction tx = new ElementsTransaction(Network.NETWORK);
 
         ElementsTransactionOutput feeOutput = new ElementsTransactionOutput(Network.NETWORK, tx, Coin.ZERO);
+
         feeOutput.setUnblindedAssetTagFromAssetId(service.mAssetId);
         feeOutput.setValue(Coin.valueOf(1));  // updated below, necessary for serialization for fee calculation
         tx.addOutput(feeOutput);
         TransactionOutput changeOutput = null;
 
-        tx.addOutput(getGAService().mAssetId, amount, ConfidentialAddress.fromBase58(Network.NETWORK, recipient));
+        tx.addOutput(service.mAssetId, amount, ConfidentialAddress.fromBase58(Network.NETWORK, recipient));
 
         Coin total = Coin.ZERO;
         Coin fee;
@@ -1029,12 +1106,17 @@ public class SendFragment extends SubaccountFragment {
                                     amount.add(finalFee).getValue() < Float.valueOf(limit) * 100) {
                                     method = "limit";
                                 }
-                                onTransactionValidated(null, tx, recipient, amount, method, sendFee, underLimits);
+                                onTransactionValidated(null, tx, recipient, amount, method,
+                                                       sendFee, privateData, underLimits);
                             }
                         });
                 if (mTwoFactor != null)
                     mTwoFactor.show();
             }
         });
+    }
+
+    public void setIsExchanger(final boolean isExchanger) {
+        mIsExchanger = isExchanger;
     }
 }

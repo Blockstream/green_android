@@ -26,18 +26,24 @@ public class ListTransactionsAdapter extends
     private final List<TransactionItem> mTxItems;
     private final Activity mActivity;
     private final GaService mService;
+    private final boolean mIsExchanger;
 
     public ListTransactionsAdapter(final Activity activity, final GaService service,
-                                   final List<TransactionItem> txItems) {
+                                   final List<TransactionItem> txItems, final boolean isExchanger) {
         mTxItems = txItems;
         mActivity = activity;
         mService = service;
+        mIsExchanger = isExchanger;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_element_transaction, parent, false));
+        if (mIsExchanger)
+            return new ViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_element_transaction_exchanger, parent, false));
+        else
+            return new ViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_element_transaction, parent, false));
     }
 
     @Override
@@ -93,7 +99,9 @@ public class ListTransactionsAdapter extends
             else
                 message = getTypeString(txItem.type);
         } else {
-            if (humanCpty)
+            if (txItem.memo.contains(Exchanger.TAG_EXCHANGER_TX_MEMO))
+                message = mActivity.getString(R.string.txExchangerMemo);
+            else if (humanCpty)
                 message = String.format("%s %s", txItem.counterparty, txItem.memo);
             else
                 message = txItem.memo;

@@ -1,6 +1,8 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,6 +16,8 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+
+import de.schildbach.wallet.ui.ScanActivity;
 
 /**
  * Base class for activities within the application.
@@ -138,4 +142,34 @@ public abstract class GaActivity extends AppCompatActivity {
     public void toast(final String s) { UI.toast(this, s, Toast.LENGTH_LONG); }
     public void shortToast(final int id) { UI.toast(this, id, Toast.LENGTH_SHORT); }
     public void shortToast(final String s) { UI.toast(this, s, Toast.LENGTH_SHORT); }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case TabbedMainActivity.REQUEST_SEND_QR_SCAN:
+            case TabbedMainActivity.REQUEST_SEND_QR_SCAN_EXCHANGER:
+                if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {
+                    String scanned = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
+                    if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:")))
+                        scanned = String.format("bitcoin:%s", scanned);
+                    final Intent browsable;
+                    if (requestCode == TabbedMainActivity.REQUEST_SEND_QR_SCAN)
+                        browsable = new Intent(this, TabbedMainActivity.class);
+                    else
+                        browsable = new Intent(this, SellActivity.class);
+                    browsable.setData(Uri.parse(scanned));
+                    browsable.addCategory(Intent.CATEGORY_BROWSABLE);
+                    browsable.putExtra("internal_qr", true);
+                    if (data.getStringExtra("sendAmount") != null)
+                        browsable.putExtra("sendAmount", data.getStringExtra("sendAmount"));
+                    // start new activity and finish old one
+                    startActivity(browsable);
+                    this.finish();
+                }
+                break;
+        }
+    }
 }

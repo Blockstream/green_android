@@ -66,7 +66,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             REQUEST_SWEEP_PRIVKEY = 1,
             REQUEST_BITCOIN_URL_LOGIN = 2,
             REQUEST_SETTINGS = 3,
-            REQUEST_TX_DETAILS = 4;
+            REQUEST_TX_DETAILS = 4,
+            REQUEST_SEND_QR_SCAN_EXCHANGER = 5;
     private ViewPager mViewPager;
     private Menu mMenu;
     private Boolean mInternalQr = false;
@@ -84,7 +85,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     };
     private final Runnable mDialogCB = new Runnable() { public void run() { setBlockWaitDialog(false); } };
 
-    private boolean isBitcoinScheme(final Intent intent) {
+    static boolean isBitcoinScheme(final Intent intent) {
         final Uri uri = intent.getData();
         return uri != null && uri.getScheme() != null && uri.getScheme().equals("bitcoin");
     }
@@ -357,22 +358,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 startActivity(new Intent(this, TabbedMainActivity.class));
                 finish();
                 break;
-            case REQUEST_SEND_QR_SCAN:
-                if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {
-                    String scanned = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
-                    if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:")))
-                        scanned = String.format("bitcoin:%s", scanned);
-                    final Intent browsable = new Intent(this, TabbedMainActivity.class);
-                    browsable.setData(Uri.parse(scanned));
-                    browsable.addCategory(Intent.CATEGORY_BROWSABLE);
-                    browsable.putExtra("internal_qr", true);
-                    if (data.getStringExtra("sendAmount") != null)
-                        browsable.putExtra("sendAmount", data.getStringExtra("sendAmount"));
-                    // start new activity and finish old one
-                    startActivity(browsable);
-                    this.finish();
-                }
-                break;
             case REQUEST_BITCOIN_URL_LOGIN:
                 if (resultCode != RESULT_OK) {
                     // The user failed to login after clicking on a bitcoin Uri
@@ -513,6 +498,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         setMenuItemVisible(menu, R.id.action_network, !GaService.IS_ELEMENTS);
         setMenuItemVisible(menu, R.id.action_sweep, !GaService.IS_ELEMENTS);
 
+        final boolean isExchanger = mService.cfg().getBoolean("show_exchanger_menu", false);
+        setMenuItemVisible(menu, R.id.action_exchanger, isExchanger);
+
         mMenu = menu;
         return true;
     }
@@ -525,6 +513,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 startActivityForResult(new Intent(caller, SettingsActivity.class), REQUEST_SETTINGS);
+                return true;
+            case R.id.action_exchanger:
+                startActivity(new Intent(caller, MainExchanger.class));
                 return true;
             case R.id.action_sweep:
                 final Intent scanner = new Intent(caller, ScanActivity.class);

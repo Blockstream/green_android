@@ -15,10 +15,6 @@ import org.bitcoinj.utils.Fiat;
 
 import java.math.BigDecimal;
 
-/**
- * Created by Antonio Parrella on 11/16/16.
- * by inbitcoin
- */
 class AmountFields {
     private final EditText mAmountEdit;
     private final EditText mAmountFiatEdit;
@@ -65,6 +61,11 @@ class AmountFields {
     }
 
     private void updateFiatFields() {
+        if (GaService.IS_ELEMENTS) {
+            UI.hide(mAmountFiatEdit, mFiatView);
+            return;
+        }
+
         changeFiatIcon(mFiatView, mGaService.getFiatCurrency());
 
         if (!mGaService.hasFiatRate()) {
@@ -143,6 +144,13 @@ class AmountFields {
             }
         }
 
+        if (mGaService.IS_ELEMENTS) {
+            // fiat == btc in elements
+            mAmountFiatEdit.setText(UI.getText(mAmountEdit));
+            finishConversion();
+            return;
+        }
+
         try {
             final Coin btcValue = UI.parseCoinValue(mGaService, UI.getText(mAmountEdit));
             Fiat fiatValue = mGaService.getFiatRate().coinToFiat(btcValue);
@@ -164,6 +172,14 @@ class AmountFields {
             return;
 
         mConverting = true;
+
+        if (mGaService.IS_ELEMENTS) {
+            // fiat == btc in elements
+            mAmountEdit.setText(UI.getText(mAmountFiatEdit));
+            finishConversion();
+            return;
+        }
+
         try {
             final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(mAmountFiatEdit));
             mAmountEdit.setText(UI.formatCoinValue(mGaService, mGaService.getFiatRate().fiatToCoin(fiatValue)));

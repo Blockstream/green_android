@@ -27,12 +27,13 @@ public class TransactionItem implements Serializable {
     public final long amount;
     public final String counterparty;
     public final String receivedOn;
+    public final JSONMap receivedOnEp;
     public final boolean instant;
     public final boolean replaceable;
     public final Sha256Hash txHash;
     public final String doubleSpentBy;
     public final Date date;
-    public final String memo;
+    public String memo;
     public boolean spvVerified;
     public final boolean isSpent;
     public final long fee;
@@ -84,6 +85,8 @@ public class TransactionItem implements Serializable {
         long tmpAmount = 0;
         boolean tmpIsSpent = true;
         String tmpReceivedOn = null;
+        JSONMap tmpReceivedOnEp = null;
+        boolean hasConfidentialRecipients = false;
 
         for (final JSONMap ep : eps) {
             final String socialDestination = ep.get("social_destination", null);
@@ -110,8 +113,16 @@ public class TransactionItem implements Serializable {
             final Boolean isRelevant = ep.get("is_relevant");
             final Boolean isCredit = ep.get("is_credit");
 
-            if (isCredit && (!isRelevant || socialDestination != null))
-                recipients.add(ep);
+            final boolean confidential;
+            confidential = ep.getBool("confidential") || // Confidential own output
+                           ep.get("value") == null;      // Confidential foreign output
+            if (isCredit && (!isRelevant || socialDestination != null) && ep.get("ad") != null) {
+                // Elements fees
+                if (confidential)
+                    hasConfidentialRecipients = true;
+                else
+                    recipients.add(ep);
+            }
 
             if (!isRelevant)
                 continue;
@@ -128,10 +139,13 @@ public class TransactionItem implements Serializable {
                 if (!ep.getBool("is_spent"))
                     tmpIsSpent = false;
             }
-            if (tmpReceivedOn == null)
-                tmpReceivedOn = ep.get("ad");
-            else
+            if (tmpReceivedOn != null)
                 tmpReceivedOn += ", " + ep.get("ad");
+            else {
+                tmpReceivedOn = ep.get("ad");
+                if (ep.getBool("confidential"))
+                    tmpReceivedOnEp = ep; // Needed for regenerating the confidential address
+            }
         }
 
         if (tmpAmount >= 0) {
@@ -144,12 +158,16 @@ public class TransactionItem implements Serializable {
                 }
         } else {
             tmpReceivedOn = null; // don't show change addresses
-            if (recipients.isEmpty())
+            if (recipients.isEmpty() && !hasConfidentialRecipients)
                 type = TransactionItem.TYPE.REDEPOSIT;
             else {
                 type = TransactionItem.TYPE.OUT;
-                if (tmpCounterparty == null)
-                    tmpCounterparty = recipients.get(0).get("ad");
+                if (tmpCounterparty == null) {
+                    if (recipients.size() > 0)
+                        tmpCounterparty = recipients.get(0).get("ad");
+                    else if (hasConfidentialRecipients)
+                        tmpCounterparty = "Confidential address";
+                }
                 if (recipients.size() > 1)
                     tmpCounterparty += ", ...";
             }
@@ -159,6 +177,7 @@ public class TransactionItem implements Serializable {
         counterparty = tmpCounterparty;
         isSpent = tmpIsSpent;
         receivedOn = tmpReceivedOn;
+        receivedOnEp = tmpReceivedOnEp;
         spvVerified = service.isSPVVerified(txHash);
         date = m.getDate("created_at");
     }

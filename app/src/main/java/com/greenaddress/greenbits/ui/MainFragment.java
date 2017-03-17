@@ -25,6 +25,7 @@ import org.bitcoinj.core.Sha256Hash;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observer;
@@ -40,6 +41,8 @@ public class MainFragment extends SubaccountFragment {
     private Observer mNewTxObserver;
     private final Runnable mDialogCB = new Runnable() { public void run() { mUnconfirmedDialog = null; } };
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private Boolean mIsExchanger = false;
 
     private void updateBalance() {
         Log.d(TAG, "Updating balance");
@@ -73,16 +76,18 @@ public class MainFragment extends SubaccountFragment {
 
         UI.setAmountText(balanceFiatText, service.getFiatBalance(mSubaccount));
 
-        if (GaService.IS_ELEMENTS) {
+        if (!GaService.IS_ELEMENTS)
+            AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
+        else {
             balanceUnit.setText(service.getAssetSymbol() + " ");
             balanceText.setText(service.getAssetFormat().format(balance));
 
-            // No fiat values in elements multiasset
-            UI.hide((View) UI.find(mView, R.id.mainLocalBalance));
-            // Currently no SPV either
-            UI.hide(balanceQuestionMark);
-        } else {
-            AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
+            if (!mIsExchanger) {
+                // No fiat values in elements multiasset
+                UI.hide((View) UI.find(mView, R.id.mainLocalBalance));
+                // Currently no SPV either
+                UI.hide(balanceQuestionMark);
+            }
         }
 
         if (service.showBalanceInTitle())
@@ -100,7 +105,13 @@ public class MainFragment extends SubaccountFragment {
         final GaService service = getGAService();
         popupWaitDialog(R.string.loading_transactions);
 
-        mView = inflater.inflate(R.layout.fragment_main, container, false);
+        if (savedInstanceState != null)
+            mIsExchanger = savedInstanceState.getBoolean("isExchanger", false);
+
+        if (mIsExchanger)
+            mView = inflater.inflate(R.layout.fragment_exchanger_txs, container, false);
+        else
+            mView = inflater.inflate(R.layout.fragment_main, container, false);
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.setHasFixedSize(true);
         txView.addItemDecoration(new DividerItem(getActivity()));
@@ -110,16 +121,18 @@ public class MainFragment extends SubaccountFragment {
 
         mSubaccount = service.getCurrentSubAccount();
 
-        final TextView firstP = UI.find(mView, R.id.mainFirstParagraphText);
-        final TextView secondP = UI.find(mView, R.id.mainSecondParagraphText);
-        final TextView thirdP = UI.find(mView, R.id.mainThirdParagraphText);
+        if (!mIsExchanger) {
+            final TextView firstP = UI.find(mView, R.id.mainFirstParagraphText);
+            final TextView secondP = UI.find(mView, R.id.mainSecondParagraphText);
+            final TextView thirdP = UI.find(mView, R.id.mainThirdParagraphText);
 
-        if (GaService.IS_ELEMENTS)
-            UI.hide(firstP); // Don't show a Bitcoin message for elements
-        else
-            firstP.setMovementMethod(LinkMovementMethod.getInstance());
-        secondP.setMovementMethod(LinkMovementMethod.getInstance());
-        thirdP.setMovementMethod(LinkMovementMethod.getInstance());
+            if (GaService.IS_ELEMENTS)
+                UI.hide(firstP); // Don't show a Bitcoin message for elements
+            else
+                firstP.setMovementMethod(LinkMovementMethod.getInstance());
+            secondP.setMovementMethod(LinkMovementMethod.getInstance());
+            thirdP.setMovementMethod(LinkMovementMethod.getInstance());
+        }
 
         final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
         final TextView balanceQuestionMark = UI.find(mView, R.id.mainBalanceQuestionMark);
@@ -144,16 +157,18 @@ public class MainFragment extends SubaccountFragment {
             reloadTransactions(false, true);
         }
 
-        mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
-        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.accent));
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Log.d(TAG, "onRefresh -> " + TAG);
-                // user action to force reload balance and tx list
-                onBalanceUpdated();
-            }
-        });
+        if (!mIsExchanger) {
+            mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
+            mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.accent));
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    Log.d(TAG, "onRefresh -> " + TAG);
+                    // user action to force reload balance and tx list
+                    onBalanceUpdated();
+                }
+            });
+        }
 
         registerReceiver();
         return mView;
@@ -233,7 +248,8 @@ public class MainFragment extends SubaccountFragment {
 
     private void showTxView(final boolean doShow) {
         UI.showIf(doShow, (View) UI.find(mView, R.id.mainTransactionList));
-        UI.hideIf(doShow, (View) UI.find(mView, R.id.mainEmptyTransText));
+        if (!mIsExchanger)
+            UI.hideIf(doShow, (View) UI.find(mView, R.id.mainEmptyTransText));
     }
 
     private void reloadTransactions(final boolean newAdapter, final boolean showWaitDialog) {
@@ -258,13 +274,15 @@ public class MainFragment extends SubaccountFragment {
 
         if (mTxItems == null || newAdapter) {
             mTxItems = new ArrayList<>();
-            txView.setAdapter(new ListTransactionsAdapter(activity, service, mTxItems));
+            txView.setAdapter(new ListTransactionsAdapter(activity, service, mTxItems, mIsExchanger));
             // FIXME, more efficient to use swap
             // txView.swapAdapter(lta, false);
         }
 
         if (replacedTxs == null || newAdapter)
             replacedTxs = new HashMap<>();
+
+
 
         Futures.addCallback(service.getMyTransactions(mSubaccount),
             new FutureCallback<Map<?, ?>>() {
@@ -313,7 +331,22 @@ public class MainFragment extends SubaccountFragment {
                             }
                         }
 
-                        for (final TransactionItem txItem : mTxItems) {
+                        final Iterator<TransactionItem> iterator = mTxItems.iterator();
+                        while (iterator.hasNext()) {
+                            final TransactionItem txItem = iterator.next();
+                            final boolean isExchangerAddress = service.cfg().getBoolean("exchanger_address_" + txItem.receivedOn, false);
+                            if (isExchangerAddress && txItem.memo == null) {
+                                txItem.memo = Exchanger.TAG_EXCHANGER_TX_MEMO;
+                                CB.after(service.changeMemo(txItem.txHash, Exchanger.TAG_EXCHANGER_TX_MEMO),
+                                        new CB.Toast<Boolean>(activity) {
+                                            @Override
+                                            public void onSuccess(final Boolean result) {
+                                            }
+                                        });
+                            } else if (mIsExchanger && (txItem.memo == null || !txItem.memo.contains(Exchanger.TAG_EXCHANGER_TX_MEMO))) {
+                                // FIXME should be better to filter list with api query
+                                iterator.remove();
+                            }
                             if (replacedTxs.containsKey(txItem.txHash))
                                 for (final Sha256Hash replaced : replacedTxs.get(txItem.txHash))
                                     txItem.replacedHashes.add(replaced);
@@ -377,5 +410,15 @@ public class MainFragment extends SubaccountFragment {
             if (!isZombie())
                 setIsDirty(false);
         }
+    }
+
+    public void setIsExchanger(final boolean isExchanger) {
+        mIsExchanger = isExchanger;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isExchanger", mIsExchanger);
     }
 }

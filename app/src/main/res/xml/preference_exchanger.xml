@@ -1,0 +1,34 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference android:key="show_exchanger_menu"
+        android:title="@string/show_exchanger_menu"/>
+
+    <EditTextPreference android:key="exchanger_fiat_btns"
+        android:title="@string/exchangerPreferenceFiat"
+        android:summary="@string/exchangerPreferenceFiatDesc"
+        android:inputType="text"
+        android:hint=""/>
+
+    <EditTextPreference android:key="exchanger_fiat_in_bill"
+        android:title="@string/exchangerPreferenceFiatInPocket"
+        android:summary="@string/exchangerPreferenceFiatInPocketDesc"
+        android:inputType="numberDecimal"
+        android:hint=""/>
+
+    <EditTextPreference android:key="buy_commission_percentage"
+        android:inputType="numberDecimal"
+        android:title="@string/buy_commission_percentage"/>
+
+    <EditTextPreference android:key="buy_commission_fixed"
+        android:inputType="numberDecimal"
+        android:title="@string/buy_commission_fixed"/>
+
+    <EditTextPreference android:key="sell_commission_percentage"
+        android:inputType="numberDecimal"
+        android:title="@string/sell_commission_percentage"/>
+
+    <EditTextPreference android:key="sell_commission_fixed"
+        android:inputType="numberDecimal"
+        android:title="@string/sell_commission_fixed"/>
+
+</PreferenceScreen>

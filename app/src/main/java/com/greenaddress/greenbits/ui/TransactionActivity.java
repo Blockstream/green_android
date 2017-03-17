@@ -23,6 +23,7 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.GATx;
 import com.greenaddress.greenapi.HDKey;
@@ -106,7 +107,7 @@ public class TransactionActivity extends GaActivity {
         final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
 
         final TextView hashText = UI.find(this, R.id.txHashText);
-        openInBrowser(hashText, txItem.txHash.toString(), Network.BLOCKEXPLORER_TX);
+        openInBrowser(hashText, txItem.txHash.toString(), Network.BLOCKEXPLORER_TX, null);
 
         final Coin feePerKb = txItem.getFeePerKilobyte();
 
@@ -183,7 +184,10 @@ public class TransactionActivity extends GaActivity {
 
         final TextView receivedOnText = UI.find(this, R.id.txReceivedOnText);
         if (!TextUtils.isEmpty(txItem.receivedOn))
-            openInBrowser(receivedOnText, txItem.receivedOn, Network.BLOCKEXPLORER_ADDRESS);
+            openInBrowser(
+                    receivedOnText, txItem.receivedOn, Network.BLOCKEXPLORER_ADDRESS,
+                    txItem.receivedOnEp
+            );
         else {
             final View receivedOnTitle = UI.find(this, R.id.txReceivedOnTitle);
             final View receivedOnMargin = UI.find(this, R.id.txReceivedOnMargin);
@@ -327,8 +331,19 @@ public class TransactionActivity extends GaActivity {
         return Coin.valueOf((long) (rate * 1000 * 1000 * 100));
     }
 
-    private void openInBrowser(final TextView textView, final String identifier, final String url) {
-        textView.setText(identifier);
+    private void openInBrowser(final TextView textView, final String identifier, final String url, final JSONMap confidentialData) {
+        if (confidentialData == null)
+            textView.setText(identifier);
+        else {
+            final int subaccount = confidentialData.getInt("subaccount", 0);
+            final int pointer = confidentialData.getInt("pubkey_pointer");
+            textView.setText(ConfidentialAddress.fromP2SHHash(
+                    Network.NETWORK,
+                    Wally.hash160(mService.createOutScript(subaccount, pointer)),
+                    mService.getBlindingPubKey(subaccount, pointer)
+            ).toString());
+        }
+
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {

@@ -156,6 +156,35 @@
         <activity android:name=".FailHardActivity"/>
         <activity android:name=".AboutActivity"/>
         <activity android:name=".WatchOnlyLoginActivity"/>
+        <activity android:name=".MainExchanger"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/exchanger"
+            android:theme="@style/AppThemeMark"
+            android:parentActivityName=".TabbedMainActivity" >
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".TabbedMainActivity" />
+        </activity>
+        <activity android:name=".SellActivity"
+            android:label="@string/exchangerSellTitle"
+            android:theme="@style/AppThemeMark"
+            android:parentActivityName=".MainExchanger" >
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainExchanger" />
+        </activity>
+        <activity android:name=".BuyActivity"
+            android:label="@string/exchangerBuyTitle"
+            android:theme="@style/AppThemeMark"
+            android:parentActivityName=".MainExchanger" >
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainExchanger" />
+        </activity>
+
     </application>
 
 </manifest>

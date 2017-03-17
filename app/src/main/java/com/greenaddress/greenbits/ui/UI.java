@@ -287,7 +287,8 @@ public abstract class UI {
         dialog.show();
     }
 
-    private static int getUnitSymbol(final String unit) {
+    private static int getUnitSymbol(final GaService service) {
+        final String unit = service.getBitcoinUnit();
         if (MonetaryFormat.CODE_BTC.equals(unit))
             return R.string.fa_btc_space;
         if (MonetaryFormat.CODE_MBTC.equals(unit))
@@ -318,8 +319,12 @@ public abstract class UI {
     public static String setCoinText(final GaService service,
                                      final TextView symbol, final TextView amount,
                                      final Coin value) {
-        if (symbol != null)
-            symbol.setText(getUnitSymbol(service.getBitcoinUnit()));
+        if (symbol != null) {
+            if (GaService.IS_ELEMENTS)
+                symbol.setText(service.getAssetSymbol());
+            else
+                symbol.setText(getUnitSymbol(service));
+        }
         if (value == null)
             return null;
         return setAmountText(amount, formatCoinValue(service, value));

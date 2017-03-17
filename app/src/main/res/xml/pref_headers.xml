@@ -15,4 +15,9 @@
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="@string/spvNoWiFiTitle" />
 
+    <header
+        android:fragment="com.greenaddress.greenbits.ui.preferences.ExchangerPreferenceFragment"
+        android:icon="@drawable/ic_sync_black_24dp"
+        android:title="@string/exchanger"/>
+
 </preference-headers>
