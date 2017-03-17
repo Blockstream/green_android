@@ -376,8 +376,13 @@ public class WalletClient {
         return simpleCall("txs.get_balance", Map.class, subAccount);
     }
 
+    // FIXME: Get rid of this
     public ListenableFuture<Map<?, ?>> getTwoFactorConfig() {
         return simpleCall("twofactor.get_config", Map.class);
+    }
+
+    public Map<?, ?> getTwoFactorConfigSync() throws Exception {
+        return syncCall("twofactor.get_config", Map.class);
     }
 
     public ListenableFuture<Map<?, ?>> getAvailableCurrencies() {
@@ -845,7 +850,7 @@ public class WalletClient {
     }
 
     public ListenableFuture<ArrayList> getAllUnspentOutputs(final int confs, final Integer subAccount) {
-        return simpleCall("txs.get_all_unspent_outputs", ArrayList.class, confs, subAccount);
+        return simpleCall("txs.get_all_unspent_outputs", ArrayList.class, confs, subAccount, "any");
     }
 
     private ListenableFuture<Transaction> transactionCall(final String procedure, final Object... args) {
@@ -889,7 +894,7 @@ public class WalletClient {
         return simpleCall("twofactor.enable_" + type, Boolean.class, code, twoFacData);
     }
 
-    public ListenableFuture<Boolean> disableTwoFac(final String type, final Map<String, String> twoFacData) {
-        return simpleCall("twofactor.disable_" + type, Boolean.class, twoFacData);
+    public Boolean disableTwoFactor(final String type, final Map<String, String> twoFacData) throws Exception {
+        return syncCall("twofactor.disable_" + type, Boolean.class, twoFacData);
     }
 }

@@ -115,6 +115,34 @@ class AmountFields {
             return;
 
         mConverting = true;
+
+        if (GaService.IS_ELEMENTS) {
+            // limit decimal places (TODO should work for BTC, but needs testing)
+            try {
+                int selectionStart = mAmountEdit.getSelectionStart();
+                final String old = UI.getText(mAmountEdit);
+                String adjusted = old;
+                if (!old.isEmpty() && Character.isDigit(old.charAt(selectionStart-1))) {
+                    // don't adjust if the added char is not a digit,
+                    // to still allow inserting commas/dots
+                    adjusted = UI.formatCoinValue(mGaService, UI.parseCoinValue(mGaService, old));
+                }
+                if (old.length() > adjusted.length() &&
+                        Double.parseDouble(old) != Double.parseDouble(adjusted)) {
+                    // Don't ever make the string longer, for example '1.0' -> '1.00'
+                    // And adjust only if the values differ, to allow adding trailing zeroes,
+                    // otherwise entering values like 0.04 is not possible.
+                    mAmountEdit.setText(adjusted);
+                    try {
+                        mAmountEdit.setSelection(selectionStart, selectionStart);
+                    } catch (final IndexOutOfBoundsException e) {
+                        mAmountEdit.setSelection(adjusted.length(), adjusted.length());
+                    }
+                }
+            } catch (final NumberFormatException | IndexOutOfBoundsException e) {
+            }
+        }
+
         try {
             final Coin btcValue = UI.parseCoinValue(mGaService, UI.getText(mAmountEdit));
             Fiat fiatValue = mGaService.getFiatRate().coinToFiat(btcValue);

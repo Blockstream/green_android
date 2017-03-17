@@ -276,4 +276,7 @@
     <string name="segwit_dialog_content">Your account has been automatically updated to enable segregated witness. You can disable this upgrade in settings only until you generate the next address to receive funds.</string>
     <string name="segwit_disable">Disable Segwit</string>
     <string name="segwit_enable">Enable Segwit</string>
+    <string name="twoFacLimitTitle">Set Two Factor Threshold</string>
+    <string name="twoFacLimitEnabled">Two Factor Authentication will be skipped for transactions under your threshold.</string>
+    <string name="twoFacLimitDisabled">You must enable at least one Two Factor Authentication method before you can change the threshold.</string>
 </resources>

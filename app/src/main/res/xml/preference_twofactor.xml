@@ -19,6 +19,11 @@
         android:key="twoFacPhone"
         android:title="@string/twoFacPhoneCall" />
 
+    <EditTextPreference
+        android:key="twoFacLimits"
+        android:title="@string/twoFacLimitTitle"
+        android:summary="@string/twoFacLimitDisabled" />
+
     <CheckBoxPreference
         android:key="twoFacNLocktimeEmails"
         android:title="@string/enable_nlocktime_emails" />

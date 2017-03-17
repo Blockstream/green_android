@@ -72,7 +72,18 @@ public class MainFragment extends SubaccountFragment {
         balanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 
         UI.setAmountText(balanceFiatText, service.getFiatBalance(mSubaccount));
-        AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
+
+        if (GaService.IS_ELEMENTS) {
+            balanceUnit.setText(service.getAssetSymbol() + " ");
+            balanceText.setText(service.getAssetFormat().format(balance));
+
+            // No fiat values in elements multiasset
+            UI.hide((View) UI.find(mView, R.id.mainLocalBalance));
+            // Currently no SPV either
+            UI.hide(balanceQuestionMark);
+        } else {
+            AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
+        }
 
         if (service.showBalanceInTitle())
             UI.hide(balanceText, balanceUnit);

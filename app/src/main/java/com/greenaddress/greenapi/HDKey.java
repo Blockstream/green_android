@@ -27,6 +27,7 @@ public class HDKey {
     private final static int VER_PRIVATE = isMain() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
 
     public static final int BRANCH_REGULAR = 1;
+    public static final int BRANCH_BLINDED = 5;
 
     private static final SparseArray<DeterministicKey> mServerKeys = new SparseArray<>();
     private static int[] mGaUserPath;

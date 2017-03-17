@@ -53,6 +53,12 @@ public class ListTransactionsAdapter extends
                                  !mService.isSPVEnabled();
         UI.hideIf(verified, holder.textValueQuestionMark);
 
+        if (GaService.IS_ELEMENTS) {
+            holder.unitText.setText(mService.getAssetSymbol() + " ");
+            holder.textValue.setText(mService.getAssetFormat().format(coin));
+            UI.hide(holder.textValueQuestionMark);
+        }
+
         final Resources res = mActivity.getResources();
 
         if (txItem.doubleSpentBy == null) {

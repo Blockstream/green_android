@@ -332,7 +332,6 @@ public class TransactionActivity extends GaActivity {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-
                 if (url == null)
                     return;
 
@@ -406,10 +405,9 @@ public class TransactionActivity extends GaActivity {
                 // keep non-change/non-redeposit intact
                 tx.addOutput(origOuts.get(ep.getInt("pt_idx")));
             else {
-                final Integer epSubaccount = ep.get("subaccount");
-                if ((epSubaccount == null && subAccount == 0) ||
-                    epSubaccount.equals(subAccount))
+                if (ep.getInt("subaccount", 0).equals(subAccount))
                     change_pointer = ep.getInt("pubkey_pointer");
+
                 // change/redeposit
                 final Coin value = ep.getCoin("value");
                 if (!value.isGreaterThan(remainingFeeDelta)) {

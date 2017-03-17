@@ -117,12 +117,14 @@ public class TransactionItem implements Serializable {
                 continue;
 
             if (!isCredit) {
-                tmpAmount -= ep.getLong("value");
+                if (ep.get("value") != null)
+                    tmpAmount -= ep.getLong("value");
                 continue;
             }
 
             if (!externalSocial) {
-                tmpAmount += ep.getLong("value");
+                if (ep.get("value") != null)
+                    tmpAmount += ep.getLong("value");
                 if (!ep.getBool("is_spent"))
                     tmpIsSpent = false;
             }

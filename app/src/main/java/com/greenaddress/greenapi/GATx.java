@@ -15,12 +15,12 @@ import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionWitness;
 import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.VarInt;
 import org.bitcoinj.script.ScriptBuilder;
 import com.blockstream.libwally.Wally;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class GATx {
 
@@ -45,9 +45,8 @@ public class GATx {
     }
 
     public static byte[] createOutScript(final GaService service, final JSONMap ep) {
-        final String k = ep.containsKey("pubkey_pointer") ? "pubkey_pointer" : "pointer";
-        final Integer sa = ep.getInt("subaccount");
-        return service.createOutScript(sa == null ? 0 : sa, ep.getInt(k));
+        return service.createOutScript(ep.getInt("subaccount", 0),
+                                       ep.getInt(ep.getKey("pubkey_pointer", "pointer")));
     }
 
     public static byte[] createInScript(final List<byte[]> sigs, final byte[] outScript,
@@ -125,23 +124,43 @@ public class GATx {
         return previousTxs;
     }
 
-    /* Calculate the fee that must be paid for a tx */
+    // Estimate the size of Elements specific parts of a tx
+    private static int estimateElementsSize(final Transaction tx) {
+        if (!GaService.IS_ELEMENTS)
+            return 0;
+
+        final int sjSize = Wally.asset_surjectionproof_size(tx.getInputs().size());
+        final int cmtSize = Wally.EC_PUBLIC_KEY_LEN;
+        // Estimate the rangeproof len as 160 bytes per 2 bits used to express the
+        // output value (currently 32), plus fixed overhead of 128 (this is a slight
+        // over-estimate given that only up to +100 has been seen in the wild).
+        // FIXME: This assumes 32 bit maximum amounts as per current wally impl.
+        final int rpSize = ((32 / 2) * 160) + 128;
+        final int singleOutputSize = sjSize + VarInt.sizeOf(sjSize) +
+                                     cmtSize + VarInt.sizeOf(cmtSize) +
+                                     rpSize + VarInt.sizeOf(rpSize);
+        return singleOutputSize * tx.getOutputs().size();
+    }
+
+    // Calculate the fee that must be paid for a tx
     public static Coin getTxFee(final GaService service, final Transaction tx, final Coin feeRate) {
         final Coin minRate = service.getMinFeeRate();
         final Coin rate = feeRate.isLessThan(minRate) ? minRate : feeRate;
         final int vSize;
-        if (!service.isSegwitEnabled())
+
+        if (!GaService.IS_ELEMENTS && !service.isSegwitEnabled())
             vSize = tx.unsafeBitcoinSerialize().length;
         else {
             /* For segwit, the fee is based on the weighted size of the tx */
             tx.transactionOptions = TransactionOptions.NONE;
             final int nonSwSize = tx.unsafeBitcoinSerialize().length;
             tx.transactionOptions = TransactionOptions.ALL;
-            final int fullSize = tx.unsafeBitcoinSerialize().length;
-            // FIXME: Cores segwit for developers doc says to round this value up
-            vSize = (nonSwSize * 3 + fullSize) / 4;
+            final int swSize = tx.unsafeBitcoinSerialize().length;
+            final int fullSize = swSize + estimateElementsSize(tx);
+            vSize = (int) Math.ceil((double) (nonSwSize * 3 + fullSize) / 4.0);
         }
-        return Coin.valueOf(vSize * rate.value / 1000);
+        final double fee = (double) vSize * rate.value / 1000.0;
+        return Coin.valueOf((long) Math.ceil(fee));
     }
 
     // Swap the change and recipient output in a tx with 50% probability */

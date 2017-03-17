@@ -16,18 +16,21 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 import android.util.SparseArray;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.UnsignedLongs;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.ElementsRegTestParams;
 import com.greenaddress.greenapi.HDClientKey;
@@ -141,6 +144,9 @@ public class GaService extends Service implements INotificationHandler {
     private final GaObservable mTwoFactorConfigObservable = new GaObservable();
     private String mDeviceId;
     private boolean mUserCancelledPINEntry;
+    public byte[] mAssetId;
+    private String mAssetSymbol;
+    private MonetaryFormat mAssetFormat;
 
     private final SPV mSPV = new SPV(this);
 
@@ -236,7 +242,10 @@ public class GaService extends Service implements INotificationHandler {
 
     public static boolean isValidAddress(final String address) {
         try {
-            Address.fromBase58(Network.NETWORK, address);
+            if (IS_ELEMENTS)
+                ConfidentialAddress.fromBase58(Network.NETWORK, address);
+            else
+                Address.fromBase58(Network.NETWORK, address);
             return true;
         } catch (final AddressFormatException e) {
             return false;
@@ -470,12 +479,38 @@ public class GaService extends Service implements INotificationHandler {
         HDKey.resetCache(loginData.mGaitPath);
 
         mBalanceObservables.put(0, new GaObservable());
-        updateBalance(0, loginData.mRawData);
-        for (final Map<String, Object> data : mSubAccounts) {
-            final int pointer = ((Integer) data.get("pointer"));
-            mBalanceObservables.put(pointer, new GaObservable());
-            updateBalance(pointer, data);
+        if (IS_ELEMENTS) {
+            // ignore login data from elements since it doesn't include confidential values
+            updateBalance(0);
+            for (final Map<String, Object> data : mSubAccounts)
+                updateBalance((Integer) data.get("pointer"));
+            // fetch the asset id and symbol for elements:
+            int maxId = 0;
+            final Map<String, Integer> assetIds =  (Map<String, Integer>) loginData.mRawData.get("asset_ids");
+            final Map<String, String> assetSymbols = (Map<String, String>) loginData.mRawData.get("asset_symbols");
+            for (final String assetIdHex : assetIds.keySet()) {
+                // find largest asset id that has a symbol set:
+                if (assetIds.get(assetIdHex) > maxId && assetSymbols.get(assetIdHex) != null) {
+                    maxId = assetIds.get(assetIdHex);
+                    mAssetId = Wally.hex_to_bytes(assetIdHex);
+                }
+            }
+            mAssetSymbol = assetSymbols.get(
+                    Wally.hex_from_bytes(mAssetId)
+            );
+            int decimalPlaces = ((Map<String, Integer>) loginData.mRawData.get("asset_decimal_places")).get(
+                    Wally.hex_from_bytes(mAssetId)
+            );
+            mAssetFormat = new MonetaryFormat().shift(8 - decimalPlaces).minDecimals(decimalPlaces).noCode();
+        } else {
+            updateBalance(0, loginData.mRawData);
+            for (final Map<String, Object> data : mSubAccounts) {
+                final int pointer = ((Integer) data.get("pointer"));
+                mBalanceObservables.put(pointer, new GaObservable());
+                updateBalance(pointer, data);
+            }
         }
+
         if (!isWatchOnly()) {
             getAvailableTwoFactorMethods();
             mSPV.startAsync();
@@ -602,7 +637,40 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<Map<String, Object>> getSubaccountBalance(final int subAccount) {
+        if (IS_ELEMENTS)
+            return getBalanceFromUtxo(subAccount);
         return mClient.getSubaccountBalance(subAccount);
+    }
+
+    private ListenableFuture<Map<String,Object>> getBalanceFromUtxo(int subAccount) {
+        return Futures.transform(mClient.getAllUnspentOutputs(0, subAccount), new Function<ArrayList, Map<String, Object>>() {
+            @Override
+            public Map<String, Object> apply(final ArrayList utxos) {
+                Map <String, Object> res = new HashMap<String, Object>();
+                res.put("fiat_currency", "?");
+                res.put("fiat_exchange", "1");
+                res.put("fiat_value", "0");
+
+                BigInteger finalValue = BigInteger.ZERO;
+                Pair<Long, List<byte[]>> unblinded;
+
+                for (final JSONMap utxo : JSONMap.fromList(utxos)) {
+                    if (utxo.get("value") != null) {
+                        finalValue = finalValue.add(utxo.getBigInteger("value"));
+                        continue;
+                    }
+
+                    unblinded = unblindValue(utxo);
+                    if (Arrays.equals(mAssetId, unblinded.second.get(0))) {
+                        final String v = UnsignedLongs.toString(unblinded.first);
+                        finalValue = finalValue.add(new BigInteger(v));
+                    }
+                }
+
+                res.put("satoshi", String.valueOf(finalValue));
+                return res;
+            }
+        });
     }
 
     public void fireBalanceChanged(final int subAccount) {
@@ -624,12 +692,44 @@ public class GaService extends Service implements INotificationHandler {
         });
     }
 
+    private Pair<Long, List<byte[]>> unblindValue(final byte[] rangeProof, final byte[] commitment,
+                                                  final byte[] nonceCommitment, final byte[] assetTag,
+                                                  final byte[] blindingPrivkey) {
+        final List<byte[]> retvals = new ArrayList<>();
+        return new Pair<>(Wally.asset_unblind(nonceCommitment, blindingPrivkey,
+                                              rangeProof, commitment, assetTag,
+                                              retvals), retvals);
+    }
+
+    public Pair<Long, List<byte[]>> unblindValue(final JSONMap ep) {
+        return unblindValue(ep.getBytes("range_proof"), ep.getBytes("commitment"),
+                            ep.getBytes("nonce_commitment"), ep.getBytes("asset_tag"),
+                            getBlindingPrivKey(ep));
+    }
+
+    private void unblindOutputs(final List<?> transactions) {
+        Pair<Long, List<byte[]>> unblinded;
+
+        for (Map<?, ?> tx : (List<Map<?, ?>>) transactions) {
+            for (final JSONMap ep : JSONMap.fromList((List) tx.get("eps"))) {
+                if (ep.get("commitment") == null)
+                    continue;
+
+                unblinded = unblindValue(ep);
+                ep.mData.put("value", UnsignedLongs.toString(unblinded.first));
+                if (!Arrays.equals(mAssetId, unblinded.second.get(0)))
+                    ep.mData.put("is_relevant", false);
+            }
+        }
+    }
+
     public ListenableFuture<Map<?, ?>> getMyTransactions(final int subAccount) {
         return mExecutor.submit(new Callable<Map<?, ?>>() {
             @Override
             public Map<?, ?> call() throws Exception {
                 final Map<?, ?> result = mClient.getMyTransactions(subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
+                unblindOutputs((List<?>) (result.get("list")));
                 return result;
             }
         });
@@ -866,13 +966,38 @@ public class GaService extends Service implements INotificationHandler {
                     public QrBitmap apply(final Boolean isValid) {
                         if (!isValid)
                             throw new IllegalArgumentException("Address validation failed");
-                        final String address = Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
+
+                        final String address;
+                        if (IS_ELEMENTS) {
+                            final byte[] pubKey = getBlindingPubKey(subAccount, pointer);
+                            address = ConfidentialAddress.fromP2SHHash(Network.NETWORK, scriptHash, pubKey).toString();
+                        } else
+                            address = Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
+
                         return new QrBitmap(address, 0 /* transparent background */);
                     }
                 });
             }
         };
         return Futures.transform(addrFn, verifyAddress, mExecutor);
+    }
+
+    public byte[] getBlindingPubKey(final int subAccount, final int pointer) {
+        return Wally.ec_public_key_from_private_key(getBlindingPrivKey(subAccount, pointer));
+    }
+
+    private byte[] getBlindingPrivKey(final int subAccount, final int pointer) {
+        final byte[] privKey = new byte[32];
+        // TODO derive real blinding key
+        for (int i = 0; i < 32; ++i)
+            privKey[i] = 1;
+        return privKey;
+    }
+
+    // Fetch a blinding key from a utxo (or endpoint)
+    private byte[] getBlindingPrivKey(final JSONMap utxo) {
+        return getBlindingPrivKey(utxo.getInt("subaccount", 0),
+                                  utxo.getInt(utxo.getKey("pubkey_pointer", "pointer")));
     }
 
     public ListenableFuture<List<List<String>>> getCurrencyExchangePairs() {
@@ -984,6 +1109,14 @@ public class GaService extends Service implements INotificationHandler {
         return mFiatCurrency;
     }
 
+    public String getAssetSymbol() {
+        return mAssetSymbol;
+    }
+
+    public MonetaryFormat getAssetFormat() {
+        return mAssetFormat;
+    }
+
     public String getFiatExchange() {
         return mFiatExchange;
     }
@@ -1052,14 +1185,12 @@ public class GaService extends Service implements INotificationHandler {
         });
     }
 
-    public ListenableFuture<Boolean> disableTwoFac(final String type, final Map<String, String> twoFacData) {
-        return Futures.transform(mClient.disableTwoFac(type, twoFacData), new Function<Boolean, Boolean>() {
-            @Override
-            public Boolean apply(final Boolean input) {
-                getAvailableTwoFactorMethods();
-                return input;
-            }
-        });
+    public Boolean disableTwoFactor(final String type, final Map<String, String> twoFacData) throws Exception {
+        if (!mClient.disableTwoFactor(type, twoFacData))
+            return false;
+        mTwoFactorConfig = mClient.getTwoFactorConfigSync();
+        mTwoFactorConfigObservable.doNotify();
+        return true;
     }
 
     public void changeTxLimits(final long newValue, final Map<String, String> twoFacData) throws Exception {

@@ -32,7 +32,12 @@ public class ElementsRegTestParams extends TestNet3Params {
         port = 9042;
         addressHeader = 235;
         p2shHeader = 40;
+        p2wshHeader = -1; // not supported, changed from 40 to avoid conflict with p2sh
         acceptableAddressCodes = new int[] { addressHeader, p2shHeader };
+    }
+
+    public BitcoinSerializer getSerializer(final boolean parseRetain) {
+        return new ElementsSerializer(this, parseRetain);
     }
 
     public static synchronized ElementsRegTestParams get() {

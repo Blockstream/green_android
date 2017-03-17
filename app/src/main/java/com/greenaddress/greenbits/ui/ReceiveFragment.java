@@ -22,7 +22,9 @@ import android.widget.TextView;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.Network;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
 import java.util.concurrent.Callable;
@@ -283,8 +285,25 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mAddressImage.setImageDrawable(bd);
 
         final String qrData = result.getData();
-        mAddressText.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12),
-                             qrData.substring(12, 24), qrData.substring(24)));
+        if (GaService.IS_ELEMENTS) {
+            mAddressText.setText(String.format("%s\n" +
+                            "%s\n%s\n" +
+                            "%s\n%s\n" +
+                            "%s\n%s",
+                    qrData.substring(0, 12),
+                    qrData.substring(12, 24),
+                    qrData.substring(24, 36),
+                    qrData.substring(36, 48),
+                    qrData.substring(48, 60),
+                    qrData.substring(60, 72),
+                    qrData.substring(72)
+            ));
+            mAddressText.setLines(7);
+            mAddressText.setMaxLines(7);
+        } else {
+            mAddressText.setText(String.format("%s\n%s\n%s", qrData.substring(0, 12),
+                    qrData.substring(12, 24), qrData.substring(24)));
+        }
         mCurrentAddress = result.getData();
 
         mAddressImage.setOnClickListener(new View.OnClickListener() {
@@ -320,8 +339,12 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private String getAddressUri() {
-        final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
-        return BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);
+        final String addr;
+        if (GaService.IS_ELEMENTS)
+            addr = ConfidentialAddress.fromBase58(Network.NETWORK, mCurrentAddress).toString();
+        else
+            addr = Address.fromBase58(Network.NETWORK, mCurrentAddress).toString();
+        return BitcoinURI.convertToBitcoinURI(Network.NETWORK, addr, mCurrentAmount, null, null);
     }
 
     @Override
