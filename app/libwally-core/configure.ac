@@ -157,6 +157,7 @@ AX_PTHREAD([ac_have_pthread=yes], [ac_have_pthread=no])
 AM_CONDITIONAL([USE_PTHREAD], [test "x$ac_have_pthread" == "xyes"])
 if test "x$ac_have_pthread" == "xyes"; then
     AC_DEFINE([HAVE_PTHREAD], 1, [Define if we have pthread support])
+    AC_CHECK_HEADERS([asm/page.h])
 fi
 
 #
@@ -251,6 +252,11 @@ JAVAC_TARGET=1.7
 AC_SUBST([JAVAC_TARGET])
 
 AC_SUBST([AM_CFLAGS])
+
+if test "x$enable_static" == "xyes"; then
+    CTEST_EXTRA_STATIC='$(libwallycore_la_LIBADD)'
+fi
+AC_SUBST([CTEST_EXTRA_STATIC])
 
 AC_CONFIG_FILES([
  Makefile

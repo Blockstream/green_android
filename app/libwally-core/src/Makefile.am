@@ -122,7 +122,7 @@ noinst_PROGRAMS = test_clear
 test_clear_SOURCES = ctest/test_clear.c
 test_clear_CFLAGS = -I$(top_srcdir)/include $(PTHREAD_CFLAGS) $(AM_CFLAGS)
 test_clear_LIBS = $(PTHREAD_LIBS)
-test_clear_LDADD = $(lib_LTLIBRARIES)
+test_clear_LDADD = $(lib_LTLIBRARIES) @CTEST_EXTRA_STATIC@
 endif
 
 check-local: $(SWIG_PYTHON_TEST_DEPS) $(SWIG_JAVA_TEST_DEPS)
@@ -141,6 +141,7 @@ if RUN_PYTHON_TESTS
 	$(AM_V_at)$(PYTHON_TEST) test/test_sign.py
 	$(AM_V_at)$(PYTHON_TEST) test/test_wordlist.py
 if USE_SWIG_PYTHON
+	$(AM_V_at)$(PYTHON_SWIGTEST) swig_python/contrib/bip32.py
 	$(AM_V_at)$(PYTHON_SWIGTEST) swig_python/contrib/mnemonic.py
 endif
 endif # RUN_PYTHON_TESTS
