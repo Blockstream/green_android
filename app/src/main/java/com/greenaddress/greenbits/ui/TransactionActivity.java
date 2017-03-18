@@ -226,7 +226,7 @@ public class TransactionActivity extends GaActivity {
         final Map<String, Object> feeEstimates = mService.getFeeEstimates();
         int currentEstimate = 25;
         for (final String atBlock : FEE_BLOCK_NUMBERS)
-            if (feePerKb.compareTo(getFeeEstimate(feeEstimates, atBlock)) >= 0) {
+            if (!feePerKb.isLessThan(getFeeEstimate(feeEstimates, atBlock))) {
                 currentEstimate = (Integer) ((Map) feeEstimates.get(atBlock)).get("blocks");
                 break;
             }
@@ -412,7 +412,7 @@ public class TransactionActivity extends GaActivity {
                     change_pointer = ep.getInt("pubkey_pointer");
                 // change/redeposit
                 final Coin value = ep.getCoin("value");
-                if (value.compareTo(remainingFeeDelta) <= 0) {
+                if (!value.isGreaterThan(remainingFeeDelta)) {
                     // smaller than remaining fee -- get rid of this output
                     remainingFeeDelta = remainingFeeDelta.subtract(value);
                 } else {
@@ -425,7 +425,7 @@ public class TransactionActivity extends GaActivity {
             }
         }
 
-        if (remainingFeeDelta.compareTo(Coin.ZERO) <= 0) {
+        if (!remainingFeeDelta.isGreaterThan(Coin.ZERO)) {
             doReplaceByFee(txItem, feerate, tx, tx_eps, change_pointer, subAccount, oldFee, null, level);
             return;
         }
@@ -441,7 +441,7 @@ public class TransactionActivity extends GaActivity {
                 for (final JSONMap utxo : JSONMap.fromList(result)) {
                     remaining = remaining.subtract(utxo.getCoin("value"));
                     moreInputs.add(utxo);
-                    if (remaining.compareTo(Coin.ZERO) <= 0)
+                    if (!remaining.isGreaterThan(Coin.ZERO))
                         break;
                 }
 
@@ -520,14 +520,15 @@ public class TransactionActivity extends GaActivity {
         // verify if the increased fee is enough to achieve wanted feerate
         // (can be too small in case of added inputs)
         final int estimatedSize = tx.getMessageSize() + tx.getInputs().size() * 4;
-        if (feerate.multiply(estimatedSize).divide(1000).compareTo(tx.getFee()) > 0) {
+        if (feerate.multiply(estimatedSize).divide(1000).isGreaterThan(tx.getFee())) {
             replaceByFee(txItem, feerate, estimatedSize, level + 1);
             return;
         }
 
         // also verify if it's enough for 'bandwidth fee increment' condition
         // of RBF
-        if (tx.getFee().subtract(oldFee).compareTo(Coin.valueOf(tx.getMessageSize() + tx.getInputs().size() * 4)) < 0) {
+        final Coin bandwidthAdjustedFee = Coin.valueOf(tx.getMessageSize() + tx.getInputs().size() * 4);
+        if (tx.getFee().subtract(oldFee).isLessThan(bandwidthAdjustedFee)) {
             replaceByFee(txItem, feerate, estimatedSize, level + 1);
             return;
         }
