@@ -13,11 +13,8 @@ public abstract class HWWallet extends ISigningWallet {
     public boolean requiresPrevoutRawTxs() { return true; }
 
     @Override
-    public DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
-        DeterministicKey k = getMyKey(subAccount).getPubKey();
-        // Currently only regular transactions are supported
-        k = HDKey.deriveChildKey(k, HDKey.BRANCH_REGULAR);
-        return HDKey.deriveChildKey(k, pointer);
+    public DeterministicKey getSubAccountPublicKey(final int subAccount) {
+        return getMyKey(subAccount).getPubKey();
     }
 
     @Override

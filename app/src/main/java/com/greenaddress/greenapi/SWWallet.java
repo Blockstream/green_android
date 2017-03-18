@@ -37,11 +37,9 @@ public class SWWallet extends ISigningWallet {
     }
 
     @Override
-    public DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
+    public DeterministicKey getSubAccountPublicKey(final int subAccount) {
         DeterministicKey k = getMyKey(subAccount).mRootKey;
-        // Currently only regular transactions are supported
-        k = HDKey.deriveChildKey(k, HDKey.BRANCH_REGULAR);
-        return HDKey.deriveChildKey(k, pointer);
+        return k;
     }
 
     @Override

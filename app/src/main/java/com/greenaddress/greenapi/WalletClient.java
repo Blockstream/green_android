@@ -401,6 +401,8 @@ public class WalletClient {
         mHDParent = wallet;
         mWatchOnlyUsername = username;
         mWatchOnlyPassword = password;
+        if (mHDParent != null)
+            HDClientKey.resetCache(mLoginData.mSubAccounts, mHDParent);
 
         final boolean rbf = mLoginData.get("rbf");
         if (rbf && getUserConfig("replace_by_fee") == null) {

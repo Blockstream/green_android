@@ -12,7 +12,7 @@ public abstract class ISigningWallet {
 
     public abstract boolean requiresPrevoutRawTxs(); // FIXME: Get rid of this
 
-    public abstract DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer);
+    public abstract DeterministicKey getSubAccountPublicKey(final int subAccount);
     public abstract List<byte[]> signTransaction(PreparedTransaction ptx);
     public abstract List<byte[]> signTransaction(final Transaction tx, final PreparedTransaction ptx, final List<Output> prevOuts);
 

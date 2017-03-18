@@ -30,6 +30,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.ElementsRegTestParams;
+import com.greenaddress.greenapi.HDClientKey;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.INotificationHandler;
 import com.greenaddress.greenapi.ISigningWallet;
@@ -352,6 +353,7 @@ public class GaService extends Service implements INotificationHandler {
     @Override
     public void onConnectionClosed(final int code) {
         HDKey.resetCache(null);
+        HDClientKey.resetCache(null, null);
 
         // Server error codes FIXME: These should be in a class somewhere
         // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
@@ -375,7 +377,7 @@ public class GaService extends Service implements INotificationHandler {
     public byte[] createOutScript(final int subAccount, final Integer pointer) {
         final List<ECKey> pubkeys = new ArrayList<>();
         pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
-        pubkeys.add(mClient.getSigningWallet().getMyPublicKey(subAccount, pointer));
+        pubkeys.add(HDClientKey.getMyPublicKey(subAccount, pointer));
 
         final Map<String, ?> m = findSubaccountByType(subAccount, "2of3");
         if (m != null)
