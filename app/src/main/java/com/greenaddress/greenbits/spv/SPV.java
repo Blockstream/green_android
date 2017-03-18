@@ -468,7 +468,7 @@ public class SPV {
         return Futures.transform(changeFn, new Function<List<Boolean>, Coin>() {
             @Override
             public Coin apply(final List<Boolean> input) {
-                return Verifier.verify(mCountedUtxoValues, ptx, recipientAddr, amount, input);
+                return Verifier.verify(mService, mCountedUtxoValues, ptx, recipientAddr, amount, input);
             }
         });
     }

@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.spv;
 
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
+import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
@@ -15,7 +16,15 @@ import java.util.List;
 import java.util.Map;
 
 class Verifier {
-    static Coin verify(final Map<TransactionOutPoint, Coin> countedUtxoValues, final PreparedTransaction ptx,
+    private static Coin feeError(final String smallLarge, final Coin fee, final Coin limit) {
+            final String msg = "Verification: Fee is too " + smallLarge + " (" +
+                               fee.toFriendlyString() + " vs limit " +
+                               limit.toFriendlyString() + ')';
+            throw new IllegalArgumentException(msg);
+    }
+
+    static Coin verify(final GaService service,
+                       final Map<TransactionOutPoint, Coin> countedUtxoValues, final PreparedTransaction ptx,
                        final Address recipient, final Coin amount, final List<Boolean> input) {
         int changeIdx;
         if (input == null)
@@ -59,15 +68,15 @@ class Verifier {
             outValue = outValue.add(out.getValue());
 
         final Coin fee = inValue.subtract(outValue);
-        if (fee.compareTo(Coin.valueOf(1000)) == -1 && Network.NETWORK != RegTestParams.get())
-            throw new IllegalArgumentException("Verification: Fee is too small (expected at least 1000 satoshi). Fee is: " + fee.toFriendlyString());
+        final Coin minFee = service.getMinFee();
+        if (fee.isLessThan(minFee) && Network.NETWORK != RegTestParams.get())
+            feeError("small", fee, minFee);
 
         final int kBfee = (int) (15000000.0 * ((double) ptx.mDecoded.getMessageSize()) / 1000.0);
-        if (fee.compareTo(Coin.valueOf(kBfee)) == 1)
-            throw new IllegalArgumentException("Verification: Fee is too large (expected at most 15000000 satoshi per kB). Fee is: " + fee.toFriendlyString());
+        final Coin maxFee = Coin.valueOf(kBfee);
+        if (fee.isGreaterThan(maxFee))
+            feeError("large", fee, maxFee);
 
-        if (amount == null)
-            return output.getValue();
-        return fee;
+        return amount == null ? output.getValue() : fee;
     }
 }
