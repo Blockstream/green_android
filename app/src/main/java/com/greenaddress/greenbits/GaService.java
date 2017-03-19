@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -756,14 +757,73 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getNewAddress(subAccount, userSegwit ? "p2wsh" : "p2sh");
     }
 
-    public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {
-        final ListenableFuture<JSONMap> addrFn = mExecutor.submit(new Callable<JSONMap>() {
+    private void storeCachedAddress(final int subAccount, final byte[] salt, final byte[] encryptedAddress) {
+        final String configKey = "next_addr_" + subAccount;
+        cfgInEdit(configKey).putString("salt", Wally.hex_from_bytes(salt))
+                            .putString("encrypted", Wally.hex_from_bytes(encryptedAddress))
+                            .apply();
+    }
+
+    private void cacheAddress(final int subAccount, final JSONMap address) {
+        final byte[] password = getSigningWallet().getLocalEncryptionPassword();
+        final byte[] salt = CryptoHelper.randomBytes(16);
+        storeCachedAddress(subAccount, salt, CryptoHelper.encryptJSON(address, password, salt));
+    }
+
+    private void uncacheAddress(final int subAccount) {
+        storeCachedAddress(subAccount, new byte[] { 0 }, new byte[] { 0 });
+    }
+
+    private JSONMap getCachedAddress(final int subAccount) {
+        if (isWatchOnly())
+            return null;
+
+        final String configKey = "next_addr_" + subAccount;
+        final String saltHex = cfgIn(configKey).getString("salt", null);
+        if (saltHex == null || saltHex.length() != 32)
+            return null;
+        final String encryptedAddressHex = cfgIn(configKey).getString("encrypted", null);
+        JSONMap json;
+        try {
+            json = CryptoHelper.decryptJSON(Wally.hex_to_bytes(encryptedAddressHex),
+                                            getSigningWallet().getLocalEncryptionPassword(),
+                                            Wally.hex_to_bytes(saltHex));
+        } catch(final RuntimeException e) {
+            e.printStackTrace();
+            json = null;
+        }
+        uncacheAddress(subAccount);
+        return json;
+     }
+
+    private ListenableFuture<JSONMap> getNewAddressAsync(final int subAccount, final boolean cacheResult) {
+        return mExecutor.submit(new Callable<JSONMap>() {
             @Override
             public JSONMap call() throws Exception {
-                return getNewAddress(subAccount);
+                final JSONMap address = getNewAddress(subAccount);
+                if (cacheResult)
+                    cacheAddress(subAccount, address);
+                return address;
             }
         });
+    }
 
+    public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {
+        // Fetch any cached address
+        final JSONMap cachedAddress = getCachedAddress(subAccount);
+
+        // Use either the cached address or a new address
+        final ListenableFuture<JSONMap> addrFn;
+        if (cachedAddress != null)
+            addrFn = Futures.immediateFuture(cachedAddress);
+        else
+            addrFn = getNewAddressAsync(subAccount, false);
+
+        // Fetch and cache another address in the background
+        if (!isWatchOnly())
+            getNewAddressAsync(subAccount, true);
+
+        // Convert the address into a bitmap and return it
         final AsyncFunction<JSONMap, QrBitmap> verifyAddress = new AsyncFunction<JSONMap, QrBitmap>() {
             @Override
             public ListenableFuture<QrBitmap> apply(final JSONMap input) throws Exception {
