@@ -52,6 +52,11 @@ public abstract class HWWallet extends ISigningWallet {
         return parent;
     }
 
+    public byte[] getLocalEncryptionPassword() {
+        final byte[] pubkey = this.derive(PASSWORD_PATH).getPubKey().getPubKey();
+        return CryptoHelper.pbkdf2_hmac_sha512(pubkey, PASSWORD_SALT);
+    }
+
     protected Object[] getChallengeArguments(final boolean isTrezor) {
         final byte[] id = getPubKey().toAddress(Network.NETWORK).getHash160();
         final Address addr = new Address(Network.NETWORK, id);
