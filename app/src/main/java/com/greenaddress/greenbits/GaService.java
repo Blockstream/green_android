@@ -788,7 +788,10 @@ public class GaService extends Service implements INotificationHandler {
             json = CryptoHelper.decryptJSON(Wally.hex_to_bytes(encryptedAddressHex),
                                             getSigningWallet().getLocalEncryptionPassword(),
                                             Wally.hex_to_bytes(saltHex));
-        } catch(final RuntimeException e) {
+            final String expectedType = isSegwitEnabled() ? "p2wsh" : "p2sh";
+            if (!json.getString("addr_type").equals(expectedType))
+                json = null; // User has enabled SW, cached address is non-SW
+        } catch (final RuntimeException e) {
             e.printStackTrace();
             json = null;
         }
