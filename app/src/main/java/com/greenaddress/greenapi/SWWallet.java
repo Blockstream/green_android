@@ -38,8 +38,7 @@ public class SWWallet extends ISigningWallet {
 
     @Override
     public DeterministicKey getSubAccountPublicKey(final int subAccount) {
-        DeterministicKey k = getMyKey(subAccount).mRootKey;
-        return k;
+        return getMyKey(subAccount).mRootKey;
     }
 
     @Override
@@ -115,6 +114,11 @@ public class SWWallet extends ISigningWallet {
             parent = parent.derive(ISigningWallet.HARDENED | 3)
                            .derive(ISigningWallet.HARDENED | subAccount);
         return parent;
+    }
+
+    public byte[] getLocalEncryptionPassword() {
+        final byte[] pubkey = this.derive(PASSWORD_PATH).mRootKey.getPubKey();
+        return CryptoHelper.pbkdf2_hmac_sha512(pubkey, PASSWORD_SALT);
     }
 
     private int u8(final int i) { return i < 0 ? 256 + i : i; }
