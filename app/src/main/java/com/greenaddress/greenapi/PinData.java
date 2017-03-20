@@ -33,14 +33,15 @@ public class PinData {
 
     public static PinData fromMnemonic(final String pinIdentifier, final String mnemonic, final byte[] password) {
 
-        final byte[] salt = Base64.encode(CryptoHelper.randomBytes(16), Base64.NO_WRAP);
+        final byte[] salt = CryptoHelper.randomBytes(16);
         final byte[] seed = CryptoHelper.mnemonic_to_seed(mnemonic);
 
         final Map<String, Object> json = new HashMap<>();
         json.put("mnemonic", mnemonic);
         json.put("seed", Wally.hex_from_bytes(seed));
 
-        final byte[] encryptedJSON = CryptoHelper.encryptJSON(new JSONMap(json), password, salt);
+        final byte[] encryptedJSON = CryptoHelper.encryptJSON(new JSONMap(json), password,
+                                                              Base64.encode(salt, Base64.NO_WRAP));
 
         return new PinData(pinIdentifier, salt, encryptedJSON, seed, mnemonic);
     }
