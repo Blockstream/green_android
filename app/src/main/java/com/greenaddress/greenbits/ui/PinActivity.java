@@ -117,6 +117,7 @@ public class PinActivity extends LoginActivity implements Observer {
                 final SharedPreferences prefs = mService.cfg("pin");
                 final int counter = prefs.getInt("counter", 0) + 1;
 
+                final Throwable error;
                 if (t instanceof GAException ||
                     Throwables.getRootCause(t) instanceof LoginFailed) {
                     final SharedPreferences.Editor editor = prefs.edit();
@@ -128,13 +129,19 @@ public class PinActivity extends LoginActivity implements Observer {
                         editor.clear();
                     }
                     editor.apply();
+                    error = null;
                 }
-                else
-                    message = t.getMessage();
+                else {
+                    error = t;
+                    message = null;
+                }
 
                 PinActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        PinActivity.this.toast(message);
+                        if (error != null)
+                            PinActivity.this.toast(error);
+                        else
+                            PinActivity.this.toast(message);
 
                         if (counter >= 3) {
                             startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
