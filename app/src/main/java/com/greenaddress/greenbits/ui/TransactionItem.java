@@ -27,6 +27,7 @@ public class TransactionItem implements Serializable {
     public final long amount;
     public final String counterparty;
     public final String receivedOn;
+    public final boolean instant;
     public final boolean replaceable;
     public final Sha256Hash txHash;
     public final String doubleSpentBy;
@@ -57,7 +58,9 @@ public class TransactionItem implements Serializable {
     public TransactionItem(final GaService service, final Map<String, Object> txJSON, final int currentBlock) throws ParseException {
         final JSONMap m = new JSONMap(txJSON);
 
-        replaceable = !GaService.IS_ELEMENTS && m.getBool("rbf_optin");
+        instant = m.getBool("instant");
+        // FIXME: Implement RBF for instant transactions
+        replaceable = !GaService.IS_ELEMENTS && !instant && m.getBool("rbf_optin");
         doubleSpentBy = m.get("double_spent_by");
 
         this.currentBlock = currentBlock;
