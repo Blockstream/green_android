@@ -160,9 +160,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void setBlockWaitDialog(final boolean doBlock) {
-        final SectionsPagerAdapter adapter;
-        adapter = (SectionsPagerAdapter) mViewPager.getAdapter();
-        adapter.setBlockWaitDialog(doBlock);
+        getPagerAdapter().setBlockWaitDialog(doBlock);
     }
 
     private void configureSubaccountsFooter(final int subAccount) {
@@ -327,7 +325,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             return;
         }
 
-        setMenuItemVisible(mMenu, R.id.action_share, !mService.isLoggedIn());
+        final SectionsPagerAdapter adapter = getPagerAdapter();
+        setMenuItemVisible(mMenu, R.id.action_share,
+                           adapter != null && adapter.mSelectedPage == 0);
      }
 
     @Override
@@ -538,6 +538,9 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 return true;
             case R.id.network_unavailable:
                 return true;
+            case R.id.action_share:
+                getPagerAdapter().onOptionsItemSelected(item);
+                return true;
             case R.id.action_logout:
                 mService.disconnect(false);
                 finish();
@@ -548,7 +551,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             case R.id.action_about:
                 startActivity(new Intent(caller, AboutActivity.class));
                 return true;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -588,13 +590,17 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                        R.string.err_qrscan_requires_camera_permissions);
     }
 
+    SectionsPagerAdapter getPagerAdapter() {
+        return (SectionsPagerAdapter) mViewPager.getAdapter();
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         private final SubaccountFragment[] mFragments = new SubaccountFragment[3];
-        private int mSelectedPage = -1;
+        public int mSelectedPage = -1;
         private int mInitialSelectedPage = -1;
         private boolean mInitialPage = true;
 
@@ -678,12 +684,20 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             mSelectedPage = index;
             if (mFragments[mSelectedPage] != null)
                 mFragments[mSelectedPage].setPageSelected(true);
+
+            setMenuItemVisible(mMenu, R.id.action_share, mSelectedPage == 0);
         }
 
         public void setBlockWaitDialog(final boolean doBlock) {
             for (final SubaccountFragment fragment : mFragments)
                 if (fragment != null)
                     fragment.setBlockWaitDialog(doBlock);
+        }
+
+        public void onOptionsItemSelected(final MenuItem item) {
+            if (item.getItemId() == R.id.action_share)
+                if (mSelectedPage == 0 && mFragments[0] != null)
+                    mFragments[0].onShareClicked();
         }
     }
 }

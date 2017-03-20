@@ -11,6 +11,14 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/ic_action_share"
+        android:orderInCategory="90"
+        android:title="Share"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="30"
         android:title="@string/action_settings"

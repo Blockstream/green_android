@@ -13,9 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -311,13 +308,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate -> " + TAG);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.receive, menu);
     }
 
     @Override
@@ -335,21 +325,15 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public void onShareClicked() {
+        if (mQrCodeBitmap == null || mQrCodeBitmap.getData().isEmpty())
+            return;
 
-        if (item.getItemId() == R.id.action_share) {
-            if (mQrCodeBitmap != null && !mQrCodeBitmap.getData().isEmpty()) {
-                // SHARE intent
-                final Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_TEXT, getAddressUri());
-                intent.setType("text/plain");
-                startActivity(intent);
-            }
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        final Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, getAddressUri());
+        intent.setType("text/plain");
+        startActivity(intent);
     }
 
     public void setPageSelected(final boolean isSelected) {
