@@ -808,7 +808,8 @@ public class GaService extends Service implements INotificationHandler {
         });
     }
 
-    public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount) {
+    public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount,
+                                                          final Callable<Void> waitFn) {
         // Fetch any cached address
         final JSONMap cachedAddress = getCachedAddress(subAccount);
 
@@ -816,8 +817,13 @@ public class GaService extends Service implements INotificationHandler {
         final ListenableFuture<JSONMap> addrFn;
         if (cachedAddress != null)
             addrFn = Futures.immediateFuture(cachedAddress);
-        else
+        else {
+            try {
+                waitFn.call();
+            } catch (final Exception e) {
+            }
             addrFn = getNewAddressAsync(subAccount, false);
+        }
 
         // Fetch and cache another address in the background
         if (!isWatchOnly())

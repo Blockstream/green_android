@@ -28,6 +28,8 @@ import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.QrBitmap;
 
+import java.util.concurrent.Callable;
+
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
@@ -85,8 +87,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         if (isZombieNoView())
             return null;
-
-        popupWaitDialog(R.string.generating_address);
 
         final GaActivity gaActivity = getGaActivity();
 
@@ -213,12 +213,20 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
         if (isZombie())
             return;
+        final GaActivity gaActivity = getGaActivity();
+
         UI.clear(mAmountEdit, mAmountFiatEdit);
         mCurrentAddress = "";
-        popupWaitDialog(R.string.generating_address);
         UI.disable(mCopyIcon);
         destroyCurrentAddress();
-        Futures.addCallback(getGAService().getNewAddressBitmap(mSubaccount),
+        Callable waitFn = new Callable<Void>() {
+            @Override
+            public Void call() {
+                popupWaitDialog(R.string.generating_address);
+                return null;
+            }
+        };
+        Futures.addCallback(getGAService().getNewAddressBitmap(mSubaccount, waitFn),
                             mNewAddressCallback, getGAService().getExecutor());
     }
 
