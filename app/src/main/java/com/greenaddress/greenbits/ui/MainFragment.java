@@ -143,7 +143,7 @@ public class MainFragment extends SubaccountFragment {
     @Override
     protected void onBalanceUpdated() {
         updateBalance();
-        reloadTransactions(true, false); // newAdapter for unit change
+        reloadTransactions(false, false);
     }
 
     @Override
