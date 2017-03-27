@@ -74,54 +74,60 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/mainTransactionListSwipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_below="@id/mainBalanceLayout">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mainTransactionList"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:scrollbars="vertical" />
+            android:orientation="vertical">
 
-        <LinearLayout
-            android:gravity="center"
-            android:id="@+id/mainEmptyTransText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/mainFirstParagraphText"
-                android:layout_width="fill_parent"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/mainTransactionList"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/noBalanceFirstLine"
-                android:textSize="20sp" />
+                android:scrollbars="vertical"
+                android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/mainSecondParagraphText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/noBalanceSecondLine"
-                android:textSize="20sp" />
+                android:id="@+id/mainEmptyTransText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <TextView
-                android:id="@+id/mainThirdParagraphText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/noBalanceThirdLine"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/mainFirstParagraphText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/noBalanceFirstLine"
+                    android:textSize="20sp" />
 
+                <TextView
+                    android:id="@+id/mainSecondParagraphText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/noBalanceSecondLine"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/mainThirdParagraphText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/noBalanceThirdLine"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

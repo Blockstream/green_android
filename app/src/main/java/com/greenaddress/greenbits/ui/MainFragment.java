@@ -2,6 +2,8 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
@@ -38,6 +40,7 @@ public class MainFragment extends SubaccountFragment {
     private Observer mVerifiedTxObserver;
     private Observer mNewTxObserver;
     private final Runnable mDialogCB = new Runnable() { public void run() { mUnconfirmedDialog = null; } };
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private void updateBalance() {
         Log.d(TAG, "Updating balance");
@@ -136,12 +139,24 @@ public class MainFragment extends SubaccountFragment {
             reloadTransactions(false, true);
         }
 
+        mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
+        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.accent));
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d(TAG, "onRefresh -> " + TAG);
+                // user action to force reload balance and tx list
+                onBalanceUpdated();
+            }
+        });
+
         registerReceiver();
         return mView;
     }
 
     @Override
     protected void onBalanceUpdated() {
+        Log.d(TAG, "onBalanceUpdated -> " + TAG);
         updateBalance();
         reloadTransactions(false, false);
     }
@@ -255,6 +270,8 @@ public class MainFragment extends SubaccountFragment {
 
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
+                        if (mSwipeRefreshLayout != null)
+                            mSwipeRefreshLayout.setRefreshing(false);
 
                         if (!IsPageSelected()) {
                             Log.d(TAG, "Callback after hiding, ignoring");
@@ -315,8 +332,9 @@ public class MainFragment extends SubaccountFragment {
                 t.printStackTrace();
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
-                        showTxView(false);
                         hideWaitDialog();
+                        if (mSwipeRefreshLayout != null)
+                            mSwipeRefreshLayout.setRefreshing(false);
                     }
                 });
             }
