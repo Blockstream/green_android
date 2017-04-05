@@ -135,7 +135,7 @@ public class GaService extends Service implements INotificationHandler {
     private ArrayList<Map<String, ?>> mSubAccounts;
     private String mReceivingId;
     private Coin mDustThreshold = Coin.valueOf(546); // Per 0.13.0, updated on login
-    private Coin mMinFee = Coin.valueOf(1000); // Per 0.12.0, updated on login
+    private Coin mMinFeeRate = Coin.valueOf(1000); // Per 0.12.0, updated on login
     private Map<?, ?> mTwoFactorConfig;
     private final GaObservable mTwoFactorConfigObservable = new GaObservable();
     private String mDeviceId;
@@ -462,7 +462,7 @@ public class GaService extends Service implements INotificationHandler {
         mReceivingId = loginData.get("receiving_id");
 
         if (loginData.mRawData.containsKey("min_fee"))
-            mMinFee = Coin.valueOf((long)((int) loginData.get("min_fee")));
+            mMinFeeRate = Coin.valueOf((long)((int) loginData.get("min_fee")));
         if (loginData.mRawData.containsKey("dust"))
             mDustThreshold = Coin.valueOf((long) ((int) loginData.get("dust")));
 
@@ -551,8 +551,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getFeeEstimates();
     }
 
-    public Coin getMinFee() {
-        return mMinFee;
+    public Coin getMinFeeRate() {
+        return mMinFeeRate;
     }
 
     public Coin getDustThreshold() {

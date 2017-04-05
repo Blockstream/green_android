@@ -127,6 +127,8 @@ public class GATx {
 
     /* Calculate the fee that must be paid for a tx */
     public static Coin getTxFee(final GaService service, final Transaction tx, final Coin feeRate) {
+        final Coin minRate = service.getMinFeeRate();
+        final Coin rate = feeRate.isLessThan(minRate) ? minRate : feeRate;
         final int vSize;
         if (!service.isSegwitEnabled())
             vSize = tx.unsafeBitcoinSerialize().length;
@@ -139,7 +141,7 @@ public class GATx {
             // FIXME: Cores segwit for developers doc says to round this value up
             vSize = (nonSwSize * 3 + fullSize) / 4;
         }
-        return Coin.valueOf(vSize * feeRate.value / 1000);
+        return Coin.valueOf(vSize * rate.value / 1000);
     }
 
     // Swap the change and recipient output in a tx with 50% probability */

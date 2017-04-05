@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 class Verifier {
-    private static Coin feeError(final String smallLarge, final Coin fee, final Coin limit) {
+    private static Coin feeError(final String smallLarge, final Coin feeRate, final Coin limit) {
             final String msg = "Verification: Fee is too " + smallLarge + " (" +
-                               fee.toFriendlyString() + " vs limit " +
+                               feeRate.toFriendlyString() + " vs limit " +
                                limit.toFriendlyString() + ')';
             throw new IllegalArgumentException(msg);
     }
@@ -51,31 +51,34 @@ class Verifier {
         if (amount != null && !output.getValue().equals(amount))
             throw new IllegalArgumentException("Verification: Invalid output amount.");
 
-        // 3. Verify fee value:
-        Coin inValue = Coin.ZERO, outValue = Coin.ZERO;
+        // 3. Verify fee value
+        Coin fee = Coin.ZERO;
         for (final TransactionInput in : ptx.mDecoded.getInputs()) {
             if (countedUtxoValues.get(in.getOutpoint()) != null) {
-                inValue = inValue.add(countedUtxoValues.get(in.getOutpoint()));
+                fee = fee.add(countedUtxoValues.get(in.getOutpoint()));
                 continue;
             }
 
             final Transaction prevTx = ptx.mPrevoutRawTxs.get(in.getOutpoint().getHash().toString());
             if (!prevTx.getHash().equals(in.getOutpoint().getHash()))
                 throw new IllegalArgumentException("Verification: Prev tx hash invalid");
-            inValue = inValue.add(prevTx.getOutput((int) in.getOutpoint().getIndex()).getValue());
+            fee = fee.add(prevTx.getOutput((int) in.getOutpoint().getIndex()).getValue());
         }
         for (final TransactionOutput out : ptx.mDecoded.getOutputs())
-            outValue = outValue.add(out.getValue());
+            fee = fee.subtract(out.getValue());
 
-        final Coin fee = inValue.subtract(outValue);
-        final Coin minFee = service.getMinFee();
-        if (fee.isLessThan(minFee) && Network.NETWORK != RegTestParams.get())
-            feeError("small", fee, minFee);
+        final double messageSize = (double) ptx.mDecoded.getMessageSize();
+        final double satoshiPerByte = (double) fee.value / messageSize;
+        final double satoshiPerKiloByte = satoshiPerByte * 1000.0;
+        final Coin feeRate = Coin.valueOf((int) satoshiPerKiloByte);
 
-        final int kBfee = (int) (15000000.0 * ((double) ptx.mDecoded.getMessageSize()) / 1000.0);
-        final Coin maxFee = Coin.valueOf(kBfee);
-        if (fee.isGreaterThan(maxFee))
-            feeError("large", fee, maxFee);
+        final Coin minFeeRate = service.getMinFeeRate();
+        if (feeRate.isLessThan(minFeeRate) && Network.NETWORK != RegTestParams.get())
+            feeError("small", feeRate, minFeeRate);
+
+        final Coin maxFeeRate = Coin.valueOf(15000 * 1000); // FIXME: Get max fee rate from server
+        if (feeRate.isGreaterThan(maxFeeRate))
+            feeError("large", feeRate, maxFeeRate);
 
         return amount == null ? output.getValue() : fee;
     }

@@ -461,7 +461,6 @@ public class SendFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        // final Coin fee = Coin.parseCoin("0.0001"); //FIXME: pass real fee
         final Coin verifyAmount = mMaxButton.isChecked() ? null : amount;
         CB.after(service.validateTx(ptx, recipient, verifyAmount), new CB.Toast<Coin>(gaActivity, mSendButton) {
             @Override
@@ -650,8 +649,6 @@ public class SendFragment extends SubaccountFragment {
         // Then add inputs until we cover amount + fee/change
         while (true) {
             fee = GATx.getTxFee(service, tx, feeRate);
-            if (fee.isLessThan(service.getMinFee()))
-                fee = service.getMinFee();
 
             final Coin minChange = changeOutput == null ? Coin.ZERO : service.getDustThreshold();
             final int cmp = sendAll ? 0 : total.compareTo(amount.add(fee).add(minChange));
