@@ -60,6 +60,7 @@ import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.Fiat;
+import org.bitcoinj.utils.MonetaryFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -586,7 +587,9 @@ public class GaService extends Service implements INotificationHandler {
     private void updateBalance(final int subAccount, final Map<String, ?> data) {
         final String fiatCurrency = (String) data.get("fiat_currency");
         mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) data.get("satoshi"))));
+
         mFiatRate = Float.valueOf((String) data.get("fiat_exchange"));
+
         // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
         // while the server can return more, hence toBigInteger instead here:
         final BigInteger tmpValue = new BigDecimal((String) data.get("fiat_value"))
@@ -956,8 +959,9 @@ public class GaService extends Service implements INotificationHandler {
         return mCoinBalances.get(subAccount);
     }
 
-    public Fiat getFiatBalance(final int subAccount) {
-        return mFiatBalances.get(subAccount);
+    public String getFiatBalance(final int subAccount) {
+        final Fiat balance = mFiatBalances.get(subAccount);
+        return MonetaryFormat.FIAT.minDecimals(2).noCode().format(balance).toString();
     }
 
     public float getFiatRate() {

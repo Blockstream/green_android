@@ -21,7 +21,6 @@ import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -58,10 +57,6 @@ public class MainFragment extends SubaccountFragment {
 
         final Coin verifiedBalance = service.getSPVVerifiedBalance(mSubaccount);
 
-        final String fiatBalance =
-                MonetaryFormat.FIAT.minDecimals(2).noCode().format(
-                        service.getFiatBalance(mSubaccount)).toString();
-
         // Hide balance question mark if we know our balance is verified
         // (or we are in watch only mode and so have no SPV to verify it with)
         final boolean verified = balance.equals(verifiedBalance) || !service.isSPVEnabled();
@@ -76,8 +71,7 @@ public class MainFragment extends SubaccountFragment {
         balanceText.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         balanceUnit.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 
-        UI.setAmountText(balanceFiatText, fiatBalance);
-
+        UI.setAmountText(balanceFiatText, service.getFiatBalance(mSubaccount));
         AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
 
         if (service.showBalanceInTitle())
