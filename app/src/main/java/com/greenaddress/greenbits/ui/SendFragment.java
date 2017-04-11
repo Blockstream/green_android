@@ -140,16 +140,13 @@ public class SendFragment extends SubaccountFragment {
             if (URI.getAmount() == null)
                 return;
 
-            Futures.addCallback(service.getSubaccountBalance(mSubaccount), new CB.Op<Map<?, ?>>() {
+            Futures.addCallback(service.getSubaccountBalance(mSubaccount), new CB.Op<Map<String, Object>>() {
                 @Override
-                public void onSuccess(final Map<?, ?> result) {
+                public void onSuccess(final Map<String, Object> result) {
                     gaActivity.runOnUiThread(new Runnable() {
                             public void run() {
-                                final Coin uriAmount = URI.getAmount();
-                                UI.setCoinText(service, null, mAmountEdit, uriAmount);
-
-                                final Float fiatRate = Float.valueOf((String) result.get("fiat_exchange"));
-                                mAmountFields.convertBtcToFiat(fiatRate);
+                                UI.setCoinText(service, null, mAmountEdit, URI.getAmount());
+                                mAmountFields.convertBtcToFiat();
                                 UI.disable(mAmountEdit, mAmountFiatEdit);
                                 UI.hide(mMaxButton, mMaxLabel);
                             }

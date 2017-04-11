@@ -59,6 +59,7 @@ import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
+import org.bitcoinj.utils.ExchangeRate;
 import org.bitcoinj.utils.Fiat;
 import org.bitcoinj.utils.MonetaryFormat;
 
@@ -129,11 +130,10 @@ public class GaService extends Service implements INotificationHandler {
 
     private final SparseArray<Coin> mCoinBalances = new SparseArray<>();
 
-    private final SparseArray<Fiat> mFiatBalances = new SparseArray<>();
-    private float mFiatRate;
+    private Float mFiatRate;
     private String mFiatCurrency;
     private String mFiatExchange;
-    private ArrayList<Map<String, ?>> mSubAccounts;
+    private ArrayList<Map<String, Object>> mSubAccounts;
     private String mReceivingId;
     private Coin mDustThreshold = Coin.valueOf(546); // Per 0.13.0, updated on login
     private Coin mMinFeeRate = Coin.valueOf(1000); // Per 0.12.0, updated on login
@@ -381,7 +381,7 @@ public class GaService extends Service implements INotificationHandler {
         pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
         pubkeys.add(HDClientKey.getMyPublicKey(subAccount, pointer));
 
-        final Map<String, ?> m = findSubaccountByType(subAccount, "2of3");
+        final Map<String, Object> m = findSubaccountByType(subAccount, "2of3");
         if (m != null)
             pubkeys.add(HDKey.getRecoveryKeys((String) m.get("2of3_backup_chaincode"),
                                               (String) m.get("2of3_backup_pubkey"), pointer)[1]);
@@ -471,7 +471,7 @@ public class GaService extends Service implements INotificationHandler {
 
         mBalanceObservables.put(0, new GaObservable());
         updateBalance(0, loginData.mRawData);
-        for (final Map<String, ?> data : mSubAccounts) {
+        for (final Map<String, Object> data : mSubAccounts) {
             final int pointer = ((Integer) data.get("pointer"));
             mBalanceObservables.put(pointer, new GaObservable());
             updateBalance(pointer, data);
@@ -573,9 +573,9 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public void updateBalance(final int subAccount) {
-        Futures.addCallback(getSubaccountBalance(subAccount), new FutureCallback<Map<String, ?>>() {
+        Futures.addCallback(getSubaccountBalance(subAccount), new FutureCallback<Map<String, Object>>() {
             @Override
-            public void onSuccess(final Map<String, ?> data) {
+            public void onSuccess(final Map<String, Object> data) {
                 updateBalance(subAccount, data);
             }
 
@@ -584,23 +584,24 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    private void updateBalance(final int subAccount, final Map<String, ?> data) {
-        final String fiatCurrency = (String) data.get("fiat_currency");
-        mCoinBalances.put(subAccount, Coin.valueOf(Long.valueOf((String) data.get("satoshi"))));
+    private void updateBalance(final int subAccount, final Map<String, Object> rawData) {
+        final JSONMap data = new JSONMap(rawData);
+        final String fiatCurrency = data.getString("fiat_currency");
+        if (!TextUtils.isEmpty(fiatCurrency))
+            mFiatCurrency = fiatCurrency;
 
-        mFiatRate = Float.valueOf((String) data.get("fiat_exchange"));
+        mCoinBalances.put(subAccount, data.getCoin("satoshi"));
 
-        // Fiat.parseFiat uses toBigIntegerExact which requires at most 4 decimal digits,
-        // while the server can return more, hence toBigInteger instead here:
-        final BigInteger tmpValue = new BigDecimal((String) data.get("fiat_value"))
-                .movePointRight(Fiat.SMALLEST_UNIT_EXPONENT).toBigInteger();
-        // Also strip extra decimals (over 2 places) because that's what the old JS client does
-        final BigInteger fiatValue = tmpValue.subtract(tmpValue.mod(BigInteger.valueOf(10).pow(Fiat.SMALLEST_UNIT_EXPONENT - 2)));
-        mFiatBalances.put(subAccount, Fiat.valueOf(fiatCurrency, fiatValue.longValue()));
+        try {
+            mFiatRate = data.getFloat("fiat_exchange");
+        } catch (final java.lang.NumberFormatException e) {
+            Log.d(TAG, "No exchange rate returned by server");
+        }
+
         fireBalanceChanged(subAccount);
     }
 
-    public ListenableFuture<Map<String, ?>> getSubaccountBalance(final int subAccount) {
+    public ListenableFuture<Map<String, Object>> getSubaccountBalance(final int subAccount) {
         return mClient.getSubaccountBalance(subAccount);
     }
 
@@ -960,12 +961,23 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public String getFiatBalance(final int subAccount) {
-        final Fiat balance = mFiatBalances.get(subAccount);
+        if (!hasFiatRate())
+            return "N/A";
+        final Coin coinBalance = getCoinBalance(subAccount);
+        Fiat balance = getFiatRate().coinToFiat(coinBalance);
+        // Strip extra decimals (over 2 places) because that's what the old JS client does
+        balance = balance.subtract(balance.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
         return MonetaryFormat.FIAT.minDecimals(2).noCode().format(balance).toString();
     }
 
-    public float getFiatRate() {
-        return mFiatRate;
+    public boolean hasFiatRate() {
+        return mFiatRate != null;
+    }
+
+    public ExchangeRate getFiatRate() {
+        final long rate = new BigDecimal(mFiatRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
+                                                   .toBigInteger().longValue();
+        return new ExchangeRate(Fiat.valueOf("???", rate));
     }
 
     public String getFiatCurrency() {
@@ -976,7 +988,7 @@ public class GaService extends Service implements INotificationHandler {
         return mFiatExchange;
     }
 
-    public ArrayList<Map<String, ?>> getSubaccounts() {
+    public ArrayList<Map<String, Object>> getSubaccounts() {
         return mSubAccounts;
     }
 
@@ -984,16 +996,16 @@ public class GaService extends Service implements INotificationHandler {
         return mSubAccounts != null && !mSubAccounts.isEmpty();
     }
 
-    public Map<String, ?> findSubaccountByType(final Integer subAccount, final String type) {
+    public Map<String, Object> findSubaccountByType(final Integer subAccount, final String type) {
         if (haveSubaccounts())
-            for (final Map<String, ?> ret : mSubAccounts)
+            for (final Map<String, Object> ret : mSubAccounts)
                 if (ret.get("pointer").equals(subAccount) &&
                    (type == null || ret.get("type").equals(type)))
                     return ret;
         return null;
     }
 
-    public Map<String, ?> findSubaccount(final Integer subAccount) {
+    public Map<String, Object> findSubaccount(final Integer subAccount) {
         return findSubaccountByType(subAccount, null);
     }
 

@@ -189,14 +189,13 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
                         public void run() {
                             final ArrayList<String> fiatPairs = new ArrayList<>(result.size());
 
-                            for (final List<String> currency_exchange : result) {
-                                final boolean current = currency_exchange.get(0).equals(mService.getFiatCurrency())
-                                        && currency_exchange.get(1).equals(mService.getFiatExchange());
-                                final String pair = String.format("%s %s", currency_exchange.get(0), currency_exchange.get(1));
-                                if (current) {
-                                    fiatCurrency.setSummary(pair);
-                                }
-                                fiatPairs.add(pair);
+                            for (final List<String> pair : result) {
+                                final boolean current = pair.get(0).equals(mService.getFiatCurrency()) &&
+                                                        pair.get(1).equals(mService.getFiatExchange());
+                                final String entry = String.format("%s %s", pair.get(0), pair.get(1));
+                                if (current)
+                                    fiatCurrency.setSummary(entry);
+                                fiatPairs.add(entry);
                             }
                             fiatCurrency.setEntries(fiatPairs.toArray(new String[result.size()]));
                             fiatCurrency.setEntryValues(fiatPairs.toArray(new String[result.size()]));

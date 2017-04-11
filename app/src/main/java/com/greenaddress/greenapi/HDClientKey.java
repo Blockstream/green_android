@@ -25,14 +25,14 @@ public class HDClientKey {
         return deriveChildKey(deriveChildKey(ret, HDKey.BRANCH_REGULAR), pointer); // Child
     }
 
-    public static void resetCache(final ArrayList<Map<String, ?>> subAccounts,
+    public static void resetCache(final ArrayList<Map<String, Object>> subAccounts,
                                   final ISigningWallet hdParent) {
         synchronized (mClientKeys) {
             mClientKeys.clear();
             if (hdParent == null)
                 return;
             mClientKeys.put(0, hdParent.getSubAccountPublicKey(0));
-            for (Map<String, ?> subaccount : subAccounts) {
+            for (Map<String, Object> subaccount : subAccounts) {
                 final DeterministicKey key = hdParent.getSubAccountPublicKey((Integer) subaccount.get("pointer"));
                 mClientKeys.put((Integer) subaccount.get("pointer"), key);
             }

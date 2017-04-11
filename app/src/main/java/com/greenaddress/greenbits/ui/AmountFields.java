@@ -47,17 +47,23 @@ class AmountFields {
         final FontAwesomeTextView fiatView = UI.find(view, R.id.sendFiatIcon);
         changeFiatIcon(fiatView, mGaService.getFiatCurrency());
 
-        mAmountFiatEdit.addTextChangedListener(new UI.TextWatcher() {
-            @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                convertFiatToBtc();
-            }
-        });
+        if (mGaService.hasFiatRate()) {
+            mAmountFiatEdit.addTextChangedListener(new UI.TextWatcher() {
+                @Override
+                public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                    convertFiatToBtc();
+                }
+            });
+        } else {
+            mAmountFiatEdit.setText("N/A");
+            UI.disable(mAmountFiatEdit);
+        }
 
         mAmountEdit.addTextChangedListener(new UI.TextWatcher() {
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                convertBtcToFiat();
+                if (mGaService.hasFiatRate())
+                    convertBtcToFiat();
             }
         });
     }
@@ -94,21 +100,13 @@ class AmountFields {
     }
 
     void convertBtcToFiat() {
-        convertBtcToFiat(mGaService.getFiatRate());
-    }
-
-    void convertBtcToFiat(final float exchangeRate) {
         if (mConverting || mIsPausing)
             return;
 
         mConverting = true;
-        final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
-                .toBigInteger().longValue());
-
         try {
-            final ExchangeRate rate = new ExchangeRate(exchangeFiat);
             final Coin btcValue = UI.parseCoinValue(mGaService, UI.getText(mAmountEdit));
-            Fiat fiatValue = rate.coinToFiat(btcValue);
+            Fiat fiatValue = mGaService.getFiatRate().coinToFiat(btcValue);
             // strip extra decimals (over 2 places) because that's what the old JS client does
             fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
             mAmountFiatEdit.setText(fiatValue.toPlainString());
@@ -127,13 +125,9 @@ class AmountFields {
             return;
 
         mConverting = true;
-        final float exchangeRate = mGaService.getFiatRate();
-        final Fiat exchangeFiat = Fiat.valueOf("???", new BigDecimal(exchangeRate).movePointRight(Fiat.SMALLEST_UNIT_EXPONENT)
-                .toBigInteger().longValue());
-        final ExchangeRate rate = new ExchangeRate(exchangeFiat);
         try {
             final Fiat fiatValue = Fiat.parseFiat("???", UI.getText(mAmountFiatEdit));
-            mAmountEdit.setText(UI.formatCoinValue(mGaService, rate.fiatToCoin(fiatValue)));
+            mAmountEdit.setText(UI.formatCoinValue(mGaService, mGaService.getFiatRate().fiatToCoin(fiatValue)));
         } catch (final ArithmeticException | IllegalArgumentException e) {
             UI.clear(mAmountEdit);
         }

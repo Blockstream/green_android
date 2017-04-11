@@ -91,6 +91,11 @@ public class JSONMap implements Serializable {
         return Long.valueOf(v);
     }
 
+    public float getFloat(final String k) {
+        final String v = get(k);
+        return Float.valueOf(v);
+    }
+
     public Coin getCoin(final String k) {
         return Coin.valueOf(getLong(k));
     }

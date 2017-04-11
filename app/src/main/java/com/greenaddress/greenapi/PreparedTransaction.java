@@ -30,11 +30,11 @@ public class PreparedTransaction {
     public final byte[] mTwoOfThreeBackupChaincode;
     public final byte[] mTwoOfThreeBackupPubkey;
 
-    private static byte[] getBytes(final Map<String, ?> map, final String key) {
+    private static byte[] getBytes(final Map<String, Object> map, final String key) {
         return map == null ? null : Wally.hex_to_bytes((String) map.get(key));
     }
 
-    public PreparedTransaction(final Integer changePointer, final int subAccount, final Transaction decoded, final Map<String, ?> twoOfThree) {
+    public PreparedTransaction(final Integer changePointer, final int subAccount, final Transaction decoded, final Map<String, Object> twoOfThree) {
         mChangePointer = changePointer;
         mSubAccount = subAccount;
         mRequiresTwoFactor = false;
@@ -47,7 +47,7 @@ public class PreparedTransaction {
 
         public PreparedData(final Map<?, ?> values,
                             final Map<String, ?> privateData,
-                            final ArrayList<Map<String, ?>> subAccounts,
+                            final ArrayList<Map<String, Object>> subAccounts,
                             final OkHttpClient client)
 
         {
@@ -59,7 +59,7 @@ public class PreparedTransaction {
         }
         final Map<?, ?> mValues;
         final Map<String, ?> mPrivateData;
-        final ArrayList<Map<String, ?>> mSubAccounts;
+        final ArrayList<Map<String, Object>> mSubAccounts;
         final OkHttpClient mClient;
     }
 
@@ -74,7 +74,7 @@ public class PreparedTransaction {
             byte[] chaincode = null, pubkey = null;
             if (mSubAccount != 0) {
                 // Check if the sub-account is 2of3 and if so store its chaincode/public key
-                for (final Map<String, ?> m : pte.mSubAccounts)
+                for (final Map<String, Object> m : pte.mSubAccounts)
                     if (m.get("type").equals("2of3") && m.get("pointer").equals(mSubAccount)) {
                         chaincode = getBytes(m, "2of3_backup_chaincode");
                         pubkey = getBytes(m, "2of3_backup_pubkey");

@@ -372,7 +372,7 @@ public class WalletClient {
         HDKey.resetCache(mLoginData.mGaitPath);
     }
 
-    public ListenableFuture<Map<String, ?>> getSubaccountBalance(final int subAccount) {
+    public ListenableFuture<Map<String, Object>> getSubaccountBalance(final int subAccount) {
         return simpleCall("txs.get_balance", Map.class, subAccount);
     }
 
@@ -392,7 +392,7 @@ public class WalletClient {
         syncCall("login.change_settings", Boolean.class, "tx_limits", limits, twoFacData);
     }
 
-    private void onAuthenticationComplete(final Map<String,?> loginData, final ISigningWallet wallet, final String username, final String password) {
+    private void onAuthenticationComplete(final Map<String, Object> loginData, final ISigningWallet wallet, final String username, final String password) {
         mLoginData = new LoginData(loginData);
         if (loginData.containsKey("fee_estimates"))
             mFeeEstimates = (Map) loginData.get("fee_estimates");
@@ -578,7 +578,7 @@ public class WalletClient {
     }
 
     private LoginData watchOnlyLoginImpl(final String username, final String password) throws Exception {
-        final Map<String, ?> loginData;
+        final Map<String, Object> loginData;
         loginData = syncCall("login.watch_only_v2",  Map.class, "custom",
                              ImmutableMap.of("username", username, "password", password),
                              USER_AGENT);
@@ -634,7 +634,7 @@ public class WalletClient {
             throw new LoginFailed();
         }
 
-        onAuthenticationComplete((Map <String,?>) ret, signingWallet, null, null);  // requires receivingId to be set
+        onAuthenticationComplete((Map <String, Object>) ret, signingWallet, null, null);  // requires receivingId to be set
         return mLoginData;
     }
 

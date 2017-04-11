@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginData {
-    public final ArrayList<Map<String, ?>> mSubAccounts;
+    public final ArrayList<Map<String, Object>> mSubAccounts;
     public final Map<String, Object> mUserConfig;
     public final int[] mGaitPath;
-    public final Map<String, ?> mRawData;
+    public final Map<String, Object> mRawData;
     public final Map<ByteBuffer, String> mAssets;
     public final Map<ByteBuffer, Integer> mAssetIds;
     public final Map<String, ByteBuffer> mAssetsByName;
 
-    public LoginData(final Map<String, ?> map) {
+    public LoginData(final Map<String, Object> map) {
         mSubAccounts = (ArrayList) map.get("subaccounts");
         mUserConfig = (Map<String, Object>) map.get("appearance");
         mGaitPath = getPath((String) map.get("gait_path"));
