@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 class AmountFields {
     private final EditText mAmountEdit;
     private final EditText mAmountFiatEdit;
+    private final FontAwesomeTextView mFiatView;
     private boolean mConverting;
     private final GaService mGaService;
     private final Context mContext;
@@ -40,24 +41,17 @@ class AmountFields {
 
         mAmountEdit = UI.find(view, R.id.sendAmountEditText);
         mAmountFiatEdit = UI.find(view, R.id.sendAmountFiatEditText);
+        mFiatView = UI.find(view, R.id.sendFiatIcon);
 
         final TextView bitcoinUnitText = UI.find(view, R.id.sendBitcoinUnitText);
         UI.setCoinText(mGaService, bitcoinUnitText, null, null);
 
-        final FontAwesomeTextView fiatView = UI.find(view, R.id.sendFiatIcon);
-        changeFiatIcon(fiatView, mGaService.getFiatCurrency());
-
-        if (mGaService.hasFiatRate()) {
-            mAmountFiatEdit.addTextChangedListener(new UI.TextWatcher() {
-                @Override
-                public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                    convertFiatToBtc();
-                }
-            });
-        } else {
-            mAmountFiatEdit.setText("N/A");
-            UI.disable(mAmountFiatEdit);
-        }
+        mAmountFiatEdit.addTextChangedListener(new UI.TextWatcher() {
+            @Override
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                convertFiatToBtc();
+            }
+        });
 
         mAmountEdit.addTextChangedListener(new UI.TextWatcher() {
             @Override
@@ -66,10 +60,27 @@ class AmountFields {
                     convertBtcToFiat();
             }
         });
+
+        updateFiatFields();
+    }
+
+    private void updateFiatFields() {
+        changeFiatIcon(mFiatView, mGaService.getFiatCurrency());
+
+        if (!mGaService.hasFiatRate()) {
+            // Disable fiat editing
+            mAmountFiatEdit.setText("N/A");
+            UI.disable(mAmountFiatEdit);
+        } else {
+            if (UI.getText(mAmountFiatEdit).equals("N/A"))
+                convertBtcToFiat(); // Fiat setting changed, recalc it
+        }
     }
 
     void setIsPausing(final Boolean isPausing) {
         mIsPausing = isPausing;
+        if (!isPausing)
+            updateFiatFields(); // Resuming: Update in case fiat changed in prefs
     }
 
     Boolean isPausing() {
