@@ -185,7 +185,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.okhttp:okhttp:2.7.5'
     compile 'com.github.medyo:android-about-page:1.2'
-    compile 'com.afollestad.material-dialogs:core:0.9.4.2'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.3'
     compile 'com.maksim88:PasswordEditText:v0.9'
     // used to redirect bitcoinj logging to android in debug builds
     debugCompile 'com.noveogroup.android:android-logger:1.3.6'
