@@ -42,6 +42,7 @@ import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.TransactionWitness;
@@ -471,7 +472,8 @@ public class SendFragment extends SubaccountFragment {
         if (mSubaccount != 0)
             privateData.put("subaccount", mSubaccount);
 
-        if (mInstantConfirmationCheckbox.isChecked())
+        final boolean isInstant = mInstantConfirmationCheckbox.isChecked();
+        if (isInstant)
             privateData.put("instant", true);
 
         final Coin amount = getSendAmount();
@@ -506,7 +508,14 @@ public class SendFragment extends SubaccountFragment {
             }
 
             UI.disable(mSendButton);
-            final int numConfs = GaService.IS_ELEMENTS ? 0 : 1;
+            final int numConfs;
+            if (isInstant)
+                numConfs = 6; // Instant requires at least 6 confs
+            else if (Network.NETWORK == MainNetParams.get())
+                numConfs = 1; // Require 1 conf before spending on mainnet
+            else
+                numConfs = 0; // Allow 0 conf for networks with no real-world value
+
             CB.after(service.getAllUnspentOutputs(numConfs, mSubaccount),
                      new CB.Toast<ArrayList>(gaActivity, mSendButton) {
                 @Override
