@@ -495,7 +495,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         final int id = mService.isWatchOnly() ? R.menu.watchonly : R.menu.main;
         getMenuInflater().inflate(id, menu);
 
-        setMenuItemVisible(menu, R.id.action_network, !GaService.IS_ELEMENTS);
+        setMenuItemVisible(menu, R.id.action_network,
+                           !GaService.IS_ELEMENTS && mService.isSPVEnabled());
         setMenuItemVisible(menu, R.id.action_sweep, !GaService.IS_ELEMENTS);
 
         final boolean isExchanger = mService.cfg().getBoolean("show_exchanger_menu", false);
