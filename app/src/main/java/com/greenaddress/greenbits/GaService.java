@@ -643,29 +643,19 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private ListenableFuture<Map<String,Object>> getBalanceFromUtxo(int subAccount) {
-        return Futures.transform(mClient.getAllUnspentOutputs(0, subAccount), new Function<ArrayList, Map<String, Object>>() {
+        final boolean filterAsset = true;
+        return Futures.transform(getAllUnspentOutputs(0, subAccount, filterAsset),
+                                 new Function<List<JSONMap>, Map<String, Object>>() {
             @Override
-            public Map<String, Object> apply(final ArrayList utxos) {
-                Map <String, Object> res = new HashMap<String, Object>();
+            public Map<String, Object> apply(final List<JSONMap> utxos) {
+                final Map <String, Object> res = new HashMap<String, Object>();
                 res.put("fiat_currency", "?");
                 res.put("fiat_exchange", "1");
                 res.put("fiat_value", "0");
 
                 BigInteger finalValue = BigInteger.ZERO;
-                Pair<Long, List<byte[]>> unblinded;
-
-                for (final JSONMap utxo : JSONMap.fromList(utxos)) {
-                    if (utxo.get("value") != null) {
-                        finalValue = finalValue.add(utxo.getBigInteger("value"));
-                        continue;
-                    }
-
-                    unblinded = unblindValue(utxo);
-                    if (Arrays.equals(mAssetId, unblinded.second.get(0))) {
-                        final String v = UnsignedLongs.toString(unblinded.first);
-                        finalValue = finalValue.add(new BigInteger(v));
-                    }
-                }
+                for (final JSONMap utxo : utxos)
+                    finalValue = finalValue.add(utxo.getBigInteger("value"));
 
                 res.put("satoshi", String.valueOf(finalValue));
                 return res;
@@ -824,8 +814,28 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.sendRawTransaction(tx, twoFacData, privateData, returnErrorUri);
     }
 
-    public ListenableFuture<ArrayList> getAllUnspentOutputs(final int confs, final Integer subAccount) {
-        return mClient.getAllUnspentOutputs(confs, subAccount);
+    public ListenableFuture<List<JSONMap>> getAllUnspentOutputs(final int confs, final Integer subAccount,
+                                                                final boolean filterAsset) {
+        if (!IS_ELEMENTS)
+            return mClient.getAllUnspentOutputs(confs, subAccount);
+
+        return Futures.transform(mClient.getAllUnspentOutputs(confs, subAccount),
+                                 new Function<List<JSONMap>, List<JSONMap>>() {
+            @Override
+            public List<JSONMap> apply(final List<JSONMap> utxos) {
+                for (final JSONMap utxo : utxos) {
+                    if (utxo.get("value") == null) {
+                        // Blinded value: Unblind it
+                        final Pair<Long, List<byte[]>> unblinded = unblindValue(utxo);
+                        if (filterAsset && !Arrays.equals(unblinded.second.get(0), mAssetId))
+                            continue; // Filter out this asset id
+                        utxo.mData.put("value", UnsignedLongs.toString(unblinded.first));
+                        utxo.mData.put("confidentialData", unblinded.second);
+                    }
+                }
+                return utxos;
+            }
+        });
     }
 
     public ListenableFuture<Transaction> getRawUnspentOutput(final Sha256Hash txHash) {

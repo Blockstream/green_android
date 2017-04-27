@@ -20,6 +20,8 @@ import org.bitcoinj.script.ScriptBuilder;
 import com.blockstream.libwally.Wally;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class GATx {
@@ -42,6 +44,23 @@ public class GATx {
             default:
                 return scriptType;
         }
+    }
+
+    public static void sortUtxos(final List<JSONMap> utxos, final boolean minimizeInputs) {
+        Collections.sort(utxos, new Comparator<JSONMap>() {
+            @Override
+            public int compare(final JSONMap lhs, final JSONMap rhs) {
+                int cmp = 0;
+                if (!minimizeInputs) {
+                    // When not minimizing inputs, prefer earlier block times;
+                    // By spending earlier utxos we can avoid re-deposits.
+                    cmp = lhs.getInt("block_height").compareTo(rhs.getInt("block_height"));
+                }
+                if (cmp == 0)
+                    cmp = lhs.getBigInteger("value").compareTo(rhs.getBigInteger("value"));
+                return cmp;
+            }
+        });
     }
 
     public static byte[] createOutScript(final GaService service, final JSONMap ep) {

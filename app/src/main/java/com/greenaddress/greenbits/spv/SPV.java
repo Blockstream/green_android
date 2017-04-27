@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
@@ -221,36 +222,37 @@ public class SPV {
     public ListenableFuture<Void> updateUnspentOutputs() {
         final boolean currentlyEnabled = isEnabled();
         Log.d(TAG, "updateUnspentOutputs: " + Var("currentlyEnabled", currentlyEnabled));
-        if (currentlyEnabled)
-            return Futures.transform(mService.getAllUnspentOutputs(0, null), new Function<ArrayList, Void>() {
-                @Override
-                public Void apply(final ArrayList outputs) {
-                    updateUnspentOutputs(outputs);
-                    return null;
-                }
-            }, mService.getExecutor());
-        return Futures.immediateFuture(null);
+        if (!currentlyEnabled)
+            return Futures.immediateFuture(null);
+
+        final boolean filterAsset = true; // TODO: Elements doesn't support SPV yet
+        return Futures.transform(mService.getAllUnspentOutputs(0, null, filterAsset),
+                                 new Function<List<JSONMap>, Void>() {
+            @Override
+            public Void apply(final List<JSONMap> utxos) {
+                updateUnspentOutputs(utxos);
+                return null;
+            }
+        }, mService.getExecutor());
     }
 
-    private void updateUnspentOutputs(final ArrayList outputs) {
+    private void updateUnspentOutputs(final List<JSONMap> utxos) {
         final Set<TransactionOutPoint> newUtxos = new HashSet<>();
         boolean recalculateBloom = false;
 
-        Log.d(TAG, Var("number of outputs", outputs.size()));
-        for (final Map<?, ?> utxo : (ArrayList<Map<?, ?>>) outputs) {
-            final String txHashHex = (String) utxo.get("txhash");
-            final Integer blockHeight = (Integer) utxo.get("block_height");
-            final Integer prevIndex = ((Integer) utxo.get("pt_idx"));
-            final Integer subaccount = ((Integer) utxo.get("subaccount"));
-            final Integer pointer = ((Integer) utxo.get("pointer"));
-            final Sha256Hash txHash = Sha256Hash.wrap(txHashHex);
+        Log.d(TAG, Var("number of utxos", utxos.size()));
+        for (final JSONMap utxo : utxos) {
+            final Integer prevIndex = utxo.getInt("pt_idx");
+            final Integer subaccount = utxo.getInt("subaccount");
+            final Integer pointer = utxo.getInt("pointer");
+            final Sha256Hash txHash = utxo.getHash("txhash");
 
             if (isVerified(txHash)) {
                 addToUtxo(txHash, prevIndex, subaccount, pointer);
                 addUtxoToValues(txHash, false /* updateVerified */);
             } else {
                 recalculateBloom = true;
-                addToBloomFilter(blockHeight, txHash, prevIndex, subaccount, pointer);
+                addToBloomFilter(utxo.getInt("block_height"), txHash, prevIndex, subaccount, pointer);
             }
             newUtxos.add(createOutPoint(prevIndex, txHash));
         }

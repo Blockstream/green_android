@@ -444,14 +444,15 @@ public class TransactionActivity extends GaActivity {
         }
 
         final Coin finalRemaining = remainingFeeDelta;
-        CB.after(mService.getAllUnspentOutputs(1, subAccount),
-                 new CB.Toast<ArrayList>(TransactionActivity.this) {
+        final boolean filterAsset = true; // TODO: Elements doesn't support RBF yet
+        CB.after(mService.getAllUnspentOutputs(1, subAccount, filterAsset),
+                 new CB.Toast<List<JSONMap>>(TransactionActivity.this) {
             @Override
-            public void onSuccess(final ArrayList result) {
+            public void onSuccess(final List<JSONMap> result) {
                 Coin remaining = finalRemaining;
                 final List<JSONMap> moreInputs = new ArrayList<>();
 
-                for (final JSONMap utxo : JSONMap.fromList(result)) {
+                for (final JSONMap utxo : result) {
                     remaining = remaining.subtract(utxo.getCoin("value"));
                     moreInputs.add(utxo);
                     if (!remaining.isGreaterThan(Coin.ZERO))

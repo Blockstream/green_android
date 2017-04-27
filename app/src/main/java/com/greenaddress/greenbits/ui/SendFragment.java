@@ -516,11 +516,30 @@ public class SendFragment extends SubaccountFragment {
             else
                 numConfs = 0; // Allow 0 conf for networks with no real-world value
 
-            CB.after(service.getAllUnspentOutputs(numConfs, mSubaccount),
-                     new CB.Toast<ArrayList>(gaActivity, mSendButton) {
+            // For 2of2 accounts we first try to spend older coins to avoid
+            // having to re-deposit them. If that fails (and always for 2of3
+            // accounts) we try to use the minimum number of utxos instead.
+            final boolean is2Of3 = service.findSubaccountByType(mSubaccount, "2of3") != null;
+            final boolean minimizeInputs = is2Of3;
+            final boolean filterAsset = true;
+
+            CB.after(service.getAllUnspentOutputs(numConfs, mSubaccount, filterAsset),
+                     new CB.Toast<List<JSONMap>>(gaActivity, mSendButton) {
                 @Override
-                public void onSuccess(final ArrayList utxos) {
-                    createRawTransaction(utxos, recipient, amount, privateData, sendAll);
+                public void onSuccess(final List<JSONMap> utxos) {
+                    int ret = R.string.insufficientFundsText;
+                    if (!utxos.isEmpty()) {
+                        GATx.sortUtxos(utxos, minimizeInputs);
+                        ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
+                        if (ret == R.string.insufficientFundsText && !minimizeInputs) {
+                            // Not enough money using nlocktime outputs first:
+                            // Try again using the largest values first
+                            GATx.sortUtxos(utxos, true);
+                            ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
+                        }
+                    }
+                    if (ret != 0)
+                        gaActivity.toast(ret, mSendButton);
                 }
             });
         }
@@ -718,17 +737,17 @@ public class SendFragment extends SubaccountFragment {
 
 
     private Coin addUtxo(final Transaction tx,
-                         final List<JSONMap> candidates, final List<JSONMap> used) {
-        return addUtxo(tx, candidates, used, null, null, null, null);
+                         final List<JSONMap> utxos, final List<JSONMap> used) {
+        return addUtxo(tx, utxos, used, null, null, null, null);
     }
 
     private Coin addUtxo(final Transaction tx,
-                         final List<JSONMap> candidates, final List<JSONMap> used,
-                         final List<Long> inValues,
-                         List<byte[]> inAssetIds, List<byte[]> inAbfs, List<byte[]> inVbfs) {
-        final JSONMap utxo = candidates.get(0);
-        GaService service = getGAService();
-        candidates.remove(0);
+                         final List<JSONMap> utxos, final List<JSONMap> used,
+                         final List<Long> inValues, final List<byte[]> inAssetIds,
+                         final List<byte[]> inAbfs, final List<byte[]> inVbfs) {
+        final JSONMap utxo = utxos.get(0);
+        final GaService service = getGAService();
+        utxos.remove(0);
         if (utxo.containsKey("confidentialData")) {
             final List<byte[]> confidentialData = utxo.get("confidentialData");
             inAssetIds.add(confidentialData.get(0));
@@ -742,41 +761,15 @@ public class SendFragment extends SubaccountFragment {
         return utxo.getCoin("value");
     }
 
-    private boolean filterUtxo(final List<JSONMap> candidates) {
-        if (candidates.isEmpty())
-            return true;
-        GaService service = getGAService();
-        final JSONMap utxo = candidates.get(0);
-        if (utxo.get("value") == null) {
-            final Pair<Long, List<byte[]>> res = service.unblindValue(utxo);
-            if (!Arrays.equals(res.second.get(0), service.mAssetId)) {
-                candidates.remove(0);
-                return true; // FIXME: Only filters for one asset ID
-            }
-            utxo.mData.put("value", UnsignedLongs.toString(res.first));
-            utxo.mData.put("confidentialData", res.second);
-        }
-        return false;
-    }
+    private int createRawTransaction(final List<JSONMap> utxos, final String recipient,
+                                     final Coin amount, final Map<String, Object> privateData,
+                                     final boolean sendAll) {
 
-    // FIXME: Use a better utxo selection strategy
-    private void createRawTransaction(final ArrayList utxos, final String recipient,
-                                      final Coin amount, final Map<String, Object> privateData,
-                                      final boolean sendAll) {
+        if (GaService.IS_ELEMENTS)
+            return createRawElementsTransaction(utxos, recipient, amount, privateData, sendAll);
+
         final GaActivity gaActivity = getGaActivity();
-
-        if (utxos.isEmpty()) {
-            gaActivity.toast(R.string.insufficientFundsText, mSendButton);
-            return;
-        }
-
-        if (GaService.IS_ELEMENTS) {
-            createRawElementsTransaction(utxos, recipient, amount, privateData, sendAll);
-            return;
-        }
-
         final GaService service = getGAService();
-        final List<JSONMap> candidates = JSONMap.fromList(utxos);
         final List<JSONMap> used = new ArrayList<>();
         final Coin feeRate = getFeeEstimate(service, "1");
 
@@ -789,8 +782,8 @@ public class SendFragment extends SubaccountFragment {
         Pair<TransactionOutput, Integer> changeOutput = null;
 
         // First add inputs until we cover the amount to send
-        while ((sendAll || total.isLessThan(amount)) && !candidates.isEmpty())
-            total = total.add(addUtxo(tx, candidates, used));
+        while ((sendAll || total.isLessThan(amount)) && !utxos.isEmpty())
+            total = total.add(addUtxo(tx, utxos, used));
 
         // Then add inputs until we cover amount + fee/change
         while (true) {
@@ -800,11 +793,10 @@ public class SendFragment extends SubaccountFragment {
             final int cmp = sendAll ? 0 : total.compareTo(amount.add(fee).add(minChange));
             if (cmp < 0) {
                 // Need more inputs to cover amount + fee/change
-                if (candidates.isEmpty()) {
-                    gaActivity.toast(R.string.insufficientFundsText, mSendButton); // None left, fail
-                    return;
-                }
-                total = total.add(addUtxo(tx, candidates, used));
+                if (utxos.isEmpty())
+                    return R.string.insufficientFundsText; // None left, fail
+
+                total = total.add(addUtxo(tx, utxos, used));
                 continue;
             }
 
@@ -816,10 +808,8 @@ public class SendFragment extends SubaccountFragment {
 
             // Inputs greater than amount + fee, add a change output and try again
             changeOutput = GATx.addChangeOutput(service, tx, mSubaccount);
-            if (changeOutput == null) {
-                gaActivity.toast(R.string.unable_to_create_change, mSendButton);
-                return;
-            }
+            if (changeOutput == null)
+                return R.string.unable_to_create_change;
         }
 
         if (changeOutput != null) {
@@ -833,10 +823,8 @@ public class SendFragment extends SubaccountFragment {
             actualAmount = amount;
         else {
             actualAmount = total.subtract(fee);
-            if (!actualAmount.isGreaterThan(Coin.ZERO)) {
-                gaActivity.toast(R.string.insufficientFundsText, mSendButton);
-                return;
-            }
+            if (!actualAmount.isGreaterThan(Coin.ZERO))
+                return R.string.insufficientFundsText;
             tx.getOutputs().get(0).setValue(actualAmount);
         }
 
@@ -899,20 +887,20 @@ public class SendFragment extends SubaccountFragment {
                     mTwoFactor.show();
             }
         });
+        return 0;
     }
 
     private void arraycpy(final byte[] dest, final int i, final byte[] src) {
         System.arraycopy(src, 0, dest, src.length * i, src.length);
     }
 
-    private void createRawElementsTransaction(final ArrayList utxos, final String recipient,
-                                              final Coin amount, final Map<String, Object> privateData,
-                                              final boolean sendAll) {
+    private int createRawElementsTransaction(final List<JSONMap> utxos, final String recipient,
+                                             final Coin amount, final Map<String, Object> privateData,
+                                             final boolean sendAll) {
         // FIXME: sendAll
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        final List<JSONMap> candidates = JSONMap.fromList(utxos);
         final List<JSONMap> used = new ArrayList<>();
         final Coin feeRate = getFeeEstimate(service, "1");
 
@@ -930,15 +918,14 @@ public class SendFragment extends SubaccountFragment {
         Coin total = Coin.ZERO;
         Coin fee;
 
-        List<Long> inValues = new ArrayList<>();
-        List<byte[]> inAssetIds = new ArrayList<byte[]>();
-        List<byte[]> inAbfs = new ArrayList<byte[]>();
-        List<byte[]> inVbfs = new ArrayList<byte[]>();
+        final List<Long> inValues = new ArrayList<>();
+        final List<byte[]> inAssetIds = new ArrayList<byte[]>();
+        final List<byte[]> inAbfs = new ArrayList<byte[]>();
+        final List<byte[]> inVbfs = new ArrayList<byte[]>();
 
         // First add inputs until we cover the amount to send
-        while (total.isLessThan(amount) && !candidates.isEmpty())
-            if (!filterUtxo(candidates))
-                total = total.add(addUtxo(tx, candidates, used, inValues, inAssetIds, inAbfs, inVbfs));
+        while (total.isLessThan(amount) && !utxos.isEmpty())
+            total = total.add(addUtxo(tx, utxos, used, inValues, inAssetIds, inAbfs, inVbfs));
 
         // Then add inputs until we cover amount + fee/change
         while (true) {
@@ -948,14 +935,9 @@ public class SendFragment extends SubaccountFragment {
             final int cmp = total.compareTo(amount.add(fee).add(minChange));
             if (cmp < 0) {
                 // Need more inputs to cover amount + fee/change
-                if (candidates.isEmpty()) {
-                    gaActivity.toast(R.string.insufficientFundsText, mSendButton); // None left, fail
-                    return;
-                }
-                // FIXME: This is not optimally efficient, since it requires recomputing
-                // the fee on the same tx when we filter out a utxo
-                if (!filterUtxo(candidates))
-                    total = total.add(addUtxo(tx, candidates, used, inValues, inAssetIds, inAbfs, inVbfs));
+                if (utxos.isEmpty())
+                    return R.string.insufficientFundsText; // None left, fail
+                total = total.add(addUtxo(tx, utxos, used, inValues, inAssetIds, inAbfs, inVbfs));
                 continue;
             }
 
@@ -967,10 +949,9 @@ public class SendFragment extends SubaccountFragment {
 
             // Inputs greater than amount + fee, add a change output and try again
             final JSONMap addr = service.getNewAddress(mSubaccount);
-            if (addr == null) {
-                gaActivity.toast(R.string.unable_to_create_change, mSendButton);
-                return;
-            }
+            if (addr == null)
+                return R.string.unable_to_create_change;
+
             final byte[] script = addr.getBytes("script");
             changeOutput = tx.addOutput(
                     service.mAssetId, Coin.ZERO,
@@ -1123,6 +1104,7 @@ public class SendFragment extends SubaccountFragment {
                     mTwoFactor.show();
             }
         });
+        return 0;
     }
 
     public void setIsExchanger(final boolean isExchanger) {

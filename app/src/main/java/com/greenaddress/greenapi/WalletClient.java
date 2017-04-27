@@ -853,8 +853,16 @@ public class WalletClient {
         return mHDParent;
     }
 
-    public ListenableFuture<ArrayList> getAllUnspentOutputs(final int confs, final Integer subAccount) {
-        return simpleCall("txs.get_all_unspent_outputs", ArrayList.class, confs, subAccount, "any");
+    public ListenableFuture<List<JSONMap>> getAllUnspentOutputs(final int confs, final Integer subAccount) {
+         final ListenableFuture<ArrayList> rpc;
+         rpc = simpleCall("txs.get_all_unspent_outputs", ArrayList.class,
+                          confs, subAccount, "any");
+         return Futures.transform(rpc, new Function<ArrayList, List<JSONMap>>() {
+            @Override
+            public List<JSONMap> apply(final ArrayList utxos) {
+                return JSONMap.fromList(utxos);
+            }
+        });
     }
 
     private ListenableFuture<Transaction> transactionCall(final String procedure, final Object... args) {
