@@ -16,7 +16,6 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import android.util.Pair;
 import android.util.SparseArray;
 
 import com.blockstream.libwally.Wally;
@@ -686,23 +685,12 @@ public class GaService extends Service implements INotificationHandler {
         return mExecutor.submit(new Callable<Map<String, Object>>() {
             @Override
             public Map<String, Object> call() throws Exception {
-                final Map<String, Object> result = mClient.getMyTransactions(subAccount);
+                final Map<String, Object> result = mClient.getMyTransactions(null, subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
                 List<JSONMap> txs = JSONMap.fromList((List) result.get("list"));
                 for (final JSONMap tx : txs)
                     tx.mData.put("eps", unblindValues(JSONMap.fromList((List) tx.get("eps")), false, false));
                 result.put("list", txs);
-                return result;
-            }
-        });
-    }
-
-    public ListenableFuture<Map<String, Object>> getMyTransactions(final String searchQuery, final int subAccount) {
-        return mExecutor.submit(new Callable<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> call() throws Exception {
-                final Map<String, Object> result = mClient.getMyTransactions(searchQuery, subAccount);
-                setCurrentBlock((Integer) result.get("cur_block"));
                 return result;
             }
         });
