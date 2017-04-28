@@ -111,4 +111,8 @@ public class JSONMap implements Serializable {
     public String toString() {
         return mData.toString();
     }
+
+    public void putBytes(final String k, final byte[] v) {
+        mData.put(k, Wally.hex_from_bytes(v));
+    }
 }

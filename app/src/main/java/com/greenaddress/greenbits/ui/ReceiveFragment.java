@@ -26,6 +26,7 @@ import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.ConfidentialAddress;
+import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
@@ -518,14 +519,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private void onNewTx() {
         final GaService service = getGAService();
         Futures.addCallback(service.getMyTransactions(mSubaccount),
-                new FutureCallback<Map<?, ?>>() {
+                new FutureCallback<Map<String, Object>>() {
                     @Override
-                    public void onSuccess(final Map<?, ?> result) {
+                    public void onSuccess(final Map<String, Object> result) {
                         final List txList = (List) result.get("list");
                         final int currentBlock = ((Integer) result.get("cur_block"));
                         for (Object tx : txList) {
                             try {
-                                Map<String, Object> txJSON = (Map) tx;
+                                final JSONMap txJSON = (JSONMap) tx;
                                 ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
 
                                 if (replacedList == null) {

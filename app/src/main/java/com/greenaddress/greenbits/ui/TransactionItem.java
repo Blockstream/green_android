@@ -56,9 +56,7 @@ public class TransactionItem implements Serializable {
         return getConfirmations() >= 6;
     }
 
-    public TransactionItem(final GaService service, final Map<String, Object> txJSON, final int currentBlock) throws ParseException {
-        final JSONMap m = new JSONMap(txJSON);
-
+    public TransactionItem(final GaService service, final JSONMap m, final int currentBlock) throws ParseException {
         instant = m.getBool("instant");
         // FIXME: Implement RBF for instant transactions
         replaceable = !GaService.IS_ELEMENTS && !instant && m.getBool("rbf_optin");
@@ -75,11 +73,7 @@ public class TransactionItem implements Serializable {
 
         blockHeight = m.get("block_height", null);
 
-        final List epRaw = m.get("eps");
         final List<JSONMap> recipients = new ArrayList<>();
-        eps = new ArrayList<>(epRaw.size());
-        for (final Object ep : epRaw)
-            eps.add(new JSONMap((Map<String, Object>) ep));
 
         String tmpCounterparty = null;
         long tmpAmount = 0;
@@ -88,6 +82,7 @@ public class TransactionItem implements Serializable {
         JSONMap tmpReceivedOnEp = null;
         boolean hasConfidentialRecipients = false;
 
+        eps = m.get("eps");
         for (final JSONMap ep : eps) {
             final String socialDestination = ep.get("social_destination", null);
             boolean externalSocial = false;

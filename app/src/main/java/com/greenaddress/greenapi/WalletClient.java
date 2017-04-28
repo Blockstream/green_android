@@ -677,7 +677,7 @@ public class WalletClient {
     }
 
 
-    public Map<?, ?> getMyTransactions(final int subAccount) throws Exception {
+    public Map<String, Object> getMyTransactions(final int subAccount) throws Exception {
         return syncCall("txs.get_list_v2", Map.class, null, null, null, null, subAccount);
     }
 
@@ -691,7 +691,7 @@ public class WalletClient {
         }
     }
 
-    public Map<?, ?> getMyTransactions(final String searchQuery, final int subAccount) throws Exception {
+    public Map<String, Object> getMyTransactions(final String searchQuery, final int subAccount) throws Exception {
         return syncCall("txs.get_list_v2", Map.class, null, searchQuery, null, null, subAccount);
     }
 

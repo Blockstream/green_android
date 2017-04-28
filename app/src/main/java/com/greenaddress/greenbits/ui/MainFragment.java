@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
@@ -285,9 +286,9 @@ public class MainFragment extends SubaccountFragment {
 
 
         Futures.addCallback(service.getMyTransactions(mSubaccount),
-            new FutureCallback<Map<?, ?>>() {
+            new FutureCallback<Map<String, Object>>() {
             @Override
-            public void onSuccess(final Map<?, ?> result) {
+            public void onSuccess(final Map<String, Object> result) {
                 final List txList = (List) result.get("list");
                 final int currentBlock = ((Integer) result.get("cur_block"));
 
@@ -311,7 +312,7 @@ public class MainFragment extends SubaccountFragment {
 
                         for (final Object tx : txList) {
                             try {
-                                final Map<String, Object> txJSON = (Map) tx;
+                                final JSONMap txJSON = (JSONMap) tx;
                                 final ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
@@ -323,8 +324,7 @@ public class MainFragment extends SubaccountFragment {
                                     final Sha256Hash replacedHash = Sha256Hash.wrap(replacedBy);
                                     if (!replacedTxs.containsKey(replacedHash))
                                         replacedTxs.put(replacedHash, new ArrayList<Sha256Hash>());
-                                    final Sha256Hash newTxHash = Sha256Hash.wrap((String) txJSON.get("txhash"));
-                                    replacedTxs.get(replacedHash).add(newTxHash);
+                                    replacedTxs.get(replacedHash).add(txJSON.getHash("txhash"));
                                 }
                             } catch (final ParseException e) {
                                 e.printStackTrace();

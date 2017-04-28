@@ -748,11 +748,10 @@ public class SendFragment extends SubaccountFragment {
         final JSONMap utxo = utxos.get(0);
         final GaService service = getGAService();
         utxos.remove(0);
-        if (utxo.containsKey("confidentialData")) {
-            final List<byte[]> confidentialData = utxo.get("confidentialData");
-            inAssetIds.add(confidentialData.get(0));
-            inAbfs.add(confidentialData.get(1));
-            inVbfs.add(confidentialData.get(2));
+        if (utxo.getBool("confidential")) {
+            inAssetIds.add(utxo.getBytes("assetId"));
+            inAbfs.add(utxo.getBytes("abf"));
+            inVbfs.add(utxo.getBytes("vbf"));
         }
         used.add(utxo);
         GATx.addInput(service, tx, utxo);

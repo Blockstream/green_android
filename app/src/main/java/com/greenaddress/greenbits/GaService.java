@@ -682,55 +682,26 @@ public class GaService extends Service implements INotificationHandler {
         });
     }
 
-    private Pair<Long, List<byte[]>> unblindValue(final byte[] rangeProof, final byte[] commitment,
-                                                  final byte[] nonceCommitment, final byte[] assetTag,
-                                                  final byte[] blindingPrivkey) {
-        final List<byte[]> retvals = new ArrayList<>();
-        return new Pair<>(Wally.asset_unblind(nonceCommitment, blindingPrivkey,
-                                              rangeProof, commitment, assetTag,
-                                              retvals), retvals);
-    }
-
-    public Pair<Long, List<byte[]>> unblindValue(final JSONMap ep) {
-        return unblindValue(ep.getBytes("range_proof"), ep.getBytes("commitment"),
-                            ep.getBytes("nonce_commitment"), ep.getBytes("asset_tag"),
-                            getBlindingPrivKey(ep));
-    }
-
-    private void unblindOutputs(final List<?> transactions) {
-        Pair<Long, List<byte[]>> unblinded;
-
-        for (Map<?, ?> tx : (List<Map<?, ?>>) transactions) {
-            for (final JSONMap ep : JSONMap.fromList((List) tx.get("eps"))) {
-                if (ep.get("commitment") == null)
-                    continue;
-
-                unblinded = unblindValue(ep);
-                ep.mData.put("value", UnsignedLongs.toString(unblinded.first));
-                ep.mData.put("confidential", true);
-                if (!Arrays.equals(mAssetId, unblinded.second.get(0)))
-                    ep.mData.put("is_relevant", false);
-            }
-        }
-    }
-
-    public ListenableFuture<Map<?, ?>> getMyTransactions(final int subAccount) {
-        return mExecutor.submit(new Callable<Map<?, ?>>() {
+    public ListenableFuture<Map<String, Object>> getMyTransactions(final int subAccount) {
+        return mExecutor.submit(new Callable<Map<String, Object>>() {
             @Override
-            public Map<?, ?> call() throws Exception {
-                final Map<?, ?> result = mClient.getMyTransactions(subAccount);
+            public Map<String, Object> call() throws Exception {
+                final Map<String, Object> result = mClient.getMyTransactions(subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
-                unblindOutputs((List<?>) (result.get("list")));
+                List<JSONMap> txs = JSONMap.fromList((List) result.get("list"));
+                for (final JSONMap tx : txs)
+                    tx.mData.put("eps", unblindValues(JSONMap.fromList((List) tx.get("eps")), false, false));
+                result.put("list", txs);
                 return result;
             }
         });
     }
 
-    public ListenableFuture<Map<?, ?>> getMyTransactions(final String searchQuery, final int subAccount) {
-        return mExecutor.submit(new Callable<Map<?, ?>>() {
+    public ListenableFuture<Map<String, Object>> getMyTransactions(final String searchQuery, final int subAccount) {
+        return mExecutor.submit(new Callable<Map<String, Object>>() {
             @Override
-            public Map<?, ?> call() throws Exception {
-                final Map<?, ?> result = mClient.getMyTransactions(searchQuery, subAccount);
+            public Map<String, Object> call() throws Exception {
+                final Map<String, Object> result = mClient.getMyTransactions(searchQuery, subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
                 return result;
             }
@@ -814,26 +785,52 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.sendRawTransaction(tx, twoFacData, privateData, returnErrorUri);
     }
 
+    private List<JSONMap> unblindValues(final List<JSONMap> values, final boolean filterAsset,
+                                        final boolean isUtxo) {
+        if (!IS_ELEMENTS)
+            return values;
+
+        final List<JSONMap> result = new ArrayList<>(values.size());
+        final List<byte[]> unblinded = new ArrayList<>(3);
+        for (final JSONMap v : values) {
+            if ((isUtxo && v.get("value") == null) ||
+                (!isUtxo && v.get("commitment") != null)) {
+                // Blinded value: Unblind it
+                final Long value;
+                unblinded.clear();
+                value = Wally.asset_unblind(v.getBytes("nonce_commitment"),
+                                            getBlindingPrivKey(v),
+                                            v.getBytes("range_proof"),
+                                            v.getBytes("commitment"),
+                                            v.getBytes("asset_tag"),
+                                            unblinded);
+                final byte[] assetId = unblinded.get(0);
+                if (!Arrays.equals(assetId, mAssetId)) {
+                    if (filterAsset)
+                        continue; // Ignore
+                    if (!isUtxo)
+                        v.mData.put("is_relevant", false); // Mark irrelevant
+                }
+                v.mData.put("confidential", true);
+                v.mData.put("value", UnsignedLongs.toString(value));
+                if (isUtxo) {
+                    v.putBytes("assetId", assetId);
+                    v.putBytes("abf", unblinded.get(1));
+                    v.putBytes("vbf", unblinded.get(2));
+                }
+            }
+            result.add(v);
+        }
+        return result;
+    }
+
     public ListenableFuture<List<JSONMap>> getAllUnspentOutputs(final int confs, final Integer subAccount,
                                                                 final boolean filterAsset) {
-        if (!IS_ELEMENTS)
-            return mClient.getAllUnspentOutputs(confs, subAccount);
-
         return Futures.transform(mClient.getAllUnspentOutputs(confs, subAccount),
                                  new Function<List<JSONMap>, List<JSONMap>>() {
             @Override
             public List<JSONMap> apply(final List<JSONMap> utxos) {
-                for (final JSONMap utxo : utxos) {
-                    if (utxo.get("value") == null) {
-                        // Blinded value: Unblind it
-                        final Pair<Long, List<byte[]>> unblinded = unblindValue(utxo);
-                        if (filterAsset && !Arrays.equals(unblinded.second.get(0), mAssetId))
-                            continue; // Filter out this asset id
-                        utxo.mData.put("value", UnsignedLongs.toString(unblinded.first));
-                        utxo.mData.put("confidentialData", unblinded.second);
-                    }
-                }
-                return utxos;
+                return unblindValues(utxos, filterAsset, true);
             }
         });
     }
