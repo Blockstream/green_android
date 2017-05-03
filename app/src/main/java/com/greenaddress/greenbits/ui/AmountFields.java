@@ -120,7 +120,7 @@ class AmountFields {
         if (GaService.IS_ELEMENTS) {
             // limit decimal places (TODO should work for BTC, but needs testing)
             try {
-                int selectionStart = mAmountEdit.getSelectionStart();
+                final int selectionStart = mAmountEdit.getSelectionStart();
                 final String old = UI.getText(mAmountEdit);
                 String adjusted = old;
                 if (!old.isEmpty() && Character.isDigit(old.charAt(selectionStart-1))) {

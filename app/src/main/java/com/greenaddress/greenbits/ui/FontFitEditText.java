@@ -93,7 +93,7 @@ public class FontFitEditText extends android.support.v7.widget.AppCompatEditText
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         if (w != oldw)
             refitText(UI.getText(this), w);
     }

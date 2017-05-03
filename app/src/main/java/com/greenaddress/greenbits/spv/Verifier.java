@@ -26,7 +26,7 @@ class Verifier {
     static Coin verify(final GaService service,
                        final Map<TransactionOutPoint, Coin> countedUtxoValues, final PreparedTransaction ptx,
                        final Address recipient, final Coin amount, final List<Boolean> input) {
-        int changeIdx;
+        final int changeIdx;
         if (input == null)
             changeIdx = -1;
         else if (input.get(0))

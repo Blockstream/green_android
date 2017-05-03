@@ -18,7 +18,7 @@ public class MainExchanger extends GaActivity {
     private MainFragment mMainFragment;
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_main_exchanger);
         mMainFragment = new MainFragment();
         mMainFragment.setIsExchanger(true);
@@ -33,14 +33,14 @@ public class MainExchanger extends GaActivity {
         final Button sellBtn = UI.find(this, R.id.sell_btn);
         sellBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 startActivity(new Intent(context, SellActivity.class));
             }
         });
         final Button buyBtn = UI.find(this, R.id.buy_btn);
         buyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 startActivity(new Intent(context, BuyActivity.class));
             }
         });

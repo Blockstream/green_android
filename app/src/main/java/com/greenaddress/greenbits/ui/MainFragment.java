@@ -417,7 +417,7 @@ public class MainFragment extends SubaccountFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("isExchanger", mIsExchanger);
     }

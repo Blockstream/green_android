@@ -13,7 +13,7 @@ import de.schildbach.wallet.ui.ScanActivity;
 
 public class SellActivity extends GaActivity {
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_sell);
 
         if (GaService.IS_ELEMENTS)
@@ -58,7 +58,7 @@ public class SellActivity extends GaActivity {
     }
 
     // FIXME duplicated function in TabbedMainActivity
-    private void handlePermissionResult(final int[] granted, int action, int msgId) {
+    private void handlePermissionResult(final int[] granted, final int action, final int msgId) {
         if (granted[0] == PackageManager.PERMISSION_GRANTED)
             startActivityForResult(new Intent(this, ScanActivity.class), action);
         else

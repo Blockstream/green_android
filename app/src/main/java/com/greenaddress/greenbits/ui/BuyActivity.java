@@ -8,7 +8,7 @@ import com.greenaddress.greenbits.GaService;
 
 public class BuyActivity extends GaActivity {
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_sell);
 
         if (GaService.IS_ELEMENTS)

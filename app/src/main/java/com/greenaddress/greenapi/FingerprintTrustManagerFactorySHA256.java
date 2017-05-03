@@ -28,19 +28,19 @@ public class FingerprintTrustManagerFactorySHA256 extends SimpleTrustManagerFact
     private final TrustManager tm = new X509TrustManager() {
 
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String s) throws CertificateException {
+        public void checkClientTrusted(final X509Certificate[] chain, final String s) throws CertificateException {
             checkTrusted("client", chain);
         }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String s) throws CertificateException {
+        public void checkServerTrusted(final X509Certificate[] chain, final String s) throws CertificateException {
             checkTrusted("server", chain);
         }
 
-        private void checkTrusted(String type, X509Certificate[] chain) throws CertificateException {
+        private void checkTrusted(final String type, final X509Certificate[] chain) throws CertificateException {
             boolean found = false;
-            for (X509Certificate cert : chain) {
-                for (byte[] allowedFingerprint: fingerprints) {
+            for (final X509Certificate cert : chain) {
+                for (final byte[] allowedFingerprint: fingerprints) {
                     if (Arrays.equals(fingerprint(cert), allowedFingerprint)) {
                         found = true;
                         break;
@@ -55,7 +55,7 @@ public class FingerprintTrustManagerFactorySHA256 extends SimpleTrustManagerFact
             }
         }
 
-        private byte[] fingerprint(X509Certificate cert) throws CertificateEncodingException {
+        private byte[] fingerprint(final X509Certificate cert) throws CertificateEncodingException {
             return Wally.sha256(cert.getEncoded());
         }
 
@@ -71,8 +71,8 @@ public class FingerprintTrustManagerFactorySHA256 extends SimpleTrustManagerFact
     public FingerprintTrustManagerFactorySHA256(final String...  fp) {
         final byte[][] fingerprints = toFingerprintArray(Arrays.asList(fp));
 
-        List<byte[]> list = InternalThreadLocalMap.get().arrayList();
-        for (byte[] f: fingerprints) {
+        final List<byte[]> list = InternalThreadLocalMap.get().arrayList();
+        for (final byte[] f: fingerprints) {
             if (f == null) {
                 break;
             }
@@ -86,12 +86,12 @@ public class FingerprintTrustManagerFactorySHA256 extends SimpleTrustManagerFact
         this.fingerprints = list.toArray(new byte[list.size()][]);
     }
 
-    private static byte[][] toFingerprintArray(Iterable<String> fingerprints) {
+    private static byte[][] toFingerprintArray(final Iterable<String> fingerprints) {
         if (fingerprints == null) {
             throw new NullPointerException("fingerprints");
         }
 
-        List<byte[]> list = InternalThreadLocalMap.get().arrayList();
+        final List<byte[]> list = InternalThreadLocalMap.get().arrayList();
         for (String f: fingerprints) {
             if (f == null) {
                 break;
@@ -105,9 +105,9 @@ public class FingerprintTrustManagerFactorySHA256 extends SimpleTrustManagerFact
                 throw new IllegalArgumentException("malformed fingerprint: " + f + " (expected: SHA256)");
             }
 
-            byte[] farr = new byte[Wally.SHA256_LEN];
+            final byte[] farr = new byte[Wally.SHA256_LEN];
             for (int i = 0; i < farr.length; i++) {
-                int strIdx = i << 1;
+                final int strIdx = i << 1;
                 farr[i] = (byte) Integer.parseInt(f.substring(strIdx, strIdx + 2), 16);
             }
             list.add(farr);
@@ -117,10 +117,10 @@ public class FingerprintTrustManagerFactorySHA256 extends SimpleTrustManagerFact
     }
 
     @Override
-    protected void engineInit(KeyStore keyStore) throws Exception { }
+    protected void engineInit(final KeyStore keyStore) throws Exception { }
 
     @Override
-    protected void engineInit(ManagerFactoryParameters managerFactoryParameters) throws Exception { }
+    protected void engineInit(final ManagerFactoryParameters managerFactoryParameters) throws Exception { }
 
     @Override
     protected TrustManager[] engineGetTrustManagers() {

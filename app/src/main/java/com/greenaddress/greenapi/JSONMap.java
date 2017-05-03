@@ -21,7 +21,7 @@ public class JSONMap implements Serializable {
     private static final SimpleDateFormat DATE_FORMAT = getDateFormat();
 
     private static SimpleDateFormat getDateFormat() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return df;
     }

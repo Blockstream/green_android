@@ -52,7 +52,7 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
     }
 
     private static boolean isAcceptableVersion(final NetworkParameters params, final int version) {
-        for (int v : params.getAcceptableAddressCodes())
+        for (final int v : params.getAcceptableAddressCodes())
             if (version == v)
                 return true;
         return false;
@@ -68,14 +68,14 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
     public static ConfidentialAddress fromP2SHHash(final NetworkParameters params, final byte[] hash160, final byte[] blindingPubKey) {
         try {
             return new ConfidentialAddress(params, params.getP2SHHeader(), hash160, blindingPubKey);
-        } catch (WrongNetworkException e) {
+        } catch (final WrongNetworkException e) {
             throw new RuntimeException(e);  // Cannot happen.
         }
     }
 
     private static byte[] getBytes(final NetworkParameters params, final int version, final byte[] hash, final byte[] blindingPubKey) {
         if (version == params.getAddressHeader() || version == params.getP2SHHeader()) {
-            byte[] bytes = new byte[1 + 33 + 20]; // p2sh/p2pkh version + pubkey + hash
+            final byte[] bytes = new byte[1 + 33 + 20]; // p2sh/p2pkh version + pubkey + hash
             bytes[0] = (byte) version;
             System.arraycopy(blindingPubKey, 0, bytes, 1, 33);
             System.arraycopy(hash, 0, bytes, 34, 20);
@@ -92,16 +92,16 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
         throw new RuntimeException();  // Cannot happen.
     }
 
-    public static Pair<String, Coin> parseBitcoinURI(NetworkParameters params, String input) throws BitcoinURIParseException {
+    public static Pair<String, Coin> parseBitcoinURI(final NetworkParameters params, final String input) throws BitcoinURIParseException {
         checkNotNull(input);
 
-        String scheme = params == null ? AbstractBitcoinNetParams.BITCOIN_SCHEME : params.getUriScheme();
+        final String scheme = params == null ? AbstractBitcoinNetParams.BITCOIN_SCHEME : params.getUriScheme();
 
         // Attempt to form the URI (fail fast syntax checking to official standards).
-        URI uri;
+        final URI uri;
         try {
             uri = new URI(input);
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             throw new BitcoinURIParseException("Bad URI syntax", e);
         }
 
@@ -114,9 +114,9 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
         // For instance with : bitcoin:129mVqKUmJ9uwPxKJBnNdABbuaaNfho4Ha?amount=0.06&label=Tom%20%26%20Jerry
         // the & (%26) in Tom and Jerry gets interpreted as a separator and the label then gets parsed
         // as 'Tom ' instead of 'Tom & Jerry')
-        String blockchainInfoScheme = scheme + "://";
-        String correctScheme = scheme + ":";
-        String schemeSpecificPart;
+        final String blockchainInfoScheme = scheme + "://";
+        final String correctScheme = scheme + ":";
+        final String schemeSpecificPart;
         if (input.startsWith(blockchainInfoScheme))
             schemeSpecificPart = input.substring(blockchainInfoScheme.length());
         else if (input.startsWith(correctScheme))
@@ -125,12 +125,12 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
             throw new BitcoinURIParseException("Unsupported URI scheme: " + uri.getScheme());
 
         // Split off the address from the rest of the query parameters.
-        String[] addressSplitTokens = schemeSpecificPart.split("\\?", 2);
+        final String[] addressSplitTokens = schemeSpecificPart.split("\\?", 2);
         if (addressSplitTokens.length == 0)
             throw new BitcoinURIParseException("No data found after the bitcoin: prefix");
-        String addressToken = addressSplitTokens[0];  // may be empty!
+        final String addressToken = addressSplitTokens[0];  // may be empty!
 
-        String[] nameValuePairTokens;
+        final String[] nameValuePairTokens;
         if (addressSplitTokens.length == 1) {
             // Only an address is specified - use an empty '<name>=<value>' token array.
             nameValuePairTokens = new String[] {};
@@ -144,7 +144,7 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
 
         Coin value = null;
 
-        for (String nameValuePairToken : nameValuePairTokens) {
+        for (final String nameValuePairToken : nameValuePairTokens) {
             final int sepIndex = nameValuePairToken.indexOf('=');
             if (sepIndex == -1)
                 throw new BitcoinURIParseException("Malformed Bitcoin URI - no separator in '" +
@@ -169,9 +169,9 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
                         throw new BitcoinURIParseException(String.format(Locale.US, "'%s' is duplicated, URI is invalid", nameToken));
                     else
                         parameterMap.put(nameToken, value);
-                } catch (IllegalArgumentException e) {
+                } catch (final IllegalArgumentException e) {
                     throw new OptionalFieldValidationException(String.format(Locale.US, "'%s' is not a valid amount", valueToken), e);
-                } catch (ArithmeticException e) {
+                } catch (final ArithmeticException e) {
                     throw new OptionalFieldValidationException(String.format(Locale.US, "'%s' has too many decimal places", valueToken), e);
                 }
             }

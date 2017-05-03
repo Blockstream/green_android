@@ -497,7 +497,7 @@ public class GaService extends Service implements INotificationHandler {
             mAssetSymbol = assetSymbols.get(
                     Wally.hex_from_bytes(mAssetId)
             );
-            int decimalPlaces = ((Map<String, Integer>) loginData.mRawData.get("asset_decimal_places")).get(
+            final int decimalPlaces = ((Map<String, Integer>) loginData.mRawData.get("asset_decimal_places")).get(
                     Wally.hex_from_bytes(mAssetId)
             );
             mAssetFormat = new MonetaryFormat().shift(8 - decimalPlaces).minDecimals(decimalPlaces).noCode();
@@ -641,7 +641,7 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getSubaccountBalance(subAccount);
     }
 
-    private ListenableFuture<Map<String,Object>> getBalanceFromUtxo(int subAccount) {
+    private ListenableFuture<Map<String,Object>> getBalanceFromUtxo(final int subAccount) {
         final boolean filterAsset = true;
         return Futures.transform(getAllUnspentOutputs(0, subAccount, filterAsset),
                                  new Function<List<JSONMap>, Map<String, Object>>() {
@@ -687,7 +687,7 @@ public class GaService extends Service implements INotificationHandler {
             public Map<String, Object> call() throws Exception {
                 final Map<String, Object> result = mClient.getMyTransactions(null, subAccount);
                 setCurrentBlock((Integer) result.get("cur_block"));
-                List<JSONMap> txs = JSONMap.fromList((List) result.get("list"));
+                final List<JSONMap> txs = JSONMap.fromList((List) result.get("list"));
                 for (final JSONMap tx : txs)
                     tx.mData.put("eps", unblindValues(JSONMap.fromList((List) tx.get("eps")), false, false));
                 result.put("list", txs);

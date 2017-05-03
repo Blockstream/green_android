@@ -26,7 +26,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
     private final EditText mAmountBtcEdit;
     private final boolean mIsBuyPage;
 
-    public static String TAG_EXCHANGER_TX_MEMO = "__exchanger_tx__";
+    public static final String TAG_EXCHANGER_TX_MEMO = "__exchanger_tx__";
 
     interface OnCalculateCommissionFinishListener {
         void calculateCommissionFinish();
@@ -34,7 +34,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
 
     private final OnCalculateCommissionFinishListener mOnCalculateCommissionFinishListener;
 
-    Exchanger(Context context, GaService service, View mView, boolean isBuyPage, OnCalculateCommissionFinishListener listener) {
+    Exchanger(final Context context, final GaService service, final View mView, final boolean isBuyPage, final OnCalculateCommissionFinishListener listener) {
         mContext = context;
         mService = service;
         mIsBuyPage = isBuyPage;
@@ -70,7 +70,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
                 btn.setLayoutParams(param);
                 btn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(final View view) {
                         mAmountFiatEdit.setText(value);
                         if (GaService.IS_ELEMENTS)
                             mAmountBtcEdit.setText(value);
@@ -127,7 +127,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
 
             final Coin coin = amountBtcTxt.isEmpty() ? Coin.ZERO : UI.parseCoinValue(mService, amountBtcTxt);
 
-            long amountBtcWithCommission = coin.getValue() * (100 - commissionPerc) / 100 - fixedCommissionBtc.getValue();
+            final long amountBtcWithCommission = coin.getValue() * (100 - commissionPerc) / 100 - fixedCommissionBtc.getValue();
 
             final Coin amountWithCommission = Coin.valueOf(amountBtcWithCommission);
 
@@ -145,7 +145,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
                 return;
             }
             final float amountFiat = Float.valueOf(amountFiatTxt);
-            float amountFiatWithCommission = (amountFiat / 100) * (100 - commissionPerc) - fixedCommissionFiat;
+            final float amountFiatWithCommission = (amountFiat / 100) * (100 - commissionPerc) - fixedCommissionFiat;
             if (amountFiatWithCommission < 0) {
                 mAmountBtcWithCommission.setText("0");
                 mAmountFiatWithCommission.setText("0");
@@ -159,7 +159,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
                 return;
 
             final Coin coin = UI.parseCoinValue(mService, amountBtcTxt);
-            long amountBtcWithCommission = (coin.getValue() / 100) * (100 - commissionPerc) - fixedCommissionBtc.getValue();
+            final long amountBtcWithCommission = (coin.getValue() / 100) * (100 - commissionPerc) - fixedCommissionBtc.getValue();
             final Coin amountWithCommission = Coin.valueOf(amountBtcWithCommission);
             mAmountBtcWithCommission.setText(UI.formatCoinValue(mService, amountWithCommission));
         }

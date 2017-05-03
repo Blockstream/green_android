@@ -185,7 +185,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             mShowQrCode = UI.find(mView, R.id.showQrCode);
             mShowQrCode.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(final View view) {
                     final String amountStr = UI.getText(mAmountFiatWithCommission);
                     final float amount = Float.valueOf(amountStr);
                     if (amount > mExchanger.getFiatInBill()) {
@@ -199,7 +199,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     }
                     generateNewAddress(false, new FutureCallback<Void>() {
                         @Override
-                        public void onSuccess(Void aVoid) {
+                        public void onSuccess(final Void aVoid) {
                             String exchangerAddress = mCurrentAddress;
                             if (GaService.IS_ELEMENTS) {
                                 final String currentBtcAddress = mCurrentAddress.replace("bitcoin:", "").split("\\?")[0];
@@ -213,7 +213,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         }
 
                         @Override
-                        public void onFailure(Throwable t) {
+                        public void onFailure(final Throwable t) {
                             t.printStackTrace();
                         }
                     });
@@ -291,7 +291,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         generateNewAddress(true, null);
     }
 
-    private void generateNewAddress(boolean clear, FutureCallback<Void> onDone) {
+    private void generateNewAddress(final boolean clear, final FutureCallback<Void> onDone) {
         Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
         if (isZombie())
             return;
@@ -310,7 +310,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         UI.disable(mCopyIcon);
         destroyCurrentAddress(clear);
         mNewAddressFinished = onDone;
-        Callable waitFn = new Callable<Void>() {
+        final Callable waitFn = new Callable<Void>() {
             @Override
             public Void call() {
                 popupWaitDialog(R.string.generating_address);
@@ -321,7 +321,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                             mNewAddressCallback, getGAService().getExecutor());
     }
 
-    private void destroyCurrentAddress(boolean clear) {
+    private void destroyCurrentAddress(final boolean clear) {
         Log.d(TAG, "Destroying address for subaccount " + mSubaccount);
         if (isZombie())
             return;
@@ -354,7 +354,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             final Button cancelBtn = UI.find(v, R.id.cancelBtn);
             cancelBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(final View view) {
                     mQrCodeDialog.dismiss();
                 }
             });
@@ -524,14 +524,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     public void onSuccess(final Map<String, Object> result) {
                         final List txList = (List) result.get("list");
                         final int currentBlock = ((Integer) result.get("cur_block"));
-                        for (Object tx : txList) {
+                        for (final Object tx : txList) {
                             try {
                                 final JSONMap txJSON = (JSONMap) tx;
-                                ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
+                                final ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
                                     final TransactionItem txItem = new TransactionItem(service, txJSON, currentBlock);
-                                    boolean matches;
+                                    final boolean matches;
                                     if (!GaService.IS_ELEMENTS)
                                         matches = txItem.receivedOn != null && txItem.receivedOn.equals(mCurrentAddress);
                                     else {
@@ -552,14 +552,14 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                         getGaActivity().finish();
                                     }
                                 }
-                            } catch (ParseException e) {
+                            } catch (final ParseException e) {
                                 e.printStackTrace();
                             }
                         }
                     }
 
                     @Override
-                    public void onFailure(Throwable throwable) {
+                    public void onFailure(final Throwable throwable) {
                         throwable.printStackTrace();
                     }
                 });

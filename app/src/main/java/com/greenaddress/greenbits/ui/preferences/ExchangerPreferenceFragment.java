@@ -27,7 +27,7 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
         addPreferencesFromResource(R.xml.preference_exchanger);
         setHasOptionsMenu(true);
 
-        String btcUnit = mService.getBitcoinUnit();
+        final String btcUnit = mService.getBitcoinUnit();
 
         final String buyFixed = mService.cfg().getString("buy_commission_fixed_coin", "");
         final String buyFixedCurrentFormat;
@@ -76,10 +76,10 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
         mSellCommissionFixed.setSummary(String.format("%s %s", getString(R.string.fixedCommissionDesc), btcUnit));
     }
 
-    private boolean commissionPerc(String value) {
+    private boolean commissionPerc(final String value) {
         if (value.isEmpty())
             return true;
-        float floatValue = Float.valueOf(value);
+        final float floatValue = Float.valueOf(value);
         if (floatValue < 0 || floatValue > 100) {
             UI.popup(getActivity(), R.string.enterValidValue, android.R.string.ok)
                     .content(R.string.enterValidPerc).build().show();
@@ -88,30 +88,30 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
         return true;
     }
 
-    private boolean commissionBuyFixed(String value) {
+    private boolean commissionBuyFixed(final String value) {
         if (value.isEmpty()) {
             mService.cfg().edit().putString("buy_commission_fixed_coin", "").apply();
             return true;
         }
-        Coin coin = UI.parseCoinValue(mService, value);
+        final Coin coin = UI.parseCoinValue(mService, value);
         mService.cfg().edit().putString("buy_commission_fixed_coin", coin.toString()).apply();
         mBuyCommissionFixed.setText(value);
         return false;
     }
 
-    private boolean commissionSellFixed(String value) {
+    private boolean commissionSellFixed(final String value) {
         if (value.isEmpty()) {
             mService.cfg().edit().putString("sell_commission_fixed_coin", "").apply();
             return true;
         }
-        Coin coin = UI.parseCoinValue(mService, value);
+        final Coin coin = UI.parseCoinValue(mService, value);
         mService.cfg().edit().putString("sell_commission_fixed_coin", coin.toString()).apply();
         mSellCommissionFixed.setText(value);
         return false;
     }
 
     @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    public boolean onPreferenceChange(final Preference preference, final Object newValue) {
         if (preference == mBuyCommissionPerc || preference == mSellCommissionPerc) {
             return commissionPerc((String) newValue);
         } else if (preference == mBuyCommissionFixed) {
@@ -126,7 +126,7 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
                     UI.parseCoinValue(mService, value);
                 }
                 return true;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
                 UI.toast(getActivity(), "Invalid format", Toast.LENGTH_SHORT);
             }

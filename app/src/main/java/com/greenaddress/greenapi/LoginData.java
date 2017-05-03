@@ -26,7 +26,7 @@ public class LoginData {
         mAssetsByName = new HashMap<>();
         if (map.containsKey("assets")) {
             final Map<String, String> assets = (Map) map.get("assets");
-            for (Map.Entry<String, String> entry : assets.entrySet()) {
+            for (final Map.Entry<String, String> entry : assets.entrySet()) {
                 final ByteBuffer assetId = ByteBuffer.wrap(Wally.hex_to_bytes(entry.getKey()));
                 mAssets.put(assetId, entry.getValue());
                 mAssetsByName.put(entry.getValue(), assetId);
@@ -34,7 +34,7 @@ public class LoginData {
         }
         if (map.containsKey("asset_ids")) {
             final Map<String, Integer> asset_ids = (Map) map.get("asset_ids");
-            for (Map.Entry<String, Integer> entry : asset_ids.entrySet()) {
+            for (final Map.Entry<String, Integer> entry : asset_ids.entrySet()) {
                 final ByteBuffer assetId = ByteBuffer.wrap(Wally.hex_to_bytes(entry.getKey()));
                 mAssetIds.put(assetId, entry.getValue());
             }

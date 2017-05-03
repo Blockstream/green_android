@@ -32,7 +32,7 @@ public class HDClientKey {
             if (hdParent == null)
                 return;
             mClientKeys.put(0, hdParent.getSubAccountPublicKey(0));
-            for (Map<String, Object> subaccount : subAccounts) {
+            for (final Map<String, Object> subaccount : subAccounts) {
                 final DeterministicKey key = hdParent.getSubAccountPublicKey((Integer) subaccount.get("pointer"));
                 mClientKeys.put((Integer) subaccount.get("pointer"), key);
             }

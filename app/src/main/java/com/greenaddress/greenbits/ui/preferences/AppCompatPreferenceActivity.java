@@ -19,14 +19,14 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
     private AppCompatDelegate mDelegate;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         getDelegate().onPostCreate(savedInstanceState);
     }
@@ -41,22 +41,22 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
     }
 
     @Override
-    public void setContentView(@LayoutRes int layoutResID) {
+    public void setContentView(@LayoutRes final int layoutResID) {
         getDelegate().setContentView(layoutResID);
     }
 
     @Override
-    public void setContentView(View v) {
+    public void setContentView(final View v) {
         getDelegate().setContentView(v);
     }
 
     @Override
-    public void setContentView(View v, ViewGroup.LayoutParams params) {
+    public void setContentView(final View v, final ViewGroup.LayoutParams params) {
         getDelegate().setContentView(v, params);
     }
 
     @Override
-    public void addContentView(View v, ViewGroup.LayoutParams params) {
+    public void addContentView(final View v, final ViewGroup.LayoutParams params) {
         getDelegate().addContentView(v, params);
     }
 
@@ -67,13 +67,13 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
     }
 
     @Override
-    protected void onTitleChanged(CharSequence title, int color) {
+    protected void onTitleChanged(final CharSequence title, final int color) {
         super.onTitleChanged(title, color);
         getDelegate().setTitle(title);
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         getDelegate().onConfigurationChanged(newConfig);
     }

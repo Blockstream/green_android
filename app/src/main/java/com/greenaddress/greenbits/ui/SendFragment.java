@@ -245,7 +245,7 @@ public class SendFragment extends SubaccountFragment {
                 String addr = null;
                 Coin amount = null;
                 try {
-                    Pair<String, Coin> res = ConfidentialAddress.parseBitcoinURI(Network.NETWORK, uri.toString());
+                    final Pair<String, Coin> res = ConfidentialAddress.parseBitcoinURI(Network.NETWORK, uri.toString());
                     addr = res.first;
                     amount = res.second;
                 } catch (final BitcoinURIParseException e) {
@@ -687,7 +687,7 @@ public class SendFragment extends SubaccountFragment {
                 UI.toast(gaActivity, R.string.transactionCompleted, Toast.LENGTH_LONG);
 
                 if (mIsExchanger) {
-                    float fiatAmount = Float.valueOf(mAmountFiatEdit.getText().toString());
+                    final float fiatAmount = Float.valueOf(mAmountFiatEdit.getText().toString());
                     mExchanger.sellBtc(fiatAmount);
                 }
 
@@ -905,7 +905,7 @@ public class SendFragment extends SubaccountFragment {
 
         final ElementsTransaction tx = new ElementsTransaction(Network.NETWORK);
 
-        ElementsTransactionOutput feeOutput = new ElementsTransactionOutput(Network.NETWORK, tx, Coin.ZERO);
+        final ElementsTransactionOutput feeOutput = new ElementsTransactionOutput(Network.NETWORK, tx, Coin.ZERO);
 
         feeOutput.setUnblindedAssetTagFromAssetId(service.mAssetId);
         feeOutput.setValue(Coin.valueOf(1));  // updated below, necessary for serialization for fee calculation
@@ -997,7 +997,7 @@ public class SendFragment extends SubaccountFragment {
         }
 
         for (int i = 0; i < numOutputs; ++i) {
-            ElementsTransactionOutput output = (ElementsTransactionOutput) tx.getOutput(i);
+            final ElementsTransactionOutput output = (ElementsTransactionOutput) tx.getOutput(i);
 
             // Fee: FIXME: Assumes fee is the first output
             values[numInputs + i] = i == 0 ? output.getValue().getValue() : output.getUnblindedValue();
@@ -1021,7 +1021,7 @@ public class SendFragment extends SubaccountFragment {
         blindingKeys.add("00");
 
         for (int i = 1; i < numOutputs; ++i) {
-            ElementsTransactionOutput out = (ElementsTransactionOutput) tx.getOutput(i);
+            final ElementsTransactionOutput out = (ElementsTransactionOutput) tx.getOutput(i);
 
             final byte[] ephemeral = CryptoHelper.randomBytes(32);
             ephemeralKeys.add(Wally.hex_from_bytes(ephemeral));
