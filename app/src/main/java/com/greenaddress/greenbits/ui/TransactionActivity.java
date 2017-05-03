@@ -113,7 +113,7 @@ public class TransactionActivity extends GaActivity {
 
         final boolean isWatchOnly = mService.isWatchOnly();
 
-        if (mService.IS_ELEMENTS) {
+        if (GaService.IS_ELEMENTS) {
             UI.hide(UI.find(this, R.id.txUnconfirmed));
         } else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT || txItem.isSpent) {
             if (txItem.getConfirmations() > 0)

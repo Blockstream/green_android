@@ -144,7 +144,7 @@ class AmountFields {
             }
         }
 
-        if (mGaService.IS_ELEMENTS) {
+        if (GaService.IS_ELEMENTS) {
             // fiat == btc in elements
             mAmountFiatEdit.setText(UI.getText(mAmountEdit));
             finishConversion();
@@ -173,7 +173,7 @@ class AmountFields {
 
         mConverting = true;
 
-        if (mGaService.IS_ELEMENTS) {
+        if (GaService.IS_ELEMENTS) {
             // fiat == btc in elements
             mAmountEdit.setText(UI.getText(mAmountFiatEdit));
             finishConversion();

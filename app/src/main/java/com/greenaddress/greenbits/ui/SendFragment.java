@@ -631,7 +631,7 @@ public class SendFragment extends SubaccountFragment {
                 if (underLimits != null)
                     for (final String key : underLimits.keySet())
                         twoFacData.put("send_raw_tx_" + key, underLimits.get(key));
-                if (service.IS_ELEMENTS) {
+                if (GaService.IS_ELEMENTS) {
                     underLimits.remove("ephemeral_privkeys");
                     underLimits.remove("blinding_pubkeys");
                 }
@@ -652,7 +652,7 @@ public class SendFragment extends SubaccountFragment {
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity, mSendButton) {
                                 @Override
                                 public void onSuccess(final Map result) {
-                                    if (service.IS_ELEMENTS && twoFacData != null && method.equals("limit")) {
+                                    if (GaService.IS_ELEMENTS && twoFacData != null && method.equals("limit")) {
                                         // FIXME: Store limits for non-elements w/configurable m/u/bits units
                                         service.cfg().edit().putString(
                                             "twoFacLimits",

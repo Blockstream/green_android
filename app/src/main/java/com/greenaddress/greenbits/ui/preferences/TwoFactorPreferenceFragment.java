@@ -90,7 +90,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         setupCheckbox(twoFacConfig, "Phone");
 
         mLimitsPref = find("twoFacLimits");
-        if (!mService.IS_ELEMENTS) {
+        if (!GaService.IS_ELEMENTS) {
             // Value -> satoshi conversion needs implementation & testing for
             // non-Elements (currently it's simply float(str) * 100)
             removePreference(mLimitsPref);
@@ -227,7 +227,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         if (method.equals("Email")) {
             // Reset nlocktime prefs when the user changes email 2FA
             setNlocktimeConfig(checked);
-            if (!mService.IS_ELEMENTS)
+            if (!GaService.IS_ELEMENTS)
                 getPref(NLOCKTIME_EMAILS).setEnabled(checked);
         }
         final boolean haveAny;
