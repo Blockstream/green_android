@@ -253,7 +253,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private boolean onLimitsPreferenceChange(final Preference preference, final Object newValue) {
         final Float limitF = Float.valueOf((String) newValue);
-        final Long limit = (long) (limitF.floatValue() * 100);
+        final long limit = (long) (limitF.floatValue() * 100);
 
         final String existingLimit = mLimitsPref.getText();
         if (!TextUtils.isEmpty(existingLimit) && limitF <= Float.valueOf(existingLimit)) {
