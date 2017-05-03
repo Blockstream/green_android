@@ -527,7 +527,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         for (final Object tx : txList) {
                             try {
                                 final JSONMap txJSON = (JSONMap) tx;
-                                final ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
+                                final ArrayList<String> replacedList = txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
                                     final TransactionItem txItem = new TransactionItem(service, txJSON, currentBlock);

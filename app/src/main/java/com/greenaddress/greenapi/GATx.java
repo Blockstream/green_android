@@ -176,7 +176,7 @@ public class GATx {
             tx.transactionOptions = TransactionOptions.ALL;
             final int swSize = tx.unsafeBitcoinSerialize().length;
             final int fullSize = swSize + estimateElementsSize(tx);
-            vSize = (int) Math.ceil((double) (nonSwSize * 3 + fullSize) / 4.0);
+            vSize = (int) Math.ceil((nonSwSize * 3 + fullSize) / 4.0);
         }
         final double fee = (double) vSize * rate.value / 1000.0;
         return Coin.valueOf((long) Math.ceil(fee));

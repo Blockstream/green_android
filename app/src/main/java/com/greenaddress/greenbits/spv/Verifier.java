@@ -67,8 +67,8 @@ class Verifier {
         for (final TransactionOutput out : ptx.mDecoded.getOutputs())
             fee = fee.subtract(out.getValue());
 
-        final double messageSize = (double) ptx.mDecoded.getMessageSize();
-        final double satoshiPerByte = (double) fee.value / messageSize;
+        final double messageSize = ptx.mDecoded.getMessageSize();
+        final double satoshiPerByte = fee.value / messageSize;
         final double satoshiPerKiloByte = satoshiPerByte * 1000.0;
         final Coin feeRate = Coin.valueOf((int) satoshiPerKiloByte);
 

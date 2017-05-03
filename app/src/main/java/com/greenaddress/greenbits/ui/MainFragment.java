@@ -313,7 +313,7 @@ public class MainFragment extends SubaccountFragment {
                         for (final Object tx : txList) {
                             try {
                                 final JSONMap txJSON = (JSONMap) tx;
-                                final ArrayList<String> replacedList = (ArrayList) txJSON.get("replaced_by");
+                                final ArrayList<String> replacedList = txJSON.get("replaced_by");
 
                                 if (replacedList == null) {
                                     mTxItems.add(new TransactionItem(service, txJSON, currentBlock));
