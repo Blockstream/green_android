@@ -1,10 +1,8 @@
 package com.greenaddress.greenbits.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 public class FontAwesomeTextView extends android.support.v7.widget.AppCompatTextView {
 

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-import android.widget.EditText;
 
 public class MnemonicEditText extends android.support.v7.widget.AppCompatEditText {
     public MnemonicEditText(final Context context) {

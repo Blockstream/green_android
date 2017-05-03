@@ -10,10 +10,7 @@ import android.widget.TextView;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.utils.ExchangeRate;
 import org.bitcoinj.utils.Fiat;
-
-import java.math.BigDecimal;
 
 class AmountFields {
     private final EditText mAmountEdit;

@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.EditText;
 import android.widget.Toast;
 
 
