@@ -86,9 +86,6 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    public void toast(final String s) {
-        UI.toast(this, s, Toast.LENGTH_LONG);
-    }
     public void toast(final int id) {
         UI.toast(this, id, Toast.LENGTH_LONG);
     }

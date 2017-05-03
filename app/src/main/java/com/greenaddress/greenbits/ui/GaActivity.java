@@ -141,7 +141,6 @@ public abstract class GaActivity extends AppCompatActivity {
     public void toast(final int id, final Button reenable) { UI.toast(this, getString(id), reenable); }
     public void toast(final String s) { UI.toast(this, s, Toast.LENGTH_LONG); }
     public void shortToast(final int id) { UI.toast(this, id, Toast.LENGTH_SHORT); }
-    public void shortToast(final String s) { UI.toast(this, s, Toast.LENGTH_SHORT); }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {

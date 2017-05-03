@@ -61,7 +61,6 @@ import de.schildbach.wallet.ui.ScanActivity;
 public class SendFragment extends SubaccountFragment {
 
     private static final String TAG = SendFragment.class.getSimpleName();
-    private static final int REQUEST_SEND_QR_SCAN = 0;
 
     private Dialog mSummary;
     private Dialog mTwoFactor;

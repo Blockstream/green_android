@@ -111,10 +111,6 @@ public abstract class UI {
         return popup(a, a.getString(title), pos, neg);
     }
 
-    public static MaterialDialog.Builder popup(final Activity a, final String title, final int pos) {
-        return popup(a, title, pos, INVALID_RESOURCE_ID);
-    }
-
     public static MaterialDialog.Builder popup(final Activity a, final int title, final int pos) {
         return popup(a, title, pos, INVALID_RESOURCE_ID);
     }
