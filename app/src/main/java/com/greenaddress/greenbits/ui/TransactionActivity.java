@@ -157,7 +157,7 @@ public class TransactionActivity extends GaActivity {
                 if (txItem.doubleSpentBy.equals("malleability") || txItem.doubleSpentBy.equals("update"))
                     res = txItem.doubleSpentBy;
                 else
-                    res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + "" + txItem.doubleSpentBy + "\">" + txItem.doubleSpentBy + "</a>");
+                    res = Html.fromHtml("<a href=\"" + Network.BLOCKEXPLORER_TX + txItem.doubleSpentBy + "\">" + txItem.doubleSpentBy + "</a>");
                 if (!txItem.replacedHashes.isEmpty())
                     res = TextUtils.concat(res, "; ");
             }
