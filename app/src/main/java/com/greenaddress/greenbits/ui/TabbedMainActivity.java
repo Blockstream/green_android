@@ -75,7 +75,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private MaterialDialog mSegwitDialog;
     private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private MaterialDialog mSubaccountDialog;
-    private final Runnable mSubaccountCB = new Runnable() { public void run() { mSubaccountDialog = null; } };
+    private final Runnable mSubaccountCB = new Runnable() { public void run() { mDialogCB.run(); mSubaccountDialog = null; } };
+    private final Runnable mDialogCB = new Runnable() { public void run() { setBlockWaitDialog(false); } };
 
     private final Observer mTwoFactorObserver = new Observer() {
         @Override
@@ -83,7 +84,6 @@ public class TabbedMainActivity extends GaActivity implements Observer {
             runOnUiThread(new Runnable() { public void run() { onTwoFactorConfigChange(); } });
         }
     };
-    private final Runnable mDialogCB = new Runnable() { public void run() { setBlockWaitDialog(false); } };
 
     static boolean isBitcoinScheme(final Intent intent) {
         final Uri uri = intent.getData();
@@ -195,7 +195,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                         .title(R.string.footerAccount)
                         .adapter(adapter, null)
                         .show();
-                UI.setDialogCloseHandler(mSubaccountDialog, mDialogCB);
+                UI.setDialogCloseHandler(mSubaccountDialog, mSubaccountCB);
 
                 adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
                     @Override
