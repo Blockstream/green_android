@@ -710,10 +710,10 @@ public class SendFragment extends SubaccountFragment {
                 if (!mIsExchanger) {
                     final ViewPager viewPager = UI.find(gaActivity, R.id.container);
                     viewPager.setCurrentItem(1);
-		} else {
+                } else {
                     gaActivity.toast(R.string.transactionCompleted);
                     gaActivity.finish();
-		}
+                }
             }
         });
     }

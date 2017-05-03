@@ -79,7 +79,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
 
-	if (mIsExchanger && getGAService() != null)
+        if (mIsExchanger && getGAService() != null)
             attachObservers();
 
         if (mAmountFields != null)
