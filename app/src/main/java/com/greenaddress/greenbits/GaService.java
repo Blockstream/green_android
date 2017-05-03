@@ -647,7 +647,7 @@ public class GaService extends Service implements INotificationHandler {
                                  new Function<List<JSONMap>, Map<String, Object>>() {
             @Override
             public Map<String, Object> apply(final List<JSONMap> utxos) {
-                final Map <String, Object> res = new HashMap<String, Object>();
+                final Map <String, Object> res = new HashMap<>();
                 res.put("fiat_currency", "?");
                 res.put("fiat_exchange", "1");
                 res.put("fiat_value", "0");

@@ -916,9 +916,9 @@ public class SendFragment extends SubaccountFragment {
         Coin fee;
 
         final List<Long> inValues = new ArrayList<>();
-        final List<byte[]> inAssetIds = new ArrayList<byte[]>();
-        final List<byte[]> inAbfs = new ArrayList<byte[]>();
-        final List<byte[]> inVbfs = new ArrayList<byte[]>();
+        final List<byte[]> inAssetIds = new ArrayList<>();
+        final List<byte[]> inAbfs = new ArrayList<>();
+        final List<byte[]> inVbfs = new ArrayList<>();
 
         // First add inputs until we cover the amount to send
         while (total.isLessThan(amount) && !utxos.isEmpty())

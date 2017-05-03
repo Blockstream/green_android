@@ -101,7 +101,7 @@ public class TwoFactorActivity extends GaActivity {
 
     private Map<String, String> make2FAData(final String method, final String code) {
         if (code == null)
-            return new HashMap<String, String>();
+            return new HashMap<>();
         return ImmutableMap.of("method", method, "code", code);
     }
 
