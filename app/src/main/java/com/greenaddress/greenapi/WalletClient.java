@@ -82,7 +82,7 @@ public class WalletClient {
     private ISigningWallet mHDParent;
     private String mWatchOnlyUsername;
     private String mWatchOnlyPassword;
-    private String mMnemonics;
+    private String mMnemonic;
 
     private String h(final byte[] data) { return Wally.hex_from_bytes(data); }
 
@@ -333,14 +333,14 @@ public class WalletClient {
         return Wally.hmac_sha512(GA_KEY.getBytes(), data);
     }
 
-    public String getMnemonics() {
-        return mMnemonics;
+    public String getMnemonic() {
+        return mMnemonic;
     }
 
     public void disconnect() {
         // FIXME: Server should handle logout without having to disconnect
         mLoginData = null;
-        mMnemonics = null;
+        mMnemonic = null;
         mWatchOnlyUsername = null;
         mHDParent = null;
 
@@ -351,16 +351,16 @@ public class WalletClient {
     }
 
     public void registerUser(final ISigningWallet signingWallet,
-                             final String mnemonics,
+                             final String mnemonic,
                              final byte[] pubkey, final byte[] chaincode,
                              final byte[] pathPubkey, final byte[] pathChaincode,
                              final String deviceId) throws Exception {
         String agent = USER_AGENT;
         final byte[] path;
 
-        if (mnemonics != null) {
-            mMnemonics = mnemonics; // Software Wallet
-            path = mnemonicToPath(mnemonics);
+        if (mnemonic != null) {
+            mMnemonic = mnemonic; // Software Wallet
+            path = mnemonicToPath(mnemonic);
         } else {
             agent += " HW"; // Hardware Wallet
             path = extendedKeyToPath(pathPubkey, pathChaincode);
@@ -656,9 +656,9 @@ public class WalletClient {
         });
     }
 
-    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String deviceId, final String mnemonics) {
-        if (mnemonics != null)
-            mMnemonics = mnemonics;
+    public ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String deviceId, final String mnemonic) {
+        if (mnemonic != null)
+            mMnemonic = mnemonic;
         return mExecutor.submit(new Callable<LoginData>() {
             @Override
             public LoginData call() {
@@ -691,7 +691,7 @@ public class WalletClient {
     }
 
     public PinData setPin(final String mnemonic, final String pin, final String deviceName) throws Exception {
-        mMnemonics = mnemonic;
+        mMnemonic = mnemonic;
 
         // FIXME: set_pin_login could return the password as well, saving a
         // round-trip vs calling getPinPassword() below.

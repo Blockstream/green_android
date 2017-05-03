@@ -122,7 +122,7 @@ public class GaService extends Service implements INotificationHandler {
     private final SparseArray<GaObservable> mBalanceObservables = new SparseArray<>();
     private final GaObservable mNewTxObservable = new GaObservable();
     private final GaObservable mVerifiedTxObservable = new GaObservable();
-    private String mSignUpMnemonics;
+    private String mSignUpMnemonic;
     private Bitmap mSignUpQRCode;
     private int mCurrentBlock; // FIXME: Pass current block height back in login data.
 
@@ -529,16 +529,16 @@ public class GaService extends Service implements INotificationHandler {
         mClient.disableWatchOnly();
     }
 
-    public ListenableFuture<LoginData> login(final String mnemonics) {
-        return login(new SWWallet(mnemonics), mnemonics);
+    public ListenableFuture<LoginData> login(final String mnemonic) {
+        return login(new SWWallet(mnemonic), mnemonic);
     }
 
-    private ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonics) {
-        return loginImpl(mClient.login(signingWallet, mDeviceId, mnemonics));
+    private ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonic) {
+        return loginImpl(mClient.login(signingWallet, mDeviceId, mnemonic));
     }
 
     private ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
-                                               final String mnemonics,
+                                               final String mnemonic,
                                                final byte[] pubkey, final byte[] chaincode,
                                                final byte[] pathPubkey, final byte[] pathChaincode) {
         mState.transitionTo(ConnState.LOGGINGIN);
@@ -547,7 +547,7 @@ public class GaService extends Service implements INotificationHandler {
                    @Override
                    public LoginData call() throws Exception {
                        try {
-                           mClient.registerUser(signingWallet, mnemonics,
+                           mClient.registerUser(signingWallet, mnemonic,
                                                 pubkey, chaincode,
                                                 pathPubkey, pathChaincode,
                                                 mDeviceId);
@@ -562,9 +562,9 @@ public class GaService extends Service implements INotificationHandler {
                });
     }
 
-    public ListenableFuture<LoginData> signup(final String mnemonics) {
-        final SWWallet sw = new SWWallet(mnemonics);
-        return signup(sw, mnemonics, sw.getMasterKey().getPubKey(),
+    public ListenableFuture<LoginData> signup(final String mnemonic) {
+        final SWWallet sw = new SWWallet(mnemonic);
+        return signup(sw, mnemonic, sw.getMasterKey().getPubKey(),
                       sw.getMasterKey().getChainCode(), null, null);
     }
 
@@ -574,8 +574,8 @@ public class GaService extends Service implements INotificationHandler {
         return signup(signingWallet, null, pubkey, chaincode, pathPubkey, pathChaincode);
     }
 
-    public String getMnemonics() {
-        return mClient.getMnemonics();
+    public String getMnemonic() {
+        return mClient.getMnemonic();
     }
 
     public LoginData getLoginData() {
@@ -1026,16 +1026,16 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public void resetSignUp() {
-        mSignUpMnemonics = null;
+        mSignUpMnemonic = null;
         if (mSignUpQRCode != null)
             mSignUpQRCode.recycle();
         mSignUpQRCode = null;
     }
 
     public String getSignUpMnemonic() {
-        if (mSignUpMnemonics == null)
-            mSignUpMnemonics = CryptoHelper.mnemonic_from_bytes(CryptoHelper.randomBytes(32));
-        return mSignUpMnemonics;
+        if (mSignUpMnemonic == null)
+            mSignUpMnemonic = CryptoHelper.mnemonic_from_bytes(CryptoHelper.randomBytes(32));
+        return mSignUpMnemonic;
     }
 
     public Bitmap getSignUpQRCode() {

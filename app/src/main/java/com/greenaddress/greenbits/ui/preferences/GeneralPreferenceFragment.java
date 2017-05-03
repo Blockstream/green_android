@@ -70,7 +70,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         });
 
         // Mnemonics
-        final String mnemonic = mService.getMnemonics();
+        final String mnemonic = mService.getMnemonic();
         if (mnemonic != null) {
             final Preference passphrase = find("mnemonic_passphrase");
             passphrase.setSummary(getString(R.string.touch_to_display));

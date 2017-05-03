@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Build;
@@ -11,19 +10,18 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
-import android.text.Spannable;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.MultiAutoCompleteTextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -39,13 +37,12 @@ import com.greenaddress.greenapi.LoginData;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import de.schildbach.wallet.ui.ScanActivity;
 
 
-public class MnemonicActivity extends LoginActivity {
+public class MnemonicActivity extends LoginActivity implements View.OnClickListener {
 
     private static final String TAG = MnemonicActivity.class.getSimpleName();
 
@@ -53,54 +50,139 @@ public class MnemonicActivity extends LoginActivity {
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
 
-    private ArrayList<String> mWordsArray;
     private Set<String> mWords;
+    private ArrayList<String> mWordsArray;
 
-    private EditText mMnemonicText;
+    private MultiAutoCompleteTextView mMnemonicText;
     private CircularProgressButton mOkButton;
+    private TextView mScanButton;
 
+    final private MultiAutoCompleteTextView.Tokenizer mTokenizer = new MultiAutoCompleteTextView.Tokenizer() {
+        private boolean isspace(final CharSequence t, final int pos) {
+            return Character.isWhitespace(t.charAt(pos));
+        }
 
-    private void showErrorCorrection(final String closeWord, final String badWord) {
-        if (closeWord == null)
-            return;
+        public int findTokenStart(final CharSequence t, int cursor) {
+            final int end = cursor;
+            while (cursor > 0 && !isspace(t, cursor - 1))
+                --cursor;
+            while (cursor < end && isspace(t, cursor))
+                ++cursor;
+            return cursor;
+        }
 
+        public int findTokenEnd(final CharSequence t, int cursor) {
+            final int end = t.length();
+            while (cursor < end && !isspace(t, cursor))
+                ++cursor;
+            return cursor;
+        }
+
+        public CharSequence terminateToken(final CharSequence t) {
+            int cursor = t.length();
+
+            while (cursor > 0 && isspace(t, cursor - 1))
+                cursor--;
+            if (cursor > 0 && isspace(t, cursor - 1))
+                return t;
+            if (t instanceof Spanned) {
+                final SpannableString sp = new SpannableString(t + " ");
+                TextUtils.copySpansFrom((Spanned) t, 0, t.length(), Object.class, sp, 0);
+                return sp;
+            }
+            return t + " ";
+        }
+    };
+
+    public static void initWordList(final ArrayList<String> wordsArray, final Set<String> words) {
+        final Object en = Wally.bip39_get_wordlist("en");
+        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i) {
+            wordsArray.add(Wally.bip39_get_word(en, i));
+            if (words != null)
+                words.add(wordsArray.get(i));
+        }
+    }
+
+    @Override
+    protected void onCreateWithService(final Bundle savedInstanceState) {
+        Log.i(TAG, getIntent().getType() + ' ' + getIntent());
+
+        mWordsArray = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
+        mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
+        initWordList(mWordsArray, mWords);
+
+        mMnemonicText = UI.find(this, R.id.mnemonicText);
+        mOkButton = UI.find(this,R.id.mnemonicOkButton);
+        mScanButton = UI.find(this,R.id.mnemonicScanIcon);
+
+        mOkButton.setIndeterminateProgressMode(true);
+
+        UI.mapClick(this, R.id.mnemonicOkButton, this);
+
+        final boolean haveCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+        UI.showIf(haveCamera, mScanButton);
+        if (haveCamera)
+            UI.mapClick(this, R.id.mnemonicScanIcon, this);
+
+        final ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, mWordsArray);
+        mMnemonicText.setAdapter(adapter);
+        mMnemonicText.setThreshold(1);
+        mMnemonicText.setTokenizer(mTokenizer);
+        mMnemonicText.addTextChangedListener(new UI.TextWatcher() {
+            @Override
+            public void onTextChanged(final CharSequence t, final int start,
+                                      final int before, final int count) {
+                markInvalidWords();
+            }
+        });
+
+        NFCIntentMnemonicLogin();
+    }
+
+    private void markInvalidWords() {
+        final Editable e = mMnemonicText.getText();
+        for (final StrikethroughSpan s : e.getSpans(0, e.length(), StrikethroughSpan.class))
+            e.removeSpan(s);
+
+        int start = 0;
+        for (final String word : e.toString().split(" ")) {
+            final int end = start + word.length();
+            if (!mWords.contains(word))
+                e.setSpan(new StrikethroughSpan(), start, end, 0);
+            start = end + 1;
+        }
+    }
+
+    private void promptToFixInvalidWord(final String badWord, final int start, final int end) {
+        // FIXME: Show a list of closest words instead of just one
+        final String closeWord = MnemonicHelper.getClosestWord(mWordsArray, badWord);
         final Snackbar snackbar = Snackbar
-                .make(mMnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
-                .setAction("Correct", new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        mMnemonicText.setOnTouchListener(null);
-                        final String mnemonicStr = UI.getText(mMnemonicText).replace(badWord, closeWord);
-                        mMnemonicText.setText(mnemonicStr);
-                        final int textLength = mnemonicStr.length();
-                        mMnemonicText.setSelection(textLength, textLength);
-
-                        final int words = mnemonicStr.trim().split(" ").length;
-                        if (validateMnemonic(mnemonicStr) && (words == 24 || words == 27))
-                            login();
-                    }
-                });
-
-        final View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(Color.DKGRAY);
-        final TextView textView = UI.find(snackbarView, android.support.design.R.id.snackbar_text);
+            .make(mMnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
+            .setAction("Correct", new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    // FIXME: Use start/end to replace and try logging in again
+                    setMnemonic(getMnemonic().replace(badWord, closeWord));
+                }
+            });
+        final View v = snackbar.getView();
+        v.setBackgroundColor(Color.DKGRAY);
+        final TextView textView = UI.find(v, android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackbar.show();
     }
 
-    private boolean validateMnemonic(final String mnemonic) {
-        try {
-            Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
-            return true;
-        } catch (final IllegalArgumentException e) {
-            for (final String w : mnemonic.split(" "))
-                if (!mWords.contains(w)) {
-                    setWord(w);
-                    showErrorCorrection(MnemonicHelper.getClosestWord(mWordsArray, w), w);
-                    break;
-                }
-            return false;
-        }
+    protected int getMainViewId() { return R.layout.activity_mnemonic; }
+
+    private String getMnemonic() {
+        return UI.getText(mMnemonicText).replaceAll("\\s+", " ").trim();
+    }
+
+    private void setMnemonic(final String mnemonic) {
+        if (!UI.getText(mMnemonicText).equals(mnemonic))
+            mMnemonicText.setText(mnemonic);
+        mMnemonicText.setSelection(mnemonic.length(), mnemonic.length());
     }
 
     private void enableLogin() {
@@ -108,7 +190,10 @@ public class MnemonicActivity extends LoginActivity {
         mMnemonicText.setEnabled(true);
     }
 
-    private void login() {
+    private void doLogin() {
+        final String mnemonic = getMnemonic();
+        setMnemonic(mnemonic); // Trim mnemonic when OK pressed
+
         if (mOkButton.getProgress() != 0)
             return;
 
@@ -122,8 +207,26 @@ public class MnemonicActivity extends LoginActivity {
             return;
         }
 
-        if (!validateMnemonic(UI.getText(mMnemonicText))) {
+        final String words[] = mnemonic.split(" ");
+        if (words.length != 24 && words.length != 27) {
             toast(R.string.err_mnemonic_activity_invalid_mnemonic);
+            return;
+        }
+
+        int start = 0;
+        for (final String word : words) {
+            final int end = start + word.length();
+            if (!mWords.contains(word)) {
+                promptToFixInvalidWord(word, start, end);
+                return;
+            }
+            start = end + 1;
+        }
+
+        try {
+            Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
+        } catch (final IllegalArgumentException e) {
+            toast(R.string.err_mnemonic_activity_invalid_mnemonic); // FIXME: Use different error message
             return;
         }
 
@@ -134,15 +237,14 @@ public class MnemonicActivity extends LoginActivity {
         final AsyncFunction<Void, LoginData> connectToLogin = new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) {
-                final String mnemonics = UI.getText(mMnemonicText).trim();
-                if (mnemonics.split(" ").length != 27)
-                    return mService.login(mnemonics);
+                if (words.length != 27)
+                    return mService.login(mnemonic);
 
                 // Encrypted mnemonic
                 return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final String passphrase) {
-                        return mService.login(CryptoHelper.encrypted_mnemonic_to_mnemonic(mnemonics, passphrase));
+                        return mService.login(CryptoHelper.decrypt_mnemonic(mnemonic, passphrase));
                     }
                 });
             }
@@ -155,7 +257,7 @@ public class MnemonicActivity extends LoginActivity {
             @Override
             public void onSuccess(final LoginData result) {
                 if (getCallingActivity() == null) {
-                    final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, mService.getMnemonics());
+                    final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, mService.getMnemonic());
                     startActivityForResult(savePin, PINSAVE);
                 } else {
                     setResult(RESULT_OK);
@@ -179,7 +281,7 @@ public class MnemonicActivity extends LoginActivity {
     }
 
     private ListenableFuture<String> askForPassphrase() {
-        final SettableFuture<String> passphraseFuture = SettableFuture.create();
+        final SettableFuture<String> fn = SettableFuture.create();
         runOnUiThread(new Runnable() {
             public void run() {
                 final View v = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
@@ -190,7 +292,7 @@ public class MnemonicActivity extends LoginActivity {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                                passphraseFuture.set(UI.getText(passphraseValue));
+                                fn.set(UI.getText(passphraseValue));
                             }
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -202,127 +304,42 @@ public class MnemonicActivity extends LoginActivity {
                 UI.showDialog(dialog);
             }
         });
-        return passphraseFuture;
-    }
-
-    protected int getMainViewId() { return R.layout.activity_mnemonic; }
-
-    public static void initWordList(final ArrayList<String> wordsArray, final Set<String> words) {
-        final Object en = Wally.bip39_get_wordlist("en");
-        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i) {
-            wordsArray.add(Wally.bip39_get_word(en, i));
-            if (words != null)
-                words.add(wordsArray.get(i));
-        }
+        return fn;
     }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
-        Log.i(TAG, getIntent().getType() + ' ' + getIntent());
-
-        mWordsArray = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
-        mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
-        initWordList(mWordsArray, mWords);
-
-        mMnemonicText = UI.find(this, R.id.mnemonicText);
-        mOkButton = UI.find(this,R.id.mnemonicOkButton);
-
-        mOkButton.setIndeterminateProgressMode(true);
-
-        UI.mapClick(this, R.id.mnemonicOkButton, new View.OnClickListener() {
-            public void onClick(final View v) {
-                login();
-            }
-        });
-        UI.mapClick(this, R.id.mnemonicScanIcon, new View.OnClickListener() {
-                                        public void onClick(final View v) {
-                                            //New Marshmallow permissions paradigm
-                                            final String[] perms = {"android.permission.CAMERA"};
-                                            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
-                                                checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
-                                                requestPermissions(perms, CAMERA_PERMISSION);
-                                            } else {
-                                                final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
-                                                startActivityForResult(scanner, QRSCANNER);
-                                            }
-                                        }
-                                    }
-        );
-
-
-        mMnemonicText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                if(event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode())
-                    return true;
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-                    login();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        mMnemonicText.addTextChangedListener(new UI.TextWatcher() {
-            public void afterTextChanged(final Editable s) {
-                final String mnemonic = s.toString();
-                if (mnemonic.startsWith(" ")) {
-                    s.replace(0, 1, "");
-                    return;
-                }
-                final int space_idx = mnemonic.lastIndexOf("  ");
-                if (space_idx != -1) {
-                    try {
-                        s.replace(space_idx, 2, " ");
-                    } catch (final IndexOutOfBoundsException ignore) {
-                        // seems caused by backspace on a physical keyboard via emulator
-                        // ideally we handle this better but this seems to work
-                    }
-                    return;
-                }
-                final String[] split = mnemonic.split(" ");
-                final boolean endsWithSpace = mnemonic.endsWith(" ");
-                final int lastElement = split.length - 1;
-                for (int i = 0; i < split.length; ++i) {
-                    final String word = split[i];
-                    // check for equality
-                    // not last or last but postponed by a space
-                    // otherwise just that it's the start of a word
-                    if (MnemonicHelper.isInvalidWord(mWordsArray, word, !(i == lastElement) || endsWithSpace)) {
-                        if (spans == null || !word.equals(spans.word))
-                            setWord(word);
-                        return;
-                    }
-                }
-                mMnemonicText.setOnTouchListener(null);
-                final Spans copy = spans;
-                spans = null;
-                if (copy != null)
-                    for (final Object span : copy.spans)
-                        s.removeSpan(span);
-            }
-        });
-
-        NFCIntentMnemonicLogin();
+    public void onClick(final View v) {
+        if (v == mOkButton) {
+            doLogin();
+        }
+        else if (v == mScanButton)
+            onScanClicked();
     }
 
-    private void loginOnUiThread(final String mnemonics) {
-        if (mService.onConnected == null || mnemonics.equals(mService.getMnemonics()))
+    private void onScanClicked() {
+        final String[] perms = { "android.permission.CAMERA" };
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 &&
+            checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED)
+            requestPermissions(perms, CAMERA_PERMISSION);
+        else {
+            final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
+            startActivityForResult(scanner, QRSCANNER);
+        }
+    }
+
+    private void loginOnUiThread() {
+        if (mService.onConnected == null || getMnemonic().equals(mService.getMnemonic()))
             return;
 
         CB.after(mService.onConnected, new CB.Op<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        login();
-                    }
-                });
+                runOnUiThread(new Runnable() { public void run() { doLogin(); } });
             }
         });
     }
 
-    private byte[] getNFCPayload(final Intent intent) {
+    private static byte[] getNFCPayload(final Intent intent) {
         final Parcelable[] extra = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
         return ((NdefMessage) extra[0]).getRecords()[0].getPayload();
     }
@@ -337,64 +354,19 @@ public class MnemonicActivity extends LoginActivity {
 
         if (intent.getType().equals("x-gait/mnc")) {
             // Unencrypted NFC
-            final String mnemonics = CryptoHelper.mnemonic_from_bytes(getNFCPayload(intent));
-            mMnemonicText.setText(mnemonics);
-            loginOnUiThread(mnemonics);
+            mMnemonicText.setText(CryptoHelper.mnemonic_from_bytes(getNFCPayload(intent)));
+            loginOnUiThread();
 
         } else if (intent.getType().equals("x-ga/en"))
             // Encrypted NFC
             CB.after(askForPassphrase(), new CB.Op<String>() {
                 @Override
                 public void onSuccess(final String passphrase) {
-                    final String mnemonics = CryptoHelper.encrypted_mnemonic_to_mnemonic(getNFCPayload(intent), passphrase);
-                    mMnemonicText.setText(mnemonics);
-                    loginOnUiThread(mnemonics);
+                    mMnemonicText.setText(CryptoHelper.decrypt_mnemonic(getNFCPayload(intent),
+                                                                        passphrase));
+                    loginOnUiThread();
                 }
             });
-    }
-
-    private Spans spans;
-
-    private void setWord(final String badWord) {
-
-        mMnemonicText.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(final View v, final MotionEvent motionEvent) {
-                showErrorCorrection(MnemonicHelper.getClosestWord(mWordsArray, badWord), badWord);
-                return false;
-            }
-        });
-
-        final Spannable spannable = mMnemonicText.getText();
-        final String mnemonics = spannable.toString();
-
-        int start = 0;
-        for (final String word: mnemonics.split(" ")) {
-            if (word.equals(badWord)) break;
-            start += word.length() + 1;
-        }
-
-        final int end = start + badWord.length();
-
-        if (spans != null)
-            for (final Object o: spans.spans)
-                spannable.removeSpan(o);
-
-        spans = new Spans(badWord);
-        for (final Object s: spans.spans)
-            spannable.setSpan(s, start, end, 0);
-    }
-
-    static class Spans {
-        final String word;
-        final List<Object> spans = new ArrayList<>(4);
-        Spans(final String word) {
-            this.word = word;
-            spans.add(new StyleSpan(Typeface.BOLD));
-            spans.add(new StyleSpan(Typeface.ITALIC));
-            spans.add(new UnderlineSpan());
-            spans.add(new ForegroundColorSpan(Color.RED));
-        }
     }
 
     @Override
@@ -407,7 +379,7 @@ public class MnemonicActivity extends LoginActivity {
             case QRSCANNER:
                 if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {
                     mMnemonicText.setText(data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT));
-                    login();
+                    doLogin();
                 }
                 break;
         }
@@ -423,27 +395,20 @@ public class MnemonicActivity extends LoginActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onRequestPermissionsResult(final int permsRequestCode, final String[] permissions, final int[] grantResults) {
-        switch (permsRequestCode) {
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
+        if (requestCode != CAMERA_PERMISSION)
+            return;
 
-            case CAMERA_PERMISSION:
-
-                final boolean cameraPermissionGranted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
-
-                if (cameraPermissionGranted) {
-                    final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
-                    startActivityForResult(scanner, QRSCANNER);
-                }
-                else
-                    shortToast(R.string.err_qrscan_requires_camera_permissions);
+        if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            shortToast(R.string.err_qrscan_requires_camera_permissions);
+            return;
         }
+
+        final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
+        startActivityForResult(scanner, QRSCANNER);
     }
 }
-

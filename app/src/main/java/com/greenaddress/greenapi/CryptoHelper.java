@@ -52,13 +52,13 @@ public class CryptoHelper {
         return len == size ? buf: Arrays.copyOf(buf, len);
     }
 
-    public static String encrypted_mnemonic_to_mnemonic(final String mnemonics, final String pass) {
+    public static String decrypt_mnemonic(final String mnemonic, final String pass) {
         return mnemonic_from_bytes(MnemonicHelper.decryptMnemonic(
-                mnemonic_to_bytes(mnemonics, Wally.BIP39_ENTROPY_LEN_288),
+                mnemonic_to_bytes(mnemonic, Wally.BIP39_ENTROPY_LEN_288),
                 Normalizer.normalize(pass, Normalizer.Form.NFC)));
     }
 
-    public static String encrypted_mnemonic_to_mnemonic(final byte[] data, final String pass) {
+    public static String decrypt_mnemonic(final byte[] data, final String pass) {
         return CryptoHelper.mnemonic_from_bytes(MnemonicHelper.decryptMnemonic(data, pass));
     }
 

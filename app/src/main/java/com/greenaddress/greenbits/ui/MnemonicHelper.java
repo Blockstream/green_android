@@ -28,16 +28,6 @@ public class MnemonicHelper {
         return c[s1 - 1];
     }
 
-    static boolean isInvalidWord(final ArrayList<String> words, final String word, final boolean equals) {
-        for (final String w : words) {
-            if ((!equals && w.startsWith(word)) ||
-                    (equals && w.equals(word))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static byte[] decryptMnemonic(final byte[] entropy, final String normalizedPassphrase) {
         final byte[] salt = Arrays.copyOfRange(entropy, 32, 36);
         final byte[] encrypted = Arrays.copyOf(entropy, 32);
@@ -55,7 +45,7 @@ public class MnemonicHelper {
         return decrypted;
     }
 
-    static String getClosestWord(final ArrayList<String> words, final String word) {
+    public static String getClosestWord(final ArrayList<String> words, final String word) {
 
         final List<Integer> scores = new ArrayList<>(words.size());
         for (final String w : words) {

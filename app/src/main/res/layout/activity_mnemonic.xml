@@ -43,7 +43,7 @@
                     android:textColor="@color/accent"
                     android:textSize="34sp" />
 
-                <com.greenaddress.greenbits.ui.MnemonicEditText
+                <MultiAutoCompleteTextView
                     android:id="@+id/mnemonicText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                     android:imeActionId="2"
                     android:imeActionLabel="Login"
                     android:imeOptions="actionGo"
-                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+                    android:inputType="textMultiLine|textVisiblePassword"
                     android:minLines="2"
                     android:digits="abcdefghijklmnopqrstuvwxyz "
                     android:text=""

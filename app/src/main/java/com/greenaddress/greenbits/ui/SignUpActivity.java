@@ -129,7 +129,7 @@ public class SignUpActivity extends LoginActivity {
                         setComplete(true);
                         mService.resetSignUp();
                         mOnSignUp = null;
-                        final Intent savePin = PinSaveActivity.createIntent(SignUpActivity.this, mService.getMnemonics());
+                        final Intent savePin = PinSaveActivity.createIntent(SignUpActivity.this, mService.getMnemonic());
                         startActivityForResult(savePin, PINSAVE);
                     }
 
