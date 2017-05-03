@@ -53,7 +53,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
 
         if (GaService.IS_ELEMENTS) {
             bitcoinUnitText.setText(mService.getAssetSymbol() + " ");
-            UI.hide((View) UI.find(mView, R.id.commissionFiatColumn));
+            UI.hide(UI.find(mView, R.id.commissionFiatColumn));
         }
 
         mAmountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);

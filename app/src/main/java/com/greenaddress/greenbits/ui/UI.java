@@ -263,11 +263,11 @@ public abstract class UI {
             v.setText(R.string.empty);
     }
 
-    public static <T> T find(final Activity activity, final int id) {
+    public static <T extends View> T find(final Activity activity, final int id) {
         return (T) activity.findViewById(id);
     }
 
-    public static <T> T find(final View v, final int id) {
+    public static <T extends View> T find(final View v, final int id) {
         return (T) v.findViewById(id);
     }
 

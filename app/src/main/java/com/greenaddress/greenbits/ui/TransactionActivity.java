@@ -114,17 +114,17 @@ public class TransactionActivity extends GaActivity {
         final boolean isWatchOnly = mService.isWatchOnly();
 
         if (mService.IS_ELEMENTS) {
-            UI.hide((View) UI.find(this, R.id.txUnconfirmed));
+            UI.hide(UI.find(this, R.id.txUnconfirmed));
         } else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT || txItem.isSpent) {
             if (txItem.getConfirmations() > 0)
-                UI.hide((View) UI.find(this, R.id.txUnconfirmed)); // Confirmed: hide warning
+                UI.hide(UI.find(this, R.id.txUnconfirmed)); // Confirmed: hide warning
             else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 showUnconfirmed(txItem, feePerKb);
         } else {
             // unspent incoming output
             if (txItem.getConfirmations() > 0)
                 if (isWatchOnly || txItem.spvVerified)
-                    UI.hide((View) UI.find(this, R.id.txUnconfirmed));
+                    UI.hide(UI.find(this, R.id.txUnconfirmed));
                 else {
                     final int blocksLeft = mService.getSPVBlocksRemaining();
                     final String message = getResources().getString(R.string.txUnverifiedTx);
@@ -174,13 +174,13 @@ public class TransactionActivity extends GaActivity {
             doubleSpentByText.setText(res);
         } else
             UI.hide(doubleSpentByText, doubleSpentByTitle,
-                    (View) UI.find(this, R.id.txDoubleSpentByMargin));
+                    UI.find(this, R.id.txDoubleSpentByMargin));
 
         if (!TextUtils.isEmpty(txItem.counterparty))
             recipientText.setText(txItem.counterparty);
         else
             UI.hide(recipientText, recipientTitle,
-                   (View) UI.find(this, R.id.txRecipientMargin));
+                    UI.find(this, R.id.txRecipientMargin));
 
         final TextView receivedOnText = UI.find(this, R.id.txReceivedOnText);
         if (!TextUtils.isEmpty(txItem.receivedOn))
@@ -640,8 +640,7 @@ public class TransactionActivity extends GaActivity {
         final TextView feeLabel = UI.find(v, R.id.newTxFeeLabel);
         feeLabel.setText(R.string.oldFeeText);
 
-        UI.hide((View) UI.find(v, R.id.newTxRecipientLabel),
-                (View) UI.find(v, R.id.newTxRecipientText));
+        UI.hide(UI.find(v, R.id.newTxRecipientLabel), UI.find(v, R.id.newTxRecipientText));
         final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
 

@@ -114,7 +114,7 @@ public class TwoFactorActivity extends GaActivity {
 
         mPromptText.setText(getTypeString(UI.getText(mPromptText), type));
         if (!isEmail)
-            UI.hide((View) UI.find(this, R.id.emailNotices));
+            UI.hide(UI.find(this, R.id.emailNotices));
 
         mProgressBar.setProgress(stepNum);
         mProgressBar.setMax(numSteps);

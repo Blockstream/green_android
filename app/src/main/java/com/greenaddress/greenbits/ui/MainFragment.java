@@ -85,7 +85,7 @@ public class MainFragment extends SubaccountFragment {
 
             if (!mIsExchanger) {
                 // No fiat values in elements multiasset
-                UI.hide((View) UI.find(mView, R.id.mainLocalBalance));
+                UI.hide(UI.find(mView, R.id.mainLocalBalance));
                 // Currently no SPV either
                 UI.hide(balanceQuestionMark);
             }
@@ -248,9 +248,9 @@ public class MainFragment extends SubaccountFragment {
     }
 
     private void showTxView(final boolean doShow) {
-        UI.showIf(doShow, (View) UI.find(mView, R.id.mainTransactionList));
+        UI.showIf(doShow, UI.find(mView, R.id.mainTransactionList));
         if (!mIsExchanger)
-            UI.hideIf(doShow, (View) UI.find(mView, R.id.mainEmptyTransText));
+            UI.hideIf(doShow, UI.find(mView, R.id.mainEmptyTransText));
     }
 
     private void reloadTransactions(final boolean newAdapter, final boolean showWaitDialog) {
