@@ -704,7 +704,7 @@ public class WalletClient {
         return simpleCall("vault.process_bip0070_url", Map.class, url);
     }
 
-    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final Map<String, Object> privateData) {
+    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final JSONMap privateData) {
 
         final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
 
@@ -718,7 +718,7 @@ public class WalletClient {
 
         clientCall(rpc, "vault.prepare_payreq", Map.class, new CallHandler() {
             public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData, mLoginData.mSubAccounts, mHttpClient));
+                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData.mData, mLoginData.mSubAccounts, mHttpClient));
             }
         }, amount.longValue(), dataClone, privateData);
 
@@ -746,11 +746,7 @@ public class WalletClient {
         return simpleCall("vault.send_tx", null, args, TfaData);
     }
 
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final boolean returnErrorUri) {
-        return sendRawTransaction(tx, twoFacData, null, returnErrorUri);
-    }
-
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final Map<String, Object> privateData, final boolean returnErrorUri) {
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final JSONMap privateData, final boolean returnErrorUri) {
         final SettableFuture<Map<String, Object>> rpc = SettableFuture.create();
         final ErrorHandler errHandler = new ErrorHandler() {
             public void onError(final String uri, final String err) {
@@ -758,7 +754,8 @@ public class WalletClient {
             }
         };
         return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc),
-                          errHandler, h(tx.bitcoinSerialize()), twoFacData, privateData);
+                          errHandler, h(tx.bitcoinSerialize()), twoFacData,
+                          privateData == null ? null : privateData.mData);
     }
 
     public ListenableFuture<List<byte[]>> signTransaction(final ISigningWallet signingWallet, final PreparedTransaction ptx) {

@@ -595,7 +595,8 @@ public class TransactionActivity extends GaActivity {
                 }
                 final Map<String, Object> twoFacData = new HashMap<>();
                 twoFacData.put("try_under_limits_bump", tx.getFee().subtract(oldFee).longValue());
-                final ListenableFuture<Map<String,Object>> sendFuture = mService.sendRawTransaction(tx, twoFacData, true);
+                final ListenableFuture<Map<String,Object>> sendFuture;
+                sendFuture = mService.sendRawTransaction(tx, twoFacData, null, true);
                 Futures.addCallback(sendFuture, new FutureCallback<Map<String,Object>>() {
                     @Override
                     public void onSuccess(final Map result) {
@@ -670,7 +671,8 @@ public class TransactionActivity extends GaActivity {
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
                         if (twoFacData != null)
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
-                        final ListenableFuture<Map<String,Object>> sendFuture = mService.sendRawTransaction(signedTx, twoFacData, false);
+                        final ListenableFuture<Map<String,Object>> sendFuture;
+                        sendFuture = mService.sendRawTransaction(signedTx, twoFacData, null, false);
                         Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(TransactionActivity.this) {
                             @Override
                             public void onSuccess(final Map result) {

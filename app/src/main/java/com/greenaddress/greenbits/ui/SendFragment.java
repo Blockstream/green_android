@@ -459,20 +459,20 @@ public class SendFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        final Map<String, Object> privateData = new HashMap<>();
+        final JSONMap privateData = new JSONMap();
         final String memo = UI.getText(mNoteText);
         if (!memo.isEmpty())
-            privateData.put("memo", memo);
+            privateData.mData.put("memo", memo);
 
         if (mIsExchanger)
-            privateData.put("memo", Exchanger.TAG_EXCHANGER_TX_MEMO);
+            privateData.mData.put("memo", Exchanger.TAG_EXCHANGER_TX_MEMO);
 
         if (mSubaccount != 0)
-            privateData.put("subaccount", mSubaccount);
+            privateData.mData.put("subaccount", mSubaccount);
 
         final boolean isInstant = mInstantConfirmationCheckbox.isChecked();
         if (isInstant)
-            privateData.put("instant", true);
+            privateData.mData.put("instant", true);
 
         final Coin amount = getSendAmount();
 
@@ -545,7 +545,7 @@ public class SendFragment extends SubaccountFragment {
 
     private void onTransactionPrepared(final PreparedTransaction ptx,
                                        final String recipient, final Coin amount,
-                                       final Map<String, Object> privateData) {
+                                       final JSONMap privateData) {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
@@ -589,7 +589,7 @@ public class SendFragment extends SubaccountFragment {
                                         final Transaction signedRawTx,
                                         final String recipient, final Coin amount,
                                         final String method, final Coin fee,
-                                        final Map<String, Object> privateData,
+                                        final JSONMap privateData,
                                         final Map<String, Object> underLimits) {
         Log.i(TAG, "onTransactionValidated( params " + method + ' ' + fee + ' ' + amount + ' ' + recipient + ')');
         final GaService service = getGAService();
@@ -646,7 +646,8 @@ public class SendFragment extends SubaccountFragment {
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
 
                         if (signedRawTx != null) {
-                            final ListenableFuture<Map<String,Object>> sendFuture = service.sendRawTransaction(signedRawTx, twoFacData, privateData, false);
+                            final ListenableFuture<Map<String,Object>> sendFuture;
+                            sendFuture = service.sendRawTransaction(signedRawTx, twoFacData, privateData, false);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity, mSendButton) {
                                 @Override
                                 public void onSuccess(final Map result) {
@@ -759,7 +760,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private int createRawTransaction(final List<JSONMap> utxos, final String recipient,
-                                     final Coin amount, final Map<String, Object> privateData,
+                                     final Coin amount, final JSONMap privateData,
                                      final boolean sendAll) {
 
         if (GaService.IS_ELEMENTS)
@@ -892,7 +893,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private int createRawElementsTransaction(final List<JSONMap> utxos, final String recipient,
-                                             final Coin amount, final Map<String, Object> privateData,
+                                             final Coin amount, final JSONMap privateData,
                                              final boolean sendAll) {
         // FIXME: sendAll
         final GaService service = getGAService();

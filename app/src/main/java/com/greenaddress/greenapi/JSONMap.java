@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -28,6 +29,7 @@ public class JSONMap implements Serializable {
 
     public final Map<String, Object> mData; // Public for setting only
 
+    public JSONMap() { mData = new HashMap(); }
     public JSONMap(final Map<String, Object> jsonMap) { mData = jsonMap; }
 
     public static List<JSONMap> fromList(final List list) {

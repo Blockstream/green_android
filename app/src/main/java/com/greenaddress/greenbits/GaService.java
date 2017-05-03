@@ -724,10 +724,8 @@ public class GaService extends Service implements INotificationHandler {
         return login(new SWWallet(master), pinData.mMnemonic);
     }
 
-    private void preparePrivData(final Map<String, Object> privateData) {
-        int subAccount = 0;
-        if (privateData.containsKey("subaccount"))
-            subAccount = (int) privateData.get("subaccount");
+    private void preparePrivData(final JSONMap privateData) {
+        int subAccount = privateData.get("subaccount", 0);
         // Skip fetching raw previous outputs if they are not required
         final Coin verifiedBalance = getSPVVerifiedBalance(subAccount);
         final boolean fetchPrev = !isSPVEnabled() ||
@@ -736,11 +734,11 @@ public class GaService extends Service implements INotificationHandler {
 
         final boolean isRegTest = Network.NETWORK == RegTestParams.get();
         final String fetchMode = isRegTest ? "" : "http"; // Fetch inline for regtest
-        privateData.put("prevouts_mode", fetchPrev ? fetchMode : "skip");
+        privateData.mData.put("prevouts_mode", fetchPrev ? fetchMode : "skip");
 
         final Object rbf_optin = getUserConfig("replace_by_fee");
         if (rbf_optin != null)
-            privateData.put("rbf_optin", rbf_optin);
+            privateData.mData.put("rbf_optin", rbf_optin);
     }
 
     public ListenableFuture<List<byte[]>> signTransaction(final PreparedTransaction ptx) {
@@ -765,11 +763,7 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final boolean returnErrorUri) {
-        return mClient.sendRawTransaction(tx, twoFacData, returnErrorUri);
-    }
-
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final Map<String, Object> privateData, final boolean returnErrorUri) {
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final JSONMap privateData, final boolean returnErrorUri) {
         return mClient.sendRawTransaction(tx, twoFacData, privateData, returnErrorUri);
     }
 
@@ -1173,7 +1167,7 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.processBip70URL(url);
     }
 
-    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final Map<String, Object> privateData) {
+    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final JSONMap privateData) {
         preparePrivData(privateData);
         return mClient.preparePayreq(amount, data, privateData);
     }
