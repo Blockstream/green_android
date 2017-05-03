@@ -31,7 +31,6 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     private Runnable mRefreshCallback;
 
     private ListView mPeerList;
-    private TextView mEmptyView;
     private TextView mBloomInfoText;
 
     @Override
@@ -42,11 +41,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         mService.enableSPVPingMonitoring();
 
         mPeerList = UI.find(this, R.id.peerlistview);
-        mEmptyView = UI.find(this, R.id.empty_list_view);
         mBloomInfoText = UI.find(this, R.id.bloominfo);
         mPeerListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mPeers);
 
-        mPeerList.setEmptyView(mEmptyView);
+        mPeerList.setEmptyView(UI.find(this, R.id.empty_list_view));
 
         mRefreshHandler = new Handler();
         mRefreshCallback = new Runnable() {
