@@ -79,8 +79,8 @@ public class SPV {
 
     private final Map<TransactionOutPoint, Coin> mCountedUtxoValues = new HashMap<>();
 
-    private final String VERIFIED = "verified_utxo_";
-    private final String SPENDABLE = "verified_utxo_spendable_value_";
+    private final static String VERIFIED = "verified_utxo_";
+    private final static String SPENDABLE = "verified_utxo_spendable_value_";
 
     static class AccountInfo extends Pair<Integer, Integer> {
         public AccountInfo(final Integer subAccount, final Integer pointer) { super(subAccount, pointer); }
