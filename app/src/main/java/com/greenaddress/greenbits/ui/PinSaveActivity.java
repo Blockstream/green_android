@@ -23,7 +23,6 @@ public class PinSaveActivity extends GaActivity {
     private static final int ACTIVITY_REQUEST_CODE = 1;
     private static final String NEW_PIN_MNEMONIC = "com.greenaddress.greenbits.NewPinMnemonic";
 
-    private CheckBox mNativeAuthCB;
     private EditText mPinText;
     private Button mSkipButton;
     private CircularProgressButton mSaveButton;
@@ -107,14 +106,14 @@ public class PinSaveActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
         mPinText = UI.find(this, R.id.pinSaveText);
-        mNativeAuthCB = UI.find(this, R.id.useNativeAuthentication);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
                 KeyStoreAES.createKey(true);
 
-                UI.show(mNativeAuthCB);
-                mNativeAuthCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                final CheckBox nativeAuthCB = UI.find(this, R.id.useNativeAuthentication);
+                UI.show(nativeAuthCB);
+                nativeAuthCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
                         if (isChecked)
