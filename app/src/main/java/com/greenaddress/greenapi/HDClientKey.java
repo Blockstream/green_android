@@ -14,7 +14,7 @@ public class HDClientKey {
 
     //
     // Temporary methods for use while converting from DeterministicKey
-    public static DeterministicKey deriveChildKey(final DeterministicKey parent, final Integer childNum) {
+    private static DeterministicKey deriveChildKey(final DeterministicKey parent, final Integer childNum) {
         return HDKeyDerivation.deriveChildKey(parent, new ChildNumber(childNum));
     }
 
