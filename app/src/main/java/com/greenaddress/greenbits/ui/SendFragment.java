@@ -675,7 +675,7 @@ public class SendFragment extends SubaccountFragment {
                         }
                     }
                 }).build();
-
+        UI.mapEnterToPositive(mSummary, R.id.newTx2FACodeText);
         mSummary.show();
     }
 

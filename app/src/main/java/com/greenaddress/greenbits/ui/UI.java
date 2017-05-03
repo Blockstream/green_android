@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.collect.Lists;
@@ -67,21 +68,25 @@ public abstract class UI {
         setDialogCloseHandler(d, callback, false);
     }
 
+    private static boolean isEnterKeyDown(final KeyEvent e) {
+        return e != null && e.getAction() == KeyEvent.ACTION_DOWN &&
+               e.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+    }
+
     public static TextView.OnEditorActionListener getListenerRunOnEnter(final Runnable r) {
         return new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                        actionId == EditorInfo.IME_ACTION_DONE ||
-                        (event != null && event.getAction() == KeyEvent.ACTION_DOWN) &&
-                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                if (actionId == EditorInfo.IME_ACTION_DONE ||
+                    actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == EditorInfo.IME_ACTION_SEND ||
+                    isEnterKeyDown(event)) {
                     if (event == null || !event.isShiftPressed()) {
-                        // the user is done typing.
-                        r.run();
-                        return true; // consume.
+                        r.run(); // The user is done typing.
+                        return true; // Consume.
                     }
                 }
-                return false; // pass on to other listeners.
+                return false; // Pass on to other listeners.
             }
         };
     }
@@ -226,6 +231,16 @@ public abstract class UI {
         });
     }
 
+    public static void mapEnterToPositive(final Dialog dialog, final int editId) {
+        final TextView edit = UI.find(dialog, editId);
+        edit.setOnEditorActionListener(getListenerRunOnEnter(new Runnable() {
+            public void run() {
+                final MaterialDialog md = (MaterialDialog) dialog;
+                md.onClick(md.getActionButton(DialogAction.POSITIVE));
+            }
+        }));
+    }
+
     // Show/Hide controls
     public static void showIf(final boolean condition, final View... views) {
         for (final View v: views)
@@ -269,6 +284,10 @@ public abstract class UI {
 
     public static <T extends View> T find(final View v, final int id) {
         return (T) v.findViewById(id);
+    }
+
+    public static <T extends View> T find(final Dialog dialog, final int id) {
+        return (T) dialog.findViewById(id);
     }
 
     public static LinearLayout.LayoutParams getScreenLayout(final Activity activity,

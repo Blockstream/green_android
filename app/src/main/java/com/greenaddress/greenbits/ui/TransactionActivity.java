@@ -687,7 +687,7 @@ public class TransactionActivity extends GaActivity {
                     }
                 })
                 .build();
-
+        UI.mapEnterToPositive(mSummary, R.id.newTx2FACodeText);
         mSummary.show();
     }
 }
