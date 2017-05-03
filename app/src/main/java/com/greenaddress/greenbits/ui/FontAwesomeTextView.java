@@ -6,7 +6,7 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-public class FontAwesomeTextView extends TextView {
+public class FontAwesomeTextView extends android.support.v7.widget.AppCompatTextView {
 
     private Typeface mDefaultTypeface;
     private static Typeface mAwesomeTypeface;
@@ -25,14 +25,6 @@ public class FontAwesomeTextView extends TextView {
 
     public FontAwesomeTextView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        if (!isInEditMode())
-            init();
-    }
-
-    @SuppressLint("NewApi")
-    public FontAwesomeTextView(final Context context, final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
         if (!isInEditMode())
             init();
     }

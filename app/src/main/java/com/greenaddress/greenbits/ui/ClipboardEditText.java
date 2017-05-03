@@ -6,7 +6,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
-public class ClipboardEditText extends EditText {
+public class ClipboardEditText extends android.support.v7.widget.AppCompatEditText {
 
     private final Context context;
 

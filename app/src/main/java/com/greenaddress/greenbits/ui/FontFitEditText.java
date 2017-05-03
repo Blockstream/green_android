@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.EditText;
 
-public class FontFitEditText extends EditText {
+public class FontFitEditText extends android.support.v7.widget.AppCompatEditText {
 
     //Attributes
     private Paint mTestPaint;
