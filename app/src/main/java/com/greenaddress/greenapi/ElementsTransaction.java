@@ -116,7 +116,7 @@ public class ElementsTransaction extends Transaction {
         // First come the inputs.
         readInputs();
         byte flags = 0;
-        if (getInputs().size() == 0 && witSupported) {
+        if (witSupported && getInputs().isEmpty()) {
             flags = readBytes(1)[0];
             optimalEncodingMessageSize += 1;
             if (flags != 0) {

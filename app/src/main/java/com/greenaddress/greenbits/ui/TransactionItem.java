@@ -158,7 +158,7 @@ public class TransactionItem implements Serializable {
             else {
                 type = TransactionItem.TYPE.OUT;
                 if (tmpCounterparty == null) {
-                    if (recipients.size() > 0)
+                    if (!recipients.isEmpty())
                         tmpCounterparty = recipients.get(0).get("ad");
                     else if (hasConfidentialRecipients)
                         tmpCounterparty = "Confidential address";
