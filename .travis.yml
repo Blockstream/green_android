@@ -21,9 +21,9 @@ script:
    - ./gradlew --project-dir=bitcoinj/tools build
 
 before_install:
-   - curl -O http://dl.google.com/android/repository/android-ndk-r14-linux-x86_64.zip
-   - unzip -qq ./android-ndk-r14-linux-x86_64.zip
-   - export ANDROID_NDK=`pwd`/android-ndk-r14
+   - curl -O http://dl.google.com/android/repository/android-ndk-r14b-linux-x86_64.zip
+   - unzip -qq ./android-ndk-r14b-linux-x86_64.zip
+   - export ANDROID_NDK=`pwd`/android-ndk-r14b
    - rm -fr app/src/main/jniLibs && pushd app && ./prepare_fdroid.sh && popd
    - find app/src/main/jniLibs | xargs ls -laht
 
