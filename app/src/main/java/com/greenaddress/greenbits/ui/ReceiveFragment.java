@@ -295,7 +295,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
         if (isZombie())
             return;
-        final GaActivity gaActivity = getGaActivity();
 
         Long amount = null;
         if (clear)
