@@ -23,6 +23,7 @@ import com.greenaddress.greenbits.ui.UI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class GeneralPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {
@@ -52,14 +53,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
                               .putString("altime", Integer.toString(timeout))
                               .apply();
         final Preference altime = find("altime");
-        altime.setSummary(String.format("%d %s", timeout, getResources().getString(R.string.autologout_time_default)));
+        altime.setSummary(String.format(Locale.US, "%d %s", timeout, getResources().getString(R.string.autologout_time_default)));
         altime.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 try {
                     final Integer altimeout = Integer.parseInt(newValue.toString());
                     mService.setUserConfig("altimeout", altimeout, true);
-                    preference.setSummary(String.format("%d %s", altimeout, getResources().getString(R.string.autologout_time_default)));
+                    preference.setSummary(String.format(Locale.US, "%d %s", altimeout, getResources().getString(R.string.autologout_time_default)));
                     return true;
                 } catch (final Exception e) {
                     // not set
