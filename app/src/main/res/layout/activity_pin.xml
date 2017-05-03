@@ -18,26 +18,28 @@
         android:textSize="34sp"
         android:paddingBottom="10dp" />
 
-    <com.maksim88.passwordedittext.PasswordEditText
-        android:id="@+id/pinText"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        app:pet_nonMonospaceFont="true"
-        android:ems="10"
-        android:gravity="center"
-        android:hint=""
-        android:maxLength="15"
-        android:textColor="@color/secondaryTextColor"
-        android:textSize="34sp"
-        android:inputType="numberPassword">
+        app:passwordToggleEnabled="true">
 
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pinText"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:ems="10"
+            android:gravity="center"
+            android:hint=""
+            android:maxLength="15"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="34sp"
+            android:inputType="numberPassword"
+        />
         <requestFocus />
-
-    </com.maksim88.passwordedittext.PasswordEditText>
-
+    </android.support.design.widget.TextInputLayout>
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
