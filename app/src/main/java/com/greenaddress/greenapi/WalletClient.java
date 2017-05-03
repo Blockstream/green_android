@@ -161,7 +161,7 @@ public class WalletClient {
                              final ErrorHandler errHandler,
                              final String uri, final String err,
                              final Object... args) {
-        Log.d(TAG, procedure + "->" + uri + ":" + err);
+        Log.d(TAG, procedure + "->" + uri + ':' + err);
         if (BuildConfig.DEBUG)
             logCallDetails(procedure, err, args);
         if (errHandler != null)

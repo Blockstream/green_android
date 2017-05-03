@@ -218,7 +218,7 @@ public class MnemonicActivity extends LoginActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        Log.i(TAG, getIntent().getType() + "" + getIntent());
+        Log.i(TAG, getIntent().getType() + ' ' + getIntent());
 
         mWordsArray = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
         mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);

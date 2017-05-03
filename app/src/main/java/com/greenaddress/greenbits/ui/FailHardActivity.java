@@ -21,7 +21,7 @@ public class FailHardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         final Intent i = getIntent();
-        Log.e(TAG, i.getStringExtra("errorTitle") + ":" + i.getStringExtra("errorContent"));
+        Log.e(TAG, i.getStringExtra("errorTitle") + ':' + i.getStringExtra("errorContent"));
 
         UI.popup(this, i.getStringExtra("errorTitle"))
                   .content(i.getStringExtra("errorContent"))

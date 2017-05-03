@@ -80,7 +80,7 @@ public class MainFragment extends SubaccountFragment {
         if (!GaService.IS_ELEMENTS)
             AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
         else {
-            balanceUnit.setText(service.getAssetSymbol() + " ");
+            balanceUnit.setText(service.getAssetSymbol() + ' ');
             balanceText.setText(service.getAssetFormat().format(balance));
 
             if (!mIsExchanger) {

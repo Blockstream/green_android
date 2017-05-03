@@ -702,7 +702,7 @@ public class GaService extends Service implements INotificationHandler {
             public Void call() throws Exception {
                 final PinData pinData = mClient.setPin(mnemonic, pin, "default");
                 // As this is a new PIN, save it to config
-                final String encrypted = Base64.encodeToString(pinData.mSalt, Base64.NO_WRAP) + ";" +
+                final String encrypted = Base64.encodeToString(pinData.mSalt, Base64.NO_WRAP) + ';' +
                                          Base64.encodeToString(pinData.mEncryptedData, Base64.NO_WRAP);
                 cfgEdit("pin").putString("ident", pinData.mPinIdentifier)
                               .putInt("counter", 0)

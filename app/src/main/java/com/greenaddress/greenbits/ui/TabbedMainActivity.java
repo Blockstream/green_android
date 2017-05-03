@@ -156,7 +156,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 suffix = (String) m.get("name");
         }
         if (!suffix.isEmpty())
-            suffix = " " + suffix;
+            suffix = ' ' + suffix;
         setTitle(String.format("%s%s", getResources().getText(R.string.app_name), suffix));
     }
 

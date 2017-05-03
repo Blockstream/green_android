@@ -115,7 +115,7 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
         // the & (%26) in Tom and Jerry gets interpreted as a separator and the label then gets parsed
         // as 'Tom ' instead of 'Tom & Jerry')
         final String blockchainInfoScheme = scheme + "://";
-        final String correctScheme = scheme + ":";
+        final String correctScheme = scheme + ':';
         final String schemeSpecificPart;
         if (input.startsWith(blockchainInfoScheme))
             schemeSpecificPart = input.substring(blockchainInfoScheme.length());
@@ -148,10 +148,10 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
             final int sepIndex = nameValuePairToken.indexOf('=');
             if (sepIndex == -1)
                 throw new BitcoinURIParseException("Malformed Bitcoin URI - no separator in '" +
-                        nameValuePairToken + "'");
+                        nameValuePairToken + '\'');
             if (sepIndex == 0)
                 throw new BitcoinURIParseException("Malformed Bitcoin URI - empty name '" +
-                        nameValuePairToken + "'");
+                        nameValuePairToken + '\'');
             final String nameToken = nameValuePairToken.substring(0, sepIndex).toLowerCase(Locale.US);
             final String valueToken = nameValuePairToken.substring(sepIndex + 1);
 

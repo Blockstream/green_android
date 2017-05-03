@@ -116,7 +116,7 @@ public class SPV {
     }
 
     private <T> String Var(final String name, final T value) {
-        return name + " => " + value.toString() + " ";
+        return name + " => " + value.toString() + ' ';
     }
 
     public boolean isEnabled() {
@@ -304,7 +304,7 @@ public class SPV {
         final List<Integer> changedSubaccounts = new ArrayList<>();
         boolean missing = false;
         for (final Integer outpoint : mUnspentOutpoints.get(txHash)) {
-            final String key = txHashHex + ":" + outpoint;
+            final String key = txHashHex + ':' + outpoint;
             final long value = mService.cfgIn(SPENDABLE).getLong(key, -1);
             if (value == -1) {
                 missing = true;
@@ -344,7 +344,7 @@ public class SPV {
                     futuresList.add(Futures.transform(verifyFn, new Function<Boolean, Boolean>() {
                         @Override
                         public Boolean apply(final Boolean input) {
-                            final String key = txHashHex + ":" + outpoint;
+                            final String key = txHashHex + ':' + outpoint;
                             if (!input)
                                 Log.e(TAG, "txHash " + key + " not spendable!");
                             else {

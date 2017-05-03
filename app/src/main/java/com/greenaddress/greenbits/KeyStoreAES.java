@@ -87,8 +87,8 @@ public class KeyStoreAES {
             keyStore.load(null);
             final SecretKey secretKey = (SecretKey) keyStore.getKey(KEYSTORE_KEY, null);
             final Cipher cipher = Cipher.getInstance(
-                    android.security.keystore.KeyProperties.KEY_ALGORITHM_AES + "/"
-                            + android.security.keystore.KeyProperties.BLOCK_MODE_CBC + "/"
+                    android.security.keystore.KeyProperties.KEY_ALGORITHM_AES + '/'
+                            + android.security.keystore.KeyProperties.BLOCK_MODE_CBC + '/'
                             + android.security.keystore.KeyProperties.ENCRYPTION_PADDING_PKCS7);
 
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);

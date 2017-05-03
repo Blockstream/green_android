@@ -203,8 +203,8 @@ public class FirstScreenActivity extends LoginActivity {
                     try {
                         masterPublicKey = dongle.getWalletPublicKey("");
                         loginPublicKey = dongle.getWalletPublicKey("18241'");
-                        Log.d(TAG, "TEE derived MPK " + Dump.dump(masterPublicKey.getPublicKey()) + " " + Dump.dump(masterPublicKey.getChainCode()));
-                        Log.d(TAG, "TEE derived LPK " + Dump.dump(loginPublicKey.getPublicKey()) + " " + Dump.dump(loginPublicKey.getChainCode()));
+                        Log.d(TAG, "TEE derived MPK " + Dump.dump(masterPublicKey.getPublicKey()) + ' ' + Dump.dump(masterPublicKey.getChainCode()));
+                        Log.d(TAG, "TEE derived LPK " + Dump.dump(loginPublicKey.getPublicKey()) + ' ' + Dump.dump(loginPublicKey.getChainCode()));
                     } catch (final Exception e) {
                         FirstScreenActivity.this.toast("Trustlet login failed");
                         tuiCall = false;

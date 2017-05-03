@@ -201,8 +201,8 @@ public class PinActivity extends LoginActivity implements Observer {
 
     @TargetApi(Build.VERSION_CODES.M)
     private Cipher getAESCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {
-        final String name = KeyProperties.KEY_ALGORITHM_AES + "/" +
-                            KeyProperties.BLOCK_MODE_CBC + "/" +
+        final String name = KeyProperties.KEY_ALGORITHM_AES + '/' +
+                            KeyProperties.BLOCK_MODE_CBC + '/' +
                             KeyProperties.ENCRYPTION_PADDING_PKCS7;
         return Cipher.getInstance(name);
     }

@@ -632,7 +632,7 @@ public class TransactionActivity extends GaActivity {
     }
 
     private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee, final Transaction signedTx) {
-        Log.i(TAG, "showIncreaseSummary( params " + method + " " + oldFee + " " + newFee + ")");
+        Log.i(TAG, "showIncreaseSummary( params " + method + ' ' + oldFee + ' ' + newFee + ')');
         final View v = getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
         final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);

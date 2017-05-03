@@ -340,7 +340,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         final ClipData data = ClipData.newPlainText("data", mQrCodeBitmap.getData());
         cm.setPrimaryClip(data);
         final String text = gaActivity.getString(R.string.toastOnCopyAddress) +
-                            " " + gaActivity.getString(R.string.warnOnPaste);
+                ' ' + gaActivity.getString(R.string.warnOnPaste);
         gaActivity.toast(text);
     }
 
