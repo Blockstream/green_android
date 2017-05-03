@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 class Verifier {
-    private static Coin feeError(final String smallLarge, final Coin feeRate, final Coin limit) {
+    private static void feeError(final String smallLarge, final Coin feeRate, final Coin limit) {
             final String msg = "Verification: Fee is too " + smallLarge + " (" +
                                feeRate.toFriendlyString() + " vs limit " +
                                limit.toFriendlyString() + ')';

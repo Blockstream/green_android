@@ -670,8 +670,8 @@ public class GaService extends Service implements INotificationHandler {
         mBalanceObservables.get(subAccount).doNotify();
     }
 
-    public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {
-        return Futures.transform(mClient.setPricingSource(currency, exchange), new Function<Boolean, Boolean>() {
+    public void setPricingSource(final String currency, final String exchange) {
+        Futures.transform(mClient.setPricingSource(currency, exchange), new Function<Boolean, Boolean>() {
             @Override
             public Boolean apply(final Boolean input) {
                 mFiatCurrency = currency;
