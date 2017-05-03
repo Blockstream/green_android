@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -68,7 +69,7 @@ public class ListTransactionsAdapter extends
         final Resources res = mActivity.getResources();
 
         if (txItem.doubleSpentBy == null) {
-            holder.textWhen.setTextColor(res.getColor(R.color.tertiaryTextColor));
+            holder.textWhen.setTextColor(ContextCompat.getColor(mActivity, R.color.tertiaryTextColor));
             holder.textWhen.setText(TimeAgo.fromNow(txItem.date.getTime(), mActivity));
         } else {
             switch (txItem.doubleSpentBy) {
@@ -110,7 +111,7 @@ public class ListTransactionsAdapter extends
         holder.textWho.setText(message);
 
         final int color = txItem.amount > 0 ? R.color.superLightGreen : R.color.superLightPink;
-        holder.mainLayout.setBackgroundColor(res.getColor(color));
+        holder.mainLayout.setBackgroundColor(ContextCompat.getColor(mActivity, color));
 
         if (txItem.hasEnoughConfirmations()) {
             final int glyph = txItem.amount > 0 ? R.string.fa_sign_in : R.string.fa_sign_out;
