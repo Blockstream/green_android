@@ -767,12 +767,12 @@ public class SendFragment extends SubaccountFragment {
             return Coin.valueOf((long) (bestInstant * 1000 * 1000 * 100));
         }
 
-        // We don't have a usable fee rate estimate. Default to
-        // 10000 satoshi per 1000 bytes to match the JS wallets.
-        // FIXME: May cause high fees, should we have different rates for (non)instant?
+        // We don't have a usable fee rate estimate, use a default.
         if (GaService.IS_ELEMENTS)
             return Coin.valueOf(1);
-        return Coin.valueOf(10000);
+        if (Network.NETWORK == MainNetParams.get())
+            return Coin.valueOf((isInstant ? 200 : 120) * 1000);
+        return Coin.valueOf((isInstant ? 75 : 60) * 1000);
     }
 
 
