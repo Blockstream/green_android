@@ -1,33 +1,20 @@
-language: android
+language: generic
 sudo: required
-android:
-    components:
-        - tools
-        - build-tools-25.0.3
-        - android-25
-        - platform-tools-25
-        - extra-android-support
-        - extra-android-m2repository
-        - extra-google-m2repository
-    licenses:
-        - '.+'
 
-jdk:
-    - oraclejdk8
-
-script:
-   - sed -i -e 's/enable true/enable false/g' app/build.gradle
-   - ./gradlew --stacktrace clean assembleProductRelease -PdisablePreDex
-   - ./gradlew --project-dir=bitcoinj/tools build
+services:
+  - docker
 
 before_install:
-   - curl -O http://dl.google.com/android/repository/android-ndk-r14b-linux-x86_64.zip
-   - unzip -qq ./android-ndk-r14b-linux-x86_64.zip
-   - export ANDROID_NDK=`pwd`/android-ndk-r14b
-   - rm -fr app/src/main/jniLibs && pushd app && ./prepare_fdroid.sh && popd
-   - find app/src/main/jniLibs | xargs ls -laht
+  - docker pull greenaddress/android
 
-addons:
-    apt:
-        packages:
-           - swig
+env:
+  - NETWORK=Production BUILD=Debug
+  - NETWORK=Production BUILD=Release
+  - NETWORK=Btctestnet BUILD=Debug
+  - NETWORK=Btctestnet BUILD=Release
+  - NETWORK=Publicregtest BUILD=Debug
+  - NETWORK=Publicregtest BUILD=Release
+  - NETWORK=Elementsregtest BUILD=Debug
+  - NETWORK=Elementsregtest BUILD=Release
+
+script: docker run -v $PWD:/gb greenaddress/android /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assemble$NETWORK$BUILD"

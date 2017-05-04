@@ -65,6 +65,19 @@ Or to build both at once, run:
 
 `./buildCheckpoints.sh`
 
+If you have docker configured and want to build the app in release mode without having to deal with setting up an Android development environment
+
+`cd contrib`
+
+`docker build -t greenbits_docker .`
+
+`docker run -v $PATH_TO_GREENBITS_REPO:/gb greenbits_docker`
+
+if you don't need to build the Docker image, you can directly do:
+
+`docker pull greenaddress/android && docker run -v $PATH_TO_GREENBITS_REPO:/gb greenaddress/android`
+
+
 ### Acknowledgements
 
 Thanks to [Bitcoin Wallet for Android](https://github.com/schildbach/bitcoin-wallet) for their QR scanning activity source code!
