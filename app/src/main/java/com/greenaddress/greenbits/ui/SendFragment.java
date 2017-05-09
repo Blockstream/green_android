@@ -87,7 +87,7 @@ public class SendFragment extends SubaccountFragment {
     private Exchanger mExchanger;
 
     private void processBitcoinURI(final BitcoinURI URI) {
-        processBitcoinURI(URI);
+        processBitcoinURI(URI, null, null);
     }
 
     private void processBitcoinURI(final BitcoinURI URI, final String confidentialAddress, Coin amount) {
