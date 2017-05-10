@@ -33,6 +33,7 @@ public class GATx {
     public static final int P2SH_P2WSH_FORTIFIED_OUT = 14;
     public static final int REDEEM_P2SH_FORTIFIED = 150;
     public static final int REDEEM_P2SH_P2WSH_FORTIFIED = 159;
+    public static final int MAX_BLOCK_NUM = 500000000 - 1;  // From nTimeLock field definition
 
 
     public static int getOutScriptType(final int scriptType) {
@@ -54,7 +55,7 @@ public class GATx {
                 if (!minimizeInputs) {
                     // When not minimizing inputs, prefer earlier block times;
                     // By spending earlier utxos we can avoid re-deposits.
-                    cmp = lhs.getInt("block_height").compareTo(rhs.getInt("block_height"));
+                    cmp = lhs.getInt("block_height", MAX_BLOCK_NUM).compareTo(rhs.getInt("block_height", MAX_BLOCK_NUM));
                 }
                 if (cmp == 0)
                     cmp = lhs.getBigInteger("value").compareTo(rhs.getBigInteger("value"));
