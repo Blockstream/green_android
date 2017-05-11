@@ -70,44 +70,54 @@ public class JSONMap implements Serializable {
             return false;
         return Boolean.TRUE.equals(get(k));
     }
-    public Integer getInt(final String k) { return get(k); }
-    public Integer getInt(final String k, final Integer def) {
-       final Integer v = get(k, null);
-       return v != null ? v : def;
+
+    public String getString(final String k) {
+       final Object o = containsKey(k) ? get(k) : null;
+       return o == null ? null : o.toString();
     }
 
-    public String getString(final String k) { return get(k); }
+    public Integer getInt(final String k) {
+        return getInt(k, null);
+    }
+
+    public Integer getInt(final String k, final Integer def) {
+        final String v = getString(k);
+        return v == null ? def : Integer.valueOf(v);
+    }
 
     public Date getDate(final String k) throws ParseException {
-        final String date = get(k);
-        return DATE_FORMAT.parse(date);
+        final String v = getString(k);
+        return v == null ? null : DATE_FORMAT.parse(v);
     }
 
     public Sha256Hash getHash(final String k) {
-        final String hash = get(k);
-        return Sha256Hash.wrap(hash);
+        final String v = getString(k);
+        return v == null ? null : Sha256Hash.wrap(v);
     }
 
     public Long getLong(final String k) {
-        final String v = get(k);
-        return Long.valueOf(v);
+        final String v = getString(k);
+        return v == null ? null : Long.valueOf(v);
     }
 
     public float getFloat(final String k) {
-        final String v = get(k);
-        return Float.valueOf(v);
+        final String v = getString(k);
+        return v == null ? null : Float.valueOf(v);
     }
 
     public Coin getCoin(final String k) {
-        return Coin.valueOf(getLong(k));
+        final Long v = getLong(k);
+        return v == null ? null : Coin.valueOf(v);
     }
 
     public BigInteger getBigInteger(final String k) {
-        return new BigInteger(String.valueOf(get(k)));
+        final String v = getString(k);
+        return v == null ? null : new BigInteger(v);
     }
 
     public byte[] getBytes(final String k) {
-        return Wally.hex_to_bytes(getString(k));
+        final String v = getString(k);
+        return v == null ? null : Wally.hex_to_bytes(v);
     }
 
     public String toString() {
