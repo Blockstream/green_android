@@ -178,6 +178,9 @@ public class TransactionItem implements Serializable {
     }
 
     final Coin getFeePerKilobyte() {
-        return size > 0 ? Coin.valueOf(1000 * fee / size) : Coin.ZERO;
+        if (size <= 0)
+            return Coin.ZERO;
+        final double perKb = fee * 1000.0 / size;
+        return Coin.valueOf((long) Math.ceil(perKb));
     }
 }
