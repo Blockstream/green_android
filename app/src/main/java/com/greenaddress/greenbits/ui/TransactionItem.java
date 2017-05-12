@@ -57,8 +57,6 @@ public class TransactionItem implements Serializable {
 
     public TransactionItem(final GaService service, final JSONMap m, final int currentBlock) throws ParseException {
         instant = m.getBool("instant");
-        // FIXME: Implement RBF for instant transactions
-        replaceable = !GaService.IS_ELEMENTS && !instant && m.getBool("rbf_optin");
         doubleSpentBy = m.get("double_spent_by");
 
         this.currentBlock = currentBlock;
@@ -174,6 +172,9 @@ public class TransactionItem implements Serializable {
         receivedOnEp = tmpReceivedOnEp;
         spvVerified = service.isSPVVerified(txHash);
         date = m.getDate("created_at");
+        // FIXME: Implement RBF for instant transactions
+        replaceable = !GaService.IS_ELEMENTS && !instant &&
+                      m.getBool("rbf_optin") && type != TransactionItem.TYPE.IN;
     }
 
     final Coin getFeePerKilobyte() {
