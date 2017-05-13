@@ -39,7 +39,9 @@ public abstract class UI {
     public static final int INVALID_RESOURCE_ID = 0;
     public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
     private static final String MICRO_BTC = "\u00B5BTC";
-    private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).repeatOptionalDecimals(1, 3);
+    private static final MonetaryFormat BTC = new MonetaryFormat().shift(0).minDecimals(8).noCode();
+    private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(5).noCode();
+    private static final MonetaryFormat UBTC = new MonetaryFormat().shift(6).minDecimals(2).noCode();
     private static final DecimalFormat mDecimalFmt = new DecimalFormat("#,###.########", DecimalFormatSymbols.getInstance(Locale.US));
 
     // Class to unify cancel and dismiss handling */
@@ -313,22 +315,21 @@ public abstract class UI {
         return R.string.fa_bits_space;
     }
 
-    private static MonetaryFormat getUnitFormat(final String unit) {
+    private static MonetaryFormat getUnitFormat(final GaService service) {
+        final String unit = service.getBitcoinUnit();
         if (MonetaryFormat.CODE_BTC.equals(unit))
-            return MonetaryFormat.BTC;
+            return BTC;
         if (MonetaryFormat.CODE_MBTC.equals(unit))
             return MBTC;
-        if (MICRO_BTC.equals(unit))
-            return MonetaryFormat.UBTC;
-        return MonetaryFormat.UBTC.code(6, "bits");
+        return UBTC;
     }
 
     public static String formatCoinValue(final GaService service, final Coin value) {
-        return getUnitFormat(service.getBitcoinUnit()).noCode().format(value).toString();
+        return getUnitFormat(service).format(value).toString();
     }
 
     public static Coin parseCoinValue(final GaService service, final String value) {
-        return getUnitFormat(service.getBitcoinUnit()).parse(value);
+        return getUnitFormat(service).parse(value);
     }
 
     public static String setCoinText(final GaService service,
@@ -342,7 +343,10 @@ public abstract class UI {
         }
         if (value == null)
             return null;
-        return setAmountText(amount, formatCoinValue(service, value));
+        final String formatted = formatCoinValue(service, value);
+        if (amount != null)
+            amount.setText(formatted);
+        return formatted;
     }
 
     public static String setCoinText(final GaService service, final View v,
@@ -359,16 +363,11 @@ public abstract class UI {
                            (TextView) find(activity, amountId), value);
     }
 
-    public static String setAmountText(final TextView v, final String value) {
-        String res;
+    public static void setAmountText(final TextView v, final String value) {
         try {
-            res = mDecimalFmt.format(Double.valueOf(value));
+            v.setText(mDecimalFmt.format(Double.valueOf(value)));
         } catch (final NumberFormatException e) {
-            res = value;
+            v.setText(value);
         }
-
-        if (v != null)
-            v.setText(res);
-        return res;
     }
 }
