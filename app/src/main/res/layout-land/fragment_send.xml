@@ -33,7 +33,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="@string/fa_btc_space"
                         android:textColor="@color/textColor"
                         android:textSize="34sp" />
 
@@ -125,7 +124,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="@string/fa_btc_space"
                                 android:textColor="@color/accent"
                                 android:textSize="24sp" />
 

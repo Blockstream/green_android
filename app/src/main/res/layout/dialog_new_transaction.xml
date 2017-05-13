@@ -25,7 +25,6 @@
                 android:id="@+id/newTxAmountUnitText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/fa_btc_space"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -59,7 +58,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/newTxFeeUnit"
-                android:text="@string/fa_btc_space"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
