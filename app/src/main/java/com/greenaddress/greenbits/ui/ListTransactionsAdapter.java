@@ -173,7 +173,10 @@ public class ListTransactionsAdapter extends
             textWho = UI.find(v, R.id.listWhoText);
             inOutIcon = UI.find(v, R.id.listInOutIcon);
             mainLayout = UI.find(v, R.id.list_item_layout);
-            unitText = UI.find(v, R.id.listBitcoinUnitText);
+            // TODO: For multiasset, enable unitText
+            //if (GaService.IS_ELEMENTS)
+            //    unitText = UI.find(v, R.id.listBitcoinUnitText);
+            unitText = null;
             listNumberConfirmation = UI.find(v, R.id.listNumberConfirmation);
         }
     }
