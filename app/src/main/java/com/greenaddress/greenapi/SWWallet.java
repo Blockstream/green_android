@@ -56,7 +56,7 @@ public class SWWallet extends ISigningWallet {
 
             final Script script = new Script(Wally.hex_to_bytes(prevOut.script));
             final Sha256Hash hash;
-            if (prevOut.scriptType.equals(14))
+            if (prevOut.scriptType.equals(GATx.P2SH_P2WSH_FORTIFIED_OUT))
                 hash = tx.hashForSignatureWitness(i, script.getProgram(), Coin.valueOf(prevOut.value), Transaction.SigHash.ALL, false);
             else
                 hash = tx.hashForSignature(i, script.getProgram(), Transaction.SigHash.ALL, false);
