@@ -141,23 +141,23 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void setAccountTitle(final int subAccount) {
-        String suffix = "";
+        final boolean doLookup = subAccount != 0 && mService.haveSubaccounts();
+        final Map<String, ?> details;
+        details = doLookup ? mService.findSubaccount(subAccount) : null;
+        final String accountName;
+        if (details == null)
+            accountName = getResources().getString(R.string.main_account);
+        else
+            accountName = (String) details.get("name");
 
-        if (mService.showBalanceInTitle()) {
-            Coin balance = mService.getCoinBalance(subAccount);
-            if (balance == null)
-                balance = Coin.ZERO;
-            suffix = formatValuePostfix(balance);
-        } else if (mService.haveSubaccounts()) {
-            final Map<String, ?> m = mService.findSubaccount(subAccount);
-            if (m == null)
-                suffix = getResources().getString(R.string.main_account);
-            else
-                suffix = (String) m.get("name");
+        if (!mService.showBalanceInTitle()) {
+            setTitle(accountName);
+            return;
         }
-        if (!suffix.isEmpty())
-            suffix = ' ' + suffix;
-        setTitle(String.format("%s%s", getResources().getText(R.string.app_name), suffix));
+        Coin balance = mService.getCoinBalance(subAccount);
+        if (balance == null)
+            balance = Coin.ZERO;
+        setTitle(formatValuePostfix(balance) + " (" + accountName + ')');
     }
 
     private void setBlockWaitDialog(final boolean doBlock) {
