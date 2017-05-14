@@ -894,6 +894,9 @@ public class SendFragment extends SubaccountFragment {
 
             tx.getInput(i).setScriptSig(new Script(inscript));
             if (isSegwitEnabled && scriptType == GATx.P2SH_P2WSH_FORTIFIED_OUT) {
+                // Replace the witness data with just the user signature:
+                // the server will recreate the witness data to include the
+                // dummy OP_CHECKMULTISIG push, user + server sigs and script.
                 final TransactionWitness witness = new TransactionWitness(1);
                 witness.setPush(0, sig);
                 tx.setWitness(i, witness);

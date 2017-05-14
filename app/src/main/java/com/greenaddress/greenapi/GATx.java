@@ -24,9 +24,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.util.Log;
+
 public class GATx {
 
-    private static final List<byte[]> EMPTY_SIGS = ImmutableList.of(new byte[71], new byte[71]);
+    private static final String TAG = GaService.class.getSimpleName();
+    private static final int SIG_LEN = 71; // Average signature length
+    private static final List<byte[]> EMPTY_SIGS = ImmutableList.of(new byte[SIG_LEN], new byte[SIG_LEN]);
+    private static final byte[] EMPTY_WITNESS_DATA = new byte[0];
+    private static final byte[] EMPTY_WITNESS_SIG = new byte[SIG_LEN + 1]; // 1=Sighash flag byte
 
     // Script types in end points
     public static final int P2SH_FORTIFIED_OUT = 10;
@@ -86,9 +92,17 @@ public class GATx {
         op = new TransactionOutPoint(Network.NETWORK, ep.getInt("pt_idx"), ep.getHash("txhash"));
         final TransactionInput in = new TransactionInput(Network.NETWORK, null, inscript, op, ep.getCoin("value"));
         TransactionWitness witness = null;
-        if (service.isSegwitEnabled() && scriptType == REDEEM_P2SH_P2WSH_FORTIFIED) {
-            witness = new TransactionWitness(1);
-            witness.setPush(0, EMPTY_SIGS.get(0));
+        if (getOutScriptType(scriptType) == P2SH_P2WSH_FORTIFIED_OUT) {
+           // To calculate the tx weight correctly, we must set the witness data
+           // to the correct number of pushes of data of the correct size.
+           // Before sending the transaction, we replace this witness data with
+           // just the users signature, since the server recreates the witness
+           // data itself to replace the server sig and script placeholders.
+            witness = new TransactionWitness(4);
+            witness.setPush(0, EMPTY_WITNESS_DATA); // Dummy for off by 1 in OP_CHECKMULTISIG
+            witness.setPush(1, EMPTY_WITNESS_SIG);  // Users signature
+            witness.setPush(2, EMPTY_WITNESS_SIG);  // GA Server signature
+            witness.setPush(3, outscript);          // Outscript
         }
         in.setSequenceNumber(0); // This ensures nlocktime is recognized
         tx.addInput(in);
@@ -167,10 +181,12 @@ public class GATx {
         final Coin minRate = service.getMinFeeRate();
         final Coin rate = feeRate.isLessThan(minRate) ? minRate : feeRate;
         final int vSize;
+        Log.d(TAG, "getTxFee(rates): " + rate.value + '/' + feeRate.value + '/' + minRate.value);
 
-        if (!GaService.IS_ELEMENTS && !service.isSegwitEnabled())
+        if (!GaService.IS_ELEMENTS && !service.isSegwitEnabled()) {
             vSize = tx.unsafeBitcoinSerialize().length;
-        else {
+            Log.d(TAG, "getTxFee(non-sw): " + vSize);
+        } else {
             /* For segwit, the fee is based on the weighted size of the tx */
             tx.transactionOptions = TransactionOptions.NONE;
             final int nonSwSize = tx.unsafeBitcoinSerialize().length;
@@ -178,9 +194,12 @@ public class GATx {
             final int swSize = tx.unsafeBitcoinSerialize().length;
             final int fullSize = swSize + estimateElementsSize(tx);
             vSize = (int) Math.ceil((nonSwSize * 3 + fullSize) / 4.0);
+            Log.d(TAG, "getTxFee(sw): " + nonSwSize + '/' + swSize + '/' + vSize);
         }
         final double fee = (double) vSize * rate.value / 1000.0;
-        return Coin.valueOf((long) Math.ceil(fee));
+        final long roundedFee = (long) Math.ceil(fee); // Round up
+        Log.d(TAG, "getTxFee: fee is " + roundedFee);
+        return Coin.valueOf(roundedFee);
     }
 
     // Swap the change and recipient output in a tx with 50% probability */
