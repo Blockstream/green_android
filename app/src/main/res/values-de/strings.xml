@@ -101,7 +101,7 @@
     <string name="mnemonic_passphrase">Mnemonischer Kennwortsatz</string>
     <string name="mnemonic_passphrase_not_available">Der Kennwortsatz ist nicht verfügbar</string>
     <string name="autologout_time">Automatische logout Zeiteinstellung</string>
-    <string name="autologout_time_default">Minuten</string>
+    <string name="autologout_time_default">%1$d Minuten</string>
     <string name="touch_to_display">Hier berühren zum Anzeigen</string>
     <string name="txUnconfirmedTx">Unbestätigte Transaktion. Bitte warten sie auf Blockbestätigungen, für ein erhöhtes Vertrauen in diese Transaktion.</string>
     <string name="txUnverifiedTx">Ungeprüfte Transaktion. Bitte warte sie auf Synchronisierung, um das Vertrauen in diese Transaktion zu stärken. Verbleibende Blöcke: </string>

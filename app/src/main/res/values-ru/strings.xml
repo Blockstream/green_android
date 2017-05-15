@@ -112,7 +112,7 @@
     <string name="mnemonic_passphrase">Пароль для мнемонической фразы</string>
     <string name="mnemonic_passphrase_not_available">Пароль отсутствует</string>
     <string name="autologout_time">Время автоматического выхода</string>
-    <string name="autologout_time_default"> минут</string>
+    <string name="autologout_time_default">%1$d минут</string>
     <string name="touch_to_display">Коснитесь для отображения</string>
     <string name="txUnconfirmedTx">Транзакция не подтверждена. Пожалуйста подождите подтверждений блока для получения доверия для этой транзакции.</string>
     <string name="txUnverifiedTx">Транзакция не подтверждена. Пожалуйста подождите синхронизацию для получения доверия для этой транзакции. Осталось блоков:</string>

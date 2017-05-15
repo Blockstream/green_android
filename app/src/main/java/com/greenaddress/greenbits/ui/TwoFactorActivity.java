@@ -110,7 +110,7 @@ public class TwoFactorActivity extends GaActivity {
 
         final boolean isEmail = mMethod.equals("email");
         final int resId = isEmail ? R.string.emailAddress : R.string.phoneNumber;
-        final String type = getResources().getString(resId);
+        final String type = getString(resId);
 
         mPromptText.setText(getTypeString(UI.getText(mPromptText), type));
         if (!isEmail)

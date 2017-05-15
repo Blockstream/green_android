@@ -105,7 +105,7 @@
     <string name="mnemonic_passphrase">Phrase de récupération mnémonique</string>
     <string name="mnemonic_passphrase_not_available">Phrase de récupération non disponible</string>
     <string name="autologout_time">Timeout de déconnexion</string>
-    <string name="autologout_time_default"> minutes</string>
+    <string name="autologout_time_default">%1$d minutes</string>
     <string name="touch_to_display">Tapez pour afficher</string>
     <string name="txUnconfirmedTx">Transaction non confirmée. Veuillez attendre une confirmation de bloc pour faire confiance à cette transaction.</string>
     <string name="txUnverifiedTx">Transaction non vérifiée. Veuillez attendre la synchronisation pour gagner de la confiance en cette transaction. Blocs restants :</string>
@@ -159,7 +159,7 @@
     <string name="pref_title_display_hostname">Nom d\'hôte</string>
     <string name="pref_title_display_port">Port</string>
     <string name="optin_rbf">Activer le remplacement de transaction</string>
-    <string name="willConfirmAfter">Se confirmera après %s blocs (estimation)</string>
+    <string name="willConfirmAfter">Se confirmera après %1$d blocs (estimation)</string>
     <string name="recommendationBlocks">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après %s blocs.</string>
     <string name="recommendationSingleBlock">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après 1 bloc.</string>
     <string name="increaseFee">Augmenter les frais</string>

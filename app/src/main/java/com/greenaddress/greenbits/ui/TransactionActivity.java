@@ -125,7 +125,7 @@ public class TransactionActivity extends GaActivity {
                     UI.hide(UI.find(this, R.id.txUnconfirmed));
                 else {
                     final int blocksLeft = mService.getSPVBlocksRemaining();
-                    final String message = getResources().getString(R.string.txUnverifiedTx);
+                    final String message = getString(R.string.txUnverifiedTx);
                     if (blocksLeft != Integer.MAX_VALUE)
                         mUnconfirmedText.setText(String.format("%s %s", message, blocksLeft));
                     else
@@ -234,7 +234,7 @@ public class TransactionActivity extends GaActivity {
                 break;
             }
 
-        mUnconfirmedEstimatedBlocks.setText(String.format(getResources().getString(R.string.willConfirmAfter), currentEstimate));
+        mUnconfirmedEstimatedBlocks.setText(getString(R.string.willConfirmAfter, currentEstimate));
         if (mService.isWatchOnly() || GaService.IS_ELEMENTS || !txItem.replaceable)
             return; // FIXME: Implement RBF for elements
 

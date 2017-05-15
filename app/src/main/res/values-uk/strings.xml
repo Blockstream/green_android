@@ -112,7 +112,7 @@
     <string name="mnemonic_passphrase">Відобразити мнемонічну фразу</string>
     <string name="mnemonic_passphrase_not_available">Відсутній пароль</string>
     <string name="autologout_time">Час автоматичного виходу</string>
-    <string name="autologout_time_default"> хвилин</string>
+    <string name="autologout_time_default">%1$d хвилин</string>
     <string name="touch_to_display">Доторкнутись для відображення</string>
     <string name="txUnconfirmedTx">Транзакція не підтверджена. Будь-ласка зачекайте підтерджень блоку для отримання довіри для цієї транзакції.</string>
     <string name="txUnverifiedTx">Транзакція не підтверджена. Будь-ласка зачекайте синхронізації для отримання довіри для цієї транзакції. Залишилось блоків:</string>

@@ -73,8 +73,8 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
             mSellCommissionPerc.setTitle(R.string.sell_commission_percentage_elements);
         }
 
-        mBuyCommissionFixed.setSummary(String.format("%s %s", getString(R.string.fixedCommissionDesc), btcUnit));
-        mSellCommissionFixed.setSummary(String.format("%s %s", getString(R.string.fixedCommissionDesc), btcUnit));
+        mBuyCommissionFixed.setSummary(getString(R.string.fixedCommissionDesc, btcUnit));
+        mSellCommissionFixed.setSummary(getString(R.string.fixedCommissionDesc, btcUnit));
     }
 
     private boolean commissionPerc(final String value) {

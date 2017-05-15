@@ -120,7 +120,7 @@
     <string name="mnemonic_passphrase">Mnemonic passphrase</string>
     <string name="mnemonic_passphrase_not_available">Passphrase not available</string>
     <string name="autologout_time">Auto logout timeout</string>
-    <string name="autologout_time_default"> minutes</string>
+    <string name="autologout_time_default">%1$d minutes</string>
     <string name="touch_to_display">Touch to display</string>
     <string name="txUnconfirmedTx">Transaction not confirmed. Please wait for block confirmations to gain trust in this transaction.</string>
     <string name="txUnverifiedTx">Transaction not verified. Please wait for synchronization to gain trust in this transaction. Remaining blocks:</string>
@@ -269,7 +269,7 @@
     <string name="signupInProgress">Signup in progress</string>
     <string name="notConnected">You are not connected, please wait</string>
     <string name="pinErrorLength">PIN has to be between 4 and 15 long</string>
-    <string name="problemWithKey">Problem with key %s</string>
+    <string name="problemWithKey">Problem with key %1$s</string>
     <string name="showAmountInReceive">Amount fields in receive tab</string>
     <string name="showAmountInReceiveDetail">Show amount fields in receive tab</string>
     <string name="segwit_dialog_title">Account updated</string>
@@ -299,7 +299,7 @@
     <string name="enterValidValue">Enter a valid value</string>
     <string name="enterValidPerc">Enter value from 0 to 100</string>
     <string name="enterValidValueGreaterZero">Enter value greater than 0</string>
-    <string name="fixedCommissionDesc">fixed commission in</string>
+    <string name="fixedCommissionDesc">fixed commission in %1$s</string>
     <string name="totalWithCommissions">Total with commissions:</string>
     <string name="showQrCode">Show QR code</string>
     <string name="cash_in">Cash in</string>

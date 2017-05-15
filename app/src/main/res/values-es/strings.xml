@@ -105,7 +105,7 @@
     <string name="mnemonic_passphrase">Frase clave mnemotécnica</string>
     <string name="mnemonic_passphrase_not_available">Frase clave no disponible</string>
     <string name="autologout_time">Tiempo de ingreso automático agotado</string>
-    <string name="autologout_time_default"> minutos</string>
+    <string name="autologout_time_default">%1$d minutos</string>
     <string name="touch_to_display">Presione para mostrar</string>
     <string name="txUnconfirmedTx">Transacción no confirmada. Por favor espere la confirmación del bloque para que la transacción sea confiable.</string>
     <string name="txUnverifiedTx">Transacción no verificada. Por favor espere la sincronización para que la transacción sea confiable. Bloques restantes:</string>

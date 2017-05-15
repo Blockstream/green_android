@@ -146,7 +146,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         details = doLookup ? mService.findSubaccount(subAccount) : null;
         final String accountName;
         if (details == null)
-            accountName = getResources().getString(R.string.main_account);
+            accountName = getString(R.string.main_account);
         else
             accountName = (String) details.get("name");
 
@@ -181,7 +181,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 final ArrayList<String> names = new ArrayList<>(subaccount_len);
                 final ArrayList<Integer> pointers = new ArrayList<>(subaccount_len);
 
-                names.add(getResources().getString(R.string.main_account));
+                names.add(getString(R.string.main_account));
                 pointers.add(0);
 
                 for (final Object s : subaccounts) {
