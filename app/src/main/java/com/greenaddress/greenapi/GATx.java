@@ -16,6 +16,7 @@ import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionWitness;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.VarInt;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.script.ScriptBuilder;
 import com.blockstream.libwally.Wally;
 
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import android.util.Log;
 
@@ -174,6 +178,85 @@ public class GATx {
                                      cmtSize + VarInt.sizeOf(cmtSize) +
                                      rpSize + VarInt.sizeOf(rpSize);
         return singleOutputSize * tx.getOutputs().size();
+    }
+
+    private static double extractRate(final Map feeEstimates, final Integer blockNum) {
+        final Map estimate = (Map) feeEstimates.get(Integer.toString(blockNum));
+        return Double.parseDouble(estimate.get("feerate").toString());
+    }
+
+    // Return the best estimate of the fee rate in satoshi/1000 bytes
+    public static Coin getFeeEstimate(final GaService service, final boolean isInstant) {
+        final Map<String, Object> feeEstimates = service.getFeeEstimates();
+        Double bestInstant = null;
+
+        // Iterate the estimates from shortest to longest confirmation time
+        final SortedSet<Integer> keys = new TreeSet<>();
+        for (final String block : feeEstimates.keySet())
+            keys.add(Integer.parseInt(block));
+
+        for (final Integer blockNum : keys) {
+            if (!isInstant && blockNum < 6)
+                continue; // Non-instant: Use 6 confirmation rate and later only
+
+            double rate = extractRate(feeEstimates, blockNum);
+            if (rate <= 0.0)
+                continue; // No estimate available: Try next confirmation rate
+
+            if (isInstant) {
+                // For instant, increase the rate to increase the likelyhood of confirmation.
+                // We use the lowest value of:
+                // a) 1.1 * the 1st or 2nd block fee rate
+                // b) 2.0 * the first rate later than 2 blocks
+                if (blockNum <= 2) {
+                    if (bestInstant == null)
+                       bestInstant = rate * 1.1; // Save earliest fast confirmation rate
+                    continue; // Continue to find the first non-fast rate
+                } else
+                    rate *= 2.0;
+            }
+
+            if (bestInstant != null && bestInstant < rate)
+                rate = bestInstant; // Use the lowest instant rate found
+
+            return Coin.valueOf((long) (rate * 1000 * 1000 * 100));
+        }
+
+        if (bestInstant != null) {
+            // No non-fast confirmation rate, return the fast confirmation rate
+            return Coin.valueOf((long) (bestInstant * 1000 * 1000 * 100));
+        }
+
+        // We don't have a usable fee rate estimate, use a default.
+        if (GaService.IS_ELEMENTS)
+            return Coin.valueOf(1);
+        if (Network.NETWORK == MainNetParams.get())
+            return Coin.valueOf((isInstant ? 200 : 120) * 1000);
+        return Coin.valueOf((isInstant ? 75 : 60) * 1000);
+    }
+
+
+    public static Coin addUtxo(final GaService service, final Transaction tx,
+                               final List<JSONMap> utxos, final List<JSONMap> used) {
+        return addUtxo(service, tx, utxos, used, null, null, null, null);
+    }
+
+    public static Coin addUtxo(final GaService service, final Transaction tx,
+                               final List<JSONMap> utxos, final List<JSONMap> used,
+                               final List<Long> inValues, final List<byte[]> inAssetIds,
+                               final List<byte[]> inAbfs, final List<byte[]> inVbfs) {
+        final JSONMap utxo = utxos.get(0);
+        utxos.remove(0);
+        if (utxo.getBool("confidential")) {
+            inAssetIds.add(utxo.getBytes("assetId"));
+            inAbfs.add(utxo.getBytes("abf"));
+            inVbfs.add(utxo.getBytes("vbf"));
+        }
+        used.add(utxo);
+        GATx.addInput(service, tx, utxo);
+        if (inValues != null)
+            inValues.add(utxo.getLong("value"));
+        return utxo.getCoin("value");
     }
 
     // Calculate the fee that must be paid for a tx
