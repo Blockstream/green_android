@@ -725,7 +725,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void preparePrivData(final JSONMap privateData) {
-        int subAccount = privateData.get("subaccount", 0);
+        final int subAccount = privateData.get("subaccount", 0);
         // Skip fetching raw previous outputs if they are not required
         final Coin verifiedBalance = getSPVVerifiedBalance(subAccount);
         final boolean fetchPrev = !isSPVEnabled() ||

@@ -71,7 +71,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private ViewPager mViewPager;
     private Menu mMenu;
     private Boolean mInternalQr = false;
-    private String mSendAmount = null;
+    private String mSendAmount;
     private MaterialDialog mSegwitDialog;
     private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private MaterialDialog mSubaccountDialog;

@@ -50,7 +50,7 @@ public class LoginData {
         return assetId == null ? null : mAssetIds.get(assetId);
     }
 
-    private int u8(final int i) { return i < 0 ? 256 + i : i; }
+    private static int u8(final int i) { return i < 0 ? 256 + i : i; }
 
     private int[] getPath(final String pathHex) {
         if (pathHex == null)

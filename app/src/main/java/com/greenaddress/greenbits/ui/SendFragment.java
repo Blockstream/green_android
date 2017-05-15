@@ -849,7 +849,7 @@ public class SendFragment extends SubaccountFragment {
         return 0;
     }
 
-    private void arraycpy(final byte[] dest, final int i, final byte[] src) {
+    private static void arraycpy(final byte[] dest, final int i, final byte[] src) {
         System.arraycopy(src, 0, dest, src.length * i, src.length);
     }
 

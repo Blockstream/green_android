@@ -79,7 +79,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
         }
     }
 
-    private String formatFiat(final float fiatAmount) {
+    private static String formatFiat(final float fiatAmount) {
         return String.format(Locale.US, "%.2f", fiatAmount);
     }
 

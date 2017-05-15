@@ -29,7 +29,7 @@ public class Output {
         this.value = Long.valueOf((String) values.get("value"));
     }
 
-    private int getInt(final Integer v, final int def) {
+    private static int getInt(final Integer v, final int def) {
         return (v == null ? def : v);
     }
  }
