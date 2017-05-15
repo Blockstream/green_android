@@ -109,8 +109,6 @@ public class TransactionActivity extends GaActivity {
         final TextView hashText = UI.find(this, R.id.txHashText);
         openInBrowser(hashText, txItem.txHash.toString(), Network.BLOCKEXPLORER_TX, null);
 
-        final Coin feePerKb = txItem.getFeePerKilobyte();
-
         final boolean isWatchOnly = mService.isWatchOnly();
 
         if (GaService.IS_ELEMENTS) {
@@ -119,7 +117,7 @@ public class TransactionActivity extends GaActivity {
             if (txItem.getConfirmations() > 0)
                 UI.hide(UI.find(this, R.id.txUnconfirmed)); // Confirmed: hide warning
             else if (txItem.type == TransactionItem.TYPE.OUT || txItem.type == TransactionItem.TYPE.REDEPOSIT)
-                showUnconfirmed(txItem, feePerKb);
+                showUnconfirmed(txItem);
         } else {
             // unspent incoming output
             if (txItem.getConfirmations() > 0)
@@ -143,7 +141,7 @@ public class TransactionActivity extends GaActivity {
         final TextView feeInfoText = UI.find(this, R.id.txFeeInfoText);
         feeInfoText.setText(UI.setCoinText(mService, feeUnit, null, Coin.valueOf(txItem.fee)) +
                             " / " + String.valueOf(txItem.size) + " / " +
-                            UI.setCoinText(mService, feeUnit, null, feePerKb));
+                            UI.setCoinText(mService, feeUnit, null, txItem.getFeePerKilobyte()));
 
         final TextView dateText = UI.find(this, R.id.txDateText);
         dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));
@@ -224,9 +222,10 @@ public class TransactionActivity extends GaActivity {
         });
     }
 
-    private void showUnconfirmed(final TransactionItem txItem, final Coin feePerKb) {
+    private void showUnconfirmed(final TransactionItem txItem) {
         UI.show(mUnconfirmedEstimatedBlocks);
 
+        final Coin feePerKb = txItem.getFeePerKilobyte();
         final Map<String, Object> feeEstimates = mService.getFeeEstimates();
         int currentEstimate = 25;
         for (final String atBlock : FEE_BLOCK_NUMBERS)
