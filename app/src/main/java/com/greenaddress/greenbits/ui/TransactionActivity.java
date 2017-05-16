@@ -109,6 +109,8 @@ public class TransactionActivity extends GaActivity {
         final TextView hashText = UI.find(this, R.id.txHashText);
         openInBrowser(hashText, txItem.txHash.toString(), Network.BLOCKEXPLORER_TX, null);
 
+        showFeeInfo(txItem.fee, txItem.size, txItem.getFeePerKilobyte());
+
         final boolean isWatchOnly = mService.isWatchOnly();
 
         if (GaService.IS_ELEMENTS) {
@@ -136,12 +138,6 @@ public class TransactionActivity extends GaActivity {
 
         UI.setCoinText(this, R.id.txBitcoinUnit, R.id.txAmountText,
                        Coin.valueOf(txItem.amount));
-
-        final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
-        final TextView feeInfoText = UI.find(this, R.id.txFeeInfoText);
-        feeInfoText.setText(UI.setCoinText(mService, feeUnit, null, Coin.valueOf(txItem.fee)) +
-                            " / " + String.valueOf(txItem.size) + " / " +
-                            UI.setCoinText(mService, feeUnit, null, txItem.getFeePerKilobyte()));
 
         final TextView dateText = UI.find(this, R.id.txDateText);
         dateText.setText(SimpleDateFormat.getInstance().format(txItem.date));
@@ -222,18 +218,30 @@ public class TransactionActivity extends GaActivity {
         });
     }
 
+    private void showFeeInfo(final long fee, final long vSize, final Coin feeRate) {
+        final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
+        final TextView feeText = UI.find(this, R.id.txFeeInfoText);
+        feeText.setText(UI.setCoinText(mService, feeUnit, null, Coin.valueOf(fee)) +
+                        " / " + String.valueOf(vSize) + " / " +
+                        UI.setCoinText(mService, feeUnit, null, feeRate));
+    }
+
     private void showUnconfirmed(final TransactionItem txItem) {
         UI.show(mEstimatedBlocks);
 
         // FIXME: The fee rate for segwit txs without txdata is not
-        // correct, because the backend does not provide vSize.
+        // correct, because the backend does not provide vSize. So,
+        // we re-compute it here.
         Transaction tx = null;
         double satoshiPerKb = (double) txItem.getFeePerKilobyte().value;
 
         if (txItem.data != null && mService.isSegwitEnabled()) {
             // Compute the correct fee rate as we have tx data available
             tx = GaService.buildTransaction(txItem.data);
-            satoshiPerKb = Math.ceil(txItem.fee * 1000.0 / GATx.getTxVSize(tx));
+            final int vSize = GATx.getTxVSize(tx);
+            satoshiPerKb = Math.ceil(txItem.fee * 1000.0 / vSize);
+            // Update displayed fee info: its incorrect due to the FIXME above
+            showFeeInfo(txItem.fee, vSize, Coin.valueOf((long) satoshiPerKb));
         }
         final double currentFeeRate = satoshiPerKb / 100000000.0; // ->BTC/KB
 
