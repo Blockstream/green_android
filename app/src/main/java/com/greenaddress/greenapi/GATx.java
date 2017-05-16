@@ -253,16 +253,12 @@ public class GATx {
         return utxo.getCoin("value");
     }
 
-    // Calculate the fee that must be paid for a tx
-    public static Coin getTxFee(final GaService service, final Transaction tx, final Coin feeRate) {
-        final Coin minRate = service.getMinFeeRate();
-        final Coin rate = feeRate.isLessThan(minRate) ? minRate : feeRate;
+    public static int getTxVSize(final Transaction tx) {
         final int vSize;
-        Log.d(TAG, "getTxFee(rates): " + rate.value + '/' + feeRate.value + '/' + minRate.value);
 
-        if (!GaService.IS_ELEMENTS && !service.isSegwitEnabled()) {
+        if (!(GaService.IS_ELEMENTS || tx.hasWitness())) {
             vSize = tx.unsafeBitcoinSerialize().length;
-            Log.d(TAG, "getTxFee(non-sw): " + vSize);
+            Log.d(TAG, "getTxVSize(non-sw): " + vSize);
         } else {
             /* For segwit, the fee is based on the weighted size of the tx */
             tx.transactionOptions = TransactionOptions.NONE;
@@ -271,8 +267,18 @@ public class GATx {
             final int swSize = tx.unsafeBitcoinSerialize().length;
             final int fullSize = swSize + estimateElementsSize(tx);
             vSize = (int) Math.ceil((nonSwSize * 3 + fullSize) / 4.0);
-            Log.d(TAG, "getTxFee(sw): " + nonSwSize + '/' + swSize + '/' + vSize);
+            Log.d(TAG, "getTxVSize(sw): " + nonSwSize + '/' + swSize + '/' + vSize);
         }
+        return vSize;
+    }
+
+    // Calculate the fee that must be paid for a tx
+    public static Coin getTxFee(final GaService service, final Transaction tx, final Coin feeRate) {
+        final Coin minRate = service.getMinFeeRate();
+        final Coin rate = feeRate.isLessThan(minRate) ? minRate : feeRate;
+        Log.d(TAG, "getTxFee(rates): " + rate.value + '/' + feeRate.value + '/' + minRate.value);
+
+        final int vSize = getTxVSize(tx);
         final double fee = (double) vSize * rate.value / 1000.0;
         final long roundedFee = (long) Math.ceil(fee); // Round up
         Log.d(TAG, "getTxFee: fee is " + roundedFee);
