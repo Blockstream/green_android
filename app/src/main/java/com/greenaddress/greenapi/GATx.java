@@ -180,26 +180,20 @@ public class GATx {
         return singleOutputSize * tx.getOutputs().size();
     }
 
-    private static double extractRate(final Map feeEstimates, final Integer blockNum) {
-        final Map estimate = (Map) feeEstimates.get(Integer.toString(blockNum));
-        return Double.parseDouble(estimate.get("feerate").toString());
-    }
-
     // Return the best estimate of the fee rate in satoshi/1000 bytes
     public static Coin getFeeEstimate(final GaService service, final boolean isInstant) {
-        final Map<String, Object> feeEstimates = service.getFeeEstimates();
         Double bestInstant = null;
 
         // Iterate the estimates from shortest to longest confirmation time
         final SortedSet<Integer> keys = new TreeSet<>();
-        for (final String block : feeEstimates.keySet())
+        for (final String block : service.getFeeEstimates().mData.keySet())
             keys.add(Integer.parseInt(block));
 
         for (final Integer blockNum : keys) {
             if (!isInstant && blockNum < 6)
                 continue; // Non-instant: Use 6 confirmation rate and later only
 
-            double rate = extractRate(feeEstimates, blockNum);
+            double rate = service.getFeeRate(blockNum);
             if (rate <= 0.0)
                 continue; // No estimate available: Try next confirmation rate
 

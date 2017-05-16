@@ -78,7 +78,7 @@ public class WalletClient {
     private boolean mTorEnabled;
     private WampClient mConnection;
     private LoginData mLoginData;
-    private Map<String, Object> mFeeEstimates;
+    private JSONMap mFeeEstimates;
     private ISigningWallet mHDParent;
     private String mWatchOnlyUsername;
     private String mWatchOnlyPassword;
@@ -317,7 +317,7 @@ public class WalletClient {
         return mLoginData;
     }
 
-    public Map<String, Object> getFeeEstimates() {
+    public JSONMap getFeeEstimates() {
         return mFeeEstimates;
     }
 
@@ -399,10 +399,10 @@ public class WalletClient {
 
     private void onAuthenticationComplete(final Map<String, Object> loginData, final ISigningWallet wallet, final String username, final String password) {
         mLoginData = new LoginData(loginData);
+        mFeeEstimates = null;
         if (loginData.containsKey("fee_estimates"))
-            mFeeEstimates = (Map) loginData.get("fee_estimates");
-        else
-            mFeeEstimates = null;
+            mFeeEstimates = new JSONMap((Map) loginData.get("fee_estimates"));
+
         mHDParent = wallet;
         mWatchOnlyUsername = username;
         mWatchOnlyPassword = password;
@@ -568,7 +568,7 @@ public class WalletClient {
                     @Override
                     public void onEvent(final String topicUri, final Object newFeeEstimates) {
                         Log.i(TAG, "FEE_ESTIMATES IS " + newFeeEstimates.toString());
-                        mFeeEstimates = (Map) newFeeEstimates;
+                        mFeeEstimates = new JSONMap((Map) newFeeEstimates);
                     }
                 });
             }

@@ -582,8 +582,18 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getLoginData();
     }
 
-    public Map<String, Object> getFeeEstimates() {
+    public JSONMap getFeeEstimates() {
         return mClient.getFeeEstimates();
+    }
+
+    public Double getFeeRate(final int blockNum) {
+        final JSONMap m = new JSONMap((Map) getFeeEstimates().get(Integer.toString(blockNum)));
+        return m == null ? null : m.getDouble("feerate");
+    }
+
+    public Integer getFeeBlocks(final int blockNum) {
+        final JSONMap m = new JSONMap((Map) getFeeEstimates().get(Integer.toString(blockNum)));
+        return m == null ? null : m.getInt("blocks");
     }
 
     public Coin getMinFeeRate() {

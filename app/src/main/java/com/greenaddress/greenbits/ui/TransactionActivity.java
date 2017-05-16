@@ -57,7 +57,7 @@ import java.util.Map;
 public class TransactionActivity extends GaActivity {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
-    private static final String FEE_BLOCK_NUMBERS[] = {"1", "3", "6"};
+    private static final int FEE_BLOCK_NUMBERS[] = {1, 3, 6};
 
     // For debug regtest builds, always allow RBF (Useful for development/testing)
     private static final boolean ALWAYS_ALLOW_RBF = BuildConfig.DEBUG &&
@@ -65,7 +65,7 @@ public class TransactionActivity extends GaActivity {
 
     private Menu mMenu;
     private TextView mUnconfirmedText;
-    private TextView mUnconfirmedEstimatedBlocks;
+    private TextView mEstimatedBlocks;
     private TextView mUnconfirmedRecommendation;
     private Button mUnconfirmedIncreaseFee;
     private View mMemoView;
@@ -91,7 +91,7 @@ public class TransactionActivity extends GaActivity {
         mMemoEditText = UI.find(this, R.id.sendToNoteText);
         mMemoSaveButton = UI.find(this, R.id.saveMemo);
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
-        mUnconfirmedEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
+        mEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
         mUnconfirmedRecommendation = UI.find(this, R.id.txUnconfirmedRecommendation);
         mUnconfirmedIncreaseFee = UI.find(this, R.id.txUnconfirmedIncreaseFee);
 
@@ -102,7 +102,7 @@ public class TransactionActivity extends GaActivity {
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);
 
         // Hide outgoing-only widgets by default
-        UI.hide(mUnconfirmedRecommendation, mUnconfirmedEstimatedBlocks, mUnconfirmedIncreaseFee);
+        UI.hide(mUnconfirmedRecommendation, mEstimatedBlocks, mUnconfirmedIncreaseFee);
 
         final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
 
@@ -222,33 +222,41 @@ public class TransactionActivity extends GaActivity {
         });
     }
 
-    private void showUnconfirmed(final TransactionItem txItem) {
-        UI.show(mUnconfirmedEstimatedBlocks);
+    private Coin getFeeEstimate(final int blockNum) {
+        return Coin.valueOf((long) (mService.getFeeRate(blockNum) * 100000000));
+    }
 
+    private void showUnconfirmed(final TransactionItem txItem) {
+        UI.show(mEstimatedBlocks);
+
+        // FIXME: The fee per KB figure for segwit txs is not correct
         final Coin feePerKb = txItem.getFeePerKilobyte();
-        final Map<String, Object> feeEstimates = mService.getFeeEstimates();
-        int currentEstimate = 25;
-        for (final String atBlock : FEE_BLOCK_NUMBERS)
-            if (!feePerKb.isLessThan(getFeeEstimate(feeEstimates, atBlock))) {
-                currentEstimate = (Integer) ((Map) feeEstimates.get(atBlock)).get("blocks");
+
+        // Compute the number of expected blocks before this tx confirms
+        int estimatedBlocks = 25;
+        for (final int blockNum : FEE_BLOCK_NUMBERS)
+            if (!feePerKb.isLessThan(getFeeEstimate(blockNum))) {
+                estimatedBlocks = mService.getFeeBlocks(blockNum);
                 break;
             }
 
-        mUnconfirmedEstimatedBlocks.setText(getString(R.string.willConfirmAfter, currentEstimate));
+        mEstimatedBlocks.setText(getString(R.string.willConfirmAfter, estimatedBlocks));
         if (mService.isWatchOnly() || GaService.IS_ELEMENTS || !txItem.replaceable)
             return; // FIXME: Implement RBF for elements
 
-        final int bestEstimate = (Integer) ((Map) feeEstimates.get("1")).get("blocks");
-        if (ALWAYS_ALLOW_RBF || (bestEstimate < currentEstimate)) {
+        // If the fastest number of blocks is less than the expected number,
+        // then allow the user to RBF the fee up to the fastest fee rate.
+        final int fastestBlocks = mService.getFeeBlocks(1);
+        if (fastestBlocks < estimatedBlocks || ALWAYS_ALLOW_RBF) {
             UI.show(mUnconfirmedRecommendation, mUnconfirmedIncreaseFee);
-            if (bestEstimate == 1)
+            if (fastestBlocks == 1)
                 mUnconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
             else
-                mUnconfirmedRecommendation.setText(getString(R.string.recommendationBlocks, bestEstimate));
+                mUnconfirmedRecommendation.setText(getString(R.string.recommendationBlocks, fastestBlocks));
             mUnconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    replaceByFee(txItem, getFeeEstimate(feeEstimates, "1"), null, 0);
+                    replaceByFee(txItem, getFeeEstimate(1), null, 0);
                 }
             });
         }
@@ -323,11 +331,6 @@ public class TransactionActivity extends GaActivity {
                         onFinishedSavingMemo();
                     }
                 });
-    }
-
-    private static Coin getFeeEstimate(final Map<String, Object> feeEstimates, final String atBlock) {
-        final double rate = Double.parseDouble(((Map)feeEstimates.get(atBlock)).get("feerate").toString());
-        return Coin.valueOf((long) (rate * 1000 * 1000 * 100));
     }
 
     private void openInBrowser(final TextView textView, final String identifier, final String url, final JSONMap confidentialData) {
