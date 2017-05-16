@@ -241,7 +241,7 @@ public class TransactionActivity extends GaActivity {
         int estimatedBlocks = 25;
         for (final int blockNum : FEE_BLOCK_NUMBERS) {
             final double blockFeeRate = mService.getFeeRate(blockNum);
-            if (currentFeeRate >= blockFeeRate) {
+            if (blockFeeRate >=0 && currentFeeRate >= blockFeeRate) {
                 estimatedBlocks = mService.getFeeBlocks(blockNum);
                 break;
             }
