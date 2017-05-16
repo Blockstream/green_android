@@ -225,8 +225,17 @@ public class TransactionActivity extends GaActivity {
     private void showUnconfirmed(final TransactionItem txItem) {
         UI.show(mEstimatedBlocks);
 
-        // FIXME: The fee per KB figure for segwit txs is not correct
-        final double currentFeeRate = txItem.getFeePerKilobyte().getValue() / 100000000.0;
+        // FIXME: The fee rate for segwit txs without txdata is not
+        // correct, because the backend does not provide vSize.
+        Transaction tx = null;
+        double satoshiPerKb = (double) txItem.getFeePerKilobyte().value;
+
+        if (txItem.data != null && mService.isSegwitEnabled()) {
+            // Compute the correct fee rate as we have tx data available
+            tx = GaService.buildTransaction(txItem.data);
+            satoshiPerKb = Math.ceil(txItem.fee * 1000.0 / GATx.getTxVSize(tx));
+        }
+        final double currentFeeRate = satoshiPerKb / 100000000.0; // ->BTC/KB
 
         // Compute the number of expected blocks before this tx confirms
         int estimatedBlocks = 25;
