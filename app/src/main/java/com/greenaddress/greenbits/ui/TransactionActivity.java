@@ -222,23 +222,21 @@ public class TransactionActivity extends GaActivity {
         });
     }
 
-    private Coin getFeeEstimate(final int blockNum) {
-        return Coin.valueOf((long) (mService.getFeeRate(blockNum) * 100000000));
-    }
-
     private void showUnconfirmed(final TransactionItem txItem) {
         UI.show(mEstimatedBlocks);
 
         // FIXME: The fee per KB figure for segwit txs is not correct
-        final Coin feePerKb = txItem.getFeePerKilobyte();
+        final double currentFeeRate = txItem.getFeePerKilobyte().getValue() / 100000000.0;
 
         // Compute the number of expected blocks before this tx confirms
         int estimatedBlocks = 25;
-        for (final int blockNum : FEE_BLOCK_NUMBERS)
-            if (!feePerKb.isLessThan(getFeeEstimate(blockNum))) {
+        for (final int blockNum : FEE_BLOCK_NUMBERS) {
+            final double blockFeeRate = mService.getFeeRate(blockNum);
+            if (currentFeeRate >= blockFeeRate) {
                 estimatedBlocks = mService.getFeeBlocks(blockNum);
                 break;
             }
+        }
 
         mEstimatedBlocks.setText(getString(R.string.willConfirmAfter, estimatedBlocks));
         if (mService.isWatchOnly() || GaService.IS_ELEMENTS || !txItem.replaceable)
@@ -247,6 +245,8 @@ public class TransactionActivity extends GaActivity {
         // If the fastest number of blocks is less than the expected number,
         // then allow the user to RBF the fee up to the fastest fee rate.
         final int fastestBlocks = mService.getFeeBlocks(1);
+        final Coin fastestFeeRate = Coin.valueOf((long) (mService.getFeeRate(1) * 100000000));
+
         if (fastestBlocks < estimatedBlocks || ALWAYS_ALLOW_RBF) {
             UI.show(mUnconfirmedRecommendation, mUnconfirmedIncreaseFee);
             if (fastestBlocks == 1)
@@ -256,7 +256,7 @@ public class TransactionActivity extends GaActivity {
             mUnconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    replaceByFee(txItem, getFeeEstimate(1), null, 0);
+                    replaceByFee(txItem, fastestFeeRate, null, 0);
                 }
             });
         }

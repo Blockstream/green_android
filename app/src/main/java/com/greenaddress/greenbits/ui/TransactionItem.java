@@ -177,6 +177,7 @@ public class TransactionItem implements Serializable {
                       m.getBool("rbf_optin") && type != TransactionItem.TYPE.IN;
     }
 
+    // Return the fee rate in satoshis per 1000 bytes
     final Coin getFeePerKilobyte() {
         if (size <= 0)
             return Coin.ZERO;

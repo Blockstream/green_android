@@ -182,7 +182,7 @@ public class GATx {
 
     // Return the best estimate of the fee rate in satoshi/1000 bytes
     public static Coin getFeeEstimate(final GaService service, final boolean isInstant) {
-        Double bestInstant = null;
+        Double bestInstantRate = null;
 
         // Iterate the estimates from shortest to longest confirmation time
         final SortedSet<Integer> keys = new TreeSet<>();
@@ -193,8 +193,8 @@ public class GATx {
             if (!isInstant && blockNum < 6)
                 continue; // Non-instant: Use 6 confirmation rate and later only
 
-            double rate = service.getFeeRate(blockNum);
-            if (rate <= 0.0)
+            double feeRate = service.getFeeRate(blockNum);
+            if (feeRate <= 0.0)
                 continue; // No estimate available: Try next confirmation rate
 
             if (isInstant) {
@@ -203,22 +203,22 @@ public class GATx {
                 // a) 1.1 * the 1st or 2nd block fee rate
                 // b) 2.0 * the first rate later than 2 blocks
                 if (blockNum <= 2) {
-                    if (bestInstant == null)
-                       bestInstant = rate * 1.1; // Save earliest fast confirmation rate
+                    if (bestInstantRate == null)
+                       bestInstantRate = feeRate * 1.1; // Save earliest fast confirmation rate
                     continue; // Continue to find the first non-fast rate
                 } else
-                    rate *= 2.0;
+                    feeRate *= 2.0;
             }
 
-            if (bestInstant != null && bestInstant < rate)
-                rate = bestInstant; // Use the lowest instant rate found
+            if (bestInstantRate != null && bestInstantRate < feeRate)
+                feeRate = bestInstantRate; // Use the lowest instant rate found
 
-            return Coin.valueOf((long) (rate * 1000 * 1000 * 100));
+            return Coin.valueOf((long) (feeRate * 1000 * 1000 * 100));
         }
 
-        if (bestInstant != null) {
+        if (bestInstantRate != null) {
             // No non-fast confirmation rate, return the fast confirmation rate
-            return Coin.valueOf((long) (bestInstant * 1000 * 1000 * 100));
+            return Coin.valueOf((long) (bestInstantRate * 1000 * 1000 * 100));
         }
 
         // We don't have a usable fee rate estimate, use a default.

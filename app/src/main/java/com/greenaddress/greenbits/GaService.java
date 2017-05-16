@@ -586,6 +586,7 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getFeeEstimates();
     }
 
+    // Get the fee rate to confirm at the next blockNum blocks in BTC/1000 bytes
     public Double getFeeRate(final int blockNum) {
         final JSONMap m = new JSONMap((Map) getFeeEstimates().get(Integer.toString(blockNum)));
         return m == null ? null : m.getDouble("feerate");
