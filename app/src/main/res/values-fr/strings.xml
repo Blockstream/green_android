@@ -160,7 +160,7 @@
     <string name="pref_title_display_port">Port</string>
     <string name="optin_rbf">Activer le remplacement de transaction</string>
     <string name="willConfirmAfter">Se confirmera après %1$d blocs (estimation)</string>
-    <string name="recommendationBlocks">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après %s blocs.</string>
+    <string name="recommendationBlocks">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après %1$d blocs.</string>
     <string name="recommendationSingleBlock">Si vous augmentez maintenant les frais au niveau recommandé, la transaction devrait se confirmer après 1 bloc.</string>
     <string name="increaseFee">Augmenter les frais</string>
     <string name="newFeeText">Nouveaux frais :</string>
