@@ -180,8 +180,16 @@ public class GATx {
         return singleOutputSize * tx.getOutputs().size();
     }
 
-    // Return the best estimate of the fee rate in satoshi/1000 bytes
     public static Coin getFeeEstimate(final GaService service, final boolean isInstant) {
+        return getFeeEstimate(service, isInstant, 6); // Fee rate for 6 confs if not instant
+    }
+
+    public static Coin getFeeEstimateForRBF(final GaService service, final boolean isInstant) {
+        return getFeeEstimate(service, isInstant, 1); // Fee rate for 1 conf if not instant
+    }
+
+    // Return the best estimate of the fee rate in satoshi/1000 bytes
+    public static Coin getFeeEstimate(final GaService service, final boolean isInstant, final int forBlock) {
         Double bestInstantRate = null;
 
         // Iterate the estimates from shortest to longest confirmation time
@@ -190,8 +198,8 @@ public class GATx {
             keys.add(Integer.parseInt(block));
 
         for (final Integer blockNum : keys) {
-            if (!isInstant && blockNum < 6)
-                continue; // Non-instant: Use 6 confirmation rate and later only
+            if (!isInstant && blockNum < forBlock)
+                continue; // Non-instant: Use forBlock confirmation rate and later only
 
             double feeRate = service.getFeeRate(blockNum);
             if (feeRate <= 0.0)

@@ -260,23 +260,39 @@ public class TransactionActivity extends GaActivity {
             return; // FIXME: Implement RBF for elements
 
         // If the fastest number of blocks is less than the expected number,
-        // then allow the user to RBF the fee up to the fastest fee rate.
+        // then allow the user to RBF the fee up to the fastest fee rate
         final int fastestBlocks = mService.getFeeBlocks(1);
-        final Coin fastestFeeRate = Coin.valueOf((long) (mService.getFeeRate(1) * 100000000));
+        boolean allowRbf = fastestBlocks < estimatedBlocks;
 
-        if (fastestBlocks < estimatedBlocks || ALWAYS_ALLOW_RBF) {
-            UI.show(mUnconfirmedRecommendation, mUnconfirmedIncreaseFee);
-            if (fastestBlocks == 1)
-                mUnconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
-            else
-                mUnconfirmedRecommendation.setText(getString(R.string.recommendationBlocks, fastestBlocks));
-            mUnconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    replaceByFee(txItem, fastestFeeRate, null, 0);
-                }
-            });
+        double fastestFeeRate = mService.getFeeRate(1);
+        final Coin fastestRateBTC;
+        if (fastestFeeRate >= 0)
+            fastestRateBTC = Coin.valueOf((long) (fastestFeeRate * 100000000));
+        else {
+            // No fastest fee rate is available: allow the user to RBF to the
+            // current new transaction rate for 1 block confirmation if it is
+            // higher than the current rate
+            final boolean isInstant = false; // FIXME: Support instant RBF
+            fastestRateBTC = GATx.getFeeEstimateForRBF(mService, isInstant);
+            fastestFeeRate = fastestRateBTC.getValue() / 100000000.0;
+            allowRbf = fastestFeeRate > currentFeeRate;
         }
+
+        if (!allowRbf && !ALWAYS_ALLOW_RBF)
+            return;
+
+        UI.show(mUnconfirmedRecommendation, mUnconfirmedIncreaseFee);
+        if (fastestBlocks == 1)
+            mUnconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
+        else
+            mUnconfirmedRecommendation.setText(getString(R.string.recommendationBlocks, fastestBlocks));
+
+        mUnconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                replaceByFee(txItem, fastestRateBTC, null, 0);
+            }
+        });
     }
 
     @Override
