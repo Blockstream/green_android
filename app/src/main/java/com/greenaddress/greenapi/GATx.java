@@ -17,14 +17,15 @@ import org.bitcoinj.core.TransactionWitness;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.VarInt;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import com.blockstream.libwally.Wally;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -129,7 +130,7 @@ public class GATx {
             }
             return new Pair<>(
                     tx.addOutput(Coin.ZERO, Address.fromP2SHHash(Network.NETWORK,
-                                                                Utils.sha256hash160(script))),
+                                                                 Utils.sha256hash160(script))),
                     addr.getInt("pointer")
             );
     }
@@ -255,7 +256,7 @@ public class GATx {
             inVbfs.add(utxo.getBytes("vbf"));
         }
         used.add(utxo);
-        GATx.addInput(service, tx, utxo);
+        addInput(service, tx, utxo);
         if (inValues != null)
             inValues.add(utxo.getLong("value"));
         return utxo.getCoin("value");
@@ -305,4 +306,45 @@ public class GATx {
         tx.addOutput(a);
         return true;
     }
+
+    public static PreparedTransaction signTransaction(final GaService service, final Transaction tx,
+                                                      final List<JSONMap> usedUtxos,
+                                                      final int subAccount,
+                                                      final Pair<TransactionOutput, Integer> changeOutput) {
+
+        // Fetch previous outputs
+        final List<Output> prevOuts = createPrevouts(service, usedUtxos);
+        final PreparedTransaction ptx;
+        ptx = new PreparedTransaction(changeOutput == null ? null : changeOutput.second,
+                                      subAccount, tx,
+                                      service.findSubaccountByType(subAccount, "2of3"));
+        ptx.mPrevoutRawTxs = new HashMap<>();
+        for (final Transaction prevTx : getPreviousTransactions(service, tx))
+            ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(prevTx.getHash().getBytes()), prevTx);
+
+        final boolean isSegwitEnabled = service.isSegwitEnabled();
+
+        // Sign the tx
+        final List<byte[]> signatures = service.signTransaction(tx, ptx, prevOuts);
+        for (int i = 0; i < signatures.size(); ++i) {
+            final byte[] sig = signatures.get(i);
+            final JSONMap utxo = usedUtxos.get(i);
+            final int scriptType = utxo.getInt("script_type");
+            final byte[] outscript = createOutScript(service, utxo);
+            final List<byte[]> userSigs = ImmutableList.of(new byte[]{0}, sig);
+            final byte[] inscript = createInScript(userSigs, outscript, scriptType);
+
+            tx.getInput(i).setScriptSig(new Script(inscript));
+            if (isSegwitEnabled && getOutScriptType(scriptType) == P2SH_P2WSH_FORTIFIED_OUT) {
+                // Replace the witness data with just the user signature:
+                // the server will recreate the witness data to include the
+                // dummy OP_CHECKMULTISIG push, user + server sigs and script.
+                final TransactionWitness witness = new TransactionWitness(1);
+                witness.setPush(0, sig);
+                tx.setWitness(i, witness);
+            }
+        }
+        return ptx;
+    }
+
 }

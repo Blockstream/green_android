@@ -726,7 +726,7 @@ public class SendFragment extends SubaccountFragment {
 
         final GaActivity gaActivity = getGaActivity();
         final GaService service = getGAService();
-        final List<JSONMap> used = new ArrayList<>();
+        final List<JSONMap> usedUtxos = new ArrayList<>();
         final Coin feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
 
         final Transaction tx = new Transaction(Network.NETWORK);
@@ -739,7 +739,7 @@ public class SendFragment extends SubaccountFragment {
 
         // First add inputs until we cover the amount to send
         while ((sendAll || total.isLessThan(amount)) && !utxos.isEmpty())
-            total = total.add(GATx.addUtxo(service, tx, utxos, used));
+            total = total.add(GATx.addUtxo(service, tx, utxos, usedUtxos));
 
         // Then add inputs until we cover amount + fee/change
         while (true) {
@@ -752,7 +752,7 @@ public class SendFragment extends SubaccountFragment {
                 if (utxos.isEmpty())
                     return R.string.insufficientFundsText; // None left, fail
 
-                total = total.add(GATx.addUtxo(service, tx, utxos, used));
+                total = total.add(GATx.addUtxo(service, tx, utxos, usedUtxos));
                 continue;
             }
 
@@ -786,39 +786,8 @@ public class SendFragment extends SubaccountFragment {
 
         tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
 
-        // Fetch previous outputs
-        final List<Output> prevOuts = GATx.createPrevouts(service, used);
-        final PreparedTransaction ptx = new PreparedTransaction(
-                changeOutput == null ? null : changeOutput.second,
-                mSubaccount, tx, service.findSubaccountByType(mSubaccount, "2of3")
-        );
-        ptx.mPrevoutRawTxs = new HashMap<>();
-        for (final Transaction prevTx : GATx.getPreviousTransactions(service, tx))
-            ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(prevTx.getHash().getBytes()), prevTx);
-
-        final boolean isSegwitEnabled = service.isSegwitEnabled();
-
-        // Sign the tx
-        final List<byte[]> signatures = service.signTransaction(tx, ptx, prevOuts);
-        for (int i = 0; i < signatures.size(); ++i) {
-            final byte[] sig = signatures.get(i);
-            // FIXME: Massive duplication with TransactionActivity
-            final JSONMap utxo = used.get(i);
-            final int scriptType = utxo.getInt("script_type");
-            final byte[] outscript = GATx.createOutScript(service, utxo);
-            final List<byte[]> userSigs = ImmutableList.of(new byte[]{0}, sig);
-            final byte[] inscript = GATx.createInScript(userSigs, outscript, scriptType);
-
-            tx.getInput(i).setScriptSig(new Script(inscript));
-            if (isSegwitEnabled && scriptType == GATx.P2SH_P2WSH_FORTIFIED_OUT) {
-                // Replace the witness data with just the user signature:
-                // the server will recreate the witness data to include the
-                // dummy OP_CHECKMULTISIG push, user + server sigs and script.
-                final TransactionWitness witness = new TransactionWitness(1);
-                witness.setPush(0, sig);
-                tx.setWitness(i, witness);
-            }
-        }
+        final PreparedTransaction ptx;
+        ptx = GATx.signTransaction(service, tx, usedUtxos, mSubaccount, changeOutput);
 
         final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
         final Coin sendFee = fee;
@@ -860,7 +829,7 @@ public class SendFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        final List<JSONMap> used = new ArrayList<>();
+        final List<JSONMap> usedUtxos = new ArrayList<>();
         final Coin feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
 
         final ElementsTransaction tx = new ElementsTransaction(Network.NETWORK);
@@ -884,7 +853,7 @@ public class SendFragment extends SubaccountFragment {
 
         // First add inputs until we cover the amount to send
         while (total.isLessThan(amount) && !utxos.isEmpty())
-            total = total.add(GATx.addUtxo(service, tx, utxos, used, inValues, inAssetIds, inAbfs, inVbfs));
+            total = total.add(GATx.addUtxo(service, tx, utxos, usedUtxos, inValues, inAssetIds, inAbfs, inVbfs));
 
         // Then add inputs until we cover amount + fee/change
         while (true) {
@@ -896,7 +865,7 @@ public class SendFragment extends SubaccountFragment {
                 // Need more inputs to cover amount + fee/change
                 if (utxos.isEmpty())
                     return R.string.insufficientFundsText; // None left, fail
-                total = total.add(GATx.addUtxo(service, tx, utxos, used, inValues, inAssetIds, inAbfs, inVbfs));
+                total = total.add(GATx.addUtxo(service, tx, utxos, usedUtxos, inValues, inAssetIds, inAbfs, inVbfs));
                 continue;
             }
 
@@ -933,7 +902,7 @@ public class SendFragment extends SubaccountFragment {
         // FIXME: tx.setLockTime(latestBlock); // Prevent fee sniping
 
         // Fetch previous outputs
-        final List<Output> prevOuts = GATx.createPrevouts(service, used);
+        final List<Output> prevOuts = GATx.createPrevouts(service, usedUtxos);
 
         final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
         final Coin sendFee = fee;
@@ -1017,7 +986,7 @@ public class SendFragment extends SubaccountFragment {
         for (int i = 0; i < signatures.size(); ++i) {
             final byte[] sig = signatures.get(i);
             // FIXME: Massive duplication with TransactionActivity
-            final JSONMap utxo = used.get(i);
+            final JSONMap utxo = usedUtxos.get(i);
             final int scriptType = utxo.getInt("script_type");
             final byte[] outscript = GATx.createOutScript(service, utxo);
             final List<byte[]> userSigs = ImmutableList.of(new byte[]{0}, sig);
