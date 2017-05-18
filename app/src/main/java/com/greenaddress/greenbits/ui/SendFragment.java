@@ -487,60 +487,61 @@ public class SendFragment extends SubaccountFragment {
                     onTransactionPrepared(ptx, recipient, amount, privateData);
                 }
             });
-        } else {
-            final boolean sendAll = mMaxButton.isChecked();
-            final boolean validAddress = GaService.isValidAddress(recipient);
-            final boolean validAmount = sendAll || amount.isGreaterThan(Coin.ZERO);
-
-            int messageId = 0;
-            if (!validAddress && !validAmount)
-                messageId = R.string.invalidAmountAndAddress;
-            else if (!validAddress)
-                messageId = R.string.invalidAddress;
-            else if (!validAmount)
-                messageId = R.string.invalidAmount;
-
-            if (messageId != 0) {
-                gaActivity.toast(messageId);
-                return;
-            }
-
-            UI.disable(mSendButton);
-            final int numConfs;
-            if (isInstant)
-                numConfs = 6; // Instant requires at least 6 confs
-            else if (Network.NETWORK == MainNetParams.get())
-                numConfs = 1; // Require 1 conf before spending on mainnet
-            else
-                numConfs = 0; // Allow 0 conf for networks with no real-world value
-
-            // For 2of2 accounts we first try to spend older coins to avoid
-            // having to re-deposit them. If that fails (and always for 2of3
-            // accounts) we try to use the minimum number of utxos instead.
-            final boolean is2Of3 = service.findSubaccountByType(mSubaccount, "2of3") != null;
-            final boolean minimizeInputs = is2Of3;
-            final boolean filterAsset = true;
-
-            CB.after(service.getAllUnspentOutputs(numConfs, mSubaccount, filterAsset),
-                     new CB.Toast<List<JSONMap>>(gaActivity, mSendButton) {
-                @Override
-                public void onSuccess(final List<JSONMap> utxos) {
-                    int ret = R.string.insufficientFundsText;
-                    if (!utxos.isEmpty()) {
-                        GATx.sortUtxos(utxos, minimizeInputs);
-                        ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
-                        if (ret == R.string.insufficientFundsText && !minimizeInputs) {
-                            // Not enough money using nlocktime outputs first:
-                            // Try again using the largest values first
-                            GATx.sortUtxos(utxos, true);
-                            ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
-                        }
-                    }
-                    if (ret != 0)
-                        gaActivity.toast(ret, mSendButton);
-                }
-            });
+            return;
         }
+
+        final boolean sendAll = mMaxButton.isChecked();
+        final boolean validAddress = GaService.isValidAddress(recipient);
+        final boolean validAmount = sendAll || amount.isGreaterThan(Coin.ZERO);
+
+        int messageId = 0;
+        if (!validAddress && !validAmount)
+            messageId = R.string.invalidAmountAndAddress;
+        else if (!validAddress)
+            messageId = R.string.invalidAddress;
+        else if (!validAmount)
+            messageId = R.string.invalidAmount;
+
+        if (messageId != 0) {
+            gaActivity.toast(messageId);
+            return;
+        }
+
+        UI.disable(mSendButton);
+        final int numConfs;
+        if (isInstant)
+            numConfs = 6; // Instant requires at least 6 confs
+        else if (Network.NETWORK == MainNetParams.get())
+            numConfs = 1; // Require 1 conf before spending on mainnet
+        else
+            numConfs = 0; // Allow 0 conf for networks with no real-world value
+
+        // For 2of2 accounts we first try to spend older coins to avoid
+        // having to re-deposit them. If that fails (and always for 2of3
+        // accounts) we try to use the minimum number of utxos instead.
+        final boolean is2Of3 = service.findSubaccountByType(mSubaccount, "2of3") != null;
+        final boolean minimizeInputs = is2Of3;
+        final boolean filterAsset = true;
+
+        CB.after(service.getAllUnspentOutputs(numConfs, mSubaccount, filterAsset),
+                 new CB.Toast<List<JSONMap>>(gaActivity, mSendButton) {
+            @Override
+            public void onSuccess(final List<JSONMap> utxos) {
+                int ret = R.string.insufficientFundsText;
+                if (!utxos.isEmpty()) {
+                    GATx.sortUtxos(utxos, minimizeInputs);
+                    ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
+                    if (ret == R.string.insufficientFundsText && !minimizeInputs) {
+                        // Not enough money using nlocktime outputs first:
+                        // Try again using the largest values first
+                        GATx.sortUtxos(utxos, true);
+                        ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
+                    }
+                }
+                if (ret != 0)
+                    gaActivity.toast(ret, mSendButton);
+            }
+        });
     }
 
     private void onTransactionPrepared(final PreparedTransaction ptx,
