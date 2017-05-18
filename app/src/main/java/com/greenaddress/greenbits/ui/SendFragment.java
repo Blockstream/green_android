@@ -781,7 +781,7 @@ public class SendFragment extends SubaccountFragment {
             actualAmount = total.subtract(fee);
             if (!actualAmount.isGreaterThan(Coin.ZERO))
                 return R.string.insufficientFundsText;
-            tx.getOutputs().get(0).setValue(actualAmount);
+            tx.getOutput(randomizedChange ? 1 : 0).setValue(actualAmount);
         }
 
         tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
