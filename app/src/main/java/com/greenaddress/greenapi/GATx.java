@@ -139,7 +139,7 @@ public class GATx {
         final List<Output> prevOuts = new ArrayList<>();
         for (final JSONMap utxo : utxos)
             prevOuts.add(new Output(utxo.getInt("subaccount"),
-                                    utxo.getInt("pointer"),
+                                    utxo.getInt(utxo.getKey("pubkey_pointer", "pointer")),
                                     HDKey.BRANCH_REGULAR,
                                     getOutScriptType(utxo.getInt("script_type")),
                                     Wally.hex_from_bytes(createOutScript(service, utxo)),
