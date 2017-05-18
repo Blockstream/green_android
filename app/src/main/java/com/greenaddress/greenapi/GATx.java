@@ -115,24 +115,62 @@ public class GATx {
             tx.setWitness(tx.getInputs().size() - 1, witness);
     }
 
+    private static Address createChangeAddress(final JSONMap addrInfo) {
+        byte[] script = addrInfo.getBytes("script");
+        if (addrInfo.getString("addr_type").equals("p2wsh"))
+            script = ScriptBuilder.createP2WSHOutputScript(Wally.sha256(script)).getProgram();
+        return Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script));
+    }
+
     /* Add a new change output to a tx */
     public static Pair<TransactionOutput, Integer> addChangeOutput(final GaService service, final Transaction tx,
                                                                    final int subaccount) {
-            final JSONMap addr = service.getNewAddress(subaccount);
-            if (addr == null)
-                return null;
-            final byte[] script;
-            if (addr.getString("addr_type").equals("p2wsh")) {
-                script = ScriptBuilder.createP2WSHOutputScript(
-                        Wally.sha256(addr.getBytes("script"))).getProgram();
-            } else {
-                script = addr.getBytes("script");
+        final JSONMap addrInfo = service.getNewAddress(subaccount);
+        if (addrInfo == null)
+            return null;
+        return new Pair<>(tx.addOutput(Coin.ZERO, createChangeAddress(addrInfo)),
+                          addrInfo.getInt("pointer"));
+    }
+
+    /* Identify the change output in a tx */
+    public static Pair<TransactionOutput, Integer> findChangeOutput(final List<JSONMap> endPoints,
+                                                                    final Transaction tx) {
+        int index = -1;
+        int pubkey_pointer = -1;
+        for (final JSONMap ep : endPoints) {
+            if (!ep.getBool("is_credit") || !ep.getBool("is_relevant"))
+                continue;
+
+            if (index != -1) {
+                // Found another output paying to this account. This can
+                // only happend when redepositing to our own acount with
+                // a change output (e.g. by manually sending some amount
+                // of funds to ourself). In this case the change output
+                // will have been created after the amount output by the
+                // tx construction code, so the output with the highest
+                // pubkey pointer is our change, as they are incremented
+                // for each new output. Note that we can't use the order
+                // of the output in the tx due to change randomisation.
+                if (ep.getInt("pubkey_pointer") < pubkey_pointer)
+                    continue; // Not our change output
             }
-            return new Pair<>(
-                    tx.addOutput(Coin.ZERO, Address.fromP2SHHash(Network.NETWORK,
-                                                                 Utils.sha256hash160(script))),
-                    addr.getInt("pointer")
-            );
+            index = ep.getInt("pt_idx");
+            pubkey_pointer = ep.getInt("pubkey_pointer");
+        }
+        return new Pair<>(tx.getOutput(index), pubkey_pointer);
+    }
+
+    /* Swap the change and recipient output in a tx with 50% probability */
+    public static boolean randomizeChangeOutput(final Transaction tx) {
+        if (CryptoHelper.randomBytes(1)[0] < 0)
+            return false;
+
+        final TransactionOutput a = tx.getOutput(0);
+        final TransactionOutput b = tx.getOutput(1);
+        tx.clearOutputs();
+        tx.addOutput(b);
+        tx.addOutput(a);
+        return true;
     }
 
     /* Create previous outputs for tx construction from uxtos */
@@ -292,19 +330,6 @@ public class GATx {
         final long roundedFee = (long) Math.ceil(fee); // Round up
         Log.d(TAG, "getTxFee: fee is " + roundedFee);
         return Coin.valueOf(roundedFee);
-    }
-
-    // Swap the change and recipient output in a tx with 50% probability */
-    public static boolean randomizeChange(final Transaction tx) {
-        if (CryptoHelper.randomBytes(1)[0] < 0)
-            return false;
-
-        final TransactionOutput a = tx.getOutput(0);
-        final TransactionOutput b = tx.getOutput(1);
-        tx.clearOutputs();
-        tx.addOutput(b);
-        tx.addOutput(a);
-        return true;
     }
 
     public static PreparedTransaction signTransaction(final GaService service, final Transaction tx,

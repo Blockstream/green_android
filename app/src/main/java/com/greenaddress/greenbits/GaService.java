@@ -471,9 +471,9 @@ public class GaService extends Service implements INotificationHandler {
         mReceivingId = loginData.get("receiving_id");
 
         if (loginData.mRawData.containsKey("min_fee"))
-            mMinFeeRate = Coin.valueOf((long)((int) loginData.get("min_fee")));
+            mMinFeeRate = Coin.valueOf((int) loginData.get("min_fee"));
         if (loginData.mRawData.containsKey("dust"))
-            mDustThreshold = Coin.valueOf((long) ((int) loginData.get("dust")));
+            mDustThreshold = Coin.valueOf((int) loginData.get("dust"));
 
         HDKey.resetCache(loginData.mGaitPath);
 
@@ -1207,6 +1207,10 @@ public class GaService extends Service implements INotificationHandler {
 
     public void changeTxLimits(final long newValue, final Map<String, String> twoFacData) throws Exception {
         mClient.changeTxLimits(newValue, twoFacData);
+    }
+
+    public Boolean checkSpendingLimit(final Coin amount) throws Exception {
+        return mClient.checkSpendingLimit(amount);
     }
 
     public List<String> getEnabledTwoFactorMethods() {

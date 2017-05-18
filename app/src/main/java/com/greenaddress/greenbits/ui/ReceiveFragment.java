@@ -303,7 +303,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             // TODO: non-fiat / non-assets values
             if (mAmountEdit.getText().toString().isEmpty())
                 return;
-            amount = (long) (Float.valueOf(mAmountEdit.getText().toString()).floatValue() * 100);
+            amount = (long) (Float.valueOf(mAmountEdit.getText().toString()) * 100);
         }
         mCurrentAddress = "";
         UI.disable(mCopyIcon);

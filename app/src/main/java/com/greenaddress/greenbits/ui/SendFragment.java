@@ -531,7 +531,7 @@ public class SendFragment extends SubaccountFragment {
                 if (!utxos.isEmpty()) {
                     GATx.sortUtxos(utxos, minimizeInputs);
                     ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
-                    if (ret == R.string.insufficientFundsText && !minimizeInputs) {
+                    if (ret == R.string.insufficientFundsText && !minimizeInputs && utxos.size() > 1) {
                         // Not enough money using nlocktime outputs first:
                         // Try again using the largest values first
                         GATx.sortUtxos(utxos, true);
@@ -772,7 +772,7 @@ public class SendFragment extends SubaccountFragment {
         if (changeOutput != null) {
             // Set the value of the change output
             changeOutput.first.setValue(total.subtract(amount).subtract(fee));
-            randomizedChange = GATx.randomizeChange(tx);
+            randomizedChange = GATx.randomizeChangeOutput(tx);
         }
 
         final Coin actualAmount;
@@ -895,7 +895,7 @@ public class SendFragment extends SubaccountFragment {
             // Set the value of the change output
             ((ElementsTransactionOutput)changeOutput).setUnblindedValue(total.subtract(amount).subtract(fee).getValue());
             // TODO: randomize change
-            // GATx.randomizeChange(tx);
+            // GATx.randomizeChangeOutput(tx);
         }
 
         feeOutput.setValue(fee);

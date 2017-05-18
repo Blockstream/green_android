@@ -901,4 +901,8 @@ public class WalletClient {
     public Boolean disableTwoFactor(final String type, final Map<String, String> twoFacData) throws Exception {
         return syncCall("twofactor.disable_" + type, Boolean.class, twoFacData);
     }
+
+    public Boolean checkSpendingLimit(final Coin amount) throws Exception {
+        return syncCall("vault.check_spending_limit", Boolean.class, amount.longValue());
+    }
 }
