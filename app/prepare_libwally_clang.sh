@@ -12,12 +12,6 @@ if [ -f /proc/cpuinfo ]; then
     NUM_JOBS=$(cat /proc/cpuinfo | grep ^processor | wc -l)
 fi
 
-if [ `uname` == "Darwin" ]; then
-    export HOST_OS="x86_64-apple-darwin" # FIXME: Verify
-else
-    export HOST_OS="i686-linux-gnu"
-fi
-
 function build() {
     unset CFLAGS
     unset CPPFLAGS
@@ -51,9 +45,6 @@ function build() {
             arch=$1
     esac
 
-    export CFLAGS="$CFLAGS -O3" # Must  add optimisation flags for secp
-    export CPPFLAGS="$CFLAGS"
-
     if [[ $arch == *"64"* ]]; then
         export ANDROID_VERSION="21"
     else
@@ -62,6 +53,12 @@ function build() {
 
     rm -rf ./toolchain >/dev/null 2>&1
     $ANDROID_NDK/build/tools/make_standalone_toolchain.py --arch $arch --api $ANDROID_VERSION --install-dir=./toolchain
+    export HOST_OS=$(basename $(find ./toolchain/ -maxdepth 1 -type d -name "*linux-android*"))
+    export AR="${HOST_OS}-ar"
+    export RANLIB="${HOST_OS}-ranlib"
+    export JNI_INCLUDES="-I${ANDROID_NDK}/platforms/android-${ANDROID_VERSION}/arch-${arch}/usr/include"
+    export CFLAGS="${JNI_INCLUDES} -O3 ${CFLAGS}" # Must  add optimisation flags for secp
+    export CPPFLAGS="$CFLAGS"
 
     echo '============================================================'
     echo Building $1

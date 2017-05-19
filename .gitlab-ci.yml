@@ -24,3 +24,12 @@ build_tag_release:
     - ./gradlew assembleProductionRelease assembleBtctestnetRelease assembleProduction_21Release assembleBtctestnet_21Release
   only:
     - tags
+
+test_debug_osx_build:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - pushd app && ./prepare_fdroid.sh && popd
+    - ./gradlew --project-dir=bitcoinj/tools build
+    - ./gradlew assembleProductionDebug assembleBtctestnetDebug assemblePublicregtestDebug
