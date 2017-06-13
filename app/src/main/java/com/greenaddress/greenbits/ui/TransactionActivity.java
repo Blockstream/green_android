@@ -622,7 +622,6 @@ public class TransactionActivity extends GaActivity {
             public void run() {
                 mTwoFactor = UI.popupTwoFactorChoice(TransactionActivity.this, mService, skipChoice,
                                                      new CB.Runnable1T<String>() {
-                    @Override
                     public void run(final String method) {
                         showIncreaseSummary(method, oldFee, newFee, tx);
                     }

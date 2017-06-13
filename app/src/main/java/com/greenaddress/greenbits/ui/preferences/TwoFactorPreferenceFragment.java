@@ -143,7 +143,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         final boolean skipChoice = false;
         final Dialog dlg = UI.popupTwoFactorChoice(getActivity(), mService, skipChoice,
                                                    new CB.Runnable1T<String>() {
-            @Override
             public void run(final String withMethod) {
                 disable2FA(method, withMethod);
             }
@@ -254,7 +253,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         final boolean skipChoice = false;
         final Dialog dlg = UI.popupTwoFactorChoice(getActivity(), mService, skipChoice,
             new CB.Runnable1T<String>() {
-                @Override
                 public void run(final String withMethod) {
                     final View v = inflatePinDialog(withMethod);
                     final EditText codeText = UI.find(v, R.id.btchipPINValue);

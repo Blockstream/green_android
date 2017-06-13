@@ -571,7 +571,6 @@ public class SendFragment extends SubaccountFragment {
                         final boolean skipChoice = !ptx.mRequiresTwoFactor || !haveTwoFactor;
                         mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                              new CB.Runnable1T<String>() {
-                            @Override
                             public void run(final String method) {
                                 onTransactionValidated(ptx, null, recipient, sendAmount, method,
                                                        sendFee, privateData, null);
@@ -805,7 +804,6 @@ public class SendFragment extends SubaccountFragment {
                                            !haveTwoFactor;
                 mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                      new CB.Runnable1T<String>() {
-                    @Override
                     public void run(final String method) {
                         onTransactionValidated(null, tx, recipient, actualAmount,
                                                method, sendFee, privateData, underLimits);
@@ -1018,7 +1016,6 @@ public class SendFragment extends SubaccountFragment {
                                            !haveTwoFactor || isUnderLimit;
                 mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                         new CB.Runnable1T<String>() {
-                            @Override
                             public void run(String method) {
                                 if (haveTwoFactor && isUnderLimit)
                                     method = "limit";
