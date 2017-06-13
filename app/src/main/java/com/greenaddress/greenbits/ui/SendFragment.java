@@ -554,7 +554,7 @@ public class SendFragment extends SubaccountFragment {
         CB.after(service.validateTx(ptx, recipient, verifyAmount), new CB.Toast<Coin>(gaActivity, mSendButton) {
             @Override
             public void onSuccess(final Coin fee) {
-                final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
+                final boolean haveTwoFactor = service.hasAnyTwoFactor();
                 // can be non-UI because validation talks to USB if hw wallet is used
                 gaActivity.runOnUiThread(new Runnable() {
                     public void run() {
@@ -568,8 +568,7 @@ public class SendFragment extends SubaccountFragment {
                             sendAmount = amount;
                             sendFee = fee;
                         }
-                        final boolean skipChoice = !ptx.mRequiresTwoFactor ||
-                                                    twoFacConfig == null || !((Boolean) twoFacConfig.get("any"));
+                        final boolean skipChoice = !ptx.mRequiresTwoFactor || !haveTwoFactor;
                         mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                              new CB.Runnable1T<String>() {
                             @Override
@@ -790,7 +789,6 @@ public class SendFragment extends SubaccountFragment {
         final PreparedTransaction ptx;
         ptx = GATx.signTransaction(service, tx, usedUtxos, mSubaccount, changeOutput);
 
-        final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
         final Coin sendFee = fee;
 
         final Map underLimits = new HashMap();
@@ -799,11 +797,12 @@ public class SendFragment extends SubaccountFragment {
         underLimits.put("fee", sendFee.getValue());
         underLimits.put("change_idx", changeOutput == null ? -1 : (randomizedChange ? 0 : 1));
 
+        final boolean haveTwoFactor = service.hasAnyTwoFactor();
         gaActivity.runOnUiThread(new Runnable() {
             public void run() {
                 mSendButton.setEnabled(true);
                 final boolean skipChoice = /* FIXME: !ptx.mRequiresTwoFactor || */
-                                            twoFacConfig == null || !((Boolean) twoFacConfig.get("any"));
+                                           !haveTwoFactor;
                 mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                      new CB.Runnable1T<String>() {
                     @Override
@@ -905,7 +904,6 @@ public class SendFragment extends SubaccountFragment {
         // Fetch previous outputs
         final List<Output> prevOuts = GATx.createPrevouts(service, usedUtxos);
 
-        final Map<?, ?> twoFacConfig = service.getTwoFactorConfig();
         final Coin sendFee = fee;
 
         final int numInputs = tx.getInputs().size();
@@ -1010,21 +1008,20 @@ public class SendFragment extends SubaccountFragment {
         underLimits.put("blinding_pubkeys", blindingKeys);
         final Coin finalFee = fee;
 
+        final boolean haveTwoFactor = service.hasAnyTwoFactor();
         gaActivity.runOnUiThread(new Runnable() {
             public void run() {
                 mSendButton.setEnabled(true);
                 final String limit = service.cfg().getString("twoFacLimits", "0");
+                final boolean isUnderLimit = amount.add(finalFee).getValue() < Float.valueOf(limit) * 100;
                 final boolean skipChoice = /* FIXME: !ptx.mRequiresTwoFactor || */
-                        twoFacConfig == null || !((Boolean) twoFacConfig.get("any")) ||
-                        amount.add(finalFee).getValue() < Float.valueOf(limit)*100;
+                                           !haveTwoFactor || isUnderLimit;
                 mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                         new CB.Runnable1T<String>() {
                             @Override
                             public void run(String method) {
-                                if (twoFacConfig != null && ((Boolean) twoFacConfig.get("any")) &&
-                                    amount.add(finalFee).getValue() < Float.valueOf(limit) * 100) {
+                                if (haveTwoFactor && isUnderLimit)
                                     method = "limit";
-                                }
                                 onTransactionValidated(null, tx, recipient, amount, method,
                                                        sendFee, privateData, underLimits);
                             }

@@ -605,9 +605,8 @@ public class TransactionActivity extends GaActivity {
     }
 
     private void onTransactionConstructed(final Transaction tx, final Coin oldFee, final Coin newFee) {
-        final Map<?, ?> twoFacConfig = mService.getTwoFactorConfig();
         final boolean skipChoice;
-        if (twoFacConfig == null || !((Boolean) twoFacConfig.get("any")))
+        if (!mService.hasAnyTwoFactor())
             skipChoice = true;
         else {
             try {

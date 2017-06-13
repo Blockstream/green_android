@@ -110,29 +110,25 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     }
 
     private void onTwoFactorConfigChange() {
-
-        final Map<?, ?> twoFacConfig = mService.getTwoFactorConfig();
-        if (twoFacConfig == null)
+        if (mService.hasAnyTwoFactor() ||
+            mService.cfg().getBoolean("hideTwoFacWarning", false))
             return;
 
-        if (!((Boolean) twoFacConfig.get("any")) &&
-            !mService.cfg().getBoolean("hideTwoFacWarning", false)) {
-            final Snackbar snackbar = Snackbar
-                    .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
-                    .setActionTextColor(Color.RED)
-                    .setAction(getString(R.string.set2FA), new View.OnClickListener() {
-                        @Override
-                        public void onClick(final View v) {
-                            startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
-                        }
-                    });
+        final Snackbar snackbar = Snackbar
+                .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
+                .setActionTextColor(Color.RED)
+                .setAction(getString(R.string.set2FA), new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
+                    }
+                });
 
-            final View snackbarView = snackbar.getView();
-            snackbarView.setBackgroundColor(Color.DKGRAY);
-            final TextView textView = UI.find(snackbarView, android.support.design.R.id.snackbar_text);
-            textView.setTextColor(Color.WHITE);
-            snackbar.show();
-        }
+        final View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(Color.DKGRAY);
+        final TextView textView = UI.find(snackbarView, android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 
     private String formatValuePostfix(final Coin value) {

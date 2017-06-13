@@ -45,10 +45,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         return twoFacConfig.get(method.toLowerCase()).equals(true);
     }
 
-    private boolean haveAny2FA(final Map<?, ?> twoFacConfig) {
-        return twoFacConfig != null && (Boolean) twoFacConfig.get("any");
-    }
-
     private CheckBoxPreference setupCheckbox(final Map<?, ?> twoFacConfig, final String method) {
         final CheckBoxPreference c = getPref(method);
         if (method.equals(NLOCKTIME_EMAILS))
@@ -103,9 +99,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                 }
             });
             // Can only set limits if at least one 2FA method is available
-            final boolean haveAny = haveAny2FA(twoFacConfig);
-            mLimitsPref.setEnabled(haveAny);
-            mLimitsPref.setSummary(haveAny ? R.string.twoFacLimitEnabled : R.string.twoFacLimitDisabled);
+            setLimitsText(mService.hasAnyTwoFactor());
         }
 
         if (GaService.IS_ELEMENTS)
@@ -230,16 +224,12 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             if (!GaService.IS_ELEMENTS)
                 getPref(NLOCKTIME_EMAILS).setEnabled(checked);
         }
-        final boolean haveAny;
-        if (checked) {
-            // Simple case when enabling a new 2FA method
-            haveAny = true;
-        } else {
-            // If disabled, we know the services cached 2FA info is current
-            haveAny = haveAny2FA(mService.getTwoFactorConfig());
-        }
-        mLimitsPref.setEnabled(haveAny);
-        mLimitsPref.setSummary(haveAny ? R.string.twoFacLimitEnabled : R.string.twoFacLimitDisabled);
+        setLimitsText(checked || mService.hasAnyTwoFactor());
+    }
+
+    private void setLimitsText(final Boolean enabled) {
+        mLimitsPref.setEnabled(enabled);
+        mLimitsPref.setSummary(enabled ? R.string.twoFacLimitEnabled : R.string.twoFacLimitDisabled);
     }
 
     private View inflatePinDialog(final String withMethod) {

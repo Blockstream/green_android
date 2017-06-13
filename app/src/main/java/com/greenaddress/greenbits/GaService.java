@@ -1158,6 +1158,10 @@ public class GaService extends Service implements INotificationHandler {
         return mTwoFactorConfig;
     }
 
+    public boolean hasAnyTwoFactor() {
+        return mTwoFactorConfig != null && (Boolean) mTwoFactorConfig.get("any");
+    }
+
     public ListenableFuture<Boolean> setUserConfig(final String key, final Object value, final boolean updateImmediately) {
         return mClient.setUserConfig(ImmutableMap.of(key, value), updateImmediately);
     }
