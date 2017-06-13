@@ -99,12 +99,6 @@ public class TwoFactorActivity extends GaActivity {
                 showProvideDetails(1, 2, null);
     }
 
-    private Map<String, String> make2FAData(final String method, final String code) {
-        if (code == null)
-            return new HashMap<>();
-        return ImmutableMap.of("method", method, "code", code);
-    }
-
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
         setView(R.layout.activity_two_factor_3_provide_details);
 
@@ -134,7 +128,7 @@ public class TwoFactorActivity extends GaActivity {
                 if (details.isEmpty())
                     return;
                 UI.disable(mContinueButton);
-                final Map<String, String> twoFacData = make2FAData("proxy", proxyCode);
+                final Map<String, String> twoFacData = mService.make2FAData("proxy", proxyCode);
                 CB.after(mService.initEnableTwoFac(mMethod, details, twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
@@ -170,8 +164,9 @@ public class TwoFactorActivity extends GaActivity {
             @Override
             public void onClick(final View v) {
                 mContinueButton.setEnabled(false);
-                final Map<String, String> data = make2FAData(method, UI.getText(mCodeText).trim());
-                CB.after(mService.requestTwoFacCode("proxy", mMethod, data),
+                final String code = UI.getText(mCodeText).trim();
+                final Map<String, String> twoFacData = mService.make2FAData(method, code);
+                CB.after(mService.requestTwoFacCode("proxy", mMethod, twoFacData),
                          new CB.Toast<Object>(TwoFactorActivity.this, mContinueButton) {
                     @Override
                     public void onSuccess(final Object proxyCode) {
@@ -222,7 +217,7 @@ public class TwoFactorActivity extends GaActivity {
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Map<String, String> twoFacData = make2FAData("proxy", proxyCode);
+                final Map<String, String> twoFacData = mService.make2FAData("proxy", proxyCode);
                 mContinueButton.setEnabled(false);
                 CB.after(mService.enableTwoFactor("gauth", UI.getText(mCodeText).trim(), twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {

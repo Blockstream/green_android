@@ -436,7 +436,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                                                 sig = tx.calculateSignature(i, key, script, Transaction.SigHash.ALL, false);
                                                 signatures.add(sig.encodeToBitcoin());
                                             }
-                                            CB.after(mService.sendTransaction(signatures),
+                                            CB.after(mService.sendTransaction(signatures, null),
                                                      new CB.Toast<String>(caller) { });
                                         }
                                     });

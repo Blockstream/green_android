@@ -389,12 +389,9 @@ public class WalletClient {
         return simpleCall("login.available_currencies", Map.class);
     }
 
-    public void changeTxLimits(final long newTotalValue, final Map<String, String> twoFacData) throws Exception {
-        final Map<String, Object> limits = new HashMap<>();
-        limits.put("total", newTotalValue);
-        limits.put("per_tx", 0);
-        limits.put("is_fiat", false);
-        syncCall("login.change_settings", Boolean.class, "tx_limits", limits, twoFacData);
+    public void setSpendingLimits(final JSONMap limitsData,
+                                  final Map<String, String> twoFacData) throws Exception {
+        syncCall("login.change_settings", Boolean.class, "tx_limits", limitsData.mData, twoFacData);
     }
 
     private void onAuthenticationComplete(final Map<String, Object> loginData, final ISigningWallet wallet, final String username, final String password) {
@@ -739,11 +736,11 @@ public class WalletClient {
 
     }
 
-    public ListenableFuture<String> sendTransaction(final List<byte[]> signatures, final Object TfaData) {
-        final List<String> args = new ArrayList<>();
+    public ListenableFuture<String> sendTransaction(final List<byte[]> signatures, final Object twoFacData) {
+        final List<String> sigs = new ArrayList<>();
         for (final byte[] s : signatures)
-            args.add(h(s));
-        return simpleCall("vault.send_tx", null, args, TfaData);
+            sigs.add(h(s));
+        return simpleCall("vault.send_tx", null, sigs, twoFacData);
     }
 
     public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final JSONMap privateData, final boolean returnErrorUri) {
@@ -902,7 +899,7 @@ public class WalletClient {
         return syncCall("twofactor.disable_" + type, Boolean.class, twoFacData);
     }
 
-    public Boolean checkSpendingLimit(final Coin amount) throws Exception {
-        return syncCall("vault.check_spending_limit", Boolean.class, amount.longValue());
+    public JSONMap getSpendingLimits() throws Exception {
+        return new JSONMap((Map<String, Object>) syncCall("login.get_spending_limits", Map.class));
     }
 }

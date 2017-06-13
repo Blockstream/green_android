@@ -135,6 +135,7 @@ public class GaService extends Service implements INotificationHandler {
     private Float mFiatRate;
     private String mFiatCurrency;
     private String mFiatExchange;
+    private JSONMap mLimitsData;
     private ArrayList<Map<String, Object>> mSubAccounts;
     private String mReceivingId;
     private Coin mDustThreshold = Coin.valueOf(546); // Per 0.13.0, updated on login
@@ -469,6 +470,7 @@ public class GaService extends Service implements INotificationHandler {
         mFiatExchange = loginData.get("exchange");
         mSubAccounts = loginData.mSubAccounts;
         mReceivingId = loginData.get("receiving_id");
+        mLimitsData = new JSONMap((Map) loginData.get("limits"));
 
         if (loginData.mRawData.containsKey("min_fee"))
             mMinFeeRate = Coin.valueOf((int) loginData.get("min_fee"));
@@ -494,9 +496,7 @@ public class GaService extends Service implements INotificationHandler {
                     mAssetId = Wally.hex_to_bytes(assetIdHex);
                 }
             }
-            mAssetSymbol = assetSymbols.get(
-                    Wally.hex_from_bytes(mAssetId)
-            );
+            mAssetSymbol = assetSymbols.get(Wally.hex_from_bytes(mAssetId));
             final int decimalPlaces = ((Map<String, Integer>) loginData.mRawData.get("asset_decimal_places")).get(
                     Wally.hex_from_bytes(mAssetId)
             );
@@ -633,7 +633,10 @@ public class GaService extends Service implements INotificationHandler {
         final JSONMap data = new JSONMap(rawData);
         final String fiatCurrency = data.getString("fiat_currency");
         if (!TextUtils.isEmpty(fiatCurrency))
-            mFiatCurrency = fiatCurrency;
+            if (mFiatCurrency == null || !fiatCurrency.equals(mFiatCurrency)) {
+                mFiatCurrency = fiatCurrency;
+                resetFiatSpendingLimits();
+            }
 
         mCoinBalances.put(subAccount, data.getCoin("satoshi"));
 
@@ -687,6 +690,7 @@ public class GaService extends Service implements INotificationHandler {
             public Boolean apply(final Boolean input) {
                 mFiatCurrency = currency;
                 mFiatExchange = exchange;
+                resetFiatSpendingLimits();
                 return input;
             }
         });
@@ -768,14 +772,48 @@ public class GaService extends Service implements INotificationHandler {
     public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
         return Futures.transform(signTransaction(ptx), new AsyncFunction<List<byte[]>, String>() {
             @Override
-            public ListenableFuture<String> apply(final List<byte[]> txSigs) throws Exception {
-                return mClient.sendTransaction(txSigs, twoFacData);
+            public ListenableFuture<String> apply(final List<byte[]> sigs) throws Exception {
+                return sendTransaction(sigs, twoFacData);
             }
         }, mExecutor);
     }
 
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final JSONMap privateData, final boolean returnErrorUri) {
-        return mClient.sendRawTransaction(tx, twoFacData, privateData, returnErrorUri);
+    public ListenableFuture<String> sendTransaction(final List<byte[]> sigs, final Object twoFacData) {
+        final ListenableFuture<String> fn = mClient.sendTransaction(sigs, twoFacData);
+        Futures.addCallback(fn, new FutureCallback<String>() {
+            @Override
+            public void onSuccess(final String txHash) {
+                // FIXME: Should be returned by the server from send_tx
+                try {
+                    mLimitsData = mClient.getSpendingLimits();
+                } catch (final Exception e) {
+                    // We don't know what the new limit is so nuke it
+                    mLimitsData.mData.put("total", 0);
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                t.printStackTrace();
+            }
+        }, mExecutor);
+        return fn;
+    }
+
+    public ListenableFuture<Map<String, Object>>
+    sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData,
+                       final JSONMap privateData, final boolean returnErrorUri) {
+        return Futures.transform(mClient.sendRawTransaction(tx, twoFacData, privateData, returnErrorUri),
+                                 new Function<Map<String, Object>, Map<String, Object>>() {
+                   @Override
+                   public Map<String, Object> apply(final Map<String, Object> ret) {
+                       // FIXME: Server should return the full limits including is_fiat
+                       if (ret.get("new_limit") != null)
+                           mLimitsData.mData.put("total", ret.get("new_limit"));
+                       return ret;
+                   }
+        }, mExecutor);
     }
 
     private List<JSONMap> unblindValues(final List<JSONMap> values, final boolean filterAsset,
@@ -842,10 +880,6 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<Boolean> changeMemo(final Sha256Hash txHash, final String memo) {
         return mClient.changeMemo(txHash, memo);
-    }
-
-    public ListenableFuture<String> sendTransaction(final List<byte[]> txSigs) {
-        return mClient.sendTransaction(txSigs, null);
     }
 
     private static byte[] getSegWitScript(final byte[] input) {
@@ -1187,6 +1221,12 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.preparePayreq(amount, data, privateData);
     }
 
+    public Map<String, String> make2FAData(final String method, final String code) {
+        if (code == null)
+            return new HashMap<>();
+        return ImmutableMap.of("method", method, "code", code);
+    }
+
     public ListenableFuture<Boolean> initEnableTwoFac(final String type, final String details, final Map<?, ?> twoFacData) {
         return mClient.initEnableTwoFac(type, details, twoFacData);
     }
@@ -1209,12 +1249,51 @@ public class GaService extends Service implements INotificationHandler {
         return true;
     }
 
-    public void changeTxLimits(final long newValue, final Map<String, String> twoFacData) throws Exception {
-        mClient.changeTxLimits(newValue, twoFacData);
+    private void resetFiatSpendingLimits() {
+        if (mLimitsData.getBool("is_fiat")) {
+            mLimitsData.mData.put("total", 0);
+            mLimitsData.mData.put("per_tx", 0);
+        }
     }
 
-    public Boolean checkSpendingLimit(final Coin amount) throws Exception {
-        return mClient.checkSpendingLimit(amount);
+    public JSONMap makeLimitsData(final long limit, final boolean isFiat) {
+        final JSONMap limitsData = new JSONMap();
+        limitsData.mData.put("total", limit);
+        limitsData.mData.put("per_tx", 0);
+        limitsData.mData.put("is_fiat", isFiat);
+        return limitsData;
+    }
+
+    public void setSpendingLimits(final JSONMap limitsData,
+                                  final Map<String, String> twoFacData) throws Exception {
+        mClient.setSpendingLimits(limitsData, twoFacData);
+        mLimitsData = limitsData;
+    }
+
+    public JSONMap getSpendingLimits() {
+        return mLimitsData;
+    }
+
+    // Get the users spending limit in BTC/the primary asset
+    private Coin getSpendingLimitAmount() {
+        final Coin unconverted = mLimitsData.getCoin("total");
+        if (IS_ELEMENTS)
+            return unconverted.multiply(100);
+        if (!mLimitsData.getBool("is_fiat"))
+            return unconverted;
+        // Fiat class uses SMALLEST_UNIT_EXPONENT units (10^4), our limit is
+        // held in 10^2 (e.g. cents) units, hence we * 100 below.
+        final Fiat fiatLimit = Fiat.valueOf("???", mLimitsData.getLong("total") * 100);
+        return getFiatRate().fiatToCoin(fiatLimit);
+    }
+
+    public boolean isUnderLimit(final Coin amount) {
+        return !hasAnyTwoFactor() || !amount.isGreaterThan(getSpendingLimitAmount());
+    }
+
+    public boolean doesLimitChangeRequireTwoFactor(final long newValue, final boolean isFiat) {
+        return hasAnyTwoFactor() && (isFiat != mLimitsData.getBool("is_fiat") ||
+                                     newValue > mLimitsData.getLong("total"));
     }
 
     public List<String> getEnabledTwoFactorMethods() {

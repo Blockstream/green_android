@@ -592,37 +592,24 @@ public class TransactionActivity extends GaActivity {
         // FIXME: Needed?
         tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
 
-        final JSONMap limits = new JSONMap();
-        limits.mData.put("asset", "BTC");
-        limits.mData.put("amount", actualAmount.add(fee).getValue()); // FIXME: Correct?
-        limits.mData.put("fee", fee.getValue());
-        if (changeOutput == null || tx.getOutputs().size() == 1)
-            limits.mData.put("change_idx", -1);
-        else
-            limits.mData.put("change_idx", randomizedChange ? 0 : 1);
-
-        return new Pair<>(0, limits);
+        int changeIndex = -1;
+        if (changeOutput != null && tx.getOutputs().size() != 1)
+            changeIndex = randomizedChange ? 0 : 1;
+        return new Pair<>(0,
+                          GATx.makeLimitsData(fee.subtract(oldFee), fee, changeIndex));
     }
 
     private void onTransactionConstructed(final Transaction tx, final Coin oldFee, final Coin newFee) {
-        final boolean skipChoice;
-        if (!mService.hasAnyTwoFactor())
-            skipChoice = true;
-        else {
-            try {
-                skipChoice = mService.checkSpendingLimit(newFee.subtract(oldFee));
-            } catch (final Exception e) {
-                toast(R.string.err_send_not_connected_will_resume, mUnconfirmedIncreaseFee);
-                return;
-            }
-        }
-
+        final Coin feeDelta = newFee.subtract(oldFee);
+        final boolean skipChoice = mService.isUnderLimit(feeDelta);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mTwoFactor = UI.popupTwoFactorChoice(TransactionActivity.this, mService, skipChoice,
                                                      new CB.Runnable1T<String>() {
-                    public void run(final String method) {
+                    public void run(String method) {
+                        if (skipChoice && mService.hasAnyTwoFactor())
+                            method = "limit";
                         showIncreaseSummary(method, oldFee, newFee, tx);
                     }
                 });
@@ -632,7 +619,8 @@ public class TransactionActivity extends GaActivity {
         });
     }
 
-    private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee, final Transaction signedTx) {
+    private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee,
+                                     final Transaction signedTx) {
         Log.i(TAG, "showIncreaseSummary( params " + method + ' ' + oldFee + ' ' + newFee + ')');
         final View v = getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
@@ -648,13 +636,17 @@ public class TransactionActivity extends GaActivity {
         UI.setCoinText(mService, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, newFee);
         UI.setCoinText(mService, v, R.id.newTxFeeUnit, R.id.newTxFeeText, oldFee);
 
+        UI.showIf(method != null && !method.equals("limit"), twoFAText, newTx2FACodeText);
         final long feeDeltaSatoshi = newFee.subtract(oldFee).longValue();
-        final Map<String, Object> twoFacData = new HashMap<>();
+        final Map<String, Object> twoFacData;
         if (method == null) {
-            UI.hide(twoFAText, newTx2FACodeText);
+            twoFacData = null;
+        } else if (method.equals("limit")) {
+            twoFacData = new HashMap<>();
             twoFacData.put("try_under_limits_bump", feeDeltaSatoshi);
         } else {
             twoFAText.setText(String.format("2FA %s code", method));
+            twoFacData = new HashMap<>();
             twoFacData.put("method", method);
             twoFacData.put("bump_fee_amount", feeDeltaSatoshi);
             if (!method.equals("gauth")) {

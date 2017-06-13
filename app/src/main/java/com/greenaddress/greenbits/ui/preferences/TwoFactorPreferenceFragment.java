@@ -10,7 +10,9 @@ import android.preference.Preference;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +20,16 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
 
+import org.bitcoinj.core.Coin;
+
+import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +41,13 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private String mMethod; // Current 2FA Method
     private Map<String, String> mLocalizedMap; // 2FA method to localized description
-    private EditTextPreference mLimitsPref;
+    private Preference mLimitsPref;
 
     private CheckBoxPreference getPref(final String method) {
         return find("twoFac" + method);
     }
 
-    private boolean isEnabled(final Map<?, ?> twoFacConfig, final String method) {
+    private static boolean isEnabled(final Map<?, ?> twoFacConfig, final String method) {
         return twoFacConfig.get(method.toLowerCase()).equals(true);
     }
 
@@ -86,21 +92,14 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         setupCheckbox(twoFacConfig, "Phone");
 
         mLimitsPref = find("twoFacLimits");
-        if (!GaService.IS_ELEMENTS) {
-            // Value -> satoshi conversion needs implementation & testing for
-            // non-Elements (currently it's simply float(str) * 100)
-            removePreference(mLimitsPref);
-        } else {
-            mLimitsPref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            mLimitsPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                    return onLimitsPreferenceChange(preference, newValue);
-                }
-            });
-            // Can only set limits if at least one 2FA method is available
-            setLimitsText(mService.hasAnyTwoFactor());
-        }
+        mLimitsPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                return onLimitsPreferenceClicked(preference);
+            }
+        });
+        // Can only set limits if at least one 2FA method is available
+        setLimitsText(mService.hasAnyTwoFactor());
 
         if (GaService.IS_ELEMENTS)
             removePreference(getPref(NLOCKTIME_EMAILS));
@@ -151,17 +150,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
             dlg.show();
     }
 
-    private void setLimit(final Long newValue, final Map<String, String> twoFacData) {
-        try {
-            mService.changeTxLimits(newValue, twoFacData);
-        } catch (final Exception e) {
-            e.printStackTrace();
-            UI.toast(getActivity(), "Failed", Toast.LENGTH_SHORT);
-            return;
-        }
-        mLimitsPref.setText(String.valueOf(((float) newValue) / 100));
-    }
-
     private void disable2FA(final String method, final String withMethod) {
         if (!withMethod.equals("gauth")) {
             final Map<String, String> data = new HashMap<>();
@@ -190,10 +178,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private void disable2FAImpl(final String method, final String withMethod, final String code) {
         try {
-            final Map<String, String> twoFacData = new HashMap<>();
-            twoFacData.put("method", withMethod);
-            twoFacData.put("code", code);
-            if (mService.disableTwoFactor(method.toLowerCase(), twoFacData)) {
+            if (mService.disableTwoFactor(method.toLowerCase(), mService.make2FAData(withMethod, code))) {
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         change2FA(method, false);
@@ -228,7 +213,22 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
 
     private void setLimitsText(final Boolean enabled) {
         mLimitsPref.setEnabled(enabled);
-        mLimitsPref.setSummary(enabled ? R.string.twoFacLimitEnabled : R.string.twoFacLimitDisabled);
+        if (!enabled) {
+            mLimitsPref.setSummary(R.string.twoFacLimitDisabled);
+            return;
+        }
+        final JSONMap limits = mService.getSpendingLimits();
+        final BigDecimal unscaled = new BigDecimal(limits.getLong("total"));
+        final boolean isFiat = limits.getBool("is_fiat");
+        String trimmed = unscaled.movePointLeft(isFiat ? 2 : 8).toPlainString();
+        trimmed = trimmed.indexOf('.') < 0 ? trimmed : trimmed.replaceAll("0*$", "").replaceAll("\\.$", "");
+        final String limitText;
+        if (GaService.IS_ELEMENTS)
+            limitText = mService.getAssetSymbol() + ' ' + trimmed;
+        else
+            limitText = trimmed + ' ' + (isFiat ? mService.getFiatCurrency() : "BTC");
+
+        mLimitsPref.setSummary(getString(R.string.twoFacLimitEnabled, limitText));
     }
 
     private View inflatePinDialog(final String withMethod) {
@@ -240,48 +240,89 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         return v;
     }
 
-    private boolean onLimitsPreferenceChange(final Preference preference, final Object newValue) {
-        final Float limitF = Float.valueOf((String) newValue);
-        final long limit = (long) (limitF * 100);
+    private boolean onLimitsPreferenceClicked(final Preference preference) {
+        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_set_limits, null, false);
+        final Spinner currencySpinner = UI.find(v, R.id.set_limits_currency);
+        final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
 
-        final String existingLimit = mLimitsPref.getText();
-        if (!TextUtils.isEmpty(existingLimit) && limitF <= Float.valueOf(existingLimit)) {
-            setLimit(limit, null); // Don't require 2FA to lower the limit
-            return true;
+        final String[] currencies;
+        if (GaService.IS_ELEMENTS)
+            currencies = new String[]{mService.getAssetSymbol()};
+        else if (!mService.hasFiatRate())
+            currencies = new String[]{"BTC"};
+        else
+            currencies = new String[]{"BTC", mService.getFiatCurrency()};
+
+        final ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, currencies);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        currencySpinner.setAdapter(adapter);
+        if (currencies.length > 1 && mService.getSpendingLimits().getBool("is_fiat"))
+            currencySpinner.setSelection(1);
+
+        final MaterialDialog dialog;
+        dialog = UI.popup(getActivity(), R.string.twoFacLimitTitle)
+                   .customView(v, true)
+                   .onPositive(new MaterialDialog.SingleButtonCallback() {
+                       @Override
+                       public void onClick(final MaterialDialog dlg, final DialogAction which) {
+                           try {
+                               final String currency = currencySpinner.getSelectedItem().toString();
+                               final String amount = UI.getText(amountEdit);
+                               final boolean isFiat = !currency.equals(currencies[0]);
+                               onNewLimitsSelected(TextUtils.isEmpty(amount) ? "0" : amount, isFiat);
+                           } catch (final Exception e) {
+                               UI.toast(getActivity(), "Error setting limits", Toast.LENGTH_LONG);
+                           }
+                       }
+                   }).build();
+        UI.showDialog(dialog);
+        return false;
+    }
+
+    private void onNewLimitsSelected(final String amount, final boolean isFiat) {
+        final BigDecimal unscaled = new BigDecimal(amount);
+        final BigDecimal scaled = unscaled.movePointRight(isFiat ? 2 : 8);
+        final long limit = scaled.longValue();
+
+        // Only requires 2FA if we have it setup and we are increasing the limit
+        final boolean skipChoice = !mService.doesLimitChangeRequireTwoFactor(limit, isFiat);
+        if (skipChoice) {
+            setSpendingLimits(mService.makeLimitsData(limit, isFiat), null);
+            return;
         }
 
-        final boolean skipChoice = false;
-        final Dialog dlg = UI.popupTwoFactorChoice(getActivity(), mService, skipChoice,
-            new CB.Runnable1T<String>() {
-                public void run(final String withMethod) {
-                    final View v = inflatePinDialog(withMethod);
-                    final EditText codeText = UI.find(v, R.id.btchipPINValue);
+        UI.popupTwoFactorChoice(getActivity(), mService, skipChoice, new CB.Runnable1T<String>() {
+            public void run(final String method) {
+                final View v = inflatePinDialog(method);
+                final EditText codeText = UI.find(v, R.id.btchipPINValue);
+                final JSONMap limitsData = mService.makeLimitsData(limit, isFiat);
 
-                    if (!withMethod.equals("gauth")) {
-                        final Map<String, Object> data = new HashMap<>();
-                        data.put("is_fiat", false);
-                        data.put("per_tx", 0);
-                        data.put("total", limit);
+                if (!method.equals("gauth"))
+                    mService.requestTwoFacCode(method, "change_tx_limits", limitsData.mData);
 
-                        mService.requestTwoFacCode(withMethod, "change_tx_limits", data);
-                    }
+                UI.popup(getActivity(), "Enter TwoFactor Code")
+                  .customView(v, true)
+                  .onPositive(new MaterialDialog.SingleButtonCallback() {
+                      @Override
+                      public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                          final String code = UI.getText(codeText);
+                          setSpendingLimits(limitsData, mService.make2FAData(method, code));
+                      }
+                  }).build().show();
+            }
+        });
+    }
 
-                    UI.popup(getActivity(), "2FA")
-                            .customView(v, true)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                                    final Map<String, String> twoFacData = new HashMap<>();
-                                    twoFacData.put("method", withMethod);
-                                    twoFacData.put("code", UI.getText(codeText));
-                                    setLimit(limit, twoFacData);
-                                }
-                            }).build().show();
-                }
-            });
-
-        if (dlg != null)
-            dlg.show();
-        return false;
+    private void setSpendingLimits(final JSONMap limitsData,
+                                   final Map<String, String> twoFacData) {
+        try {
+            mService.setSpendingLimits(limitsData, twoFacData);
+            setLimitsText(true);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            UI.toast(getActivity(), "Failed", Toast.LENGTH_SHORT);
+            return;
+        }
     }
 }

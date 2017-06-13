@@ -19,7 +19,7 @@
         android:key="twoFacPhone"
         android:title="@string/twoFacPhoneCall" />
 
-    <EditTextPreference
+    <Preference
         android:key="twoFacLimits"
         android:title="@string/twoFacLimitTitle"
         android:summary="@string/twoFacLimitDisabled" />

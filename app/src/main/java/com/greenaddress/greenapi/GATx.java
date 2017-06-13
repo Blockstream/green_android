@@ -276,6 +276,15 @@ public class GATx {
         return Coin.valueOf((isInstant ? 75 : 60) * 1000);
     }
 
+    public static JSONMap makeLimitsData(final Coin limitDelta, final Coin fee,
+                                         final int changeIndex) {
+        final JSONMap m = new JSONMap();
+        m.mData.put("asset", "BTC");
+        m.mData.put("amount", limitDelta.getValue());
+        m.mData.put("fee", fee.getValue());
+        m.mData.put("change_idx", changeIndex);
+        return m;
+    }
 
     public static Coin addUtxo(final GaService service, final Transaction tx,
                                final List<JSONMap> utxos, final List<JSONMap> used) {

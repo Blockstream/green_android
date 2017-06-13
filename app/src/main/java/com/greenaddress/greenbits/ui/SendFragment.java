@@ -588,8 +588,7 @@ public class SendFragment extends SubaccountFragment {
                                         final Transaction signedRawTx,
                                         final String recipient, final Coin amount,
                                         final String method, final Coin fee,
-                                        final JSONMap privateData,
-                                        final Map<String, Object> underLimits) {
+                                        final JSONMap privateData, final JSONMap underLimits) {
         Log.i(TAG, "onTransactionValidated( params " + method + ' ' + fee + ' ' + amount + ' ' + recipient + ')');
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
@@ -619,20 +618,20 @@ public class SendFragment extends SubaccountFragment {
             twoFacData = null;
         else if (method.equals("limit")) {
             twoFacData = new HashMap<>();
-            twoFacData.put("try_under_limits_spend", underLimits);
+            twoFacData.put("try_under_limits_spend", underLimits.mData);
         } else {
             twoFacData = new HashMap<>();
             twoFacData.put("method", method);
             twoFAText.setText(String.format("2FA %s code", method));
             if (!method.equals("gauth")) {
                 if (underLimits != null)
-                    for (final String key : underLimits.keySet())
+                    for (final String key : underLimits.mData.keySet())
                         twoFacData.put("send_raw_tx_" + key, underLimits.get(key));
                 if (GaService.IS_ELEMENTS) {
-                    underLimits.remove("ephemeral_privkeys");
-                    underLimits.remove("blinding_pubkeys");
+                    underLimits.mData.remove("ephemeral_privkeys");
+                    underLimits.mData.remove("blinding_pubkeys");
                 }
-                service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", underLimits);
+                service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", underLimits.mData);
             }
         }
 
@@ -650,15 +649,6 @@ public class SendFragment extends SubaccountFragment {
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity, mSendButton) {
                                 @Override
                                 public void onSuccess(final Map result) {
-                                    if (GaService.IS_ELEMENTS && twoFacData != null && method.equals("limit")) {
-                                        // FIXME: Store limits for non-elements w/configurable m/u/bits units
-                                        service.cfg().edit().putString(
-                                            "twoFacLimits",
-                                            UI.formatCoinValue(
-                                                service, Coin.valueOf(((Number) result.get("new_limit")).longValue())
-                                            )
-                                        ).apply();
-                                    }
                                     onTransactionSent();
                                 }
                             }, service.getExecutor());
@@ -788,23 +778,19 @@ public class SendFragment extends SubaccountFragment {
         final PreparedTransaction ptx;
         ptx = GATx.signTransaction(service, tx, usedUtxos, mSubaccount, changeOutput);
 
+        final int changeIndex = changeOutput == null ? -1 : (randomizedChange ? 0 : 1);
+        final JSONMap underLimits = GATx.makeLimitsData(amount.add(fee), fee, changeIndex);
+
+        final boolean skipChoice = service.isUnderLimit(underLimits.getCoin("amount"));
         final Coin sendFee = fee;
-
-        final Map underLimits = new HashMap();
-        underLimits.put("asset", "BTC");
-        underLimits.put("amount", amount.add(sendFee).getValue());
-        underLimits.put("fee", sendFee.getValue());
-        underLimits.put("change_idx", changeOutput == null ? -1 : (randomizedChange ? 0 : 1));
-
-        final boolean haveTwoFactor = service.hasAnyTwoFactor();
         gaActivity.runOnUiThread(new Runnable() {
             public void run() {
                 mSendButton.setEnabled(true);
-                final boolean skipChoice = /* FIXME: !ptx.mRequiresTwoFactor || */
-                                           !haveTwoFactor;
                 mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                                                      new CB.Runnable1T<String>() {
-                    public void run(final String method) {
+                    public void run(String method) {
+                        if (skipChoice && service.hasAnyTwoFactor())
+                            method = "limit";
                         onTransactionValidated(null, tx, recipient, actualAmount,
                                                method, sendFee, privateData, underLimits);
                     }
@@ -902,8 +888,6 @@ public class SendFragment extends SubaccountFragment {
         // Fetch previous outputs
         final List<Output> prevOuts = GATx.createPrevouts(service, usedUtxos);
 
-        final Coin sendFee = fee;
-
         final int numInputs = tx.getInputs().size();
         final int numOutputs = tx.getOutputs().size();
         final int numInOuts = numInputs + numOutputs;
@@ -997,27 +981,21 @@ public class SendFragment extends SubaccountFragment {
             }
         }
 
-        final Map underLimits = new HashMap();
-        underLimits.put("asset_id", Wally.hex_from_bytes(service.mAssetId)); // FIXME: Others
-        underLimits.put("amount", amount.add(sendFee).getValue());
-        underLimits.put("fee", sendFee.getValue());
-        underLimits.put("change_idx", changeOutput == null ? -1 : 2);
-        underLimits.put("ephemeral_privkeys", ephemeralKeys);
-        underLimits.put("blinding_pubkeys", blindingKeys);
-        final Coin finalFee = fee;
+        final int changeIndex = changeOutput == null ? -1 : 2;
+        final JSONMap underLimits = GATx.makeLimitsData(amount.add(fee), fee, changeIndex);
+        underLimits.putBytes("asset_id", service.mAssetId); // FIXME: Others
+        underLimits.mData.put("ephemeral_privkeys", ephemeralKeys);
+        underLimits.mData.put("blinding_pubkeys", blindingKeys);
+        final boolean skipChoice = service.isUnderLimit(underLimits.getCoin("amount"));
+        final Coin sendFee = fee;
 
-        final boolean haveTwoFactor = service.hasAnyTwoFactor();
         gaActivity.runOnUiThread(new Runnable() {
             public void run() {
                 mSendButton.setEnabled(true);
-                final String limit = service.cfg().getString("twoFacLimits", "0");
-                final boolean isUnderLimit = amount.add(finalFee).getValue() < Float.valueOf(limit) * 100;
-                final boolean skipChoice = /* FIXME: !ptx.mRequiresTwoFactor || */
-                                           !haveTwoFactor || isUnderLimit;
                 mTwoFactor = UI.popupTwoFactorChoice(gaActivity, service, skipChoice,
                         new CB.Runnable1T<String>() {
                             public void run(String method) {
-                                if (haveTwoFactor && isUnderLimit)
+                                if (skipChoice && service.hasAnyTwoFactor())
                                     method = "limit";
                                 onTransactionValidated(null, tx, recipient, amount, method,
                                                        sendFee, privateData, underLimits);

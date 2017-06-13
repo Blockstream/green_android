@@ -92,7 +92,7 @@
     <string name="action_network">Network Monitor</string>
     <string name="action_about">About</string>
 
-    <!-- Example settings for Notifications -->
+    <string name="currency">Currency</string>
     <string name="txDateText">Date</string>
     <string name="txAmountText">Amount</string>
     <string name="newTxAmount">Amount: </string>
@@ -306,8 +306,8 @@
     <string name="cash_out">Cash out</string>
     <string name="send_to_address">Send to address</string>
     <string name="twoFacLimitTitle">Set Two Factor Threshold</string>
-    <string name="twoFacLimitEnabled">Two Factor Authentication will be skipped for transactions under your threshold.</string>
-    <string name="twoFacLimitDisabled">You must enable at least one Two Factor Authentication method before you can change the threshold.</string>
+    <string name="twoFacLimitEnabled">Your transaction threshold is %1$s.</string>
+    <string name="twoFacLimitDisabled">You must enable Two Factor Authentication before you can change the threshold.</string>
     <string name="enter_matching_words">Enter The Matching Words</string>
     <string name="hash_number"># %1$d</string>
 </resources>
