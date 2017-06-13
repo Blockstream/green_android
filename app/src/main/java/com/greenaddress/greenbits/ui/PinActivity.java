@@ -130,8 +130,7 @@ public class PinActivity extends LoginActivity implements Observer {
                     }
                     editor.apply();
                     error = null;
-                }
-                else {
+                } else {
                     error = t;
                     message = null;
                 }
