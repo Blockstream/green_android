@@ -116,13 +116,12 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         mScanButton = UI.find(this,R.id.mnemonicScanIcon);
 
         mOkButton.setIndeterminateProgressMode(true);
-
-        UI.mapClick(this, R.id.mnemonicOkButton, this);
+        mOkButton.setOnClickListener(this);
 
         final boolean haveCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
         UI.showIf(haveCamera, mScanButton);
         if (haveCamera)
-            UI.mapClick(this, R.id.mnemonicScanIcon, this);
+            mScanButton.setOnClickListener(this);
 
         final ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, mWordsArray);
@@ -138,6 +137,13 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         });
 
         NFCIntentMnemonicLogin();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        UI.unmapClick(mOkButton);
+        UI.unmapClick(mScanButton);
     }
 
     private void markInvalidWords() {
@@ -309,9 +315,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
     @Override
     public void onClick(final View v) {
-        if (v == mOkButton) {
+        if (v == mOkButton)
             doLogin();
-        }
         else if (v == mScanButton)
             onScanClicked();
     }

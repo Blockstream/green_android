@@ -70,6 +70,11 @@ public abstract class UI {
         setDialogCloseHandler(d, callback, false);
     }
 
+    public static void dismiss(final Dialog d) {
+        if (d != null)
+            d.dismiss();
+    }
+
     private static boolean isEnterKeyDown(final KeyEvent e) {
         return e != null && e.getAction() == KeyEvent.ACTION_DOWN &&
                e.getKeyCode() == KeyEvent.KEYCODE_ENTER;
@@ -227,6 +232,11 @@ public abstract class UI {
                 activity.startActivity(activityIntent);
             }
         });
+    }
+
+    public static void unmapClick(final View v) {
+        if (v != null)
+            v.setOnClickListener(null);
     }
 
     public static void mapEnterToPositive(final Dialog dialog, final int editId) {
