@@ -347,18 +347,16 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (mQrCodeDialog != null)
             mQrCodeDialog.dismiss();
 
-        final View v;
+        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
         if (mIsExchanger) {
-            v = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode_exchanger, null, false);
-            final Button cancelBtn = UI.find(v, R.id.cancelBtn);
-            cancelBtn.setOnClickListener(new View.OnClickListener() {
+            final Button cancelButton = UI.find(v, R.id.qrInDialogCancel);
+            UI.show(cancelButton, UI.find(v, R.id.qrInDialogWaiting));
+            cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
                     mQrCodeDialog.dismiss();
                 }
             });
-        } else {
-            v = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
         }
 
         final ImageView qrCode = UI.find(v, R.id.qrInDialogImageView);
