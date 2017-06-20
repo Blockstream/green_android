@@ -15,7 +15,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
-import com.greenaddress.greenbits.ui.MnemonicActivity;
+import com.greenaddress.greenbits.ui.MnemonicHelper;
 
 import java.util.ArrayList;
 
@@ -62,7 +62,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         // wallet during SPV syncing to prevent an exception.
         try {
             final ArrayList<String> words = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
-            MnemonicActivity.initWordList(words, null);
+            MnemonicHelper.initWordList(words, null);
             MnemonicCode.INSTANCE = new MnemonicCode(words, null);
         } catch (final Exception e) {
             e.printStackTrace();

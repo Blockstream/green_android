@@ -35,10 +35,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import de.schildbach.wallet.ui.ScanActivity;
 
 
@@ -49,9 +45,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     private static final int PINSAVE = 1337;
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
-
-    private Set<String> mWords;
-    private ArrayList<String> mWordsArray;
 
     private MultiAutoCompleteTextView mMnemonicText;
     private CircularProgressButton mOkButton;
@@ -94,22 +87,9 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         }
     };
 
-    public static void initWordList(final ArrayList<String> wordsArray, final Set<String> words) {
-        final Object en = Wally.bip39_get_wordlist("en");
-        for (int i = 0; i < Wally.BIP39_WORDLIST_LEN; ++i) {
-            wordsArray.add(Wally.bip39_get_word(en, i));
-            if (words != null)
-                words.add(wordsArray.get(i));
-        }
-    }
-
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.i(TAG, getIntent().getType() + ' ' + getIntent());
-
-        mWordsArray = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
-        mWords = new HashSet<>(Wally.BIP39_WORDLIST_LEN);
-        initWordList(mWordsArray, mWords);
 
         mMnemonicText = UI.find(this, R.id.mnemonicText);
         mOkButton = UI.find(this,R.id.mnemonicOkButton);
@@ -124,7 +104,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             mScanButton.setOnClickListener(this);
 
         final ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, mWordsArray);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, MnemonicHelper.mWordsArray);
         mMnemonicText.setAdapter(adapter);
         mMnemonicText.setThreshold(1);
         mMnemonicText.setTokenizer(mTokenizer);
@@ -154,7 +134,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         int start = 0;
         for (final String word : e.toString().split(" ")) {
             final int end = start + word.length();
-            if (!mWords.contains(word))
+            if (!MnemonicHelper.mWords.contains(word))
                 e.setSpan(new StrikethroughSpan(), start, end, 0);
             start = end + 1;
         }
@@ -162,7 +142,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
     private void promptToFixInvalidWord(final String badWord, final int start, final int end) {
         // FIXME: Show a list of closest words instead of just one
-        final String closeWord = MnemonicHelper.getClosestWord(mWordsArray, badWord);
+        final String closeWord = MnemonicHelper.getClosestWord(MnemonicHelper.mWordsArray, badWord);
         final Snackbar snackbar = Snackbar
             .make(mMnemonicText, getString(R.string.invalidWord, badWord, closeWord), Snackbar.LENGTH_LONG)
             .setAction("Correct", new View.OnClickListener() {
@@ -222,7 +202,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         int start = 0;
         for (final String word : words) {
             final int end = start + word.length();
-            if (!mWords.contains(word)) {
+            if (!MnemonicHelper.mWords.contains(word)) {
                 promptToFixInvalidWord(word, start, end);
                 return;
             }
