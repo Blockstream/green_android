@@ -593,25 +593,6 @@ public class SendFragment extends SubaccountFragment {
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
-        final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
-
-        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
-        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
-
-        final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
-        final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
-        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
-
-        if (mPayreqData != null)
-            recipientText.setText(recipient);
-        else
-            recipientText.setText(String.format("%s\n%s\n%s",
-                                  recipient.substring(0, 12),
-                                  recipient.substring(12, 24),
-                                  recipient.substring(24)));
-
-        UI.showIf(method != null && !method.equals("limit"), twoFAText, newTx2FACodeText);
-
         final Map<String, Object> twoFacData;
 
         if (method == null)
@@ -622,7 +603,6 @@ public class SendFragment extends SubaccountFragment {
         } else {
             twoFacData = new HashMap<>();
             twoFacData.put("method", method);
-            twoFAText.setText(String.format("2FA %s code", method));
             if (!method.equals("gauth")) {
                 if (underLimits != null)
                     for (final String key : underLimits.mData.keySet())
@@ -633,6 +613,28 @@ public class SendFragment extends SubaccountFragment {
                 }
                 service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", underLimits.mData);
             }
+        }
+
+        final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+
+        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
+        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
+
+        final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
+        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
+
+        if (mPayreqData != null)
+            recipientText.setText(recipient);
+        else
+            recipientText.setText(String.format("%s\n%s\n%s",
+                                  recipient.substring(0, 12),
+                                  recipient.substring(12, 24),
+                                  recipient.substring(24)));
+
+        if (method != null && !method.equals("limit")) {
+            final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
+            UI.show(twoFAText, newTx2FACodeText);
+            twoFAText.setText(String.format("2FA %s code", method));
         }
 
         mSummary = UI.popup(gaActivity, R.string.newTxTitle, R.string.send, R.string.cancel)

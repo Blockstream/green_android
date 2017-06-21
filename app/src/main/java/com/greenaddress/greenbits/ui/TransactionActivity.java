@@ -622,21 +622,7 @@ public class TransactionActivity extends GaActivity {
     private void showIncreaseSummary(final String method, final Coin oldFee, final Coin newFee,
                                      final Transaction signedTx) {
         Log.i(TAG, "showIncreaseSummary( params " + method + ' ' + oldFee + ' ' + newFee + ')');
-        final View v = getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
 
-        final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);
-        amountLabel.setText(R.string.newFeeText);
-        final TextView feeLabel = UI.find(v, R.id.newTxFeeLabel);
-        feeLabel.setText(R.string.oldFeeText);
-
-        UI.hide(UI.find(v, R.id.newTxRecipientLabel), UI.find(v, R.id.newTxRecipientText));
-        final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
-        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
-
-        UI.setCoinText(mService, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, newFee);
-        UI.setCoinText(mService, v, R.id.newTxFeeUnit, R.id.newTxFeeText, oldFee);
-
-        UI.showIf(method != null && !method.equals("limit"), twoFAText, newTx2FACodeText);
         final long feeDeltaSatoshi = newFee.subtract(oldFee).longValue();
         final Map<String, Object> twoFacData;
         if (method == null) {
@@ -645,7 +631,6 @@ public class TransactionActivity extends GaActivity {
             twoFacData = new HashMap<>();
             twoFacData.put("try_under_limits_bump", feeDeltaSatoshi);
         } else {
-            twoFAText.setText(String.format("2FA %s code", method));
             twoFacData = new HashMap<>();
             twoFacData.put("method", method);
             twoFacData.put("bump_fee_amount", feeDeltaSatoshi);
@@ -654,6 +639,26 @@ public class TransactionActivity extends GaActivity {
                 amount.put("amount", feeDeltaSatoshi);
                 mService.requestTwoFacCode(method, "bump_fee", amount);
             }
+        }
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+
+        final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);
+        amountLabel.setText(R.string.newFeeText);
+        final TextView feeLabel = UI.find(v, R.id.newTxFeeLabel);
+        feeLabel.setText(R.string.oldFeeText);
+
+        UI.hide(UI.find(v, R.id.newTxRecipientLabel), UI.find(v, R.id.newTxRecipientText));
+
+        UI.setCoinText(mService, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, newFee);
+        UI.setCoinText(mService, v, R.id.newTxFeeUnit, R.id.newTxFeeText, oldFee);
+
+        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
+
+        if (method != null && !method.equals("limit")) {
+            final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
+            twoFAText.setText(String.format("2FA %s code", method));
+            UI.show(twoFAText, newTx2FACodeText);
         }
 
         mSummary = UI.popup(this, R.string.feeIncreaseTitle, R.string.send, R.string.cancel)
