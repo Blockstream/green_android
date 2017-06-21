@@ -81,6 +81,7 @@
                     android:textAlignment="center"
                     android:textColor="@color/secondaryTextColor"
                     android:textIsSelectable="true"
+                    android:hyphenationFrequency="none"
                     android:textSize="24sp" />
 
 
