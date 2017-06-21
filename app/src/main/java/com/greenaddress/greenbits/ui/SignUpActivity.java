@@ -19,6 +19,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,14 +37,18 @@ import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.LoginData;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
 
 public class SignUpActivity extends LoginActivity implements View.OnClickListener {
-    private static final String TAG = SignUpActivity.class.getSimpleName();
     private static final int PINSAVE = 1337;
+    private static final int VERIFY_COUNT = 4;
 
     private boolean mWriteMode;
     private Dialog mMnemonicDialog;
     private Dialog mNfcDialog;
+    private Dialog mVerifyDialog;
     private NfcAdapter mNfcAdapter;
     private PendingIntent mNfcPendingIntent;
     private View mNfcView;
@@ -52,8 +60,12 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     private TextView mQrCodeIcon;
     private ImageView mQrCodeBitmap;
 
+    private ArrayList<Integer> mWordChoices;
+    private boolean[] mChoiceIsValid;
+
     private ListenableFuture<LoginData> mOnSignUp;
-    private final Runnable mDialogCB = new Runnable() { public void run() { mWriteMode = false; } };
+    private final Runnable mNfcDialogCB = new Runnable() { public void run() { mWriteMode = false; } };
+    private final Runnable mVerifyDialogCB = new Runnable() { public void run() { onVerifyDismissed(); } };
 
     @Override
     protected int getMainViewId() { return R.layout.activity_sign_up; }
@@ -90,6 +102,12 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
             UI.hide(mNfcSignupIcon);
         else
             mNfcSignupIcon.setOnClickListener(this);
+
+        mWordChoices = new ArrayList<>(24);
+        for (int i = 0; i < 24; ++i)
+            mWordChoices.add(i);
+
+        mChoiceIsValid = new boolean[VERIFY_COUNT];
     }
 
     @Override
@@ -106,6 +124,10 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     public void onPauseWithService() {
         if (mNfcAdapter != null)
             mNfcAdapter.disableForegroundDispatch(this);
+        if (mContinueButton != null) {
+            mContinueButton.setIndeterminateProgressMode(false);
+            mContinueButton.setProgress(0);
+        }
     }
 
     @Override
@@ -117,6 +139,10 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
         UI.dismiss(mNfcDialog);
         mNfcDialog = null;
         mNfcView = null;
+        if (mChoiceIsValid != null) {
+            mChoiceIsValid[0] = false;
+            UI.dismiss(mVerifyDialog);
+        }
     }
 
     @Override
@@ -160,7 +186,34 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
 
         mContinueButton.setIndeterminateProgressMode(true);
         mContinueButton.setProgress(50);
+        UI.hide(mMnemonicText, mQrCodeIcon);
 
+        // Create a random shuffle of word orders; the user will be asked
+        // to verify the first VERIFY_COUNT words.
+        Collections.shuffle(mWordChoices);
+
+        for (int i = 0; i < mChoiceIsValid.length; ++i)
+            mChoiceIsValid[i] = false;
+
+        // Show the verification dialog
+        final View v = getLayoutInflater().inflate(R.layout.dialog_verify_words, null, false);
+        mVerifyDialog = new MaterialDialog.Builder(SignUpActivity.this)
+                .title(R.string.enter_matching_words)
+                .customView(v, true)
+                .titleColorRes(R.color.white)
+                .contentColorRes(android.R.color.white)
+                .theme(Theme.DARK)
+                .build();
+        UI.setDialogCloseHandler(mVerifyDialog, mVerifyDialogCB, false);
+        final String[] words = UI.getText(mMnemonicText).split(" ");
+        setupWord(v, R.id.verify_label_1, R.id.verify_word_1, words, 0);
+        setupWord(v, R.id.verify_label_2, R.id.verify_word_2, words, 1);
+        setupWord(v, R.id.verify_label_3, R.id.verify_word_3, words, 2);
+        setupWord(v, R.id.verify_label_4, R.id.verify_word_4, words, 3);
+        mVerifyDialog.show();
+    }
+
+    private void onMnemonicVerified() {
         mOnSignUp = mService.signup(UI.getText(mMnemonicText));
         Futures.addCallback(mOnSignUp, new FutureCallback<LoginData>() {
             @Override
@@ -186,7 +239,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
                 .titleColorRes(R.color.white)
                 .contentColorRes(android.R.color.white)
                 .theme(Theme.DARK).build();
-            UI.setDialogCloseHandler(mNfcDialog, mDialogCB, true /* cancelOnly */);
+            UI.setDialogCloseHandler(mNfcDialog, mNfcDialogCB, true /* cancelOnly */);
         }
         mWriteMode = true;
         mNfcDialog.show();
@@ -288,6 +341,67 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
             case PINSAVE:
                 onLoginSuccess();
                 break;
+        }
+    }
+
+    void setupWord(final View v, final int labelId, final int spinnerId,
+                   final String[] words, final int index) {
+        final int wordIndex = mWordChoices.get(index);
+        final String validWord = words[wordIndex];
+
+        final TextView label = UI.find(v, labelId);
+        final AutoCompleteTextView text = UI.find(v, spinnerId);
+
+        label.setText(getString(R.string.hash_number, wordIndex + 1));
+        final ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, MnemonicHelper.mWordsArray);
+        text.setAdapter(adapter);
+        text.setThreshold(1);
+        text.addTextChangedListener(new UI.TextWatcher() {
+            @Override
+            public void onTextChanged(final CharSequence t, final int start,
+                                      final int before, final int count) {
+                onWordChanged(label, text, index, validWord, true);
+            }
+        });
+        text.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+                onWordChanged(label, text, index, validWord, false);
+            }
+        });
+    }
+
+    private void onWordChanged(final TextView label, final AutoCompleteTextView text,
+                               final int index, final String validWord, final boolean isTextChange) {
+        if (isTextChange && text.isPerformingCompletion())
+            return; // Let the call from onItemClick handle it
+        final boolean isValid = UI.getText(text).equals(validWord);
+        mChoiceIsValid[index] = isValid;
+        if (isValid) {
+            UI.hide(label, text);
+            if (areAllChoicesValid())
+                mVerifyDialog.dismiss(); // Dismiss callback will continue
+        }
+    }
+
+    private boolean areAllChoicesValid() {
+        if (mChoiceIsValid == null)
+            return false;
+        for (final boolean isValid : mChoiceIsValid)
+            if (!isValid)
+                return false;
+        return true;
+    }
+
+    private void onVerifyDismissed() {
+        if (mVerifyDialog != null) {
+            UI.show(mMnemonicText, mQrCodeIcon);
+            mContinueButton.setIndeterminateProgressMode(false);
+            mContinueButton.setProgress(0);
+            mVerifyDialog = null;
+            if (areAllChoicesValid())
+                onMnemonicVerified();
         }
     }
 }

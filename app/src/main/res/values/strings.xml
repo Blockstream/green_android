@@ -308,4 +308,6 @@
     <string name="twoFacLimitTitle">Set Two Factor Threshold</string>
     <string name="twoFacLimitEnabled">Two Factor Authentication will be skipped for transactions under your threshold.</string>
     <string name="twoFacLimitDisabled">You must enable at least one Two Factor Authentication method before you can change the threshold.</string>
+    <string name="enter_matching_words">Enter The Matching Words</string>
+    <string name="hash_number"># %1$d</string>
 </resources>
