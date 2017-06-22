@@ -47,7 +47,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 
-public class PinActivity extends LoginActivity implements Observer {
+public class PinActivity extends LoginActivity implements Observer, View.OnClickListener {
 
     private Menu mMenu;
     private static final String KEYSTORE_KEY = "NativeAndroidAuth";
@@ -184,13 +184,7 @@ public class PinActivity extends LoginActivity implements Observer {
                         }
                     }));
 
-            mPinLoginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    login();
-                }
-            });
-
+            mPinLoginButton.setOnClickListener(this);
         } else  {
             mPinText.setEnabled(false);
             mPinLoginButton.setProgress(50);
@@ -293,6 +287,12 @@ public class PinActivity extends LoginActivity implements Observer {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        UI.unmapClick(mPinLoginButton);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.common_menu, menu);
         getMenuInflater().inflate(R.menu.preauth_menu, menu);
@@ -323,4 +323,10 @@ public class PinActivity extends LoginActivity implements Observer {
         setMenuItemVisible(mMenu, R.id.network_unavailable,
                            !state.isConnected() && !state.isLoggedOrLoggingIn());
     }
-}
+
+    @Override
+    public void onClick(final View v) {
+        if (v == mPinLoginButton)
+            login();
+    }
+ }

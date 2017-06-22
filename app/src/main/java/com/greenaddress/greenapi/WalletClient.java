@@ -864,8 +864,8 @@ public class WalletClient {
         return syncCall("txs.get_raw_output", String.class, txHash.toString());
     }
 
-    public ListenableFuture<Boolean> changeMemo(final Sha256Hash txHash, final String memo) {
-        return simpleCall("txs.change_memo", Boolean.class, txHash.toString(), memo);
+    public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
+        return simpleCall("txs.change_memo", Boolean.class, txHashHex, memo);
     }
 
     public ListenableFuture<Boolean> setPricingSource(final String currency, final String exchange) {

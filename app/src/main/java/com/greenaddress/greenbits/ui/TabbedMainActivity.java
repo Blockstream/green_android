@@ -45,6 +45,7 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.TransactionSignature;
+import org.bitcoinj.params.MainNetParams;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,9 +58,13 @@ import java.util.Observer;
 import de.schildbach.wallet.ui.ScanActivity;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
-public class TabbedMainActivity extends GaActivity implements Observer {
+public class TabbedMainActivity extends GaActivity implements Observer, View.OnClickListener {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
+
+    private static final boolean IS_MAINNET = Network.NETWORK == MainNetParams.get();
+    private static final int BIP32_NETWORK = IS_MAINNET ? Wally.BIP38_KEY_MAINNET : Wally.BIP38_KEY_TESTNET;
+    private static final int BIP38_FLAGS = BIP32_NETWORK | Wally.BIP38_KEY_COMPRESSED;
 
     public static final int
             REQUEST_SEND_QR_SCAN = 0,
@@ -73,8 +78,10 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     private Boolean mInternalQr = false;
     private String mSendAmount;
     private MaterialDialog mSegwitDialog;
-    private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private MaterialDialog mSubaccountDialog;
+    private FloatingActionButton mSubaccountButton;
+
+    private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private final Runnable mSubaccountCB = new Runnable() { public void run() { mDialogCB.run(); mSubaccountDialog = null; } };
     private final Runnable mDialogCB = new Runnable() { public void run() { setBlockWaitDialog(false); } };
 
@@ -165,45 +172,49 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         if (!mService.haveSubaccounts())
             return;
 
-        final FloatingActionButton fab = UI.find(this, R.id.fab);
-        UI.show(fab);
+        mSubaccountButton = UI.find(this, R.id.fab);
+        UI.show(mSubaccountButton);
+        mSubaccountButton.setOnClickListener(this);
+    }
 
-        fab.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(final View v) {
+        if (v == mSubaccountButton)
+            onSubaccountButtonClicked();
+    }
+
+    public void onSubaccountButtonClicked() {
+        setBlockWaitDialog(true);
+        final ArrayList subaccounts = mService.getSubaccounts();
+        final int subaccount_len = subaccounts.size() + 1;
+        final ArrayList<String> names = new ArrayList<>(subaccount_len);
+        final ArrayList<Integer> pointers = new ArrayList<>(subaccount_len);
+
+        names.add(getString(R.string.main_account));
+        pointers.add(0);
+
+        for (final Object s : subaccounts) {
+            final Map<String, ?> m = (Map) s;
+            names.add((String) m.get("name"));
+            pointers.add((Integer) m.get("pointer"));
+        }
+
+        final AccountItemAdapter adapter = new AccountItemAdapter(names, pointers, mService);
+        mSubaccountDialog = new MaterialDialog.Builder(TabbedMainActivity.this)
+                .title(R.string.footerAccount)
+                .adapter(adapter, null)
+                .show();
+        UI.setDialogCloseHandler(mSubaccountDialog, mSubaccountCB);
+
+        adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
             @Override
-            public void onClick(final View v) {
-                setBlockWaitDialog(true);
-                final ArrayList subaccounts = mService.getSubaccounts();
-                final int subaccount_len = subaccounts.size() + 1;
-                final ArrayList<String> names = new ArrayList<>(subaccount_len);
-                final ArrayList<Integer> pointers = new ArrayList<>(subaccount_len);
-
-                names.add(getString(R.string.main_account));
-                pointers.add(0);
-
-                for (final Object s : subaccounts) {
-                    final Map<String, ?> m = (Map) s;
-                    names.add((String) m.get("name"));
-                    pointers.add((Integer) m.get("pointer"));
-                }
-
-                final AccountItemAdapter adapter = new AccountItemAdapter(names, pointers, mService);
-                mSubaccountDialog = new MaterialDialog.Builder(TabbedMainActivity.this)
-                        .title(R.string.footerAccount)
-                        .adapter(adapter, null)
-                        .show();
-                UI.setDialogCloseHandler(mSubaccountDialog, mSubaccountCB);
-
-                adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
-                    @Override
-                    public void onAccountSelected(final int account) {
-                        mSubaccountDialog = UI.dismiss(TabbedMainActivity.this, mSubaccountDialog);
-                        final int pointer = pointers.get(account);
-                        if (pointer == mService.getCurrentSubAccount())
-                            return;
-                        setAccountTitle(pointer);
-                        onSubaccountUpdate(pointer);
-                    }
-                });
+            public void onAccountSelected(final int account) {
+                mSubaccountDialog = UI.dismiss(TabbedMainActivity.this, mSubaccountDialog);
+                final int pointer = pointers.get(account);
+                if (pointer == mService.getCurrentSubAccount())
+                    return;
+                setAccountTitle(pointer);
+                onSubaccountUpdate(pointer);
             }
         });
     }
@@ -335,8 +346,11 @@ public class TabbedMainActivity extends GaActivity implements Observer {
         mSegwitDialog = UI.dismiss(this, mSegwitDialog);
     }
 
-    private final static int BIP38_FLAGS = (NetworkParameters.fromID(NetworkParameters.ID_MAINNET).equals(Network.NETWORK)
-            ? Wally.BIP38_KEY_MAINNET : Wally.BIP38_KEY_TESTNET) | Wally.BIP38_KEY_COMPRESSED;
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        UI.unmapClick(mSubaccountButton);
+    }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {

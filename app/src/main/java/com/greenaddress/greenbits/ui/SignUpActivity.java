@@ -134,6 +134,9 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     public void onDestroy() {
         super.onDestroy();
         UI.unmapClick(mQrCodeIcon);
+        UI.unmapClick(mContinueButton);
+        UI.unmapClick(mNfcSignupIcon);
+
         mMnemonicDialog = UI.dismiss(this, mMnemonicDialog);
         mNfcDialog = UI.dismiss(this, mNfcDialog);
         mNfcView = null;

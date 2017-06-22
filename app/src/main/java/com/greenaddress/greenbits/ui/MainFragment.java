@@ -337,12 +337,8 @@ public class MainFragment extends SubaccountFragment {
                             final boolean isExchangerAddress = service.cfg().getBoolean("exchanger_address_" + txItem.receivedOn, false);
                             if (isExchangerAddress && txItem.memo == null) {
                                 txItem.memo = Exchanger.TAG_EXCHANGER_TX_MEMO;
-                                CB.after(service.changeMemo(txItem.txHash, Exchanger.TAG_EXCHANGER_TX_MEMO),
-                                        new CB.Toast<Boolean>(activity) {
-                                            @Override
-                                            public void onSuccess(final Boolean result) {
-                                            }
-                                        });
+                                CB.after(service.changeMemo(txItem.txHash.toString(), Exchanger.TAG_EXCHANGER_TX_MEMO),
+                                         new CB.Toast<Boolean>(activity));
                             } else if (mIsExchanger && (txItem.memo == null || !txItem.memo.contains(Exchanger.TAG_EXCHANGER_TX_MEMO))) {
                                 // FIXME should be better to filter list with api query
                                 iterator.remove();

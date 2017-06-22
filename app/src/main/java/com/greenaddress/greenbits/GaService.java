@@ -876,8 +876,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getRawOutputHex(txHash);
     }
 
-    public ListenableFuture<Boolean> changeMemo(final Sha256Hash txHash, final String memo) {
-        return mClient.changeMemo(txHash, memo);
+    public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
+        return mClient.changeMemo(txHashHex, memo);
     }
 
     private static byte[] getSegWitScript(final byte[] input) {

@@ -16,7 +16,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
 
-public class WatchOnlyLoginActivity extends LoginActivity {
+public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClickListener {
 
     private final static String CFG = "WATCH_ONLY_CREDENTIALS";
 
@@ -36,15 +36,10 @@ public class WatchOnlyLoginActivity extends LoginActivity {
         mRememberCheckBox = UI.find(this, R.id.remember_watch_only);
 
         mLoginButton.setIndeterminateProgressMode(true);
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                login();
-            }
-        });
+        mLoginButton.setOnClickListener(this);
 
         final TextView.OnEditorActionListener listener;
-        listener = UI.getListenerRunOnEnter(new Runnable() { public void run() { login(); } });
+        listener = UI.getListenerRunOnEnter(new Runnable() { public void run() { onLoginButtonClicked(); } });
         mPasswordText.setOnEditorActionListener(listener);
 
         final String username = mService.cfg(CFG).getString("username", "");
@@ -81,7 +76,19 @@ public class WatchOnlyLoginActivity extends LoginActivity {
         });
     }
 
-    private void login() {
+    @Override
+    public void onClick(final View v) {
+        if (v == mLoginButton)
+            onLoginButtonClicked();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        UI.unmapClick(mLoginButton);
+    }
+
+    private void onLoginButtonClicked() {
         if (mLoginButton.getProgress() != 0)
             return;
 
