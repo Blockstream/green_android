@@ -358,13 +358,15 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
             @Override
             public void onTextChanged(final CharSequence t, final int start,
                                       final int before, final int count) {
-                onWordChanged(label, text, index, validWord, true);
+                final AutoCompleteTextView tv = UI.find(v, spinnerId);
+                onWordChanged(label, tv, index, validWord, true);
             }
         });
         text.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-                onWordChanged(label, text, index, validWord, false);
+                final AutoCompleteTextView tv = UI.find(v, spinnerId);
+                onWordChanged(label, tv, index, validWord, false);
             }
         });
     }
