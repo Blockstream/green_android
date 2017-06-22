@@ -647,7 +647,7 @@ public class SendFragment extends SubaccountFragment {
 
                         if (signedRawTx != null) {
                             final ListenableFuture<Map<String,Object>> sendFuture;
-                            sendFuture = service.sendRawTransaction(signedRawTx, twoFacData, privateData, false);
+                            sendFuture = service.sendRawTransaction(signedRawTx, twoFacData, privateData);
                             Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity, mSendButton) {
                                 @Override
                                 public void onSuccess(final Map result) {

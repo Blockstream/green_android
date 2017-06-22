@@ -803,8 +803,8 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<Map<String, Object>>
     sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData,
-                       final JSONMap privateData, final boolean returnErrorUri) {
-        return Futures.transform(mClient.sendRawTransaction(tx, twoFacData, privateData, returnErrorUri),
+                       final JSONMap privateData) {
+        return Futures.transform(mClient.sendRawTransaction(tx, twoFacData, privateData),
                                  new Function<Map<String, Object>, Map<String, Object>>() {
                    @Override
                    public Map<String, Object> apply(final Map<String, Object> ret) {

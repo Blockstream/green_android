@@ -95,7 +95,7 @@ public class WalletClient {
     /**
      * Call handler.
      */
-    public interface CallHandler {
+    private interface CallHandler {
 
         /**
          * Fired on successful completion of call.
@@ -105,14 +105,9 @@ public class WalletClient {
         void onResult(Object result);
     }
 
-    public interface ErrorHandler {
-        /**
-         * Fired on call failure.
-         *
-         * @param uri   The URI or CURIE of the error that occurred.
-         * @param err  A human readable description of the error.
-         */
-        void onError(String uri, String err);
+    // FIXME: Remove this and replace with a catch from its only caller
+    private interface ErrorHandler {
+        void onError(final GAException e);
     }
 
     private <V> CallHandler simpleHandler(final SettableFuture<V> f) {
@@ -145,29 +140,28 @@ public class WalletClient {
         void onEvent(String topicUri, Object event);
     }
 
-    private static final String DELIM = ", ";
     private static void logCallDetails(final String procedure, final String result, final Object... args) {
-        final ArrayList<Object> expanded_args = new ArrayList<>();
+        final ArrayList<Object> expanded = new ArrayList<>();
         for (final Object o : args) {
             if (o instanceof Object[])
-                expanded_args.add(String.format("[%s]", TextUtils.join(DELIM, (Object[]) o)));
+                expanded.add(String.format("[%s]", TextUtils.join(", ", (Object[]) o)));
             else
-                expanded_args.add(o);
+                expanded.add(o);
         }
-        Log.v(TAG, String.format("%s(%s)\n\t -> %s", procedure, TextUtils.join(DELIM, expanded_args), result));
+        Log.v(TAG, String.format("%s(%s)\n\t -> %s", procedure, TextUtils.join(", ", expanded), result));
     }
 
     private void onCallError(final SettableFuture rpc, final String procedure,
-                             final ErrorHandler errHandler,
-                             final String uri, final String err,
+                             final ErrorHandler errHandler, final GAException e,
                              final Object... args) {
-        Log.d(TAG, procedure + "->" + uri + ':' + err);
+        final String logDetails = e.mUri + ':' + e.mMessage;
         if (BuildConfig.DEBUG)
-            logCallDetails(procedure, err, args);
-        if (errHandler != null)
-            errHandler.onError(uri, err);
+            logCallDetails(procedure, logDetails, args);
         else
-            rpc.setException(new GAException(err));
+            Log.d(TAG, procedure + "->" + logDetails);
+        if (errHandler != null)
+            errHandler.onError(e); // May change the exception details in e
+        rpc.setException(e);
     }
 
     private SettableFuture clientCall(final SettableFuture rpc,
@@ -189,16 +183,16 @@ public class WalletClient {
 
         final Action1<Throwable> errorHandler = new Action1<Throwable>() {
             @Override
-            public void call(final Throwable err) {
-
-                if (err instanceof ApplicationError) {
-                    final ArrayNode a = ((ApplicationError) err).arguments();
-                    if (a != null && a.size() >= 2) {
-                        onCallError(rpc, procedure, errHandler, a.get(0).asText(), a.get(1).asText(), args);
-                        return;
-                    }
+            public void call(final Throwable t) {
+                GAException e = null;
+                if (t instanceof ApplicationError) {
+                    final ArrayNode a = ((ApplicationError) t).arguments();
+                    if (a != null && a.size() >= 2)
+                        e = new GAException(a.get(0).asText(), a.get(1).asText());
                 }
-                onCallError(rpc, procedure, errHandler, err.toString(), err.toString(), args);
+                if (e == null)
+                    e = new GAException(t.toString());
+                onCallError(rpc, procedure, errHandler, e, args);
             }
         };
 
@@ -214,7 +208,7 @@ public class WalletClient {
         } catch (final RejectedExecutionException e) {
             // Fall through
         }
-        onCallError(rpc, procedure, errHandler, "not connected", "not connected", args);
+        onCallError(rpc, procedure, errHandler, new GAException("not connected"), args);
         return rpc;
     }
 
@@ -249,25 +243,25 @@ public class WalletClient {
             final JsonNode node = reply.arguments().get(0);
             if (BuildConfig.DEBUG)
                 logCallDetails(procedure, node.toString(), args);
-            return (T)mapper.convertValue(node, result);
+            return (T) mapper.convertValue(node, result);
         } catch (final RejectedExecutionException e) {
             if (BuildConfig.DEBUG)
                 logCallDetails(procedure, e.getMessage(), args);
             throw new GAException("rejected");
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             Log.d(TAG, "Sync RPC exception: (" + procedure + ")->" + e.toString());
+            String uri = GAException.INTERNAL;
             String error = e.toString();
             if (e instanceof ApplicationError) {
                 final ArrayNode a = ((ApplicationError) e).arguments();
                 if (a != null && a.size() >= 2) {
-                    // Throw the actual error message and ignore the URI
+                    uri = a.get(0).asText();
                     error = a.get(1).asText();
                 }
             }
             if (BuildConfig.DEBUG)
                 logCallDetails(procedure, error, args);
-            throw new GAException(error);
+            throw new GAException(uri, error);
         }
     }
 
@@ -287,9 +281,9 @@ public class WalletClient {
             }
         }, new Action1<Throwable>() {
             @Override
-            public void call(final Throwable throwable) {
-                Log.w(TAG, throwable);
-                Log.i(TAG, "Subscribe failed (" + topic + "): " + throwable.toString());
+            public void call(final Throwable t) {
+                Log.w(TAG, t);
+                Log.i(TAG, "Subscribe failed (" + topic + "): " + t.toString());
             }
         });
     }
@@ -537,9 +531,9 @@ public class WalletClient {
                         }
                     }, new Action1<Throwable>() {
                         @Override
-                        public void call(final Throwable throwable) {
-                            throwable.printStackTrace();
-                            Log.d(TAG, throwable.toString());
+                        public void call(final Throwable t) {
+                            t.printStackTrace();
+                            Log.d(TAG, t.toString());
                         }
                     });
                 try {
@@ -743,15 +737,9 @@ public class WalletClient {
         return simpleCall("vault.send_tx", null, sigs, twoFacData);
     }
 
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final JSONMap privateData, final boolean returnErrorUri) {
-        final SettableFuture<Map<String, Object>> rpc = SettableFuture.create();
-        final ErrorHandler errHandler = new ErrorHandler() {
-            public void onError(final String uri, final String err) {
-                rpc.setException(new GAException(returnErrorUri ? uri : err));
-            }
-        };
-        return clientCall(rpc, "vault.send_raw_tx", Map.class, simpleHandler(rpc),
-                          errHandler, h(tx.bitcoinSerialize()), twoFacData,
+    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final JSONMap privateData) {
+        final String txHex = h(tx.bitcoinSerialize());
+        return simpleCall("vault.send_raw_tx", Map.class, txHex, twoFacData,
                           privateData == null ? null : privateData.mData);
     }
 
@@ -823,12 +811,11 @@ public class WalletClient {
             }
         };
         final ErrorHandler errHandler = new ErrorHandler() {
-            public void onError(final String uri, final String err) {
-                Log.d(TAG, "updateAppearance failed: " + err);
+            public void onError(final GAException e) {
+                Log.d(TAG, "updateAppearance failed: " + e.mMessage);
                 // Restore local config if it was updated previously
                 if (updateImmediately)
                     updateMap(mLoginData.mUserConfig, oldValues, oldValues.keySet());
-                rpc.setException(new GAException(err));
             }
         };
         return clientCall(rpc, "login.set_appearance", Map.class, handler, errHandler, newJSON);

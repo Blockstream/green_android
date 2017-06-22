@@ -669,7 +669,7 @@ public class TransactionActivity extends GaActivity {
                         if (twoFacData != null && twoFacData.containsKey("method"))
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
                         final ListenableFuture<Map<String,Object>> sendFuture;
-                        sendFuture = mService.sendRawTransaction(signedTx, twoFacData, null, false);
+                        sendFuture = mService.sendRawTransaction(signedTx, twoFacData, null);
                         Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(TransactionActivity.this) {
                             @Override
                             public void onSuccess(final Map result) {
