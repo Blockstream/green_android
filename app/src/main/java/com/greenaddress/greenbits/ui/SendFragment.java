@@ -1,8 +1,10 @@
 package com.greenaddress.greenbits.ui;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.ElementsTransaction;
 import com.greenaddress.greenapi.ElementsTransactionOutput;
+import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.GATx;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.Network;
@@ -79,6 +82,7 @@ public class SendFragment extends SubaccountFragment {
 
 
     private int mSubaccount;
+    private int mTwoFactorAttemptsRemaining;
     private AmountFields mAmountFields;
 
     private boolean mIsExchanger;
@@ -635,8 +639,16 @@ public class SendFragment extends SubaccountFragment {
             twoFAText.setText(String.format("2FA %s code", method));
         }
 
+        mTwoFactorAttemptsRemaining = 3;
         mSummary = UI.popup(gaActivity, R.string.newTxTitle, R.string.send, R.string.cancel)
                 .customView(v, true)
+                .autoDismiss(false)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                        UI.dismiss(null, SendFragment.this.mSummary);
+                    }
+                })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
@@ -652,7 +664,29 @@ public class SendFragment extends SubaccountFragment {
                         Futures.addCallback(sendFn, new CB.Toast<Void>(gaActivity, mSendButton) {
                             @Override
                             public void onSuccess(final Void dummy) {
+                                UI.dismiss(SendFragment.this.getActivity(), SendFragment.this.mSummary);
                                 onTransactionSent();
+                            }
+
+                            @Override
+                            public void onFailure(final Throwable t) {
+                                final SendFragment fragment = SendFragment.this;
+                                final Activity activity = fragment.getActivity();
+                                if (t instanceof GAException) {
+                                    final GAException e = (GAException) t;
+                                    if (e.mUri.equals(GAException.AUTH)) {
+                                        final int n = --fragment.mTwoFactorAttemptsRemaining;
+                                        if (n > 0) {
+                                            final Resources r = fragment.getResources();
+                                            final String msg = r.getQuantityString(R.plurals.attempts_remaining, n, n);
+                                            UI.toast(activity, e.mMessage + "\n(" + msg + ')', mSendButton);
+                                            return; // Allow re-trying
+                                        }
+                                    }
+                                }
+                                UI.toast(activity, t, mSendButton);
+                                 // Out of 2FA attempts, or another exception; give up
+                                UI.dismiss(activity, fragment.mSummary);
                             }
                         }, service.getExecutor());
                     }

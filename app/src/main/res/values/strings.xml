@@ -29,6 +29,12 @@
     <string name="choose">CHOOSE</string>
     <string name="cancel">CANCEL</string>
     <string name="attemptsLeft">%1$d attempts left</string>
+    <plurals
+        name="attempts_remaining">
+        <item quantity="zero">No attempts remaining</item>
+        <item quantity="one">One attempt remaining</item>
+        <item quantity="other">%d attempts remaining</item>
+    </plurals>
 
     <string-array name="twoFactorChoices">
         <item>Email</item>

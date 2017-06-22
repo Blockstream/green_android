@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
@@ -21,6 +22,7 @@ import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.ConfidentialAddress;
+import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.GATx;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.JSONMap;
@@ -56,7 +58,7 @@ public class TransactionActivity extends GaActivity {
     private TextView mUnconfirmedText;
     private TextView mEstimatedBlocks;
     private TextView mUnconfirmedRecommendation;
-    private Button mUnconfirmedIncreaseFee;
+    private Button mSendButton;
     private View mMemoView;
     private View mMemoTitle;
     private TextView mMemoIcon;
@@ -65,6 +67,8 @@ public class TransactionActivity extends GaActivity {
     private Button mMemoSaveButton;
     private Dialog mSummary;
     private Dialog mTwoFactor;
+
+    private int mTwoFactorAttemptsRemaining;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
@@ -82,7 +86,7 @@ public class TransactionActivity extends GaActivity {
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
         mEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
         mUnconfirmedRecommendation = UI.find(this, R.id.txUnconfirmedRecommendation);
-        mUnconfirmedIncreaseFee = UI.find(this, R.id.txUnconfirmedIncreaseFee);
+        mSendButton = UI.find(this, R.id.txUnconfirmedIncreaseFee);
 
         final TextView doubleSpentByText = UI.find(this, R.id.txDoubleSpentByText);
         final TextView doubleSpentByTitle = UI.find(this, R.id.txDoubleSpentByTitle);
@@ -91,7 +95,7 @@ public class TransactionActivity extends GaActivity {
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);
 
         // Hide outgoing-only widgets by default
-        UI.hide(mUnconfirmedRecommendation, mEstimatedBlocks, mUnconfirmedIncreaseFee);
+        UI.hide(mUnconfirmedRecommendation, mEstimatedBlocks, mSendButton);
 
         final TransactionItem txItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
 
@@ -282,14 +286,14 @@ public class TransactionActivity extends GaActivity {
             fastestRateBTC = Coin.valueOf((long) rounded + vSize);
         }
 
-        UI.show(mUnconfirmedRecommendation, mUnconfirmedIncreaseFee);
+        UI.show(mUnconfirmedRecommendation, mSendButton);
         if (fastestBlocks == 1)
             mUnconfirmedRecommendation.setText(R.string.recommendationSingleBlock);
         else
             mUnconfirmedRecommendation.setText(getString(R.string.recommendationBlocks, fastestBlocks));
 
         final Coin rateToUse = Coin.valueOf(fastestRateBTC.getValue());
-        mUnconfirmedIncreaseFee.setOnClickListener(new View.OnClickListener() {
+        mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 bumpFee(txItem, rateToUse);
@@ -456,7 +460,7 @@ public class TransactionActivity extends GaActivity {
                 changeOutput.first.setValue(remainingChange);
                 final Coin newFee = fee;
                 CB.after(Futures.immediateFuture((Void) null),
-                         new CB.Toast<Void>(this, mUnconfirmedIncreaseFee) {
+                         new CB.Toast<Void>(this, mSendButton) {
                     @Override
                     public void onSuccess(final Void dummy) {
                         final PreparedTransaction ptx;
@@ -479,7 +483,7 @@ public class TransactionActivity extends GaActivity {
         final Coin outputAmount = amount;
 
         CB.after(mService.getAllUnspentOutputs(numConfs, subAccount, filterAsset),
-                 new CB.Toast<List<JSONMap>>(this, mUnconfirmedIncreaseFee) {
+                 new CB.Toast<List<JSONMap>>(this, mSendButton) {
             @Override
             public void onSuccess(final List<JSONMap> utxos) {
                 Pair<Integer, JSONMap> ret = createFailed(R.string.insufficientFundsText);
@@ -505,7 +509,7 @@ public class TransactionActivity extends GaActivity {
                     }
                 }
                 if (ret.first != 0)
-                    toast(ret.first, mUnconfirmedIncreaseFee);
+                    toast(ret.first, mSendButton);
             }
         });
     }
@@ -659,8 +663,16 @@ public class TransactionActivity extends GaActivity {
             UI.show(twoFAText, newTx2FACodeText);
         }
 
+        mTwoFactorAttemptsRemaining = 3;
         mSummary = UI.popup(this, R.string.feeIncreaseTitle, R.string.send, R.string.cancel)
                 .customView(v, true)
+                .autoDismiss(false)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                        UI.dismiss(null, TransactionActivity.this.mSummary);
+                    }
+                })
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
@@ -671,7 +683,28 @@ public class TransactionActivity extends GaActivity {
                             @Override
                             public void onSuccess(final Void dummy) {
                                 // FIXME: Add notification with "Transaction sent"?
+                                UI.dismiss(TransactionActivity.this, TransactionActivity.this.mSummary);
                                 finishOnUiThread();
+                            }
+
+                            @Override
+                            public void onFailure(final Throwable t) {
+                                final TransactionActivity activity = TransactionActivity.this;
+                                if (t instanceof GAException) {
+                                    final GAException e = (GAException) t;
+                                    if (e.mUri.equals(GAException.AUTH)) {
+                                        final int n = --activity.mTwoFactorAttemptsRemaining;
+                                        if (n > 0) {
+                                            final Resources r = activity.getResources();
+                                            final String msg = r.getQuantityString(R.plurals.attempts_remaining, n, n);
+                                            UI.toast(activity, e.mMessage + "\n(" + msg + ')', mSendButton);
+                                            return; // Allow re-trying
+                                        }
+                                    }
+                                }
+                                UI.toast(activity, t, mSendButton);
+                                // Out of 2FA attempts, or another exception; give up
+                                UI.dismiss(activity, activity.mSummary);
                             }
                         }, mService.getExecutor());
                     }
