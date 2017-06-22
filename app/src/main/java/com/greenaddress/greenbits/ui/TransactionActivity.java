@@ -668,11 +668,10 @@ public class TransactionActivity extends GaActivity {
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
                         if (twoFacData != null && twoFacData.containsKey("method"))
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
-                        final ListenableFuture<Map<String,Object>> sendFuture;
-                        sendFuture = mService.sendRawTransaction(signedTx, twoFacData, null);
-                        Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(TransactionActivity.this) {
+                        Futures.addCallback(mService.sendRawTransaction(signedTx, twoFacData, null),
+                                            new CB.Toast<Void>(TransactionActivity.this) {
                             @Override
-                            public void onSuccess(final Map result) {
+                            public void onSuccess(final Void dummy) {
                                 // FIXME: Add notification with "Transaction sent"?
                                 finishOnUiThread();
                             }

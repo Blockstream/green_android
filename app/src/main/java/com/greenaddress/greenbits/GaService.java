@@ -769,49 +769,47 @@ public class GaService extends Service implements INotificationHandler {
         return mSPV.validateTx(ptx, recipientStr, amount);
     }
 
-    public ListenableFuture<String> signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
-        return Futures.transform(signTransaction(ptx), new AsyncFunction<List<byte[]>, String>() {
+    public ListenableFuture<Void>
+    signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
+        return Futures.transform(signTransaction(ptx),
+                                 new AsyncFunction<List<byte[]>, Void>() {
             @Override
-            public ListenableFuture<String> apply(final List<byte[]> sigs) throws Exception {
+            public ListenableFuture<Void> apply(final List<byte[]> sigs) throws Exception {
                 return sendTransaction(sigs, twoFacData);
             }
         }, mExecutor);
     }
 
-    public ListenableFuture<String> sendTransaction(final List<byte[]> sigs, final Object twoFacData) {
-        final ListenableFuture<String> fn = mClient.sendTransaction(sigs, twoFacData);
-        Futures.addCallback(fn, new FutureCallback<String>() {
-            @Override
-            public void onSuccess(final String txHash) {
-                // FIXME: Should be returned by the server from send_tx
-                try {
-                    mLimitsData = mClient.getSpendingLimits();
-                } catch (final Exception e) {
-                    // We don't know what the new limit is so nuke it
-                    mLimitsData.mData.put("total", 0);
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                t.printStackTrace();
-            }
+    public ListenableFuture<Void>
+    sendTransaction(final List<byte[]> sigs, final Object twoFacData) {
+        // FIXME: The server should return the full limits including is_fiat from send_tx
+        return Futures.transform(mClient.sendTransaction(sigs, twoFacData),
+                                 new Function<String, Void>() {
+                   @Override
+                   public Void apply(final String txHash) {
+                       try {
+                           mLimitsData = mClient.getSpendingLimits();
+                       } catch (final Exception e) {
+                           // We don't know what the new limit is so nuke it
+                           mLimitsData.mData.put("total", 0);
+                           e.printStackTrace();
+                       }
+                       return null;
+                   }
         }, mExecutor);
-        return fn;
     }
 
-    public ListenableFuture<Map<String, Object>>
+    public ListenableFuture<Void>
     sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData,
                        final JSONMap privateData) {
         return Futures.transform(mClient.sendRawTransaction(tx, twoFacData, privateData),
-                                 new Function<Map<String, Object>, Map<String, Object>>() {
+                                 new Function<Map<String, Object>, Void>() {
                    @Override
-                   public Map<String, Object> apply(final Map<String, Object> ret) {
+                   public Void apply(final Map<String, Object> ret) {
                        // FIXME: Server should return the full limits including is_fiat
                        if (ret.get("new_limit") != null)
                            mLimitsData.mData.put("total", ret.get("new_limit"));
-                       return ret;
+                       return null;
                    }
         }, mExecutor);
     }

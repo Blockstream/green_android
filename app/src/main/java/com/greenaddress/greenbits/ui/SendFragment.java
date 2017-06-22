@@ -645,24 +645,18 @@ public class SendFragment extends SubaccountFragment {
                         if (twoFacData != null && !method.equals("limit"))
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
 
-                        if (signedRawTx != null) {
-                            final ListenableFuture<Map<String,Object>> sendFuture;
-                            sendFuture = service.sendRawTransaction(signedRawTx, twoFacData, privateData);
-                            Futures.addCallback(sendFuture, new CB.Toast<Map<String,Object>>(gaActivity, mSendButton) {
-                                @Override
-                                public void onSuccess(final Map result) {
-                                    onTransactionSent();
-                                }
-                            }, service.getExecutor());
-                        } else {
-                            final ListenableFuture<String> sendFuture = service.signAndSendTransaction(ptx, twoFacData);
-                            Futures.addCallback(sendFuture, new CB.Toast<String>(gaActivity, mSendButton) {
-                                @Override
-                                public void onSuccess(final String result) {
-                                    onTransactionSent();
-                                }
-                            }, service.getExecutor());
-                        }
+                        final ListenableFuture<Void> sendFn;
+                        if (signedRawTx != null)
+                            sendFn = service.sendRawTransaction(signedRawTx, twoFacData, privateData);
+                        else
+                            sendFn = service.signAndSendTransaction(ptx, twoFacData);
+
+                        Futures.addCallback(sendFn, new CB.Toast<Void>(gaActivity, mSendButton) {
+                            @Override
+                            public void onSuccess(final Void dummy) {
+                                onTransactionSent();
+                            }
+                        }, service.getExecutor());
                     }
                 }).build();
         UI.mapEnterToPositive(mSummary, R.id.newTx2FACodeText);
