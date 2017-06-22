@@ -134,15 +134,12 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     public void onDestroy() {
         super.onDestroy();
         UI.unmapClick(mQrCodeIcon);
-        UI.dismiss(mMnemonicDialog);
-        mMnemonicDialog = null;
-        UI.dismiss(mNfcDialog);
-        mNfcDialog = null;
+        mMnemonicDialog = UI.dismiss(this, mMnemonicDialog);
+        mNfcDialog = UI.dismiss(this, mNfcDialog);
         mNfcView = null;
-        if (mChoiceIsValid != null) {
+        if (mChoiceIsValid != null)
             mChoiceIsValid[0] = false;
-            UI.dismiss(mVerifyDialog);
-        }
+        mVerifyDialog = UI.dismiss(this, mVerifyDialog);
     }
 
     @Override
@@ -381,7 +378,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
         if (isValid) {
             UI.hide(label, text);
             if (areAllChoicesValid())
-                mVerifyDialog.dismiss(); // Dismiss callback will continue
+                UI.dismiss(this, mVerifyDialog); // Dismiss callback will continue
         }
     }
 

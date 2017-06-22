@@ -92,10 +92,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (mAmountFields != null)
             mAmountFields.setIsPausing(true);
         Log.d(TAG, "onPause -> " + TAG);
-        if (mQrCodeDialog != null) {
-            mQrCodeDialog.dismiss();
-            mQrCodeDialog = null;
-        }
+        mQrCodeDialog = UI.dismiss(getActivity(), mQrCodeDialog);
         if (mTagDispatcher != null)
             mTagDispatcher.disableExclusiveNfc();
         detachObservers();
@@ -344,8 +341,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private void onAddressImageClicked(final BitmapDrawable bd) {
-        if (mQrCodeDialog != null)
-            mQrCodeDialog.dismiss();
+        mQrCodeDialog = UI.dismiss(getActivity(), mQrCodeDialog);
 
         final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
         if (mIsExchanger) {
@@ -354,7 +350,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    mQrCodeDialog.dismiss();
+                    mQrCodeDialog = UI.dismiss(getActivity(), mQrCodeDialog);
                 }
             });
         }

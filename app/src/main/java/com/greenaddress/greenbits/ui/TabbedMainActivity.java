@@ -196,7 +196,7 @@ public class TabbedMainActivity extends GaActivity implements Observer {
                 adapter.setCallback(new AccountItemAdapter.OnAccountSelected() {
                     @Override
                     public void onAccountSelected(final int account) {
-                        mSubaccountDialog.dismiss();
+                        mSubaccountDialog = UI.dismiss(TabbedMainActivity.this, mSubaccountDialog);
                         final int pointer = pointers.get(account);
                         if (pointer == mService.getCurrentSubAccount())
                             return;
@@ -331,10 +331,8 @@ public class TabbedMainActivity extends GaActivity implements Observer {
     public void onPauseWithService() {
         mService.deleteTwoFactorObserver(mTwoFactorObserver);
         mService.deleteConnectionObserver(this);
-        if (mSubaccountDialog != null)
-            mSubaccountDialog.dismiss();
-        if (mSegwitDialog != null)
-            mSegwitDialog.dismiss();
+        mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
+        mSegwitDialog = UI.dismiss(this, mSegwitDialog);
     }
 
     private final static int BIP38_FLAGS = (NetworkParameters.fromID(NetworkParameters.ID_MAINNET).equals(Network.NETWORK)

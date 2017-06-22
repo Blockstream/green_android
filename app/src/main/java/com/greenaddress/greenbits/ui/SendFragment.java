@@ -408,10 +408,8 @@ public class SendFragment extends SubaccountFragment {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView -> " + TAG);
-        if (mSummary != null)
-            mSummary.dismiss();
-        if (mTwoFactor != null)
-            mTwoFactor.dismiss();
+        mSummary = UI.dismiss(getActivity(), mSummary);
+        mTwoFactor = UI.dismiss(getActivity(), mTwoFactor);
     }
 
     @Override

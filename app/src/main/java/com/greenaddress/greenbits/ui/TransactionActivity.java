@@ -311,10 +311,8 @@ public class TransactionActivity extends GaActivity {
 
     @Override
     public void onPauseWithService() {
-        if (mSummary != null)
-            mSummary.dismiss();
-        if (mTwoFactor != null)
-            mTwoFactor.dismiss();
+        mSummary = UI.dismiss(this, mSummary);
+        mTwoFactor = UI.dismiss(this, mTwoFactor);
     }
 
     @Override

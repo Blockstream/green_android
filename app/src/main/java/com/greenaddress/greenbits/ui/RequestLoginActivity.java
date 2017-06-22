@@ -409,8 +409,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mBTChipDialog != null)
-            mBTChipDialog.dismiss();
+        mBTChipDialog = UI.dismiss(this, mBTChipDialog);
     }
 
     @Override
