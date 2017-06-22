@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -12,7 +13,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -26,6 +31,8 @@ public class PinSaveActivity extends GaActivity {
     private EditText mPinText;
     private Button mSkipButton;
     private CircularProgressButton mSaveButton;
+
+    private Dialog mVerifyDialog;
 
     static public Intent createIntent(final Context ctx, final String mnemonic) {
         final Intent intent = new Intent(ctx, PinSaveActivity.class);
@@ -67,7 +74,7 @@ public class PinSaveActivity extends GaActivity {
 
                     @Override
                     public void onFailure(final Throwable t) {
-                        PinSaveActivity.this.runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable() {
                             public void run() {
                                 mSaveButton.setProgress(0);
                                 mPinText.setEnabled(true);
@@ -129,13 +136,13 @@ public class PinSaveActivity extends GaActivity {
         mPinText.setOnEditorActionListener(
                 UI.getListenerRunOnEnter(new Runnable() {
                     public void run() {
-                        setPin(UI.getText(mPinText), false);
+                        onSaveNonNativePin();
                     }
                 }));
 
         mSaveButton = (CircularProgressButton) UI.mapClick(this, R.id.pinSaveButton, new View.OnClickListener() {
             public void onClick(final View v) {
-                setPin(UI.getText(mPinText), false);
+                onSaveNonNativePin();
             }
         });
 
@@ -145,6 +152,43 @@ public class PinSaveActivity extends GaActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onPauseWithService() {
+        mVerifyDialog = UI.dismiss(this, mVerifyDialog);
+    }
+
+    private void onSaveNonNativePin() {
+        final String currentPin = UI.getText(mPinText);
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
+
+        UI.hide(UI.find(v, R.id.btchipPinPrompt));
+        final TextView newPin = UI.find(v, R.id.btchipPINValue);
+
+        mVerifyDialog = UI.popup(this, R.string.verify_your_pin, R.string.signupContinueButtonText, R.string.cancel)
+                .customView(v, true)
+                .autoDismiss(false)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                        UI.dismiss(null, PinSaveActivity.this.mVerifyDialog);
+                    }
+                })
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                        if (UI.getText(newPin).equals(currentPin)) {
+                            UI.dismiss(null, PinSaveActivity.this.mVerifyDialog);
+                            setPin(currentPin, false);
+                            return;
+                        }
+                        UI.toast(PinSaveActivity.this, R.string.pins_dont_match, Toast.LENGTH_SHORT);
+                    }
+                }).build();
+        UI.mapEnterToPositive(mVerifyDialog, R.id.btchipPINValue);
+        mVerifyDialog.show();
     }
 
     @Override

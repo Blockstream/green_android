@@ -204,6 +204,8 @@
     <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
     <string name="app_description">GreenAddress Logo</string>
     <string name="setPin">Setup PIN</string>
+    <string name="verify_your_pin">Verify Your PIN</string>
+    <string name="pins_dont_match">PINs do not match, please try again.</string>
     <string name="set2FA">SETUP 2FA</string>
     <string name="resetSPV">Reset SPV</string>
     <string name="err_send_invalid_bitcoin_uri">Invalid Bitcoin URI</string>
