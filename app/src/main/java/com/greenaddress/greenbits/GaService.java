@@ -487,7 +487,7 @@ public class GaService extends Service implements INotificationHandler {
                 updateBalance((Integer) data.get("pointer"));
             // fetch the asset id and symbol for elements:
             int maxId = 0;
-            final Map<String, Integer> assetIds =  (Map<String, Integer>) loginData.mRawData.get("asset_ids");
+            final Map<String, Integer> assetIds = (Map<String, Integer>) loginData.mRawData.get("asset_ids");
             final Map<String, String> assetSymbols = (Map<String, String>) loginData.mRawData.get("asset_symbols");
             for (final String assetIdHex : assetIds.keySet()) {
                 // find largest asset id that has a symbol set:
@@ -1248,7 +1248,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void resetFiatSpendingLimits() {
-        if (mLimitsData.getBool("is_fiat")) {
+        if (!isWatchOnly() && mLimitsData.getBool("is_fiat")) {
             mLimitsData.mData.put("total", 0);
             mLimitsData.mData.put("per_tx", 0);
         }
