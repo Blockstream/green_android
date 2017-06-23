@@ -137,12 +137,20 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
 
             // amount fiat
             final String amountFiatTxt = mAmountFiatEdit.getText().toString();
-            if (amountFiatTxt.isEmpty()) {
+            boolean isValid = !amountFiatTxt.isEmpty();
+            float amountFiat = 0;
+            try {
+                if (isValid)
+                    amountFiat = Float.valueOf(amountFiatTxt);
+            } catch (final Exception e) {
+                isValid = false;
+            }
+
+            if (!isValid) {
                 mAmountBtcWithCommission.setText("0");
                 mAmountFiatWithCommission.setText("0");
                 return;
             }
-            final float amountFiat = Float.valueOf(amountFiatTxt);
             final float amountFiatWithCommission = (amountFiat / 100) * (100 - commissionPerc) - fixedCommissionFiat;
             if (amountFiatWithCommission < 0) {
                 mAmountBtcWithCommission.setText("0");
