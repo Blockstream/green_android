@@ -1,6 +1,6 @@
-FROM debian:jessie
+FROM debian:stretch
 
-COPY jessie_deps.sh /deps.sh
+COPY stretch_deps.sh /deps.sh
 RUN /deps.sh && rm /deps.sh
 VOLUME /gb
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
