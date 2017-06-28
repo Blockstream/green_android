@@ -22,7 +22,7 @@ function build() {
     unset CFLAGS
     unset CPPFLAGS
     unset LDFLAGS
-    configure_opts="--enable-silent-rules --disable-dependency-tracking --enable-swig-java --enable-endomorphism"
+    configure_opts="--enable-silent-rules --disable-dependency-tracking --enable-swig-java --enable-endomorphism --disable-swig-python"
 
     case $1 in
         armeabi)

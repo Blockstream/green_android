@@ -13,7 +13,7 @@ dpkg --add-architecture i386
 sed -i 's/deb.debian.org/httpredir.debian.org/g' /etc/apt/sources.list
 apt-get -yqq update && apt-get -yqq upgrade
 apt-get -yqq install -t jessie-backports openjdk-8-jdk ca-certificates-java
-apt-get -yqq install unzip curl make swig autoconf libtool pkg-config libc6:i386 libc6-dev:i386 libncurses5:i386 libstdc++6:i386 lib32z1
+apt-get -yqq install unzip curl make swig autoconf libtool pkg-config libc6:i386 libc6-dev:i386 libncurses5:i386 libstdc++6:i386 lib32z1 python
 update-java-alternatives -s java-1.8.0-openjdk-amd64
 
 cd /opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} && rm ${SDK_FILENAME}
