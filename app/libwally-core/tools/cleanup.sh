@@ -18,6 +18,7 @@ rm -rf build/
 rm -f config.h.in
 rm -f configure
 rm -rf dist/
+rm -rf src/wallycore.pc
 rm -f src/*pyc
 rm -f src/test/*pyc
 rm -f src/config.h.in
@@ -31,6 +32,13 @@ rm -rf src/swig_java/src/com/blockstream/libwally
 rm -f src/swig_python/wallycore.py
 rm -f src/swig_python/wallycore/__init__.py
 rm -f src/swig_python/swig_python_wrap.c
+rm -rf src/swig_js/build
+rm -rf src/swig_js/node_modules/
+rm -f src/swig_js/nodejs_wrap.cc
+rm -rf src/swig_js/src/
+rm -f src/swig_js/WallyCordova.java
+rm -f src/swig_js/WallyCordova.swift
+rm -f src/swig_js/wally.js
 rm -rf src/.libs
 rm -f tools/build-aux/compile
 rm -f tools/build-aux/config.guess

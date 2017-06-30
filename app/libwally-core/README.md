@@ -5,9 +5,9 @@ Wally is a collection of useful primitives for cryptocurrency wallets.
 Note that the library is currently pre-release and so the API may change
 without notice.
 
-Please report bugs and submit patches to https://github.com/jgriffiths/libwally-core.
+Please report bugs and submit patches to https://github.com/ElementsProject/libwally-core.
 
-[![Build Status](https://travis-ci.org/jgriffiths/libwally-core.svg?branch=master)](https://travis-ci.org/jgriffiths/libwally-core)
+[![Build Status](https://travis-ci.org/ElementsProject/libwally-core.svg?branch=master)](https://travis-ci.org/ElementsProject/libwally-core)
 
 ## Platforms
 
@@ -39,6 +39,8 @@ $ make check
 - `--enable-swig-java`. Enable the [SWIG](http://www.swig.org/) Java (JNI)
    interface. After building, see `src/swig_java/src/com/blockstream/libwally/Wally.java`
    for the Java interface definition (default: no).
+- `--enable-js-wrappers`. Enable the Node.js and Cordova Javascript wrappers.
+   Note that this currently requires `--enable-swig-python` (default: no).
 - `--enable-coverage`. Enables code coverage (default: no) Note that you will
    need [lcov](http://ltp.sourceforge.net/coverage/lcov.php) installed to
    build with this option enabled and generate coverage reports.

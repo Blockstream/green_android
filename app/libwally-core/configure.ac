@@ -151,7 +151,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]],[[return posix_memalign(
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <string.h>]],[[int x[1]; memset_s(x, 1, 0, 1)]])],
                [AC_DEFINE(HAVE_MEMSET_S, 1, [Define if we have memset_s])])
 
-AC_CHECK_HEADERS([byteswap.h])
+AC_CHECK_HEADERS([byteswap.h, sys/mman.h])
 
 AX_PTHREAD([ac_have_pthread=yes], [ac_have_pthread=no])
 AM_CONDITIONAL([USE_PTHREAD], [test "x$ac_have_pthread" == "xyes"])
@@ -209,6 +209,26 @@ if test "x$swig_python" == "xyes"; then
     AX_CHECK_COMPILE_FLAG([-DSWIG_PYTHON_BUILD=1], [AM_CFLAGS="$AM_CFLAGS -DSWIG_PYTHON_BUILD=1"])
 fi
 
+AC_ARG_ENABLE(js-wrappers,
+    AS_HELP_STRING([--enable-js-wrappers],[enable the Javascript interface wrappers (default: no)]),
+    [js_wrappers=$enableval], [js_wrappers=no])
+AM_CONDITIONAL([USE_JS_WRAPPERS], [test "x$js_wrappers" == "xyes"])
+
+if test "x$js_wrappers" == "xyes"; then
+    if test "x$pythonexists" != "xyes"; then
+        AC_MSG_FAILURE([ERROR: No usable python was found for generating js wrappers])
+    fi
+    if test "x$swig_python" != "xyes"; then
+        SWIG_PYTHON
+    fi
+    AX_CHECK_COMPILE_FLAG([-DSWIG_JAVASCRIPT_BUILD=1], [AM_CFLAGS="$AM_CFLAGS -DSWIG_JAVASCRIPT_BUILD=1"])
+    AC_CHECK_PROG(HAVE_NPM,npm,yes,no)
+    if test "x$HAVE_NPM" != "xyes"; then
+        AC_MSG_FAILURE([ERROR: No usable npm was found, please install npm before re-running])
+    fi
+    npm install --prefix ./src/swig_js node-gyp nan tape big-integer
+fi
+
 AC_ARG_ENABLE(swig-java,
     AS_HELP_STRING([--enable-swig-java],[enable the SWIG java (JNI) interface (default: no)]),
     [swig_java=$enableval], [swig_java=no])
@@ -261,14 +281,14 @@ AC_SUBST([CTEST_EXTRA_STATIC])
 AC_CONFIG_FILES([
  Makefile
  src/Makefile
+ src/wallycore.pc
 ])
 
 secp_jni="--disable-jni"
 if test "x$swig_java" == "xyes"; then
     secp_jni="--enable-jni"
 fi
-ac_configure_args="${ac_configure_args} --disable-shared ${secp_jni} --with-pic --with-bignum=no --enable-experimental --enable-module-ecdh --enable-openssl-tests=no --disable-dependency-tracking"
-ac_configure_args="${ac_configure_args} --disable-shared ${secp_jni} --with-pic --with-bignum=no --enable-experimental --enable-module-ecdh --enable-module-rangeproof --enable-module-surjectionproof --enable-module-whitelist --enable-module-generator --enable-openssl-tests=no --enable-tests=no --disable-dependency-tracking"
+ac_configure_args="${ac_configure_args} --disable-shared ${secp_jni} --with-pic --with-bignum=no --enable-experimental --enable-module-ecdh --enable-module-rangeproof --enable-module-surjectionproof --enable-module-whitelist --enable-module-generator --enable-openssl-tests=no --enable-tests=no --enable-exhaustive-tests=no --disable-dependency-tracking"
 AC_CONFIG_SUBDIRS([src/secp256k1])
 
 

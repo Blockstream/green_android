@@ -1,6 +1,5 @@
 bld
-src/*.pyc
-src/test/*.pyc
+*.pyc
 src/test/__pycache__/
 *~
 *.class
@@ -39,12 +38,19 @@ src/config.h.in
 src/stamp-h1
 src/test/Makefile
 src/test/Makefile.in
+src/wallycore.pc
 src/test_clear*
 src/test-suite.log
 src/swig_java/swig_java_wrap.c
 src/swig_java/*.java
 src/swig_java/*.jar
 src/swig_java/src/com/blockstream/libwally
+src/swig_js/WallyCordova.java
+src/swig_js/WallyCordova.swift
+src/swig_js/node_modules/
+src/swig_js/nodejs_wrap.cc
+src/swig_js/src/
+src/swig_js/wally.js
 src/swig_python/swig_python_wrap.c
 src/swig_python/wallycore/__init__.py
 src/swig_python/wallycore/wallycore.egg-info
