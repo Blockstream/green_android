@@ -49,18 +49,22 @@
 -dontwarn org.w3c.**
 -dontwarn com.ibm.**
 -dontwarn com.sun.**
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
 
 -keepattributes Signature,InnerClasses
--keepclasseswithmembers class io.netty.** {
-    *;
-}
--keepnames class io.netty.** {
-    *;
-}
+-keepclasseswithmembers class io.netty.** {*;}
+-keepnames class io.netty.** {*;}
 
--keepnames class ** { *; }
+-keepnames class ** {*;}
 -keepattributes SourceFile,LineNumberTable
--keep class mehdi.sakout.aboutpage.** { *; }
 
+-keep class mehdi.sakout.aboutpage.** {*;}
+-keep class com.google.common.collect.BiMap {*;}
+-keep class com.google.common.collect.ImmutableList {*;}
+-keep class com.google.common.collect.ImmutableMap {*;}
+-keep class com.google.common.collect.Lists {*;}
+-keep class com.google.common.collect.Maps {*;}
 -keep class com.blockstream.libwally.** {*;}
+
 -keepattributes InnerClasses,EnclosingMethod
