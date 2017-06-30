@@ -831,6 +831,7 @@ public class GaService extends Service implements INotificationHandler {
                                             getBlindingPrivKey(v),
                                             v.getBytes("range_proof"),
                                             v.getBytes("commitment"),
+                                            null,
                                             v.getBytes("asset_tag"),
                                             unblinded);
                 final byte[] assetId = unblinded.get(0);

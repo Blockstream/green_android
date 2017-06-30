@@ -967,7 +967,7 @@ public class SendFragment extends SubaccountFragment {
             final byte[] rangeproof = Wally.asset_rangeproof(
                     out.getUnblindedValue(), out.getBlindingPubKey(), ephemeral,
                     out.getAssetId(), out.getAbf(), out.getVbf(),
-                    out.getCommitment(), out.getAssetTag()
+                    out.getCommitment(), null, out.getAssetTag(), 1
             );
             final byte[] surjectionproof = Wally.asset_surjectionproof(
                     out.getAssetId(), out.getAbf(), out.getAssetTag(),
