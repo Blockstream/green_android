@@ -33,3 +33,19 @@ test_debug_osx_build:
     - pushd app && ./prepare_fdroid.sh && popd
     - ./gradlew --project-dir=bitcoinj/tools build
     - ./gradlew assembleProductionDebug assembleBtctestnetDebug assemblePublicregtestDebug
+
+build_tag_osx_release:
+  tags:
+    - osx
+  artifacts:
+    name: "greenbits-release-$CI_COMMIT_REF_NAME"
+    when: on_success
+    paths:
+    - app/build/outputs/apk/*.apk
+    - app/build/outputs/mapping/*/release/mapping.txt
+  script:
+    - cd $CI_PROJECT_DIR
+    - pushd app && ./prepare_fdroid.sh && popd
+    - ./gradlew assembleProductionRelease assembleBtctestnetRelease assembleProduction_21Release assembleBtctestnet_21Release
+  only:
+    - tags
