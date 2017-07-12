@@ -80,6 +80,7 @@ int wally_asset_final_vbf(const uint64_t *values, size_t values_len, size_t num_
         vbf_p[i] = vbf + i * ASSET_TAG_LEN;
     }
     vbf_p[values_len - 1] = bytes_out;
+    clear(bytes_out, len);
 
     if (secp256k1_pedersen_blind_generator_blind_sum(ctx, values, abf_p,
                                                      (unsigned char *const *)vbf_p,
@@ -125,7 +126,7 @@ int wally_asset_rangeproof(uint64_t value,
                            const unsigned char *commitment, size_t commitment_len,
                            const unsigned char *extra_commit, size_t extra_commit_len,
                            const unsigned char *generator, size_t generator_len,
-                           size_t min_value, unsigned char *bytes_out, size_t len,
+                           uint64_t min_value, unsigned char *bytes_out, size_t len,
                            size_t *written)
 {
     const secp256k1_context *ctx = secp_ctx();

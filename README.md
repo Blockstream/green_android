@@ -1,6 +1,7 @@
 # libwally-core
 
-Wally is a collection of useful primitives for cryptocurrency wallets.
+Wally is a cross-platform, cross-language collection of useful primitives
+for cryptocurrency wallets.
 
 Note that the library is currently pre-release and so the API may change
 without notice.
@@ -11,10 +12,18 @@ Please report bugs and submit patches to https://github.com/ElementsProject/libw
 
 ## Platforms
 
-Wally currently builds on all linux and OSX platforms as well as all supported
-Android NDK targets. Bindings for Python and Java are included.
+Wally can currently be built for:
+- Linux
+- Android
+- OS X
+- iOS
+- Windows
 
-Windows support and further language bindings such as JavaScript are planned.
+And can be used from:
+- C/C++ (and compatible languages)
+- Python 2.7+ or 3.x
+- Java
+- Javascript via node.js or Cordova
 
 ## Building
 
@@ -40,14 +49,10 @@ $ make check
    interface. After building, see `src/swig_java/src/com/blockstream/libwally/Wally.java`
    for the Java interface definition (default: no).
 - `--enable-js-wrappers`. Enable the Node.js and Cordova Javascript wrappers.
-   Note that this currently requires `--enable-swig-python` (default: no).
+   This currently requires python to be available at build time (default: no).
 - `--enable-coverage`. Enables code coverage (default: no) Note that you will
    need [lcov](http://ltp.sourceforge.net/coverage/lcov.php) installed to
    build with this option enabled and generate coverage reports.
-
-NOTE: If you wish to run the Python tests you currently need to pass
-      the `--enable-swig-python` option. This requirement will be removed
-      in a future version.
 
 ### Recommended development configure options
 
@@ -65,6 +70,31 @@ $ python setup.py install
 
 It is suggested you only install this way into a virtualenv while the library
 is under heavy development.
+
+If you wish to explicitly choose the python version to use, set the
+`PYTHON_VERSION` environment variable (to e.g. `2`, `2.7`, `3` etc) before
+running `./configure`.
+
+### Android
+
+Android builds are currently supported for all Android binary targets using
+a toolchain directory created with the Android SDK tool
+`make_standalone_toolchain.py`. The script `tools/android_helpers.sh` can be
+sourced from the shell or scripts to make it easier to produce builds:
+
+```
+$ export ANDROID_HOME=/opt/android-sdk
+$ . ./tools/android_helpers.sh
+
+$ android_get_arch_list
+armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64
+
+# Optional, uses gcc instead of clang (needed e.g. for NDK r15 with mip64)
+$ export WALLY_USE_GCC=1
+
+# See the comments in tools/android_helpers.sh for arguments
+$ android_build_wally armeabi-v7a $PWD/toolchain-armeabi-v7a 14 "--enable-swig-java"
+```
 
 ## Cleaning
 

@@ -23,19 +23,23 @@ AC_SUBST([LDPATH_VAR])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 LT_INIT([disable-static])
 
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
 AC_PROG_CC
 
-# Prefer gccs ar/ranlib as they handle flto files properly
-AC_CHECK_PROG(HAVE_GCC_AR,gcc-ar,yes,no)
-if test "x$HAVE_GCC_AR" == "xyes"; then
-    AR=gcc-ar
-    AC_SUBST([AR])
-fi
+if test x"$ac_cv_c_compiler_gnu" == "xyes"; then
+    # For gcc, prefer gccs ar/ranlib as they handle flto files properly
+    AC_CHECK_PROG(HAVE_GCC_AR,gcc-ar,yes,no)
+    if test "x$HAVE_GCC_AR" == "xyes"; then
+        AR=gcc-ar
+        AC_SUBST([AR])
+    fi
 
-AC_CHECK_PROG(HAVE_GCC_RANLIB,gcc-ranlib,yes,no)
-if test "x$HAVE_GCC_RANLIB" == "xyes"; then
-    RANLIB=gcc-ranlib
-    AC_SUBST([RANLIB])
+    AC_CHECK_PROG(HAVE_GCC_RANLIB,gcc-ranlib,yes,no)
+    if test "x$HAVE_GCC_RANLIB" == "xyes"; then
+        RANLIB=gcc-ranlib
+        AC_SUBST([RANLIB])
+    fi
 fi
 
 GNU_SED=sed
@@ -59,7 +63,7 @@ AC_ARG_ENABLE(coverage,
     AS_HELP_STRING([--enable-coverage],[enable code coverage (default: no)]),
     [coverage=$enableval], [coverage=no])
 
-CFLAGS=`echo $CFLAGS | $GNU_SED -e 's/-O2//g' | $GNU_SED -e 's/-g//g'`
+CFLAGS=`echo $CFLAGS | $GNU_SED 's/-[Og][0-9]*[ $$]*//'`
 
 AC_C_BIGENDIAN()
 AC_C_INLINE
@@ -94,21 +98,31 @@ fi
 
 # -flax-vector-conversions is needed for our arm assembly
 AX_CHECK_COMPILE_FLAG([-flax-vector-conversions], [AM_CFLAGS="$AM_CFLAGS -flax-vector-conversions"])
+AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [NOALIAS_CFLAGS="$AM_CFLAGS -fno-strict-aliasing $AM_CFLAGS"])
 
-AX_CHECK_COMPILE_FLAG([-Wall], [AM_CFLAGS="$AM_CFLAGS -Wall"])
-AX_CHECK_COMPILE_FLAG([-Wextra], [AM_CFLAGS="$AM_CFLAGS -Wextra"])
-AX_CHECK_COMPILE_FLAG([-Wpedantic], [AM_CFLAGS="$AM_CFLAGS -Wpedantic"])
-AX_CHECK_COMPILE_FLAG([-Wcast-align], [AM_CFLAGS="$AM_CFLAGS -Wcast-align"])
-AX_CHECK_COMPILE_FLAG([-Wnested-externs], [AM_CFLAGS="$AM_CFLAGS -Wnested-externs"])
-AX_CHECK_COMPILE_FLAG([-Wshadow], [AM_CFLAGS="$AM_CFLAGS -Wshadow"])
-AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes], [AM_CFLAGS="$AM_CFLAGS -Wstrict-prototypes"])
+AX_CHECK_COMPILE_FLAG([-Wformat-nonliteral], [AM_CFLAGS="-Wformat-nonliteral $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wformat-security], [AM_CFLAGS="-Wformat-security $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wformat], [AM_CFLAGS="-Wformat $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes], [AM_CFLAGS="-Wstrict-prototypes $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wshadow], [AM_CFLAGS="-Wshadow $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wnested-externs], [AM_CFLAGS="-Wnested-externs $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wcast-align], [AM_CFLAGS="-Wcast-align $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wpedantic], [AM_CFLAGS="-Wpedantic $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wextra], [AM_CFLAGS="-Wextra $AM_CFLAGS"])
+AX_CHECK_COMPILE_FLAG([-Wall], [AM_CFLAGS="-Wall $AM_CFLAGS"])
+
+# Disable some unhelpful errors from those enabled above
 AX_CHECK_COMPILE_FLAG([-Wno-unused-function], [AM_CFLAGS="$AM_CFLAGS -Wno-unused-function"])
 AX_CHECK_COMPILE_FLAG([-Wno-long-long], [AM_CFLAGS="$AM_CFLAGS -Wno-long-long"])
 AX_CHECK_COMPILE_FLAG([-Wno-overlength-strings], [AM_CFLAGS="$AM_CFLAGS -Wno-overlength-strings"])
-AX_CHECK_COMPILE_FLAG([-Wformat], [AM_CFLAGS="$AM_CFLAGS -Wformat"])
-AX_CHECK_COMPILE_FLAG([-Wformat-security], [AM_CFLAGS="$AM_CFLAGS -Wformat-security"])
-AX_CHECK_COMPILE_FLAG([-Wformat-nonliteral], [AM_CFLAGS="$AM_CFLAGS -Wformat-nonliteral"])
-AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [NOALIAS_CFLAGS="-fno-strict-aliasing"])
+AX_CHECK_COMPILE_FLAG([-Wno-variadic-macros], [AM_CFLAGS="$AM_CFLAGS -Wno-variadic-macros"])
+
+if [[ "$CC" == *"clang"* ]]; then
+    AX_CHECK_COMPILE_FLAG([-Wno-gnu-statement-expression], [AM_CFLAGS="$AM_CFLAGS -Wno-gnu-statement-expression"])
+    AX_CHECK_COMPILE_FLAG([-Wno-zero-length-array], [AM_CFLAGS="$AM_CFLAGS -Wno-zero-length-array"])
+    AX_CHECK_COMPILE_FLAG([-Wno-language-extension-token], [AM_CFLAGS="$AM_CFLAGS -Wno-language-extension-token"])
+    AX_CHECK_COMPILE_FLAG([-Wno-unknown-attributes], [AM_CFLAGS="$AM_CFLAGS -Wno-unknown-attributes"])
+fi
 AC_SUBST([NOALIAS_CFLAGS])
 
 # Under OSX the compiler accepts this flag but the linker then fails.
@@ -189,7 +203,7 @@ AC_SUBST([LIBADD_SECP256K1])
 #
 AX_PYTHON_DEVEL([>= '2.7.0'])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != ""])
-AM_CONDITIONAL([RUN_PYTHON_TESTS], [test "x$pythonexists" == "xyes"])
+AM_CONDITIONAL([RUN_PYTHON_TESTS], [test "$PYTHON" != "" -a "x$pythonexists" == "xyes"])
 
 #
 # SWIG
@@ -226,8 +240,18 @@ if test "x$js_wrappers" == "xyes"; then
     if test "x$HAVE_NPM" != "xyes"; then
         AC_MSG_FAILURE([ERROR: No usable npm was found, please install npm before re-running])
     fi
-    npm install --prefix ./src/swig_js node-gyp nan tape big-integer
+    npm install --prefix ./src/wrap_js node-gyp nan tape big-integer
 fi
+
+# Set node-gyp flags regardless of  JS enablement; they are used for wrapper
+# generation which can be usefully run without enabling JS/requiring npm
+NODE_GYP_DIR="Release"
+if test "x$debug" == "xyes"; then
+    NODE_GYP_FLAGS="--debug"
+    NODE_GYP_DIR="Debug"
+fi
+AC_SUBST([NODE_GYP_FLAGS])
+AC_SUBST([NODE_GYP_DIR])
 
 AC_ARG_ENABLE(swig-java,
     AS_HELP_STRING([--enable-swig-java],[enable the SWIG java (JNI) interface (default: no)]),
