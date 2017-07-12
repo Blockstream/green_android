@@ -6,23 +6,38 @@ var ONES = "1111111111111111111111111111111111111111111111111111111111111111";
 
 var h = function (h) { return new Buffer(h, 'hex'); };
 var b = function (b) { return new Buffer(b).toString('hex'); }
+var toBigInt = function (n) {
+  var s = bigInt(n).toString(16);
+  while (s.length < 16) s = '0' + s;
+  return new Uint8Array(new Buffer(s, 'hex'));
+}
+
+test('constants', function (t) {
+  t.plan(2);
+  t.equal(toBigInt(0).toString(), wally.ZERO_64.toString());
+  t.equal(toBigInt(1).toString(), wally.ONE_64.toString());
+});
+
+test('value commitment', function (t) {
+  t.plan(1);
+  var vbf = h("8b5d87d94b9f54dc5dd9f31df5dffedc974fc4d5bf0d2ee1297e5aba504ccc26");
+  var generator = h("0ba4fd25e0e2108e55aec683810a8652f9b067242419a1f7cc0f01f92b4b078252");
+  wally.wally_asset_value_commitment(toBigInt(10000), vbf, generator)
+       .then(function (commitment) {
+         t.equal(b(commitment), "08a9de5e391458abf4eb6ff0cc346fa0a8b5b0806b2ee9261dde54d436423c1982");
+       });
+});
 
 test('final vbf', function (t) {
   t.plan(1);
   var asset = h(ONES);
   var abf = h(ONES);
-  var values = [ 20000, 4910, 13990, 1100 ].map(function (n) {
-    var s = bigInt(n).toString(16);
-    while (s.length < 16) s = '0' + s;
-    return new Uint8Array(new Buffer(s, 'hex'));
-  });
+  var values = [ 20000, 4910, 13990, 1100 ].map(toBigInt);
+  var abfs = h("7fca161c2b849a434f49065cf590f5f1909f25e252f728dfd53669c3c8f8e37100000000000000000000000000000000000000000000000000000000000000002c89075f3c8861fea27a15682d664fb643bc08598fe36dcf817fcabc7ef5cf2efdac7bbad99a45187f863cd58686a75135f2cc0714052f809b0c1f603bcdc574");
+  var vbfs = h("1c07611b193009e847e5b296f05a561c559ca84e16d1edae6cbe914b73fb6904000000000000000000000000000000000000000000000000000000000000000074e4135177cd281b332bb8fceb46da32abda5d6dc4d2eef6342a5399c9fb3c48");
 
   wally.wally_asset_generator_from_bytes(asset, abf).then(function (_unused_gen) {
-    return wally.wally_asset_final_vbf(
-      values, 1,
-      h("7fca161c2b849a434f49065cf590f5f1909f25e252f728dfd53669c3c8f8e37100000000000000000000000000000000000000000000000000000000000000002c89075f3c8861fea27a15682d664fb643bc08598fe36dcf817fcabc7ef5cf2efdac7bbad99a45187f863cd58686a75135f2cc0714052f809b0c1f603bcdc574"),
-      h("1c07611b193009e847e5b296f05a561c559ca84e16d1edae6cbe914b73fb6904000000000000000000000000000000000000000000000000000000000000000074e4135177cd281b332bb8fceb46da32abda5d6dc4d2eef6342a5399c9fb3c48")
-    );
+    return wally.wally_asset_final_vbf(values, 1, abfs, vbfs);
   }).then(function (vbf) {
     t.equal(b(vbf), "6996212c70fa85b82d4fd76bd262e0cebc5d8f52350a73af8d2b881a30442b9d");
   });
