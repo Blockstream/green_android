@@ -10,6 +10,10 @@ AH_TOP([#ifndef LIBWALLYCORE_CONFIG_H
 AH_BOTTOM([#include "ccan_config.h"
 #endif /*LIBWALLYCORE_CONFIG_H*/])
 
+# Remove any optimisation/debug flags from CFLAGS, these are controlled
+# only by --enable-debug, in order to only use tested configurations
+CFLAGS=`echo $CFLAGS | sed 's/-[Og][0-9]*[ $$]*//'`
+
 LDPATH_VAR=LD_LIBRARY_PATH
 case $host_os in
 *darwin*)
@@ -27,20 +31,61 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_PROG_CC
 
-if test x"$ac_cv_c_compiler_gnu" == "xyes"; then
-    # For gcc, prefer gccs ar/ranlib as they handle flto files properly
-    AC_CHECK_PROG(HAVE_GCC_AR,gcc-ar,yes,no)
-    if test "x$HAVE_GCC_AR" == "xyes"; then
-        AR=gcc-ar
-        AC_SUBST([AR])
-    fi
+# Prefer the compilers native ar/ranlib if available (to better handle lto)
+# We have to manually loop to test these as autoconf inexplicably does
+# not provide an AC_PATH_TOOLS macro for this purpose.
+candidate_ars="ar"
+candidate_ranlibs="ranlib"
+case $CC in
+*gcc*)
+    candidate_ars="gcc-ar ar"
+    candidate_ranlibs="gcc-ranlib ranlib"
+    ;;
+*clang*)
+    ver=$($CC --version | head -n 1 | cut -d' '  -f3 | cut -d'.' -f1,2)
+    candidate_ars="llvm-ar-$ver llvm-ar ar"
+    candidate_ranlibs="llvm-ranlib-$ver llvm-ranlib ranlib"
+    ;;
+esac
 
-    AC_CHECK_PROG(HAVE_GCC_RANLIB,gcc-ranlib,yes,no)
-    if test "x$HAVE_GCC_RANLIB" == "xyes"; then
-        RANLIB=gcc-ranlib
-        AC_SUBST([RANLIB])
+if test "x$is_osx" == "xyes"; then
+    candidate_ars="libtool $candidate_ars"
+    CCDIR=`dirname $CC`
+    if test x"$CCDIR" != x"."; then
+        if test -x $CCDIR/libtool; then
+            # Use libtool from the same directory as our clang
+            AR=$CCDIR/libtool
+            candidate_ars=""
+        fi
     fi
 fi
+
+if test -n "$candidate_ars"; then
+    for candidate in $candidate_ars; do
+        AC_PATH_TOOL(AR, $candidate)
+        if test "x$HAVE_AR" == "xyes"; then
+            break
+        fi
+    done
+fi
+case $AR in
+*libtool)
+    ARFLAGS="-static -o"
+    AR_FLAGS="-static -o"
+    AC_SUBST([ARFLAGS])
+    AC_SUBST([AR_FLAGS])
+    ;;
+esac
+
+for candidate in $candidate_ranlibs; do
+    AC_PATH_TOOL(RANLIB, $candidate)
+    if test "x$HAVE_RANLIB" == "xyes"; then
+        break
+    fi
+done
+
+AC_SUBST([AR])
+AC_SUBST([RANLIB])
 
 GNU_SED=sed
 AC_CHECK_PROG(HAVE_GSED,gsed,yes,no)
@@ -62,8 +107,9 @@ AC_ARG_ENABLE(debug,
 AC_ARG_ENABLE(coverage,
     AS_HELP_STRING([--enable-coverage],[enable code coverage (default: no)]),
     [coverage=$enableval], [coverage=no])
-
-CFLAGS=`echo $CFLAGS | $GNU_SED 's/-[Og][0-9]*[ $$]*//'`
+AC_ARG_ENABLE(lto,
+    AS_HELP_STRING([--enable-lto],[enable link time optimisation (default: yes if not debugging)]),
+    [lto=$enableval], [lto=yes])
 
 AC_C_BIGENDIAN()
 AC_C_INLINE
@@ -91,8 +137,10 @@ else
     AX_CHECK_COMPILE_FLAG([-fstack-protector-strong], [AM_CFLAGS="$AM_CFLAGS -fstack-protector-strong"])
     AX_CHECK_COMPILE_FLAG([-DNDEBUG=1], [AM_CFLAGS="$AM_CFLAGS -DNDEBUG=1"])
     AX_CHECK_LINK_FLAG([-O3], [LDFLAGS="$LDFLAGS -O3"])
-    AX_CHECK_LINK_FLAG([-flto], [LDFLAGS="$LDFLAGS -flto"])
-    AX_CHECK_LINK_FLAG([-flto], [AM_CFLAGS="$AM_CFLAGS -flto"])
+    if test "x$lto" == "xyes"; then
+        AX_CHECK_LINK_FLAG([-flto], [LDFLAGS="$LDFLAGS -flto"])
+        AX_CHECK_LINK_FLAG([-flto], [AM_CFLAGS="$AM_CFLAGS -flto"])
+    fi
     AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
 fi
 
@@ -147,8 +195,9 @@ if test "x$export_all" != "xyes"; then
 fi
 
 # Assume we have no unaligned access if cross-compiling
-AC_RUN_IFELSE([AC_LANG_SOURCE([int main(void){static int a[2];return *((int*)(((char*)a)+1)) != 0;}])],
-              [AC_DEFINE([HAVE_UNALIGNED_ACCESS], 1, [Define if we have unaligned access])],,[foo=1])
+AC_RUN_IFELSE([AC_LANG_SOURCE([[int main(void){static int a[2];return *((int*)(((char*)a)+1)) != 0;}]])],
+              have_unaligned=1, have_unaligned=0, have_unaligned=0)
+AC_DEFINE_UNQUOTED([HAVE_UNALIGNED_ACCESS], [$have_unaligned], [Define if we have unaligned access])
 
 if test "x$is_osx" != "xyes"; then
     # Assume we are using gcc (i.e. have this attribute) if cross-compiling
@@ -310,6 +359,8 @@ if test "x$enable_static" == "xyes"; then
 fi
 AC_SUBST([CTEST_EXTRA_STATIC])
 
+AM_CONDITIONAL([SHARED_BUILD_ENABLED], [test "x$enable_shared" == "xyes"])
+
 AC_CONFIG_FILES([
  Makefile
  src/Makefile
@@ -326,6 +377,13 @@ if test x"$cross_compiling" = "xyes"; then
     # usable and that they have provided suitable FLAGS/LDFLAGS
     export JAVA_HOME=/does_not_exist
 fi
+export CC
+export CFLAGS
+export AR
+export ARFLAGS
+export AR_FLAGS
+export LD
+export LDFLAGS
 ac_configure_args="${ac_configure_args} --disable-shared ${secp_jni} --with-pic --with-bignum=no --enable-experimental --enable-module-ecdh --enable-module-rangeproof --enable-module-surjectionproof --enable-module-whitelist --enable-module-generator --enable-openssl-tests=no --enable-tests=no --enable-exhaustive-tests=no --disable-dependency-tracking"
 AC_CONFIG_SUBDIRS([src/secp256k1])
 

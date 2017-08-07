@@ -53,12 +53,19 @@ $ make check
 - `--enable-coverage`. Enables code coverage (default: no) Note that you will
    need [lcov](http://ltp.sourceforge.net/coverage/lcov.php) installed to
    build with this option enabled and generate coverage reports.
+- `--disable-shared`. Disables building a shared library and builds a static
+  library instead.
 
 ### Recommended development configure options
 
 ```
 $ ./configure --enable-debug --enable-export-all --enable-swig-python --enable-coverage
 ```
+
+### Compiler options
+
+Set `CC=clang` to use clang for building instead of gcc, when both are
+installed.
 
 ### Python
 
@@ -73,7 +80,27 @@ is under heavy development.
 
 If you wish to explicitly choose the python version to use, set the
 `PYTHON_VERSION` environment variable (to e.g. `2`, `2.7`, `3` etc) before
-running `./configure`.
+running `setup.py` or (when compiling manually) `./configure`.
+
+You can also install the binary wally releases using the released egg or
+wheel files without having to compile the library.
+
+For wheel releases you can install directly using the released wheel files
+and pip install, e.g.:
+
+```
++pip install wallycore-0.3.0-py27-none-linux_x86_64.whl
+```
+
+For egg releases, untar the tarball which will create a directory of the
+form `wallcore-<platform>-<python version>`. You can install using:
+
+```
+python3 <dir>/setup.py easy_install <dir>/*.egg
+```
+
+The script `tools/build_python_eggs.sh` builds the release files and can be
+used as an example for your own deployments.
 
 ### Android
 
