@@ -1,8 +1,11 @@
 /* Config directives for ccan */
+#include <stddef.h>
 
 #ifdef WORDS_BIGENDIAN
 # define HAVE_BIG_ENDIAN 1
+# define HAVE_LITTLE_ENDIAN 0
 #else
+# define HAVE_BIG_ENDIAN 0
 # define HAVE_LITTLE_ENDIAN 1
 #endif
 
@@ -20,15 +23,17 @@
 
 #ifdef HAVE_BYTESWAP_H
 #define HAVE_BSWAP_64 1
+#else
+#define HAVE_BYTESWAP_H 0
+#define HAVE_BSWAP_64 0
 #endif
 
 #if HAVE_UNALIGNED_ACCESS
-#define alignment_ok(p, n) true
+#define alignment_ok(p, n) 1
 #else
 #define alignment_ok(p, n) ((size_t)(p) % (n) == 0)
 #endif
 
-/* Clear a set of memory areas passed as ptr1, len1, ptr2, len2 etc */
-void clear_n(unsigned int count, ...);
+void clear(void *p, size_t len);
 
-#define CCAN_CLEAR_MEMORY(p, len) clear_n(1, p, len)
+#define CCAN_CLEAR_MEMORY(p, len) clear(p, len)
