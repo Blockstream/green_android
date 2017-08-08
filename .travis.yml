@@ -5,17 +5,17 @@ matrix:
     - services:
         - docker
       before_install:
-        - docker pull greenaddress/android
+        - docker pull greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
       script: docker run -v $PWD:/gb greenaddress/android /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleProductionRelease"
     - services:
         - docker
       before_install:
-        - docker pull greenaddress/android
+        - docker pull greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
       script: docker run -v $PWD:/gb greenaddress/android /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleBtctestnetRelease"
     - services:
         - docker
       before_install:
-        - docker pull greenaddress/android
+        - docker pull greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
       script: docker run -v $PWD:/gb greenaddress/android /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleElementsregtestRelease"
     - os: osx
       osx_image: xcode8.3
