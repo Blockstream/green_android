@@ -537,8 +537,8 @@ public class GaService extends Service implements INotificationHandler {
         return loginImpl(mClient.login(signingWallet, mDeviceId, mnemonic));
     }
 
-    private ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
-                                               final String mnemonic,
+    public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
+                                               final String userAgent,
                                                final byte[] pubkey, final byte[] chaincode,
                                                final byte[] pathPubkey, final byte[] pathChaincode) {
         mState.transitionTo(ConnState.LOGGINGIN);
@@ -547,7 +547,7 @@ public class GaService extends Service implements INotificationHandler {
                    @Override
                    public LoginData call() throws Exception {
                        try {
-                           mClient.registerUser(signingWallet, mnemonic,
+                           mClient.registerUser(signingWallet, userAgent,
                                                 pubkey, chaincode,
                                                 pathPubkey, pathChaincode,
                                                 mDeviceId);
@@ -564,14 +564,8 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<LoginData> signup(final String mnemonic) {
         final SWWallet sw = new SWWallet(mnemonic);
-        return signup(sw, mnemonic, sw.getMasterKey().getPubKey(),
+        return signup(sw, null, sw.getMasterKey().getPubKey(),
                       sw.getMasterKey().getChainCode(), null, null);
-    }
-
-    public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
-                                              final byte[] pubkey, final byte[] chaincode,
-                                              final byte[] pathPubkey, final byte[] pathChaincode) {
-        return signup(signingWallet, null, pubkey, chaincode, pathPubkey, pathChaincode);
     }
 
     public String getMnemonic() {
