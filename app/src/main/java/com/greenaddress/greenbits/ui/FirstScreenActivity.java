@@ -137,7 +137,7 @@ public class FirstScreenActivity extends LoginActivity {
             @Override
             public Object call() {
                 tuiCall = true;
-                BTChipPublicKey masterPublicKey = null, loginPublicKey = null;
+                BTChipPublicKey masterPublicKey = null;
                 Log.d(TAG, "TEE setup " + setup);
                 if (setup) {
                     try {
@@ -202,9 +202,6 @@ public class FirstScreenActivity extends LoginActivity {
                 if (setup) {
                     try {
                         masterPublicKey = dongle.getWalletPublicKey("");
-                        loginPublicKey = dongle.getWalletPublicKey("18241'");
-                        Log.d(TAG, "TEE derived MPK " + Dump.dump(masterPublicKey.getPublicKey()) + ' ' + Dump.dump(masterPublicKey.getChainCode()));
-                        Log.d(TAG, "TEE derived LPK " + Dump.dump(loginPublicKey.getPublicKey()) + ' ' + Dump.dump(loginPublicKey.getChainCode()));
                     } catch (final Exception e) {
                         FirstScreenActivity.this.toast("Trustlet login failed");
                         tuiCall = false;
@@ -213,7 +210,6 @@ public class FirstScreenActivity extends LoginActivity {
                 }
                 // And finally login
                 final BTChipPublicKey masterPublicKeyFixed = masterPublicKey;
-                final BTChipPublicKey loginPublicKeyFixed = loginPublicKey;
 
                 Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override
@@ -223,7 +219,7 @@ public class FirstScreenActivity extends LoginActivity {
                             return mService.login(new BTChipHWWallet(dongle));
                         } else {
                             Log.d(TAG, "TEE signup");
-                            return mService.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
+                            return mService.signup(new BTChipHWWallet(dongle), "HW", KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode());
                         }
                     }
                 }), new FutureCallback<LoginData>() {

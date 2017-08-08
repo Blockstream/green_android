@@ -8,6 +8,7 @@ import com.btchip.BTChipException;
 import com.btchip.BitcoinTransaction;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.utils.BufferUtils;
+import com.btchip.utils.KeyUtils;
 import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -271,7 +272,8 @@ public class BTChipHWWallet extends HWWallet {
     private DeterministicKey internalGetPubKey() throws BTChipException {
         if (mCachedPubkey == null) {
             final BTChipDongle.BTChipPublicKey walletKey = mDongle.getWalletPublicKey(getPath());
-            mCachedPubkey = HDKey.createMasterKey(walletKey.getChainCode(), walletKey.getPublicKey());
+            final byte[] compressedPubKey = KeyUtils.compressPublicKey(walletKey.getPublicKey());
+            mCachedPubkey = HDKey.createMasterKey(walletKey.getChainCode(), compressedPubKey);
         }
         return mCachedPubkey;
     }

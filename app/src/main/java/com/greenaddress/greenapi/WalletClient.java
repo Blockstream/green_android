@@ -62,8 +62,6 @@ import ws.wamp.jawampa.transport.netty.NettyWampConnectionConfig;
 public class WalletClient {
 
     private static final String TAG = WalletClient.class.getSimpleName();
-    private static final String GA_KEY = "GreenAddress.it HD wallet path";
-    private static final String GA_PATH = "greenaddress_path";
     // v2: API version 2, sw: Opt in/out segwit
     private static final String FEATURES = "v2,sw";
     private static final String USER_AGENT = String.format("[%s]%s;%s;%s;%s",
@@ -315,17 +313,6 @@ public class WalletClient {
         return mFeeEstimates;
     }
 
-    private static byte[] mnemonicToPath(final String mnemonic) {
-        final byte[] hash = CryptoHelper.pbkdf2_hmac_sha512(mnemonic.getBytes(), GA_PATH.getBytes());
-        return Wally.hmac_sha512(GA_KEY.getBytes(), hash);
-    }
-
-    private static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {
-        final byte[] data = new byte[publicKey.length + chainCode.length];
-        System.arraycopy(chainCode, 0, data, 0, chainCode.length);
-        System.arraycopy(publicKey, 0, data, chainCode.length, publicKey.length);
-        return Wally.hmac_sha512(GA_KEY.getBytes(), data);
-    }
 
     public String getMnemonic() {
         return mMnemonic;
@@ -345,20 +332,17 @@ public class WalletClient {
     }
 
     public void registerUser(final ISigningWallet signingWallet,
-                             final String mnemonic,
+                             final String userAgent,
                              final byte[] pubkey, final byte[] chaincode,
-                             final byte[] pathPubkey, final byte[] pathChaincode,
                              final String deviceId) throws Exception {
-        String agent = USER_AGENT;
-        final byte[] path;
+        final String agent;
+        if (userAgent == null)
+            agent = USER_AGENT;
+        else
+            agent = String.format("%s %s", USER_AGENT, userAgent);
 
-        if (mnemonic != null) {
-            mMnemonic = mnemonic; // Software Wallet
-            path = mnemonicToPath(mnemonic);
-        } else {
-            agent += " HW"; // Hardware Wallet
-            path = extendedKeyToPath(pathPubkey, pathChaincode);
-        }
+        final byte[] path = signingWallet.getGAPath();
+
 
         // We don't check the return value of login.register (never returns false)
         syncCall("login.register", Boolean.class, h(pubkey), h(chaincode), agent, h(path));

@@ -537,19 +537,17 @@ public class GaService extends Service implements INotificationHandler {
         return loginImpl(mClient.login(signingWallet, mDeviceId, mnemonic));
     }
 
-    private ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
-                                               final String mnemonic,
-                                               final byte[] pubkey, final byte[] chaincode,
-                                               final byte[] pathPubkey, final byte[] pathChaincode) {
+    public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
+                                               final String userAgent,
+                                               final byte[] pubkey, final byte[] chaincode) {
         mState.transitionTo(ConnState.LOGGINGIN);
 
         return mExecutor.submit(new Callable<LoginData>() {
                    @Override
                    public LoginData call() throws Exception {
                        try {
-                           mClient.registerUser(signingWallet, mnemonic,
+                           mClient.registerUser(signingWallet, userAgent,
                                                 pubkey, chaincode,
-                                                pathPubkey, pathChaincode,
                                                 mDeviceId);
                            onPostLogin(mClient.getLoginData());
                            return mClient.getLoginData();
@@ -564,14 +562,8 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<LoginData> signup(final String mnemonic) {
         final SWWallet sw = new SWWallet(mnemonic);
-        return signup(sw, mnemonic, sw.getMasterKey().getPubKey(),
-                      sw.getMasterKey().getChainCode(), null, null);
-    }
-
-    public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
-                                              final byte[] pubkey, final byte[] chaincode,
-                                              final byte[] pathPubkey, final byte[] pathChaincode) {
-        return signup(signingWallet, null, pubkey, chaincode, pathPubkey, pathChaincode);
+        return signup(sw, null, sw.getMasterKey().getPubKey(),
+                      sw.getMasterKey().getChainCode());
     }
 
     public String getMnemonic() {

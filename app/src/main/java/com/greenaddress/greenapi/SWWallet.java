@@ -122,4 +122,9 @@ public class SWWallet extends ISigningWallet {
     }
 
     private int u8(final int i) { return i < 0 ? 256 + i : i; }
+
+    public byte[] getGAPath() {
+        final DeterministicKey key = derive(GA_PATH).mRootKey;
+        return extendedKeyToPath(key.getPubKey(), key.getChainCode());
+    }
 }

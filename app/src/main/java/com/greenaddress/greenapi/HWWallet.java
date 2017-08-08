@@ -66,4 +66,9 @@ public abstract class HWWallet extends ISigningWallet {
     protected abstract DeterministicKey getPubKey();
     protected abstract HWWallet derive(Integer childNumber);
     protected abstract ECKey.ECDSASignature signMessage(String message);
+
+    public byte[] getGAPath() {
+        final HWWallet hdkey = derive(GA_PATH);
+        return extendedKeyToPath(hdkey.getPubKey().getPubKey(), hdkey.getPubKey().getChainCode());
+    }
 }
