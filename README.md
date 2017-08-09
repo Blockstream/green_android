@@ -19,7 +19,7 @@ You need to have the following Android developer tools installed:
 
 The above tools can be installed from the Android SDK manager.
 
-GreenBits uses [libwally](https://github.com/jgriffiths/libwally-core) which
+GreenBits uses [libwally](https://github.com/ElementsProject/libwally-core) which
 requires the following to be installed for building:
 
 - [SWIG](http://www.swig.org/). Most Linux distributions have this packaged,
