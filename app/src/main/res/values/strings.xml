@@ -107,6 +107,7 @@
     <string name="invalidAmountAndAddress">Invalid amount and address</string>
     <string name="invalidAddress">Invalid address</string>
     <string name="invalidAmount">Invalid amount</string>
+    <string name="invalidPhoneNumber">Invalid phone number format</string>
     <string name="noBalanceFirstLine">Getting <a href="https://bitcoin.org/en/getting-started">started</a> with Bitcoin</string>
     <string name="noBalanceSecondLine">Where to <a href="http://howtobuybitcoins.info/">buy</a> them</string>
     <string name="noBalanceThirdLine">Read our <a href="https://greenaddress.it/faq">FAQ</a></string>

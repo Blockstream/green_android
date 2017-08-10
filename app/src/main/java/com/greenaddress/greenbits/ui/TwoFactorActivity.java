@@ -124,6 +124,10 @@ public class TwoFactorActivity extends GaActivity {
                 final String details = UI.getText(detailsText).trim();
                 if (details.isEmpty())
                     return;
+                if (!isEmail && !isValidPhoneNumber(details)) {
+                    toast(R.string.invalidPhoneNumber);
+                    return;
+                }
                 UI.disable(mContinueButton);
                 final Map<String, String> twoFacData = mService.make2FAData("proxy", proxyCode);
                 CB.after(mService.initEnableTwoFac(mMethod, details, twoFacData),
@@ -253,5 +257,14 @@ public class TwoFactorActivity extends GaActivity {
                 });
             }
         });
+    }
+
+    static boolean isValidPhoneNumber(final String phoneNumber) {
+        if (phoneNumber.startsWith("+") && phoneNumber.length() > 7 && phoneNumber.length() < 20) {
+            final String stripped = phoneNumber.replaceAll("^\\+0", "").replaceAll("^\\+", "")
+                                         .replace(" ", "").replace("(", "").replace(")", "");
+            return !stripped.startsWith("00") && stripped.matches("\\d+?");
+        }
+        return false;
     }
 }
