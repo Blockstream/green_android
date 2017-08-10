@@ -103,23 +103,20 @@ public class TwoFactorActivity extends GaActivity {
         setView(R.layout.activity_two_factor_3_provide_details);
 
         final boolean isEmail = mMethod.equals("email");
+        final TextView detailsText = UI.find(this, R.id.details);
+        detailsText.setInputType(isEmail ?  InputType.TYPE_CLASS_TEXT : InputType.TYPE_CLASS_PHONE);
+
         final int resId = isEmail ? R.string.emailAddress : R.string.phoneNumber;
         final String type = getString(resId);
 
         mPromptText.setText(getTypeString(UI.getText(mPromptText), type));
-        if (!isEmail)
+        if (!isEmail) {
             UI.hide(UI.find(this, R.id.emailNotices));
+            detailsText.setHint(R.string.twoFacPhoneHint);
+        }
 
         mProgressBar.setProgress(stepNum);
         mProgressBar.setMax(numSteps);
-
-        final TextView detailsText = UI.find(this, R.id.details);
-
-        detailsText.setInputType(
-                isEmail ?
-                        InputType.TYPE_CLASS_TEXT :
-                        InputType.TYPE_CLASS_PHONE
-        );
 
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
