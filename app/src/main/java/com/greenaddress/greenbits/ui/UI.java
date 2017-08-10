@@ -256,7 +256,8 @@ public abstract class UI {
     // Show/Hide controls
     public static void showIf(final boolean condition, final View... views) {
         for (final View v: views)
-            v.setVisibility(condition ? View.VISIBLE : View.GONE);
+            if (v != null)
+                v.setVisibility(condition ? View.VISIBLE : View.GONE);
     }
 
     public static void show(final View... views) { showIf(true, views); }
