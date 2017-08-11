@@ -46,19 +46,19 @@ public class BTChipHWWallet extends HWWallet {
     private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
     private BTChipHWWallet(final BTChipDongle dongle, final String pin, final List<Integer> addrn) {
-        this.mDongle = dongle;
-        this.mPin = pin;
-        this.mAddrn = addrn;
+        mDongle = dongle;
+        mPin = pin;
+        mAddrn = addrn;
     }
 
     public BTChipHWWallet(final BTChipDongle dongle) {
         this(dongle, "0000", new LinkedList<Integer>());
     }
 
-    public BTChipHWWallet(final BTChipTransport transport, final String pin) {
-        this.mDongle = new BTChipDongle(transport);
-        this.mPin = pin;
-        this.mAddrn = new LinkedList<>();
+    private BTChipHWWallet(final BTChipTransport transport, final String pin) {
+        mDongle = new BTChipDongle(transport);
+        mPin = pin;
+        mAddrn = new LinkedList<>();
     }
 
     public BTChipHWWallet(final BTChipTransport transport) {
@@ -71,7 +71,7 @@ public class BTChipHWWallet extends HWWallet {
             @Override
             public Object call() {
                 try {
-                    mDongle.verifyPin(BTChipHWWallet.this.mPin.getBytes());
+                    mDongle.verifyPin(mPin.getBytes());
                     remainingAttemptsFuture.set(-1);  // -1 means success
                 } catch (final BTChipException e) {
                     e.printStackTrace();
@@ -110,22 +110,22 @@ public class BTChipHWWallet extends HWWallet {
             final TransactionOutPoint txOutpoint = txInput.getOutpoint();
             final byte[] inputHash = txOutpoint.getHash().getReversedBytes();
             final Output prevOut = prevOuts.get(i);
-            ByteArrayOutputStream inputBuf = new ByteArrayOutputStream();
+            final ByteArrayOutputStream inputBuf = new ByteArrayOutputStream();
             inputBuf.write(inputHash, 0, inputHash.length);
-            long index = txOutpoint.getIndex();
+            final long index = txOutpoint.getIndex();
             BufferUtils.writeUint32LE(inputBuf, index);
             BufferUtils.writeUint64LE(inputBuf, prevOut.value);
-            ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
+            final ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
             BufferUtils.writeUint32LE(sequenceBuf, txInput.getSequenceNumber());
             inputs[i] = mDongle.createInput(inputBuf.toByteArray(), sequenceBuf.toByteArray(), false, true);
         }
 
         // Prepare the pseudo transaction
-        BTChipDongle.BTChipInput singleInput[] = new BTChipDongle.BTChipInput[1];
+        final BTChipDongle.BTChipInput singleInput[] = new BTChipDongle.BTChipInput[1];
         final List<TransactionOutput> txOutputs = decoded.getOutputs();
-        Output output = ptx.mPrevOutputs.get(0);
+        final byte[] script = Wally.hex_to_bytes(ptx.mPrevOutputs.get(0).script);
         // Provide the first script instead of a null script to initialize the P2SH confirmation logic
-        mDongle.startUntrustedTransction(true, 0, inputs, Wally.hex_to_bytes(output.script), true);
+        mDongle.startUntrustedTransction(true, 0, inputs, script, true);
         final int msgSize = decoded.getMessageSize();
         final ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(msgSize < 32 ? 32 : msgSize + 32);
         stream.write(new VarInt(txOutputs.size()).encode());
@@ -134,7 +134,7 @@ public class BTChipHWWallet extends HWWallet {
         mDongle.finalizeInputFull(stream.toByteArray());
         // Sign each input
         for (int i = 0; i < txInputs.size(); ++i) {
-            output = ptx.mPrevOutputs.get(i);
+            final Output output = ptx.mPrevOutputs.get(i);
             singleInput[0] = inputs[i];
             final Output prevOut = prevOuts.get(i);
             if (prevOut.scriptType != 14) // sign segwit only
@@ -161,11 +161,11 @@ public class BTChipHWWallet extends HWWallet {
                 final TransactionInput txInput = txInputs.get(i);
                 final TransactionOutPoint txOutpoint = txInput.getOutpoint();
                 final byte[] inputHash = txOutpoint.getHash().getReversedBytes();
-                ByteArrayOutputStream inputBuf = new ByteArrayOutputStream();
+                final ByteArrayOutputStream inputBuf = new ByteArrayOutputStream();
                 inputBuf.write(inputHash, 0, inputHash.length);
-                long index = txOutpoint.getIndex();
+                final long index = txOutpoint.getIndex();
                 BufferUtils.writeUint32LE(inputBuf, index);
-                ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
+                final ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
                 BufferUtils.writeUint32LE(sequenceBuf, txInput.getSequenceNumber());
                 inputs[i] = mDongle.createInput(inputBuf.toByteArray(), sequenceBuf.toByteArray(), false, false);
             }
@@ -333,7 +333,7 @@ public class BTChipHWWallet extends HWWallet {
     public void setTransport(final BTChipTransport transport) {
         mDongle.setTransport(transport);
         try {
-                mDongle.verifyPin(BTChipHWWallet.this.mPin.getBytes());
+                mDongle.verifyPin(mPin.getBytes());
         }
         catch(final Exception e) {
         }
