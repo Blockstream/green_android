@@ -979,10 +979,13 @@ public class GaService extends Service implements INotificationHandler {
                 final Integer pointer = input.getInt("pointer");
                 final byte[] script = input.getBytes("script");
                 final byte[] scriptHash;
-                if (isSegwitEnabled())
+                final String addrType = input.get("addr_type");
+                if (addrType.equals("p2wsh"))
                     scriptHash = Utils.sha256hash160(getSegWitScript(script));
-                else
+                else if (addrType.equals("p2sh"))
                     scriptHash = Utils.sha256hash160(script);
+                else
+                    throw new IllegalArgumentException("Unknown address type " + addrType);
 
                 final ListenableFuture<Boolean> verify;
                 if (isWatchOnly())
