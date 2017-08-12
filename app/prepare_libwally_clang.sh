@@ -8,8 +8,11 @@ echo ${JAVA_HOME:?}
 echo ${ANDROID_NDK:?}
 
 if [ -d libwally-core ]; then
-    pushd libwally-core
-    need_popd=yes
+    cd libwally-core
+else
+    git clone https://github.com/ElementsProject/libwally-core.git
+    cd libwally-core
+    git checkout tags/release_0.4.0 -b release_0.4.0
 fi
 
 source ./tools/android_helpers.sh
@@ -45,7 +48,3 @@ done
 
 # Note we can't do a full clean here since we need the generated Java files
 rm -rf src/.libs ./toolchain
-
-if [ -n "$need_popd" ]; then
-    popd
-fi

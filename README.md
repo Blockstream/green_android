@@ -15,15 +15,8 @@ You need to have the following Android developer tools installed:
 - "Android SDK Tools" version 26.0.2 recommended
 - "Android SDK Build-tools" version 25.0.3 recommended
 - "Android Support Library" version 25.3.1 recommended
-- "Android NDK" version r14b recommended
 
 The above tools can be installed from the Android SDK manager.
-
-GreenBits uses [libwally](https://github.com/ElementsProject/libwally-core) which
-requires the following to be installed for building:
-
-- [SWIG](http://www.swig.org/). Most Linux distributions have this packaged,
-    for example on debian `sudo apt-get install swig` should work.
 
 ## Clone the repo
 
@@ -33,25 +26,52 @@ requires the following to be installed for building:
 
 ## How to build
 
-#### Cross-compile the native libraries:
+#### Use the released native libraries (recommended):
 
-This step requires the environment variables `ANDROID_NDK` and `JAVA_HOME` to
-be set correctly.
-
-`cd app && ./prepare_fdroid.sh && cd ..`
-
-Alternately, if you don't wish to install the wally build dependencies,
-you can simply use the released pre-built libraries:
+To fetch and install the pre-built naitive libraries, run:
 
 `./app/fetch_libwally_binaries.sh`
 
+The pre-built native libraries are the same versions used in the builds
+published by GreenAddress.
+
+#### Cross-compile the native libraries (advanced):
+
+If you wish to make changes to the native libraries or would like to build
+completely from source, you can compile
+[libwally](https://github.com/ElementsProject/libwally-core)
+from its source code yourself.
+
+This requires the "Android NDK" (version r14b recommended) from Android
+developer tools, as well as [SWIG](http://www.swig.org/). Most Linux
+distributions have SWIG available, on debian for example you can install it
+using:
+
+`sudo apt-get install swig`
+
+You must set the environment variables `ANDROID_NDK` and `JAVA_HOME`
+correctly, then run:
+
+`cd app && ./prepare_libwally_clang.sh && cd ..`
+
+If you get errors building please ensure your are using the recommended NDK
+version.
+
 #### Build the Android app
+
+Run:
 
 `./gradlew build`
 
 This will build both MAINNET and TESTNET builds
 
 For TESTNET only run `./gradlew assembleBtctestnetDebug`
+
+You can speed up builds by limiting the tasks which run. Use:
+
+`./gradlew --tasks`
+
+To see a list of available tasks.
 
 #### Rebuild the checkpoints (optional)
 
@@ -75,15 +95,18 @@ Or to build both at once, run:
 
 `./buildCheckpoints.sh`
 
-If you have docker configured and want to build the app in release mode without having to deal with setting up an Android development environment
+#### Rebuilding with docker (optional)
 
-`cd contrib`
+If you have docker configured and want to build the app in release mode
+without having to set up an Android development environment, run:
 
-`docker build -t greenbits_docker .`
+```
+cd contrib
+docker build -t greenbits_docker .
+docker run -v $PATH_TO_GREENBITS_REPO:/gb greenbits_docker
+```
 
-`docker run -v $PATH_TO_GREENBITS_REPO:/gb greenbits_docker`
-
-if you don't need to build the Docker image, you can directly do:
+If you don't need to build the Docker image, you can instead run:
 
 `docker pull greenaddress/android && docker run -v $PATH_TO_GREENBITS_REPO:/gb greenaddress/android`
 
