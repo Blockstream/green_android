@@ -43,7 +43,7 @@ be set correctly.
 Alternately, if you don't wish to install the wally build dependencies,
 you can simply use the released pre-built libraries:
 
-`cd app && ./fetch_libwally_binaries.sh && cd ..`
+`./app/fetch_libwally_binaries.sh`
 
 #### Build the Android app
 
