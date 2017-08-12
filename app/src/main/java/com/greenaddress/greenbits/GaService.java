@@ -1266,6 +1266,10 @@ public class GaService extends Service implements INotificationHandler {
         mLimitsData = limitsData;
     }
 
+    public void sendNLocktime() throws Exception {
+        mClient.sendNLocktime();
+    }
+
     public JSONMap getSpendingLimits() {
         return mLimitsData;
     }

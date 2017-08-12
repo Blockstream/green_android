@@ -34,7 +34,8 @@ import java.util.concurrent.Callable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
+public class TwoFactorPreferenceFragment extends GAPreferenceFragment
+    implements Preference.OnPreferenceClickListener {
 
     private static final int REQUEST_ENABLE_2FA = 0;
     private static final String NLOCKTIME_EMAILS = "NLocktimeEmails";
@@ -42,6 +43,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
     private String mMethod; // Current 2FA Method
     private Map<String, String> mLocalizedMap; // 2FA method to localized description
     private Preference mLimitsPref;
+    private Preference mSendNLocktimePref;
 
     private CheckBoxPreference getPref(final String method) {
         return find("twoFac" + method);
@@ -92,20 +94,20 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         setupCheckbox(twoFacConfig, "Phone");
 
         mLimitsPref = find("twoFacLimits");
-        mLimitsPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                return onLimitsPreferenceClicked(preference);
-            }
-        });
+        mLimitsPref.setOnPreferenceClickListener(this);
         // Can only set limits if at least one 2FA method is available
         setLimitsText(mService.hasAnyTwoFactor());
 
-        if (GaService.IS_ELEMENTS)
+        mSendNLocktimePref = find("send_nlocktime");
+        if (GaService.IS_ELEMENTS) {
             removePreference(getPref(NLOCKTIME_EMAILS));
-        else {
+            removePreference(mSendNLocktimePref);
+        } else {
             final CheckBoxPreference nlockCB = setupCheckbox(twoFacConfig, NLOCKTIME_EMAILS);
-            nlockCB.setEnabled(emailCB.isChecked());
+            final Boolean emailEnabled = emailCB.isChecked();
+            nlockCB.setEnabled(emailEnabled);
+            mSendNLocktimePref.setEnabled(emailEnabled);
+            mSendNLocktimePref.setOnPreferenceClickListener(this);
         }
     }
 
@@ -240,6 +242,15 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
         return v;
     }
 
+    @Override
+    public boolean onPreferenceClick(final Preference preference) {
+        if (preference == mLimitsPref)
+            return onLimitsPreferenceClicked(preference);
+        if (preference == mSendNLocktimePref)
+            return onSendNLocktimeClicked(preference);
+        return false;
+    }
+
     private boolean onLimitsPreferenceClicked(final Preference preference) {
         final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_set_limits, null, false);
         final Spinner currencySpinner = UI.find(v, R.id.set_limits_currency);
@@ -277,6 +288,22 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment {
                        }
                    }).build();
         UI.showDialog(dialog);
+        return false;
+    }
+
+    private boolean onSendNLocktimeClicked(final Preference preference) {
+        mService.getExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                try {
+                    mService.sendNLocktime();
+                } catch (final Exception e) {
+                    // Ignore, user can send again if email fails to arrive
+                }
+                return null;
+            }
+        });
+        UI.toast(getActivity(), R.string.nlocktime_request_sent, Toast.LENGTH_SHORT);
         return false;
     }
 

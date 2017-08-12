@@ -371,6 +371,10 @@ public class WalletClient {
         return syncCall("twofactor.get_config", Map.class);
     }
 
+    public void sendNLocktime() throws Exception {
+        syncCall("txs.send_nlocktime", Boolean.class);
+    }
+
     public ListenableFuture<Map<?, ?>> getAvailableCurrencies() {
         return simpleCall("login.available_currencies", Map.class);
     }

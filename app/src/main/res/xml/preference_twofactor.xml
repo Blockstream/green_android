@@ -28,4 +28,9 @@
         android:key="twoFacNLocktimeEmails"
         android:title="@string/enable_nlocktime_emails" />
 
+    <Preference
+        android:key="send_nlocktime"
+        android:title="@string/request_nlocktime_email"
+        android:dependency="twoFacNLocktimeEmails" />
+
 </PreferenceScreen>
