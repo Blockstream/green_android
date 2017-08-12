@@ -40,7 +40,7 @@ mv wallycore-android-jni/src/swig_java/src/com/blockstream/libwally/Wally.java $
 
 # Create the wally jar file for building against
 cd ${APP_ROOT}/libwally-core/src/swig_java/src
-javac com/blockstream/libwally/Wally.java
+javac -source 1.7 -target 1.7 com/blockstream/libwally/Wally.java
 jar cf ../wallycore.jar com/blockstream/libwally/Wally*class
 
 # Cleanup
