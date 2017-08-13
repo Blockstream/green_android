@@ -538,15 +538,15 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<LoginData> signup(final ISigningWallet signingWallet,
-                                               final String userAgent,
-                                               final byte[] pubkey, final byte[] chaincode) {
+                                              final String mnemonic, final String userAgent,
+                                              final byte[] pubkey, final byte[] chaincode) {
         mState.transitionTo(ConnState.LOGGINGIN);
 
         return mExecutor.submit(new Callable<LoginData>() {
                    @Override
                    public LoginData call() throws Exception {
                        try {
-                           mClient.registerUser(signingWallet, userAgent,
+                           mClient.registerUser(signingWallet, mnemonic, userAgent,
                                                 pubkey, chaincode,
                                                 mDeviceId);
                            onPostLogin(mClient.getLoginData());
@@ -562,7 +562,7 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<LoginData> signup(final String mnemonic) {
         final SWWallet sw = new SWWallet(mnemonic);
-        return signup(sw, null, sw.getMasterKey().getPubKey(),
+        return signup(sw, mnemonic, /*agent*/ null, sw.getMasterKey().getPubKey(),
                       sw.getMasterKey().getChainCode());
     }
 

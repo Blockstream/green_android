@@ -332,6 +332,7 @@ public class WalletClient {
     }
 
     public void registerUser(final ISigningWallet signingWallet,
+                             final String mnemonic,
                              final String userAgent,
                              final byte[] pubkey, final byte[] chaincode,
                              final String deviceId) throws Exception {
@@ -340,6 +341,8 @@ public class WalletClient {
             agent = USER_AGENT;
         else
             agent = String.format("%s %s", USER_AGENT, userAgent);
+
+        mMnemonic = mnemonic;
 
         final byte[] path = signingWallet.getGAPath();
 

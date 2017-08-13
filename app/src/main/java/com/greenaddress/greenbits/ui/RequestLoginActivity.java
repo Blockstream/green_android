@@ -383,7 +383,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                 // Attempt auto register
                 try {
                     final BTChipPublicKey masterPublicKey = mHwWallet.getDongle().getWalletPublicKey("");
-                    Futures.addCallback(mService.signup(mHwWallet, "HW", KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode()),
+                    Futures.addCallback(mService.signup(mHwWallet, /*mnemonic*/ null, "HW", KeyUtils.compressPublicKey(masterPublicKey.getPublicKey()), masterPublicKey.getChainCode()),
                             new FutureCallback<LoginData>() {
                                 @Override
                                 public void onSuccess(final LoginData result) {
