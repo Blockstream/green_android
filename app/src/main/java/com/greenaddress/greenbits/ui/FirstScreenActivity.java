@@ -223,7 +223,7 @@ public class FirstScreenActivity extends LoginActivity {
                             return mService.login(new BTChipHWWallet(dongle));
                         } else {
                             Log.d(TAG, "TEE signup");
-                            return mService.signup(new BTChipHWWallet(dongle), "HW", KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
+                            return mService.signup(new BTChipHWWallet(dongle), KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode(), KeyUtils.compressPublicKey(loginPublicKeyFixed.getPublicKey()), loginPublicKeyFixed.getChainCode());
                         }
                     }
                 }), new FutureCallback<LoginData>() {
