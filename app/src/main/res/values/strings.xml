@@ -122,8 +122,6 @@
     <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %1$d. Please reconnect your BTChip before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
     <string name="instantConfirmation">Instant Confirmation</string>
-    <string name="trezor_login_failed">Hardware Wallet login failed</string>
-    <string name="trezor_login_failed_details">It probably means you need to pair your Hardware Wallet device with GreenAddress using the desktop app.</string>
     <string name="mnemonic_passphrase">Mnemonic passphrase</string>
     <string name="mnemonic_passphrase_not_available">Passphrase not available</string>
     <string name="autologout_time">Auto logout timeout</string>

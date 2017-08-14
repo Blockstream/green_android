@@ -98,8 +98,6 @@
     <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>
     <string name="btchipNotSetup">لم يتم تعيين BTChip . يرجى إعداده باستخدام عميل سطح المكتب ليكون قادرا على استخدامها.</string>
     <string name="instantConfirmation">تأكيد فوري</string>
-    <string name="trezor_login_failed">فشل تسجيل دخول Hardware Wallet</string>
-    <string name="trezor_login_failed_details">هذا يعني ربما تحتاج إلى إقران جهاز Hardware Wallet الخاص بك مع GreenAddress باستخدام تطبيق سطح المكتب.</string>
     <string name="mnemonic_passphrase">عبارة المرور المتعلق بالذاكرة</string>
     <string name="mnemonic_passphrase_not_available">عبارة المرور غير متاحة</string>
     <string name="autologout_time">مهلة الخروج التلقائي </string>

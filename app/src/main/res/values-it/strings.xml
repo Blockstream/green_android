@@ -94,8 +94,6 @@
     <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
     <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
     <string name="instantConfirmation">Conferma istantanea</string>
-    <string name="trezor_login_failed">Hardware Wallet accesso fallito</string>
-    <string name="trezor_login_failed_details">Probabilmente significa che devi usare l\'app su desktop per configurare Hardware Wallet con GreenAddress.</string>
     <string name="mnemonic_passphrase">Passphrase mnemonica</string>
     <string name="mnemonic_passphrase_not_available">Passphrase non disponibile</string>
     <string name="autologout_time">Logout automatico</string>

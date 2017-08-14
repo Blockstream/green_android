@@ -107,8 +107,6 @@
     <string name="btchipInvalidPIN">ПИН некоректный. Осталось %1$d попыток. Пожалуйста переподсоедините ваш BTChip перед следуйщей попыткой.</string>
     <string name="btchipNotSetup">BTChip не установлен. Пожалуйста установите его на дектоп клиент для использование.</string>
     <string name="instantConfirmation">Моментальное Подтверждение</string>
-    <string name="trezor_login_failed">неудачний вход Физического Кошелька </string>
-    <string name="trezor_login_failed_details">Это скорее всего значит, что вам нужно привязать ваш Физический Кошелёк к GreenAddress используя настольный клиент.</string>
     <string name="mnemonic_passphrase">Пароль для мнемонической фразы</string>
     <string name="mnemonic_passphrase_not_available">Пароль отсутствует</string>
     <string name="autologout_time">Время автоматического выхода</string>

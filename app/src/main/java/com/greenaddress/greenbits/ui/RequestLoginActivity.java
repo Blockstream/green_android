@@ -39,6 +39,8 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.TrezorGUICallback;
 
+import org.bitcoinj.crypto.DeterministicKey;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -155,11 +157,12 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
             return true;
         }
+        final TrezorHWWallet trezor = new TrezorHWWallet(t);
 
         Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
             @Override
             public ListenableFuture<LoginData> apply(final Void input) throws Exception {
-                return mService.login(new TrezorHWWallet(t));
+                return mService.login(trezor);
             }
         }), new FutureCallback<LoginData>() {
             @Override
@@ -169,18 +172,31 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
 
             @Override
             public void onFailure(final Throwable t) {
-                if (Throwables.getRootCause(t) instanceof LoginFailed)
-                    // login failed - most likely TREZOR/KeepKey/BWALLET/AvalonWallet not paired
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            new MaterialDialog.Builder(RequestLoginActivity.this)
-                                    .title(R.string.trezor_login_failed)
-                                    .content(R.string.trezor_login_failed_details)
-                                    .build().show();
-                        }
-                    });
-                else
-                    finishOnUiThread();
+                t.printStackTrace();
+                if (Throwables.getRootCause(t) instanceof LoginFailed) {
+                    // Attempt auto register
+                    try {
+
+                        final DeterministicKey hdkey = trezor.getPubKey();
+                        Futures.addCallback(mService.signup(trezor, /*mnemonic*/ null, "HW", hdkey.getPubKey(), hdkey.getChainCode()),
+                                new FutureCallback<LoginData>() {
+                                    @Override
+                                    public void onSuccess(final LoginData result) {
+                                        RequestLoginActivity.this.onLoginSuccess();
+                                    }
+
+                                    @Override
+                                    public void onFailure(final Throwable t) {
+                                        t.printStackTrace();
+                                        finishOnUiThread();
+                                    }
+                                });
+                        return;
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                finishOnUiThread();
             }
         });
         return true;
