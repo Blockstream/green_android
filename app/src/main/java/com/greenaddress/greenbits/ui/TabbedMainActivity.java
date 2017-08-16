@@ -117,7 +117,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     }
 
     private void onTwoFactorConfigChange() {
-        if (mService.hasAnyTwoFactor() ||
+        if (mService.getTwoFactorConfig() == null || // Not loaded
+            mService.hasAnyTwoFactor() ||            // At least one enabled
             mService.cfg().getBoolean("hideTwoFacWarning", false))
             return;
 
