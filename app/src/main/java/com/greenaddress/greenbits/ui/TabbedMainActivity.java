@@ -327,14 +327,15 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         mService.addConnectionObserver(this);
         mService.addTwoFactorObserver(mTwoFactorObserver);
 
-        if (mService.isForcedOff()) {
+        final SectionsPagerAdapter adapter = getPagerAdapter();
+
+        if (adapter == null || mService.isForcedOff()) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
             return;
         }
 
-        final SectionsPagerAdapter adapter = getPagerAdapter();
         setMenuItemVisible(mMenu, R.id.action_share,
                            adapter != null && adapter.mSelectedPage == 0);
      }
@@ -592,6 +593,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     }
 
     SectionsPagerAdapter getPagerAdapter() {
+        if (mViewPager == null)
+            return null;
         return (SectionsPagerAdapter) mViewPager.getAdapter();
     }
 
