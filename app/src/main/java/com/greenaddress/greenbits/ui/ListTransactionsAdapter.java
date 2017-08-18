@@ -49,6 +49,14 @@ public class ListTransactionsAdapter extends
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        if (!mService.isLoggedOrLoggingIn()) {
+            // When restoring the main view after the app has paused and the
+            // service has disconnected, Android can restore our fragments
+            // before it restores the view that holds them. In this case do
+            // nothing as the parent activity will detect the log out and
+            // push us back to the login page.
+            return;
+        }
         final TransactionItem txItem = mTxItems.get(position);
         final Coin coin = Coin.valueOf(txItem.amount);
         UI.setCoinText(mService, holder.unitText, holder.textValue, coin);
