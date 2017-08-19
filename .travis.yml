@@ -4,19 +4,7 @@ matrix:
   include:
     - services:
         - docker
-      before_install:
-        - docker pull greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
-      script: docker run -v $PWD:/gb greenaddress/android /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleProductionRelease"
-    - services:
-        - docker
-      before_install:
-        - docker pull greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
-      script: docker run -v $PWD:/gb greenaddress/android /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleBtctestnetRelease"
-    - services:
-        - docker
-      before_install:
-        - docker pull greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
-      script: docker run -v $PWD:/gb greenaddress/android /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleElementsregtestRelease"
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleProductionRelease"
     - os: osx
       osx_image: xcode8.3
       env:
@@ -24,7 +12,6 @@ matrix:
         - ANDROID_HOME=/Users/travis/opt
         - SDK_FILENAME=sdk-tools-darwin-3859397.zip
         - NDK_FILENAME=android-ndk-r14b-darwin-x86_64.zip
-      before_install: rm -rf /home/travis/.nvm
       install:
         - mkdir -p $HOME/opt/licenses
         - cd $HOME/opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME}
@@ -41,3 +28,9 @@ matrix:
         - export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
         - cd $HOME/build/greenaddress/GreenBits/app && ./prepare_fdroid.sh
         - cd $HOME/build/greenaddress/GreenBits && ./gradlew assembleProductionDebug
+    - services:
+        - docker
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleBtctestnetRelease"
+    - services:
+        - docker
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f /bin/sh -c "cd /gb/app && ./prepare_fdroid.sh && cd /gb && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleElementsregtestRelease"

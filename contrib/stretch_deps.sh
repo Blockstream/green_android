@@ -17,8 +17,8 @@ mkdir -p /opt/licenses
 echo 8933bad161af4178b1185d1a37fbf41ea5269c55 > /opt/licenses/android-sdk-license
 #FIXME: avoid installing emulator
 /opt/tools/bin/sdkmanager "tools" "platform-tools"
-/opt/tools/bin/sdkmanager "build-tools;25.0.3"
-/opt/tools/bin/sdkmanager "platforms;android-25"
+/opt/tools/bin/sdkmanager "build-tools;26.0.1"
+/opt/tools/bin/sdkmanager "platforms;android-26"
 /opt/tools/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
 apt-get remove --purge curl unzip -yqq
 apt-get -yqq autoremove && apt-get -yqq clean

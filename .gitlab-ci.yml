@@ -1,5 +1,5 @@
 test_debug_build:
-  image: greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
+  image: greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f
   tags:
     - ga
   script:
@@ -9,7 +9,7 @@ test_debug_build:
     - ./gradlew assembleProductionDebug assembleBtctestnetDebug assemblePublicregtestDebug
 
 build_tag_release:
-  image: greenaddress/android@sha256:2c5add76a59357d84775ad188ea2c00d57838ac5a3e4a046e779a296aad39924
+  image: greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f
   artifacts:
     name: "greenbits-release-$CI_COMMIT_REF_NAME"
     when: on_success
