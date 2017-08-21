@@ -314,7 +314,7 @@ public class SendFragment extends SubaccountFragment {
                                                 gaActivity.requestPermissions(perms, permsRequestCode);
                                             } else {
                                                 final Intent qrcodeScanner = new Intent(gaActivity, ScanActivity.class);
-                                                qrcodeScanner.putExtra("sendAmount", mAmountEdit.getText().toString());
+                                                qrcodeScanner.putExtra("sendAmount", UI.getText(mAmountEdit));
                                                 int requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN;
                                                 if (mIsExchanger)
                                                     requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN_EXCHANGER;

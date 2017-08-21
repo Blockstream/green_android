@@ -189,7 +189,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         UI.toast(getGaActivity(), R.string.noEnoughMoneyInPocket, Toast.LENGTH_LONG);
                         return;
                     }
-                    final String amountBtc = mAmountEdit.getText().toString();
+                    final String amountBtc = UI.getText(mAmountEdit);
                     if (amountBtc.isEmpty() || Double.valueOf(amountBtc) <= 0.0) {
                         UI.toast(getGaActivity(), R.string.invalidAmount, Toast.LENGTH_LONG);
                         return;
@@ -298,9 +298,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             UI.clear(mAmountEdit, mAmountFiatEdit);
         if (mIsExchanger && GaService.IS_ELEMENTS) {
             // TODO: non-fiat / non-assets values
-            if (mAmountEdit.getText().toString().isEmpty())
+            final String amountText = UI.getText(mAmountEdit);
+            if (amountText.isEmpty())
                 return;
-            amount = (long) (Double.valueOf(mAmountEdit.getText().toString()) * 100);
+            amount = (long) (Double.valueOf(amountText) * 100);
         }
         mCurrentAddress = "";
         UI.disable(mCopyIcon);
@@ -539,8 +540,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                         matches = receivedOn.equals(currentBtcAddress);
                                     }
                                     if (matches) {
-                                        final double amountFiat = Double.valueOf(mExchanger.getAmountWithCommission());
-                                        mExchanger.buyBtc(amountFiat);
+                                        mExchanger.buyBtc(mExchanger.getAmountWithCommission());
                                         getGaActivity().toast(R.string.transactionCompleted);
                                         getGaActivity().finish();
                                     }

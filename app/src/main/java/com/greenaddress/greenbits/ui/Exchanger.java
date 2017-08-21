@@ -104,8 +104,8 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
         return value.isEmpty() ? def : value;
     }
 
-    public String getAmountWithCommission() {
-        return mAmountBtcWithCommission.getText().toString();
+    public double getAmountWithCommission() {
+        return Double.valueOf(UI.getText(mAmountBtcWithCommission));
     }
 
     private void calculateAmountWithCommission() {
@@ -118,7 +118,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
 
 
         if (GaService.IS_ELEMENTS) {
-            final String amountBtcTxt = mAmountBtcEdit.getText().toString();
+            final String amountBtcTxt = UI.getText(mAmountBtcEdit);
 
             final Coin coin = amountBtcTxt.isEmpty() ? Coin.ZERO : UI.parseCoinValue(mService, amountBtcTxt);
 
@@ -133,7 +133,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
             final double fixedCommissionFiat = convertBtcToFiat(fixedCommissionBtc);
 
             // amount fiat
-            final String amountFiatTxt = mAmountFiatEdit.getText().toString();
+            final String amountFiatTxt = UI.getText(mAmountFiatEdit);
             boolean isValid = !amountFiatTxt.isEmpty();
             double amountFiat = 0;
             try {
@@ -157,7 +157,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
             mAmountFiatWithCommission.setText(formatFiat(amountFiatWithCommission));
 
             // amount btc
-            final String amountBtcTxt = mAmountBtcEdit.getText().toString();
+            final String amountBtcTxt = UI.getText(mAmountBtcEdit);
             if (amountBtcTxt.isEmpty())
                 return;
 
