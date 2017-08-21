@@ -132,7 +132,7 @@ public class GaService extends Service implements INotificationHandler {
 
     private final SparseArray<Coin> mCoinBalances = new SparseArray<>();
 
-    private Float mFiatRate;
+    private Double mFiatRate;
     private String mFiatCurrency;
     private String mFiatExchange;
     private JSONMap mLimitsData;
@@ -633,7 +633,7 @@ public class GaService extends Service implements INotificationHandler {
         mCoinBalances.put(subAccount, data.getCoin("satoshi"));
 
         try {
-            mFiatRate = data.getFloat("fiat_exchange");
+            mFiatRate = data.getDouble("fiat_exchange");
         } catch (final java.lang.NumberFormatException e) {
             Log.d(TAG, "No exchange rate returned by server");
         }

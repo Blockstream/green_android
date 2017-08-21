@@ -702,10 +702,8 @@ public class SendFragment extends SubaccountFragment {
             public void run() {
                 UI.toast(gaActivity, R.string.transactionCompleted, Toast.LENGTH_LONG);
 
-                if (mIsExchanger) {
-                    final float fiatAmount = Float.valueOf(mAmountFiatEdit.getText().toString());
-                    mExchanger.sellBtc(fiatAmount);
-                }
+                if (mIsExchanger)
+                    mExchanger.sellBtc(Double.valueOf(UI.getText(mAmountFiatEdit)));
 
                 if (mFromIntentURI) {
                     gaActivity.finish();

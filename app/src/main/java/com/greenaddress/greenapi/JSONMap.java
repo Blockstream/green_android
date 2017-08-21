@@ -105,11 +105,6 @@ public class JSONMap implements Serializable {
         return v == null ? null : Double.valueOf(v);
     }
 
-    public float getFloat(final String k) {
-        final String v = getString(k);
-        return v == null ? null : Float.valueOf(v);
-    }
-
     public Coin getCoin(final String k) {
         final Long v = getLong(k);
         return v == null ? null : Coin.valueOf(v);

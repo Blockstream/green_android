@@ -184,13 +184,13 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 @Override
                 public void onClick(final View view) {
                     final String amountStr = UI.getText(mAmountFiatWithCommission);
-                    final float amount = Float.valueOf(amountStr);
+                    final double amount = Double.valueOf(amountStr);
                     if (amount > mExchanger.getFiatInBill()) {
                         UI.toast(getGaActivity(), R.string.noEnoughMoneyInPocket, Toast.LENGTH_LONG);
                         return;
                     }
                     final String amountBtc = mAmountEdit.getText().toString();
-                    if (amountBtc.isEmpty() || Float.valueOf(amountBtc) <= 0) {
+                    if (amountBtc.isEmpty() || Double.valueOf(amountBtc) <= 0.0) {
                         UI.toast(getGaActivity(), R.string.invalidAmount, Toast.LENGTH_LONG);
                         return;
                     }
@@ -300,7 +300,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             // TODO: non-fiat / non-assets values
             if (mAmountEdit.getText().toString().isEmpty())
                 return;
-            amount = (long) (Float.valueOf(mAmountEdit.getText().toString()) * 100);
+            amount = (long) (Double.valueOf(mAmountEdit.getText().toString()) * 100);
         }
         mCurrentAddress = "";
         UI.disable(mCopyIcon);
@@ -539,7 +539,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                         matches = receivedOn.equals(currentBtcAddress);
                                     }
                                     if (matches) {
-                                        final float amountFiat = Float.valueOf(mExchanger.getAmountWithCommission());
+                                        final double amountFiat = Double.valueOf(mExchanger.getAmountWithCommission());
                                         mExchanger.buyBtc(amountFiat);
                                         getGaActivity().toast(R.string.transactionCompleted);
                                         getGaActivity().finish();
