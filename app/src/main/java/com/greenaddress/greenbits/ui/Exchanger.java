@@ -114,17 +114,17 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
         final Coin fixedCommissionBtc = Coin.valueOf(Long.valueOf(commission));
 
         // percentage commission
-        final String percentage = getCommissionConfig("percentage", "");
-        final Integer commissionPerc = percentage.isEmpty() ? 0 : Integer.valueOf(percentage);
+        final Double percentage = 100.0 - Double.valueOf(getCommissionConfig("percentage", "0"));
+
 
         if (GaService.IS_ELEMENTS) {
             final String amountBtcTxt = mAmountBtcEdit.getText().toString();
 
             final Coin coin = amountBtcTxt.isEmpty() ? Coin.ZERO : UI.parseCoinValue(mService, amountBtcTxt);
 
-            final long amountBtcWithCommission = coin.getValue() * (100 - commissionPerc) / 100 - fixedCommissionBtc.getValue();
+            final double amountBtcWithCommission = coin.getValue() * percentage / 100.0 - fixedCommissionBtc.getValue();
 
-            final Coin amountWithCommission = Coin.valueOf(amountBtcWithCommission);
+            final Coin amountWithCommission = Coin.valueOf((long) amountBtcWithCommission);
 
             final String value = UI.formatCoinValue(mService, amountWithCommission);
             mAmountBtcWithCommission.setText(value);
@@ -148,7 +148,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
                 mAmountFiatWithCommission.setText("0");
                 return;
             }
-            final double amountFiatWithCommission = (amountFiat / 100) * (100 - commissionPerc) - fixedCommissionFiat;
+            final double amountFiatWithCommission = (amountFiat / 100.0) * percentage - fixedCommissionFiat;
             if (amountFiatWithCommission < 0) {
                 mAmountBtcWithCommission.setText("0");
                 mAmountFiatWithCommission.setText("0");
@@ -162,8 +162,8 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
                 return;
 
             final Coin coin = UI.parseCoinValue(mService, amountBtcTxt);
-            final long amountBtcWithCommission = (coin.getValue() / 100) * (100 - commissionPerc) - fixedCommissionBtc.getValue();
-            final Coin amountWithCommission = Coin.valueOf(amountBtcWithCommission);
+            final double amountBtcWithCommission = coin.getValue() / 100.0 * percentage - fixedCommissionBtc.getValue();
+            final Coin amountWithCommission = Coin.valueOf((long) amountBtcWithCommission);
             mAmountBtcWithCommission.setText(UI.formatCoinValue(mService, amountWithCommission));
         }
 
