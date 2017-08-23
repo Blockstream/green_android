@@ -70,7 +70,8 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     final public void onPause() {
         super.onPause();
         final GaService service = getGAApp().mService;
-        service.decRef();
+        if (service != null)
+            service.decRef();
     }
 
     @Override
