@@ -698,6 +698,9 @@ public class SendFragment extends SubaccountFragment {
     private void onTransactionSent() {
         final GaActivity gaActivity = getGaActivity();
 
+        if (gaActivity == null)
+            return; // App was paused/deleted while callback ran
+
         gaActivity.runOnUiThread(new Runnable() {
             public void run() {
                 UI.toast(gaActivity, R.string.transactionCompleted, Toast.LENGTH_LONG);
