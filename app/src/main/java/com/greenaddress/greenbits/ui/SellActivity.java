@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.view.View;
@@ -52,16 +51,9 @@ public class SellActivity extends GaActivity {
 
     @Override
     public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] granted) {
-       if (requestCode == 100)
-            handlePermissionResult(granted, TabbedMainActivity.REQUEST_SEND_QR_SCAN_EXCHANGER,
-                    R.string.err_qrscan_requires_camera_permissions);
-    }
-
-    // FIXME duplicated function in TabbedMainActivity
-    private void handlePermissionResult(final int[] granted, final int action, final int msgId) {
-        if (granted[0] == PackageManager.PERMISSION_GRANTED)
-            startActivityForResult(new Intent(this, ScanActivity.class), action);
-        else
-            shortToast(msgId);
+       if (requestCode == 100 &&
+           isPermissionGranted(granted, R.string.err_qrscan_requires_camera_permissions))
+            startActivityForResult(new Intent(this, ScanActivity.class),
+                                   TabbedMainActivity.REQUEST_SEND_QR_SCAN_EXCHANGER);
     }
 }

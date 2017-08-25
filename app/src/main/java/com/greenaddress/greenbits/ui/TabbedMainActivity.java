@@ -575,21 +575,14 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         setMenuItemVisible(mMenu, R.id.network_unavailable, !state.isLoggedIn());
     }
 
-    private void handlePermissionResult(final int[] granted, final int action, final int msgId) {
-        if (granted[0] == PackageManager.PERMISSION_GRANTED)
-            startActivityForResult(new Intent(this, ScanActivity.class), action);
-        else
-            shortToast(msgId);
-    }
-
     @Override
     public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] granted) {
-        if (requestCode == 200)
-                handlePermissionResult(granted, REQUEST_SWEEP_PRIVKEY,
-                                       R.string.err_tabbed_sweep_requires_camera_permissions);
-        else if (requestCode == 100)
-                handlePermissionResult(granted, REQUEST_SEND_QR_SCAN,
-                                       R.string.err_qrscan_requires_camera_permissions);
+        if (requestCode == 200 &&
+            isPermissionGranted(granted, R.string.err_tabbed_sweep_requires_camera_permissions))
+            startActivityForResult(new Intent(this, ScanActivity.class), REQUEST_SWEEP_PRIVKEY);
+        else if (requestCode == 100 &&
+                 isPermissionGranted(granted, R.string.err_qrscan_requires_camera_permissions))
+            startActivityForResult(new Intent(this, ScanActivity.class), REQUEST_SEND_QR_SCAN);
     }
 
     SectionsPagerAdapter getPagerAdapter() {

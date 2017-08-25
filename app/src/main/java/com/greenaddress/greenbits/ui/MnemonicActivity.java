@@ -384,16 +384,9 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
-        if (requestCode != CAMERA_PERMISSION)
-            return;
-
-        if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-            shortToast(R.string.err_qrscan_requires_camera_permissions);
-            return;
-        }
-
-        final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
-        startActivityForResult(scanner, QRSCANNER);
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] granted) {
+        if (requestCode == CAMERA_PERMISSION &&
+            isPermissionGranted(granted, R.string.err_qrscan_requires_camera_permissions))
+            startActivityForResult(new Intent(this, ScanActivity.class), QRSCANNER);
     }
 }
