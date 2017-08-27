@@ -25,6 +25,12 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (mService == null) {
+            // Logged out, let our holding activity bounce us back to login
+            return;
+        }
+
         addPreferencesFromResource(R.xml.preference_exchanger);
         setHasOptionsMenu(true);
 
