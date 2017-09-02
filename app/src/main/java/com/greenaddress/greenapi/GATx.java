@@ -237,25 +237,24 @@ public class GATx {
             keys.add(Integer.parseInt(block));
 
         for (final Integer blockNum : keys) {
-            if (!isInstant && blockNum < forBlock)
-                continue; // Non-instant: Use forBlock confirmation rate and later only
-
             double feeRate = service.getFeeRate(blockNum);
             if (feeRate <= 0.0)
                 continue; // No estimate available: Try next confirmation rate
 
+            final int actualBlock = service.getFeeBlocks(blockNum);
             if (isInstant) {
                 // For instant, increase the rate to increase the likelyhood of confirmation.
                 // We use the lowest value of:
                 // a) 1.1 * the 1st or 2nd block fee rate
                 // b) 2.0 * the first rate later than 2 blocks
-                if (blockNum <= 2) {
+                if (actualBlock <= 2) {
                     if (bestInstantRate == null)
                        bestInstantRate = feeRate * 1.1; // Save earliest fast confirmation rate
                     continue; // Continue to find the first non-fast rate
                 } else
                     feeRate *= 2.0;
-            }
+            } else if (actualBlock < forBlock)
+                continue; // Non-instant: Use forBlock confirmation rate and later only
 
             if (bestInstantRate != null && bestInstantRate < feeRate)
                 feeRate = bestInstantRate; // Use the lowest instant rate found
