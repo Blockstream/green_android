@@ -200,6 +200,7 @@
     <string name="oldFeeText">Old Fee:</string>
     <string name="feeIncreaseTitle">Fee increase</string>
     <string name="insufficientFundsText">Insufficient funds</string>
+    <string name="instantUnavailable">Instant transactions are not available at this time. Please try again later.</string>
     <string name="app_version">Version %1$s %2$s</string>
     <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
     <string name="app_description">GreenAddress Logo</string>

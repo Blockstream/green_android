@@ -219,18 +219,16 @@ public class GATx {
         return singleOutputSize * tx.getOutputs().size();
     }
 
-    public static Coin getFeeEstimate(final GaService service, final boolean isInstant) {
+    public static Coin getFeeEstimate(final GaService service, final boolean isInstant) throws GAException {
         return getFeeEstimate(service, isInstant, 6); // Fee rate for 6 confs if not instant
     }
 
-    public static Coin getFeeEstimateForRBF(final GaService service, final boolean isInstant) {
+    public static Coin getFeeEstimateForRBF(final GaService service, final boolean isInstant) throws GAException {
         return getFeeEstimate(service, isInstant, 1); // Fee rate for 1 conf if not instant
     }
 
     // Return the best estimate of the fee rate in satoshi/1000 bytes
-    public static Coin getFeeEstimate(final GaService service, final boolean isInstant, final int forBlock) {
-        Double bestInstantRate = null;
-
+    public static Coin getFeeEstimate(final GaService service, final boolean isInstant, final int forBlock) throws GAException {
         // Iterate the estimates from shortest to longest confirmation time
         final SortedSet<Integer> keys = new TreeSet<>();
         for (final String block : service.getFeeEstimates().mData.keySet())
@@ -243,36 +241,30 @@ public class GATx {
 
             final int actualBlock = service.getFeeBlocks(blockNum);
             if (isInstant) {
-                // For instant, increase the rate to increase the likelyhood of confirmation.
-                // We use the lowest value of:
-                // a) 1.1 * the 1st or 2nd block fee rate
-                // b) 2.0 * the first rate later than 2 blocks
-                if (actualBlock <= 2) {
-                    if (bestInstantRate == null)
-                       bestInstantRate = feeRate * 1.1; // Save earliest fast confirmation rate
-                    continue; // Continue to find the first non-fast rate
-                } else
-                    feeRate *= 2.0;
+                // For instant use 1.1 the 1st or 2nd block fee rate
+                if (actualBlock <= 2)
+                    return Coin.valueOf((long) (feeRate * 1.1 * 1000 * 1000 * 100));
+                // Failed to find a rate for instant
+                break;
             } else if (actualBlock < forBlock)
                 continue; // Non-instant: Use forBlock confirmation rate and later only
 
-            if (bestInstantRate != null && bestInstantRate < feeRate)
-                feeRate = bestInstantRate; // Use the lowest instant rate found
-
+            // Found a non-instant rate at or later than our target confirmation time
             return Coin.valueOf((long) (feeRate * 1000 * 1000 * 100));
         }
 
-        if (bestInstantRate != null) {
-            // No non-fast confirmation rate, return the fast confirmation rate
-            return Coin.valueOf((long) (bestInstantRate * 1000 * 1000 * 100));
-        }
+        // At this point, we don't have a usable fee rate estimate
 
-        // We don't have a usable fee rate estimate, use a default.
         if (GaService.IS_ELEMENTS)
-            return Coin.valueOf(1);
-        if (Network.NETWORK == MainNetParams.get())
-            return Coin.valueOf((isInstant ? 200 : 120) * 1000);
-        return Coin.valueOf((isInstant ? 75 : 60) * 1000);
+            return Coin.valueOf(1); // FIXME: Instant for elements?
+
+        if (Network.NETWORK == MainNetParams.get() && isInstant) {
+            // On mainnet disallow instant until a rate is available
+            throw new GAException("#internal",
+                                  "Instant transactions are not available at this time. Please try again later.");
+        }
+        // Return the minimum fee rate, x3 if testing instant on testnet
+        return service.getMinFeeRate().multiply(isInstant ? 3 : 1);
     }
 
     public static JSONMap makeLimitsData(final Coin limitDelta, final Coin fee,

@@ -254,7 +254,12 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
             // current new transaction rate for 1 block confirmation if it is
             // higher than the current rate
             final boolean isInstant = false; // FIXME: Support instant RBF
-            mChosenFeeRate = GATx.getFeeEstimateForRBF(mService, isInstant);
+            try {
+                mChosenFeeRate = GATx.getFeeEstimateForRBF(mService, isInstant);
+            } catch (final Throwable e) {
+                toast(e);
+                return;
+            }
             fastestFeeRate = mChosenFeeRate.getValue() / 100000000.0;
             allowRbf = fastestFeeRate > currentFeeRate;
         }

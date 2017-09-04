@@ -745,7 +745,13 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
         final GaService service = getGAService();
         final List<JSONMap> usedUtxos = new ArrayList<>();
-        final Coin feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
+
+        final Coin feeRate;
+        try {
+           feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
+        } catch (final GAException e) {
+            return R.string.instantUnavailable;
+        }
 
         final Transaction tx = new Transaction(Network.NETWORK);
         tx.addOutput(amount, Address.fromBase58(Network.NETWORK, recipient));
@@ -843,7 +849,12 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
 
         final List<JSONMap> usedUtxos = new ArrayList<>();
-        final Coin feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
+        final Coin feeRate;
+        try {
+            feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
+        } catch (final GAException e) {
+            return R.string.instantUnavailable;
+        }
 
         final ElementsTransaction tx = new ElementsTransaction(Network.NETWORK);
 
