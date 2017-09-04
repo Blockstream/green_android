@@ -34,7 +34,7 @@ import android.util.Log;
 public class GATx {
 
     private static final String TAG = GaService.class.getSimpleName();
-    private static final int SIG_LEN = 71; // Average signature length
+    private static final int SIG_LEN = 73; // Average signature length
     private static final List<byte[]> EMPTY_SIGS = ImmutableList.of(new byte[SIG_LEN], new byte[SIG_LEN]);
     private static final byte[] EMPTY_WITNESS_DATA = new byte[0];
     private static final byte[] EMPTY_WITNESS_SIG = new byte[SIG_LEN + 1]; // 1=Sighash flag byte
