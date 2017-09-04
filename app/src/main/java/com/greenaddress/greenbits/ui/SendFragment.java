@@ -613,7 +613,9 @@ public class SendFragment extends SubaccountFragment {
                     underLimits.mData.remove("ephemeral_privkeys");
                     underLimits.mData.remove("blinding_pubkeys");
                 }
-                service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", underLimits.mData);
+                final Map<String, Object> twoFactorData;
+                twoFactorData = underLimits == null ? null : underLimits.mData;;
+                service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", twoFactorData);
             }
         }
 
