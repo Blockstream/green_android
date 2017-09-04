@@ -121,16 +121,20 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         else
             mView = inflater.inflate(R.layout.fragment_receive, container, false);
 
+        mAddressText = UI.find(mView, R.id.receiveAddressText);
+        mAddressImage = UI.find(mView, R.id.receiveQrImageView);
+        mCopyIcon = UI.find(mView, R.id.receiveCopyIcon);
+        mAmountEdit = UI.find(mView, R.id.sendAmountEditText);
+        mAmountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
+
+        final View amountFields = UI.find(mView, R.id.amountFields);
+
         mAmountFields = new AmountFields(getGAService(), getContext(), mView, this);
         if (savedInstanceState != null) {
             final Boolean pausing = savedInstanceState.getBoolean("pausing", false);
             mAmountFields.setIsPausing(pausing);
         }
 
-        mAddressText = UI.find(mView, R.id.receiveAddressText);
-        mAddressImage = UI.find(mView, R.id.receiveQrImageView);
-
-        mCopyIcon = UI.find(mView, R.id.receiveCopyIcon);
         UI.disable(mCopyIcon);
         mCopyIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,9 +174,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 generateNewAddress();
             }
         });
-        mAmountEdit = UI.find(mView, R.id.sendAmountEditText);
-        mAmountFiatEdit = UI.find(mView, R.id.sendAmountFiatEditText);
-        final View amountFields = UI.find(mView, R.id.amountFields);
         UI.showIf(getGAService().cfg().getBoolean("showAmountInReceive", false) || mIsExchanger, amountFields);
 
         if (mIsExchanger) {
