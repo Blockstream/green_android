@@ -167,7 +167,8 @@ public class GaService extends Service implements INotificationHandler {
 
     public int getAutoLogoutMinutes() {
         try {
-            return (int)getUserConfig("altimeout");
+            final int timeout = (int)getUserConfig("altimeout");
+            return timeout < 1 ? 1 : timeout;
         } catch (final Exception e) {
             return 5; // Not logged in/not set, default to 5 min
         }
