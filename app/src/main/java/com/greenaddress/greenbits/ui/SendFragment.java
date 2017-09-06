@@ -816,7 +816,7 @@ public class SendFragment extends SubaccountFragment {
         ptx = GATx.signTransaction(service, tx, usedUtxos, mSubaccount, changeOutput);
 
         final int changeIndex = changeOutput == null ? -1 : (randomizedChange ? 0 : 1);
-        final JSONMap underLimits = GATx.makeLimitsData(amount.add(fee), fee, changeIndex);
+        final JSONMap underLimits = GATx.makeLimitsData(actualAmount.add(fee), fee, changeIndex);
 
         final boolean skipChoice = service.isUnderLimit(underLimits.getCoin("amount"));
         final Coin sendFee = fee;
