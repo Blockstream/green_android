@@ -210,7 +210,7 @@
     <string name="set2FA">SETUP 2FA</string>
     <string name="resetSPV">Reset SPV</string>
     <string name="err_send_invalid_bitcoin_uri">Invalid Bitcoin URI</string>
-    <string name="err_send_not_connected_will_resume">Not connected, connection will resume automatically</string>
+    <string name="err_send_not_connected_will_resume">Unable to contact the GreenAddress service. Please check your network connection and wait to be reconnected.</string>
     <string name="err_send_need_recipient">Please provide a recipient</string>
     <string name="err_request_login_no_pin">No PIN provided, exiting.</string>
     <string name="err_tabbed_sweep_failed">Verification failed: Invalid output address</string>
