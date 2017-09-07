@@ -35,10 +35,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (mService == null || !mService.isLoggedIn()) {
-            // If we are restored and our service has not been destroyed, its
-            // state is unreliable and our parent activity should shortly
-            // be calling finish(). Avoid accessing the service in this case.
+        if (!verifyServiceOK()) {
             Log.d(TAG, "Avoiding create on logged out service");
             return;
         }

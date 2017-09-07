@@ -9,6 +9,7 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -37,6 +38,7 @@ import java.util.Map;
 public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {
 
+    private static final String TAG = GAPreferenceFragment.class.getSimpleName();
     private static final int REQUEST_ENABLE_2FA = 0;
     private static final String NLOCKTIME_EMAILS = "NLocktimeEmails";
 
@@ -76,6 +78,11 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (!verifyServiceOK()) {
+            Log.d(TAG, "Avoiding create on logged out service");
+            return;
+        }
+
         mLocalizedMap = UI.getTwoFactorLookup(getResources());
 
         addPreferencesFromResource(R.xml.preference_twofactor);
@@ -83,6 +90,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
 
         final Map<?, ?> twoFacConfig = mService == null ? null : mService.getTwoFactorConfig();
         if (twoFacConfig == null || twoFacConfig.isEmpty()) {
+            // An additional check to verifyServiceOK: We must have our 2fa data
             final GaPreferenceActivity activity = (GaPreferenceActivity) getActivity();
             if (activity != null) {
                 activity.toast(R.string.err_send_not_connected_will_resume);

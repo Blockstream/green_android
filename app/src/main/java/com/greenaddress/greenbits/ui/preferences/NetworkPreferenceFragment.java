@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.util.Log;
 
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ui.R;
@@ -15,9 +16,17 @@ import com.greenaddress.greenbits.ui.R;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class NetworkPreferenceFragment extends GAPreferenceFragment {
+    private static final String TAG = GAPreferenceFragment.class.getSimpleName();
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!verifyServiceOK()) {
+            Log.d(TAG, "Avoiding create on logged out service");
+            return;
+        }
+
         addPreferencesFromResource(R.xml.pref_network);
         setHasOptionsMenu(true);
 

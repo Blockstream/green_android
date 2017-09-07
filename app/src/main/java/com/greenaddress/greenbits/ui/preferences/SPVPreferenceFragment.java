@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -17,6 +18,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,
                Preference.OnPreferenceClickListener {
 
+    private static final String TAG = GAPreferenceFragment.class.getSimpleName();
     private EditTextPreference mTrustedPeer;
     private Preference mResetSPV;
     private CheckBoxPreference mSPVEnabled;
@@ -25,6 +27,12 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!verifyServiceOK()) {
+            Log.d(TAG, "Avoiding create on logged out service");
+            return;
+        }
+
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
 
@@ -33,9 +41,8 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mSPVEnabled = find("spvEnabled");
         mSPVSyncOnMobile = find("spvSyncMobile");
 
-        if (mService == null || mService.isWatchOnly()) {
-            // Do not allow editing of SPV prefs from watch only logins or if we
-            // have been locked out (let our holding activity bounce us back to login)
+        if (mService.isWatchOnly()) {
+            // Do not allow editing of SPV prefs from watch only logins
             mTrustedPeer.setEnabled(false);
             mResetSPV.setEnabled(false);
             mSPVEnabled.setEnabled(false);

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.text.InputType;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.greenaddress.greenbits.GaService;
@@ -15,7 +16,7 @@ import org.bitcoinj.core.Coin;
 
 public class ExchangerPreferenceFragment extends GAPreferenceFragment implements Preference.OnPreferenceChangeListener {
 
-
+    private static final String TAG = ExchangerPreferenceFragment.class.getSimpleName();
     private EditTextPreference mBuyCommissionPerc;
     private EditTextPreference mBuyCommissionFixed;
     private EditTextPreference mSellCommissionPerc;
@@ -26,8 +27,8 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (mService == null) {
-            // Logged out, let our holding activity bounce us back to login
+        if (!verifyServiceOK()) {
+            Log.d(TAG, "Avoiding create on logged out service");
             return;
         }
 
