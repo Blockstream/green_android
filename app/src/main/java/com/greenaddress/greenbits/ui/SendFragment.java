@@ -79,7 +79,7 @@ public class SendFragment extends SubaccountFragment {
     private TextView mScanIcon;
     private Map<?, ?> mPayreqData;
     private boolean mFromIntentURI;
-    private boolean mSummaryInBtc[] = new boolean[1]; // State for fiat/btc toggle
+    private final boolean mSummaryInBtc[] = new boolean[1]; // State for fiat/btc toggle
 
 
     private int mSubaccount;

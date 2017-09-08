@@ -71,7 +71,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
     private int mTwoFactorAttemptsRemaining;
     private TransactionItem mTxItem;
     private Coin mChosenFeeRate;
-    private boolean mSummaryInBtc[] = new boolean[1];  // State for fiat/btc toggle
+    private final boolean mSummaryInBtc[] = new boolean[1];  // State for fiat/btc toggle
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
