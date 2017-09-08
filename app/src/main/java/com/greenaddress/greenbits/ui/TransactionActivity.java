@@ -71,6 +71,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
     private int mTwoFactorAttemptsRemaining;
     private TransactionItem mTxItem;
     private Coin mChosenFeeRate;
+    private boolean mSummaryInBtc[] = new boolean[1];  // State for fiat/btc toggle
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
@@ -197,7 +198,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
     }
 
     private void showFeeInfo(final long fee, final long vSize, final Coin feeRate) {
-        final TextView feeUnit = UI.find(this, R.id.txFeeUnit);
+        final FontAwesomeTextView feeUnit = UI.find(this, R.id.txFeeUnit);
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
         feeText.setText(UI.setCoinText(mService, feeUnit, null, Coin.valueOf(fee)) +
                         " / " + String.valueOf(vSize) + " / " +
@@ -659,10 +660,36 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
 
         UI.hide(UI.find(v, R.id.newTxRecipientLabel), UI.find(v, R.id.newTxRecipientText));
 
+        final Button showFiatBtcButton = UI.find(v, R.id.newTxShowFiatBtcButton);
+        final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
+        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
+        final String fiatNewFee = mService.coinToFiat(newFee);
+        final String fiatOldFee = mService.coinToFiat(oldFee);
+        final String fiatCurrency = mService.getFiatCurrency();
+
+        mSummaryInBtc[0] = true;
         UI.setCoinText(mService, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, newFee);
         UI.setCoinText(mService, v, R.id.newTxFeeUnit, R.id.newTxFeeText, oldFee);
 
-        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
+        if (!GaService.IS_ELEMENTS) {
+            showFiatBtcButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View btn) {
+                    // Toggle display between fiat and BTC
+                    if (mSummaryInBtc[0]) {
+                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxAmountUnitText), fiatCurrency);
+                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxFeeUnit), fiatCurrency);
+                        UI.setAmountText((TextView) UI.find(v, R.id.newTxAmountText), fiatNewFee);
+                        UI.setAmountText((TextView) UI.find(v, R.id.newTxFeeText), fiatOldFee);
+                    } else {
+                        UI.setCoinText(mService, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, newFee);
+                        UI.setCoinText(mService, v, R.id.newTxFeeUnit, R.id.newTxFeeText, oldFee);
+                    }
+                    mSummaryInBtc[0] = !mSummaryInBtc[0];
+                    showFiatBtcButton.setText(mSummaryInBtc[0] ? R.string.show_fiat : R.string.show_btc);
+                }
+            });
+        }
 
         if (method != null && !method.equals("limit")) {
             final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);

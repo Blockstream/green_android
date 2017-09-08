@@ -79,6 +79,7 @@ public class SendFragment extends SubaccountFragment {
     private TextView mScanIcon;
     private Map<?, ?> mPayreqData;
     private boolean mFromIntentURI;
+    private boolean mSummaryInBtc[] = new boolean[1]; // State for fiat/btc toggle
 
 
     private int mSubaccount;
@@ -233,8 +234,7 @@ public class SendFragment extends SubaccountFragment {
             UI.hide(mAmountFiatEdit);
         }
 
-        final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
-
+        final FontAwesomeTextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText);
         UI.setCoinText(service, bitcoinUnitText, null, null);
 
         if (container.getTag(R.id.tag_amount) != null)
@@ -372,7 +372,7 @@ public class SendFragment extends SubaccountFragment {
     @Override
     protected void onBalanceUpdated() {
         final GaService service = getGAService();
-        final TextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
+        final FontAwesomeTextView sendSubAccountBalanceUnit = UI.find(mView, R.id.sendSubAccountBalanceUnit);
         final TextView sendSubAccountBalance = UI.find(mView, R.id.sendSubAccountBalance);
         final Coin balance = service.getCoinBalance(mSubaccount);
         UI.setCoinText(service, sendSubAccountBalanceUnit, sendSubAccountBalance, balance);
@@ -620,12 +620,35 @@ public class SendFragment extends SubaccountFragment {
         }
 
         final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
-
-        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
-        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
-
+        final Button showFiatBtcButton = UI.find(v, R.id.newTxShowFiatBtcButton);
         final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
+        final String fiatAmount = service.coinToFiat(amount);
+        final String fiatFee = service.coinToFiat(fee);
+        final String fiatCurrency = service.getFiatCurrency();
+
+        mSummaryInBtc[0] = true;
+        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
+        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
+        if (!GaService.IS_ELEMENTS) {
+            showFiatBtcButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View btn) {
+                    // Toggle display between fiat and BTC
+                    if (mSummaryInBtc[0]) {
+                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxAmountUnitText), fiatCurrency);
+                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxFeeUnit), fiatCurrency);
+                        UI.setAmountText((TextView) UI.find(v, R.id.newTxAmountText), fiatAmount);
+                        UI.setAmountText((TextView) UI.find(v, R.id.newTxFeeText), fiatFee);
+                    } else {
+                        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
+                        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
+                    }
+                    mSummaryInBtc[0] = !mSummaryInBtc[0];
+                    showFiatBtcButton.setText(mSummaryInBtc[0] ? R.string.show_fiat : R.string.show_btc);
+                }
+            });
+        }
 
         if (mPayreqData != null)
             recipientText.setText(recipient);

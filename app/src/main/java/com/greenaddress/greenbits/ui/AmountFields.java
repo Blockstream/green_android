@@ -36,7 +36,7 @@ class AmountFields {
         mAmountFiatEdit = UI.find(view, R.id.sendAmountFiatEditText);
         mFiatView = UI.find(view, R.id.sendFiatIcon);
 
-        final TextView bitcoinUnitText = UI.find(view, R.id.sendBitcoinUnitText);
+        final FontAwesomeTextView bitcoinUnitText = UI.find(view, R.id.sendBitcoinUnitText);
         UI.setCoinText(mGaService, bitcoinUnitText, null, null);
 
         mAmountFiatEdit.addTextChangedListener(new UI.TextWatcher() {
@@ -151,10 +151,7 @@ class AmountFields {
 
         try {
             final Coin btcValue = UI.parseCoinValue(mGaService, UI.getText(mAmountEdit));
-            Fiat fiatValue = mGaService.getFiatRate().coinToFiat(btcValue);
-            // strip extra decimals (over 2 places) because that's what the old JS client does
-            fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
-            mAmountFiatEdit.setText(fiatValue.toPlainString());
+            mAmountFiatEdit.setText(mGaService.coinToFiat(btcValue));
         } catch (final ArithmeticException | IllegalArgumentException e) {
             final String maxAmount = mContext.getString(R.string.send_max_amount);
             if (UI.getText(mAmountEdit).equals(maxAmount))

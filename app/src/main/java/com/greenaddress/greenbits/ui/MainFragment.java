@@ -55,7 +55,7 @@ public class MainFragment extends SubaccountFragment {
         if (service.getLoginData() == null || balance == null)
             return;
 
-        final TextView balanceUnit = UI.find(mView, R.id.mainBalanceUnit);
+        final FontAwesomeTextView balanceUnit = UI.find(mView, R.id.mainBalanceUnit);
         final TextView balanceText = UI.find(mView, R.id.mainBalanceText);
         UI.setCoinText(service, balanceUnit, balanceText, balance);
 

@@ -41,7 +41,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
         mAmountFiatWithCommission = UI.find(mView, R.id.amountFiatWithCommission);
         mAmountBtcWithCommission = UI.find(mView, R.id.amountBtcWithCommission);
 
-        final TextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText2);
+        final FontAwesomeTextView bitcoinUnitText = UI.find(mView, R.id.sendBitcoinUnitText2);
         UI.setCoinText(mService, bitcoinUnitText, null, null);
 
         final String currency = mService.getFiatCurrency();

@@ -347,10 +347,10 @@ public abstract class UI {
         return getUnitFormat(service).parse(value);
     }
 
-    public static String setCoinText(final GaService service,
-                                     final TextView symbol, final TextView amount,
-                                     final Coin value) {
+    public static String setCoinText(final GaService service, final FontAwesomeTextView symbol,
+                                     final TextView amount, final Coin value) {
         if (symbol != null) {
+            symbol.setAwesomeTypeface();
             if (GaService.IS_ELEMENTS)
                 symbol.setText(service.getAssetSymbol());
             else
@@ -367,14 +367,14 @@ public abstract class UI {
     public static String setCoinText(final GaService service, final View v,
                                      final int symbolId, final int amountId,
                                      final Coin value) {
-        return setCoinText(service, (TextView) find(v, symbolId),
+        return setCoinText(service, (FontAwesomeTextView) find(v, symbolId),
                            (TextView) find(v, amountId), value);
     }
 
     public static String setCoinText(final GaActivity activity,
                                      final int symbolId, final int amountId,
                                      final Coin value) {
-        return setCoinText(activity.mService, (TextView) find(activity, symbolId),
+        return setCoinText(activity.mService, (FontAwesomeTextView) find(activity, symbolId),
                            (TextView) find(activity, amountId), value);
     }
 

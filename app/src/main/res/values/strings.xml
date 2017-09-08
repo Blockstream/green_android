@@ -246,6 +246,8 @@
     <string name="torSummary">Tor will use %1$s and only work if your proxy is Orbot or Tor enabled</string>
     <string name="show_balance_in_title">Show balance in title</string>
     <string name="show_balance_in_title_sum">This hides the Bitcoin balance from elsewhere and always shows it in the title instead of the subaccount name</string>
+    <string name="show_fiat">Show fiat</string>
+    <string name="show_btc">Show BTC</string>
     <string name="remember_watch_only">Remember username</string>
     <string name="remember_warn_title">Warning: The username will be saved on device</string>
     <string name="remember_warn_content">Saving the username on the device can be dangerous; if someone can access your memory they will have access to your username in clear text. If you choose to continue, please press "OK".</string>

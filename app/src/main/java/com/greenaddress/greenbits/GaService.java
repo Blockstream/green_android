@@ -1129,11 +1129,14 @@ public class GaService extends Service implements INotificationHandler {
     public String getFiatBalance(final int subAccount) {
         if (!hasFiatRate())
             return "N/A";
-        final Coin coinBalance = getCoinBalance(subAccount);
-        Fiat balance = getFiatRate().coinToFiat(coinBalance);
-        // Strip extra decimals (over 2 places) because that's what the old JS client does
-        balance = balance.subtract(balance.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
-        return MonetaryFormat.FIAT.minDecimals(2).noCode().format(balance).toString();
+        return coinToFiat(getCoinBalance(subAccount));
+    }
+
+    public String coinToFiat(final Coin btcValue) {
+        Fiat fiatValue = getFiatRate().coinToFiat(btcValue);
+        // strip extra decimals (over 2 places) because that's what the old JS client does
+        fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
+        return MonetaryFormat.FIAT.minDecimals(2).noCode().format(fiatValue).toString();
     }
 
     public boolean hasFiatRate() {

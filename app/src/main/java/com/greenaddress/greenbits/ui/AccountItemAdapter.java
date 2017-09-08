@@ -76,7 +76,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         final View mView;
         final RadioButton mRadio;
         final TextView mName;
-        final TextView mUnit;
+        final FontAwesomeTextView mUnit;
         final TextView mBalance;
 
         public Item(final View v) {
