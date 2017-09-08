@@ -742,14 +742,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
                             }
                         }, mService.getExecutor());
                     }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                        Log.i(TAG, "SHOWN ON CLOSE!");
-                    }
-                })
-                .build();
+                }).build();
         UI.mapEnterToPositive(mSummary, R.id.newTx2FACodeText);
         mSummary.show();
     }
