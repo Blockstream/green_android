@@ -27,7 +27,7 @@ public abstract class SubaccountFragment extends GAFragment {
     protected View mView;
     private final Runnable mDialogCB = new Runnable() { public void run() { mWaitDialog = null; } };
 
-    protected boolean IsPageSelected() {
+    protected boolean isPageSelected() {
         return mIsSelected;
     }
 

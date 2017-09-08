@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,7 +80,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
 
-        if (mIsExchanger && getGAService() != null)
+        if (getGAService() != null)
             attachObservers();
 
         if (mAmountFields != null)
@@ -435,7 +436,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     @Override
     protected void onSubaccountChanged(final int newSubAccount) {
         mSubaccount = newSubAccount;
-        if (IsPageSelected())
+        if (isPageSelected())
             generateNewAddress();
         else
             destroyCurrentAddress(true);
@@ -463,7 +464,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     public void setPageSelected(final boolean isSelected) {
-        final boolean needToRegenerate = isSelected && !IsPageSelected();
+        final boolean needToRegenerate = isSelected && !isPageSelected();
         super.setPageSelected(isSelected);
         if (needToRegenerate)
             generateNewAddress();
@@ -512,6 +513,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private void onNewTx() {
+        if (mCurrentAddress.isEmpty() || !isPageSelected())
+            return;
+
         final GaService service = getGAService();
         Futures.addCallback(service.getMyTransactions(mSubaccount),
                 new FutureCallback<Map<String, Object>>() {
@@ -519,6 +523,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                     public void onSuccess(final Map<String, Object> result) {
                         final List txList = (List) result.get("list");
                         final int currentBlock = ((Integer) result.get("cur_block"));
+                        boolean matched = false;
                         for (final Object tx : txList) {
                             try {
                                 final JSONMap txJSON = (JSONMap) tx;
@@ -526,10 +531,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                                 if (replacedList == null) {
                                     final TransactionItem txItem = new TransactionItem(service, txJSON, currentBlock);
-                                    final boolean matches;
-                                    if (!GaService.IS_ELEMENTS)
-                                        matches = txItem.receivedOn != null && txItem.receivedOn.equals(mCurrentAddress);
-                                    else {
+                                    if (!GaService.IS_ELEMENTS) {
+                                        matched = txItem.receivedOn != null && txItem.receivedOn.equals(mCurrentAddress);
+                                    } else {
                                         final int subaccount = txItem.receivedOnEp.getInt("subaccount", 0);
                                         final int pointer = txItem.receivedOnEp.getInt("pubkey_pointer");
                                         final String receivedOn = ConfidentialAddress.fromP2SHHash(
@@ -538,18 +542,31 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                             service.getBlindingPubKey(subaccount, pointer)
                                         ).toString();
                                         final String currentBtcAddress = mCurrentAddress.replace("bitcoin:", "").split("\\?")[0];
-                                        matches = receivedOn.equals(currentBtcAddress);
+                                        matched = receivedOn.equals(currentBtcAddress);
                                     }
-                                    if (matches) {
-                                        mExchanger.buyBtc(mExchanger.getAmountWithCommission());
-                                        getGaActivity().toast(R.string.transactionSubmitted);
-                                        getGaActivity().finish();
+                                    if (matched) {
+                                        final GaActivity gaActivity = getGaActivity();
+                                        if (mIsExchanger) {
+                                            mExchanger.buyBtc(mExchanger.getAmountWithCommission());
+                                            gaActivity.toast(R.string.transactionSubmitted);
+                                            gaActivity.finish();
+                                        } else {
+                                            gaActivity.runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    final ViewPager viewPager = UI.find(gaActivity, R.id.container);
+                                                    viewPager.setCurrentItem(1);
+                                                }
+                                            });
+                                        }
+                                        break;
                                     }
                                 }
                             } catch (final ParseException e) {
                                 e.printStackTrace();
                             }
                         }
+                        if (!matched)
+                            getGaActivity().toast(R.string.new_incoming_transaction);
                     }
 
                     @Override

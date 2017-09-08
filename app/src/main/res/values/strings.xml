@@ -24,6 +24,7 @@
     <string name="pinTitleText">PIN</string>
     <string name="network_unavailable">Disconnected</string>
     <string name="newTxTitle">New transaction</string>
+    <string name="new_incoming_transaction">A new transaction has just arrived in your wallet.</string>
     <string name="sweepAddressTitle">Sweep funds</string>
     <string name="twoFactorChoicesTitle">Choose 2 Factor Authentication method</string>
     <string name="choose">CHOOSE</string>

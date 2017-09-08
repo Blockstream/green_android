@@ -153,7 +153,7 @@ public class MainFragment extends SubaccountFragment {
         balanceQuestionMark.setOnClickListener(unconfirmedClickListener);
 
         makeBalanceObserver(mSubaccount);
-        if (IsPageSelected() && service.getCoinBalance(mSubaccount) != null) {
+        if (isPageSelected() && service.getCoinBalance(mSubaccount) != null) {
             updateBalance();
             reloadTransactions(false, true);
         }
@@ -226,7 +226,7 @@ public class MainFragment extends SubaccountFragment {
 
     // Called when a new transaction is seen
     private void onNewTx() {
-        if (!IsPageSelected()) {
+        if (!isPageSelected()) {
             Log.d(TAG, "New transaction while page hidden");
             setIsDirty(true);
             return;
@@ -297,7 +297,7 @@ public class MainFragment extends SubaccountFragment {
                         if (mSwipeRefreshLayout != null)
                             mSwipeRefreshLayout.setRefreshing(false);
 
-                        if (!IsPageSelected()) {
+                        if (!isPageSelected()) {
                             Log.d(TAG, "Callback after hiding, ignoring");
                             // Mark ourselves as dirty so we reload when next shown
                             setIsDirty(true);
@@ -379,7 +379,7 @@ public class MainFragment extends SubaccountFragment {
     protected void onSubaccountChanged(final int newSubAccount) {
         mSubaccount = newSubAccount;
         makeBalanceObserver(mSubaccount);
-        if (!IsPageSelected()) {
+        if (!isPageSelected()) {
             Log.d(TAG, "Subaccount changed while page hidden");
             setIsDirty(true);
             return;
@@ -397,7 +397,7 @@ public class MainFragment extends SubaccountFragment {
     }
 
     public void setPageSelected(final boolean isSelected) {
-        final boolean needReload = isSelected && !IsPageSelected() && isDirty();
+        final boolean needReload = isSelected && !isPageSelected() && isDirty();
         super.setPageSelected(isSelected);
         if (needReload) {
             Log.d(TAG, "Dirty, reloading");

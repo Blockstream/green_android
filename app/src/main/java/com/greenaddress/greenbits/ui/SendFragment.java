@@ -420,7 +420,7 @@ public class SendFragment extends SubaccountFragment {
     protected void onSubaccountChanged(final int newSubAccount) {
         mSubaccount = newSubAccount;
 
-        if (!IsPageSelected()) {
+        if (!isPageSelected()) {
             Log.d(TAG, "Subaccount changed while page hidden");
             setIsDirty(true);
             return;
