@@ -88,15 +88,16 @@ class AmountFields {
     public static void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
         final String symbol;
         switch (currency) {
-            case "USD": symbol = "&#xf155; "; break;
             case "AUD": symbol = "&#xf155; "; break;
+            case "BRL": symbol = "R&#xf155; "; break;
             case "CAD": symbol = "&#xf155; "; break;
-            case "EUR": symbol = "&#xf153; "; break;
             case "CNY": symbol = "&#xf157; "; break;
+            case "EUR": symbol = "&#xf153; "; break;
             case "GBP": symbol = "&#xf154; "; break;
             case "ILS": symbol = "&#xf20b; "; break;
+            case "NZD": symbol = "&#xf155; "; break;
             case "RUB": symbol = "&#xf158; "; break;
-            case "BRL": symbol = "R&#xf155; "; break;
+            case "USD": symbol = "&#xf155; "; break;
             default:
                 fiatIcon.setText(currency);
                 fiatIcon.setDefaultTypeface();
