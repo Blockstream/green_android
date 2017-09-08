@@ -728,7 +728,7 @@ public class SendFragment extends SubaccountFragment {
 
         gaActivity.runOnUiThread(new Runnable() {
             public void run() {
-                UI.toast(gaActivity, R.string.transactionCompleted, Toast.LENGTH_LONG);
+                UI.toast(gaActivity, R.string.transactionSubmitted, Toast.LENGTH_LONG);
 
                 if (mIsExchanger)
                     mExchanger.sellBtc(Double.valueOf(UI.getText(mAmountFiatEdit)));
@@ -753,7 +753,7 @@ public class SendFragment extends SubaccountFragment {
                     final ViewPager viewPager = UI.find(gaActivity, R.id.container);
                     viewPager.setCurrentItem(1);
                 } else {
-                    gaActivity.toast(R.string.transactionCompleted);
+                    gaActivity.toast(R.string.transactionSubmitted);
                     gaActivity.finish();
                 }
             }

@@ -542,7 +542,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                                     }
                                     if (matches) {
                                         mExchanger.buyBtc(mExchanger.getAmountWithCommission());
-                                        getGaActivity().toast(R.string.transactionCompleted);
+                                        getGaActivity().toast(R.string.transactionSubmitted);
                                         getGaActivity().finish();
                                     }
                                 }
