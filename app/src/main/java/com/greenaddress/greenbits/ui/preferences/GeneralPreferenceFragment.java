@@ -30,6 +30,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
 
     private static final int PINSAVE = 1337;
     private Preference mToggleSW;
+    private Preference mFeeRate;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -201,6 +202,34 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
                     defaultTxPriority.setSummary(prioritySummaries[index]);
         }
 
+        // Default custom feerate
+        mFeeRate = find("default_feerate");
+        if (GaService.IS_ELEMENTS)
+            removePreference(mFeeRate);
+        else {
+            setFeeRateSummary(mService.cfg().getString("default_feerate", ""));
+            final long minFeeRate = mService.getMinFeeRate().longValue();
+            mFeeRate.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                    boolean isValid = true;
+                    try {
+                        final String feeRate = newValue.toString();
+                        isValid = feeRate.isEmpty() || Double.valueOf(feeRate) > minFeeRate;
+                        if (isValid)
+                            setFeeRateSummary(feeRate);
+                    } catch (final Exception e) {
+                        isValid = false;
+                    }
+                    if (!isValid) {
+                        UI.toast(getActivity(),
+                                 getString(R.string.invalid_feerate, minFeeRate), Toast.LENGTH_LONG);
+                    }
+                    return isValid;
+                }
+            });
+        }
+
         Futures.addCallback(mService.getCurrencyExchangePairs(), new CB.Op<List<List<String>>>() {
             @Override
             public void onSuccess(final List<List<String>> result) {
@@ -298,6 +327,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         }
     }
 
+    private void setFeeRateSummary(final String feeRate) {
+        mFeeRate.setSummary(feeRate.isEmpty() ? "" : feeRate + " sat/kB");
+    }
 
     @Override
     public boolean onPreferenceClick(final Preference preference) {

@@ -4,6 +4,7 @@
         android:key="mnemonic_passphrase"
         android:title="@string/mnemonic_passphrase"
         android:summary="@string/mnemonic_passphrase_not_available" />
+
     <Preference
         android:key="reset_pin"
         android:title="@string/setPin"></Preference>
@@ -40,6 +41,12 @@
         android:entries="@array/fee_target_entries"
         android:entryValues="@array/fee_target_values"
         android:title="@string/default_transaction_priority" />
+
+    <EditTextPreference
+        android:key="default_feerate"
+        android:title="@string/default_custom_feerate"
+        android:inputType="numberDecimal"
+        android:hint="@string/enter_satoshi_per_kb" />
 
     <CheckBoxPreference
         android:key="showAmountInReceive"

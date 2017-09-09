@@ -91,11 +91,14 @@
         <item>Instant</item>
     </string-array>
 
+    <string name="default_custom_feerate">Default custom feerate</string>
+    <string name="enter_satoshi_per_kb">Enter Satoshi per kB</string>
     <string name="send">SEND</string>
     <string name="sweep">SWEEP</string>
     <string name="sweep_bip38_passphrase_prompt">Please provide the BIP38 password:</string>
     <string name="invalid_passphrase">Invalid password</string>
     <string name="invalid_key">Invalid key</string>
+    <string name="invalid_feerate">Rate must be empty or greater than %1$d.</string>
     <string name="warning">Warning!</string>
     <string name="save_password_now">You MUST save this passphrase NOW</string>
     <string name="greenaddress_headline">the easier, safer and faster bitcoin wallet</string>
