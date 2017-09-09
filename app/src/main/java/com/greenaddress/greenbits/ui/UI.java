@@ -38,6 +38,17 @@ import java.util.Map;
 public abstract class UI {
     public static final int INVALID_RESOURCE_ID = 0;
     public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
+    public enum FEE_TARGET {
+        HIGH(3),
+        NORMAL(6),
+        LOW(12),
+        ECONOMY(24),
+        INSTANT(-1);
+        private final int mBlock;
+        FEE_TARGET(int block) { mBlock = block; }
+        public int getValue() { return mBlock; }
+    }
+
     private static final String MICRO_BTC = "\u00B5BTC";
     private static final MonetaryFormat BTC = new MonetaryFormat().shift(0).minDecimals(8).noCode();
     private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(5).noCode();

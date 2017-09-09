@@ -15,11 +15,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,7 +73,7 @@ public class SendFragment extends SubaccountFragment {
     private TextView mAmountBtcWithCommission;
     private EditText mRecipientEdit;
     private EditText mNoteText;
-    private CheckBox mInstantConfirmationCheckbox;
+    private Spinner mFeeTargetCombo;
     private TextView mNoteIcon;
     private Button mSendButton;
     private Switch mMaxButton;
@@ -215,7 +217,8 @@ public class SendFragment extends SubaccountFragment {
         mMaxLabel = UI.find(mView, R.id.sendMaxLabel);
         mNoteText = UI.find(mView, R.id.sendToNoteText);
         mNoteIcon = UI.find(mView, R.id.sendToNoteIcon);
-        mInstantConfirmationCheckbox = UI.find(mView, R.id.instantConfirmationCheckBox);
+        mFeeTargetCombo = UI.find(mView, R.id.feeTargetCombo);
+        populateFeeCombo();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // pre-Material Design the label was already a part of the switch
@@ -292,7 +295,7 @@ public class SendFragment extends SubaccountFragment {
 
         if (GaService.IS_ELEMENTS) {
             UI.disable(mMaxButton); // FIXME: Sweeping not available in elements
-            UI.hide(mMaxButton, mMaxLabel, mInstantConfirmationCheckbox);
+            UI.hide(mMaxButton, mMaxLabel, mFeeTargetCombo);
         } else {
             mMaxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -339,8 +342,6 @@ public class SendFragment extends SubaccountFragment {
             }
         });
 
-        hideInstantIf2of3();
-
         makeBalanceObserver(mSubaccount);
         if (service.getCoinBalance(mSubaccount) != null)
             onBalanceUpdated();
@@ -357,16 +358,6 @@ public class SendFragment extends SubaccountFragment {
             mAmountFields.setIsPausing(false);
         if (mIsExchanger)
             mExchanger.conversionFinish();
-    }
-
-    private void hideInstantIf2of3() {
-        if (getGAService().findSubaccountByType(mSubaccount, "2of3") == null) {
-            if (!GaService.IS_ELEMENTS)
-                UI.show(mInstantConfirmationCheckbox);
-            return;
-        }
-        UI.hide(mInstantConfirmationCheckbox);
-        mInstantConfirmationCheckbox.setChecked(false);
     }
 
     @Override
@@ -432,9 +423,9 @@ public class SendFragment extends SubaccountFragment {
         Log.d(TAG, "Updating balance");
         if (isZombie())
             return;
-        hideInstantIf2of3();
         makeBalanceObserver(mSubaccount);
         getGAService().updateBalance(mSubaccount);
+        populateFeeCombo();
     }
 
     public void setPageSelected(final boolean isSelected) {
@@ -446,6 +437,19 @@ public class SendFragment extends SubaccountFragment {
             if (!isZombie())
                 setIsDirty(false);
         }
+    }
+
+    private void populateFeeCombo() {
+        if (GaService.IS_ELEMENTS)
+            return; // FIXME: No custom fees for elements
+
+        final boolean is2of3 = getGAService().findSubaccountByType(mSubaccount, "2of3") != null;
+        final int id = is2of3 ? R.array.fee_target_entries : R.array.send_fee_target_choices;
+        ArrayAdapter<CharSequence> a;
+        a = ArrayAdapter.createFromResource(getActivity(), id, android.R.layout.simple_spinner_item);
+        a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mFeeTargetCombo.setAdapter(a);
+        // FIXME: Set choice to the users default fee rate
     }
 
     private Coin getSendAmount() {
@@ -472,8 +476,8 @@ public class SendFragment extends SubaccountFragment {
         if (mSubaccount != 0)
             privateData.mData.put("subaccount", mSubaccount);
 
-        final boolean isInstant = mInstantConfirmationCheckbox.isChecked();
-        if (isInstant)
+        final UI.FEE_TARGET feeTarget = UI.FEE_TARGET.values()[mFeeTargetCombo.getSelectedItemPosition()];
+        if (feeTarget == UI.FEE_TARGET.INSTANT)
             privateData.mData.put("instant", true);
 
         final Coin amount = getSendAmount();
@@ -511,7 +515,7 @@ public class SendFragment extends SubaccountFragment {
 
         UI.disable(mSendButton);
         final int numConfs;
-        if (isInstant)
+        if (feeTarget == UI.FEE_TARGET.INSTANT)
             numConfs = 6; // Instant requires at least 6 confs
         else if (Network.NETWORK == MainNetParams.get())
             numConfs = 1; // Require 1 conf before spending on mainnet
@@ -532,6 +536,7 @@ public class SendFragment extends SubaccountFragment {
                 int ret = R.string.insufficientFundsText;
                 if (!utxos.isEmpty()) {
                     GATx.sortUtxos(utxos, minimizeInputs);
+                    // FIXME: Pass and use feeTarget to createRawTransaction
                     ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
                     if (ret == R.string.insufficientFundsText && !minimizeInputs && utxos.size() > 1) {
                         // Not enough money using nlocktime outputs first:

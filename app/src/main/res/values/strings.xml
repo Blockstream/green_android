@@ -83,6 +83,13 @@
         <item>Confirmation in 12 blocks, up to two hours on average</item>
         <item>Confirmation in 24 blocks or later, 4 hours or longer on average</item>
     </string-array>
+    <string-array name="send_fee_target_choices">
+        <item>High</item>
+        <item>Normal</item>
+        <item>Low</item>
+        <item>Economy</item>
+        <item>Instant</item>
+    </string-array>
 
     <string name="send">SEND</string>
     <string name="sweep">SWEEP</string>
@@ -92,6 +99,7 @@
     <string name="warning">Warning!</string>
     <string name="save_password_now">You MUST save this passphrase NOW</string>
     <string name="greenaddress_headline">the easier, safer and faster bitcoin wallet</string>
+    <string name="priority_label">Priority:</string>
     <string name="pinSkipText">SKIP</string>
     <string name="sendOptionalMemo">Optional memo</string>
     <string name="madeBy">by GreenAddress</string>
