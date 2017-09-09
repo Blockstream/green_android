@@ -177,6 +177,30 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
             }
         });
 
+        // Transaction priority, i.e. default fees
+        final ListPreference defaultTxPriority = find("default_tx_priority");
+        if (GaService.IS_ELEMENTS)
+            removePreference(defaultTxPriority);
+        else {
+            final String[] prioritySummaries = getResources().getStringArray(R.array.fee_target_summaries);
+            final String[] priorityValues = getResources().getStringArray(R.array.fee_target_values);
+
+            defaultTxPriority.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(final Preference preference, final Object o) {
+                    final String newValue = o.toString();
+                    final int index = defaultTxPriority.findIndexOfValue(newValue);
+                    preference.setSummary(prioritySummaries[index]);
+                    mService.setDefaultTransactionPriority(Integer.valueOf(newValue));
+                    return true;
+                }
+            });
+            final int currentPriority = mService.getDefaultTransactionPriority();
+            for (int index =0; index < priorityValues.length; index++)
+                if (Integer.valueOf(priorityValues[index]) == currentPriority)
+                    defaultTxPriority.setSummary(prioritySummaries[index]);
+        }
+
         Futures.addCallback(mService.getCurrencyExchangePairs(), new CB.Op<List<List<String>>>() {
             @Override
             public void onSuccess(final List<List<String>> result) {

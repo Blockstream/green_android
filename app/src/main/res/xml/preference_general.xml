@@ -35,6 +35,12 @@
         android:key="watch_only_login"
         android:title="@string/watchOnlyLogin"></Preference>
 
+    <ListPreference
+        android:key="default_tx_priority"
+        android:entries="@array/fee_target_entries"
+        android:entryValues="@array/fee_target_values"
+        android:title="@string/default_transaction_priority" />
+
     <CheckBoxPreference
         android:key="showAmountInReceive"
         android:title="@string/showAmountInReceive"

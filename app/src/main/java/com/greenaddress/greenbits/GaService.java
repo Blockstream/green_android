@@ -165,6 +165,18 @@ public class GaService extends Service implements INotificationHandler {
         return unit == null ? "bits" : (String) unit;
     }
 
+    public void setDefaultTransactionPriority(final int priority) {
+        setUserConfig("required_num_blocks", priority, true);
+    }
+
+    public int getDefaultTransactionPriority() {
+        try {
+            return (int) getUserConfig("required_num_blocks");
+        } catch (final Exception e) {
+            return 6; // Not logged in/not set, default to Normal/6 confs
+        }
+    }
+
     public int getAutoLogoutMinutes() {
         try {
             final int timeout = (int)getUserConfig("altimeout");

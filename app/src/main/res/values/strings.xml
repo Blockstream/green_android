@@ -65,6 +65,24 @@
         <item>minutes</item>
         <item>seconds</item>
     </string-array>
+    <string-array name="fee_target_entries">
+        <item>High</item>
+        <item>Normal</item>
+        <item>Low</item>
+        <item>Economy</item>
+    </string-array>
+    <string-array name="fee_target_values"  translatable="false">
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+    <string-array name="fee_target_summaries">
+        <item>Confirmation in 3 blocks, up to 30 minutes on average</item>
+        <item>Confirmation in 6 blocks, up to one hour on average</item>
+        <item>Confirmation in 12 blocks, up to two hours on average</item>
+        <item>Confirmation in 24 blocks or later, 4 hours or longer on average</item>
+    </string-array>
 
     <string name="send">SEND</string>
     <string name="sweep">SWEEP</string>
@@ -233,6 +251,7 @@
     <string name="no_peers_connected">No Peers Connected</string>
     <string name="settings_currency">Fiat exchange currency</string>
     <string name="settings_denomination">Bitcoin denomination</string>
+    <string name="default_transaction_priority">Default transaction priority</string>
     <string name="watchOnlyLogin">Watch only login</string>
     <string name="watchOnlyLoginStatus">Enabled: %1$s</string>
     <string name="watchOnlyLoginSetup">Touch to setup</string>
