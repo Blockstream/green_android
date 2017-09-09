@@ -46,7 +46,7 @@ public abstract class UI {
         INSTANT(-1);
         private final int mBlock;
         FEE_TARGET(int block) { mBlock = block; }
-        public int getValue() { return mBlock; }
+        public int getBlock() { return mBlock; }
     }
 
     private static final String MICRO_BTC = "\u00B5BTC";

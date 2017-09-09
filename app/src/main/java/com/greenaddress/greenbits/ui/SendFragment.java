@@ -536,13 +536,12 @@ public class SendFragment extends SubaccountFragment {
                 int ret = R.string.insufficientFundsText;
                 if (!utxos.isEmpty()) {
                     GATx.sortUtxos(utxos, minimizeInputs);
-                    // FIXME: Pass and use feeTarget to createRawTransaction
-                    ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
+                    ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll, feeTarget);
                     if (ret == R.string.insufficientFundsText && !minimizeInputs && utxos.size() > 1) {
                         // Not enough money using nlocktime outputs first:
                         // Try again using the largest values first
                         GATx.sortUtxos(utxos, true);
-                        ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll);
+                        ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll, feeTarget);
                     }
                 }
                 if (ret != 0)
@@ -767,18 +766,21 @@ public class SendFragment extends SubaccountFragment {
 
     private int createRawTransaction(final List<JSONMap> utxos, final String recipient,
                                      final Coin amount, final JSONMap privateData,
-                                     final boolean sendAll) {
+                                     final boolean sendAll, final UI.FEE_TARGET feeTarget) {
 
         if (GaService.IS_ELEMENTS)
-            return createRawElementsTransaction(utxos, recipient, amount, privateData, sendAll);
+            return createRawElementsTransaction(utxos, recipient, amount, privateData, sendAll, feeTarget);
 
         final GaActivity gaActivity = getGaActivity();
         final GaService service = getGAService();
         final List<JSONMap> usedUtxos = new ArrayList<>();
 
         final Coin feeRate;
+        // 1 is not possible yet as we always get 2 as the fastest estimate,
+        // but try it anyway in case that improves in the future.
+        final int forBlock = feeTarget == UI.FEE_TARGET.INSTANT ? 1 : feeTarget.getBlock();
         try {
-           feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
+           feeRate = GATx.getFeeEstimate(service, feeTarget == UI.FEE_TARGET.INSTANT, forBlock);
         } catch (final GAException e) {
             return R.string.instantUnavailable;
         }
@@ -873,7 +875,7 @@ public class SendFragment extends SubaccountFragment {
 
     private int createRawElementsTransaction(final List<JSONMap> utxos, final String recipient,
                                              final Coin amount, final JSONMap privateData,
-                                             final boolean sendAll) {
+                                             final boolean sendAll, final UI.FEE_TARGET feeTarget) {
         // FIXME: sendAll
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
@@ -881,7 +883,8 @@ public class SendFragment extends SubaccountFragment {
         final List<JSONMap> usedUtxos = new ArrayList<>();
         final Coin feeRate;
         try {
-            feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"));
+            final int forBlock = 6; // FIXME: feeTarget
+            feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"), forBlock);
         } catch (final GAException e) {
             return R.string.instantUnavailable;
         }

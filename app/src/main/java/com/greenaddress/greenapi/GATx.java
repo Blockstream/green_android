@@ -219,10 +219,6 @@ public class GATx {
         return singleOutputSize * tx.getOutputs().size();
     }
 
-    public static Coin getFeeEstimate(final GaService service, final boolean isInstant) throws GAException {
-        return getFeeEstimate(service, isInstant, 6); // Fee rate for 6 confs if not instant
-    }
-
     public static Coin getFeeEstimateForRBF(final GaService service, final boolean isInstant) throws GAException {
         return getFeeEstimate(service, isInstant, 1); // Fee rate for 1 conf if not instant
     }
