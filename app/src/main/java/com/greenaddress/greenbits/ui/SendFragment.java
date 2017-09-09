@@ -446,8 +446,8 @@ public class SendFragment extends SubaccountFragment {
         // Make the dropdown exclude instant if not available
         final GaService service = getGAService();
         final boolean is2of3 = service.findSubaccountByType(mSubaccount, "2of3") != null;
-        final int id = is2of3 ? R.array.fee_target_entries : R.array.send_fee_target_choices;
-        ArrayAdapter<CharSequence> a;
+        final int id = is2of3 ? R.array.send_fee_target_choices : R.array.send_fee_target_choices_instant;
+        final ArrayAdapter<CharSequence> a;
         a = ArrayAdapter.createFromResource(getActivity(), id, android.R.layout.simple_spinner_item);
         a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mFeeTargetCombo.setAdapter(a);
@@ -538,6 +538,14 @@ public class SendFragment extends SubaccountFragment {
         final boolean minimizeInputs = is2Of3;
         final boolean filterAsset = true;
 
+        final Coin feeRate;
+        try {
+            feeRate = getFeeRate(feeTarget);
+        } catch (final GAException e) {
+            gaActivity.toast(R.string.instantUnavailable, mSendButton);
+            return;
+        }
+
         CB.after(service.getAllUnspentOutputs(numConfs, mSubaccount, filterAsset),
                  new CB.Toast<List<JSONMap>>(gaActivity, mSendButton) {
             @Override
@@ -545,12 +553,12 @@ public class SendFragment extends SubaccountFragment {
                 int ret = R.string.insufficientFundsText;
                 if (!utxos.isEmpty()) {
                     GATx.sortUtxos(utxos, minimizeInputs);
-                    ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll, feeTarget);
+                    ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll, feeRate);
                     if (ret == R.string.insufficientFundsText && !minimizeInputs && utxos.size() > 1) {
                         // Not enough money using nlocktime outputs first:
                         // Try again using the largest values first
                         GATx.sortUtxos(utxos, true);
-                        ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll, feeTarget);
+                        ret = createRawTransaction(utxos, recipient, amount, privateData, sendAll, feeRate);
                     }
                 }
                 if (ret != 0)
@@ -773,26 +781,34 @@ public class SendFragment extends SubaccountFragment {
         });
     }
 
+    Coin getFeeRate(final UI.FEE_TARGET feeTarget) throws GAException {
+        if (!GaService.IS_ELEMENTS && feeTarget == UI.FEE_TARGET.CUSTOM) {
+            // FIXME: Get custom rate from UI, check its valid before calling this function
+            // FIXME: Custom fees for elements
+            final Double feeRate = Double.valueOf(getGAService().cfg().getString("default_feerate", ""));
+            return Coin.valueOf(feeRate.longValue());
+        }
+
+        // 1 is not possible yet as we always get 2 as the fastest estimate,
+        // but try it anyway in case that improves in the future.
+        final int forBlock;
+        if (GaService.IS_ELEMENTS)
+            forBlock = 6; // FIXME: feeTarget
+        else
+            forBlock = feeTarget == UI.FEE_TARGET.INSTANT ? 1 : feeTarget.getBlock();
+        return GATx.getFeeEstimate(getGAService(), feeTarget == UI.FEE_TARGET.INSTANT, forBlock);
+    }
+
     private int createRawTransaction(final List<JSONMap> utxos, final String recipient,
                                      final Coin amount, final JSONMap privateData,
-                                     final boolean sendAll, final UI.FEE_TARGET feeTarget) {
+                                     final boolean sendAll, final Coin feeRate) {
 
         if (GaService.IS_ELEMENTS)
-            return createRawElementsTransaction(utxos, recipient, amount, privateData, sendAll, feeTarget);
+            return createRawElementsTransaction(utxos, recipient, amount, privateData, sendAll, feeRate);
 
         final GaActivity gaActivity = getGaActivity();
         final GaService service = getGAService();
         final List<JSONMap> usedUtxos = new ArrayList<>();
-
-        final Coin feeRate;
-        // 1 is not possible yet as we always get 2 as the fastest estimate,
-        // but try it anyway in case that improves in the future.
-        final int forBlock = feeTarget == UI.FEE_TARGET.INSTANT ? 1 : feeTarget.getBlock();
-        try {
-           feeRate = GATx.getFeeEstimate(service, feeTarget == UI.FEE_TARGET.INSTANT, forBlock);
-        } catch (final GAException e) {
-            return R.string.instantUnavailable;
-        }
 
         final Transaction tx = new Transaction(Network.NETWORK);
         tx.addOutput(amount, Address.fromBase58(Network.NETWORK, recipient));
@@ -884,19 +900,12 @@ public class SendFragment extends SubaccountFragment {
 
     private int createRawElementsTransaction(final List<JSONMap> utxos, final String recipient,
                                              final Coin amount, final JSONMap privateData,
-                                             final boolean sendAll, final UI.FEE_TARGET feeTarget) {
+                                             final boolean sendAll, final Coin feeRate) {
         // FIXME: sendAll
         final GaService service = getGAService();
         final GaActivity gaActivity = getGaActivity();
 
         final List<JSONMap> usedUtxos = new ArrayList<>();
-        final Coin feeRate;
-        try {
-            final int forBlock = 6; // FIXME: feeTarget
-            feeRate = GATx.getFeeEstimate(service, privateData.getBool("instant"), forBlock);
-        } catch (final GAException e) {
-            return R.string.instantUnavailable;
-        }
 
         final ElementsTransaction tx = new ElementsTransaction(Network.NETWORK);
 

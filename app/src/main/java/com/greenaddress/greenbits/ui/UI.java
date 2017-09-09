@@ -43,7 +43,8 @@ public abstract class UI {
         NORMAL(6),
         LOW(12),
         ECONOMY(24),
-        INSTANT(-1);
+        CUSTOM(-1),
+        INSTANT(-2);
         private final int mBlock;
         FEE_TARGET(int block) { mBlock = block; }
         public int getBlock() { return mBlock; }
