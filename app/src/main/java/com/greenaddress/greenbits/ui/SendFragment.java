@@ -443,13 +443,22 @@ public class SendFragment extends SubaccountFragment {
         if (GaService.IS_ELEMENTS)
             return; // FIXME: No custom fees for elements
 
-        final boolean is2of3 = getGAService().findSubaccountByType(mSubaccount, "2of3") != null;
+        // Make the dropdown exclude instant if not available
+        final GaService service = getGAService();
+        final boolean is2of3 = service.findSubaccountByType(mSubaccount, "2of3") != null;
         final int id = is2of3 ? R.array.fee_target_entries : R.array.send_fee_target_choices;
         ArrayAdapter<CharSequence> a;
         a = ArrayAdapter.createFromResource(getActivity(), id, android.R.layout.simple_spinner_item);
         a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mFeeTargetCombo.setAdapter(a);
-        // FIXME: Set choice to the users default fee rate
+
+        // Default priority to the users default priority from settings
+        final int currentPriority = service.getDefaultTransactionPriority();
+        final UI.FEE_TARGET[] targets = UI.FEE_TARGET.values();
+        for (int i = 0; i < targets.length; ++i) {
+            if (currentPriority == targets[i].getBlock())
+                mFeeTargetCombo.setSelection(i);
+        }
     }
 
     private Coin getSendAmount() {
