@@ -559,7 +559,15 @@ public class SendFragment extends SubaccountFragment {
 
         final Coin feeRate;
         try {
-            feeRate = getFeeRate(feeTarget);
+            final String userRate = UI.getText(mFeeTargetEdit);
+            if (feeTarget.equals(UI.FEE_TARGET.CUSTOM) &&
+                (userRate.isEmpty() || !service.isValidFeeRate(userRate))) {
+                // Change invalid feerates to the minimum
+                feeRate = service.getMinFeeRate();
+                final String message = getString(R.string.feerate_changed, feeRate.longValue());
+                gaActivity.toast(message);
+            } else
+                feeRate = getFeeRate(feeTarget);
         } catch (final GAException e) {
             gaActivity.toast(R.string.instantUnavailable, mSendButton);
             return;
@@ -802,9 +810,8 @@ public class SendFragment extends SubaccountFragment {
 
     Coin getFeeRate(final UI.FEE_TARGET feeTarget) throws GAException {
         if (!GaService.IS_ELEMENTS && feeTarget.equals(UI.FEE_TARGET.CUSTOM)) {
-            // FIXME: Get custom rate from UI, check its valid before calling this function
             // FIXME: Custom fees for elements
-            final Double feeRate = Double.valueOf(getGAService().cfg().getString("default_feerate", ""));
+            final Double feeRate = Double.valueOf(UI.getText(mFeeTargetEdit));
             return Coin.valueOf(feeRate.longValue());
         }
 
@@ -812,7 +819,7 @@ public class SendFragment extends SubaccountFragment {
         // but try it anyway in case that improves in the future.
         final int forBlock;
         if (GaService.IS_ELEMENTS)
-            forBlock = 6; // FIXME: feeTarget
+            forBlock = 6; // FIXME: feeTarget for elements
         else
             forBlock = feeTarget.equals(UI.FEE_TARGET.INSTANT) ? 1 : feeTarget.getBlock();
         return GATx.getFeeEstimate(getGAService(), feeTarget.equals(UI.FEE_TARGET.INSTANT), forBlock);

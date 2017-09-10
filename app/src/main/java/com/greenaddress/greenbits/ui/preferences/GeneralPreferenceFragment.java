@@ -212,18 +212,13 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
             mFeeRate.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                    boolean isValid = true;
-                    try {
-                        final String feeRate = newValue.toString();
-                        isValid = feeRate.isEmpty() || Double.valueOf(feeRate) > minFeeRate;
-                        if (isValid)
-                            setFeeRateSummary(feeRate);
-                    } catch (final Exception e) {
-                        isValid = false;
-                    }
-                    if (!isValid) {
-                        UI.toast(getActivity(),
-                                 getString(R.string.invalid_feerate, minFeeRate), Toast.LENGTH_LONG);
+                    final String feeRate = newValue.toString();
+                    final boolean isValid = mService.isValidFeeRate(feeRate);
+                    if (isValid)
+                        setFeeRateSummary(feeRate);
+                    else {
+                        final String message = getString(R.string.invalid_feerate, minFeeRate);
+                        UI.toast(getActivity(), message, Toast.LENGTH_LONG);
                     }
                     return isValid;
                 }

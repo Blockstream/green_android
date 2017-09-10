@@ -177,6 +177,14 @@ public class GaService extends Service implements INotificationHandler {
         }
     }
 
+    public boolean isValidFeeRate(final String feeRate) {
+        try {
+            return feeRate.isEmpty() || Double.valueOf(feeRate) >= mMinFeeRate.longValue();
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
     public int getAutoLogoutMinutes() {
         try {
             final int timeout = (int)getUserConfig("altimeout");
