@@ -263,6 +263,7 @@
     <string name="send_all">Send All</string>
     <string name="err_sign_up_nfc_not_writable">Error: NFC tag not writable</string>
     <string name="err_sign_up_nfc_too_small">Error: NFC tag too small</string>
+    <string name="malformed_code">Malformed Code</string>
     <string name="network_monitor_peer_addr">Address: %1$s</string>
     <string name="network_monitor_peer_version">Version: %1$s</string>
     <string name="network_monitor_peer_block">Block height: %1$d</string>

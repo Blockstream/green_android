@@ -733,8 +733,14 @@ public class SendFragment extends SubaccountFragment {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                        if (twoFacData != null && !method.equals("limit"))
-                            twoFacData.put("code", UI.getText(newTx2FACodeText));
+                        final String code = UI.getText(newTx2FACodeText);
+                        if (twoFacData != null && !method.equals("limit")) {
+                            if (code.length() < 6) {
+                                UI.toast(getActivity(), getString(R.string.malformed_code), mSendButton);
+                                return;
+                            }
+                            twoFacData.put("code", code);
+                        }
 
                         final ListenableFuture<Void> sendFn;
                         if (signedRawTx != null)
