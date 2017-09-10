@@ -560,6 +560,14 @@ public class SendFragment extends SubaccountFragment {
         final Coin feeRate;
         try {
             final String userRate = UI.getText(mFeeTargetEdit);
+            if (feeTarget.equals(UI.FEE_TARGET.CUSTOM)) {
+                final Object rbf_optin = service.getUserConfig("replace_by_fee");
+                if (rbf_optin == null || !((Boolean) rbf_optin)) {
+                    gaActivity.toast(R.string.custom_requires_rbf, mSendButton);
+                    return;
+                }
+            }
+
             if (feeTarget.equals(UI.FEE_TARGET.CUSTOM) &&
                 (userRate.isEmpty() || !service.isValidFeeRate(userRate))) {
                 // Change invalid feerates to the minimum
