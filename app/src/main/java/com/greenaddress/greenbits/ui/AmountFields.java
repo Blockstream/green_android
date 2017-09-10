@@ -153,7 +153,7 @@ class AmountFields {
             final Coin btcValue = UI.parseCoinValue(mGaService, UI.getText(mAmountEdit));
             mAmountFiatEdit.setText(mGaService.coinToFiat(btcValue));
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            final String maxAmount = mContext.getString(R.string.send_max_amount);
+            final String maxAmount = mContext.getString(R.string.all);
             if (UI.getText(mAmountEdit).equals(maxAmount))
                 mAmountFiatEdit.setText(maxAmount);
             else

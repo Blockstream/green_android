@@ -184,7 +184,7 @@
     <string name="err_mnemonic_activity_logout_required">Primeiro, você deve encerrar a sessão antes de entrar.</string>
     <string name="err_mnemonic_activity_invalid_mnemonic">Senha inválida (deve conter 24 ou 27 palavras)</string>
     <string name="err_pin_save_wrong_length">O PIN deve ter entre 4 a 15 dígitos</string>
-    <string name="send_max_amount">MAX</string>
+    <string name="send_all">Send All</string>
     <string name="err_sign_up_nfc_not_writable">Erro: tag não gravável</string>
     <string name="err_sign_up_nfc_too_small">Erro: tag pequena</string>
     <string name="network_monitor_peer_version">Versão: %1$s</string>

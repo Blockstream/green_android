@@ -176,7 +176,7 @@
     <string name="err_mnemonic_activity_logout_required">Debe salir antes de acceder.</string>
     <string name="err_mnemonic_activity_invalid_mnemonic">Frase mnemónica inválida (debe contener entre 24 y 27 palabras)</string>
     <string name="err_pin_save_wrong_length">El PIN debe contener entre 4 y 15 caracteres</string>
-    <string name="send_max_amount">Máximo a enviar</string>
+    <string name="send_all">Máximo a enviar</string>
     <string name="err_sign_up_nfc_not_writable">Error: no se puede escribir en el tag NFC</string>
     <string name="err_sign_up_nfc_too_small">Error: el tag NFC es demasiado pequeño</string>
     <string name="network_monitor_peer_addr">Dirección: %1$s</string>

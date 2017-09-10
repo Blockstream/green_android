@@ -197,7 +197,7 @@
     <string name="err_mnemonic_activity_logout_required">Ви спочатку повинні вийти для того що зайти.</string>
     <string name="err_mnemonic_activity_invalid_mnemonic">некоректний пароль (має містити від 24 до 27 слів)</string>
     <string name="err_pin_save_wrong_length">ПІН має містити від 4 до 15 знаків</string>
-    <string name="send_max_amount">МАКС</string>
+    <string name="send_all">МАКС</string>
     <string name="err_sign_up_nfc_not_writable">Помилка: тег не записується</string>
     <string name="err_sign_up_nfc_too_small">Помилка: тег замалий</string>
     <string name="network_monitor_peer_addr">Адреса: %1$s</string>

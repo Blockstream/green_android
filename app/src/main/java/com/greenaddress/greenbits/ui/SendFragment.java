@@ -304,7 +304,7 @@ public class SendFragment extends SubaccountFragment {
                 @Override
                 public void onCheckedChanged(final CompoundButton v, final boolean isChecked) {
                     UI.disableIf(isChecked, mAmountEdit, mAmountFiatEdit);
-                    mAmountEdit.setText(isChecked ? R.string.send_max_amount : R.string.empty);
+                    mAmountEdit.setText(isChecked ? R.string.all : R.string.empty);
                 }
             });
         }

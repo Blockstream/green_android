@@ -153,14 +153,14 @@
                             android:id="@+id/sendMaxLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="MAX"
+                            android:text="@string/send_all"
                             />
                         <Switch
                             android:id="@+id/sendMaxButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textOff="MAX"
-                            android:textOn="MAX"
+                            android:textOff="@string/send_all"
+                            android:textOn="@string/send_all"
                             />
                     </LinearLayout>
                 </LinearLayout>

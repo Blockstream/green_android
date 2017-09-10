@@ -165,7 +165,7 @@
     <string name="err_mnemonic_activity_logout_required">Occure fare il logout prima dell\'accesso.</string>
     <string name="err_mnemonic_activity_invalid_mnemonic">Frase mnemonica invalida (deve essere di 24 o 27 parole)</string>
     <string name="err_pin_save_wrong_length">Il deve essere tra 4 e 15 numeri</string>
-    <string name="send_max_amount">TOTALE</string>
+    <string name="send_all">TOTALE</string>
     <string name="err_sign_up_nfc_not_writable">Errore: tag nfc non scrivibile</string>
     <string name="err_sign_up_nfc_too_small">Errore: tag nfc troppo piccola</string>
     <string name="network_monitor_peer_addr">Indirizzo: %1$s</string>
