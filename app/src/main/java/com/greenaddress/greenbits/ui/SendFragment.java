@@ -486,7 +486,7 @@ public class SendFragment extends SubaccountFragment {
             privateData.mData.put("subaccount", mSubaccount);
 
         final UI.FEE_TARGET feeTarget = UI.FEE_TARGET.values()[mFeeTargetCombo.getSelectedItemPosition()];
-        if (feeTarget == UI.FEE_TARGET.INSTANT)
+        if (feeTarget.equals(UI.FEE_TARGET.INSTANT))
             privateData.mData.put("instant", true);
 
         final Coin amount = getSendAmount();
@@ -524,7 +524,7 @@ public class SendFragment extends SubaccountFragment {
 
         UI.disable(mSendButton);
         final int numConfs;
-        if (feeTarget == UI.FEE_TARGET.INSTANT)
+        if (feeTarget.equals(UI.FEE_TARGET.INSTANT))
             numConfs = 6; // Instant requires at least 6 confs
         else if (Network.NETWORK == MainNetParams.get())
             numConfs = 1; // Require 1 conf before spending on mainnet
@@ -782,7 +782,7 @@ public class SendFragment extends SubaccountFragment {
     }
 
     Coin getFeeRate(final UI.FEE_TARGET feeTarget) throws GAException {
-        if (!GaService.IS_ELEMENTS && feeTarget == UI.FEE_TARGET.CUSTOM) {
+        if (!GaService.IS_ELEMENTS && feeTarget.equals(UI.FEE_TARGET.CUSTOM)) {
             // FIXME: Get custom rate from UI, check its valid before calling this function
             // FIXME: Custom fees for elements
             final Double feeRate = Double.valueOf(getGAService().cfg().getString("default_feerate", ""));
@@ -795,8 +795,8 @@ public class SendFragment extends SubaccountFragment {
         if (GaService.IS_ELEMENTS)
             forBlock = 6; // FIXME: feeTarget
         else
-            forBlock = feeTarget == UI.FEE_TARGET.INSTANT ? 1 : feeTarget.getBlock();
-        return GATx.getFeeEstimate(getGAService(), feeTarget == UI.FEE_TARGET.INSTANT, forBlock);
+            forBlock = feeTarget.equals(UI.FEE_TARGET.INSTANT) ? 1 : feeTarget.getBlock();
+        return GATx.getFeeEstimate(getGAService(), feeTarget.equals(UI.FEE_TARGET.INSTANT), forBlock);
     }
 
     private int createRawTransaction(final List<JSONMap> utxos, final String recipient,
