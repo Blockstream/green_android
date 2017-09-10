@@ -49,6 +49,7 @@ public abstract class UI {
         FEE_TARGET(int block) { mBlock = block; }
         public int getBlock() { return mBlock; }
     }
+    public static final FEE_TARGET[] FEE_TARGET_VALUES = FEE_TARGET.values();
 
     private static final String MICRO_BTC = "\u00B5BTC";
     private static final MonetaryFormat BTC = new MonetaryFormat().shift(0).minDecimals(8).noCode();

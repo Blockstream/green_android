@@ -454,9 +454,8 @@ public class SendFragment extends SubaccountFragment {
 
         // Default priority to the users default priority from settings
         final int currentPriority = service.getDefaultTransactionPriority();
-        final UI.FEE_TARGET[] targets = UI.FEE_TARGET.values();
-        for (int i = 0; i < targets.length; ++i) {
-            if (currentPriority == targets[i].getBlock())
+        for (int i = 0; i < UI.FEE_TARGET_VALUES.length; ++i) {
+            if (currentPriority == UI.FEE_TARGET_VALUES[i].getBlock())
                 mFeeTargetCombo.setSelection(i);
         }
     }
@@ -485,7 +484,7 @@ public class SendFragment extends SubaccountFragment {
         if (mSubaccount != 0)
             privateData.mData.put("subaccount", mSubaccount);
 
-        final UI.FEE_TARGET feeTarget = UI.FEE_TARGET.values()[mFeeTargetCombo.getSelectedItemPosition()];
+        final UI.FEE_TARGET feeTarget = UI.FEE_TARGET_VALUES[mFeeTargetCombo.getSelectedItemPosition()];
         if (feeTarget.equals(UI.FEE_TARGET.INSTANT))
             privateData.mData.put("instant", true);
 
