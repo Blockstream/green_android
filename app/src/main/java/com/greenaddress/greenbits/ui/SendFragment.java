@@ -15,6 +15,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -74,6 +75,7 @@ public class SendFragment extends SubaccountFragment {
     private EditText mRecipientEdit;
     private EditText mNoteText;
     private Spinner mFeeTargetCombo;
+    private EditText mFeeTargetEdit;
     private TextView mNoteIcon;
     private Button mSendButton;
     private Switch mMaxButton;
@@ -217,6 +219,7 @@ public class SendFragment extends SubaccountFragment {
         mMaxLabel = UI.find(mView, R.id.sendMaxLabel);
         mNoteText = UI.find(mView, R.id.sendToNoteText);
         mNoteIcon = UI.find(mView, R.id.sendToNoteIcon);
+        mFeeTargetEdit = UI.find(mView, R.id.feerateTextEdit);
         mFeeTargetCombo = UI.find(mView, R.id.feeTargetCombo);
         populateFeeCombo();
 
@@ -452,12 +455,29 @@ public class SendFragment extends SubaccountFragment {
         a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mFeeTargetCombo.setAdapter(a);
 
+        mFeeTargetCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int pos, long id) {
+                onNewFeeTargetSelected(pos);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
         // Default priority to the users default priority from settings
         final int currentPriority = service.getDefaultTransactionPriority();
         for (int i = 0; i < UI.FEE_TARGET_VALUES.length; ++i) {
             if (currentPriority == UI.FEE_TARGET_VALUES[i].getBlock())
                 mFeeTargetCombo.setSelection(i);
         }
+    }
+
+    private void onNewFeeTargetSelected(final int index) {
+        // Show custom fee entry when custom fee is selected
+        final boolean isCustom = UI.FEE_TARGET_VALUES[index].equals(UI.FEE_TARGET.CUSTOM);
+        UI.showIf(isCustom, mFeeTargetEdit);
+        if (isCustom)
+            mFeeTargetEdit.setText(getGAService().cfg().getString("default_feerate", ""));
     }
 
     private Coin getSendAmount() {
