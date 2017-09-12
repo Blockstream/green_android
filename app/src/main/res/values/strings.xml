@@ -334,7 +334,7 @@
     <string name="segwit_disable">Disable Segwit</string>
     <string name="segwit_enable">Enable Segwit</string>
     <string name="sellTo">Sell to</string>
-    <string name="exchanger">Exchanger</string>
+    <string name="exchanger">Exchange Calculator</string>
     <string name="exchangerSellTitle">Sell</string>
     <string name="exchangerBuyTitle">Buy</string>
     <string name="exchangerPreferenceFiat">Preset buttons for fiat</string>
@@ -342,9 +342,9 @@
     <string name="exchangerPreferenceFiatInPocket">Fiat in your pocket</string>
     <string name="exchangerPreferenceFiatInPocketDesc">in your current currency</string>
     <string name="noEnoughMoneyInPocket">No enough money in your pocket</string>
-    <string name="txExchangerMemo">Exchanger transaction</string>
+    <string name="txExchangerMemo">Exchange Calculator transaction</string>
     <string name="waitingTransaction">Waiting for transaction...</string>
-    <string name="show_exchanger_menu">Show exchanger menu</string>
+    <string name="show_exchanger_menu">Show Exchange Calculator menu</string>
     <string name="buy_commission_percentage">Buy percentage commission</string>
     <string name="buy_commission_fixed">Buy fixed commission</string>
     <string name="sell_commission_percentage">Sell percentage commission</string>
