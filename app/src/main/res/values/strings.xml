@@ -103,6 +103,7 @@
     <string name="default_custom_feerate">Default custom feerate</string>
     <string name="enter_satoshi_per_kb">Enter Satoshi per kB</string>
     <string name="feerate_changed">The feerate was corrected to the minimum rate of %s sat/kB</string>
+    <string name="sat_per_kb">sat/kB</string>
     <string name="send">SEND</string>
     <string name="sweep">SWEEP</string>
     <string name="sweep_bip38_passphrase_prompt">Please provide the BIP38 password:</string>
