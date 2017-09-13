@@ -1235,6 +1235,7 @@ public class Transaction extends ChildMessage {
             }
 
             ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(tx.length == UNKNOWN_LENGTH ? 256 : tx.length + 4);
+            tx.transactionOptions = TransactionOptions.NONE;
             tx.bitcoinSerialize(bos);
             // We also have to write a hash type (sigHashType is actually an unsigned char)
             uint32ToByteStreamLE(0x000000ff & sigHashType, bos);
