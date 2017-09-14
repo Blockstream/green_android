@@ -624,7 +624,11 @@ public class SPV {
 
     private final TransactionReceivedInBlockListener mTxListner = new TransactionReceivedInBlockListener() {
         @Override
-        public void receiveFromBlock(final Transaction tx, final StoredBlock block, final BlockChain.NewBlockType blockType, final int relativityOffset) throws VerificationException {
+        public void receiveFromBlock(final Transaction tx, final StoredBlock block,
+                                     final BlockChain.NewBlockType blockType,
+                                     final int relativityOffset) throws VerificationException {
+            if (tx == null)
+                throw new RuntimeException("receiveFromBlock got null tx");
             getService().notifyObservers(tx.getHash());
         }
 

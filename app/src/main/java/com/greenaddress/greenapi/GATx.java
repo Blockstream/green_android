@@ -342,8 +342,11 @@ public class GATx {
                                       subAccount, tx,
                                       service.findSubaccountByType(subAccount, "2of3"));
         ptx.mPrevoutRawTxs = new HashMap<>();
-        for (final Transaction prevTx : getPreviousTransactions(service, tx))
+        for (final Transaction prevTx : getPreviousTransactions(service, tx)) {
+            if (prevTx == null)
+                throw new RuntimeException("Previous transaction not found");
             ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(prevTx.getHash().getBytes()), prevTx);
+        }
 
         final boolean isSegwitEnabled = service.isSegwitEnabled();
 
