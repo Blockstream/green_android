@@ -157,6 +157,8 @@ public class GATx {
             index = ep.getInt("pt_idx");
             pubkey_pointer = ep.getInt("pubkey_pointer");
         }
+        if (index == -1)
+            return null;
         return new Pair<>(tx.getOutput(index), pubkey_pointer);
     }
 
