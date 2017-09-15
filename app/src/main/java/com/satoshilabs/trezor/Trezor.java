@@ -457,38 +457,21 @@ public class Trezor {
             } else {
                 addrN = new Integer[] { 1, curTx.mPrevOutputs.get(requestIndex).pointer};
             }
-            final TrezorType.MultisigRedeemScriptType multisig;
-            if (curRecoveryNode == null) {
-                multisig = TrezorType.MultisigRedeemScriptType.newBuilder().
-                        clearPubkeys().
-                        addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                setNode(curGaNode).
-                                clearAddressN().
-                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
-                        addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                setNode(curWalletNode).
-                                clearAddressN().
-                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
-                        setM(2).
-                        build();
-            } else {
-                multisig = TrezorType.MultisigRedeemScriptType.newBuilder().
-                        clearPubkeys().
-                        addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                setNode(curGaNode).
-                                clearAddressN().
-                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
-                        addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                setNode(curWalletNode).
-                                clearAddressN().
-                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer)).
-                        addPubkeys((TrezorType.HDNodePathType.newBuilder().
-                                setNode(curRecoveryNode).
-                                clearAddressN().
-                                addAddressN(curTx.mPrevOutputs.get(requestIndex).pointer))).
-                        setM(2).
-                        build();
+
+            // FIXME: This doesn't work for segwit inputs
+            final Integer pointer = curTx.mPrevOutputs.get(requestIndex).pointer;
+            TrezorType.MultisigRedeemScriptType.Builder multisig;
+            multisig = TrezorType.MultisigRedeemScriptType.newBuilder()
+                .clearPubkeys()
+                .addPubkeys(makePubKey(curGaNode, pointer))
+                .addPubkeys(makePubKey(curWalletNode, pointer));
+
+            if (curRecoveryNode != null) {
+                // 2of 3
+                multisig = multisig.addPubkeys(makePubKey(curRecoveryNode, pointer));
             }
+            multisig = multisig.setM(2);
+
             return TrezorType.TxInputType.newBuilder().
                     clearAddressN().
                     addAllAddressN(Arrays.asList(addrN)).
