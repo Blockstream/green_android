@@ -387,53 +387,48 @@ public class Trezor {
         return resp.getClass().getSimpleName();
     }
 
+    private TrezorType.HDNodePathType.Builder makePubKey(final TrezorType.HDNodeType node, final Integer pointer) {
+        return TrezorType.HDNodePathType.newBuilder().setNode(node)
+                   .clearAddressN().addAddressN(curTx.mChangePointer);
+    }
+
     private TrezorType.TxOutputType createOutput(final int requestIndex) {
         final TransactionOutput txOut = curTx.mDecoded.getOutputs().get(requestIndex);
 
-        final TrezorType.TxOutputType.Builder b = TrezorType.TxOutputType.newBuilder().
-            setAmount(txOut.getValue().longValue());
-        if (txOut.getScriptPubKey().isPayToScriptHash()) {
-            b.setAddress(txOut.getAddressFromP2SH(Network.NETWORK).toString());
-            if (txOut.getAddressFromP2SH(Network.NETWORK).equals(curChangeAddr)) {
-                b.setScriptType(TrezorType.OutputScriptType.PAYTOMULTISIG);
-                if (curRecoveryNode == null) {
-                    b.setMultisig(TrezorType.MultisigRedeemScriptType.newBuilder().
-                            clearPubkeys().
-                            addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                    setNode(curGaNode).
-                                    clearAddressN().
-                                    addAddressN(curTx.mChangePointer)).
-                            addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                    setNode(curWalletNode).
-                                    clearAddressN().
-                                    addAddressN(curTx.mChangePointer)).
-                            setM(2));
-                } else {
-                    b.setMultisig(TrezorType.MultisigRedeemScriptType.newBuilder().
-                            clearPubkeys().
-                            addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                    setNode(curGaNode).
-                                    clearAddressN().
-                                    addAddressN(curTx.mChangePointer)).
-                            addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                    setNode(curWalletNode).
-                                    clearAddressN().
-                                    addAddressN(curTx.mChangePointer)).
-                            addPubkeys(TrezorType.HDNodePathType.newBuilder().
-                                    setNode(curRecoveryNode).
-                                    clearAddressN().
-                                    addAddressN(curTx.mChangePointer)).
-                            setM(2));
-                }
-            } else {
-                b.setScriptType(TrezorType.OutputScriptType.PAYTOSCRIPTHASH);
-            }
-        } else {
-            b.setAddress(txOut.getAddressFromP2PKHScript(Network.NETWORK).toString());
-            b.setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
+        final TrezorType.TxOutputType.Builder txout;
+        txout = TrezorType.TxOutputType.newBuilder().setAmount(txOut.getValue().longValue());
+
+        if (!txOut.getScriptPubKey().isPayToScriptHash()) {
+            // p2pkh
+            txout.setAddress(txOut.getAddressFromP2PKHScript(Network.NETWORK).toString());
+            txout.setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
+            return txout.build(); // p2pkh output
         }
 
-        return b.build();
+        // p2sh
+        txout.setAddress(txOut.getAddressFromP2SH(Network.NETWORK).toString());
+
+        if (!txOut.getAddressFromP2SH(Network.NETWORK).equals(curChangeAddr)) {
+            txout.setScriptType(TrezorType.OutputScriptType.PAYTOSCRIPTHASH);
+            return txout.build(); // p2sh output
+        }
+
+        // FIXME: Should be PAYTOP2SHWITNESS for segwit change addresses
+        txout.setScriptType(TrezorType.OutputScriptType.PAYTOMULTISIG);
+        TrezorType.MultisigRedeemScriptType.Builder multisig;
+        multisig = TrezorType.MultisigRedeemScriptType.newBuilder()
+            .clearPubkeys()
+            .addPubkeys(makePubKey(curGaNode, curTx.mChangePointer))
+            .addPubkeys(makePubKey(curWalletNode, curTx.mChangePointer));
+
+        if (curRecoveryNode != null) {
+            // 2of 3
+            multisig = multisig.addPubkeys(makePubKey(curRecoveryNode, curTx.mChangePointer));
+        }
+
+        // FIXME: This doesn't work for segwit change addresses
+        txout.setMultisig(multisig.setM(2));
+        return txout.build(); // p2sh change output
     }
 
     private TrezorType.TxOutputBinType createBinOutput(final ByteString txHash, final int requestIndex) {
