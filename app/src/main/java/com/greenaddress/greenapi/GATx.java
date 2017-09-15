@@ -14,7 +14,6 @@ import org.bitcoinj.core.TransactionOptions;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.TransactionWitness;
-import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.VarInt;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.script.Script;
@@ -119,7 +118,7 @@ public class GATx {
         byte[] script = addrInfo.getBytes("script");
         if (addrInfo.getString("addr_type").equals("p2wsh"))
             script = ScriptBuilder.createP2WSHOutputScript(Wally.sha256(script)).getProgram();
-        return Address.fromP2SHHash(Network.NETWORK, Utils.sha256hash160(script));
+        return Address.fromP2SHHash(Network.NETWORK, Wally.hash160(script));
     }
 
     /* Add a new change output to a tx */

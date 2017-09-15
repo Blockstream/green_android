@@ -56,7 +56,6 @@ import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
-import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.script.Script;
@@ -429,9 +428,9 @@ public class GaService extends Service implements INotificationHandler {
             public Boolean call() {
                 final byte[] multisig = createOutScript(subAccount, pointer);
                 if (isSegwitEnabled() &&
-                    Arrays.equals(gotP2SH, Utils.sha256hash160(getSegWitScript(multisig))))
+                    Arrays.equals(gotP2SH, Wally.hash160(getSegWitScript(multisig))))
                     return true;
-                return Arrays.equals(gotP2SH, Utils.sha256hash160(multisig));
+                return Arrays.equals(gotP2SH, Wally.hash160(multisig));
             }
         });
     }
@@ -1000,9 +999,9 @@ public class GaService extends Service implements INotificationHandler {
                 final byte[] scriptHash;
                 final String addrType = input.get("addr_type");
                 if (addrType.equals("p2wsh"))
-                    scriptHash = Utils.sha256hash160(getSegWitScript(script));
+                    scriptHash = Wally.hash160(getSegWitScript(script));
                 else if (addrType.equals("p2sh"))
-                    scriptHash = Utils.sha256hash160(script);
+                    scriptHash = Wally.hash160(script);
                 else
                     throw new IllegalArgumentException("Unknown address type " + addrType);
 
