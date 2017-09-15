@@ -3,18 +3,18 @@
 // libprotoc 3.3.0
 // trezor-common 2a86fb0503f432063fc899c02dcdc09ee21c29d4
 
-package com.satoshilabs.trezor.lib.protobuf;
+package com.satoshilabs.trezor.protobuf;
 
 public final class TrezorType {
   private TrezorType() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
-    registry.add(com.satoshilabs.trezor.lib.protobuf.TrezorType.wireIn);
-    registry.add(com.satoshilabs.trezor.lib.protobuf.TrezorType.wireOut);
-    registry.add(com.satoshilabs.trezor.lib.protobuf.TrezorType.wireDebugIn);
-    registry.add(com.satoshilabs.trezor.lib.protobuf.TrezorType.wireDebugOut);
-    registry.add(com.satoshilabs.trezor.lib.protobuf.TrezorType.wireTiny);
-    registry.add(com.satoshilabs.trezor.lib.protobuf.TrezorType.wireBootloader);
+    registry.add(com.satoshilabs.trezor.protobuf.TrezorType.wireIn);
+    registry.add(com.satoshilabs.trezor.protobuf.TrezorType.wireOut);
+    registry.add(com.satoshilabs.trezor.protobuf.TrezorType.wireDebugIn);
+    registry.add(com.satoshilabs.trezor.protobuf.TrezorType.wireDebugOut);
+    registry.add(com.satoshilabs.trezor.protobuf.TrezorType.wireTiny);
+    registry.add(com.satoshilabs.trezor.protobuf.TrezorType.wireBootloader);
   }
 
   public static void registerAllExtensions(
@@ -185,7 +185,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(0);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(0);
     }
 
     private static final FailureType[] VALUES = values();
@@ -365,7 +365,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(1);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(1);
     }
 
     private static final OutputScriptType[] VALUES = values();
@@ -528,7 +528,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(2);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(2);
     }
 
     private static final InputScriptType[] VALUES = values();
@@ -651,7 +651,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(3);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(3);
     }
 
     private static final RequestType[] VALUES = values();
@@ -828,7 +828,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(4);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(4);
     }
 
     private static final ButtonRequestType[] VALUES = values();
@@ -933,7 +933,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(5);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(5);
     }
 
     private static final PinMatrixRequestType[] VALUES = values();
@@ -1049,7 +1049,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(6);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(6);
     }
 
     private static final RecoveryDeviceType[] VALUES = values();
@@ -1154,7 +1154,7 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.getDescriptor().getEnumTypes().get(7);
+      return com.satoshilabs.trezor.protobuf.TrezorType.getDescriptor().getEnumTypes().get(7);
     }
 
     private static final WordRequestType[] VALUES = values();
@@ -1337,14 +1337,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodeType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodeType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodeType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodeType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.class, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder.class);
     }
 
     private int bitField0_;
@@ -1527,10 +1527,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType other = (com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType) obj;
 
       boolean result = true;
       result = result && (hasDepth() == other.hasDepth());
@@ -1603,69 +1603,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1677,7 +1677,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -1707,20 +1707,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:HDNodeType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodeTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodeType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodeType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodeType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodeType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.class, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1754,23 +1754,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodeType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodeType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType result = new com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -1829,16 +1829,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.getDefaultInstance()) return this;
         if (other.hasDepth()) {
           setDepth(other.getDepth());
         }
@@ -1882,11 +1882,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -2112,12 +2112,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:HDNodeType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -2140,7 +2140,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -2165,7 +2165,7 @@ public final class TrezorType {
      *
      * <code>required .HDNodeType node = 1;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType getNode();
+    com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType getNode();
     /**
      * <pre>
      * BIP-32 node in deserialized form
@@ -2173,7 +2173,7 @@ public final class TrezorType {
      *
      * <code>required .HDNodeType node = 1;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeTypeOrBuilder getNodeOrBuilder();
+    com.satoshilabs.trezor.protobuf.TrezorType.HDNodeTypeOrBuilder getNodeOrBuilder();
 
     /**
      * <pre>
@@ -2244,11 +2244,11 @@ public final class TrezorType {
               break;
             }
             case 10: {
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder subBuilder = null;
+              com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder subBuilder = null;
               if (((bitField0_ & 0x00000001) == 0x00000001)) {
                 subBuilder = node_.toBuilder();
               }
-              node_ = input.readMessage(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.PARSER, extensionRegistry);
+              node_ = input.readMessage(com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.PARSER, extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(node_);
                 node_ = subBuilder.buildPartial();
@@ -2294,19 +2294,19 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodePathType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodePathType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodePathType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodePathType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.class, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder.class);
     }
 
     private int bitField0_;
     public static final int NODE_FIELD_NUMBER = 1;
-    private com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType node_;
+    private com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType node_;
     /**
      * <pre>
      * BIP-32 node in deserialized form
@@ -2324,8 +2324,8 @@ public final class TrezorType {
      *
      * <code>required .HDNodeType node = 1;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType getNode() {
-      return node_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
+    public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType getNode() {
+      return node_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
     }
     /**
      * <pre>
@@ -2334,8 +2334,8 @@ public final class TrezorType {
      *
      * <code>required .HDNodeType node = 1;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeTypeOrBuilder getNodeOrBuilder() {
-      return node_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
+    public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeTypeOrBuilder getNodeOrBuilder() {
+      return node_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
     }
 
     public static final int ADDRESS_N_FIELD_NUMBER = 2;
@@ -2430,10 +2430,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType other = (com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType) obj;
 
       boolean result = true;
       result = result && (hasNode() == other.hasNode());
@@ -2467,69 +2467,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2541,7 +2541,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -2561,20 +2561,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:HDNodePathType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodePathType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodePathType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodePathType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodePathType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.class, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2605,23 +2605,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_HDNodePathType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_HDNodePathType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType result = new com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -2669,16 +2669,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.getDefaultInstance()) return this;
         if (other.hasNode()) {
           mergeNode(other.getNode());
         }
@@ -2711,11 +2711,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -2726,9 +2726,9 @@ public final class TrezorType {
       }
       private int bitField0_;
 
-      private com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType node_ = null;
+      private com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType node_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeTypeOrBuilder> nodeBuilder_;
+          com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeTypeOrBuilder> nodeBuilder_;
       /**
        * <pre>
        * BIP-32 node in deserialized form
@@ -2746,9 +2746,9 @@ public final class TrezorType {
        *
        * <code>required .HDNodeType node = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType getNode() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType getNode() {
         if (nodeBuilder_ == null) {
-          return node_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
+          return node_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
         } else {
           return nodeBuilder_.getMessage();
         }
@@ -2760,7 +2760,7 @@ public final class TrezorType {
        *
        * <code>required .HDNodeType node = 1;</code>
        */
-      public Builder setNode(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType value) {
+      public Builder setNode(com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType value) {
         if (nodeBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2781,7 +2781,7 @@ public final class TrezorType {
        * <code>required .HDNodeType node = 1;</code>
        */
       public Builder setNode(
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder builderForValue) {
+          com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder builderForValue) {
         if (nodeBuilder_ == null) {
           node_ = builderForValue.build();
           onChanged();
@@ -2798,13 +2798,13 @@ public final class TrezorType {
        *
        * <code>required .HDNodeType node = 1;</code>
        */
-      public Builder mergeNode(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType value) {
+      public Builder mergeNode(com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType value) {
         if (nodeBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001) &&
               node_ != null &&
-              node_ != com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.getDefaultInstance()) {
+              node_ != com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.getDefaultInstance()) {
             node_ =
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.newBuilder(node_).mergeFrom(value).buildPartial();
+              com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.newBuilder(node_).mergeFrom(value).buildPartial();
           } else {
             node_ = value;
           }
@@ -2839,7 +2839,7 @@ public final class TrezorType {
        *
        * <code>required .HDNodeType node = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder getNodeBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder getNodeBuilder() {
         bitField0_ |= 0x00000001;
         onChanged();
         return getNodeFieldBuilder().getBuilder();
@@ -2851,12 +2851,12 @@ public final class TrezorType {
        *
        * <code>required .HDNodeType node = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeTypeOrBuilder getNodeOrBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodeTypeOrBuilder getNodeOrBuilder() {
         if (nodeBuilder_ != null) {
           return nodeBuilder_.getMessageOrBuilder();
         } else {
           return node_ == null ?
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
+              com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.getDefaultInstance() : node_;
         }
       }
       /**
@@ -2867,11 +2867,11 @@ public final class TrezorType {
        * <code>required .HDNodeType node = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeTypeOrBuilder> 
+          com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeTypeOrBuilder> 
           getNodeFieldBuilder() {
         if (nodeBuilder_ == null) {
           nodeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodeTypeOrBuilder>(
+              com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.HDNodeTypeOrBuilder>(
                   getNode(),
                   getParentForChildren(),
                   isClean());
@@ -2988,12 +2988,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:HDNodePathType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -3016,7 +3016,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -3241,14 +3241,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_CoinType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_CoinType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_CoinType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_CoinType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.CoinType.class, com.satoshilabs.trezor.protobuf.TrezorType.CoinType.Builder.class);
     }
 
     private int bitField0_;
@@ -3559,10 +3559,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.CoinType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.CoinType other = (com.satoshilabs.trezor.protobuf.TrezorType.CoinType) obj;
 
       boolean result = true;
       result = result && (hasCoinName() == other.hasCoinName());
@@ -3664,69 +3664,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3738,7 +3738,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.CoinType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -3764,20 +3764,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CoinType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.CoinTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_CoinType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_CoinType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_CoinType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_CoinType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.CoinType.class, com.satoshilabs.trezor.protobuf.TrezorType.CoinType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.CoinType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3817,23 +3817,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_CoinType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_CoinType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.CoinType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.CoinType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.CoinType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.CoinType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.CoinType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.CoinType result = new com.satoshilabs.trezor.protobuf.TrezorType.CoinType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -3904,16 +3904,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.CoinType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.CoinType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.CoinType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.CoinType.getDefaultInstance()) return this;
         if (other.hasCoinName()) {
           bitField0_ |= 0x00000001;
           coinName_ = other.coinName_;
@@ -3960,11 +3960,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.CoinType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.CoinType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -4409,12 +4409,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:CoinType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.CoinType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.CoinType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.CoinType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4437,7 +4437,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.CoinType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.CoinType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4454,7 +4454,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType> 
+    java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType> 
         getPubkeysList();
     /**
      * <pre>
@@ -4463,7 +4463,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType getPubkeys(int index);
+    com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType getPubkeys(int index);
     /**
      * <pre>
      * pubkeys from multisig address (sorted lexicographically)
@@ -4479,7 +4479,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
+    java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
         getPubkeysOrBuilderList();
     /**
      * <pre>
@@ -4488,7 +4488,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder getPubkeysOrBuilder(
+    com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder getPubkeysOrBuilder(
         int index);
 
     /**
@@ -4586,11 +4586,11 @@ public final class TrezorType {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                pubkeys_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType>();
+                pubkeys_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType>();
                 mutable_bitField0_ |= 0x00000001;
               }
               pubkeys_.add(
-                  input.readMessage(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.PARSER, extensionRegistry));
+                  input.readMessage(com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.PARSER, extensionRegistry));
               break;
             }
             case 18: {
@@ -4626,19 +4626,19 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.class, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder.class);
     }
 
     private int bitField0_;
     public static final int PUBKEYS_FIELD_NUMBER = 1;
-    private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType> pubkeys_;
+    private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType> pubkeys_;
     /**
      * <pre>
      * pubkeys from multisig address (sorted lexicographically)
@@ -4646,7 +4646,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType> getPubkeysList() {
+    public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType> getPubkeysList() {
       return pubkeys_;
     }
     /**
@@ -4656,7 +4656,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
+    public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
         getPubkeysOrBuilderList() {
       return pubkeys_;
     }
@@ -4677,7 +4677,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType getPubkeys(int index) {
+    public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType getPubkeys(int index) {
       return pubkeys_.get(index);
     }
     /**
@@ -4687,7 +4687,7 @@ public final class TrezorType {
      *
      * <code>repeated .HDNodePathType pubkeys = 1;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder getPubkeysOrBuilder(
+    public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder getPubkeysOrBuilder(
         int index) {
       return pubkeys_.get(index);
     }
@@ -4812,10 +4812,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType other = (com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType) obj;
 
       boolean result = true;
       result = result && getPubkeysList()
@@ -4855,69 +4855,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -4929,7 +4929,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -4955,20 +4955,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:MultisigRedeemScriptType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.class, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5001,23 +5001,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_MultisigRedeemScriptType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType result = new com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (pubkeysBuilder_ == null) {
@@ -5070,16 +5070,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance()) return this;
         if (pubkeysBuilder_ == null) {
           if (!other.pubkeys_.isEmpty()) {
             if (pubkeys_.isEmpty()) {
@@ -5137,11 +5137,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -5152,17 +5152,17 @@ public final class TrezorType {
       }
       private int bitField0_;
 
-      private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType> pubkeys_ =
+      private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType> pubkeys_ =
         java.util.Collections.emptyList();
       private void ensurePubkeysIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          pubkeys_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType>(pubkeys_);
+          pubkeys_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType>(pubkeys_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder> pubkeysBuilder_;
+          com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder> pubkeysBuilder_;
 
       /**
        * <pre>
@@ -5171,7 +5171,7 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType> getPubkeysList() {
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType> getPubkeysList() {
         if (pubkeysBuilder_ == null) {
           return java.util.Collections.unmodifiableList(pubkeys_);
         } else {
@@ -5199,7 +5199,7 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType getPubkeys(int index) {
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType getPubkeys(int index) {
         if (pubkeysBuilder_ == null) {
           return pubkeys_.get(index);
         } else {
@@ -5214,7 +5214,7 @@ public final class TrezorType {
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
       public Builder setPubkeys(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType value) {
         if (pubkeysBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5235,7 +5235,7 @@ public final class TrezorType {
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
       public Builder setPubkeys(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder builderForValue) {
         if (pubkeysBuilder_ == null) {
           ensurePubkeysIsMutable();
           pubkeys_.set(index, builderForValue.build());
@@ -5252,7 +5252,7 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public Builder addPubkeys(com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType value) {
+      public Builder addPubkeys(com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType value) {
         if (pubkeysBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5273,7 +5273,7 @@ public final class TrezorType {
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
       public Builder addPubkeys(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType value) {
         if (pubkeysBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5294,7 +5294,7 @@ public final class TrezorType {
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
       public Builder addPubkeys(
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder builderForValue) {
+          com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder builderForValue) {
         if (pubkeysBuilder_ == null) {
           ensurePubkeysIsMutable();
           pubkeys_.add(builderForValue.build());
@@ -5312,7 +5312,7 @@ public final class TrezorType {
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
       public Builder addPubkeys(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder builderForValue) {
         if (pubkeysBuilder_ == null) {
           ensurePubkeysIsMutable();
           pubkeys_.add(index, builderForValue.build());
@@ -5330,7 +5330,7 @@ public final class TrezorType {
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
       public Builder addAllPubkeys(
-          java.lang.Iterable<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType> values) {
+          java.lang.Iterable<? extends com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType> values) {
         if (pubkeysBuilder_ == null) {
           ensurePubkeysIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -5382,7 +5382,7 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder getPubkeysBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder getPubkeysBuilder(
           int index) {
         return getPubkeysFieldBuilder().getBuilder(index);
       }
@@ -5393,7 +5393,7 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder getPubkeysOrBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder getPubkeysOrBuilder(
           int index) {
         if (pubkeysBuilder_ == null) {
           return pubkeys_.get(index);  } else {
@@ -5407,7 +5407,7 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
+      public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
            getPubkeysOrBuilderList() {
         if (pubkeysBuilder_ != null) {
           return pubkeysBuilder_.getMessageOrBuilderList();
@@ -5422,9 +5422,9 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder addPubkeysBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder addPubkeysBuilder() {
         return getPubkeysFieldBuilder().addBuilder(
-            com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.getDefaultInstance());
+            com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.getDefaultInstance());
       }
       /**
        * <pre>
@@ -5433,10 +5433,10 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder addPubkeysBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder addPubkeysBuilder(
           int index) {
         return getPubkeysFieldBuilder().addBuilder(
-            index, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.getDefaultInstance());
+            index, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.getDefaultInstance());
       }
       /**
        * <pre>
@@ -5445,16 +5445,16 @@ public final class TrezorType {
        *
        * <code>repeated .HDNodePathType pubkeys = 1;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder> 
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder> 
            getPubkeysBuilderList() {
         return getPubkeysFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
+          com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder> 
           getPubkeysFieldBuilder() {
         if (pubkeysBuilder_ == null) {
           pubkeysBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.HDNodePathTypeOrBuilder>(
+              com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathTypeOrBuilder>(
                   pubkeys_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -5626,12 +5626,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:MultisigRedeemScriptType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -5654,7 +5654,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -5772,7 +5772,7 @@ public final class TrezorType {
      *
      * <code>optional .InputScriptType script_type = 6 [default = SPENDADDRESS];</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType getScriptType();
+    com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType getScriptType();
 
     /**
      * <pre>
@@ -5789,7 +5789,7 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getMultisig();
+    com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getMultisig();
     /**
      * <pre>
      * Filled if input is going to spend multisig tx
@@ -5797,7 +5797,7 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder();
+    com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder();
 
     /**
      * <pre>
@@ -5915,7 +5915,7 @@ public final class TrezorType {
             }
             case 48: {
               int rawValue = input.readEnum();
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType value = com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType.valueOf(rawValue);
+              com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType value = com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType.valueOf(rawValue);
               if (value == null) {
                 unknownFields.mergeVarintField(6, rawValue);
               } else {
@@ -5925,11 +5925,11 @@ public final class TrezorType {
               break;
             }
             case 58: {
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder subBuilder = null;
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder subBuilder = null;
               if (((bitField0_ & 0x00000020) == 0x00000020)) {
                 subBuilder = multisig_.toBuilder();
               }
-              multisig_ = input.readMessage(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.PARSER, extensionRegistry);
+              multisig_ = input.readMessage(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.PARSER, extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(multisig_);
                 multisig_ = subBuilder.buildPartial();
@@ -5959,14 +5959,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxInputType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxInputType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxInputType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxInputType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder.class);
     }
 
     private int bitField0_;
@@ -6115,13 +6115,13 @@ public final class TrezorType {
      *
      * <code>optional .InputScriptType script_type = 6 [default = SPENDADDRESS];</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType getScriptType() {
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType result = com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType.valueOf(scriptType_);
-      return result == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType.SPENDADDRESS : result;
+    public com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType getScriptType() {
+      com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType result = com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType.valueOf(scriptType_);
+      return result == null ? com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType.SPENDADDRESS : result;
     }
 
     public static final int MULTISIG_FIELD_NUMBER = 7;
-    private com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType multisig_;
+    private com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType multisig_;
     /**
      * <pre>
      * Filled if input is going to spend multisig tx
@@ -6139,8 +6139,8 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
-      return multisig_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+    public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
+      return multisig_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
     }
     /**
      * <pre>
@@ -6149,8 +6149,8 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
-      return multisig_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+    public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
+      return multisig_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
     }
 
     public static final int AMOUNT_FIELD_NUMBER = 8;
@@ -6282,10 +6282,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxInputType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.TxInputType other = (com.satoshilabs.trezor.protobuf.TrezorType.TxInputType) obj;
 
       boolean result = true;
       result = result && getAddressNList()
@@ -6373,69 +6373,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -6447,7 +6447,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.TxInputType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -6474,20 +6474,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:TxInputType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxInputType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxInputType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxInputType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxInputType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6530,23 +6530,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxInputType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxInputType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxInputType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxInputType result = new com.satoshilabs.trezor.protobuf.TrezorType.TxInputType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -6618,16 +6618,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxInputType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.TxInputType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.TxInputType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.getDefaultInstance()) return this;
         if (!other.addressN_.isEmpty()) {
           if (addressN_.isEmpty()) {
             addressN_ = other.addressN_;
@@ -6683,11 +6683,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.TxInputType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.TxInputType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -7008,9 +7008,9 @@ public final class TrezorType {
        *
        * <code>optional .InputScriptType script_type = 6 [default = SPENDADDRESS];</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType getScriptType() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType result = com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType.valueOf(scriptType_);
-        return result == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType.SPENDADDRESS : result;
+      public com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType getScriptType() {
+        com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType result = com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType.valueOf(scriptType_);
+        return result == null ? com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType.SPENDADDRESS : result;
       }
       /**
        * <pre>
@@ -7019,7 +7019,7 @@ public final class TrezorType {
        *
        * <code>optional .InputScriptType script_type = 6 [default = SPENDADDRESS];</code>
        */
-      public Builder setScriptType(com.satoshilabs.trezor.lib.protobuf.TrezorType.InputScriptType value) {
+      public Builder setScriptType(com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -7042,9 +7042,9 @@ public final class TrezorType {
         return this;
       }
 
-      private com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType multisig_ = null;
+      private com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType multisig_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> multisigBuilder_;
+          com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> multisigBuilder_;
       /**
        * <pre>
        * Filled if input is going to spend multisig tx
@@ -7062,9 +7062,9 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
         if (multisigBuilder_ == null) {
-          return multisig_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+          return multisig_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
         } else {
           return multisigBuilder_.getMessage();
         }
@@ -7076,7 +7076,7 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
        */
-      public Builder setMultisig(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType value) {
+      public Builder setMultisig(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType value) {
         if (multisigBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -7097,7 +7097,7 @@ public final class TrezorType {
        * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
        */
       public Builder setMultisig(
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder builderForValue) {
+          com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder builderForValue) {
         if (multisigBuilder_ == null) {
           multisig_ = builderForValue.build();
           onChanged();
@@ -7114,13 +7114,13 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
        */
-      public Builder mergeMultisig(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType value) {
+      public Builder mergeMultisig(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType value) {
         if (multisigBuilder_ == null) {
           if (((bitField0_ & 0x00000040) == 0x00000040) &&
               multisig_ != null &&
-              multisig_ != com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance()) {
+              multisig_ != com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance()) {
             multisig_ =
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.newBuilder(multisig_).mergeFrom(value).buildPartial();
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.newBuilder(multisig_).mergeFrom(value).buildPartial();
           } else {
             multisig_ = value;
           }
@@ -7155,7 +7155,7 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder getMultisigBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder getMultisigBuilder() {
         bitField0_ |= 0x00000040;
         onChanged();
         return getMultisigFieldBuilder().getBuilder();
@@ -7167,12 +7167,12 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
         if (multisigBuilder_ != null) {
           return multisigBuilder_.getMessageOrBuilder();
         } else {
           return multisig_ == null ?
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
         }
       }
       /**
@@ -7183,11 +7183,11 @@ public final class TrezorType {
        * <code>optional .MultisigRedeemScriptType multisig = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> 
+          com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> 
           getMultisigFieldBuilder() {
         if (multisigBuilder_ == null) {
           multisigBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder>(
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder>(
                   getMultisig(),
                   getParentForChildren(),
                   isClean());
@@ -7258,12 +7258,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:TxInputType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.TxInputType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.TxInputType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxInputType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -7286,7 +7286,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -7379,7 +7379,7 @@ public final class TrezorType {
      *
      * <code>required .OutputScriptType script_type = 4;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType getScriptType();
+    com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType getScriptType();
 
     /**
      * <pre>
@@ -7396,7 +7396,7 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getMultisig();
+    com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getMultisig();
     /**
      * <pre>
      * defines multisig address; script_type must be PAYTOMULTISIG
@@ -7404,7 +7404,7 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder();
+    com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder();
 
     /**
      * <pre>
@@ -7511,7 +7511,7 @@ public final class TrezorType {
             }
             case 32: {
               int rawValue = input.readEnum();
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType value = com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType.valueOf(rawValue);
+              com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType value = com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType.valueOf(rawValue);
               if (value == null) {
                 unknownFields.mergeVarintField(4, rawValue);
               } else {
@@ -7521,11 +7521,11 @@ public final class TrezorType {
               break;
             }
             case 42: {
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder subBuilder = null;
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder subBuilder = null;
               if (((bitField0_ & 0x00000008) == 0x00000008)) {
                 subBuilder = multisig_.toBuilder();
               }
-              multisig_ = input.readMessage(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.PARSER, extensionRegistry);
+              multisig_ = input.readMessage(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.PARSER, extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(multisig_);
                 multisig_ = subBuilder.buildPartial();
@@ -7555,14 +7555,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder.class);
     }
 
     private int bitField0_;
@@ -7696,13 +7696,13 @@ public final class TrezorType {
      *
      * <code>required .OutputScriptType script_type = 4;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType getScriptType() {
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType result = com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType.valueOf(scriptType_);
-      return result == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType.PAYTOADDRESS : result;
+    public com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType getScriptType() {
+      com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType result = com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType.valueOf(scriptType_);
+      return result == null ? com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType.PAYTOADDRESS : result;
     }
 
     public static final int MULTISIG_FIELD_NUMBER = 5;
-    private com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType multisig_;
+    private com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType multisig_;
     /**
      * <pre>
      * defines multisig address; script_type must be PAYTOMULTISIG
@@ -7720,8 +7720,8 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
-      return multisig_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+    public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
+      return multisig_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
     }
     /**
      * <pre>
@@ -7730,8 +7730,8 @@ public final class TrezorType {
      *
      * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
-      return multisig_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+    public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
+      return multisig_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
     }
 
     public static final int OP_RETURN_DATA_FIELD_NUMBER = 6;
@@ -7848,10 +7848,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType other = (com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType) obj;
 
       boolean result = true;
       result = result && (hasAddress() == other.hasAddress());
@@ -7921,69 +7921,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -7995,7 +7995,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -8022,20 +8022,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:TxOutputType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -8074,23 +8074,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType result = new com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -8154,16 +8154,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.getDefaultInstance()) return this;
         if (other.hasAddress()) {
           bitField0_ |= 0x00000001;
           address_ = other.address_;
@@ -8215,11 +8215,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -8490,9 +8490,9 @@ public final class TrezorType {
        *
        * <code>required .OutputScriptType script_type = 4;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType getScriptType() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType result = com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType.valueOf(scriptType_);
-        return result == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType.PAYTOADDRESS : result;
+      public com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType getScriptType() {
+        com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType result = com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType.valueOf(scriptType_);
+        return result == null ? com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType.PAYTOADDRESS : result;
       }
       /**
        * <pre>
@@ -8501,7 +8501,7 @@ public final class TrezorType {
        *
        * <code>required .OutputScriptType script_type = 4;</code>
        */
-      public Builder setScriptType(com.satoshilabs.trezor.lib.protobuf.TrezorType.OutputScriptType value) {
+      public Builder setScriptType(com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -8524,9 +8524,9 @@ public final class TrezorType {
         return this;
       }
 
-      private com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType multisig_ = null;
+      private com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType multisig_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> multisigBuilder_;
+          com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> multisigBuilder_;
       /**
        * <pre>
        * defines multisig address; script_type must be PAYTOMULTISIG
@@ -8544,9 +8544,9 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType getMultisig() {
         if (multisigBuilder_ == null) {
-          return multisig_ == null ? com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+          return multisig_ == null ? com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
         } else {
           return multisigBuilder_.getMessage();
         }
@@ -8558,7 +8558,7 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
        */
-      public Builder setMultisig(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType value) {
+      public Builder setMultisig(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType value) {
         if (multisigBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -8579,7 +8579,7 @@ public final class TrezorType {
        * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
        */
       public Builder setMultisig(
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder builderForValue) {
+          com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder builderForValue) {
         if (multisigBuilder_ == null) {
           multisig_ = builderForValue.build();
           onChanged();
@@ -8596,13 +8596,13 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
        */
-      public Builder mergeMultisig(com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType value) {
+      public Builder mergeMultisig(com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType value) {
         if (multisigBuilder_ == null) {
           if (((bitField0_ & 0x00000010) == 0x00000010) &&
               multisig_ != null &&
-              multisig_ != com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance()) {
+              multisig_ != com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance()) {
             multisig_ =
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.newBuilder(multisig_).mergeFrom(value).buildPartial();
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.newBuilder(multisig_).mergeFrom(value).buildPartial();
           } else {
             multisig_ = value;
           }
@@ -8637,7 +8637,7 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder getMultisigBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder getMultisigBuilder() {
         bitField0_ |= 0x00000010;
         onChanged();
         return getMultisigFieldBuilder().getBuilder();
@@ -8649,12 +8649,12 @@ public final class TrezorType {
        *
        * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder getMultisigOrBuilder() {
         if (multisigBuilder_ != null) {
           return multisigBuilder_.getMessageOrBuilder();
         } else {
           return multisig_ == null ?
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.getDefaultInstance() : multisig_;
         }
       }
       /**
@@ -8665,11 +8665,11 @@ public final class TrezorType {
        * <code>optional .MultisigRedeemScriptType multisig = 5;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> 
+          com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder> 
           getMultisigFieldBuilder() {
         if (multisigBuilder_ == null) {
           multisigBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder>(
+              com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptTypeOrBuilder>(
                   getMultisig(),
                   getParentForChildren(),
                   isClean());
@@ -8743,12 +8743,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:TxOutputType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -8771,7 +8771,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -8873,14 +8873,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputBinType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputBinType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputBinType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputBinType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder.class);
     }
 
     private int bitField0_;
@@ -8967,10 +8967,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType other = (com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType) obj;
 
       boolean result = true;
       result = result && (hasAmount() == other.hasAmount());
@@ -9008,69 +9008,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -9082,7 +9082,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -9108,20 +9108,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:TxOutputBinType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputBinType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputBinType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputBinType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputBinType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -9147,23 +9147,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxOutputBinType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxOutputBinType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType result = new com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -9206,16 +9206,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.getDefaultInstance()) return this;
         if (other.hasAmount()) {
           setAmount(other.getAmount());
         }
@@ -9241,11 +9241,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -9337,12 +9337,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:TxOutputBinType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -9365,7 +9365,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -9387,12 +9387,12 @@ public final class TrezorType {
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType> 
+    java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType> 
         getInputsList();
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType getInputs(int index);
+    com.satoshilabs.trezor.protobuf.TrezorType.TxInputType getInputs(int index);
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
@@ -9400,23 +9400,23 @@ public final class TrezorType {
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder> 
+    java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder> 
         getInputsOrBuilderList();
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder getInputsOrBuilder(
+    com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder getInputsOrBuilder(
         int index);
 
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType> 
+    java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType> 
         getBinOutputsList();
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType getBinOutputs(int index);
+    com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType getBinOutputs(int index);
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
@@ -9424,23 +9424,23 @@ public final class TrezorType {
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
+    java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
         getBinOutputsOrBuilderList();
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder getBinOutputsOrBuilder(
+    com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder getBinOutputsOrBuilder(
         int index);
 
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType> 
+    java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType> 
         getOutputsList();
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType getOutputs(int index);
+    com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType getOutputs(int index);
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
@@ -9448,12 +9448,12 @@ public final class TrezorType {
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder> 
+    java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder> 
         getOutputsOrBuilderList();
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder getOutputsOrBuilder(
+    com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder getOutputsOrBuilder(
         int index);
 
     /**
@@ -9565,20 +9565,20 @@ public final class TrezorType {
             }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                inputs_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType>();
+                inputs_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType>();
                 mutable_bitField0_ |= 0x00000002;
               }
               inputs_.add(
-                  input.readMessage(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.PARSER, extensionRegistry));
+                  input.readMessage(com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.PARSER, extensionRegistry));
               break;
             }
             case 26: {
               if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                binOutputs_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType>();
+                binOutputs_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType>();
                 mutable_bitField0_ |= 0x00000004;
               }
               binOutputs_.add(
-                  input.readMessage(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.PARSER, extensionRegistry));
+                  input.readMessage(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.PARSER, extensionRegistry));
               break;
             }
             case 32: {
@@ -9588,11 +9588,11 @@ public final class TrezorType {
             }
             case 42: {
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                outputs_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType>();
+                outputs_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType>();
                 mutable_bitField0_ |= 0x00000008;
               }
               outputs_.add(
-                  input.readMessage(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.PARSER, extensionRegistry));
+                  input.readMessage(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.PARSER, extensionRegistry));
               break;
             }
             case 48: {
@@ -9638,14 +9638,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TransactionType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TransactionType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TransactionType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TransactionType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.TransactionType.class, com.satoshilabs.trezor.protobuf.TrezorType.TransactionType.Builder.class);
     }
 
     private int bitField0_;
@@ -9665,17 +9665,17 @@ public final class TrezorType {
     }
 
     public static final int INPUTS_FIELD_NUMBER = 2;
-    private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType> inputs_;
+    private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType> inputs_;
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType> getInputsList() {
+    public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType> getInputsList() {
       return inputs_;
     }
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder> 
+    public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder> 
         getInputsOrBuilderList() {
       return inputs_;
     }
@@ -9688,29 +9688,29 @@ public final class TrezorType {
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType getInputs(int index) {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType getInputs(int index) {
       return inputs_.get(index);
     }
     /**
      * <code>repeated .TxInputType inputs = 2;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder getInputsOrBuilder(
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder getInputsOrBuilder(
         int index) {
       return inputs_.get(index);
     }
 
     public static final int BIN_OUTPUTS_FIELD_NUMBER = 3;
-    private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType> binOutputs_;
+    private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType> binOutputs_;
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType> getBinOutputsList() {
+    public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType> getBinOutputsList() {
       return binOutputs_;
     }
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
+    public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
         getBinOutputsOrBuilderList() {
       return binOutputs_;
     }
@@ -9723,29 +9723,29 @@ public final class TrezorType {
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType getBinOutputs(int index) {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType getBinOutputs(int index) {
       return binOutputs_.get(index);
     }
     /**
      * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder getBinOutputsOrBuilder(
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder getBinOutputsOrBuilder(
         int index) {
       return binOutputs_.get(index);
     }
 
     public static final int OUTPUTS_FIELD_NUMBER = 5;
-    private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType> outputs_;
+    private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType> outputs_;
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType> getOutputsList() {
+    public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType> getOutputsList() {
       return outputs_;
     }
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder> 
+    public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder> 
         getOutputsOrBuilderList() {
       return outputs_;
     }
@@ -9758,13 +9758,13 @@ public final class TrezorType {
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType getOutputs(int index) {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType getOutputs(int index) {
       return outputs_.get(index);
     }
     /**
      * <code>repeated .TxOutputType outputs = 5;</code>
      */
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder getOutputsOrBuilder(
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder getOutputsOrBuilder(
         int index) {
       return outputs_.get(index);
     }
@@ -9956,10 +9956,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.TransactionType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.TransactionType other = (com.satoshilabs.trezor.protobuf.TrezorType.TransactionType) obj;
 
       boolean result = true;
       result = result && (hasVersion() == other.hasVersion());
@@ -10050,69 +10050,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -10124,7 +10124,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.TransactionType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -10150,20 +10150,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:TransactionType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.TransactionTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TransactionType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TransactionType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TransactionType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TransactionType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.TransactionType.class, com.satoshilabs.trezor.protobuf.TrezorType.TransactionType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.TransactionType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -10218,23 +10218,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TransactionType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TransactionType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TransactionType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.TransactionType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TransactionType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TransactionType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.TransactionType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TransactionType result = new com.satoshilabs.trezor.protobuf.TrezorType.TransactionType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -10320,16 +10320,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.TransactionType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.TransactionType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.TransactionType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.TransactionType.getDefaultInstance()) return this;
         if (other.hasVersion()) {
           setVersion(other.getVersion());
         }
@@ -10454,11 +10454,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.TransactionType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.TransactionType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -10501,22 +10501,22 @@ public final class TrezorType {
         return this;
       }
 
-      private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType> inputs_ =
+      private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType> inputs_ =
         java.util.Collections.emptyList();
       private void ensureInputsIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          inputs_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType>(inputs_);
+          inputs_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType>(inputs_);
           bitField0_ |= 0x00000002;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder> inputsBuilder_;
+          com.satoshilabs.trezor.protobuf.TrezorType.TxInputType, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder> inputsBuilder_;
 
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType> getInputsList() {
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType> getInputsList() {
         if (inputsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(inputs_);
         } else {
@@ -10536,7 +10536,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType getInputs(int index) {
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType getInputs(int index) {
         if (inputsBuilder_ == null) {
           return inputs_.get(index);
         } else {
@@ -10547,7 +10547,7 @@ public final class TrezorType {
        * <code>repeated .TxInputType inputs = 2;</code>
        */
       public Builder setInputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType value) {
         if (inputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -10564,7 +10564,7 @@ public final class TrezorType {
        * <code>repeated .TxInputType inputs = 2;</code>
        */
       public Builder setInputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder builderForValue) {
         if (inputsBuilder_ == null) {
           ensureInputsIsMutable();
           inputs_.set(index, builderForValue.build());
@@ -10577,7 +10577,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public Builder addInputs(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType value) {
+      public Builder addInputs(com.satoshilabs.trezor.protobuf.TrezorType.TxInputType value) {
         if (inputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -10594,7 +10594,7 @@ public final class TrezorType {
        * <code>repeated .TxInputType inputs = 2;</code>
        */
       public Builder addInputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType value) {
         if (inputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -10611,7 +10611,7 @@ public final class TrezorType {
        * <code>repeated .TxInputType inputs = 2;</code>
        */
       public Builder addInputs(
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder builderForValue) {
+          com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder builderForValue) {
         if (inputsBuilder_ == null) {
           ensureInputsIsMutable();
           inputs_.add(builderForValue.build());
@@ -10625,7 +10625,7 @@ public final class TrezorType {
        * <code>repeated .TxInputType inputs = 2;</code>
        */
       public Builder addInputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder builderForValue) {
         if (inputsBuilder_ == null) {
           ensureInputsIsMutable();
           inputs_.add(index, builderForValue.build());
@@ -10639,7 +10639,7 @@ public final class TrezorType {
        * <code>repeated .TxInputType inputs = 2;</code>
        */
       public Builder addAllInputs(
-          java.lang.Iterable<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType> values) {
+          java.lang.Iterable<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxInputType> values) {
         if (inputsBuilder_ == null) {
           ensureInputsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -10679,14 +10679,14 @@ public final class TrezorType {
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder getInputsBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder getInputsBuilder(
           int index) {
         return getInputsFieldBuilder().getBuilder(index);
       }
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder getInputsOrBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder getInputsOrBuilder(
           int index) {
         if (inputsBuilder_ == null) {
           return inputs_.get(index);  } else {
@@ -10696,7 +10696,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder> 
+      public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder> 
            getInputsOrBuilderList() {
         if (inputsBuilder_ != null) {
           return inputsBuilder_.getMessageOrBuilderList();
@@ -10707,31 +10707,31 @@ public final class TrezorType {
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder addInputsBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder addInputsBuilder() {
         return getInputsFieldBuilder().addBuilder(
-            com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.getDefaultInstance());
+            com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.getDefaultInstance());
       }
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder addInputsBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder addInputsBuilder(
           int index) {
         return getInputsFieldBuilder().addBuilder(
-            index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.getDefaultInstance());
+            index, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.getDefaultInstance());
       }
       /**
        * <code>repeated .TxInputType inputs = 2;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder> 
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder> 
            getInputsBuilderList() {
         return getInputsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder> 
+          com.satoshilabs.trezor.protobuf.TrezorType.TxInputType, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder> 
           getInputsFieldBuilder() {
         if (inputsBuilder_ == null) {
           inputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxInputTypeOrBuilder>(
+              com.satoshilabs.trezor.protobuf.TrezorType.TxInputType, com.satoshilabs.trezor.protobuf.TrezorType.TxInputType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxInputTypeOrBuilder>(
                   inputs_,
                   ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
@@ -10741,22 +10741,22 @@ public final class TrezorType {
         return inputsBuilder_;
       }
 
-      private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType> binOutputs_ =
+      private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType> binOutputs_ =
         java.util.Collections.emptyList();
       private void ensureBinOutputsIsMutable() {
         if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          binOutputs_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType>(binOutputs_);
+          binOutputs_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType>(binOutputs_);
           bitField0_ |= 0x00000004;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder> binOutputsBuilder_;
+          com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder> binOutputsBuilder_;
 
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType> getBinOutputsList() {
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType> getBinOutputsList() {
         if (binOutputsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(binOutputs_);
         } else {
@@ -10776,7 +10776,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType getBinOutputs(int index) {
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType getBinOutputs(int index) {
         if (binOutputsBuilder_ == null) {
           return binOutputs_.get(index);
         } else {
@@ -10787,7 +10787,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
       public Builder setBinOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType value) {
         if (binOutputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -10804,7 +10804,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
       public Builder setBinOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder builderForValue) {
         if (binOutputsBuilder_ == null) {
           ensureBinOutputsIsMutable();
           binOutputs_.set(index, builderForValue.build());
@@ -10817,7 +10817,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public Builder addBinOutputs(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType value) {
+      public Builder addBinOutputs(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType value) {
         if (binOutputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -10834,7 +10834,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
       public Builder addBinOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType value) {
         if (binOutputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -10851,7 +10851,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
       public Builder addBinOutputs(
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder builderForValue) {
+          com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder builderForValue) {
         if (binOutputsBuilder_ == null) {
           ensureBinOutputsIsMutable();
           binOutputs_.add(builderForValue.build());
@@ -10865,7 +10865,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
       public Builder addBinOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder builderForValue) {
         if (binOutputsBuilder_ == null) {
           ensureBinOutputsIsMutable();
           binOutputs_.add(index, builderForValue.build());
@@ -10879,7 +10879,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
       public Builder addAllBinOutputs(
-          java.lang.Iterable<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType> values) {
+          java.lang.Iterable<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType> values) {
         if (binOutputsBuilder_ == null) {
           ensureBinOutputsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -10919,14 +10919,14 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder getBinOutputsBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder getBinOutputsBuilder(
           int index) {
         return getBinOutputsFieldBuilder().getBuilder(index);
       }
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder getBinOutputsOrBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder getBinOutputsOrBuilder(
           int index) {
         if (binOutputsBuilder_ == null) {
           return binOutputs_.get(index);  } else {
@@ -10936,7 +10936,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
+      public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
            getBinOutputsOrBuilderList() {
         if (binOutputsBuilder_ != null) {
           return binOutputsBuilder_.getMessageOrBuilderList();
@@ -10947,31 +10947,31 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder addBinOutputsBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder addBinOutputsBuilder() {
         return getBinOutputsFieldBuilder().addBuilder(
-            com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.getDefaultInstance());
+            com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.getDefaultInstance());
       }
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder addBinOutputsBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder addBinOutputsBuilder(
           int index) {
         return getBinOutputsFieldBuilder().addBuilder(
-            index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.getDefaultInstance());
+            index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.getDefaultInstance());
       }
       /**
        * <code>repeated .TxOutputBinType bin_outputs = 3;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder> 
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder> 
            getBinOutputsBuilderList() {
         return getBinOutputsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
+          com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder> 
           getBinOutputsFieldBuilder() {
         if (binOutputsBuilder_ == null) {
           binOutputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputBinTypeOrBuilder>(
+              com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinTypeOrBuilder>(
                   binOutputs_,
                   ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
@@ -10981,22 +10981,22 @@ public final class TrezorType {
         return binOutputsBuilder_;
       }
 
-      private java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType> outputs_ =
+      private java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType> outputs_ =
         java.util.Collections.emptyList();
       private void ensureOutputsIsMutable() {
         if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          outputs_ = new java.util.ArrayList<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType>(outputs_);
+          outputs_ = new java.util.ArrayList<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType>(outputs_);
           bitField0_ |= 0x00000008;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder> outputsBuilder_;
+          com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder> outputsBuilder_;
 
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType> getOutputsList() {
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType> getOutputsList() {
         if (outputsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(outputs_);
         } else {
@@ -11016,7 +11016,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType getOutputs(int index) {
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType getOutputs(int index) {
         if (outputsBuilder_ == null) {
           return outputs_.get(index);
         } else {
@@ -11027,7 +11027,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
       public Builder setOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType value) {
         if (outputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -11044,7 +11044,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
       public Builder setOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder builderForValue) {
         if (outputsBuilder_ == null) {
           ensureOutputsIsMutable();
           outputs_.set(index, builderForValue.build());
@@ -11057,7 +11057,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public Builder addOutputs(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType value) {
+      public Builder addOutputs(com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType value) {
         if (outputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -11074,7 +11074,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
       public Builder addOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType value) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType value) {
         if (outputsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -11091,7 +11091,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
       public Builder addOutputs(
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder builderForValue) {
+          com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder builderForValue) {
         if (outputsBuilder_ == null) {
           ensureOutputsIsMutable();
           outputs_.add(builderForValue.build());
@@ -11105,7 +11105,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
       public Builder addOutputs(
-          int index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder builderForValue) {
+          int index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder builderForValue) {
         if (outputsBuilder_ == null) {
           ensureOutputsIsMutable();
           outputs_.add(index, builderForValue.build());
@@ -11119,7 +11119,7 @@ public final class TrezorType {
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
       public Builder addAllOutputs(
-          java.lang.Iterable<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType> values) {
+          java.lang.Iterable<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType> values) {
         if (outputsBuilder_ == null) {
           ensureOutputsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -11159,14 +11159,14 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder getOutputsBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder getOutputsBuilder(
           int index) {
         return getOutputsFieldBuilder().getBuilder(index);
       }
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder getOutputsOrBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder getOutputsOrBuilder(
           int index) {
         if (outputsBuilder_ == null) {
           return outputs_.get(index);  } else {
@@ -11176,7 +11176,7 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public java.util.List<? extends com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder> 
+      public java.util.List<? extends com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder> 
            getOutputsOrBuilderList() {
         if (outputsBuilder_ != null) {
           return outputsBuilder_.getMessageOrBuilderList();
@@ -11187,31 +11187,31 @@ public final class TrezorType {
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder addOutputsBuilder() {
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder addOutputsBuilder() {
         return getOutputsFieldBuilder().addBuilder(
-            com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.getDefaultInstance());
+            com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.getDefaultInstance());
       }
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder addOutputsBuilder(
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder addOutputsBuilder(
           int index) {
         return getOutputsFieldBuilder().addBuilder(
-            index, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.getDefaultInstance());
+            index, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.getDefaultInstance());
       }
       /**
        * <code>repeated .TxOutputType outputs = 5;</code>
        */
-      public java.util.List<com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder> 
+      public java.util.List<com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder> 
            getOutputsBuilderList() {
         return getOutputsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder> 
+          com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder> 
           getOutputsFieldBuilder() {
         if (outputsBuilder_ == null) {
           outputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputType.Builder, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxOutputTypeOrBuilder>(
+              com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType.Builder, com.satoshilabs.trezor.protobuf.TrezorType.TxOutputTypeOrBuilder>(
                   outputs_,
                   ((bitField0_ & 0x00000008) == 0x00000008),
                   getParentForChildren(),
@@ -11398,12 +11398,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:TransactionType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.TransactionType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.TransactionType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TransactionType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -11426,7 +11426,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TransactionType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TransactionType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -11590,14 +11590,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestDetailsType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestDetailsType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestDetailsType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestDetailsType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType.Builder.class);
     }
 
     private int bitField0_;
@@ -11752,10 +11752,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType other = (com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType) obj;
 
       boolean result = true;
       result = result && (hasRequestIndex() == other.hasRequestIndex());
@@ -11810,69 +11810,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -11884,7 +11884,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -11910,20 +11910,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:TxRequestDetailsType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestDetailsType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestDetailsType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestDetailsType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestDetailsType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -11953,23 +11953,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestDetailsType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestDetailsType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType result = new com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -12020,16 +12020,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType.getDefaultInstance()) return this;
         if (other.hasRequestIndex()) {
           setRequestIndex(other.getRequestIndex());
         }
@@ -12055,11 +12055,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -12279,12 +12279,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:TxRequestDetailsType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -12307,7 +12307,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestDetailsType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -12448,14 +12448,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestSerializedType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestSerializedType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestSerializedType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestSerializedType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType.Builder.class);
     }
 
     private int bitField0_;
@@ -12580,10 +12580,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType other = (com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType) obj;
 
       boolean result = true;
       result = result && (hasSignatureIndex() == other.hasSignatureIndex());
@@ -12629,69 +12629,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -12703,7 +12703,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -12729,20 +12729,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:TxRequestSerializedType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestSerializedType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestSerializedType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestSerializedType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestSerializedType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType.class, com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -12770,23 +12770,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_TxRequestSerializedType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_TxRequestSerializedType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType result = new com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -12833,16 +12833,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType.getDefaultInstance()) return this;
         if (other.hasSignatureIndex()) {
           setSignatureIndex(other.getSignatureIndex());
         }
@@ -12865,11 +12865,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -13044,12 +13044,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:TxRequestSerializedType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -13072,7 +13072,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.TxRequestSerializedType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.TxRequestSerializedType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -13332,14 +13332,14 @@ public final class TrezorType {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_IdentityType_descriptor;
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_IdentityType_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_IdentityType_fieldAccessorTable
+      return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_IdentityType_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType.Builder.class);
+              com.satoshilabs.trezor.protobuf.TrezorType.IdentityType.class, com.satoshilabs.trezor.protobuf.TrezorType.IdentityType.Builder.class);
     }
 
     private int bitField0_;
@@ -13704,10 +13704,10 @@ public final class TrezorType {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType)) {
+      if (!(obj instanceof com.satoshilabs.trezor.protobuf.TrezorType.IdentityType)) {
         return super.equals(obj);
       }
-      com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType other = (com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType) obj;
+      com.satoshilabs.trezor.protobuf.TrezorType.IdentityType other = (com.satoshilabs.trezor.protobuf.TrezorType.IdentityType) obj;
 
       boolean result = true;
       result = result && (hasProto() == other.hasProto());
@@ -13780,69 +13780,69 @@ public final class TrezorType {
       return hash;
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(byte[] data)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseDelimitedFrom(java.io.InputStream input)
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseDelimitedFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parseFrom(
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -13854,7 +13854,7 @@ public final class TrezorType {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType prototype) {
+    public static Builder newBuilder(com.satoshilabs.trezor.protobuf.TrezorType.IdentityType prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -13880,20 +13880,20 @@ public final class TrezorType {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:IdentityType)
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityTypeOrBuilder {
+        com.satoshilabs.trezor.protobuf.TrezorType.IdentityTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_IdentityType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_IdentityType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_IdentityType_fieldAccessorTable
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_IdentityType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType.class, com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType.Builder.class);
+                com.satoshilabs.trezor.protobuf.TrezorType.IdentityType.class, com.satoshilabs.trezor.protobuf.TrezorType.IdentityType.Builder.class);
       }
 
-      // Construct using com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType.newBuilder()
+      // Construct using com.satoshilabs.trezor.protobuf.TrezorType.IdentityType.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -13927,23 +13927,23 @@ public final class TrezorType {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.internal_static_IdentityType_descriptor;
+        return com.satoshilabs.trezor.protobuf.TrezorType.internal_static_IdentityType_descriptor;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType getDefaultInstanceForType() {
-        return com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType.getDefaultInstance();
+      public com.satoshilabs.trezor.protobuf.TrezorType.IdentityType getDefaultInstanceForType() {
+        return com.satoshilabs.trezor.protobuf.TrezorType.IdentityType.getDefaultInstance();
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType build() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType result = buildPartial();
+      public com.satoshilabs.trezor.protobuf.TrezorType.IdentityType build() {
+        com.satoshilabs.trezor.protobuf.TrezorType.IdentityType result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType buildPartial() {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType result = new com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType(this);
+      public com.satoshilabs.trezor.protobuf.TrezorType.IdentityType buildPartial() {
+        com.satoshilabs.trezor.protobuf.TrezorType.IdentityType result = new com.satoshilabs.trezor.protobuf.TrezorType.IdentityType(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -14002,16 +14002,16 @@ public final class TrezorType {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType) {
-          return mergeFrom((com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType)other);
+        if (other instanceof com.satoshilabs.trezor.protobuf.TrezorType.IdentityType) {
+          return mergeFrom((com.satoshilabs.trezor.protobuf.TrezorType.IdentityType)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType other) {
-        if (other == com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.satoshilabs.trezor.protobuf.TrezorType.IdentityType other) {
+        if (other == com.satoshilabs.trezor.protobuf.TrezorType.IdentityType.getDefaultInstance()) return this;
         if (other.hasProto()) {
           bitField0_ |= 0x00000001;
           proto_ = other.proto_;
@@ -14053,11 +14053,11 @@ public final class TrezorType {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType parsedMessage = null;
+        com.satoshilabs.trezor.protobuf.TrezorType.IdentityType parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType) e.getUnfinishedMessage();
+          parsedMessage = (com.satoshilabs.trezor.protobuf.TrezorType.IdentityType) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -14630,12 +14630,12 @@ public final class TrezorType {
     }
 
     // @@protoc_insertion_point(class_scope:IdentityType)
-    private static final com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType DEFAULT_INSTANCE;
+    private static final com.satoshilabs.trezor.protobuf.TrezorType.IdentityType DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType();
+      DEFAULT_INSTANCE = new com.satoshilabs.trezor.protobuf.TrezorType.IdentityType();
     }
 
-    public static com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType getDefaultInstance() {
+    public static com.satoshilabs.trezor.protobuf.TrezorType.IdentityType getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -14658,7 +14658,7 @@ public final class TrezorType {
       return PARSER;
     }
 
-    public com.satoshilabs.trezor.lib.protobuf.TrezorType.IdentityType getDefaultInstanceForType() {
+    public com.satoshilabs.trezor.protobuf.TrezorType.IdentityType getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -14901,7 +14901,7 @@ public final class TrezorType {
       "!.google.protobuf.EnumValueOptions\030\326\206\003 \001" +
       "(\010:<\n\017wire_bootloader\022!.google.protobuf." +
       "EnumValueOptions\030\327\206\003 \001(\010B1\n#com.satoshil" +
-      "abs.trezor.lib.protobufB\nTrezorType"
+      "abs.trezor.protobufB\nTrezorType"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
