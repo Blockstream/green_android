@@ -599,8 +599,9 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
             tx.getOutput(amtIndex).setValue(actualAmount);
         }
 
-        // FIXME: Needed?
-        tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
+        // FIXME: Update Trezor ProtoBuffer with nlocktime fix
+        if (!(service.getSigningWallet() instanceof TrezorHWWallet))
+            tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
 
         int changeIndex = -1;
         if (changeOutput != null && tx.getOutputs().size() != 1)

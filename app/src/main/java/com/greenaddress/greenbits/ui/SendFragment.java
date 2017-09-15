@@ -44,6 +44,7 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
@@ -905,7 +906,9 @@ public class SendFragment extends SubaccountFragment {
             tx.getOutput(randomizedChange ? 1 : 0).setValue(actualAmount);
         }
 
-        tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
+        // FIXME: Update Trezor ProtoBuffer with nlocktime fix
+        if (!(service.getSigningWallet() instanceof TrezorHWWallet))
+            tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
 
         final PreparedTransaction ptx;
         ptx = GATx.signTransaction(service, tx, usedUtxos, mSubaccount, changeOutput);
