@@ -182,7 +182,7 @@ public final class TrezorType {
     private final int index;
     private final int value;
 
-    FailureType(int index, int value) {
+    private FailureType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -279,7 +279,7 @@ public final class TrezorType {
     private final int index;
     private final int value;
 
-    OutputScriptType(int index, int value) {
+    private OutputScriptType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -367,7 +367,7 @@ public final class TrezorType {
     private final int index;
     private final int value;
 
-    InputScriptType(int index, int value) {
+    private InputScriptType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -473,7 +473,7 @@ public final class TrezorType {
     private final int index;
     private final int value;
 
-    RequestType(int index, int value) {
+    private RequestType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -633,7 +633,7 @@ public final class TrezorType {
     private final int index;
     private final int value;
 
-    ButtonRequestType(int index, int value) {
+    private ButtonRequestType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -730,7 +730,7 @@ public final class TrezorType {
     private final int index;
     private final int value;
 
-    PinMatrixRequestType(int index, int value) {
+    private PinMatrixRequestType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -1337,14 +1337,22 @@ public final class TrezorType {
 
       public final boolean isInitialized() {
         if (!hasDepth()) {
-
+          
           return false;
         }
         if (!hasFingerprint()) {
-
+          
           return false;
         }
-        return hasChildNum() && hasChainCode();
+        if (!hasChildNum()) {
+          
+          return false;
+        }
+        if (!hasChainCode()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -2082,7 +2090,15 @@ public final class TrezorType {
       }
 
       public final boolean isInitialized() {
-        return hasNode() && getNode().isInitialized();
+        if (!hasNode()) {
+          
+          return false;
+        }
+        if (!getNode().isInitialized()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -7396,7 +7412,15 @@ public final class TrezorType {
       }
 
       public final boolean isInitialized() {
-        return hasAmount() && hasScriptPubkey();
+        if (!hasAmount()) {
+          
+          return false;
+        }
+        if (!hasScriptPubkey()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(

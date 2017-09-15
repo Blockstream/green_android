@@ -528,7 +528,7 @@ public final class TrezorMessage {
     private final int index;
     private final int value;
 
-    MessageType(int index, int value) {
+    private MessageType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -8869,7 +8869,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasPin();
+        if (!hasPin()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -10041,7 +10045,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasPassphrase();
+        if (!hasPassphrase()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -10518,7 +10526,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasSize();
+        if (!hasSize()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -10963,7 +10975,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasEntropy();
+        if (!hasEntropy()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -12098,7 +12114,11 @@ public final class TrezorMessage {
           
           return false;
         }
-        return getNode().isInitialized();
+        if (!getNode().isInitialized()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -13828,7 +13848,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasAddress();
+        if (!hasAddress()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -19803,7 +19827,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasWord();
+        if (!hasWord()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -20520,7 +20548,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasMessage();
+        if (!hasMessage()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -27667,7 +27699,11 @@ public final class TrezorMessage {
           
           return false;
         }
-        return hasInputsCount();
+        if (!hasInputsCount()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -28882,7 +28918,11 @@ public final class TrezorMessage {
           
           return false;
         }
-        return hasInputsCount();
+        if (!hasInputsCount()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -33292,7 +33332,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasPayload();
+        if (!hasPayload()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
@@ -33740,7 +33784,11 @@ public final class TrezorMessage {
       }
 
       public final boolean isInitialized() {
-        return hasYesNo();
+        if (!hasYesNo()) {
+          
+          return false;
+        }
+        return true;
       }
 
       public Builder mergeFrom(
