@@ -622,6 +622,7 @@ public class Trezor {
                         setInputsCount(ptx.mDecoded.getInputs().size()).
                         setOutputsCount(ptx.mDecoded.getOutputs().size()).
                         setCoinName(coinName).
+                        setLockTime((int) curTx.mDecoded.getLockTime()).
                         build())).split(";");
         for (final String sig: signatures) {
             signaturesList.add(ISigningWallet.getTxSignature(ECKey.ECDSASignature.decodeFromDER(Hex.decode(sig))));

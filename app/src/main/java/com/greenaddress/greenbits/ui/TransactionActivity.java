@@ -28,7 +28,6 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
@@ -599,9 +598,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
             tx.getOutput(amtIndex).setValue(actualAmount);
         }
 
-        // FIXME: Update Trezor ProtoBuffer with nlocktime fix
-        if (!(service.getSigningWallet() instanceof TrezorHWWallet))
-            tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
+        tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
 
         int changeIndex = -1;
         if (changeOutput != null && tx.getOutputs().size() != 1)

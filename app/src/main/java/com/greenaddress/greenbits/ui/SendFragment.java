@@ -906,9 +906,7 @@ public class SendFragment extends SubaccountFragment {
             tx.getOutput(randomizedChange ? 1 : 0).setValue(actualAmount);
         }
 
-        // FIXME: Update Trezor ProtoBuffer with nlocktime fix
-        if (!(service.getSigningWallet() instanceof TrezorHWWallet))
-            tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
+        tx.setLockTime(service.getCurrentBlock()); // Prevent fee sniping
 
         final PreparedTransaction ptx;
         ptx = GATx.signTransaction(service, tx, usedUtxos, mSubaccount, changeOutput);
