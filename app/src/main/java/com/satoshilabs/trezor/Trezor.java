@@ -10,6 +10,7 @@ import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbRequest;
 import android.util.Log;
 
+import com.blockstream.libwally.Wally;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.protobuf.ByteString;
@@ -19,140 +20,193 @@ import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
-import com.satoshilabs.trezor.protobuf.TrezorMessage;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Address;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.ButtonAck;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.ButtonRequest;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Entropy;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.EntropyRequest;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Failure;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Features;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.GetPublicKey;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.Initialize;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.MessageSignature;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.MessageType;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.PassphraseAck;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.PassphraseRequest;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.PinMatrixAck;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.PinMatrixRequest;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.PublicKey;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.SignMessage;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.SignTx;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Success;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.TxAck;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.TxRequest;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.TxSize;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.WordRequest;
-import com.satoshilabs.trezor.protobuf.TrezorType;
+import com.satoshilabs.trezor.protobuf.TrezorType.HDNodePathType;
+import com.satoshilabs.trezor.protobuf.TrezorType.HDNodeType;
+import com.satoshilabs.trezor.protobuf.TrezorType.InputScriptType;
+import com.satoshilabs.trezor.protobuf.TrezorType.MultisigRedeemScriptType;
+import com.satoshilabs.trezor.protobuf.TrezorType.OutputScriptType;
+import com.satoshilabs.trezor.protobuf.TrezorType.RequestType;
+import com.satoshilabs.trezor.protobuf.TrezorType.TransactionType;
+import com.satoshilabs.trezor.protobuf.TrezorType.TxInputType;
+import com.satoshilabs.trezor.protobuf.TrezorType.TxOutputBinType;
+import com.satoshilabs.trezor.protobuf.TrezorType.TxOutputType;
+import com.satoshilabs.trezor.protobuf.TrezorType.TxRequestDetailsType;
 
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
-import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.WrongNetworkException;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.script.Script;
-import org.spongycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-/* Stub for empty TrezorGUICallback */
-class _TrezorGUICallback implements TrezorGUICallback {
-    public String pinMatrixRequest() { return ""; }
-    public String passphraseRequest() { return ""; }
-}
 
 public class Trezor {
 
-    private PreparedTransaction curTx;
-    private org.bitcoinj.core.Address curChangeAddr;
-    private TrezorType.HDNodeType curGaNode, curWalletNode, curRecoveryNode;
-    private int curSubaccount;
-    private final ArrayList<String> curSignatures = new ArrayList<>();
     private static final String TAG = Trezor.class.getSimpleName();
+    private static final NetworkParameters NETWORK = Network.NETWORK;
 
-    public static Trezor getDevice(final Context context, final TrezorGUICallback guicall) {
+    private final int mVendorId;
+    private final UsbDeviceConnection mConn;
+    private final String mSerial;
+    private final UsbEndpoint mReadEndpoint, mWriteEndpoint;
+    private final TrezorGUICallback mGuiFn;
+
+    private PreparedTransaction mTx;
+    private int mSubaccount;
+    private org.bitcoinj.core.Address mChangeAddress;
+    private HDNodeType mGAKey, mUserKey, mBackupKey;
+    private final ArrayList<String> mSignatures = new ArrayList<>();
+
+    public static Trezor getDevice(final Context context, final TrezorGUICallback guiFn) {
         final UsbManager manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
-        final HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        for (final UsbDevice device: deviceList.values()) {
-            // check if the device is TREZOR (or AvalonWallet or BWALLET) or KeepKey
+
+        for (final UsbDevice device: manager.getDeviceList().values()) {
+            // Check if the device is TREZOR (or AvalonWallet or BWALLET) or KeepKey
             if (((device.getVendorId() != 0x534c && device.getVendorId() != 0x2B24) || device.getProductId() != 0x0001) &&
                     (device.getVendorId() != 0x10c4 || device.getProductId() != 0xea80)) {
                 continue;
             }
+
             Log.i(TAG, "Hardware Wallet device found");
             if (device.getInterfaceCount() < 1) {
                 Log.e(TAG, "Wrong interface count");
                 continue;
             }
-            // use first interface
+
+            // Use first interface
             final UsbInterface iface = device.getInterface(0);
-            // try to find read/write endpoints
-            UsbEndpoint epr = null, epw = null;
+            // Try to find read/write endpoints
+            UsbEndpoint readEndpoint = null, writeEndpoint = null;
+
             for (int i = 0; i < iface.getEndpointCount(); ++i) {
                 final UsbEndpoint ep = iface.getEndpoint(i);
-                if (epr == null && ep.getType() == UsbConstants.USB_ENDPOINT_XFER_INT && ep.getAddress() == 0x81) { // number = 1 ; dir = USB_DIR_IN
-                    epr = ep;
+
+                if (readEndpoint == null &&
+                        ep.getType() == UsbConstants.USB_ENDPOINT_XFER_INT &&
+                        ep.getAddress() == 0x81) {
+                    // number = 1 ; dir = USB_DIR_IN
+                    readEndpoint = ep;
                     continue;
                 }
-                if (epw == null && ep.getType() == UsbConstants.USB_ENDPOINT_XFER_INT && (ep.getAddress() == 0x01 || ep.getAddress() == 0x02)) { // number = 1 ; dir = USB_DIR_OUT
-                    epw = ep;
+                if (writeEndpoint == null &&
+                        ep.getType() == UsbConstants.USB_ENDPOINT_XFER_INT &&
+                        (ep.getAddress() == 0x01 || ep.getAddress() == 0x02)) {
+                    // number = 1 ; dir = USB_DIR_OUT
+                    writeEndpoint = ep;
                     continue;
                 }
                 Log.e(TAG, String.format("ep %d", ep.getAddress()));
             }
-            if (epr == null) {
-                Log.e(TAG, "Could not find read endpoint");
+
+            if (!isEndpointOK(readEndpoint, "read") || !isEndpointOK(writeEndpoint, "write"))
                 continue;
-            }
-            if (epw == null) {
-                Log.e(TAG, "Could not find write endpoint");
-                continue;
-            }
-            if (epr.getMaxPacketSize() != 64) {
-                Log.e(TAG, "Wrong packet size for read endpoint");
-                continue;
-            }
-            if (epw.getMaxPacketSize() != 64) {
-                Log.e(TAG, "Wrong packet size for write endpoint");
-                continue;
-            }
-            // try to open the device
+
+            // Try to open the device
             final UsbDeviceConnection conn = manager.openDevice(device);
-            if (conn == null) {
-                Log.e(TAG, "Could not open connection");
+            if (conn == null || !conn.claimInterface(iface,  true)) {
+                Log.e(TAG, conn == null ? "Could not open connection" : "Could not claim interface");
                 continue;
             }
-            final boolean claimed = conn.claimInterface(iface,  true);
-            if (!claimed) {
-                Log.e(TAG, "Could not claim interface");
-                continue;
-            }
-            // all OK - return the class
-            return new Trezor(guicall, device, conn, iface, epr, epw);
+
+            // All OK - return the class
+            return new Trezor(guiFn, device, conn, readEndpoint, writeEndpoint);
         }
         return null;
     }
-    private final int vendorId;
-    private final UsbDeviceConnection conn;
-    private final String serial;
-    private final UsbEndpoint epr, epw;
-    private final TrezorGUICallback guicall;
-    public int getVendorId() {
-                return vendorId;
+
+    private static boolean isEndpointOK(final UsbEndpoint endpoint, final String type) {
+        if (endpoint != null && endpoint.getMaxPacketSize() == 64)
+            return true;
+        Log.e(TAG, type + " endpoint error: " + (endpoint == null ? "not found" : "bad packet size"));
+        return false;
     }
-    private Trezor(final TrezorGUICallback guicall, final UsbDevice device, final UsbDeviceConnection conn, final UsbInterface iface, final UsbEndpoint epr, final UsbEndpoint epw) {
-        this.guicall = guicall;
-        this.vendorId = device.getVendorId();
-        this.conn = conn;
-        this.epr = epr;
-        this.epw = epw;
-        this.serial = this.conn.getSerial();
+
+    private Trezor(final TrezorGUICallback guiFn, final UsbDevice device,
+                   final UsbDeviceConnection conn,
+                   final UsbEndpoint readEndpoint, final UsbEndpoint writeEndpoint) {
+        mGuiFn = guiFn;
+        mVendorId = device.getVendorId();
+        mConn = conn;
+        mReadEndpoint = readEndpoint;
+        mWriteEndpoint = writeEndpoint;
+        mSerial = mConn.getSerial();
     }
 
     @Override
     public String toString() {
-        return "TREZOR(#" + this.serial + ")";
+        return "TREZOR(#" + mSerial + ")";
+    }
+
+    public int getVendorId() {
+        return mVendorId;
+    }
+
+    private static String b2h(final byte[] bytes) {
+        return Wally.hex_from_bytes(bytes);
+    }
+
+    private static byte[] h2b(final String hex) {
+        return Wally.hex_to_bytes(hex);
+    }
+
+    private Transaction getPreviousTx(final TxRequestDetailsType txRequest) {
+        return mTx.mPrevoutRawTxs.get(b2h(txRequest.getTxHash().toByteArray()));
+    }
+
+    private HDNodeType makeHDKey(final int depth, final int childNum,
+                                            final byte[] pubkey, final byte[] chainCode) {
+        return HDNodeType.newBuilder().setDepth(depth)
+                         .setFingerprint(0).setChildNum(childNum)
+                         .setPublicKey(ByteString.copyFrom(pubkey))
+                         .setChainCode(ByteString.copyFrom(chainCode)).build();
+    }
+
+    private HDNodeType makeHDKey(final DeterministicKey k) {
+        return makeHDKey(k.getDepth(), k.getChildNumber().getI(), k.getPubKey(), k.getChainCode());
+    }
+
+    private HDNodePathType makePath(final HDNodeType node, final Integer pointer) {
+        return HDNodePathType.newBuilder().setNode(node)
+                             .clearAddressN().addAddressN(pointer).build();
+    }
+
+    private void logData(final String prefix, final byte[] data) {
+        String s = prefix;
+        for (final byte b : data)
+            s += String.format(" %02x", b);
+        Log.i(TAG, s);
     }
 
     private void messageWrite(final Message msg) {
@@ -170,11 +224,10 @@ public class Trezor {
         data.put((byte)((msg_size >> 8) & 0xFF));
         data.put((byte)(msg_size & 0xFF));
         data.put(msg.toByteArray());
-        while (data.position() % 63 > 0) {
+        while (data.position() % 63 > 0)
             data.put((byte)0);
-        }
         final UsbRequest request = new UsbRequest();
-        request.initialize(conn, epw);
+        request.initialize(mConn, mWriteEndpoint);
         final int chunks = data.position() / 63;
         Log.i(TAG, String.format("Writing %d chunks", chunks));
         data.rewind();
@@ -182,45 +235,37 @@ public class Trezor {
             final byte[] buffer = new byte[64];
             buffer[0] = (byte)'?';
             data.get(buffer, 1, 63);
-            String s = "chunk:";
-            for (int j = 0; j < 64; j++) {
-                s += String.format(" %02x", buffer[j]);
-            }
-            Log.i(TAG, s);
+            logData("chunk:", buffer);
             request.queue(ByteBuffer.wrap(buffer), 64);
-            conn.requestWait();
+            mConn.requestWait();
         }
     }
 
     private Message parseMessageFromBytes(final MessageType type, final byte[] data) {
-        Message msg = null;
         Log.i(TAG, String.format("Parsing %s (%d bytes):", type, data.length));
-        String s = "data:";
-        for (final byte b : data) {
-            s += String.format(" %02x", b);
-        }
+        logData("data:", data);
 
-        Log.i(TAG, s);
         try {
-            if (type.getNumber() == MessageType.MessageType_Success_VALUE) msg = Success.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_Failure_VALUE) msg = Failure.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_Entropy_VALUE) msg = Entropy.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_PublicKey_VALUE) msg = PublicKey.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_Features_VALUE) msg = Features.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_PinMatrixRequest_VALUE) msg = PinMatrixRequest.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_TxRequest_VALUE) msg = TxRequest.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_ButtonRequest_VALUE) msg = ButtonRequest.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_Address_VALUE) msg = Address.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_EntropyRequest_VALUE) msg = EntropyRequest.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_MessageSignature_VALUE) msg = MessageSignature.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_PassphraseRequest_VALUE) msg = PassphraseRequest.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_TxSize_VALUE) msg = TxSize.parseFrom(data);
-            if (type.getNumber() == MessageType.MessageType_WordRequest_VALUE) msg = WordRequest.parseFrom(data);
+            switch (type.getNumber()) {
+                case MessageType.MessageType_Success_VALUE: return Success.parseFrom(data);
+                case MessageType.MessageType_Failure_VALUE: return Failure.parseFrom(data);
+                case MessageType.MessageType_Entropy_VALUE: return Entropy.parseFrom(data);
+                case MessageType.MessageType_PublicKey_VALUE: return PublicKey.parseFrom(data);
+                case MessageType.MessageType_Features_VALUE: return Features.parseFrom(data);
+                case MessageType.MessageType_PinMatrixRequest_VALUE: return PinMatrixRequest.parseFrom(data);
+                case MessageType.MessageType_TxRequest_VALUE: return TxRequest.parseFrom(data);
+                case MessageType.MessageType_ButtonRequest_VALUE: return ButtonRequest.parseFrom(data);
+                case MessageType.MessageType_Address_VALUE: return Address.parseFrom(data);
+                case MessageType.MessageType_EntropyRequest_VALUE: return EntropyRequest.parseFrom(data);
+                case MessageType.MessageType_MessageSignature_VALUE: return MessageSignature.parseFrom(data);
+                case MessageType.MessageType_PassphraseRequest_VALUE: return PassphraseRequest.parseFrom(data);
+                case MessageType.MessageType_TxSize_VALUE: return TxSize.parseFrom(data);
+                case MessageType.MessageType_WordRequest_VALUE: return WordRequest.parseFrom(data);
+            }
         } catch (final InvalidProtocolBufferException e) {
             Log.e(TAG, e.toString());
-            return null;
         }
-        return msg;
+        return null;
     }
 
     private Message messageRead() {
@@ -228,23 +273,20 @@ public class Trezor {
         final ByteBuffer buffer = ByteBuffer.allocate(64);
         final ByteBuffer cur63 = ByteBuffer.allocate(64);
         final UsbRequest request = new UsbRequest();
-        request.initialize(conn, epr);
+        request.initialize(mConn, mReadEndpoint);
         MessageType type;
         int msg_size;
         for (;;) {
             buffer.clear();
             if (!request.queue(buffer, 64)) continue;
-            conn.requestWait();
+            mConn.requestWait();
             final byte[] b = new byte[64];
             buffer.rewind();
             buffer.get(b);
             Log.i(TAG, String.format("Read chunk: %d bytes", b.length));
             if (b.length < 9) continue;
-            String s = "read:";
-            for (final byte bF : b) {
-                s += String.format(" %02x", bF);
-            }
-            Log.i(TAG, s);
+            logData("read:", b);
+
             final int rem = cur63.remaining(), len = b[0]&0xFF;
             cur63.put(b, 1, Math.min(len, rem));
             if (cur63.position() >= 63) {
@@ -260,339 +302,271 @@ public class Trezor {
         }
         while (data.position() < msg_size) {
             request.queue(buffer, 64);
-            conn.requestWait();
+            mConn.requestWait();
             final byte[] b = buffer.array();
             Log.i(TAG, String.format("Read chunk (cont): %d bytes msg size %d", b.length, msg_size));
-
-            String s = "read(cont):";
-            for (final byte j : b) {
-                s += String.format(" %02x", j);
-            }
-            Log.i(TAG, s);
+            logData("read(cont):", b);
             data.put(b, 1, b[0] & 0xFF);
         }
         return parseMessageFromBytes(type, Arrays.copyOfRange(data.array(), 0, msg_size));
     }
 
-    private Message send(final Message msg) {
-        messageWrite(msg);
-        return messageRead();
+    private String io(final Message.Builder builder) {
+        messageWrite(builder.build());
+        return _get(messageRead());
     }
 
-    final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    private static String bytesToHex(final byte[] bytes) {
-        final char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; ++j ) {
-            final int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
+    private String ioTx(final TransactionType.Builder b) {
+        return io(TxAck.newBuilder().setTx(b));
     }
 
     private String _get(final Message resp) {
         switch (resp.getClass().getSimpleName()) {
         case "Features": {
-            final TrezorMessage.Features r = (TrezorMessage.Features) resp;
-            return r.getMajorVersion()+"."+r.getMinorVersion()+"."+r.getPatchVersion(); }
-        case "Success": {
-            final TrezorMessage.Success r = (TrezorMessage.Success)resp;
-            if(r.hasMessage())return r.getMessage();
-            return ""; }
+            final Features r = (Features) resp;
+            return r.getMajorVersion() + "." + r.getMinorVersion() + "." + r.getPatchVersion();
+        }
+        case "Success":
+            return ((Success) resp).hasMessage() ? ((Success) resp).getMessage() : "";
         case "Failure":
+            Log.e(TAG, "Failure response");
             throw new IllegalStateException();
         /* User can catch ButtonRequest to Cancel by not calling _get */
         case "ButtonRequest":
-            return _get(this.send(TrezorMessage.ButtonAck.newBuilder().build()));
+            return io(ButtonAck.newBuilder());
         case "PinMatrixRequest":
-            return _get(this.send(
-                TrezorMessage.PinMatrixAck.newBuilder().
-                setPin(this.guicall.pinMatrixRequest()).
-                build()));
+            return io(PinMatrixAck.newBuilder().setPin(mGuiFn.pinMatrixRequest()));
         case "PassphraseRequest":
-            return _get(this.send(
-                TrezorMessage.PassphraseAck.newBuilder().
-                /* TODO: UTF8 VS Unicode... Fight! */
-                setPassphrase(this.guicall.passphraseRequest()).
-                build()));
+            /* TODO: UTF8 VS Unicode... Fight! */
+            return io(PassphraseAck.newBuilder().setPassphrase(mGuiFn.passphraseRequest()));
         case "PublicKey": {
-            final TrezorMessage.PublicKey r = (TrezorMessage.PublicKey)resp;
-            if(!r.hasNode())throw new IllegalArgumentException();
-            final TrezorType.HDNodeType N = r.getNode();
-            final String NodeStr = ((N.hasDepth())?N.getDepth():"") +"%"+
-                ((N.hasFingerprint())?N.getFingerprint():"") +"%"+
-                ((N.hasChildNum())?N.getChildNum():"") +"%"+
-                ((N.hasChainCode())?bytesToHex(N.getChainCode().toByteArray()):"") +"%"+
-                ((N.hasPrivateKey())?bytesToHex(N.getPrivateKey().toByteArray()):"") +"%"+
-                ((N.hasPublicKey())?bytesToHex(N.getPublicKey().toByteArray()):"") +"%"+
+            final PublicKey r = (PublicKey) resp;
+            if (!r.hasNode())
+                throw new IllegalArgumentException();
+            final HDNodeType N = r.getNode();
+            final String NodeStr = (N.hasDepth() ? N.getDepth() : "") + "%" +
+                (N.hasFingerprint() ? N.getFingerprint() : "") + "%" +
+                (N.hasChildNum() ? N.getChildNum() : "") + "%" +
+                (N.hasChainCode() ? b2h(N.getChainCode().toByteArray()) : "") + "%" +
+                (N.hasPrivateKey() ? b2h(N.getPrivateKey().toByteArray()) : "") + "%" +
+                (N.hasPublicKey() ? b2h(N.getPublicKey().toByteArray()) : "") + "%" +
                 "";
-            if(r.hasXpub())
-                return NodeStr + ":!:" + r.getXpub() + ":!:" +
-                    bytesToHex(r.getXpubBytes().toByteArray());
-            return NodeStr; }
-        case "MessageSignature": {
-            final TrezorMessage.MessageSignature r = (TrezorMessage.MessageSignature)resp;
-            return new String(Hex.encode(r.getSignature().toByteArray())); }
-        case "TxRequest": {
-            final TrezorMessage.TxRequest r = (TrezorMessage.TxRequest)resp;
-            final TrezorType.TransactionType ackTx;
-            if (r.getSerialized() != null && r.getSerialized().hasSignatureIndex()) {
-                curSignatures.set(r.getSerialized().getSignatureIndex(),
-                        Hex.toHexString(r.getSerialized().getSignature().toByteArray()));
-            }
-            if (r.getRequestType().equals(TrezorType.RequestType.TXFINISHED)) {
-                return Joiner.on(";").join(curSignatures);
-            } else if (r.getRequestType().equals(TrezorType.RequestType.TXINPUT)) {
-                ackTx = TrezorType.TransactionType.newBuilder().
-                    clearInputs().
-                    addInputs(createInput(r.getDetails().hasTxHash() ? r.getDetails().getTxHash() : null,
-                            r.getDetails().getRequestIndex())).
-                    build();
-            } else if (r.getRequestType().equals(TrezorType.RequestType.TXOUTPUT)) {
-                if (r.getDetails().hasTxHash()) {
-                    ackTx = TrezorType.TransactionType.newBuilder().
-                            clearOutputs().
-                            addBinOutputs(createBinOutput(
-                                    r.getDetails().getTxHash(),
-                                    r.getDetails().getRequestIndex())).
-                            build();
-                } else {
-                    ackTx = TrezorType.TransactionType.newBuilder().
-                        clearOutputs().
-                        addOutputs(createOutput(r.getDetails().getRequestIndex())).
-                        build();
-                }
-            } else if (r.getRequestType().equals(TrezorType.RequestType.TXMETA)) {
-                final TrezorType.TransactionType.Builder b = TrezorType.TransactionType.newBuilder();
-                if (r.getDetails().hasTxHash()) {
-                    final Transaction tx = curTx.mPrevoutRawTxs.get(Hex.toHexString(r.getDetails().getTxHash().toByteArray()));
-                    b.setInputsCnt(tx.getInputs().size());
-                    b.setOutputsCnt(tx.getOutputs().size());
-                    b.setVersion((int) tx.getVersion())
-                            .setLockTime((int) tx.getLockTime());
-                } else {
-                    b.setInputsCnt(curTx.mDecoded.getInputs().size());
-                    b.setOutputsCnt(curTx.mDecoded.getOutputs().size());
-                    b.setVersion((int) curTx.mDecoded.getVersion())
-                            .setLockTime((int) curTx.mDecoded.getLockTime());
-                }
-                ackTx = b.build();
-            } else {
-                return resp.getClass().getSimpleName();
-            }
-            return _get(this.send(TrezorMessage.TxAck.newBuilder().
-                setTx(ackTx).build())); }
+            if (r.hasXpub())
+                return NodeStr + ":!:" + r.getXpub() + ":!:" + b2h(r.getXpubBytes().toByteArray());
+            return NodeStr;
         }
-//        throw new IllegalArgumentException();
+        case "MessageSignature":
+            return b2h(((MessageSignature) resp).getSignature().toByteArray());
+        case "TxRequest": {
+            final TxRequest r = (TxRequest) resp;
+            if (r.getSerialized() != null && r.getSerialized().hasSignatureIndex()) {
+                mSignatures.set(r.getSerialized().getSignatureIndex(),
+                                b2h(r.getSerialized().getSignature().toByteArray()));
+            }
+
+            if (r.getRequestType().equals(RequestType.TXFINISHED))
+                return Joiner.on(";").join(mSignatures);
+
+            final TxRequestDetailsType txRequest = r.getDetails();
+            TransactionType.Builder ackTx = TransactionType.newBuilder();
+
+            if (r.getRequestType().equals(RequestType.TXINPUT))
+                return ioTx(ackTx.clearInputs().addInputs(createInput(txRequest)));
+
+            if (r.getRequestType().equals(RequestType.TXOUTPUT)) {
+                if (txRequest.hasTxHash())
+                    return ioTx(ackTx.clearOutputs().addBinOutputs(createBinOutput(txRequest)));
+
+                return ioTx(ackTx.clearOutputs()
+                                 .addOutputs(createOutput(txRequest.getRequestIndex())));
+            }
+
+            if (r.getRequestType().equals(RequestType.TXMETA)) {
+                final Transaction tx;
+                tx = txRequest.hasTxHash() ? getPreviousTx(txRequest) : mTx.mDecoded;
+                return ioTx(ackTx.setInputsCnt(tx.getInputs().size())
+                                 .setOutputsCnt(tx.getOutputs().size())
+                                 .setVersion((int) tx.getVersion())
+                                 .setLockTime((int) tx.getLockTime()));
+            }
+            break; // Fall through
+        }
+        }
         return resp.getClass().getSimpleName();
     }
 
-    private TrezorType.HDNodePathType.Builder makePubKey(final TrezorType.HDNodeType node, final Integer pointer) {
-        return TrezorType.HDNodePathType.newBuilder().setNode(node)
-                   .clearAddressN().addAddressN(curTx.mChangePointer);
-    }
-
-    private TrezorType.MultisigRedeemScriptType makeRedeemScript(final Integer pointer) {
-        TrezorType.MultisigRedeemScriptType.Builder multisig;
-        multisig = TrezorType.MultisigRedeemScriptType.newBuilder()
-                             .clearPubkeys()
-                             .addPubkeys(makePubKey(curGaNode, pointer))
-                             .addPubkeys(makePubKey(curWalletNode, pointer));
-        if (curRecoveryNode != null)
-            multisig = multisig.addPubkeys(makePubKey(curRecoveryNode, pointer)); // 2of 3
+    private MultisigRedeemScriptType makeRedeemScript(final Integer pointer) {
+        MultisigRedeemScriptType.Builder multisig;
+        multisig = MultisigRedeemScriptType.newBuilder()
+                                           .clearPubkeys()
+                                           .addPubkeys(makePath(mGAKey, pointer))
+                                           .addPubkeys(makePath(mUserKey, pointer));
+        if (mBackupKey != null)
+            multisig = multisig.addPubkeys(makePath(mBackupKey, pointer)); // 2of 3
         return multisig.setM(2).build();
     }
 
-    private TrezorType.TxOutputType createOutput(final int requestIndex) {
-        final TransactionOutput txOut = curTx.mDecoded.getOutputs().get(requestIndex);
+    private TxOutputType createOutput(final int requestIndex) {
+        final TransactionOutput txOut = mTx.mDecoded.getOutputs().get(requestIndex);
 
-        final TrezorType.TxOutputType.Builder txout;
-        txout = TrezorType.TxOutputType.newBuilder().setAmount(txOut.getValue().longValue());
+        final TxOutputType.Builder txout;
+        txout = TxOutputType.newBuilder().setAmount(txOut.getValue().longValue());
 
         if (!txOut.getScriptPubKey().isPayToScriptHash()) {
-            // p2pkh
-            txout.setAddress(txOut.getAddressFromP2PKHScript(Network.NETWORK).toString());
-            txout.setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
+            txout.setAddress(txOut.getAddressFromP2PKHScript(NETWORK).toString());
+            txout.setScriptType(OutputScriptType.PAYTOADDRESS);
             return txout.build(); // p2pkh output
         }
 
         // p2sh
-        txout.setAddress(txOut.getAddressFromP2SH(Network.NETWORK).toString());
+        txout.setAddress(txOut.getAddressFromP2SH(NETWORK).toString());
 
-        if (!txOut.getAddressFromP2SH(Network.NETWORK).equals(curChangeAddr)) {
-            txout.setScriptType(TrezorType.OutputScriptType.PAYTOSCRIPTHASH);
+        if (!txOut.getAddressFromP2SH(NETWORK).equals(mChangeAddress)) {
+            txout.setScriptType(OutputScriptType.PAYTOSCRIPTHASH);
             return txout.build(); // p2sh output
         }
 
         // FIXME: Should be PAYTOP2SHWITNESS for segwit change addresses
-        txout.setScriptType(TrezorType.OutputScriptType.PAYTOMULTISIG);
+        txout.setScriptType(OutputScriptType.PAYTOMULTISIG);
 
         // FIXME: This doesn't work for segwit change addresses
-        txout.setMultisig(makeRedeemScript(curTx.mChangePointer));
+        txout.setMultisig(makeRedeemScript(mTx.mChangePointer));
         return txout.build(); // p2sh change output
     }
 
-    private TrezorType.TxOutputBinType createBinOutput(final ByteString txHash, final int requestIndex) {
-        final TransactionOutput out = curTx.mPrevoutRawTxs.get(Hex.toHexString(txHash.toByteArray())).getOutput(requestIndex);
-        return TrezorType.TxOutputBinType.newBuilder().
-            setAmount(out.getValue().longValue()).
-            setScriptPubkey(ByteString.copyFrom(out.getScriptBytes())).
-            build();
+    private TxOutputBinType.Builder createBinOutput(final TxRequestDetailsType txRequest) {
+        final int requestIndex = txRequest.getRequestIndex();
+
+        final TransactionOutput out = getPreviousTx(txRequest).getOutput(requestIndex);
+        return TxOutputBinType.newBuilder()
+                              .setAmount(out.getValue().longValue())
+                              .setScriptPubkey(ByteString.copyFrom(out.getScriptBytes()));
     }
 
-    private TrezorType.TxInputType createInput(final ByteString txHash, final int requestIndex) {
-        final TransactionInput in;
-        if (txHash != null) {
-            in = curTx.mPrevoutRawTxs.get(Hex.toHexString(txHash.toByteArray())).getInput(requestIndex);
-            return TrezorType.TxInputType.newBuilder().
-                    setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes())).
-                    setPrevIndex((int)in.getOutpoint().getIndex()).
-                    setSequence((int)in.getSequenceNumber()).
-                    setScriptSig(ByteString.copyFrom(in.getScriptBytes())).
-                    build();
-        } else {
-            in = curTx.mDecoded.getInput(requestIndex);
-            final Integer[] addrN;
-            if (curSubaccount != 0) {
-                addrN = new Integer[] { 3 + 0x80000000, curSubaccount + 0x80000000, 1, curTx.mPrevOutputs.get(requestIndex).pointer };
-            } else {
-                addrN = new Integer[] { 1, curTx.mPrevOutputs.get(requestIndex).pointer};
-            }
+    private TxInputType.Builder createInput(final TxRequestDetailsType txRequest) {
+        final int requestIndex = txRequest.getRequestIndex();
 
-            return TrezorType.TxInputType.newBuilder()
-                       .clearAddressN()
-                       .addAllAddressN(Arrays.asList(addrN))
-                       .setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes()))
-                       .setPrevIndex((int)in.getOutpoint().getIndex())
-                       .setSequence((int) in.getSequenceNumber())
-                       .setScriptType(TrezorType.InputScriptType.SPENDMULTISIG)
-                       // FIXME: This doesn't work for segwit inputs
-                       .setMultisig(makeRedeemScript(curTx.mPrevOutputs.get(requestIndex).pointer))
-                       .build();
+        if (txRequest.hasTxHash()) {
+            final TransactionInput in = getPreviousTx(txRequest).getInput(requestIndex);
+            return TxInputType.newBuilder()
+                              .setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes()))
+                              .setPrevIndex((int)in.getOutpoint().getIndex())
+                              .setSequence((int)in.getSequenceNumber())
+                              .setScriptSig(ByteString.copyFrom(in.getScriptBytes()));
         }
+
+        final TransactionInput in = mTx.mDecoded.getInput(requestIndex);
+        final int prevoutPointer = mTx.mPrevOutputs.get(requestIndex).pointer;
+        final Integer[] path;
+        if (mSubaccount != 0)
+            path = new Integer[] { 3 + 0x80000000, mSubaccount + 0x80000000, 1, prevoutPointer };
+        else
+            path = new Integer[] { 1, prevoutPointer};
+
+        return TxInputType.newBuilder()
+                          .clearAddressN().addAllAddressN(Arrays.asList(path))
+                          .setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes()))
+                          .setPrevIndex((int) in.getOutpoint().getIndex())
+                          .setSequence((int) in.getSequenceNumber())
+                          // FIXME: This doesn't work for segwit inputs, needs to be SPENDP2SHWITNESS,
+                          // add amount here and make sure we have the right script
+                          .setScriptType(InputScriptType.SPENDMULTISIG)
+                          .setMultisig(makeRedeemScript(prevoutPointer));
     }
 
-    public String MessageGetPublicKey(Integer[] addrn) {
-        return _get(this.send(
-            TrezorMessage.GetPublicKey.newBuilder().
-            clearAddressN().
-            addAllAddressN(Arrays.asList(addrn)).
-            build()));
+    public String MessageGetPublicKey(final Integer[] path) {
+        return io(GetPublicKey.newBuilder().clearAddressN().addAllAddressN(Arrays.asList(path)));
     }
 
-    public ECKey.ECDSASignature MessageSignMessage(Integer[] addrn, String message) {
-        byte[] sigCompact = Hex.decode(_get(this.send(
-                TrezorMessage.SignMessage.newBuilder().
-                        clearAddressN().
-                        addAllAddressN(Arrays.asList(addrn)).
-                        setMessage(ByteString.copyFromUtf8(message)).
-                        build())));
-        return new ECKey.ECDSASignature(
-                new BigInteger(1, Arrays.copyOfRange(sigCompact, 1, 33)),
-                new BigInteger(1, Arrays.copyOfRange(sigCompact, 33, 65)));
+    public ECKey.ECDSASignature MessageSignMessage(final Integer[] path, final String message) {
+        final byte[] sig;
+        sig = h2b(io(SignMessage.newBuilder()
+                                .clearAddressN().addAllAddressN(Arrays.asList(path))
+                                .setMessage(ByteString.copyFromUtf8(message))));
+        return new ECKey.ECDSASignature(new BigInteger(1, Arrays.copyOfRange(sig, 1, 33)),
+                                        new BigInteger(1, Arrays.copyOfRange(sig, 33, 65)));
     }
 
     public List<Integer> getFirmwareVersion() {
-        Iterable<String> version = Splitter.on(".").split(_get(this.send(
-                TrezorMessage.Initialize.newBuilder().build()
-        )));
+        Iterable<String> version;
+        version = Splitter.on(".").split(io(Initialize.newBuilder()));
         LinkedList<Integer> versionInts = new LinkedList<>();
-        for (String s : version) {
+        for (String s : version)
             versionInts.add(Integer.valueOf(s));
-        }
         return versionInts;
     }
 
     public List<byte[]> MessageSignTx(final PreparedTransaction ptx, final String coinName) {
-        curTx = ptx;
-        curSubaccount = ptx.mSubAccount;
+        mTx = ptx;
+        mSubaccount = ptx.mSubAccount;
 
         final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.mSubAccount, ptx.mChangePointer);
 
-        curGaNode = TrezorType.HDNodeType.newBuilder().
-            setDepth(serverKeys[0].getDepth()).
-            setFingerprint(0).
-            setChildNum(serverKeys[0].getChildNumber().getI()).
-            setPublicKey(ByteString.copyFrom(serverKeys[0].getPubKey())).
-            setChainCode(ByteString.copyFrom(serverKeys[0].getChainCode())).
-            build();
+        mGAKey = makeHDKey(serverKeys[0]);
 
-        curChangeAddr = null;
+        mChangeAddress = null;
         if (serverKeys[1] != null) {
             // We have a change pointer
             final List<ECKey> pubkeys = new ArrayList<>();
             pubkeys.add(ECKey.fromPublicOnly(serverKeys[1].getPubKeyPoint()));
 
-            final Integer[] intArray;
-            if (ptx.mSubAccount != 0) {
-                intArray = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR, ptx.mChangePointer};
-            } else {
-                intArray = new Integer[]{HDKey.BRANCH_REGULAR, ptx.mChangePointer};
-            }
-            final String[] xpub = MessageGetPublicKey(intArray).split("%", -1);
-            final String pkHex = xpub[xpub.length - 2];
-            pubkeys.add(ECKey.fromPublicOnly(Hex.decode(pkHex)));
+            final Integer[] path;
+            if (ptx.mSubAccount != 0)
+                path = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR, ptx.mChangePointer};
+            else
+                path = new Integer[]{HDKey.BRANCH_REGULAR, ptx.mChangePointer};
 
-            curRecoveryNode = null;
+            final String[] xpub = MessageGetPublicKey(path).split("%", -1);
+            final String pubKeyHex = xpub[xpub.length - 2];
+            pubkeys.add(ECKey.fromPublicOnly(h2b(pubKeyHex)));
+
+            mBackupKey = null;
             if (ptx.mTwoOfThreeBackupChaincode != null) {
                 final DeterministicKey keys[];
                 keys = HDKey.getRecoveryKeys(ptx.mTwoOfThreeBackupChaincode, ptx.mTwoOfThreeBackupPubkey,
                                              ptx.mChangePointer);
-
-                curRecoveryNode = TrezorType.HDNodeType.newBuilder().
-                        setDepth(keys[0].getDepth()).
-                        setFingerprint(0).
-                        setChildNum(keys[0].getChildNumber().getI()).
-                        setChainCode(ByteString.copyFrom(keys[0].getChainCode())).
-                        setPublicKey(ByteString.copyFrom(keys[0].getPubKey())).
-                        build();
-
+                mBackupKey = makeHDKey(keys[0]);
                 pubkeys.add(ECKey.fromPublicOnly(keys[1].getPubKeyPoint()));
             }
 
             final Script changeScript = new Script(Script.createMultiSigOutputScript(2, pubkeys));
             try {
-                curChangeAddr = new org.bitcoinj.core.Address(Network.NETWORK,
-                        Network.NETWORK.getP2SHHeader(),
-                        Utils.sha256hash160(changeScript.getProgram()));
+                final byte hash160[] = Wally.hash160(changeScript.getProgram());
+                mChangeAddress = new org.bitcoinj.core.Address(NETWORK, NETWORK.getP2SHHeader(), hash160);
             } catch (WrongNetworkException e) {
             }
         }
 
-        final Integer[] intArray2;
-        if (ptx.mSubAccount != 0) {
-            intArray2 = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR};
-        } else {
-            intArray2 = new Integer[]{HDKey.BRANCH_REGULAR};
-        }
-        final String[] xpub2 = MessageGetPublicKey(intArray2).split("%", -1);
-        final String pkHex2 = xpub2[xpub2.length-2];
-        final String chainCodeHex2 = xpub2[xpub2.length-4];
+        final Integer[] path;
+        if (ptx.mSubAccount != 0)
+            path = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR};
+        else
+            path = new Integer[]{HDKey.BRANCH_REGULAR};
 
-        curWalletNode = TrezorType.HDNodeType.newBuilder().
-                setDepth(1).
-                setFingerprint(0).
-                setChildNum(1).
-                setPublicKey(ByteString.copyFrom(Hex.decode(pkHex2))).
-                setChainCode(ByteString.copyFrom(Hex.decode(chainCodeHex2))).
-                build();
+        final String[] xpub = MessageGetPublicKey(path).split("%", -1);
+        final String pubKeyHex = xpub[xpub.length-2];
+        final String chainCodeHex = xpub[xpub.length-4];
 
-        curSignatures.clear();
-        for (int i = 0; i < curTx.mDecoded.getInputs().size(); ++i) {
-            curSignatures.add("");
-        }
+        mUserKey = makeHDKey(1, 1, h2b(pubKeyHex), h2b(chainCodeHex));
+
+        final int numInputs = mTx.mDecoded.getInputs().size();
+        final int numOutputs = mTx.mDecoded.getOutputs().size();
+
+        mSignatures.clear();
+        for (int i = 0; i < numInputs; ++i)
+            mSignatures.add("");
+
+        final String[] sigs;
+        sigs = io(SignTx.newBuilder().setInputsCount(numInputs)
+                                     .setOutputsCount(numOutputs)
+                                     .setCoinName(coinName)
+                                     .setLockTime((int) mTx.mDecoded.getLockTime()))
+                                     .split(";");
 
         final LinkedList<byte[]> signaturesList = new LinkedList<>();
-        final String[] signatures = _get(this.send(
-                SignTx.newBuilder().
-                        setInputsCount(ptx.mDecoded.getInputs().size()).
-                        setOutputsCount(ptx.mDecoded.getOutputs().size()).
-                        setCoinName(coinName).
-                        setLockTime((int) curTx.mDecoded.getLockTime()).
-                        build())).split(";");
-        for (final String sig: signatures) {
-            signaturesList.add(ISigningWallet.getTxSignature(ECKey.ECDSASignature.decodeFromDER(Hex.decode(sig))));
-        }
+        for (final String sig: sigs)
+            signaturesList.add(ISigningWallet.getTxSignature(ECKey.ECDSASignature.decodeFromDER(h2b(sig))));
+
         return signaturesList;
     }
 }
