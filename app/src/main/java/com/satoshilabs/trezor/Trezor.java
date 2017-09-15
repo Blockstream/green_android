@@ -392,6 +392,17 @@ public class Trezor {
                    .clearAddressN().addAddressN(curTx.mChangePointer);
     }
 
+    private TrezorType.MultisigRedeemScriptType makeRedeemScript(final Integer pointer) {
+        TrezorType.MultisigRedeemScriptType.Builder multisig;
+        multisig = TrezorType.MultisigRedeemScriptType.newBuilder()
+                             .clearPubkeys()
+                             .addPubkeys(makePubKey(curGaNode, pointer))
+                             .addPubkeys(makePubKey(curWalletNode, pointer));
+        if (curRecoveryNode != null)
+            multisig = multisig.addPubkeys(makePubKey(curRecoveryNode, pointer)); // 2of 3
+        return multisig.setM(2).build();
+    }
+
     private TrezorType.TxOutputType createOutput(final int requestIndex) {
         final TransactionOutput txOut = curTx.mDecoded.getOutputs().get(requestIndex);
 
@@ -415,19 +426,9 @@ public class Trezor {
 
         // FIXME: Should be PAYTOP2SHWITNESS for segwit change addresses
         txout.setScriptType(TrezorType.OutputScriptType.PAYTOMULTISIG);
-        TrezorType.MultisigRedeemScriptType.Builder multisig;
-        multisig = TrezorType.MultisigRedeemScriptType.newBuilder()
-            .clearPubkeys()
-            .addPubkeys(makePubKey(curGaNode, curTx.mChangePointer))
-            .addPubkeys(makePubKey(curWalletNode, curTx.mChangePointer));
-
-        if (curRecoveryNode != null) {
-            // 2of 3
-            multisig = multisig.addPubkeys(makePubKey(curRecoveryNode, curTx.mChangePointer));
-        }
 
         // FIXME: This doesn't work for segwit change addresses
-        txout.setMultisig(multisig.setM(2));
+        txout.setMultisig(makeRedeemScript(curTx.mChangePointer));
         return txout.build(); // p2sh change output
     }
 
@@ -458,29 +459,16 @@ public class Trezor {
                 addrN = new Integer[] { 1, curTx.mPrevOutputs.get(requestIndex).pointer};
             }
 
-            // FIXME: This doesn't work for segwit inputs
-            final Integer pointer = curTx.mPrevOutputs.get(requestIndex).pointer;
-            TrezorType.MultisigRedeemScriptType.Builder multisig;
-            multisig = TrezorType.MultisigRedeemScriptType.newBuilder()
-                .clearPubkeys()
-                .addPubkeys(makePubKey(curGaNode, pointer))
-                .addPubkeys(makePubKey(curWalletNode, pointer));
-
-            if (curRecoveryNode != null) {
-                // 2of 3
-                multisig = multisig.addPubkeys(makePubKey(curRecoveryNode, pointer));
-            }
-            multisig = multisig.setM(2);
-
-            return TrezorType.TxInputType.newBuilder().
-                    clearAddressN().
-                    addAllAddressN(Arrays.asList(addrN)).
-                    setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes())).
-                    setPrevIndex((int)in.getOutpoint().getIndex()).
-                    setSequence((int) in.getSequenceNumber()).
-                    setScriptType(TrezorType.InputScriptType.SPENDMULTISIG).
-                    setMultisig(multisig).
-                    build();
+            return TrezorType.TxInputType.newBuilder()
+                       .clearAddressN()
+                       .addAllAddressN(Arrays.asList(addrN))
+                       .setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes()))
+                       .setPrevIndex((int)in.getOutpoint().getIndex())
+                       .setSequence((int) in.getSequenceNumber())
+                       .setScriptType(TrezorType.InputScriptType.SPENDMULTISIG)
+                       // FIXME: This doesn't work for segwit inputs
+                       .setMultisig(makeRedeemScript(curTx.mPrevOutputs.get(requestIndex).pointer))
+                       .build();
         }
     }
 
