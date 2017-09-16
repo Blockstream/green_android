@@ -893,7 +893,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.changeMemo(txHashHex, memo);
     }
 
-    private static byte[] getSegWitScript(final byte[] input) {
+    // FIXME: Put this and other script stuff in wally
+    public static byte[] getSegWitScript(final byte[] input) {
         final ByteArrayOutputStream bits = new ByteArrayOutputStream();
         bits.write(0);
         try {

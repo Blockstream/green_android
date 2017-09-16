@@ -17,10 +17,12 @@ import com.google.common.base.Splitter;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
+import com.greenaddress.greenapi.GATx;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
+import com.greenaddress.greenbits.GaService;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Address;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.ButtonAck;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.ButtonRequest;
@@ -191,7 +193,7 @@ public class Trezor {
     }
 
     private HDNodeType makeHDKey(final int depth, final int childNum,
-                                            final byte[] pubkey, final byte[] chainCode) {
+                                 final byte[] pubkey, final byte[] chainCode) {
         return HDNodeType.newBuilder().setDepth(depth)
                          .setFingerprint(0).setChildNum(childNum)
                          .setPublicKey(ByteString.copyFrom(pubkey))
@@ -333,8 +335,8 @@ public class Trezor {
         return _get(messageRead());
     }
 
-    private String ioTx(final TransactionType.Builder b) {
-        return io(TxAck.newBuilder().setTx(b));
+    private String ioTx(final TransactionType.Builder builder) {
+        return io(TxAck.newBuilder().setTx(builder));
     }
 
     private String _get(final Message resp) {
@@ -376,10 +378,9 @@ public class Trezor {
             return b2h(((MessageSignature) resp).getSignature().toByteArray());
         case "TxRequest": {
             final TxRequest r = (TxRequest) resp;
-            if (r.getSerialized() != null && r.getSerialized().hasSignatureIndex()) {
+            if (r.getSerialized() != null && r.getSerialized().hasSignatureIndex())
                 mSignatures.set(r.getSerialized().getSignatureIndex(),
                                 b2h(r.getSerialized().getSignature().toByteArray()));
-            }
 
             if (r.getRequestType().equals(RequestType.TXFINISHED))
                 return Joiner.on(";").join(mSignatures);
@@ -419,12 +420,12 @@ public class Trezor {
                                            .addPubkeys(makeHDNode(mGAKey, pointer))
                                            .addPubkeys(makeHDNode(mUserKey, pointer));
         if (mBackupKey != null)
-            multisig = multisig.addPubkeys(makeHDNode(mBackupKey, pointer)); // 2of 3
+            multisig.addPubkeys(makeHDNode(mBackupKey, pointer)); // 2of 3
         return multisig.setM(2).build();
     }
 
-    private TxOutputType.Builder createOutput(final int requestIndex) {
-        final TransactionOutput txOut = mTx.mDecoded.getOutputs().get(requestIndex);
+    private TxOutputType.Builder createOutput(final int index) {
+        final TransactionOutput txOut = mTx.mDecoded.getOutputs().get(index);
 
         final TxOutputType.Builder txout;
         txout = TxOutputType.newBuilder().setAmount(txOut.getValue().longValue());
@@ -455,21 +456,19 @@ public class Trezor {
     }
 
     private TxOutputBinType.Builder createBinOutput(final TxRequestDetailsType txRequest) {
-        final int requestIndex = txRequest.getRequestIndex();
+        final int index = txRequest.getRequestIndex();
 
-        final TransactionOutput out = getPreviousTx(txRequest).getOutput(requestIndex);
+        final TransactionOutput out = getPreviousTx(txRequest).getOutput(index);
         return TxOutputBinType.newBuilder()
                               .setAmount(out.getValue().longValue())
                               .setScriptPubkey(ByteString.copyFrom(out.getScriptBytes()));
     }
 
     private TxInputType.Builder createInput(final TxRequestDetailsType txRequest) {
-        final int requestIndex = txRequest.getRequestIndex();
-
-        final boolean isSegwit = mTx.mPrevOutputs.get(requestIndex).scriptType.equals(14);
+        final int index = txRequest.getRequestIndex();
 
         final TransactionInput in;
-        in = (txRequest.hasTxHash() ? getPreviousTx(txRequest) : mTx.mDecoded).getInput(requestIndex);
+        in = (txRequest.hasTxHash() ? getPreviousTx(txRequest) : mTx.mDecoded).getInput(index);
 
         TxInputType.Builder txin;
         txin = TxInputType.newBuilder()
@@ -480,11 +479,11 @@ public class Trezor {
         if (txRequest.hasTxHash())
             return txin.setScriptSig(ByteString.copyFrom(in.getScriptBytes()));
 
-        final int prevoutPointer = mTx.mPrevOutputs.get(requestIndex).pointer;
+        final int prevoutPointer = mTx.mPrevOutputs.get(index).pointer;
         txin.clearAddressN().addAllAddressN(makePath(prevoutPointer))
                             .setMultisig(makeRedeemScript(prevoutPointer));
 
-        if (isSegwit)
+        if (mTx.mPrevOutputs.get(index).scriptType.equals(GATx.P2SH_P2WSH_FORTIFIED_OUT))
             return txin.setScriptType(InputScriptType.SPENDP2SHWITNESS)
                        .setAmount(in.getValue().longValue());
         return txin.setScriptType(InputScriptType.SPENDMULTISIG);
@@ -497,10 +496,10 @@ public class Trezor {
         return new Pair<>(h2b(data[data.length - 2]), h2b(data[data.length - 4]));
     }
 
-    public ECKey.ECDSASignature MessageSignMessage(final Integer[] path, final String message) {
+    public ECKey.ECDSASignature signMessage(final List<Integer> path, final String message) {
         final byte[] sig;
         sig = h2b(io(SignMessage.newBuilder()
-                                .clearAddressN().addAllAddressN(Arrays.asList(path))
+                                .clearAddressN().addAllAddressN(path)
                                 .setMessage(ByteString.copyFromUtf8(message))));
         return new ECKey.ECDSASignature(new BigInteger(1, Arrays.copyOfRange(sig, 1, 33)),
                                         new BigInteger(1, Arrays.copyOfRange(sig, 33, 65)));
@@ -515,7 +514,7 @@ public class Trezor {
         return versionInts;
     }
 
-    public List<byte[]> MessageSignTx(final PreparedTransaction ptx, final String coinName) {
+    public List<byte[]> signTransaction(final PreparedTransaction ptx, final String coinName) {
         mTx = ptx;
         mSubaccount = ptx.mSubAccount;
 
@@ -542,8 +541,11 @@ public class Trezor {
             final Script changeScript = new Script(Script.createMultiSigOutputScript(2, pubkeys));
             // FIXME: Use GaService.createOutScript() for the above
             try {
-                final byte hash160[] = Wally.hash160(changeScript.getProgram());
-                mChangeAddress = new org.bitcoinj.core.Address(NETWORK, NETWORK.getP2SHHeader(), hash160);
+                byte data[] = changeScript.getProgram();
+                if (mTx.mChangeOutput.mIsSegwit)
+                    data = GaService.getSegWitScript(data);
+                mChangeAddress = new org.bitcoinj.core.Address(NETWORK, NETWORK.getP2SHHeader(),
+                                                               Wally.hash160(data));
             } catch (WrongNetworkException e) {
             }
         }

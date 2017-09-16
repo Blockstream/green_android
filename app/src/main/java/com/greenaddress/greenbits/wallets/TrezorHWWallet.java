@@ -41,8 +41,7 @@ public class TrezorHWWallet extends HWWallet {
 
     @Override
     protected ECKey.ECDSASignature signMessage(final String message) {
-        final Integer[] intArray = new Integer[addrn.size()];
-        return trezor.MessageSignMessage(addrn.toArray(intArray), message);
+        return trezor.signMessage(addrn, message);
     }
 
     @Override
@@ -54,7 +53,7 @@ public class TrezorHWWallet extends HWWallet {
     @Override
     public List<byte[]> signTransaction(final PreparedTransaction ptx) {
         final boolean isMainnet = Network.NETWORK.getId().equals(MainNetParams.ID_MAINNET);
-        return trezor.MessageSignTx(ptx, isMainnet ? "Bitcoin": "Testnet");
+        return trezor.signTransaction(ptx, isMainnet ? "Bitcoin": "Testnet");
     }
 
     @Override
