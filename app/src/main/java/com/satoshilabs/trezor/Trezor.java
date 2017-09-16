@@ -9,6 +9,7 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbRequest;
 import android.util.Log;
+import android.util.Pair;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Joiner;
@@ -206,10 +207,16 @@ public class Trezor {
                              .clearAddressN().addAddressN(pointer).build();
     }
 
-    private List<Integer> makePath(final int pointer) {
-        if (mSubaccount == 0)
-            return Arrays.asList(new Integer[] {1, pointer});
-        return Arrays.asList(new Integer[] {3 + 0x80000000, mSubaccount + 0x80000000, 1, pointer});
+    private List<Integer> makePath(final Integer pointer) {
+        final List<Integer> path = new ArrayList<>(4);
+        if (mSubaccount != 0) {
+            path.add(3 + 0x80000000);
+            path.add(mSubaccount + 0x80000000);
+        }
+        path.add(HDKey.BRANCH_REGULAR);
+        if (pointer != null)
+            path.add(pointer);
+        return path;
     }
 
     private void logData(final String prefix, final byte[] data) {
@@ -429,7 +436,7 @@ public class Trezor {
         }
 
         // p2sh
-        if (mTx.mChangeOutput == null ||
+        if (getChangePointer() == null ||
                 !txOut.getAddressFromP2SH(NETWORK).equals(mChangeAddress)) {
             // p2sh non-change output
             return txout.setScriptType(OutputScriptType.PAYTOSCRIPTHASH)
@@ -483,8 +490,11 @@ public class Trezor {
         return txin.setScriptType(InputScriptType.SPENDMULTISIG);
     }
 
-    public String MessageGetPublicKey(final Integer[] path) {
-        return io(GetPublicKey.newBuilder().clearAddressN().addAllAddressN(Arrays.asList(path)));
+    public Pair<byte[], byte[]> getUserKey(final List<Integer> path) {
+        final String xpub = io(GetPublicKey.newBuilder().clearAddressN().addAllAddressN(path));
+        final String[] data = xpub.split("%", -1);
+        // Pubkey, Chaincode
+        return new Pair<>(h2b(data[data.length - 2]), h2b(data[data.length - 4]));
     }
 
     public ECKey.ECDSASignature MessageSignMessage(final Integer[] path, final String message) {
@@ -514,20 +524,11 @@ public class Trezor {
         mGAKey = makeHDKey(serverKeys[0]);
 
         mChangeAddress = null;
-        if (serverKeys[1] != null) {
-            // We have a change pointer
+        if (getChangePointer() != null) {
+            // FIXME: Use GaService.createOutScript() for the below
             final List<ECKey> pubkeys = new ArrayList<>();
             pubkeys.add(ECKey.fromPublicOnly(serverKeys[1].getPubKeyPoint()));
-
-            final Integer[] path;
-            if (ptx.mSubAccount != 0)
-                path = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR, getChangePointer()};
-            else
-                path = new Integer[]{HDKey.BRANCH_REGULAR, getChangePointer()};
-
-            final String[] xpub = MessageGetPublicKey(path).split("%", -1);
-            final String pubKeyHex = xpub[xpub.length - 2];
-            pubkeys.add(ECKey.fromPublicOnly(h2b(pubKeyHex)));
+            pubkeys.add(ECKey.fromPublicOnly(getUserKey(makePath(getChangePointer())).first));
 
             mBackupKey = null;
             if (ptx.mTwoOfThreeBackupChaincode != null) {
@@ -539,6 +540,7 @@ public class Trezor {
             }
 
             final Script changeScript = new Script(Script.createMultiSigOutputScript(2, pubkeys));
+            // FIXME: Use GaService.createOutScript() for the above
             try {
                 final byte hash160[] = Wally.hash160(changeScript.getProgram());
                 mChangeAddress = new org.bitcoinj.core.Address(NETWORK, NETWORK.getP2SHHeader(), hash160);
@@ -546,17 +548,8 @@ public class Trezor {
             }
         }
 
-        final Integer[] path;
-        if (ptx.mSubAccount != 0)
-            path = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR};
-        else
-            path = new Integer[]{HDKey.BRANCH_REGULAR};
-
-        final String[] xpub = MessageGetPublicKey(path).split("%", -1);
-        final String pubKeyHex = xpub[xpub.length-2];
-        final String chainCodeHex = xpub[xpub.length-4];
-
-        mUserKey = makeHDKey(1, 1, h2b(pubKeyHex), h2b(chainCodeHex));
+        final Pair<byte[], byte[]> xpub = getUserKey(makePath(null));
+        mUserKey = makeHDKey(1, 1, xpub.first, xpub.second);
 
         final int numInputs = ptx.mDecoded.getInputs().size();
         final int numOutputs = ptx.mDecoded.getOutputs().size();

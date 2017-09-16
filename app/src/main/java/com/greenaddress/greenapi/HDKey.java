@@ -52,10 +52,6 @@ public class HDKey {
                                     chainCode, pub.getPubKeyPoint(), null, null);
     }
 
-    public static DeterministicKey createMasterKey(final String chainCode, final String publicKey) {
-        return createMasterKey(h(chainCode), h(publicKey));
-    }
-
     // Get the 2of3 backup key (plus parent)
     // This is the users key to reedeem 2of3 funds in the event that GA becomes unavailable
     public static DeterministicKey[] getRecoveryKeys(final byte[] chainCode, final byte[] publicKey, final Integer pointer) {
@@ -95,7 +91,7 @@ public class HDKey {
         final boolean reconcile = BuildConfig.DEBUG;
         DeterministicKey k = null;
         if (reconcile) {
-            k = createMasterKey(Network.depositChainCode, Network.depositPubkey);
+            k = createMasterKey(h(Network.depositChainCode), h(Network.depositPubkey));
             k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
             for (final int i : mGaUserPath)
                 k = deriveChildKey(k, i);
