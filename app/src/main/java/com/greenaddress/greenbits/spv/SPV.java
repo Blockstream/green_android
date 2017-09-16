@@ -444,8 +444,8 @@ public class SPV {
 
     private ListenableFuture<Boolean>
     verifyOutputSpendable(final PreparedTransaction ptx, final int index) {
-        return mService.verifySpendableBy(ptx.mDecoded.getOutputs().get(index),
-                                          ptx.mSubAccount, ptx.mChangePointer);
+        return mService.verifySpendableBy(ptx.mDecoded.getOutputs().get(index), ptx.mSubAccount,
+                                          ptx.mChangeOutput == null ? null : ptx.mChangeOutput.mPointer);
     }
 
     public ListenableFuture<Coin>

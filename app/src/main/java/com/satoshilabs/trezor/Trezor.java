@@ -173,6 +173,10 @@ public class Trezor {
         return mVendorId;
     }
 
+    private Integer getChangePointer() {
+        return mTx.mChangeOutput == null ? null : mTx.mChangeOutput.mPointer;
+    }
+
     private static String b2h(final byte[] bytes) {
         return Wally.hex_from_bytes(bytes);
     }
@@ -197,9 +201,15 @@ public class Trezor {
         return makeHDKey(k.getDepth(), k.getChildNumber().getI(), k.getPubKey(), k.getChainCode());
     }
 
-    private HDNodePathType makePath(final HDNodeType node, final Integer pointer) {
+    private HDNodePathType makeHDNode(final HDNodeType node, final Integer pointer) {
         return HDNodePathType.newBuilder().setNode(node)
                              .clearAddressN().addAddressN(pointer).build();
+    }
+
+    private List<Integer> makePath(final int pointer) {
+        if (mSubaccount == 0)
+            return Arrays.asList(new Integer[] {1, pointer});
+        return Arrays.asList(new Integer[] {3 + 0x80000000, mSubaccount + 0x80000000, 1, pointer});
     }
 
     private void logData(final String prefix, final byte[] data) {
@@ -399,39 +409,42 @@ public class Trezor {
         MultisigRedeemScriptType.Builder multisig;
         multisig = MultisigRedeemScriptType.newBuilder()
                                            .clearPubkeys()
-                                           .addPubkeys(makePath(mGAKey, pointer))
-                                           .addPubkeys(makePath(mUserKey, pointer));
+                                           .addPubkeys(makeHDNode(mGAKey, pointer))
+                                           .addPubkeys(makeHDNode(mUserKey, pointer));
         if (mBackupKey != null)
-            multisig = multisig.addPubkeys(makePath(mBackupKey, pointer)); // 2of 3
+            multisig = multisig.addPubkeys(makeHDNode(mBackupKey, pointer)); // 2of 3
         return multisig.setM(2).build();
     }
 
-    private TxOutputType createOutput(final int requestIndex) {
+    private TxOutputType.Builder createOutput(final int requestIndex) {
         final TransactionOutput txOut = mTx.mDecoded.getOutputs().get(requestIndex);
 
         final TxOutputType.Builder txout;
         txout = TxOutputType.newBuilder().setAmount(txOut.getValue().longValue());
 
         if (!txOut.getScriptPubKey().isPayToScriptHash()) {
-            txout.setAddress(txOut.getAddressFromP2PKHScript(NETWORK).toString());
-            txout.setScriptType(OutputScriptType.PAYTOADDRESS);
-            return txout.build(); // p2pkh output
+            // p2pkh output
+            return txout.setAddress(txOut.getAddressFromP2PKHScript(NETWORK).toString())
+                        .setScriptType(OutputScriptType.PAYTOADDRESS);
         }
 
         // p2sh
-        txout.setAddress(txOut.getAddressFromP2SH(NETWORK).toString());
-
-        if (!txOut.getAddressFromP2SH(NETWORK).equals(mChangeAddress)) {
-            txout.setScriptType(OutputScriptType.PAYTOSCRIPTHASH);
-            return txout.build(); // p2sh output
+        if (mTx.mChangeOutput == null ||
+                !txOut.getAddressFromP2SH(NETWORK).equals(mChangeAddress)) {
+            // p2sh non-change output
+            return txout.setScriptType(OutputScriptType.PAYTOSCRIPTHASH)
+                        .setAddress(txOut.getAddressFromP2SH(NETWORK).toString());
         }
 
-        // FIXME: Should be PAYTOP2SHWITNESS for segwit change addresses
-        txout.setScriptType(OutputScriptType.PAYTOMULTISIG);
-
-        // FIXME: This doesn't work for segwit change addresses
-        txout.setMultisig(makeRedeemScript(mTx.mChangePointer));
-        return txout.build(); // p2sh change output
+        if (mTx.mChangeOutput.mIsSegwit) {
+            // p2sh-p2wsh change output
+            txout.setScriptType(OutputScriptType.PAYTOP2SHWITNESS);
+        } else {
+            // p2sh change output
+            txout.setScriptType(OutputScriptType.PAYTOMULTISIG);
+        }
+        return txout.clearAddressN().addAllAddressN(makePath(getChangePointer()))
+                    .setMultisig(makeRedeemScript(getChangePointer()));
     }
 
     private TxOutputBinType.Builder createBinOutput(final TxRequestDetailsType txRequest) {
@@ -446,32 +459,28 @@ public class Trezor {
     private TxInputType.Builder createInput(final TxRequestDetailsType txRequest) {
         final int requestIndex = txRequest.getRequestIndex();
 
-        if (txRequest.hasTxHash()) {
-            final TransactionInput in = getPreviousTx(txRequest).getInput(requestIndex);
-            return TxInputType.newBuilder()
-                              .setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes()))
-                              .setPrevIndex((int)in.getOutpoint().getIndex())
-                              .setSequence((int)in.getSequenceNumber())
-                              .setScriptSig(ByteString.copyFrom(in.getScriptBytes()));
-        }
+        final boolean isSegwit = mTx.mPrevOutputs.get(requestIndex).scriptType.equals(14);
 
-        final TransactionInput in = mTx.mDecoded.getInput(requestIndex);
-        final int prevoutPointer = mTx.mPrevOutputs.get(requestIndex).pointer;
-        final Integer[] path;
-        if (mSubaccount != 0)
-            path = new Integer[] { 3 + 0x80000000, mSubaccount + 0x80000000, 1, prevoutPointer };
-        else
-            path = new Integer[] { 1, prevoutPointer};
+        final TransactionInput in;
+        in = (txRequest.hasTxHash() ? getPreviousTx(txRequest) : mTx.mDecoded).getInput(requestIndex);
 
-        return TxInputType.newBuilder()
-                          .clearAddressN().addAllAddressN(Arrays.asList(path))
+        TxInputType.Builder txin;
+        txin = TxInputType.newBuilder()
                           .setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes()))
                           .setPrevIndex((int) in.getOutpoint().getIndex())
-                          .setSequence((int) in.getSequenceNumber())
-                          // FIXME: This doesn't work for segwit inputs, needs to be SPENDP2SHWITNESS,
-                          // add amount here and make sure we have the right script
-                          .setScriptType(InputScriptType.SPENDMULTISIG)
-                          .setMultisig(makeRedeemScript(prevoutPointer));
+                          .setSequence((int) in.getSequenceNumber());
+
+        if (txRequest.hasTxHash())
+            return txin.setScriptSig(ByteString.copyFrom(in.getScriptBytes()));
+
+        final int prevoutPointer = mTx.mPrevOutputs.get(requestIndex).pointer;
+        txin.clearAddressN().addAllAddressN(makePath(prevoutPointer))
+                            .setMultisig(makeRedeemScript(prevoutPointer));
+
+        if (isSegwit)
+            return txin.setScriptType(InputScriptType.SPENDP2SHWITNESS)
+                       .setAmount(in.getValue().longValue());
+        return txin.setScriptType(InputScriptType.SPENDMULTISIG);
     }
 
     public String MessageGetPublicKey(final Integer[] path) {
@@ -500,7 +509,7 @@ public class Trezor {
         mTx = ptx;
         mSubaccount = ptx.mSubAccount;
 
-        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.mSubAccount, ptx.mChangePointer);
+        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.mSubAccount, getChangePointer());
 
         mGAKey = makeHDKey(serverKeys[0]);
 
@@ -512,9 +521,9 @@ public class Trezor {
 
             final Integer[] path;
             if (ptx.mSubAccount != 0)
-                path = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR, ptx.mChangePointer};
+                path = new Integer[]{3 + 0x80000000, ptx.mSubAccount + 0x80000000, HDKey.BRANCH_REGULAR, getChangePointer()};
             else
-                path = new Integer[]{HDKey.BRANCH_REGULAR, ptx.mChangePointer};
+                path = new Integer[]{HDKey.BRANCH_REGULAR, getChangePointer()};
 
             final String[] xpub = MessageGetPublicKey(path).split("%", -1);
             final String pubKeyHex = xpub[xpub.length - 2];
@@ -524,7 +533,7 @@ public class Trezor {
             if (ptx.mTwoOfThreeBackupChaincode != null) {
                 final DeterministicKey keys[];
                 keys = HDKey.getRecoveryKeys(ptx.mTwoOfThreeBackupChaincode, ptx.mTwoOfThreeBackupPubkey,
-                                             ptx.mChangePointer);
+                                             getChangePointer());
                 mBackupKey = makeHDKey(keys[0]);
                 pubkeys.add(ECKey.fromPublicOnly(keys[1].getPubKeyPoint()));
             }
@@ -549,8 +558,8 @@ public class Trezor {
 
         mUserKey = makeHDKey(1, 1, h2b(pubKeyHex), h2b(chainCodeHex));
 
-        final int numInputs = mTx.mDecoded.getInputs().size();
-        final int numOutputs = mTx.mDecoded.getOutputs().size();
+        final int numInputs = ptx.mDecoded.getInputs().size();
+        final int numOutputs = ptx.mDecoded.getOutputs().size();
 
         mSignatures.clear();
         for (int i = 0; i < numInputs; ++i)
@@ -560,7 +569,7 @@ public class Trezor {
         sigs = io(SignTx.newBuilder().setInputsCount(numInputs)
                                      .setOutputsCount(numOutputs)
                                      .setCoinName(coinName)
-                                     .setLockTime((int) mTx.mDecoded.getLockTime()))
+                                     .setLockTime((int) ptx.mDecoded.getLockTime()))
                                      .split(";");
 
         final LinkedList<byte[]> signaturesList = new LinkedList<>();

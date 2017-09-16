@@ -856,7 +856,7 @@ public class SendFragment extends SubaccountFragment {
         Coin total = Coin.ZERO;
         Coin fee;
         boolean randomizedChange = false;
-        Pair<TransactionOutput, Integer> changeOutput = null;
+        GATx.ChangeOutput changeOutput = null;
 
         // First add inputs until we cover the amount to send
         while ((sendAll || total.isLessThan(amount)) && !utxos.isEmpty())
@@ -891,7 +891,7 @@ public class SendFragment extends SubaccountFragment {
 
         if (changeOutput != null) {
             // Set the value of the change output
-            changeOutput.first.setValue(total.subtract(amount).subtract(fee));
+            changeOutput.mOutput.setValue(total.subtract(amount).subtract(fee));
             randomizedChange = GATx.randomizeChangeOutput(tx);
         }
 
@@ -1084,8 +1084,7 @@ public class SendFragment extends SubaccountFragment {
         // FIXME: Implement HW Signing
         /*
         final PreparedTransaction ptx = new PreparedTransaction(
-                changeOutput == null ? null : changeOutput.second,
-                mSubaccount, tx, service.findSubaccountByType(mSubaccount, "2of3")
+                changeOutput, mSubaccount, tx, service.findSubaccountByType(mSubaccount, "2of3")
         );
         ptx.mPrevoutRawTxs = new HashMap<>();
         for (final Transaction prevTx : GATx.getPreviousTransactions(service, tx))

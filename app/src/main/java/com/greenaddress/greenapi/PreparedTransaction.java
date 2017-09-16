@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class PreparedTransaction {
 
-    public final Integer mChangePointer;
+    public final GATx.ChangeOutput mChangeOutput;
     public final int mSubAccount;
     public final Boolean mRequiresTwoFactor;
     public List<Output> mPrevOutputs = new ArrayList<>();
@@ -34,8 +34,10 @@ public class PreparedTransaction {
         return map == null ? null : Wally.hex_to_bytes((String) map.get(key));
     }
 
-    public PreparedTransaction(final Integer changePointer, final int subAccount, final Transaction decoded, final Map<String, Object> twoOfThree) {
-        mChangePointer = changePointer;
+    public PreparedTransaction(final GATx.ChangeOutput changeOutput,
+                               final int subAccount, final Transaction decoded,
+                               final Map<String, Object> twoOfThree) {
+        mChangeOutput = changeOutput;
         mSubAccount = subAccount;
         mRequiresTwoFactor = false;
         mDecoded = decoded;
@@ -88,10 +90,13 @@ public class PreparedTransaction {
         for (final Object obj : (List) pte.mValues.get("prev_outputs"))
             mPrevOutputs.add(new Output((Map<?, ?>) obj));
 
-        if (pte.mValues.get("change_pointer") != null)
-            mChangePointer = Integer.parseInt(pte.mValues.get("change_pointer").toString());
-        else
-            mChangePointer = null;
+        if (pte.mValues.get("change_pointer") == null)
+            mChangeOutput = null;
+        else {
+            final int pointer = Integer.parseInt(pte.mValues.get("change_pointer").toString());
+            final boolean isSegwit = pte.mValues.get("change_type").equals("p2wsh");
+            mChangeOutput = new GATx.ChangeOutput(null, pointer, isSegwit);
+        }
 
         mRequiresTwoFactor = (Boolean) pte.mValues.get("requires_2factor");
         mDecoded = GaService.buildTransaction((String) pte.mValues.get("tx"));
