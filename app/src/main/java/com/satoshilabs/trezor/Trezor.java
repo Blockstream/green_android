@@ -21,6 +21,7 @@ import com.greenaddress.greenapi.GATx;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
+import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Address;
@@ -444,6 +445,7 @@ public class Trezor {
                         .setAddress(txOut.getAddressFromP2SH(NETWORK).toString());
         }
 
+        Log.d(TAG, "Matched change address: " + txOut.getAddressFromP2SH(NETWORK).toString());
         if (mTx.mChangeOutput.mIsSegwit) {
             // p2sh-p2wsh change output
             txout.setScriptType(OutputScriptType.PAYTOP2SHWITNESS);
@@ -479,13 +481,13 @@ public class Trezor {
         if (txRequest.hasTxHash())
             return txin.setScriptSig(ByteString.copyFrom(in.getScriptBytes()));
 
-        final int prevoutPointer = mTx.mPrevOutputs.get(index).pointer;
-        txin.clearAddressN().addAllAddressN(makePath(prevoutPointer))
-                            .setMultisig(makeRedeemScript(prevoutPointer));
+        final Output prevout = mTx.mPrevOutputs.get(index);
+        txin.clearAddressN().addAllAddressN(makePath(prevout.pointer))
+                            .setMultisig(makeRedeemScript(prevout.pointer));
 
-        if (mTx.mPrevOutputs.get(index).scriptType.equals(GATx.P2SH_P2WSH_FORTIFIED_OUT))
+        if (prevout.scriptType.equals(GATx.P2SH_P2WSH_FORTIFIED_OUT))
             return txin.setScriptType(InputScriptType.SPENDP2SHWITNESS)
-                       .setAmount(in.getValue().longValue());
+                       .setAmount(prevout.value);
         return txin.setScriptType(InputScriptType.SPENDMULTISIG);
     }
 
@@ -546,6 +548,7 @@ public class Trezor {
                     data = GaService.getSegWitScript(data);
                 mChangeAddress = new org.bitcoinj.core.Address(NETWORK, NETWORK.getP2SHHeader(),
                                                                Wally.hash160(data));
+                Log.d(TAG, "Change address: " + mChangeAddress.toString());
             } catch (WrongNetworkException e) {
             }
         }
