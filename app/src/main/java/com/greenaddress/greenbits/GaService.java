@@ -405,17 +405,25 @@ public class GaService extends Service implements INotificationHandler {
             reconnect();
     }
 
-    public byte[] createOutScript(final int subAccount, final Integer pointer) {
+    public static byte[] createOutScript(final int subAccount, final Integer pointer,
+                                         final byte[] backupPubkey, final byte[] backupChaincode) {
         final List<ECKey> pubkeys = new ArrayList<>();
         pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
         pubkeys.add(HDClientKey.getMyPublicKey(subAccount, pointer));
-
-        final Map<String, Object> m = findSubaccountByType(subAccount, "2of3");
-        if (m != null)
-            pubkeys.add(HDKey.getRecoveryKeys((String) m.get("2of3_backup_chaincode"),
-                                              (String) m.get("2of3_backup_pubkey"), pointer)[1]);
-
+        if (backupPubkey != null && backupChaincode != null)
+            pubkeys.add(HDKey.getRecoveryKeys(backupChaincode, backupPubkey, pointer)[1]);
         return Script.createMultiSigOutputScript(2, pubkeys);
+    }
+
+    public byte[] createOutScript(final int subAccount, final Integer pointer) {
+        byte[] backupPubkey = null;
+        byte[] backupChaincode = null;
+        final Map<String, Object> m = findSubaccountByType(subAccount, "2of3");
+        if (m != null) {
+            backupPubkey = Wally.hex_to_bytes((String) m.get("2of3_backup_pubkey"));
+            backupChaincode = Wally.hex_to_bytes((String) m.get("2of3_backup_chaincode"));
+        }
+        return createOutScript(subAccount, pointer, backupPubkey, backupChaincode);
     }
 
     private ListenableFuture<Boolean> verifyP2SHSpendableBy(final Script scriptHash, final int subAccount, final Integer pointer) {
