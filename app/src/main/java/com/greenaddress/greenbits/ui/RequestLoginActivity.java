@@ -145,14 +145,19 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         if (t == null)
             return false;
 
+        final int VENDOR_TREZOR = 21324, VENDOR_KEEPKEY = 11044;
+
         final List<Integer> version = t.getFirmwareVersion();
-        if (t.getVendorId() == 21324 &&
-                (version.get(0) < 1 || (version.get(0) == 1 && version.get(1) < 3))) {
-            final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-            instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
-            return true;
+        boolean isFirmwareOutdated = false;
+        if (t.getVendorId() == VENDOR_TREZOR) {
+            isFirmwareOutdated = version.get(0) < 1 ||
+                                 (version.get(0) == 1 && version.get(2) < 5) ||
+                                 (version.get(0) == 1 && version.get(2) == 5 && version.get(3) < 2);
         }
-        if (t.getVendorId() == 11044 && (version.get(0) < 1)) {
+        if (t.getVendorId() == VENDOR_KEEPKEY && version.get(0) < 4)
+            isFirmwareOutdated = true;
+
+        if (isFirmwareOutdated) {
             final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
             instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
             return true;
