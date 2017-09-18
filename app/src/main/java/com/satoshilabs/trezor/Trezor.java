@@ -66,7 +66,6 @@ import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.WrongNetworkException;
 import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.script.Script;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -525,31 +524,25 @@ public class Trezor {
         mGAKey = makeHDKey(serverKeys[0]);
 
         mChangeAddress = null;
+        mBackupKey = null;
         if (getChangePointer() != null) {
-            // FIXME: Use GaService.createOutScript() for the below
-            final List<ECKey> pubkeys = new ArrayList<>();
-            pubkeys.add(ECKey.fromPublicOnly(serverKeys[1].getPubKeyPoint()));
-            pubkeys.add(ECKey.fromPublicOnly(getUserKey(makePath(getChangePointer())).first));
-
-            mBackupKey = null;
             if (ptx.mTwoOfThreeBackupChaincode != null) {
                 final DeterministicKey keys[];
                 keys = HDKey.getRecoveryKeys(ptx.mTwoOfThreeBackupChaincode, ptx.mTwoOfThreeBackupPubkey,
                                              getChangePointer());
                 mBackupKey = makeHDKey(keys[0]);
-                pubkeys.add(ECKey.fromPublicOnly(keys[1].getPubKeyPoint()));
             }
 
-            final Script changeScript = new Script(Script.createMultiSigOutputScript(2, pubkeys));
-            // FIXME: Use GaService.createOutScript() for the above
+            byte[] script = GaService.createOutScript(mSubaccount, getChangePointer(),
+                                                      ptx.mTwoOfThreeBackupPubkey,
+                                                      ptx.mTwoOfThreeBackupChaincode);
             try {
-                byte data[] = changeScript.getProgram();
                 if (mTx.mChangeOutput.mIsSegwit)
-                    data = GaService.getSegWitScript(data);
+                    script = GaService.getSegWitScript(script);
                 mChangeAddress = new org.bitcoinj.core.Address(NETWORK, NETWORK.getP2SHHeader(),
-                                                               Wally.hash160(data));
+                                                               Wally.hash160(script));
                 Log.d(TAG, "Change address: " + mChangeAddress.toString());
-            } catch (WrongNetworkException e) {
+            } catch (final WrongNetworkException e) {
             }
         }
 
