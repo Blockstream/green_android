@@ -57,12 +57,8 @@ public class HDKey {
     public static DeterministicKey[] getRecoveryKeys(final byte[] chainCode, final byte[] publicKey, final Integer pointer) {
         final DeterministicKey[] ret = new DeterministicKey[2];
         ret[0] = deriveChildKey(createMasterKey(chainCode, publicKey), 1); // Parent
-        ret[1] = deriveChildKey(ret[0], pointer); // Child
+        ret[1] = pointer == null ? null : deriveChildKey(ret[0], pointer); // Child
         return ret;
-    }
-
-    public static DeterministicKey[] getRecoveryKeys(final String chainCode, final String publicKey, final Integer pointer) {
-        return getRecoveryKeys(h(chainCode), h(publicKey), pointer);
     }
 
     // Get the key derived from the servers public key/chaincode plus the users path (plus parent).
@@ -91,7 +87,7 @@ public class HDKey {
         final boolean reconcile = BuildConfig.DEBUG;
         DeterministicKey k = null;
         if (reconcile) {
-            k = createMasterKey(h(Network.depositChainCode), h(Network.depositPubkey));
+            k = createMasterKey(h2b(Network.depositChainCode), h2b(Network.depositPubkey));
             k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
             for (final int i : mGaUserPath)
                 k = deriveChildKey(k, i);
@@ -100,7 +96,7 @@ public class HDKey {
         }
 
         final Object master = Wally.bip32_key_init(VER_PUBLIC, 0, 0,
-                                                   h(Network.depositChainCode), h(Network.depositPubkey),
+                                                   h2b(Network.depositChainCode), h2b(Network.depositPubkey),
                                                    null, null, null);
         final int[] path = new int[mGaUserPath.length + (subAccount == 0 ? 1 : 2)];
         path[0] = subAccount == 0 ? 1 : 3;
@@ -131,5 +127,5 @@ public class HDKey {
         return key;
     }
     // FIXME: Remove
-    private static byte[] h(final String hex) { return Wally.hex_to_bytes(hex); }
+    private static byte[] h2b(final String hex) { return Wally.hex_to_bytes(hex); }
 }

@@ -523,16 +523,13 @@ public class Trezor {
 
         mGAKey = makeHDKey(serverKeys[0]);
 
-        mChangeAddress = null;
         mBackupKey = null;
-        if (getChangePointer() != null) {
-            if (ptx.mTwoOfThreeBackupChaincode != null) {
-                final DeterministicKey keys[];
-                keys = HDKey.getRecoveryKeys(ptx.mTwoOfThreeBackupChaincode, ptx.mTwoOfThreeBackupPubkey,
-                                             getChangePointer());
-                mBackupKey = makeHDKey(keys[0]);
-            }
+        if (ptx.mTwoOfThreeBackupChaincode != null)
+            mBackupKey = makeHDKey(HDKey.getRecoveryKeys(ptx.mTwoOfThreeBackupChaincode,
+                                                         ptx.mTwoOfThreeBackupPubkey, null)[0]);
 
+        mChangeAddress = null;
+        if (getChangePointer() != null) {
             byte[] script = GaService.createOutScript(mSubaccount, getChangePointer(),
                                                       ptx.mTwoOfThreeBackupPubkey,
                                                       ptx.mTwoOfThreeBackupChaincode);
