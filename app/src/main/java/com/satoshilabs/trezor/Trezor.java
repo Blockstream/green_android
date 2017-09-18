@@ -18,6 +18,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.greenaddress.greenapi.GATx;
+import com.greenaddress.greenapi.HDClientKey;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.ISigningWallet;
 import com.greenaddress.greenapi.Network;
@@ -191,16 +192,12 @@ public class Trezor {
         return mTx.mPrevoutRawTxs.get(b2h(txRequest.getTxHash().toByteArray()));
     }
 
-    private HDNodeType makeHDKey(final int depth, final int childNum,
-                                 final byte[] pubkey, final byte[] chainCode) {
-        return HDNodeType.newBuilder().setDepth(depth)
-                         .setFingerprint(0).setChildNum(childNum)
-                         .setPublicKey(ByteString.copyFrom(pubkey))
-                         .setChainCode(ByteString.copyFrom(chainCode)).build();
-    }
-
     private HDNodeType makeHDKey(final DeterministicKey k) {
-        return makeHDKey(k.getDepth(), k.getChildNumber().getI(), k.getPubKey(), k.getChainCode());
+        // Depth seems only used to ensure we don't derive > 255 deep.
+        return HDNodeType.newBuilder().setDepth(1)
+                         .setFingerprint(0).setChildNum(k.getChildNumber().getI())
+                         .setPublicKey(ByteString.copyFrom(k.getPubKey()))
+                         .setChainCode(ByteString.copyFrom(k.getChainCode())).build();
     }
 
     private HDNodePathType makeHDNode(final HDNodeType node, final Integer pointer) {
@@ -539,8 +536,7 @@ public class Trezor {
             }
         }
 
-        final Pair<byte[], byte[]> xpub = getUserKey(makePath(null));
-        mUserKey = makeHDKey(1, 1, xpub.first, xpub.second);
+        mUserKey = makeHDKey(HDClientKey.getMyPublicKey(ptx.mSubAccount, null));
 
         final int numInputs = ptx.mDecoded.getInputs().size();
         final int numOutputs = ptx.mDecoded.getOutputs().size();
