@@ -503,12 +503,10 @@ public class Trezor {
     }
 
     public List<Integer> getFirmwareVersion() {
-        Iterable<String> version;
-        version = Splitter.on(".").split(io(Initialize.newBuilder()));
-        LinkedList<Integer> versionInts = new LinkedList<>();
-        for (String s : version)
-            versionInts.add(Integer.valueOf(s));
-        return versionInts;
+        LinkedList<Integer> versionParts = new LinkedList<>();
+        for (final String s : Splitter.on(".").split(io(Initialize.newBuilder())))
+            versionParts.add(Integer.valueOf(s));
+        return versionParts;
     }
 
     public List<byte[]> signTransaction(final PreparedTransaction ptx, final String coinName) {
