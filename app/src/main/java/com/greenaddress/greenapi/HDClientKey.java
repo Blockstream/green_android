@@ -19,10 +19,10 @@ public class HDClientKey {
     }
 
     public static DeterministicKey getMyPublicKey(final int subAccount, final Integer pointer) {
-        final DeterministicKey ret = mClientKeys.get(subAccount);
+        final DeterministicKey ret = deriveChildKey(mClientKeys.get(subAccount), HDKey.BRANCH_REGULAR);
         if (pointer == null)
             return ret;
-        return deriveChildKey(deriveChildKey(ret, HDKey.BRANCH_REGULAR), pointer); // Child
+        return deriveChildKey(ret, pointer); // Child
     }
 
     public static void resetCache(final ArrayList<Map<String, Object>> subAccounts,
