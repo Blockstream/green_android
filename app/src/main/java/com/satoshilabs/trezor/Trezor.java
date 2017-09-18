@@ -87,7 +87,6 @@ public class Trezor {
     private final TrezorGUICallback mGuiFn;
 
     private PreparedTransaction mTx;
-    private int mSubaccount;
     private org.bitcoinj.core.Address mChangeAddress;
     private HDNodeType mGAKey, mUserKey, mBackupKey;
     private final ArrayList<String> mSignatures = new ArrayList<>();
@@ -211,9 +210,9 @@ public class Trezor {
 
     private List<Integer> makePath(final Integer pointer) {
         final List<Integer> path = new ArrayList<>(4);
-        if (mSubaccount != 0) {
+        if (mTx.mSubAccount != 0) {
             path.add(3 + 0x80000000);
-            path.add(mSubaccount + 0x80000000);
+            path.add(mTx.mSubAccount + 0x80000000);
         }
         path.add(HDKey.BRANCH_REGULAR);
         if (pointer != null)
@@ -517,7 +516,6 @@ public class Trezor {
 
     public List<byte[]> signTransaction(final PreparedTransaction ptx, final String coinName) {
         mTx = ptx;
-        mSubaccount = ptx.mSubAccount;
 
         mGAKey = makeHDKey(HDKey.getGAPublicKeys(ptx.mSubAccount, null)[0]);
 
@@ -528,7 +526,7 @@ public class Trezor {
 
         mChangeAddress = null;
         if (getChangePointer() != null) {
-            byte[] script = GaService.createOutScript(mSubaccount, getChangePointer(),
+            byte[] script = GaService.createOutScript(ptx.mSubAccount, getChangePointer(),
                                                       ptx.mTwoOfThreeBackupPubkey,
                                                       ptx.mTwoOfThreeBackupChaincode);
             try {
