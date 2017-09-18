@@ -94,7 +94,7 @@ public class PreparedTransaction {
             mChangeOutput = null;
         else {
             final int pointer = Integer.parseInt(pte.mValues.get("change_pointer").toString());
-            final boolean isSegwit = pte.mValues.get("change_type").equals("p2wsh");
+            final boolean isSegwit = "p2wsh".equals(pte.mValues.get("change_type"));
             mChangeOutput = new GATx.ChangeOutput(null, pointer, isSegwit);
         }
 
