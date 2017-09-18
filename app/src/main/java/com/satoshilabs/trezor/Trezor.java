@@ -519,9 +519,7 @@ public class Trezor {
         mTx = ptx;
         mSubaccount = ptx.mSubAccount;
 
-        final DeterministicKey[] serverKeys = HDKey.getGAPublicKeys(ptx.mSubAccount, getChangePointer());
-
-        mGAKey = makeHDKey(serverKeys[0]);
+        mGAKey = makeHDKey(HDKey.getGAPublicKeys(ptx.mSubAccount, null)[0]);
 
         mBackupKey = null;
         if (ptx.mTwoOfThreeBackupChaincode != null)
