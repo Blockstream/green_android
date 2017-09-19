@@ -151,8 +151,8 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         boolean isFirmwareOutdated = false;
         if (t.getVendorId() == VENDOR_TREZOR) {
             isFirmwareOutdated = version.get(0) < 1 ||
-                                 (version.get(0) == 1 && version.get(2) < 5) ||
-                                 (version.get(0) == 1 && version.get(2) == 5 && version.get(3) < 2);
+                                 (version.get(0) == 1 && version.get(1) < 5) ||
+                                 (version.get(0) == 1 && version.get(1) == 5 && version.get(2) < 2);
         }
         if (t.getVendorId() == VENDOR_KEEPKEY && version.get(0) < 4)
             isFirmwareOutdated = true;
