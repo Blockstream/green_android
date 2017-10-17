@@ -22,8 +22,8 @@ public class NetworkPreferenceFragment extends GAPreferenceFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!verifyServiceOK()) {
-            Log.d(TAG, "Avoiding create on logged out service");
+        if (mService == null) {
+            Log.d(TAG, "Avoiding create on null service");
             return;
         }
 
@@ -44,7 +44,8 @@ public class NetworkPreferenceFragment extends GAPreferenceFragment {
             torEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(final Preference preference, final Object o) {
-                    mService.disconnect(true);
+                    if (mService != null)
+                        mService.disconnect(true);
                     return true;
                 }
             });
@@ -55,7 +56,8 @@ public class NetworkPreferenceFragment extends GAPreferenceFragment {
         @Override
         public boolean onPreferenceChange(final Preference preference, final Object o) {
             preference.setSummary(o.toString());
-            mService.disconnect(true);
+            if (mService != null)
+                mService.disconnect(true);
             return true;
         }
     };
