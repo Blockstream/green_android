@@ -116,14 +116,12 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         launch(isBitcoinUri);
     }
 
-    private void onTwoFactorConfigChange() {
-        if (mService.getTwoFactorConfig() == null || // Not loaded
-            mService.hasAnyTwoFactor() ||            // At least one enabled
-            mService.cfg().getBoolean("hideTwoFacWarning", false))
+    private void showWarningBanner(final int messageId, final String hideCfgName) {
+        if (mService.cfg().getBoolean(hideCfgName, false))
             return;
 
         final Snackbar snackbar = Snackbar
-                .make(findViewById(R.id.main_content), getString(R.string.noTwoFactorWarning), Snackbar.LENGTH_INDEFINITE)
+                .make(findViewById(R.id.main_content), getString(messageId), Snackbar.LENGTH_INDEFINITE)
                 .setActionTextColor(Color.RED)
                 .setAction(getString(R.string.set2FA), new View.OnClickListener() {
                     @Override
@@ -137,6 +135,14 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         final TextView textView = UI.find(snackbarView, android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackbar.show();
+    }
+
+    private void onTwoFactorConfigChange() {
+        if (mService.getTwoFactorConfig() == null)
+            return; // Not loaded
+
+        if (!mService.hasAnyTwoFactor())
+            showWarningBanner(R.string.noTwoFactorWarning, "hideTwoFacWarning");
     }
 
     private String formatValuePostfix(final Coin value) {
