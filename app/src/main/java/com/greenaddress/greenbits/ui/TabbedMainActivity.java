@@ -36,6 +36,7 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.monitor.NetworkMonitorActivity;
 import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
+import com.greenaddress.greenbits.ui.preferences.TwoFactorPreferenceFragment;
 
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
@@ -126,7 +127,9 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                 .setAction(getString(R.string.set2FA), new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
-                        startActivityForResult(new Intent(TabbedMainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
+                        final Intent intent = new Intent(TabbedMainActivity.this, SettingsActivity.class);
+                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, TwoFactorPreferenceFragment.class.getName());
+                        startActivityForResult(intent, REQUEST_SETTINGS);
                     }
                 });
 
