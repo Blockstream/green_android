@@ -179,6 +179,7 @@
     <string name="syncSPVOnMobile">Synchronize SPV on mobile</string>
     <string name="syncSPVOnMobileSummary">SPV is always synchronized on non mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
     <string name="noTwoFactorWarning">You don\'t have two factor authentication!\nPlease go to settings to set it up!</string>
+    <string name="singleTwoFactorWarning">You only have one two factor authentication method set up!\nPlease add another in settings as a backup in case you lose access.</string>
     <string name="scan_camera_problem_dialog_message">The camera has a problem. You probably need to restart the device.</string>
     <string name="scan_camera_problem_dialog_title">Camera problem</string>
     <string name="providePassphrase">Please provide your passphrase:</string>
@@ -188,6 +189,7 @@
     <string name="twoFacGauth">Google Authenticator</string>
     <string name="twoFacEmail">E-mail</string>
     <string name="hideTwoFacWarning">Hide 2FA warning</string>
+    <string name="hideSingleTwoFacWarning">Hide single 2FA method warning</string>
     <string name="enable_nlocktime_emails">Enable nLocktime recovery emails</string>
 
     <string name="twoFacSetupHeader">%1$s 2FA setup</string>

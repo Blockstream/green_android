@@ -143,6 +143,9 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
 
         if (!mService.hasAnyTwoFactor())
             showWarningBanner(R.string.noTwoFactorWarning, "hideTwoFacWarning");
+
+        if (mService.getEnabledTwoFactorMethods().size() == 1)
+            showWarningBanner(R.string.singleTwoFactorWarning, "hideSingleTwoFacWarning");
     }
 
     private String formatValuePostfix(final Coin value) {
