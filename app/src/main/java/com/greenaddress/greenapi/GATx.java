@@ -117,7 +117,10 @@ public class GATx {
             witness.setPush(2, EMPTY_WITNESS_SIG);  // GA Server signature
             witness.setPush(3, outscript);          // Outscript
         }
-        in.setSequenceNumber(0); // This ensures nlocktime is recognized
+        if (service.isRBFEnabled())
+            in.setSequenceNumber(0xFFFFFFFD); // Opt-in RBF
+        else
+            in.setSequenceNumber(0xFFFFFFFE); // Ensures nlocktime is recognized
         tx.addInput(in);
         if (witness != null)
             tx.setWitness(tx.getInputs().size() - 1, witness);

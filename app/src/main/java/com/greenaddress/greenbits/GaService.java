@@ -176,6 +176,11 @@ public class GaService extends Service implements INotificationHandler {
         }
     }
 
+    public final boolean isRBFEnabled() {
+        final Object rbf_optin = getUserConfig("replace_by_fee");
+        return rbf_optin != null && (Boolean) rbf_optin;
+    }
+
     public boolean isValidFeeRate(final String feeRate) {
         try {
             return feeRate.isEmpty() || Double.valueOf(feeRate) >= mMinFeeRate.longValue();
