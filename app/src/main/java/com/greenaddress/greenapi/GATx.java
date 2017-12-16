@@ -143,12 +143,14 @@ public class GATx {
 
     /* Identify the change output in a tx */
     public static ChangeOutput findChangeOutput(final List<JSONMap> endPoints,
-                                                final Transaction tx) {
+                                                final Transaction tx,
+                                                final int forSubAccount) {
         int index = -1;
         int pubkey_pointer = -1;
         int scriptType = 0;
         for (final JSONMap ep : endPoints) {
-            if (!ep.getBool("is_credit") || !ep.getBool("is_relevant"))
+            if (!ep.getBool("is_credit") || !ep.getBool("is_relevant") ||
+                ep.getInt("subaccount", 0) != forSubAccount)
                 continue;
 
             if (index != -1) {

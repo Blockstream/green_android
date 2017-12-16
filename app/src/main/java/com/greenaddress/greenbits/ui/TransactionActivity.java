@@ -445,7 +445,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
         final List<JSONMap> usedUtxos = getUtxosFromEndpoints();
         final int subAccount = mService.getCurrentSubAccount();
 
-        final GATx.ChangeOutput changeOutput = GATx.findChangeOutput(mTxItem.eps, tx);
+        final GATx.ChangeOutput changeOutput = GATx.findChangeOutput(mTxItem.eps, tx, subAccount);
         if (changeOutput != null) {
             // Either this tx has change, or it is a changeless re-deposit.
             if (tx.getOutputs().size() != 1) {
