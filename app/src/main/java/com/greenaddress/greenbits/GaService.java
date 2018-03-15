@@ -1160,12 +1160,12 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public String getFiatBalance(final int subAccount) {
-        if (!hasFiatRate())
-            return "N/A";
         return coinToFiat(getCoinBalance(subAccount));
     }
 
     public String coinToFiat(final Coin btcValue) {
+        if (!hasFiatRate())
+            return "N/A";
         Fiat fiatValue = getFiatRate().coinToFiat(btcValue);
         // strip extra decimals (over 2 places) because that's what the old JS client does
         fiatValue = fiatValue.subtract(fiatValue.divideAndRemainder((long) Math.pow(10, Fiat.SMALLEST_UNIT_EXPONENT - 2))[1]);
