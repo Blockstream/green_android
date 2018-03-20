@@ -145,7 +145,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         if (t == null)
             return false;
 
-        final int VENDOR_TREZOR = 21324, VENDOR_KEEPKEY = 11044;
+        final int VENDOR_TREZOR = 21324;
 
         final List<Integer> version = t.getFirmwareVersion();
         boolean isFirmwareOutdated = false;
@@ -154,8 +154,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                                  (version.get(0) == 1 && version.get(1) < 5) ||
                                  (version.get(0) == 1 && version.get(1) == 5 && version.get(2) < 2);
         }
-        if (t.getVendorId() == VENDOR_KEEPKEY && version.get(0) < 4)
-            isFirmwareOutdated = true;
 
         if (isFirmwareOutdated) {
             final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
@@ -211,7 +209,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
         UI.clear(edit);
         UI.hide(edit);
-        // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
+        // not TREZOR/BWALLET/AvalonWallet, so must be BTChip
         if (mTag != null)
             showPinDialog();
         else {
