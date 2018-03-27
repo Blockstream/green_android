@@ -742,15 +742,15 @@ public class SendFragment extends SubaccountFragment {
                             twoFacData.put("code", code);
                         }
 
-                        final ListenableFuture<Void> sendFn;
+                        final ListenableFuture<String> sendFn;
                         if (signedRawTx != null)
                             sendFn = service.sendRawTransaction(signedRawTx, twoFacData, privateData);
                         else
                             sendFn = service.signAndSendTransaction(ptx, twoFacData);
 
-                        Futures.addCallback(sendFn, new CB.Toast<Void>(gaActivity, mSendButton) {
+                        Futures.addCallback(sendFn, new CB.Toast<String>(gaActivity, mSendButton) {
                             @Override
-                            public void onSuccess(final Void dummy) {
+                            public void onSuccess(final String dummy) {
                                 UI.dismiss(SendFragment.this.getActivity(), SendFragment.this.mSummary);
                                 onTransactionSent();
                             }

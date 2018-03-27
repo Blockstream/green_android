@@ -794,24 +794,24 @@ public class GaService extends Service implements INotificationHandler {
         return mSPV.validateTx(ptx, recipientStr, amount);
     }
 
-    public ListenableFuture<Void>
+    public ListenableFuture<String>
     signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
         return Futures.transform(signTransaction(ptx),
-                                 new AsyncFunction<List<byte[]>, Void>() {
+                                 new AsyncFunction<List<byte[]>, String>() {
             @Override
-            public ListenableFuture<Void> apply(final List<byte[]> sigs) throws Exception {
+            public ListenableFuture<String> apply(final List<byte[]> sigs) throws Exception {
                 return sendTransaction(sigs, twoFacData);
             }
         }, mExecutor);
     }
 
-    public ListenableFuture<Void>
+    public ListenableFuture<String>
     sendTransaction(final List<byte[]> sigs, final Object twoFacData) {
         // FIXME: The server should return the full limits including is_fiat from send_tx
         return Futures.transform(mClient.sendTransaction(sigs, twoFacData),
-                                 new Function<String, Void>() {
+                                 new Function<String, String>() {
                    @Override
-                   public Void apply(final String txHash) {
+                   public String apply(final String txHash) {
                        try {
                            mLimitsData = mClient.getSpendingLimits();
                        } catch (final Exception e) {
@@ -819,22 +819,22 @@ public class GaService extends Service implements INotificationHandler {
                            mLimitsData.mData.put("total", 0);
                            e.printStackTrace();
                        }
-                       return null;
+                       return txHash;
                    }
         }, mExecutor);
     }
 
-    public ListenableFuture<Void>
+    public ListenableFuture<String>
     sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData,
                        final JSONMap privateData) {
         return Futures.transform(mClient.sendRawTransaction(tx, twoFacData, privateData),
-                                 new Function<Map<String, Object>, Void>() {
+                                 new Function<Map<String, Object>, String>() {
                    @Override
-                   public Void apply(final Map<String, Object> ret) {
+                   public String apply(final Map<String, Object> ret) {
                        // FIXME: Server should return the full limits including is_fiat
                        if (ret.get("new_limit") != null)
                            mLimitsData.mData.put("total", ret.get("new_limit"));
-                       return null;
+                       return ret.get("txhash").toString();
                    }
         }, mExecutor);
     }

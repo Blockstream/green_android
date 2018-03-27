@@ -463,7 +463,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                                                 signatures.add(sig.encodeToBitcoin());
                                             }
                                             CB.after(mService.sendTransaction(signatures, null),
-                                                     new CB.Toast<Void>(caller) { });
+                                                     new CB.Toast<String>(caller) { });
                                         }
                                     });
                                 }

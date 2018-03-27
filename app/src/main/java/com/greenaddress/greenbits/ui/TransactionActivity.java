@@ -711,9 +711,9 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
                         if (twoFacData != null && twoFacData.containsKey("method"))
                             twoFacData.put("code", UI.getText(newTx2FACodeText));
                         Futures.addCallback(mService.sendRawTransaction(signedTx, twoFacData, null),
-                                            new CB.Toast<Void>(TransactionActivity.this) {
+                                            new CB.Toast<String>(TransactionActivity.this) {
                             @Override
-                            public void onSuccess(final Void dummy) {
+                            public void onSuccess(final String dummy) {
                                 // FIXME: Add notification with "Transaction sent"?
                                 UI.dismiss(TransactionActivity.this, TransactionActivity.this.mSummary);
                                 finishOnUiThread();
