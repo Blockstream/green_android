@@ -17,8 +17,7 @@ matrix:
         - cd $HOME/opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} &> /dev/null
         - cd $HOME/opt && curl -sSO https://dl.google.com/android/repository/${NDK_FILENAME} && unzip -qq ${NDK_FILENAME} &> /dev/null
         - brew update &> /dev/null
-        - brew upgrade &> /dev/null
-        - brew install swig coreutils gnu-sed automake autoconf pkg-config &> /dev/null
+        - brew install swig gnu-sed pkg-config &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "tools" "platform-tools" &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "build-tools;26.0.2" &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "platforms;android-26" &> /dev/null
