@@ -12,12 +12,13 @@ if [ -d libwally-core ]; then
 else
     git clone https://github.com/ElementsProject/libwally-core.git
     cd libwally-core
-    git checkout tags/release_0.4.0 -b release_0.4.0
+    git checkout tags/release_0.6.0 -b release_0.6.0
 fi
 
 source ./tools/android_helpers.sh
 
-all_archs=$(android_get_arch_list)
+# FIXME: sed only needed until wally 0.6.1 is released
+all_archs=$(android_get_arch_list | sed 's/mips mips64 //g')
 if [ -n "$1" ]; then
     all_archs="$1"
 fi

@@ -70,7 +70,7 @@ android {
             universalApk true
         }
     }
-    project.ext.versionCodes = ['armeabi': 1, 'armeabi-v7a': 2, 'arm64-v8a': 3, 'mips': 5, 'mips64': 6, 'x86': 8, 'x86_64': 9]
+    project.ext.versionCodes = ['armeabi': 1, 'armeabi-v7a': 2, 'arm64-v8a': 3, 'x86': 8, 'x86_64': 9]
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
             output.versionCodeOverride =
