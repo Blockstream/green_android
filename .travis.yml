@@ -4,18 +4,15 @@ matrix:
   include:
     - services:
         - docker
-      script: docker run -v $PWD:/gb greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f /bin/sh -c "cd /gb && ./app/fetch_libwally_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleProductionRelease"
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:da4344cf07badff07f3967ac2d82bf75acd925ffbba2d8f9e3cc78343d7cbe23 /bin/sh -c "cd /gb && ./app/fetch_libwally_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleProductionRelease"
     - os: osx
       osx_image: xcode8.3
       env:
-        - ANDROID_NDK=/Users/travis/opt/android-ndk-r14b
         - ANDROID_HOME=/Users/travis/opt
         - SDK_FILENAME=sdk-tools-darwin-3859397.zip
-        - NDK_FILENAME=android-ndk-r14b-darwin-x86_64.zip
       install:
         - mkdir -p $HOME/opt
         - cd $HOME/opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} &> /dev/null
-        - cd $HOME/opt && curl -sSO https://dl.google.com/android/repository/${NDK_FILENAME} && unzip -qq ${NDK_FILENAME} &> /dev/null
         - brew update &> /dev/null
         - brew install swig gnu-sed pkg-config &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "tools" "platform-tools" &> /dev/null
@@ -28,7 +25,7 @@ matrix:
         - cd $HOME/build/greenaddress/GreenBits && ./gradlew assembleProductionDebug
     - services:
         - docker
-      script: docker run -v $PWD:/gb greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f /bin/sh -c "cd /gb && ./app/fetch_libwally_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleBtctestnetRelease"
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:da4344cf07badff07f3967ac2d82bf75acd925ffbba2d8f9e3cc78343d7cbe23 /bin/sh -c "cd /gb && ./app/fetch_libwally_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleBtctestnetRelease"
     - services:
         - docker
-      script: docker run -v $PWD:/gb greenaddress/android@sha256:d59365ad8d61059e915d233a6afcbcb69be6320f0f62f2cb75d2730fe1e6819f /bin/sh -c "cd /gb && ./app/fetch_libwally_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleElementsregtestRelease"
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:da4344cf07badff07f3967ac2d82bf75acd925ffbba2d8f9e3cc78343d7cbe23 /bin/sh -c "cd /gb && ./app/fetch_libwally_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleElementsregtestRelease"

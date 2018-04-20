@@ -18,7 +18,7 @@ fi
 source ./tools/android_helpers.sh
 
 # FIXME: sed only needed until wally 0.6.1 is released
-all_archs=$(android_get_arch_list | sed 's/mips mips64 //g')
+all_archs=$(android_get_arch_list | sed 's/mips mips64 //g' | sed 's/armeabi //g')
 if [ -n "$1" ]; then
     all_archs="$1"
 fi

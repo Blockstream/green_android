@@ -11,7 +11,7 @@ SHA256="f9bb9a606ba889c935ff75c4b51f3446cb7e0d2626acc17e7a6e241a08027cb5"
 function check_command() {
     command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 not found, exiting."; exit 1; }
 }
-check_command wget
+check_command curl
 check_command gzip
 check_command shasum
 check_command javac
@@ -29,7 +29,7 @@ WALLY_JAVA_DIR="${APP_ROOT}/libwally-core/src/swig_java/src/com/blockstream/libw
 rm -rf wallycore-android-jni* ${APP_ROOT}/src/main/jniLibs ${WALLY_JAVA_DIR}
 
 # Fetch, validate and decompress wally
-wget -q "${URL}"
+curl -sL -o ${TARBALL} "${URL}"
 echo "${SHA256}  ${TARBALL}" | shasum -a 256 --check
 gzip -d wallycore-android-jni.tar.gz && tar xf wallycore-android-jni.tar
 

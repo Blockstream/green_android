@@ -41,7 +41,7 @@ android {
         exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
     }
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
@@ -67,10 +67,12 @@ android {
     splits {
         abi {
             enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             universalApk true
         }
     }
-    project.ext.versionCodes = ['armeabi': 1, 'armeabi-v7a': 2, 'arm64-v8a': 3, 'x86': 8, 'x86_64': 9]
+    project.ext.versionCodes = ['armeabi-v7a': 2, 'arm64-v8a': 3, 'x86': 8, 'x86_64': 9]
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
             output.versionCodeOverride =
