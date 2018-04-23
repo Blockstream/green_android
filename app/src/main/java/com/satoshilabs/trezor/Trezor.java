@@ -255,6 +255,7 @@ public class Trezor {
             request.queue(ByteBuffer.wrap(buffer), 64);
             mConn.requestWait();
         }
+        request.close();
     }
 
     private Message parseMessageFromBytes(final MessageType type, final byte[] data) {
@@ -324,6 +325,7 @@ public class Trezor {
             logData("read(cont):", b);
             data.put(b, 1, b[0] & 0xFF);
         }
+        request.close();
         return parseMessageFromBytes(type, Arrays.copyOfRange(data.array(), 0, msg_size));
     }
 
