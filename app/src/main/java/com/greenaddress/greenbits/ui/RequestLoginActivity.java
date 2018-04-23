@@ -207,15 +207,20 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         return true;
     }
 
-    private Boolean checkLedgerFirmwareVersion(final BTChipFirmware firmwareVersion,
-                                               final int major,
-                                               final int minor,
-                                               final int patch) {
-        final Boolean latest = !(firmwareVersion.getMajor() < major ||
-            (firmwareVersion.getMajor() == major && firmwareVersion.getMinor() < minor) ||
-            (firmwareVersion.getMajor() == major && firmwareVersion.getMinor() == minor && firmwareVersion.getPatch() < patch));
+    private boolean checkLedgerFirmwareVersion(final BTChipFirmware firmwareVersion) {
+        final int major = firmwareVersion.getMajor();
+        final int minor = firmwareVersion.getMinor();
+        final int patch = firmwareVersion.getPatch();
 
-        if (!latest) {
+        Log.d(TAG, "BTChip/Ledger firmware version " + firmwareVersion.toString());
+
+        boolean isFirmwareOutdated = false;
+        if (major == 0x3001)
+            isFirmwareOutdated = minor < 1 || (minor == 1 && patch < 9);
+        else if (major == 0x2001)
+            isFirmwareOutdated = minor == 0 && patch < 4;
+
+        if (isFirmwareOutdated) {
             final TextView instructions = UI.find(this, R.id.first_login_instructions);
             runOnUiThread(new Runnable() {
                 public void run() {
@@ -225,7 +230,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             });
         }
 
-        return latest;
+        return !isFirmwareOutdated;
     }
 
     private void onLedger(final Intent intent) {
@@ -267,7 +272,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                             transport = BTChipTransportAndroid.open(manager, device);
                             if (transport == null) {
                                 if (mFirmwareVersion != null)
-                                    checkLedgerFirmwareVersion(mFirmwareVersion, 0x3001, 1, 9);
+                                    checkLedgerFirmwareVersion(mFirmwareVersion);
                                 return Futures.immediateFuture(null);
                             }
                         } else {
@@ -292,8 +297,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                         try {
                             final BTChipDongle dongle = new BTChipDongle(transport, true);
                             final BTChipFirmware firmwareVersion = dongle.getFirmwareVersion();
-                            Log.d(TAG, "BTChip/Ledger firmware version " + firmwareVersion.toString());
-                            if (!checkLedgerFirmwareVersion(firmwareVersion, 0x3001, 1, 9)) {
+                            if (!checkLedgerFirmwareVersion(firmwareVersion)) {
                                 mFirmwareVersion = firmwareVersion;
                                 return Futures.immediateFuture(null);
                             }
@@ -391,8 +395,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                                     if (device != null) {
                                         final BTChipDongle dongle = new BTChipDongle(transport, true);
                                         final BTChipFirmware firmwareVersion = dongle.getFirmwareVersion();
-                                        Log.d(TAG, "BTChip/Ledger firmware version " + firmwareVersion.toString());
-                                        if (!checkLedgerFirmwareVersion(firmwareVersion, 0x2001, 0, 4)) {
+                                        if (!checkLedgerFirmwareVersion(firmwareVersion)) {
                                             return Futures.immediateFuture(null);
                                         }
                                     }
