@@ -20,19 +20,13 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="false"
         android:text="@string/madeBy"
-        android:textColor="@color/whiteSecondary"
-
-
-        />
+        android:textColor="@color/whiteSecondary" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:gravity="center"
-        android:orientation="vertical"
-
-        >
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/firstLogo"
@@ -87,7 +81,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/trezor_headline"
+                android:text="@string/hw_wallet_headline"
                 android:textColor="@color/whiteSecondary" />
 
             <ProgressBar

@@ -295,6 +295,10 @@ public abstract class UI {
 
     public static void disable(final View... views) { enableIf(false, views); }
 
+    public static String getText(final View v, final int id) {
+        return getText((TextView) find(v, id));
+    }
+
     public static String getText(final TextView text) {
         return text.getText().toString();
     }

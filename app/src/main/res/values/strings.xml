@@ -152,16 +152,20 @@
     <string name="noBalanceFirstLine">Getting <a href="https://bitcoin.org/en/getting-started">started</a> with Bitcoin</string>
     <string name="noBalanceSecondLine">Where to <a href="http://howtobuybitcoins.info/">buy</a> them</string>
     <string name="noBalanceThirdLine">Read our <a href="https://greenaddress.it/faq">FAQ</a></string>
-    <string name="trezor_headline">Please follow the instructions on your Hardware Wallet</string>
+    <string name="hw_wallet_headline">Please follow the instructions on your Hardware Wallet</string>
+    <string name="hw_wallet_reconnect">Please re-connect your hardware wallet before trying again.</string>
+    <string name="hw_wallet_registering">Cerating a new GreenAddress wallet, please wait...</string>
     <string name="trezorProvidePin">Please provide your Hardware Wallet PIN. Look at the device for number positions:</string>
     <string name="trezorProvidePassphrase">Please provide your Hardware Wallet passphrase.</string>
     <string name="main_account">Main</string>
     <string name="footerAccount">Account</string>
+    <string name="btchip" translatable="false">BTChip</string>
+    <string name="please_tap_card">Please tap card</string>
     <string name="btchipProvidePIN">Please provide your BTChip PIN:</string>
     <string name="ledger_firmware_outdated">Outdated Hardware Wallet firmware. Please upgrade to the latest firmware from your computer.</string>
     <string name="trezor_firmware_outdated">Outdated Hardware Wallet firmware. Please upgrade to at least 1.6 at http://mytrezor.com/ from your computer.</string>
     <string name="ledger_open_bitcoin_app">Ledger Dashboard detected, please open the Bitcoin app to access.</string>
-    <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %1$d. Please reconnect your BTChip before trying again.</string>
+    <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %1$d. Please re-connect your hardware wallet before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
     <string name="instantConfirmation">Instant Confirmation</string>
     <string name="mnemonic_passphrase">Mnemonic passphrase</string>
@@ -327,6 +331,7 @@
     <string name="nfcDialogMessage">Hold your NFC tag close to the device</string>
     <string name="securePassphraseMsg">Please secure your passphrase and confirm you agree to the Terms of Service</string>
     <string name="signupInProgress">Signup in progress</string>
+    <string name="logging_in">Logging in, please wait...</string>
     <string name="notConnected">You are not connected, please wait</string>
     <string name="pinErrorLength">PIN has to be between 4 and 15 long</string>
     <string name="problemWithKey">Problem with key %1$s</string>

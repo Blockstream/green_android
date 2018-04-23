@@ -29,6 +29,8 @@ import de.schildbach.wallet.ui.ScanActivity;
 public abstract class GaActivity extends AppCompatActivity {
 
     private static final String TAG = GaActivity.class.getSimpleName();
+    protected static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
+    protected static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
 
     // Both of these variables are only assigned in the UI thread.
     // mService is available to all derived classes as soon as
@@ -75,8 +77,7 @@ public abstract class GaActivity extends AppCompatActivity {
 
     @Override
     final public void onPause() {
-        Log.d(TAG, "onPause -> " + getClass().getSimpleName() +
-              (mService == null ? " (no attached service)" : ""));
+        Log.d(TAG, getLogMessage("onPause"));
         super.onPause();
         mResumed = false;
         if (mService != null) {
@@ -87,14 +88,18 @@ public abstract class GaActivity extends AppCompatActivity {
 
     @Override
     final public void onResume() {
-        Log.d(TAG, "onResume -> " + getClass().getSimpleName() +
-              (mService == null ? " (no attached service)" : ""));
+        Log.d(TAG, getLogMessage("onResume"));
         super.onResume();
         mResumed = true;
         if (mService != null) {
             mService.incRef();
             onResumeWithService();
         }
+    }
+
+    private final String getLogMessage(final String caller) {
+        return caller + " -> " + getClass().getSimpleName() +
+            (mService == null ? " (no attached service)" : "");
     }
 
     /** Override to provide the main view id */

@@ -88,7 +88,7 @@
     <string name="noBalanceFirstLine">إبدء <a href="https://bitcoin.org/ar/getting-started">مع</a> بيتكوين</string>
     <string name="noBalanceSecondLine">أين <a href="http://howtobuybitcoins.info/">يمكن</a> شرائهم</string>
     <string name="noBalanceThirdLine">اقرأ <a href="https://greenaddress.it/faq">FAQ</a></string>
-    <string name="trezor_headline">يرجى اتباع التعليمات التي تظهر على Hardware Wallet الخاص بك</string>
+    <string name="hw_wallet_headline">يرجى اتباع التعليمات التي تظهر على Hardware Wallet الخاص بك</string>
     <string name="trezorProvidePin">يرجى تقديم Hardware Wallet PIN الخاص بك. انظر إلى الجهاز لمعرفة رقم الموقع :</string>
     <string name="trezorProvidePassphrase">يرجى تقديم عبارة المرور Hardware Wallet  الخاصة بك.</string>
     <string name="main_account">الصفحة الرئيسية</string>

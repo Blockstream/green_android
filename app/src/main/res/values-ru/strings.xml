@@ -96,7 +96,7 @@
     <string name="noBalanceFirstLine"><a href="https://bitcoin.org/en/getting-started">О Bitcoin</a> </string>
     <string name="noBalanceSecondLine">Где их <a href="http://howtobuybitcoins.info/">покупать</a></string>
     <string name="noBalanceThirdLine">Ознакомиться с <a href="https://greenaddress.it/faq">FAQ</a></string>
-    <string name="trezor_headline">Ознакомиться с инструкцией вашего Физического Кошелька</string>
+    <string name="hw_wallet_headline">Ознакомиться с инструкцией вашего Физического Кошелька</string>
     <string name="trezorProvidePin">Пожалуйста введите ПИН Физического Кошелька. Осмотрите устройство на наличие цифр:</string>
     <string name="trezorProvidePassphrase">Пожалуйста введите ваш пароль Физического Кошелька.</string>
     <string name="main_account">Основной</string>

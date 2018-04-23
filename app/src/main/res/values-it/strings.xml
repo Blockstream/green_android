@@ -84,7 +84,7 @@
     <string name="noBalanceFirstLine">Iniziare con i <a href="https://bitcoin.org/it/getting-started">Bitcoin</a></string>
     <string name="noBalanceSecondLine">Dove <a href="http://howtobuybitcoins.info/">comprare</a></string>
     <string name="noBalanceThirdLine">Leggi le nostre <a href="https://greenaddress.it/it/faq">FAQ</a></string>
-    <string name="trezor_headline">Per piacere segui le istruzioni sul Hardware Wallet</string>
+    <string name="hw_wallet_headline">Per piacere segui le istruzioni sul Hardware Wallet</string>
     <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Hardware Wallet per la posizione dei tasti:</string>
     <string name="trezorProvidePassphrase">Per piacere inserisci la passphrase del tuo Hardware Wallet</string>
     <string name="main_account">Principale</string>

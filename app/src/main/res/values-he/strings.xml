@@ -90,7 +90,7 @@
     <string name="noBalanceSecondLine">איפה <a href="http://buy.alefbit.com/">קונים</a> ביטקוין</string>
     <string name="noBalanceThirdLine">קראו את <a href="https://greenaddress.it/faq">השאלות הנפוצות</a></string>
 
-    <string name="trezor_headline">אנא פעלו לפי הוראות הטרזור</string>
+    <string name="hw_wallet_headline">אנא פעלו לפי הוראות הטרזור</string>
     <string name="trezorProvidePin">יש להכניס את הקוד PIN של הטרזור. נא להסתכל על המכשיר עבור מיקומי מספרים:</string>
     <string name="trezorProvidePassphrase">יש להכניס סיסמאת טרזור.</string>
     <string name="main_account">ראשי</string>

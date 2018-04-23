@@ -90,7 +90,7 @@
     <string name="noBalanceFirstLine"><a href="https://bitcoin.org/fr/debuter">Débuter</a> avec Bitcoin</string>
     <string name="noBalanceSecondLine">Où <a href="http://howtobuybitcoins.info/">acheter</a> des bitcoins</string>
     <string name="noBalanceThirdLine">Lisez notre <a href="https://greenaddress.it/faq">FAQ</a></string>
-    <string name="trezor_headline">Veuillez suivre les instructions sur votre portefeuille matériel</string>
+    <string name="hw_wallet_headline">Veuillez suivre les instructions sur votre portefeuille matériel</string>
     <string name="trezorProvidePin">Veuillez saisir le code PIN de votre portefeuille matériel. Regardez l\'appareil pour avoir la position des numéros :</string>
     <string name="trezorProvidePassphrase">Veuillez saisir la phrase de récupération de votre portefeuille matériel.</string>
     <string name="main_account">Principal</string>
