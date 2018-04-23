@@ -85,6 +85,7 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 			connection.requestWait();
 			offset += blockSize;
 		}
+		request.close();
 		ByteBuffer responseBuffer = ByteBuffer.allocate(HID_BUFFER_SIZE);
 		request = new UsbRequest();
 		if (!request.initialize(connection, in)) {
@@ -137,6 +138,7 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 				response.write(transferBuffer, 0, HID_BUFFER_SIZE);				
 			}						
 		}		
+		request.close();
 		if (debug) {
 			Log.d(BTChipTransportAndroid.LOG_STRING, "<= " + Dump.dump(responseData));
 		}
