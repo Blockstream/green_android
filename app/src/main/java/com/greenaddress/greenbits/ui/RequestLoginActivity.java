@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipDongle.BTChipPublicKey;
 import com.btchip.BTChipDongle.BTChipFirmware;
@@ -296,8 +297,9 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                                 return Futures.immediateFuture(null);
                             }
                         } catch (final BTChipException e) {
-                            e.printStackTrace();
-                            // we are in dashboard mode ignore usb
+                            if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
+                                e.printStackTrace();
+                            // We are in dashboard mode, prompt the user to open the btcoin app.
                             runOnUiThread(new Runnable() {
                                 public void run() {
                                     final TextView instructions = UI.find(RequestLoginActivity.this, R.id.first_login_instructions);
