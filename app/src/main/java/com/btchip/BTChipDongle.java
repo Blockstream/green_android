@@ -271,6 +271,7 @@ public class BTChipDongle implements BTChipConstants {
 	private boolean mUnderstandsMultipleOutputs;
 	
 	private static final int OK[] = { SW_OK };
+	private static final int OK_OR_NOT_SUPPORTED[] = { SW_OK, SW_INS_NOT_SUPPORTED };
 	private static final byte DUMMY[] = { 0 };
 	
 	public BTChipDongle(BTChipTransport transport) {
@@ -706,7 +707,7 @@ public class BTChipDongle implements BTChipConstants {
 	public void setKeymapEncoding(byte[] keymapEncoding) throws BTChipException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		BufferUtils.writeBuffer(data, keymapEncoding);
-		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_SET_KEYMAP, (byte)0x00, (byte)0x00, data.toByteArray(), OK);		
+		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_SET_KEYMAP, (byte)0x00, (byte)0x00, data.toByteArray(), OK_OR_NOT_SUPPORTED);
 	}
 	
 	public boolean setup(OperationMode supportedOperationModes[], Feature features[], int keyVersion, int keyVersionP2SH, byte[] userPin, byte[] wipePin, byte[] keymapEncoding, byte[] seed, byte[] developerKey) throws BTChipException {
