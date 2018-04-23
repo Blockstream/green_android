@@ -21,6 +21,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipDongle.BTChipPublicKey;
+import com.btchip.BTChipDongle.BTChipFirmware;
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
@@ -59,6 +60,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     private Tag mTag;
     private SettableFuture<BTChipTransport> mTransportFuture;
     private MaterialDialog mNfcWaitDialog;
+    private BTChipFirmware mFirmwareVersion = null;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -205,6 +207,27 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         return true;
     }
 
+    private Boolean checkLedgerFirmwareVersion(final BTChipFirmware firmwareVersion,
+                                               final int major,
+                                               final int minor,
+                                               final int patch) {
+        final Boolean latest = !(firmwareVersion.getMajor() < major ||
+            (firmwareVersion.getMajor() == major && firmwareVersion.getMinor() < minor) ||
+            (firmwareVersion.getMajor() == major && firmwareVersion.getMinor() == minor && firmwareVersion.getPatch() < patch));
+
+        if (!latest) {
+            final TextView instructions = UI.find(RequestLoginActivity.this, R.id.firstLoginRequestedInstructionsText);
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    UI.show(instructions);
+                    instructions.setText("Please upgrade your firmware to the latest version and ensure your mnemonics are backed up");
+                }
+            });
+        }
+
+        return latest;
+    }
+
     private void onLedger(final Intent intent) {
         final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
         UI.clear(edit);
@@ -242,6 +265,11 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                         if (device != null) {
                             final UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
                             transport = BTChipTransportAndroid.open(manager, device);
+                            if (transport == null) {
+                                if (mFirmwareVersion != null)
+                                    checkLedgerFirmwareVersion(mFirmwareVersion, 0x3001, 1, 9);
+                                return Futures.immediateFuture(null);
+                            }
                         } else {
                             // If the tag was already tapped, work with it
                             transport = getTransport(mTag);
@@ -262,9 +290,14 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                         final TextView instructions = UI.find(RequestLoginActivity.this, R.id.firstLoginRequestedInstructionsText);
 
                         transport.setDebug(BuildConfig.DEBUG);
-                        final BTChipDongle dongle = new BTChipDongle(transport, true);
                         try {
-                            dongle.getFirmwareVersion();
+                            final BTChipDongle dongle = new BTChipDongle(transport, true);
+                            final BTChipFirmware firmwareVersion = dongle.getFirmwareVersion();
+                            Log.d(TAG, "BTChip/Ledger firmware version " + firmwareVersion.toString());
+                            if (!checkLedgerFirmwareVersion(firmwareVersion, 0x3001, 1, 9)) {
+                                mFirmwareVersion = firmwareVersion;
+                                return Futures.immediateFuture(null);
+                            }
                         } catch (final BTChipException e) {
                             e.printStackTrace();
                             // we are in dashboard mode ignore usb
@@ -354,6 +387,18 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                         return Futures.transform(mTransportFuture, new AsyncFunction<BTChipTransport, LoginData>() {
                             @Override
                             public ListenableFuture<LoginData> apply(final BTChipTransport transport) {
+                                try {
+                                    if (device != null) {
+                                        final BTChipDongle dongle = new BTChipDongle(transport, true);
+                                        final BTChipFirmware firmwareVersion = dongle.getFirmwareVersion();
+                                        Log.d(TAG, "BTChip/Ledger firmware version " + firmwareVersion.toString());
+                                        if (!checkLedgerFirmwareVersion(firmwareVersion, 0x2001, 0, 4)) {
+                                            return Futures.immediateFuture(null);
+                                        }
+                                    }
+                                } catch (final BTChipException e) {
+                                    Log.d(TAG, "BTChip/Ledger firmware version check failed");
+                                }
                                 transport.setDebug(BuildConfig.DEBUG);
                                 final SettableFuture<Integer> remainingAttemptsFuture = SettableFuture.create();
                                 mHwWallet = new BTChipHWWallet(transport, pin, remainingAttemptsFuture);

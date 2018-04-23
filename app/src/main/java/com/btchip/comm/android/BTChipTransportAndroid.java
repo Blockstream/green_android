@@ -226,6 +226,9 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
             }
         }
         UsbDeviceConnection connection = manager.openDevice(device);
+        if (connection == null) {
+            return null;
+        }
         connection.claimInterface(dongleInterface, true);
         ledger = ((device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON)
 		|| (device.getProductId() == PID_NANOS) || (device.getProductId() == PID_BLUE));
@@ -236,7 +239,6 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
         	return new BTChipTransportAndroidHID(connection, dongleInterface, in, out, TIMEOUT, ledger);
         }
 	}
-	
 	public void setDetectedTag(Tag tag) {
 		Log.d(LOG_TAG, "Setting detected tag " + tag);
 		this.detectedTag = tag;
