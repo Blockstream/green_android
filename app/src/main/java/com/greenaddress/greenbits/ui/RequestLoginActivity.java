@@ -239,7 +239,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         UI.hide(instructions);
         // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
         if (mTag != null)
-            showPinDialog();
+            showPinDialog(null);
         else {
             final UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
             if (device != null)
@@ -251,14 +251,8 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     }
 
     private void onUsbDeviceDetected(final Intent intent) {
-        if (onTrezor())
-            return;
-
-        onLedger(intent);
-    }
-
-    private void showPinDialog() {
-        showPinDialog(null);
+        if (!onTrezor())
+            onLedger(intent);
     }
 
     private void login(final UsbDevice device) {
@@ -434,7 +428,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             }
         }), mOnLoggedIn);
     }
-
 
     private final FutureCallback<LoginData> mOnLoggedIn = new FutureCallback<LoginData>() {
         @Override
