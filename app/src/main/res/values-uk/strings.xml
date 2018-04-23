@@ -102,8 +102,8 @@
     <string name="main_account">Основний</string>
     <string name="footerAccount">Аккаунт</string>
     <string name="btchipProvidePIN">Будь-ласка введіть Ваш ПІН BTChip:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">ПЗ Вашого Фізичного Гаманця застаріло. Будь-ласка обновіть його до, як мінімум, 1.6.0 за адресою http://mytrezor.com/ з вашого комп\'ютера.</string>
-    <string name="firstLoginRequestedPleaseOpenBitcoinApp">Детектовано Ledger Dashboard, будь-ласка відкрийте додаток Bitcoin для доступу.</string>
+    <string name="trezor_firmware_outdated">ПЗ Вашого Фізичного Гаманця застаріло. Будь-ласка обновіть його до, як мінімум, 1.6 за адресою http://mytrezor.com/ з вашого комп\'ютера.</string>
+    <string name="ledger_open_bitcoin_app">Детектовано Ledger Dashboard, будь-ласка відкрийте додаток Bitcoin для доступу.</string>
     <string name="btchipInvalidPIN">ПІН некоректний. Залишилось %1$d спроб. Будь-ласка перепідєднайте ваш BTChip перед наступною спробою.</string>
     <string name="btchipNotSetup">BTChip не встановлений. Будь-ласка встановіть його на дектоп клієнті для використання.</string>
     <string name="instantConfirmation">Моментальне Підтвердження</string>

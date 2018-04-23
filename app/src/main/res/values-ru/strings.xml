@@ -102,8 +102,7 @@
     <string name="main_account">Основной</string>
     <string name="footerAccount">Аккаунт</string>
     <string name="btchipProvidePIN">Пожалуйста введите Ваш ПИН BTChip:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">ПО Вашего Физического Кошелька устарело. Пожалуйста обновите его к, как минимум, 1.6.0 по адресу http://mytrezor.com/ с Вашего компьютера.</string>
-    <string name="firstLoginRequestedPleaseOpenBitcoinApp">Детектировано Ledger Dashboard, Пожалуйста откройте приложение Bitcoin для доступа.</string>
+    <string name="trezor_firmware_outdated">ПО Вашего Физического Кошелька устарело. Пожалуйста обновите его к, как минимум, 1.6 по адресу http://mytrezor.com/ с Вашего компьютера.</string>
     <string name="btchipInvalidPIN">ПИН некоректный. Осталось %1$d попыток. Пожалуйста переподсоедините ваш BTChip перед следуйщей попыткой.</string>
     <string name="btchipNotSetup">BTChip не установлен. Пожалуйста установите его на дектоп клиент для использование.</string>
     <string name="instantConfirmation">Моментальное Подтверждение</string>

@@ -158,8 +158,8 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         }
 
         if (isFirmwareOutdated) {
-            final TextView instructions = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-            instructions.setText(R.string.firstLoginRequestedInstructionsOldTrezor);
+            final TextView instructions = UI.find(this, R.id.first_login_instructions);
+            instructions.setText(R.string.trezor_firmware_outdated);
             return true;
         }
         final TrezorHWWallet trezor = new TrezorHWWallet(t);
@@ -216,11 +216,11 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             (firmwareVersion.getMajor() == major && firmwareVersion.getMinor() == minor && firmwareVersion.getPatch() < patch));
 
         if (!latest) {
-            final TextView instructions = UI.find(RequestLoginActivity.this, R.id.firstLoginRequestedInstructionsText);
+            final TextView instructions = UI.find(this, R.id.first_login_instructions);
             runOnUiThread(new Runnable() {
                 public void run() {
+                    instructions.setText(R.string.ledger_firmware_outdated);
                     UI.show(instructions);
-                    instructions.setText("Please upgrade your firmware to the latest version and ensure your mnemonics are backed up");
                 }
             });
         }
@@ -229,10 +229,10 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     }
 
     private void onLedger(final Intent intent) {
-        final TextView edit = UI.find(this, R.id.firstLoginRequestedInstructionsText);
-        UI.clear(edit);
-        UI.hide(edit);
-        // not TREZOR/BWALLET/AvalonWallet, so must be BTChip
+        final TextView instructions = UI.find(this, R.id.first_login_instructions);
+        UI.clear(instructions);
+        UI.hide(instructions);
+        // not TREZOR/KeepKey/BWALLET/AvalonWallet, so must be BTChip
         if (mTag != null)
             showPinDialog();
         else {
@@ -287,7 +287,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                                 return Futures.immediateFuture(null);
                             }
                         }
-                        final TextView instructions = UI.find(RequestLoginActivity.this, R.id.firstLoginRequestedInstructionsText);
 
                         transport.setDebug(BuildConfig.DEBUG);
                         try {
@@ -303,8 +302,9 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                             // we are in dashboard mode ignore usb
                             runOnUiThread(new Runnable() {
                                 public void run() {
+                                    final TextView instructions = UI.find(RequestLoginActivity.this, R.id.first_login_instructions);
+                                    instructions.setText(R.string.ledger_open_bitcoin_app);
                                     UI.show(instructions);
-                                    instructions.setText(R.string.firstLoginRequestedPleaseOpenBitcoinApp);
                                 }
                             });
                             return Futures.immediateFuture(null);

@@ -96,7 +96,7 @@
     <string name="main_account">Principal</string>
     <string name="footerAccount">Cuenta</string>
     <string name="btchipProvidePIN">Por favor, ingrese el PIN de su BTChip:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Firmware de Hardware Wallet desactualizado. Por favor, actualice hasta al menos la versión 1.6.0 en http://mytrezor.com/ desde su computadora.</string>
+    <string name="trezor_firmware_outdated">Firmware de Hardware Wallet desactualizado. Por favor, actualice hasta al menos la versión 1.6 en http://mytrezor.com/ desde su computadora.</string>
     <string name="btchipInvalidPIN">PIN inválido. Intentos restantes: %d. Por favor, reconecte su BTChip antes de intentar nuevamente.</string>
     <string name="btchipNotSetup">BTChip no se encuentra configurado. Por favor, configúrelo usando el cliente de escritorio para poder utilizarlo.</string>
     <string name="instantConfirmation">Confirmación instantánea</string>

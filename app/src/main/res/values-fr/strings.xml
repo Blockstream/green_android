@@ -96,7 +96,7 @@
     <string name="main_account">Principal</string>
     <string name="footerAccount">Compte</string>
     <string name="btchipProvidePIN">Veuillez saisir le code PIN de votre BTChip :</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Le micrologiciel du portefeuille matériel est dépassé. Veuillez au moins le mettre à jour vers la version 1.6.0 sur http://mytrezor.com/ depuis votre ordinateur.</string>
+    <string name="trezor_firmware_outdated">Le micrologiciel du portefeuille matériel est dépassé. Veuillez au moins le mettre à jour vers la version 1.6 sur http://mytrezor.com/ depuis votre ordinateur.</string>
     <string name="btchipInvalidPIN">Code PIN incorrect. Tentatives restantes : %d. Veuillez reconnecter votre BTChip avant de recommencer.</string>
     <string name="btchipNotSetup">Votre BTChip n\'est pas initialisé. Veuillez l\'initialiser depuis votre ordinateur pour l\'utiliser.</string>
     <string name="instantConfirmation">Confirmation instantanée</string>

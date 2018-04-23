@@ -92,7 +92,7 @@
     <string name="main_account">Hauptkonto</string>
     <string name="footerAccount">Konto</string>
     <string name="btchipProvidePIN">Bitte BTChip PIN eingeben:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Ihre Hardware Wallet firmware ist veraltet. Bitte aktualisieren sie, von ihrem Computer aus, auf Version 1.6.0 oder neuer über http://mytrezor.com/ .</string>
+    <string name="trezor_firmware_outdated">Ihre Hardware Wallet firmware ist veraltet. Bitte aktualisieren sie, von ihrem Computer aus, auf Version 1.6 oder neuer über http://mytrezor.com/ .</string>
     <string name="btchipInvalidPIN">Ungültige PIN. Verbleibende Versuche: %d. Bitte Verbinden sie ihren BTChip erneut und versuchen es nochmals.</string>
     <string name="btchipNotSetup">BTChip ist nicht eingerichtet. Bitte nehmen sie alle Einstellungen am Desktop-Client vor um ihren BTChip benutzen zu können.</string>
     <string name="instantConfirmation">Sofortige Bestätigung</string>

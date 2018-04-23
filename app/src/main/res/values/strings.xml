@@ -158,8 +158,9 @@
     <string name="main_account">Main</string>
     <string name="footerAccount">Account</string>
     <string name="btchipProvidePIN">Please provide your BTChip PIN:</string>
-    <string name="firstLoginRequestedInstructionsOldTrezor">Outdated Hardware Wallet firmware. Please upgrade to at least 1.6.0 at http://mytrezor.com/ from your computer.</string>
-    <string name="firstLoginRequestedPleaseOpenBitcoinApp">Ledger Dashboard detected, please open the Bitcoin app to access.</string>
+    <string name="ledger_firmware_outdated">Outdated Hardware Wallet firmware. Please upgrade to the latest firmware from your computer.</string>
+    <string name="trezor_firmware_outdated">Outdated Hardware Wallet firmware. Please upgrade to at least 1.6 at http://mytrezor.com/ from your computer.</string>
+    <string name="ledger_open_bitcoin_app">Ledger Dashboard detected, please open the Bitcoin app to access.</string>
     <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %1$d. Please reconnect your BTChip before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
     <string name="instantConfirmation">Instant Confirmation</string>
