@@ -86,7 +86,7 @@
     <string name="invalidAddress">عنوان غير صالح</string>
     <string name="invalidAmount">مبلغ غير صالح</string>
     <string name="noBalanceFirstLine">إبدء <a href="https://bitcoin.org/ar/getting-started">مع</a> بيتكوين</string>
-    <string name="noBalanceSecondLine">أين <a href="http://howtobuybitcoins.info/">يمكن</a> شرائهم</string>
+    <string name="noBalanceSecondLine">أين <a href="https://howtobuybitcoins.info">يمكن</a> شرائهم</string>
     <string name="noBalanceThirdLine">اقرأ <a href="https://greenaddress.it/faq">FAQ</a></string>
     <string name="hw_wallet_headline">يرجى اتباع التعليمات التي تظهر على Hardware Wallet الخاص بك</string>
     <string name="trezorProvidePin">يرجى تقديم Hardware Wallet PIN الخاص بك. انظر إلى الجهاز لمعرفة رقم الموقع :</string>
@@ -94,7 +94,7 @@
     <string name="main_account">الصفحة الرئيسية</string>
     <string name="footerAccount">الحساب</string>
     <string name="btchipProvidePIN">يرجى تقديم BTChip PIN الخاص بك:</string>
-    <string name="trezor_firmware_outdated">نظام تشغيل Hardware Wallet قديم . الرجاء الترقية إلى 1.6 على الأقل في http://mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
+    <string name="trezor_firmware_outdated">نظام تشغيل Hardware Wallet قديم . الرجاء الترقية إلى 1.6 على الأقل في https:/mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
     <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>
     <string name="btchipNotSetup">لم يتم تعيين BTChip . يرجى إعداده باستخدام عميل سطح المكتب ليكون قادرا على استخدامها.</string>
     <string name="instantConfirmation">تأكيد فوري</string>

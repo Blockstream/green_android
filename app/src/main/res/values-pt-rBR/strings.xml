@@ -86,7 +86,7 @@
     <string name="invalidAddress">Endereço inválido</string>
     <string name="invalidAmount">Quantidade inválido</string>
     <string name="noBalanceFirstLine">Começando a <a href="https://bitcoin.org/en/getting-started">usar</a> o Bitcoin</string>
-    <string name="noBalanceSecondLine">Onde posso <a href="http://howtobuybitcoins.info/">comprar</a> Bitcoins</string>
+    <string name="noBalanceSecondLine">Onde posso <a href="https://howtobuybitcoins.info">comprar</a> Bitcoins</string>
     <string name="noBalanceThirdLine">Leia nosso <a href="https://greenaddress.it/faq">FAQ</a></string>
     <string name="hw_wallet_headline">Por favor, siga as instruções na sua Hardware Wallet</string>
     <string name="trezorProvidePin">Por favor, forneça o seu PIN Hardware Wallet. Olhe no dispositivo as posições dos números:</string>
@@ -94,7 +94,7 @@
     <string name="main_account">Principal</string>
     <string name="footerAccount">Conta</string>
     <string name="btchipProvidePIN">Por favor, forneça o seu PIN BTChip:</string>
-    <string name="trezor_firmware_outdated">O firmware de Hardware Wallet está desatualizado. Faça o upgrade, pelo menos, para a versão 1.6 em http://mytrezor.com/ no seu computador.</string>
+    <string name="trezor_firmware_outdated">O firmware de Hardware Wallet está desatualizado. Faça o upgrade, pelo menos, para a versão 1.6 em https:/mytrezor.com/ no seu computador.</string>
     <string name="btchipInvalidPIN">PIN inválido. Tentativas restantes: %1$d. Por favor, reconecte seu BTChip antes de tentar novamente.</string>
     <string name="btchipNotSetup">BTChip não está configurado. Por favor, configure-o usando um cliente de desktop para ser capaz de usá-lo.</string>
     <string name="instantConfirmation">Confirmação Imediata</string>

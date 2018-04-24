@@ -150,7 +150,7 @@
     <string name="invalidAmount">Invalid amount</string>
     <string name="invalidPhoneNumber">Invalid phone number format</string>
     <string name="noBalanceFirstLine">Getting <a href="https://bitcoin.org/en/getting-started">started</a> with Bitcoin</string>
-    <string name="noBalanceSecondLine">Where to <a href="http://howtobuybitcoins.info/">buy</a> them</string>
+    <string name="noBalanceSecondLine">Where to <a href="https://howtobuybitcoins.info">buy</a> them</string>
     <string name="noBalanceThirdLine">Read our <a href="https://greenaddress.it/faq">FAQ</a></string>
     <string name="hw_wallet_headline">Please follow the instructions on your Hardware Wallet</string>
     <string name="hw_wallet_reconnect">Please re-connect your hardware wallet before trying again.</string>
@@ -163,7 +163,7 @@
     <string name="please_tap_card">Please tap card</string>
     <string name="btchipProvidePIN">Please provide your BTChip PIN:</string>
     <string name="ledger_firmware_outdated">Outdated Hardware Wallet firmware. Please upgrade to the latest firmware from your computer.</string>
-    <string name="trezor_firmware_outdated">Outdated Hardware Wallet firmware. Please upgrade to at least 1.6 at http://mytrezor.com/ from your computer.</string>
+    <string name="trezor_firmware_outdated">Outdated Hardware Wallet firmware. Please upgrade to at least 1.6 at https:/mytrezor.com/ from your computer.</string>
     <string name="ledger_open_bitcoin_app">Ledger Dashboard detected, please open the Bitcoin app to access.</string>
     <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %1$d. Please re-connect your hardware wallet before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>

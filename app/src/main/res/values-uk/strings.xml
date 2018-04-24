@@ -94,7 +94,7 @@
     <string name="invalidAddress">Адреса некоректна</string>
     <string name="invalidAmount">Сума некоректна</string>
     <string name="noBalanceFirstLine"><a href="https://bitcoin.org/en/getting-started">Про</a> Bitcoin</string>
-    <string name="noBalanceSecondLine">Де їх <a href="http://howtobuybitcoins.info/">купити</a></string>
+    <string name="noBalanceSecondLine">Де їх <a href="https://howtobuybitcoins.info">купити</a></string>
     <string name="noBalanceThirdLine">Ознайомитись з <a href="https://greenaddress.it/faq">FAQ</a></string>
     <string name="hw_wallet_headline">Ознайомтесь з інструкцією вашого Фізичного Гаманця</string>
     <string name="trezorProvidePin">Будь-ласка введіть ПІН Фізичного Гаманця. Огляньте пристрій для цифр:</string>
@@ -102,7 +102,7 @@
     <string name="main_account">Основний</string>
     <string name="footerAccount">Аккаунт</string>
     <string name="btchipProvidePIN">Будь-ласка введіть Ваш ПІН BTChip:</string>
-    <string name="trezor_firmware_outdated">ПЗ Вашого Фізичного Гаманця застаріло. Будь-ласка обновіть його до, як мінімум, 1.6 за адресою http://mytrezor.com/ з вашого комп\'ютера.</string>
+    <string name="trezor_firmware_outdated">ПЗ Вашого Фізичного Гаманця застаріло. Будь-ласка обновіть його до, як мінімум, 1.6 за адресою https:/mytrezor.com/ з вашого комп\'ютера.</string>
     <string name="ledger_open_bitcoin_app">Детектовано Ledger Dashboard, будь-ласка відкрийте додаток Bitcoin для доступу.</string>
     <string name="btchipInvalidPIN">ПІН некоректний. Залишилось %1$d спроб. Будь-ласка перепідєднайте ваш BTChip перед наступною спробою.</string>
     <string name="btchipNotSetup">BTChip не встановлений. Будь-ласка встановіть його на дектоп клієнті для використання.</string>

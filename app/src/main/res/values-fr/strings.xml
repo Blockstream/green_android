@@ -88,7 +88,7 @@
     <string name="invalidAddress">Adresse invalide</string>
     <string name="invalidAmount">Montant invalide</string>
     <string name="noBalanceFirstLine"><a href="https://bitcoin.org/fr/debuter">Débuter</a> avec Bitcoin</string>
-    <string name="noBalanceSecondLine">Où <a href="http://howtobuybitcoins.info/">acheter</a> des bitcoins</string>
+    <string name="noBalanceSecondLine">Où <a href="https://howtobuybitcoins.info">acheter</a> des bitcoins</string>
     <string name="noBalanceThirdLine">Lisez notre <a href="https://greenaddress.it/faq">FAQ</a></string>
     <string name="hw_wallet_headline">Veuillez suivre les instructions sur votre portefeuille matériel</string>
     <string name="trezorProvidePin">Veuillez saisir le code PIN de votre portefeuille matériel. Regardez l\'appareil pour avoir la position des numéros :</string>
@@ -96,7 +96,7 @@
     <string name="main_account">Principal</string>
     <string name="footerAccount">Compte</string>
     <string name="btchipProvidePIN">Veuillez saisir le code PIN de votre BTChip :</string>
-    <string name="trezor_firmware_outdated">Le micrologiciel du portefeuille matériel est dépassé. Veuillez au moins le mettre à jour vers la version 1.6 sur http://mytrezor.com/ depuis votre ordinateur.</string>
+    <string name="trezor_firmware_outdated">Le micrologiciel du portefeuille matériel est dépassé. Veuillez au moins le mettre à jour vers la version 1.6 sur https:/mytrezor.com/ depuis votre ordinateur.</string>
     <string name="btchipInvalidPIN">Code PIN incorrect. Tentatives restantes : %d. Veuillez reconnecter votre BTChip avant de recommencer.</string>
     <string name="btchipNotSetup">Votre BTChip n\'est pas initialisé. Veuillez l\'initialiser depuis votre ordinateur pour l\'utiliser.</string>
     <string name="instantConfirmation">Confirmation instantanée</string>

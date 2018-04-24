@@ -82,7 +82,7 @@
     <string name="invalidAddress">Indirizzo non valido</string>
     <string name="invalidAmount">Importo non valido</string>
     <string name="noBalanceFirstLine">Iniziare con i <a href="https://bitcoin.org/it/getting-started">Bitcoin</a></string>
-    <string name="noBalanceSecondLine">Dove <a href="http://howtobuybitcoins.info/">comprare</a></string>
+    <string name="noBalanceSecondLine">Dove <a href="https://howtobuybitcoins.info">comprare</a></string>
     <string name="noBalanceThirdLine">Leggi le nostre <a href="https://greenaddress.it/it/faq">FAQ</a></string>
     <string name="hw_wallet_headline">Per piacere segui le istruzioni sul Hardware Wallet</string>
     <string name="trezorProvidePin">Inserisci il tuo Trezor PIN per piacere. Guarda sul Hardware Wallet per la posizione dei tasti:</string>
@@ -90,7 +90,7 @@
     <string name="main_account">Principale</string>
     <string name="footerAccount">Conto</string>
     <string name="btchipProvidePIN">Digita il tuo PIN per BTChip:</string>
-    <string name="trezor_firmware_outdated">Rilevato Hardware Wallet firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.6 da http://mytrezor.com/ dal tuo PC.</string>
+    <string name="trezor_firmware_outdated">Rilevato Hardware Wallet firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.6 da https:/mytrezor.com/ dal tuo PC.</string>
     <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
     <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
     <string name="instantConfirmation">Conferma istantanea</string>

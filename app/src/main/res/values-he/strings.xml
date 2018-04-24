@@ -86,8 +86,8 @@
     <string name="invalidAmountAndAddress">סכום וכתובת לא תקינים</string>
     <string name="invalidAddress">כתובת לא תקינה</string>
     <string name="invalidAmount">סכום לא תקין</string>
-    <string name="noBalanceFirstLine"><a href="http://alefbit.com">התחלו</a> עם ביטקוין</string>
-    <string name="noBalanceSecondLine">איפה <a href="http://buy.alefbit.com/">קונים</a> ביטקוין</string>
+    <string name="noBalanceFirstLine"><a href="https://bitcoin.org/en/getting-started">התחלו</a> עם ביטקוין</string>
+    <string name="noBalanceSecondLine">איפה <a href="https://howtobuybitcoins.info/">קונים</a> ביטקוין</string>
     <string name="noBalanceThirdLine">קראו את <a href="https://greenaddress.it/faq">השאלות הנפוצות</a></string>
 
     <string name="hw_wallet_headline">אנא פעלו לפי הוראות הטרזור</string>
@@ -96,7 +96,7 @@
     <string name="main_account">ראשי</string>
     <string name="footerAccount">חשבון</string>
     <string name="btchipProvidePIN">יש להכניס קוד PIN של BTChip:</string>
-    <string name="trezor_firmware_outdated">גרסת טרזור ישנה. יש לעדכן לגרסה 1.6 לפחות באתר http://mytrezor.com/ מהמחשב.</string>
+    <string name="trezor_firmware_outdated">גרסת טרזור ישנה. יש לעדכן לגרסה 1.6 לפחות באתר https:/mytrezor.com/ מהמחשב.</string>
     <string name="btchipInvalidPIN">קוד PIN שגוי. נסיונות נותרים: %d. אנא חברו מחדש את ההתקן לפני נסיון נוסף.</string>
     <string name="btchipNotSetup">התקן לא מוכן. אנא הגדירו אותו באמצעות תוכנת המחשב בכדי להשתמש בו.</string>
     <string name="instantConfirmation">אישור מיידי</string>
