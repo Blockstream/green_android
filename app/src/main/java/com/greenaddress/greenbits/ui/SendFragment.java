@@ -81,6 +81,7 @@ public class SendFragment extends SubaccountFragment {
     private Switch mMaxButton;
     private TextView mMaxLabel;
     private TextView mScanIcon;
+    private ProgressBar mBip70Progress;
     private Map<?, ?> mPayreqData;
     private boolean mFromIntentURI;
     private final boolean mSummaryInBtc[] = new boolean[1]; // State for fiat/btc toggle
@@ -102,8 +103,8 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
 
         if (URI != null && URI.getPaymentRequestUrl() != null) {
-            final ProgressBar bip70Progress = UI.find(mView, R.id.sendBip70ProgressBar);
-            UI.show(bip70Progress);
+            mBip70Progress = UI.find(mView, R.id.sendBip70ProgressBar);
+            UI.show(mBip70Progress);
             mRecipientEdit.setEnabled(false);
             mSendButton.setEnabled(false);
             UI.hide(mNoteIcon);
@@ -139,7 +140,7 @@ public class SendFragment extends SubaccountFragment {
                                         mAmountFiatEdit.setEnabled(false);
                                         UI.hide(mMaxButton, mMaxLabel);
                                     }
-                                    UI.hide(bip70Progress);
+                                    UI.hide(mBip70Progress);
                                 }
                             });
                         }
@@ -149,7 +150,7 @@ public class SendFragment extends SubaccountFragment {
                             super.onFailure(t);
                             gaActivity.runOnUiThread(new Runnable() {
                                 public void run() {
-                                    UI.hide(bip70Progress);
+                                    UI.hide(mBip70Progress);
                                     mRecipientEdit.setEnabled(true);
                                     mSendButton.setEnabled(true);
                                     UI.show(mNoteIcon);
@@ -478,6 +479,16 @@ public class SendFragment extends SubaccountFragment {
         UI.showIf(isCustom, mFeeTargetEdit);
         if (isCustom)
             mFeeTargetEdit.setText(getGAService().cfg().getString("default_feerate", ""));
+    }
+
+    private void resetAllFields() {
+        mMaxButton.setChecked(false);
+        mNoteIcon.setText(R.string.fa_pencil);
+        UI.clear(mAmountEdit, mAmountFiatEdit, mRecipientEdit, mNoteText, mFeeTargetEdit);
+        UI.enable(mAmountEdit, mAmountFiatEdit,  mRecipientEdit, mSendButton);
+        UI.show(mMaxButton, mMaxLabel, mNoteIcon);
+        UI.hide(mBip70Progress, mFeeTargetEdit);
+        mPayreqData = null;
     }
 
     private Coin getSendAmount() {
