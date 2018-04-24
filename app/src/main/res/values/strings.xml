@@ -375,4 +375,10 @@
     <string name="twoFacLimitDisabled">You must enable Two Factor Authentication before you can change the threshold.</string>
     <string name="enter_matching_words">Enter The Matching Words</string>
     <string name="hash_number"># %1$d</string>
+    <string name="bip70_session_expired">Session expired, try payment again</string>
+    <string name="bip70_invoice_not_found">Invoice not found, try payment again</string>
+    <string name="bip70_invalid_payment_url">Invalid payment URL, try payment again</string>
+    <string name="bip70_invalid_payment">Invalid payment</string>
+    <string name="bip70_payment_failure">Payment failure</string>
+    <string name="bip70_invalid_pki">Impossible to verify the service "%s". Continue anyway?</string>
 </resources>

@@ -58,6 +58,9 @@ import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.RegTestParams;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
+import org.bitcoinj.protocols.payments.PaymentProtocolException;
+import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.ExchangeRate;
@@ -1262,6 +1265,28 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
         return mClient.processBip70URL(url);
+    }
+
+    public ListenableFuture<PaymentSession>
+    fetchPaymentRequest(final String url) {
+        return Futures.transform(mClient.fetchPaymentRequest(url),
+                new Function<PaymentSession, PaymentSession>() {
+                    @Override
+                    public PaymentSession apply(final PaymentSession ret) {
+                        return ret;
+                    }
+                }, mExecutor);
+    }
+
+    public ListenableFuture<PaymentProtocol.Ack>
+    sendPayment(final PaymentSession paymentSession, final List<Transaction> txns, final Address refundAddr, final String memo) throws PaymentProtocolException.InvalidNetwork, PaymentProtocolException.InvalidPaymentURL, PaymentProtocolException.Expired, IOException {
+        return Futures.transform(mClient.sendPayment(paymentSession, txns, refundAddr, memo),
+                new Function<PaymentProtocol.Ack, PaymentProtocol.Ack>() {
+                    @Override
+                    public PaymentProtocol.Ack apply(final PaymentProtocol.Ack ret) {
+                        return ret;
+                    }
+                }, mExecutor);
     }
 
     public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final JSONMap privateData) {

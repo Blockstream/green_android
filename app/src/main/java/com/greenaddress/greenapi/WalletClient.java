@@ -15,20 +15,34 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
+import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.spv.Socks5SocketFactory;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
+import org.bitcoin.protocols.payments.Protos;
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
+import org.bitcoinj.protocols.payments.PaymentProtocolException;
+import org.bitcoinj.protocols.payments.PaymentSession;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.SocketAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +87,7 @@ public class WalletClient {
     private final INotificationHandler mNotificationHandler;
     private SocketAddress mProxyAddress;
     private final OkHttpClient mHttpClient = new OkHttpClient();
+    private final OkHttpClient mHttpClientBIP70 = new OkHttpClient();
     private boolean mTorEnabled;
     private WampClient mConnection;
     private LoginData mLoginData;
@@ -290,11 +305,13 @@ public class WalletClient {
         if (TextUtils.isEmpty(host) || TextUtils.isEmpty(port)) {
             mProxyAddress = null;
             mHttpClient.setSocketFactory(null);
+            mHttpClientBIP70.setSocketFactory(null);
             return;
         }
         try {
             mProxyAddress = new InetSocketAddress(host, Integer.parseInt(port));
             mHttpClient.setSocketFactory(new Socks5SocketFactory(host, port));
+            mHttpClientBIP70.setSocketFactory(new Socks5SocketFactory(host, port));
         } catch (final UnknownHostException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -879,5 +896,101 @@ public class WalletClient {
 
     public JSONMap getSpendingLimits() throws Exception {
         return new JSONMap((Map<String, Object>) syncCall("login.get_spending_limits", Map.class));
+    }
+
+    public ListenableFuture<PaymentSession> fetchPaymentRequest(final String url) {
+        final SettableFuture<PaymentSession> rpc = SettableFuture.create();
+        return fetchPaymentRequestCall(rpc, url);
+    }
+
+    private ListenableFuture<PaymentSession> fetchPaymentRequestCall(final SettableFuture<PaymentSession> rpc, final String url) {
+
+        final Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Accept", PaymentProtocol.MIMETYPE_PAYMENTREQUEST)
+                .build();
+
+        mHttpClientBIP70.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                rpc.set(null);
+            }
+
+            @Override
+            public void onResponse(final Response response) throws IOException {
+                try {
+                    final Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(response.body().bytes());
+                    rpc.set(new PaymentSession(paymentRequest, true));
+                } catch (PaymentProtocolException | InvalidProtocolBufferException e) {
+                    rpc.set(null);
+                }
+            }
+        });
+
+        return rpc;
+    }
+
+    public ListenableFuture<PaymentProtocol.Ack> sendPayment(final PaymentSession paymentSession,
+                                                             final List<Transaction> txns,
+                                                             final Address refundAddr,
+                                                             final String memo) throws IOException, PaymentProtocolException.InvalidNetwork, PaymentProtocolException.Expired, PaymentProtocolException.InvalidPaymentURL {
+        Protos.Payment payment = paymentSession.getPayment(txns, refundAddr, memo);
+        if (payment == null)
+            return null;
+        if (paymentSession.isExpired())
+            throw new PaymentProtocolException.Expired("PaymentRequest is expired");
+        URL url;
+        try {
+            url = new URL(paymentSession.getPaymentUrl());
+        } catch (MalformedURLException e) {
+            throw new PaymentProtocolException.InvalidPaymentURL(e);
+        }
+
+        final SettableFuture<PaymentProtocol.Ack> rpc = SettableFuture.create();
+        return sendPaymentCall(rpc, payment, url);
+    }
+
+    private ListenableFuture<PaymentProtocol.Ack> sendPaymentCall(final SettableFuture<PaymentProtocol.Ack> rpc, final Protos.Payment payment, final URL url) {
+
+        final byte[] byteArray = new byte[payment.getSerializedSize()];
+        final CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(byteArray);
+        try {
+            payment.writeTo(codedOutputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            rpc.set(null);
+            return rpc;
+        }
+
+        final MediaType mediaType = MediaType.parse(PaymentProtocol.MIMETYPE_PAYMENT);
+        final RequestBody body = RequestBody.create(mediaType, byteArray);
+
+
+        final Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Content-Type", PaymentProtocol.MIMETYPE_PAYMENT)
+                .addHeader("Accept", PaymentProtocol.MIMETYPE_PAYMENTREQUEST)
+                .addHeader("Content-Length", Integer.toString(payment.getSerializedSize()))
+                .post(body)
+                .build();
+
+        mHttpClientBIP70.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                rpc.set(null);
+            }
+
+            @Override
+            public void onResponse(final Response response) throws IOException {
+                try {
+                    Protos.PaymentACK paymentAck = Protos.PaymentACK.parseFrom(response.body().bytes());
+                    rpc.set(PaymentProtocol.parsePaymentAck(paymentAck));
+                } catch (Exception e) {
+                    rpc.set(null);
+                }
+            }
+        });
+
+        return rpc;
     }
 }

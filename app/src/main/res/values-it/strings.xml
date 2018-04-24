@@ -208,4 +208,10 @@
     <string name="segwit_disable">Disabilita Segwit</string>
     <string name="segwit_enable">Abilita Segwit</string>
     <string name="showQrCode">Mostra QR code</string>
+    <string name="bip70_session_expired">Sessione scaduta, prova di nuovo</string>
+    <string name="bip70_invoice_not_found">Fattura non trovata, prova di nuovo</string>
+    <string name="bip70_invalid_payment_url">Indirizzo pagamento invalido, prova di nuovo</string>
+    <string name="bip70_invalid_payment">Pagamento invalido</string>
+    <string name="bip70_payment_failure">Pagamento fallito</string>
+    <string name="bip70_invalid_pki">Impossibile verificare il servizio "%s". Continuare ugualmente?</string>
 </resources>
