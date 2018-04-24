@@ -88,6 +88,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+
 public class GaService extends Service implements INotificationHandler {
     private static final String TAG = GaService.class.getSimpleName();
     public static final boolean IS_ELEMENTS = Network.NETWORK == ElementsRegTestParams.get();
@@ -982,6 +983,28 @@ public class GaService extends Service implements INotificationHandler {
     public ListenableFuture<QrBitmap> getNewAddressBitmap(final int subAccount,
                                                           final Callable<Void> waitFn,
                                                           final Long amount) {
+        final Function<String, QrBitmap> generateQrBitmap = new Function<String, QrBitmap>() {
+            @Override
+            public QrBitmap apply(final String address) {
+                final String uri;
+                if (amount != null)
+                    uri = "bitcoin:" + address + "?amount=" + Coin.valueOf(amount).toPlainString();
+                else
+                    uri = address;
+                return new QrBitmap(uri, 0 /* transparent background */);
+            }
+        };
+        return Futures.transform(getNewAddress(subAccount, waitFn), generateQrBitmap, mExecutor);
+    }
+
+    /**
+     * Generate new address to the selected sub account, bitcoin or elements
+     * @param subAccount sub account ID
+     * @param waitFn eventually callback to execute (e.g. waiting popup)
+     * @return the address in string format
+     */
+    public ListenableFuture<String> getNewAddress(final int subAccount,
+                                                  final Callable<Void> waitFn) {
         // Fetch any cached address
         final JSONMap cachedAddress = getCachedAddress(subAccount);
 
@@ -991,7 +1014,8 @@ public class GaService extends Service implements INotificationHandler {
             addrFn = Futures.immediateFuture(cachedAddress);
         else {
             try {
-                waitFn.call();
+                if (waitFn != null)
+                    waitFn.call();
             } catch (final Exception e) {
             }
             addrFn = getNewAddressAsync(subAccount, false);
@@ -1002,9 +1026,9 @@ public class GaService extends Service implements INotificationHandler {
             getNewAddressAsync(subAccount, true);
 
         // Convert the address into a bitmap and return it
-        final AsyncFunction<JSONMap, QrBitmap> verifyAddress = new AsyncFunction<JSONMap, QrBitmap>() {
+        final AsyncFunction<JSONMap, String> verifyAddress = new AsyncFunction<JSONMap, String>() {
             @Override
-            public ListenableFuture<QrBitmap> apply(final JSONMap input) throws Exception {
+            public ListenableFuture<String> apply(final JSONMap input) throws Exception {
                 if (input == null)
                     throw new IllegalArgumentException("Failed to generate a new address");
 
@@ -1029,9 +1053,9 @@ public class GaService extends Service implements INotificationHandler {
                 }
 
                 return Futures.transform(verify,
-                        new Function<Boolean, QrBitmap>() {
+                        new Function<Boolean, String>() {
                     @Override
-                    public QrBitmap apply(final Boolean isValid) {
+                    public String apply(final Boolean isValid) {
                         if (!isValid)
                             throw new IllegalArgumentException("Address validation failed");
 
@@ -1041,14 +1065,7 @@ public class GaService extends Service implements INotificationHandler {
                             address = ConfidentialAddress.fromP2SHHash(Network.NETWORK, scriptHash, pubKey).toString();
                         } else
                             address = Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
-
-                        final String uri;
-                        if (amount != null)
-                            uri = "bitcoin:" + address + "?amount=" + Coin.valueOf(amount).toPlainString();
-                        else
-                            uri = address;
-
-                        return new QrBitmap(uri, 0 /* transparent background */);
+                        return address;
                     }
                 });
             }
