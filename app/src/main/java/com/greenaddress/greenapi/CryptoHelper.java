@@ -2,9 +2,6 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
 import com.greenaddress.greenbits.ui.MnemonicHelper;
-import org.bitcoin.NativeSecp256k1;
-import org.bitcoin.NativeSecp256k1Util;
-import org.bitcoin.Secp256k1Context;
 import org.codehaus.jackson.map.MappingJsonFactory;
 
 import java.io.ByteArrayOutputStream;
@@ -27,8 +24,10 @@ public class CryptoHelper {
 
     public static boolean initialize() {
         try {
-            return Secp256k1Context.isEnabled() && NativeSecp256k1.randomize(randomBytes(32));
-        } catch (final NativeSecp256k1Util.AssertFailException e) {
+            Wally.init(0);
+            Wally.secp_randomize(randomBytes(Wally.WALLY_SECP_RANDOMISE_LEN));
+            return true;
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
