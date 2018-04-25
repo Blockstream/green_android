@@ -101,10 +101,6 @@ public class SendFragment extends SubaccountFragment {
     private boolean mIsExchanger;
     private Exchanger mExchanger;
 
-    private void processBitcoinURI(final BitcoinURI URI) {
-        processBitcoinURI(URI, null, null);
-    }
-
     private void onBip70Failure(final int msgId) {
         final GaActivity gaActivity = getGaActivity();
         UI.toast(gaActivity, msgId, Toast.LENGTH_LONG);
@@ -120,7 +116,6 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
 
         if (URI != null && URI.getPaymentRequestUrl() != null) {
-            mBip70Progress = UI.find(mView, R.id.sendBip70ProgressBar);
             UI.show(mBip70Progress);
             mRecipientEdit.setEnabled(false);
             mSendButton.setEnabled(false);
@@ -186,13 +181,13 @@ public class SendFragment extends SubaccountFragment {
                                     name = Uri.parse(mPaymentDetails.getPaymentUrl()).getHost();
                             }
 
-                            long amount = 0;
+                            long total = 0;
                             for (final Protos.Output output : mPaymentDetails.getOutputsList())
-                                amount += output.getAmount();
+                                total += output.getAmount();
                             final CharSequence amountStr;
-                            if (amount > 0) {
-                                amountStr = UI.setCoinText(service, null, null, Coin.valueOf(amount));
-                            } else
+                            if (total > 0)
+                                amountStr = UI.setCoinText(service, null, null, Coin.valueOf(total));
+                            else
                                 amountStr = "";
 
                             gaActivity.runOnUiThread(new Runnable() {
@@ -286,6 +281,8 @@ public class SendFragment extends SubaccountFragment {
         mNoteIcon = UI.find(mView, R.id.sendToNoteIcon);
         mFeeTargetEdit = UI.find(mView, R.id.feerateTextEdit);
         mFeeTargetCombo = UI.find(mView, R.id.feeTargetCombo);
+        mBip70Progress = UI.find(mView, R.id.sendBip70ProgressBar);
+        UI.hide(mBip70Progress);
         populateFeeCombo();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -312,28 +309,17 @@ public class SendFragment extends SubaccountFragment {
             mAmountEdit.setText((String) container.getTag(R.id.tag_amount));
 
         if (container.getTag(R.id.tag_bitcoin_uri) != null) {
-            final Uri uri = (Uri) container.getTag(R.id.tag_bitcoin_uri);
-            BitcoinURI bitcoinUri = null;
-            if (GaService.IS_ELEMENTS) {
-                String addr = null;
-                Coin amount = null;
-                try {
-                    final Pair<String, Coin> res = ConfidentialAddress.parseBitcoinURI(Network.NETWORK, uri.toString());
-                    addr = res.first;
-                    amount = res.second;
-                } catch (final BitcoinURIParseException e) {
-                    gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
+            final String uri = ((Uri) container.getTag(R.id.tag_bitcoin_uri)).toString();
+            try {
+                if (!GaService.IS_ELEMENTS)
+                    processBitcoinURI(new BitcoinURI(uri), null, null);
+                else {
+                    final Pair<String, Coin> res = ConfidentialAddress.parseBitcoinURI(Network.NETWORK, uri);
+                    if (res.first != null)
+                        processBitcoinURI(null, res.first, res.second);
                 }
-                if (addr != null)
-                    processBitcoinURI(null, addr, amount);
-            } else {
-                try {
-                    bitcoinUri = new BitcoinURI(uri.toString());
-                } catch (final BitcoinURIParseException e) {
-                    gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
-                }
-                if (bitcoinUri != null)
-                    processBitcoinURI(bitcoinUri);
+            } catch (final BitcoinURIParseException e) {
+                gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
             }
             // set intent uri flag only if the call arrives from non internal qr scan
             if (container.getTag(R.id.internal_qr) == null) {
@@ -351,8 +337,8 @@ public class SendFragment extends SubaccountFragment {
                     gaActivity.toast(R.string.err_send_not_connected_will_resume);
                     return;
                 }
-                final String recipient = UI.getText(mRecipientEdit);
 
+                final String recipient = UI.getText(mRecipientEdit);
                 if (recipient.isEmpty()) {
                     gaActivity.toast(R.string.err_send_need_recipient);
                     return;
@@ -375,25 +361,11 @@ public class SendFragment extends SubaccountFragment {
         }
 
         mScanIcon.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(final View v) {
-                                            //New Marshmallow permissions paradigm
-                                            final String[] perms = {"android.permission.CAMERA"};
-                                            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
-                                                    gaActivity.checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
-                                                final int permsRequestCode = 100;
-                                                gaActivity.requestPermissions(perms, permsRequestCode);
-                                            } else {
-                                                final Intent qrcodeScanner = new Intent(gaActivity, ScanActivity.class);
-                                                qrcodeScanner.putExtra("sendAmount", UI.getText(mAmountEdit));
-                                                int requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN;
-                                                if (mIsExchanger)
-                                                    requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN_EXCHANGER;
-                                                gaActivity.startActivityForResult(qrcodeScanner, requestCode);
-                                            }
-                                        }
-                                    }
-        );
+            @Override
+            public void onClick(final View v) {
+                onScanIconClicked();
+            }
+        });
 
         mNoteIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -562,6 +534,23 @@ public class SendFragment extends SubaccountFragment {
             return UI.parseCoinValue(getGAService(), UI.getText(amountEdit));
         } catch (final IllegalArgumentException e) {
             return Coin.ZERO;
+        }
+    }
+
+    private void onScanIconClicked() {
+        final GaActivity gaActivity = getGaActivity();
+        final String[] perms = { "android.permission.CAMERA" };
+        if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
+                gaActivity.checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
+            final int permsRequestCode = 100;
+            gaActivity.requestPermissions(perms, permsRequestCode);
+        } else {
+            final Intent qrcodeScanner = new Intent(gaActivity, ScanActivity.class);
+            qrcodeScanner.putExtra("sendAmount", UI.getText(mAmountEdit));
+            int requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN;
+            if (mIsExchanger)
+                requestCode = TabbedMainActivity.REQUEST_SEND_QR_SCAN_EXCHANGER;
+            gaActivity.startActivityForResult(qrcodeScanner, requestCode);
         }
     }
 
@@ -815,7 +804,7 @@ public class SendFragment extends SubaccountFragment {
                     Log.d(TAG, "BIP70 payment failure: " + R.string.bip70_session_expired);
                     return;
                 }
-            } catch (PaymentProtocolException e) {
+            } catch (final PaymentProtocolException e) {
                 UI.toast(getActivity(), getString(R.string.bip70_payment_failure), mSendButton);
                 Log.d(TAG, "BIP70 payment failure");
                 return;
@@ -832,7 +821,7 @@ public class SendFragment extends SubaccountFragment {
                     final PaymentSession paymentSession;
                     try {
                         paymentSession = new PaymentSession(mPayreqData, true);
-                    } catch (PaymentProtocolException e) {
+                    } catch (final PaymentProtocolException e) {
                         e.printStackTrace();
                         Log.d(TAG, "BIP70 payment failure");
                         return;
@@ -879,7 +868,7 @@ public class SendFragment extends SubaccountFragment {
                                                 Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
                                             }
                                         }, service.getExecutor());
-                                    } catch (PaymentProtocolException | IOException e) {
+                                    } catch (final PaymentProtocolException | IOException e) {
                                         e.printStackTrace();
                                         Log.d(TAG, "BIP70 payment failure: " + e.getMessage());
                                         UI.toast(getGaActivity(), e.getMessage(), mSendButton);
