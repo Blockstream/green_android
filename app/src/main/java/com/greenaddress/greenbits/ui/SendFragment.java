@@ -89,6 +89,7 @@ public class SendFragment extends SubaccountFragment {
     private TextView mMaxLabel;
     private TextView mScanIcon;
     private ProgressBar mBip70Progress;
+
     private Protos.PaymentRequest mPayreqData;
     private Protos.PaymentDetails mPaymentDetails;
     private boolean mFromIntentURI;
@@ -100,150 +101,6 @@ public class SendFragment extends SubaccountFragment {
 
     private boolean mIsExchanger;
     private Exchanger mExchanger;
-
-    private void onBip70Failure(final int msgId) {
-        final GaActivity gaActivity = getGaActivity();
-        UI.toast(gaActivity, msgId, Toast.LENGTH_LONG);
-        gaActivity.runOnUiThread(new Runnable() {
-            public void run() {
-                resetAllFields();
-            }
-        });
-    }
-
-    private void processBitcoinURI(final BitcoinURI URI, final String confidentialAddress, Coin amount) {
-        final GaService service = getGAService();
-        final GaActivity gaActivity = getGaActivity();
-
-        if (URI != null && URI.getPaymentRequestUrl() != null) {
-            UI.show(mBip70Progress);
-            mRecipientEdit.setEnabled(false);
-            mSendButton.setEnabled(false);
-            UI.hide(mNoteIcon);
-
-            final ListenableFuture<PaymentSession> futureUri;
-            futureUri = service.fetchPaymentRequest(URI.getPaymentRequestUrl());
-            Futures.addCallback(futureUri,
-                    new CB.Toast<PaymentSession>(gaActivity) {
-                        @Override
-                        public void onSuccess(final PaymentSession paymentSession) {
-                            if (paymentSession == null) {
-                                onBip70Failure(R.string.bip70_invalid_payment);
-                                return;
-                            }
-                            if (paymentSession.isExpired()) {
-                                onBip70Failure(R.string.bip70_session_expired); // Expired, exit and retry
-                                return;
-                            }
-
-                            PaymentProtocol.PkiVerificationData pkiVerificationData = null;
-                            try {
-                                pkiVerificationData = paymentSession.verifyPki();
-                            } catch (Exception e) {
-                                // Don't show errors that occur during PKI verification to the user!
-                                // Just treat such payment requests as if they were unsigned. This way
-                                // new features and PKI roots can be introduced in future without
-                                // being disruptive.
-                            }
-                            if (pkiVerificationData == null) {
-                                gaActivity.runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        final String host = Uri.parse(URI.getPaymentRequestUrl()).getHost();
-                                        final String text = getString(R.string.bip70_invalid_pki, host);
-                                        UI.popup(gaActivity, text, R.string.continueText, R.string.cancel)
-                                                .cancelable(false)
-                                                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                                                        resetAllFields();
-                                                    }
-                                                }).build().show();
-                                    }
-                                });
-                            }
-
-                            mPayreqData = paymentSession.getPaymentRequest();
-                            mPaymentDetails = null;
-                            try {
-                                mPaymentDetails = Protos.PaymentDetails.parseFrom(mPayreqData.getSerializedPaymentDetails());
-                            } catch (InvalidProtocolBufferException e) {
-                                e.printStackTrace();
-                            }
-
-                            final String name;
-
-                            if (mPaymentDetails == null)
-                                name = Uri.parse(URI.getPaymentRequestUrl()).getHost();
-                            else {
-                                if (pkiVerificationData != null)
-                                    name = pkiVerificationData.displayName;
-                                else
-                                    name = Uri.parse(mPaymentDetails.getPaymentUrl()).getHost();
-                            }
-
-                            long total = 0;
-                            for (final Protos.Output output : mPaymentDetails.getOutputsList())
-                                total += output.getAmount();
-                            final CharSequence amountStr;
-                            if (total > 0)
-                                amountStr = UI.setCoinText(service, null, null, Coin.valueOf(total));
-                            else
-                                amountStr = "";
-
-                            gaActivity.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    mRecipientEdit.setText(name);
-                                    UI.enable(mSendButton);
-                                    if (!amountStr.toString().isEmpty()) {
-                                        mAmountEdit.setText(amountStr);
-                                        mAmountFields.convertBtcToFiat();
-                                        UI.disable(mAmountEdit, mAmountFiatEdit);
-                                        UI.hide(mMaxButton, mMaxLabel);
-                                    }
-                                    UI.hide(mBip70Progress);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(final Throwable t) {
-                            super.onFailure(t);
-                            gaActivity.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    UI.hide(mBip70Progress);
-                                    UI.enable(mRecipientEdit, mSendButton);
-                                    UI.show(mNoteIcon);
-                                }
-                            });
-                        }
-                    });
-        } else {
-            if (confidentialAddress != null) {
-                mRecipientEdit.setText(confidentialAddress);
-            } else {
-                mRecipientEdit.setText(URI.getAddress().toString());
-                amount = URI.getAmount();
-            }
-            if (amount == null)
-                return;
-
-            final Coin uriAmount = amount;
-
-            Futures.addCallback(service.getSubaccountBalance(mSubaccount), new CB.Op<Map<String, Object>>() {
-                @Override
-                public void onSuccess(final Map<String, Object> result) {
-                    gaActivity.runOnUiThread(new Runnable() {
-                            public void run() {
-                                UI.setCoinText(service, null, mAmountEdit, uriAmount);
-                                mAmountFields.convertBtcToFiat();
-                                UI.disable(mAmountEdit, mAmountFiatEdit);
-                                UI.hide(mMaxButton, mMaxLabel);
-                            }
-                    });
-                }
-            }, service.getExecutor());
-        }
-    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -537,6 +394,158 @@ public class SendFragment extends SubaccountFragment {
         }
     }
 
+    private void processBitcoinURI(final BitcoinURI URI, final String confidentialAddress, Coin amount) {
+        final GaService service = getGAService();
+        final GaActivity gaActivity = getGaActivity();
+
+        if (URI != null && URI.getPaymentRequestUrl() != null) {
+            processPaymentRequestUrl(URI.getPaymentRequestUrl());
+            return;
+        }
+
+        if (confidentialAddress != null)
+            mRecipientEdit.setText(confidentialAddress);
+        else {
+            mRecipientEdit.setText(URI.getAddress().toString());
+            amount = URI.getAmount();
+        }
+        if (amount == null)
+            return;
+
+        final Coin uriAmount = amount;
+        Futures.addCallback(service.getSubaccountBalance(mSubaccount), new CB.Op<Map<String, Object>>() {
+            @Override
+            public void onSuccess(final Map<String, Object> result) {
+                gaActivity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            UI.setCoinText(service, null, mAmountEdit, uriAmount);
+                            mAmountFields.convertBtcToFiat();
+                            UI.disable(mAmountEdit, mAmountFiatEdit);
+                            UI.hide(mMaxButton, mMaxLabel);
+                        }
+                });
+            }
+        }, service.getExecutor());
+    }
+
+    private void processPaymentRequestUrl(final String requestUrl) {
+        final GaService service = getGAService();
+        final GaActivity gaActivity = getGaActivity();
+
+        UI.show(mBip70Progress);
+        UI.disable(mRecipientEdit, mSendButton);
+        UI.hide(mNoteIcon);
+
+        Futures.addCallback(service.fetchPaymentRequest(requestUrl),
+                new CB.Toast<PaymentSession>(gaActivity) {
+                    @Override
+                    public void onSuccess(final PaymentSession session) {
+                        onPaymentSessionInitiated(session, requestUrl);
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable t) {
+                        super.onFailure(t);
+                        gaActivity.runOnUiThread(new Runnable() {
+                            public void run() {
+                                UI.hide(mBip70Progress);
+                                UI.enable(mRecipientEdit, mSendButton);
+                                UI.show(mNoteIcon);
+                            }
+                        });
+                    }
+                });
+    }
+
+    private void onPaymentSessionInitiated(final PaymentSession session, final String requestUrl) {
+        final GaService service = getGAService();
+        final GaActivity gaActivity = getGaActivity();
+
+        int msgId = 0;
+        if (session == null)
+            msgId = R.string.bip70_invalid_payment;
+        else if (session.isExpired())
+            msgId = R.string.bip70_session_expired;
+
+        if (msgId != 0) {
+            UI.toast(gaActivity, msgId, Toast.LENGTH_LONG);
+            gaActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    resetAllFields();
+                }
+            });
+            return;
+        }
+
+        PaymentProtocol.PkiVerificationData pkiData = null;
+        try {
+            pkiData = session.verifyPki();
+        } catch (final Exception e) {
+            // Don't show errors that occur during PKI verification to the user!
+            // Just treat such payment requests as if they were unsigned. This way
+            // new features and PKI roots can be introduced in future without
+            // being disruptive.
+        }
+        if (pkiData == null) {
+            gaActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    final String host = Uri.parse(requestUrl).getHost();
+                    final String text = getString(R.string.bip70_invalid_pki, host);
+                    UI.popup(gaActivity, text, R.string.continueText, R.string.cancel)
+                            .cancelable(false)
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                                    resetAllFields();
+                                }
+                            }).build().show();
+                }
+            });
+        }
+
+        mPayreqData = session.getPaymentRequest();
+        mPaymentDetails = null;
+        try {
+            mPaymentDetails = Protos.PaymentDetails.parseFrom(mPayreqData.getSerializedPaymentDetails());
+        } catch (final InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        final String recipient;
+        if (mPaymentDetails == null)
+            recipient = Uri.parse(requestUrl).getHost();
+        else {
+            if (pkiData != null)
+                recipient = pkiData.displayName;
+            else
+                recipient = Uri.parse(mPaymentDetails.getPaymentUrl()).getHost();
+        }
+
+        long total = 0;
+        for (final Protos.Output output : mPaymentDetails.getOutputsList())
+            total += output.getAmount();
+        final long totalAmount = total;
+
+        gaActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                mRecipientEdit.setText(recipient);
+                UI.enable(mSendButton);
+
+                String amount = "";
+                if (totalAmount > 0)
+                    amount = UI.setCoinText(service, null, null, Coin.valueOf(totalAmount));
+
+                if (!amount.toString().isEmpty()) {
+                    mAmountEdit.setText(amount);
+                    mAmountFields.convertBtcToFiat();
+                    UI.disable(mAmountEdit, mAmountFiatEdit);
+                    UI.hide(mMaxButton, mMaxLabel);
+                }
+                UI.hide(mBip70Progress);
+            }
+        });
+    }
+
     private void onScanIconClicked() {
         final GaActivity gaActivity = getGaActivity();
         final String[] perms = { "android.permission.CAMERA" };
@@ -796,10 +805,10 @@ public class SendFragment extends SubaccountFragment {
         }
 
         if (mPayreqData != null) {
-            final PaymentSession paymentSession;
+            final PaymentSession session;
             try {
-                paymentSession = new PaymentSession(mPayreqData, true);
-                if (paymentSession.isExpired()) {
+                session = new PaymentSession(mPayreqData, true);
+                if (session.isExpired()) {
                     UI.toast(getActivity(), getString(R.string.bip70_session_expired), mSendButton);
                     Log.d(TAG, "BIP70 payment failure: " + R.string.bip70_session_expired);
                     return;
@@ -818,9 +827,9 @@ public class SendFragment extends SubaccountFragment {
             @Override
             public void onSuccess(final String txHash) {
                 if (mPayreqData != null) {
-                    final PaymentSession paymentSession;
+                    final PaymentSession session;
                     try {
-                        paymentSession = new PaymentSession(mPayreqData, true);
+                        session = new PaymentSession(mPayreqData, true);
                     } catch (final PaymentProtocolException e) {
                         e.printStackTrace();
                         Log.d(TAG, "BIP70 payment failure");
@@ -842,7 +851,7 @@ public class SendFragment extends SubaccountFragment {
                                     try {
                                         final Address address = Address.fromBase58(Network.NETWORK, result);
                                         final ListenableFuture<PaymentProtocol.Ack> sendPayment =
-                                                service.sendPayment(paymentSession, ImmutableList.of(tx), address, null);
+                                                service.sendPayment(session, ImmutableList.of(tx), address, null);
                                         if (sendPayment == null) {
                                             Log.d(TAG, "BIP70 payment failure");
                                             UI.toast(getGaActivity(), getString(R.string.bip70_invalid_payment), mSendButton);
