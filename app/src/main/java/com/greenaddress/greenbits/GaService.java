@@ -1289,11 +1289,6 @@ public class GaService extends Service implements INotificationHandler {
                 }, mExecutor);
     }
 
-    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final JSONMap privateData) {
-        preparePrivData(privateData);
-        return mClient.preparePayreq(amount, data, privateData);
-    }
-
     public Map<String, String> make2FAData(final String method, final String code) {
         if (code == null)
             return new HashMap<>();

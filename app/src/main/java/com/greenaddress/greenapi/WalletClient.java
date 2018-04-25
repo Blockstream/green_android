@@ -703,32 +703,6 @@ public class WalletClient {
         return simpleCall("vault.process_bip0070_url", Map.class, url);
     }
 
-    public ListenableFuture<PreparedTransaction> preparePayreq(final Coin amount, final Map<?, ?> data, final JSONMap privateData) {
-
-        final SettableFuture<PreparedTransaction.PreparedData> rpc = SettableFuture.create();
-
-
-        final Map dataClone = new HashMap<>();
-        for (final Object k : data.keySet())
-            dataClone.put(k, data.get(k));
-
-        if (privateData != null && privateData.containsKey("subaccount"))
-            dataClone.put("subaccount", privateData.get("subaccount"));
-
-        clientCall(rpc, "vault.prepare_payreq", Map.class, new CallHandler() {
-            public void onResult(final Object prepared) {
-                rpc.set(new PreparedTransaction.PreparedData((Map) prepared, privateData.mData, mLoginData.mSubAccounts, mHttpClient));
-            }
-        }, amount.longValue(), dataClone, privateData);
-
-        return Futures.transform(rpc, new Function<PreparedTransaction.PreparedData, PreparedTransaction>() {
-            @Override
-            public PreparedTransaction apply(final PreparedTransaction.PreparedData ptxData) {
-                return new PreparedTransaction(ptxData);
-            }
-        }, mExecutor);
-    }
-
     public ListenableFuture<Map<?, ?>> prepareSweepSocial(final byte[] pubKey, final boolean useElectrum) {
         final Integer[] pubKeyObjs = new Integer[pubKey.length];
         for (int i = 0; i < pubKey.length; ++i)
