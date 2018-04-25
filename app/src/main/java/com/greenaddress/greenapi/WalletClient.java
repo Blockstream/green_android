@@ -874,19 +874,12 @@ public class WalletClient {
 
     public ListenableFuture<PaymentSession> fetchPaymentRequest(final String url) {
         final SettableFuture<PaymentSession> rpc = SettableFuture.create();
-        return fetchPaymentRequestCall(rpc, url);
-    }
-
-    private ListenableFuture<PaymentSession> fetchPaymentRequestCall(final SettableFuture<PaymentSession> rpc, final String url) {
-
-        final Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Accept", PaymentProtocol.MIMETYPE_PAYMENTREQUEST)
-                .build();
+        final Request request = new Request.Builder().url(url)
+                .addHeader("Accept", PaymentProtocol.MIMETYPE_PAYMENTREQUEST).build();
 
         mHttpClientBIP70.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Request request, IOException e) {
+            public void onFailure(final Request request, final IOException e) {
                 rpc.set(null);
             }
 
@@ -900,7 +893,6 @@ public class WalletClient {
                 }
             }
         });
-
         return rpc;
     }
 
