@@ -1279,14 +1279,10 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<PaymentProtocol.Ack>
-    sendPayment(final PaymentSession paymentSession, final List<Transaction> txns, final Address refundAddr, final String memo) throws PaymentProtocolException.InvalidNetwork, PaymentProtocolException.InvalidPaymentURL, PaymentProtocolException.Expired, IOException {
-        return Futures.transform(mClient.sendPayment(paymentSession, txns, refundAddr, memo),
-                new Function<PaymentProtocol.Ack, PaymentProtocol.Ack>() {
-                    @Override
-                    public PaymentProtocol.Ack apply(final PaymentProtocol.Ack ret) {
-                        return ret;
-                    }
-                }, mExecutor);
+    sendPayment(final PaymentSession paymentSession, final List<Transaction> txns, final Address refundAddr, final String memo)
+        throws PaymentProtocolException.InvalidNetwork, PaymentProtocolException.InvalidPaymentURL,
+            PaymentProtocolException.Expired, IOException {
+        return mClient.sendPayment(paymentSession, txns, refundAddr, memo);
     }
 
     public Map<String, String> make2FAData(final String method, final String code) {

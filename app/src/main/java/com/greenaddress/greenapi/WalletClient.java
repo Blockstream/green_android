@@ -916,11 +916,6 @@ public class WalletClient {
         }
 
         final SettableFuture<PaymentProtocol.Ack> rpc = SettableFuture.create();
-        return sendPaymentCall(rpc, payment, url);
-    }
-
-    private ListenableFuture<PaymentProtocol.Ack> sendPaymentCall(final SettableFuture<PaymentProtocol.Ack> rpc, final Protos.Payment payment, final URL url) {
-
         final byte[] byteArray = new byte[payment.getSerializedSize()];
         final CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(byteArray);
         try {
@@ -933,7 +928,6 @@ public class WalletClient {
 
         final MediaType mediaType = MediaType.parse(PaymentProtocol.MIMETYPE_PAYMENT);
         final RequestBody body = RequestBody.create(mediaType, byteArray);
-
 
         final Request request = new Request.Builder()
                 .url(url)
