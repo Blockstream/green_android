@@ -1170,8 +1170,9 @@ public class SendFragment extends SubaccountFragment {
                                 public void onSuccess(final String result) {
                                     try {
                                         final Address address = Address.fromBase58(Network.NETWORK, result);
+                                        final String memo = privateData.getString("memo");
                                         final ListenableFuture<PaymentProtocol.Ack> sendAckFn =
-                                                service.sendPayment(session, ImmutableList.of(tx), address, null);
+                                                service.sendPayment(session, ImmutableList.of(tx), address, memo);
 
                                         if (sendAckFn == null) {
                                             Log.d(TAG, "BIP70 payment failure");
