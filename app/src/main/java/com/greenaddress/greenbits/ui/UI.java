@@ -225,6 +225,16 @@ public abstract class UI {
         });
     }
 
+    public static void toast(final Activity activity, final int id, final Button reenable) {
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                if (reenable != null)
+                    reenable.setEnabled(true);
+                Toast.makeText(activity, id, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     // Dummy TextWatcher for simple overrides
     public static class TextWatcher implements android.text.TextWatcher {
         TextWatcher() { super(); }

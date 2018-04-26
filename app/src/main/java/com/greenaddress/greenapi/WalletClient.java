@@ -899,7 +899,10 @@ public class WalletClient {
     public ListenableFuture<PaymentProtocol.Ack> sendPayment(final PaymentSession paymentSession,
                                                              final List<Transaction> txns,
                                                              final Address refundAddr,
-                                                             final String memo) throws IOException, PaymentProtocolException.InvalidNetwork, PaymentProtocolException.Expired, PaymentProtocolException.InvalidPaymentURL {
+                                                             final String memo)
+        throws IOException, PaymentProtocolException.InvalidNetwork,
+            PaymentProtocolException.Expired, PaymentProtocolException.InvalidPaymentURL {
+
         Protos.Payment payment = paymentSession.getPayment(txns, refundAddr, memo);
         if (payment == null)
             return null;

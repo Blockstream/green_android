@@ -336,6 +336,10 @@ public class SendFragment extends SubaccountFragment {
         }
     }
 
+    public void setIsExchanger(final boolean isExchanger) {
+        mIsExchanger = isExchanger;
+    }
+
     private void populateFeeCombo() {
         if (GaService.IS_ELEMENTS)
             return; // FIXME: No custom fees for elements
@@ -652,8 +656,7 @@ public class SendFragment extends SubaccountFragment {
                 (userRate.isEmpty() || !service.isValidFeeRate(userRate))) {
                 // Change invalid feerates to the minimum
                 feeRate = service.getMinFeeRate();
-                final String message = getString(R.string.feerate_changed, feeRate.longValue());
-                gaActivity.toast(message);
+                gaActivity.toast(getString(R.string.feerate_changed, feeRate.longValue()));
             } else
                 feeRate = getFeeRate(feeTarget);
         } catch (final GAException e) {
@@ -678,285 +681,6 @@ public class SendFragment extends SubaccountFragment {
                 }
                 if (ret != 0)
                     gaActivity.toast(ret, mSendButton);
-            }
-        });
-    }
-
-    private void onTransactionValidated(final PreparedTransaction ptx,
-                                        final Transaction signedRawTx,
-                                        final String recipient, final Coin amount,
-                                        final String method, final Coin fee,
-                                        final JSONMap privateData, final JSONMap underLimits) {
-        Log.i(TAG, "onTransactionValidated( params " + method + ' ' + fee + ' ' + amount + ' ' + recipient + ')');
-        final GaService service = getGAService();
-        final GaActivity gaActivity = getGaActivity();
-
-        final Map<String, Object> twoFacData;
-
-        if (method == null)
-            twoFacData = null;
-        else if (method.equals("limit")) {
-            twoFacData = new HashMap<>();
-            twoFacData.put("try_under_limits_spend", underLimits.mData);
-        } else {
-            twoFacData = new HashMap<>();
-            twoFacData.put("method", method);
-            if (!method.equals("gauth")) {
-                if (underLimits != null)
-                    for (final String key : underLimits.mData.keySet())
-                        twoFacData.put("send_raw_tx_" + key, underLimits.get(key));
-                if (GaService.IS_ELEMENTS) {
-                    underLimits.mData.remove("ephemeral_privkeys");
-                    underLimits.mData.remove("blinding_pubkeys");
-                }
-                final Map<String, Object> twoFactorData;
-                twoFactorData = underLimits == null ? null : underLimits.mData;;
-                service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", twoFactorData);
-            }
-        }
-
-        final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
-        final Button showFiatBtcButton = UI.find(v, R.id.newTxShowFiatBtcButton);
-        final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
-        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
-        final String fiatAmount = service.coinToFiat(amount);
-        final String fiatFee = service.coinToFiat(fee);
-        final String fiatCurrency = service.getFiatCurrency();
-
-        mSummaryInBtc[0] = true;
-        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
-        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
-        if (!GaService.IS_ELEMENTS) {
-            showFiatBtcButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View btn) {
-                    // Toggle display between fiat and BTC
-                    if (mSummaryInBtc[0]) {
-                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxAmountUnitText), fiatCurrency);
-                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxFeeUnit), fiatCurrency);
-                        UI.setAmountText((TextView) UI.find(v, R.id.newTxAmountText), fiatAmount);
-                        UI.setAmountText((TextView) UI.find(v, R.id.newTxFeeText), fiatFee);
-                    } else {
-                        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
-                        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
-                    }
-                    mSummaryInBtc[0] = !mSummaryInBtc[0];
-                    showFiatBtcButton.setText(mSummaryInBtc[0] ? R.string.show_fiat : R.string.show_btc);
-                }
-            });
-        }
-
-        if (mPayreqData != null)
-            recipientText.setText(recipient);
-        else
-            recipientText.setText(String.format("%s\n%s\n%s",
-                                  recipient.substring(0, 12),
-                                  recipient.substring(12, 24),
-                                  recipient.substring(24)));
-
-        if (method != null && !method.equals("limit")) {
-            final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
-            UI.show(twoFAText, newTx2FACodeText);
-            twoFAText.setText(String.format("2FA %s code", method));
-        }
-
-        mTwoFactorAttemptsRemaining = 3;
-        mSummary = UI.popup(gaActivity, R.string.newTxTitle, R.string.send, R.string.cancel)
-                .customView(v, true)
-                .autoDismiss(false)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                        UI.dismiss(null, SendFragment.this.mSummary);
-                    }
-                })
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                        final String code = UI.getText(newTx2FACodeText);
-                        sendTransaction(code, twoFacData, method, signedRawTx, privateData);
-                    }
-                }).build();
-        UI.mapEnterToPositive(mSummary, R.id.newTx2FACodeText);
-        mSummary.show();
-    }
-
-    /**
-     * Sign and send transaction to GA server. On BIP70, manage the payment data
-     * @param code new TX 2FA code
-     * @param twoFacData 2FA data
-     * @param twoFacMethod 2FA method
-     * @param signedRawTx the client side signed transaction
-     * @param privateData private data to send to GA server
-     */
-    private void sendTransaction(final String code, final Map<String, Object> twoFacData,
-                                 final String twoFacMethod, final Transaction signedRawTx,
-                                 final JSONMap privateData) {
-
-        final GaActivity gaActivity = getGaActivity();
-        final GaService service = getGAService();
-
-        if (twoFacData != null && !twoFacMethod.equals("limit")) {
-            if (code.length() < 6) {
-                UI.toast(getActivity(), getString(R.string.malformed_code), mSendButton);
-                return;
-            }
-            twoFacData.put("code", code);
-        }
-
-        if (mPayreqData != null) {
-            final PaymentSession session;
-            try {
-                session = new PaymentSession(mPayreqData, true);
-                if (session.isExpired()) {
-                    UI.toast(getActivity(), getString(R.string.bip70_session_expired), mSendButton);
-                    Log.d(TAG, "BIP70 payment failure: " + R.string.bip70_session_expired);
-                    return;
-                }
-            } catch (final PaymentProtocolException e) {
-                UI.toast(getActivity(), getString(R.string.bip70_payment_failure), mSendButton);
-                Log.d(TAG, "BIP70 payment failure");
-                return;
-            }
-        }
-
-        final ListenableFuture<String> sendFn = service.sendRawTransaction(signedRawTx, twoFacData, privateData);
-
-        // send tx to GA server to broadcast to bitcoin network
-        Futures.addCallback(sendFn, new CB.Toast<String>(gaActivity, mSendButton) {
-            @Override
-            public void onSuccess(final String txHash) {
-                if (mPayreqData != null) {
-                    final PaymentSession session;
-                    try {
-                        session = new PaymentSession(mPayreqData, true);
-                    } catch (final PaymentProtocolException e) {
-                        e.printStackTrace();
-                        Log.d(TAG, "BIP70 payment failure");
-                        return;
-                    }
-
-                    // get signed tx from GA
-                    final ListenableFuture<Transaction> getRawOutput;
-                    getRawOutput = service.getRawOutput(Sha256Hash.wrap(txHash));
-                    Futures.addCallback(getRawOutput, new CB.Toast<Transaction>(gaActivity, mSendButton) {
-                        @Override
-                        public void onSuccess(final Transaction tx) {
-
-                            // generate new address to refund
-                            final ListenableFuture<String> getNewAddress = service.getNewAddress(service.getCurrentSubAccount(), null);
-                            Futures.addCallback(getNewAddress, new CB.Toast<String>(gaActivity, mSendButton) {
-                                @Override
-                                public void onSuccess(final String result) {
-                                    try {
-                                        final Address address = Address.fromBase58(Network.NETWORK, result);
-                                        final ListenableFuture<PaymentProtocol.Ack> sendPayment =
-                                                service.sendPayment(session, ImmutableList.of(tx), address, null);
-                                        if (sendPayment == null) {
-                                            Log.d(TAG, "BIP70 payment failure");
-                                            UI.toast(getGaActivity(), getString(R.string.bip70_invalid_payment), mSendButton);
-                                            return;
-                                        }
-
-                                        // send payment to BIP70 server
-                                        Futures.addCallback(sendPayment, new CB.Toast<PaymentProtocol.Ack>(gaActivity, mSendButton) {
-                                            @Override
-                                            public void onSuccess(final PaymentProtocol.Ack ack) {
-                                                if (ack == null) {
-                                                    Log.d(TAG, "BIP70 payment failure");
-                                                    UI.toast(getGaActivity(), getString(R.string.bip70_payment_failure), mSendButton);
-                                                    return;
-                                                }
-                                                Log.d(TAG, "BIP70 payment OK: " + ack.getMemo());
-                                                UI.toast(getGaActivity(), ack.getMemo(), mSendButton);
-                                            }
-
-                                            @Override
-                                            public void onFailure(final Throwable t) {
-                                                super.onFailure(t);
-                                                Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
-                                            }
-                                        }, service.getExecutor());
-                                    } catch (final PaymentProtocolException | IOException e) {
-                                        e.printStackTrace();
-                                        Log.d(TAG, "BIP70 payment failure: " + e.getMessage());
-                                        UI.toast(getGaActivity(), e.getMessage(), mSendButton);
-                                    }
-                                }
-
-                            }, service.getExecutor());
-                        }
-
-                        @Override
-                        public void onFailure(final Throwable t) {
-                            super.onFailure(t);
-                            Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
-                        }
-                    }, service.getExecutor());
-                }
-                UI.dismiss(SendFragment.this.getActivity(), SendFragment.this.mSummary);
-                onTransactionSent();
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                final SendFragment fragment = SendFragment.this;
-                final Activity activity = fragment.getActivity();
-                if (t instanceof GAException) {
-                    final GAException e = (GAException) t;
-                    if (e.mUri.equals(GAException.AUTH)) {
-                        final int n = --fragment.mTwoFactorAttemptsRemaining;
-                        if (n > 0) {
-                            final Resources r = fragment.getResources();
-                            final String msg = r.getQuantityString(R.plurals.attempts_remaining, n, n);
-                            UI.toast(activity, e.mMessage + "\n(" + msg + ')', mSendButton);
-                            return; // Allow re-trying
-                        }
-                    }
-                }
-                UI.toast(activity, t, mSendButton);
-                // Out of 2FA attempts, or another exception; give up
-                UI.dismiss(activity, fragment.mSummary);
-            }
-        }, service.getExecutor());
-    }
-
-    private void onTransactionSent() {
-        final GaActivity gaActivity = getGaActivity();
-
-        if (gaActivity == null)
-            return; // App was paused/deleted while callback ran
-
-        gaActivity.runOnUiThread(new Runnable() {
-            public void run() {
-                UI.toast(gaActivity, R.string.transactionSubmitted, Toast.LENGTH_LONG);
-
-                if (mIsExchanger)
-                    mExchanger.sellBtc(Double.valueOf(UI.getText(mAmountFiatEdit)));
-
-                if (mFromIntentURI) {
-                    gaActivity.finish();
-                    return;
-                }
-
-                UI.clear(mAmountEdit, mRecipientEdit);
-                UI.enable(mAmountEdit, mRecipientEdit);
-                if (!GaService.IS_ELEMENTS) {
-                    mMaxButton.setChecked(false);
-                    UI.show(mMaxButton, mMaxLabel);
-                }
-
-                mNoteIcon.setText(R.string.fa_pencil);
-                UI.clear(mNoteText);
-                UI.hide(mNoteText);
-
-                if (!mIsExchanger) {
-                    final ViewPager viewPager = UI.find(gaActivity, R.id.container);
-                    viewPager.setCurrentItem(1);
-                } else {
-                    gaActivity.toast(R.string.transactionSubmitted);
-                    gaActivity.finish();
-                }
             }
         });
     }
@@ -1277,7 +1001,284 @@ public class SendFragment extends SubaccountFragment {
         return 0;
     }
 
-    public void setIsExchanger(final boolean isExchanger) {
-        mIsExchanger = isExchanger;
+    private void onTransactionValidated(final PreparedTransaction ptx,
+                                        final Transaction signedRawTx,
+                                        final String recipient, final Coin amount,
+                                        final String method, final Coin fee,
+                                        final JSONMap privateData, final JSONMap underLimits) {
+        Log.i(TAG, "onTransactionValidated( params " + method + ' ' + fee + ' ' + amount + ' ' + recipient + ')');
+        final GaService service = getGAService();
+        final GaActivity gaActivity = getGaActivity();
+
+        final Map<String, Object> twoFacData;
+
+        if (method == null)
+            twoFacData = null;
+        else if (method.equals("limit")) {
+            twoFacData = new HashMap<>();
+            twoFacData.put("try_under_limits_spend", underLimits.mData);
+        } else {
+            twoFacData = new HashMap<>();
+            twoFacData.put("method", method);
+            if (!method.equals("gauth")) {
+                if (underLimits != null)
+                    for (final String key : underLimits.mData.keySet())
+                        twoFacData.put("send_raw_tx_" + key, underLimits.get(key));
+                if (GaService.IS_ELEMENTS) {
+                    underLimits.mData.remove("ephemeral_privkeys");
+                    underLimits.mData.remove("blinding_pubkeys");
+                }
+                final Map<String, Object> twoFactorData;
+                twoFactorData = underLimits == null ? null : underLimits.mData;;
+                service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", twoFactorData);
+            }
+        }
+
+        final View v = gaActivity.getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+        final Button showFiatBtcButton = UI.find(v, R.id.newTxShowFiatBtcButton);
+        final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
+        final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
+        final String fiatAmount = service.coinToFiat(amount);
+        final String fiatFee = service.coinToFiat(fee);
+        final String fiatCurrency = service.getFiatCurrency();
+
+        mSummaryInBtc[0] = true;
+        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
+        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
+        if (!GaService.IS_ELEMENTS) {
+            showFiatBtcButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View btn) {
+                    // Toggle display between fiat and BTC
+                    if (mSummaryInBtc[0]) {
+                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxAmountUnitText), fiatCurrency);
+                        AmountFields.changeFiatIcon((FontAwesomeTextView) UI.find(v, R.id.newTxFeeUnit), fiatCurrency);
+                        UI.setAmountText((TextView) UI.find(v, R.id.newTxAmountText), fiatAmount);
+                        UI.setAmountText((TextView) UI.find(v, R.id.newTxFeeText), fiatFee);
+                    } else {
+                        UI.setCoinText(service, v, R.id.newTxAmountUnitText, R.id.newTxAmountText, amount);
+                        UI.setCoinText(service, v, R.id.newTxFeeUnit, R.id.newTxFeeText, fee);
+                    }
+                    mSummaryInBtc[0] = !mSummaryInBtc[0];
+                    showFiatBtcButton.setText(mSummaryInBtc[0] ? R.string.show_fiat : R.string.show_btc);
+                }
+            });
+        }
+
+        if (mPayreqData != null)
+            recipientText.setText(recipient);
+        else
+            recipientText.setText(String.format("%s\n%s\n%s",
+                                  recipient.substring(0, 12),
+                                  recipient.substring(12, 24),
+                                  recipient.substring(24)));
+
+        if (method != null && !method.equals("limit")) {
+            final TextView twoFAText = UI.find(v, R.id.newTx2FATypeText);
+            UI.show(twoFAText, newTx2FACodeText);
+            twoFAText.setText(String.format("2FA %s code", method));
+        }
+
+        mTwoFactorAttemptsRemaining = 3;
+        mSummary = UI.popup(gaActivity, R.string.newTxTitle, R.string.send, R.string.cancel)
+                .customView(v, true)
+                .autoDismiss(false)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                        UI.dismiss(null, SendFragment.this.mSummary);
+                    }
+                })
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                        final String code = UI.getText(newTx2FACodeText);
+                        sendTransaction(code, twoFacData, method, signedRawTx, privateData);
+                    }
+                }).build();
+        UI.mapEnterToPositive(mSummary, R.id.newTx2FACodeText);
+        mSummary.show();
+    }
+
+    /**
+     * Send transaction to GA server. On BIP70, manage the payment data
+     * @param code new TX 2FA code
+     * @param twoFacData 2FA data
+     * @param twoFacMethod 2FA method
+     * @param signedRawTx the client side signed transaction
+     * @param privateData private data to send to GA server
+     */
+    private void sendTransaction(final String code, final Map<String, Object> twoFacData,
+                                 final String twoFacMethod, final Transaction signedRawTx,
+                                 final JSONMap privateData) {
+
+        final GaActivity gaActivity = getGaActivity();
+        final GaService service = getGAService();
+
+        if (twoFacData != null && !twoFacMethod.equals("limit")) {
+            if (code.length() < 6) {
+                UI.toast(gaActivity, R.string.malformed_code, mSendButton);
+                return;
+            }
+            twoFacData.put("code", code);
+        }
+
+        if (mPayreqData != null) {
+            final PaymentSession session;
+            try {
+                session = new PaymentSession(mPayreqData, true);
+                if (session.isExpired()) {
+                    UI.toast(gaActivity, R.string.bip70_session_expired, mSendButton);
+                    Log.d(TAG, "BIP70 payment failure: " + R.string.bip70_session_expired);
+                    return;
+                }
+            } catch (final PaymentProtocolException e) {
+                UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
+                Log.d(TAG, "BIP70 payment failure");
+                return;
+            }
+        }
+
+        // FIXME: The server should allow returning the final signed tx from send_raw_tx
+        final ListenableFuture<String> sendFn = service.sendRawTransaction(signedRawTx, twoFacData, privateData);
+
+        // Send tx to GA server to broadcast to bitcoin network
+        Futures.addCallback(sendFn, new CB.Toast<String>(gaActivity, mSendButton) {
+            @Override
+            public void onSuccess(final String txHash) {
+                if (mPayreqData != null) {
+                    final PaymentSession session;
+                    try {
+                        session = new PaymentSession(mPayreqData, true);
+                    } catch (final PaymentProtocolException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "BIP70 payment failure");
+                        return;
+                    }
+
+                    // Get signed tx from GA
+                    final ListenableFuture<Transaction> getRawOutput;
+                    getRawOutput = service.getRawOutput(Sha256Hash.wrap(txHash));
+                    Futures.addCallback(getRawOutput, new CB.Toast<Transaction>(gaActivity, mSendButton) {
+                        @Override
+                        public void onSuccess(final Transaction tx) {
+
+                            // Generate new address to refund
+                            Futures.addCallback(service.getNewAddress(service.getCurrentSubAccount(), null),
+                                new CB.Toast<String>(gaActivity, mSendButton) {
+                                @Override
+                                public void onSuccess(final String result) {
+                                    try {
+                                        final Address address = Address.fromBase58(Network.NETWORK, result);
+                                        final ListenableFuture<PaymentProtocol.Ack> sendAckFn =
+                                                service.sendPayment(session, ImmutableList.of(tx), address, null);
+
+                                        if (sendAckFn == null) {
+                                            Log.d(TAG, "BIP70 payment failure");
+                                            UI.toast(gaActivity, R.string.bip70_invalid_payment, mSendButton);
+                                            return;
+                                        }
+
+                                        // send payment to BIP70 server
+                                        Futures.addCallback(sendAckFn, new CB.Toast<PaymentProtocol.Ack>(gaActivity, mSendButton) {
+                                            @Override
+                                            public void onSuccess(final PaymentProtocol.Ack ack) {
+                                                if (ack == null) {
+                                                    Log.d(TAG, "BIP70 payment failure");
+                                                    UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
+                                                    return;
+                                                }
+                                                Log.d(TAG, "BIP70 payment OK: " + ack.getMemo());
+                                                UI.toast(gaActivity, ack.getMemo(), mSendButton);
+                                            }
+
+                                            @Override
+                                            public void onFailure(final Throwable t) {
+                                                super.onFailure(t);
+                                                Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
+                                            }
+                                        }, service.getExecutor());
+                                    } catch (final PaymentProtocolException | IOException e) {
+                                        e.printStackTrace();
+                                        Log.d(TAG, "BIP70 payment failure: " + e.getMessage());
+                                        UI.toast(gaActivity, e.getMessage(), mSendButton);
+                                    }
+                                }
+
+                            }, service.getExecutor());
+                        }
+
+                        @Override
+                        public void onFailure(final Throwable t) {
+                            super.onFailure(t);
+                            Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
+                        }
+                    }, service.getExecutor());
+                }
+                UI.dismiss(gaActivity, SendFragment.this.mSummary);
+                onTransactionSent();
+            }
+
+            @Override
+            public void onFailure(final Throwable t) {
+                final SendFragment fragment = SendFragment.this;
+                final Activity activity = fragment.getActivity();
+                if (t instanceof GAException) {
+                    final GAException e = (GAException) t;
+                    if (e.mUri.equals(GAException.AUTH)) {
+                        final int n = --fragment.mTwoFactorAttemptsRemaining;
+                        if (n > 0) {
+                            final Resources r = fragment.getResources();
+                            final String msg = r.getQuantityString(R.plurals.attempts_remaining, n, n);
+                            UI.toast(activity, e.mMessage + "\n(" + msg + ')', mSendButton);
+                            return; // Allow re-trying
+                        }
+                    }
+                }
+                UI.toast(activity, t, mSendButton);
+                // Out of 2FA attempts, or another exception; give up
+                UI.dismiss(activity, fragment.mSummary);
+            }
+        }, service.getExecutor());
+    }
+
+    private void onTransactionSent() {
+        final GaActivity gaActivity = getGaActivity();
+
+        if (gaActivity == null)
+            return; // App was paused/deleted while callback ran
+
+        gaActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                UI.toast(gaActivity, R.string.transactionSubmitted, Toast.LENGTH_LONG);
+
+                if (mIsExchanger)
+                    mExchanger.sellBtc(Double.valueOf(UI.getText(mAmountFiatEdit)));
+
+                if (mFromIntentURI) {
+                    gaActivity.finish();
+                    return;
+                }
+
+                UI.clear(mAmountEdit, mRecipientEdit);
+                UI.enable(mAmountEdit, mRecipientEdit);
+                if (!GaService.IS_ELEMENTS) {
+                    mMaxButton.setChecked(false);
+                    UI.show(mMaxButton, mMaxLabel);
+                }
+
+                mNoteIcon.setText(R.string.fa_pencil);
+                UI.clear(mNoteText);
+                UI.hide(mNoteText);
+
+                if (!mIsExchanger) {
+                    final ViewPager viewPager = UI.find(gaActivity, R.id.container);
+                    viewPager.setCurrentItem(1);
+                } else {
+                    gaActivity.toast(R.string.transactionSubmitted);
+                    gaActivity.finish();
+                }
+            }
+        });
     }
 }
