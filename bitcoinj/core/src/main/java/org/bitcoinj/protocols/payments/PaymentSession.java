@@ -19,6 +19,8 @@ package org.bitcoinj.protocols.payments;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.params.RegTestParams;
+import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.protocols.payments.PaymentProtocol.PkiVerificationData;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.utils.Threading;
@@ -344,9 +346,13 @@ public class PaymentSession {
     public Protos.Payment getPayment(List<Transaction> txns, @Nullable Address refundAddr, @Nullable String memo)
             throws IOException, PaymentProtocolException.InvalidNetwork {
         if (paymentDetails.hasPaymentUrl()) {
-            for (Transaction tx : txns)
-                if (!tx.getParams().equals(params))
+            for (Transaction tx : txns) {
+                // BIP70 doesn't allow for regtest in its network type. If we mismatch,
+                // treat regtest transactions for a testnet payment request as a match.
+                if (!tx.getParams().equals(params) &&
+                    (!tx.getParams().equals(RegTestParams.get()) || !params.equals(TestNet3Params.get())))
                     throw new PaymentProtocolException.InvalidNetwork(params.getPaymentProtocolId());
+            }
             return PaymentProtocol.createPaymentMessage(txns, totalValue, refundAddr, memo, getMerchantData());
         } else {
             return null;
