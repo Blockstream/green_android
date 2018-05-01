@@ -1267,15 +1267,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.processBip70URL(url);
     }
 
-    public ListenableFuture<PaymentSession>
-    fetchPaymentRequest(final String url) {
-        return Futures.transform(mClient.fetchPaymentRequest(url),
-                new Function<PaymentSession, PaymentSession>() {
-                    @Override
-                    public PaymentSession apply(final PaymentSession ret) {
-                        return ret;
-                    }
-                }, mExecutor);
+    public ListenableFuture<PaymentSession> fetchPaymentRequest(final String url) {
+        return mClient.fetchPaymentRequest(url);
     }
 
     public ListenableFuture<PaymentProtocol.Ack>

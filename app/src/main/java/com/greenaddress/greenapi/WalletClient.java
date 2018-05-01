@@ -880,6 +880,7 @@ public class WalletClient {
         mHttpClientBIP70.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(final Request request, final IOException e) {
+                Log.d(TAG,"fetchPaymentRequest.onFailure: " +  e.toString());
                 rpc.set(null);
             }
 
@@ -888,7 +889,8 @@ public class WalletClient {
                 try {
                     final Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(response.body().bytes());
                     rpc.set(new PaymentSession(paymentRequest, true));
-                } catch (PaymentProtocolException | InvalidProtocolBufferException e) {
+                } catch (final PaymentProtocolException | InvalidProtocolBufferException e) {
+                    Log.d(TAG, "fetchPaymentRequest.onResponse: " + e.toString());
                     rpc.set(null);
                 }
             }

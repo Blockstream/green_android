@@ -439,6 +439,7 @@ public class SendFragment extends SubaccountFragment {
         UI.show(mBip70Progress);
         UI.disable(mRecipientEdit, mSendButton);
         UI.hide(mNoteIcon);
+        Log.d(TAG, "BIP70 url: " + requestUrl);
 
         Futures.addCallback(service.fetchPaymentRequest(requestUrl),
                 new CB.Toast<PaymentSession>(gaActivity) {
@@ -472,6 +473,7 @@ public class SendFragment extends SubaccountFragment {
             msgId = R.string.bip70_session_expired;
 
         if (msgId != 0) {
+            Log.e(TAG, "BIP70 session invalid: " + (session == null ? "null" : "expired"));
             UI.toast(gaActivity, msgId, Toast.LENGTH_LONG);
             gaActivity.runOnUiThread(new Runnable() {
                 public void run() {
