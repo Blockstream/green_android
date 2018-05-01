@@ -29,6 +29,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.protobuf.GeneratedMessage;
 import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.ElementsRegTestParams;
@@ -1261,6 +1262,10 @@ public class GaService extends Service implements INotificationHandler {
 
     public ListenableFuture<Map<?, ?>> prepareSweepSocial(final byte[] pubKey, final boolean useElectrum) {
         return mClient.prepareSweepSocial(pubKey, useElectrum);
+    }
+
+    public static byte[] serializeProtobuf(final GeneratedMessage msg) {
+        return WalletClient.serializeProtobuf(msg);
     }
 
     public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {

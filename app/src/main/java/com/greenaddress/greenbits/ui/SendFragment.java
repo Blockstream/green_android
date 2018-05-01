@@ -91,7 +91,8 @@ public class SendFragment extends SubaccountFragment {
     private ProgressBar mBip70Progress;
 
     private Protos.PaymentRequest mPayreqData;
-    private Protos.PaymentDetails mPaymentDetails;
+    private Protos.PaymentDetails mPayreqDetails;
+    private String mPayreqRecipient;
     private boolean mFromIntentURI;
     private final boolean mSummaryInBtc[] = new boolean[1]; // State for fiat/btc toggle
 
@@ -386,7 +387,8 @@ public class SendFragment extends SubaccountFragment {
         UI.show(mMaxButton, mMaxLabel, mNoteIcon);
         UI.hide(mBip70Progress, mFeeTargetEdit);
         mPayreqData = null;
-        mPaymentDetails = null;
+        mPayreqDetails = null;
+        mPayreqRecipient = null;
     }
 
     private Coin getSendAmount() {
@@ -510,25 +512,26 @@ public class SendFragment extends SubaccountFragment {
         }
 
         mPayreqData = session.getPaymentRequest();
-        mPaymentDetails = null;
+        mPayreqDetails = null;
         try {
-            mPaymentDetails = Protos.PaymentDetails.parseFrom(mPayreqData.getSerializedPaymentDetails());
+            mPayreqDetails = Protos.PaymentDetails.parseFrom(mPayreqData.getSerializedPaymentDetails());
         } catch (final InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
 
         final String recipient;
-        if (mPaymentDetails == null)
+        if (mPayreqDetails == null)
             recipient = Uri.parse(requestUrl).getHost();
         else {
             if (pkiData != null)
                 recipient = pkiData.displayName;
             else
-                recipient = Uri.parse(mPaymentDetails.getPaymentUrl()).getHost();
+                recipient = Uri.parse(mPayreqDetails.getPaymentUrl()).getHost();
+            mPayreqRecipient = recipient;
         }
 
         long total = 0;
-        for (final Protos.Output output : mPaymentDetails.getOutputsList())
+        for (final Protos.Output output : mPayreqDetails.getOutputsList())
             total += output.getAmount();
         final long totalAmount = total;
 
@@ -592,17 +595,17 @@ public class SendFragment extends SubaccountFragment {
         final String recipient;
 
         if (mPayreqData != null) {
-            final List<Protos.Output> outputs = mPaymentDetails.getOutputsList();
+            final List<Protos.Output> outputs = mPayreqDetails.getOutputsList();
             if (outputs.size() != 1) {
                 // gaActivity.toast("Only payment requests with 1 output are supported", mSendButton);
                 // TODO manage outputs > 1
                 Log.e(TAG, "Only bip70 payment requests with 1 output are supported");
                 return;
             }
-            final Protos.Output output = mPaymentDetails.getOutputs(0);
+            final Protos.Output output = mPayreqDetails.getOutputs(0);
             amount = Coin.valueOf(output.getAmount());
             recipient =  new Script(output.getScript().toByteArray()).getToAddress(Network.NETWORK).toString();
-            final String bip70memo = mPaymentDetails.getMemo();
+            final String bip70memo = mPayreqDetails.getMemo();
             if (!bip70memo.isEmpty())
                 privateData.mData.put("memo", bip70memo);
         } else {
@@ -1139,6 +1142,12 @@ public class SendFragment extends SubaccountFragment {
                 Log.d(TAG, "BIP70 payment failure");
                 return;
             }
+            // Store the payment request details in private data so the server
+            // can process it appropriately
+            privateData.mData.put("payreq", service.serializeProtobuf(mPayreqData));
+            privateData.mData.put("social_destination", mPayreqRecipient);
+            privateData.mData.put("social_destination_type", 110); // 110 = PAYMENTREQUEST
+
         }
 
         // FIXME: The server should allow returning the final signed tx from send_raw_tx

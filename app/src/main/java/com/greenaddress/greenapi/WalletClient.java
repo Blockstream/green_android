@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.GeneratedMessage;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.spv.Socks5SocketFactory;
 import com.greenaddress.greenbits.ui.BuildConfig;
@@ -898,6 +899,19 @@ public class WalletClient {
         return rpc;
     }
 
+    public static byte[] serializeProtobuf(final GeneratedMessage msg) {
+        final byte[] byteArray = new byte[msg.getSerializedSize()];
+        final CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(byteArray);
+        try {
+            msg.writeTo(codedOutputStream);
+        } catch (final IOException e) {
+            Log.e(TAG, "failed to serialize message: " + e.toString());
+            e.printStackTrace();
+            return null;
+        }
+        return byteArray;
+    }
+
     public ListenableFuture<PaymentProtocol.Ack> sendPayment(final PaymentSession paymentSession,
                                                              final List<Transaction> txns,
                                                              final Address refundAddr,
@@ -917,19 +931,16 @@ public class WalletClient {
             throw new PaymentProtocolException.InvalidPaymentURL(e);
         }
 
+        final byte[] paymentBytes;
         final SettableFuture<PaymentProtocol.Ack> rpc = SettableFuture.create();
-        final byte[] byteArray = new byte[payment.getSerializedSize()];
-        final CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(byteArray);
-        try {
-            payment.writeTo(codedOutputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if ((paymentBytes = serializeProtobuf(payment)) == null) {
             rpc.set(null);
             return rpc;
         }
 
         final MediaType mediaType = MediaType.parse(PaymentProtocol.MIMETYPE_PAYMENT);
-        final RequestBody body = RequestBody.create(mediaType, byteArray);
+        final RequestBody body = RequestBody.create(mediaType, paymentBytes);
 
         final Request request = new Request.Builder()
                 .url(url)
