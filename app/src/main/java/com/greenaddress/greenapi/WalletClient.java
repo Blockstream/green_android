@@ -934,7 +934,7 @@ public class WalletClient {
         final Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Content-Type", PaymentProtocol.MIMETYPE_PAYMENT)
-                .addHeader("Accept", PaymentProtocol.MIMETYPE_PAYMENTREQUEST)
+                .addHeader("Accept", PaymentProtocol.MIMETYPE_PAYMENTACK)
                 .addHeader("Content-Length", Integer.toString(payment.getSerializedSize()))
                 .post(body)
                 .build();
