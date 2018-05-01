@@ -1268,10 +1268,6 @@ public class GaService extends Service implements INotificationHandler {
         return WalletClient.serializeProtobuf(msg);
     }
 
-    public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
-        return mClient.processBip70URL(url);
-    }
-
     public ListenableFuture<PaymentSession> fetchPaymentRequest(final String url) {
         return mClient.fetchPaymentRequest(url);
     }

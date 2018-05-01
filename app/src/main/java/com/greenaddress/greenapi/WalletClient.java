@@ -700,10 +700,6 @@ public class WalletClient {
         return PinData.fromMnemonic(pinIdentifier, mnemonic, password);
     }
 
-    public ListenableFuture<Map<?, ?>> processBip70URL(final String url) {
-        return simpleCall("vault.process_bip0070_url", Map.class, url);
-    }
-
     public ListenableFuture<Map<?, ?>> prepareSweepSocial(final byte[] pubKey, final boolean useElectrum) {
         final Integer[] pubKeyObjs = new Integer[pubKey.length];
         for (int i = 0; i < pubKey.length; ++i)
