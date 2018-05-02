@@ -716,10 +716,12 @@ public class WalletClient {
         return simpleCall("vault.send_tx", null, sigs, twoFacData);
     }
 
-    public ListenableFuture<Map<String, Object>> sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData, final JSONMap privateData) {
+    public ListenableFuture<Map<String, Object>>
+    sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData,
+                       final JSONMap privateData, final boolean returnTx) {
         final String txHex = h(tx.bitcoinSerialize());
         return simpleCall("vault.send_raw_tx", Map.class, txHex, twoFacData,
-                          privateData == null ? null : privateData.mData);
+                          privateData == null ? null : privateData.mData, returnTx);
     }
 
     public ListenableFuture<List<byte[]>> signTransaction(final ISigningWallet signingWallet, final PreparedTransaction ptx) {
@@ -923,7 +925,7 @@ public class WalletClient {
         URL url;
         try {
             url = new URL(paymentSession.getPaymentUrl());
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             throw new PaymentProtocolException.InvalidPaymentURL(e);
         }
 
@@ -957,7 +959,7 @@ public class WalletClient {
                 try {
                     Protos.PaymentACK paymentAck = Protos.PaymentACK.parseFrom(response.body().bytes());
                     rpc.set(PaymentProtocol.parsePaymentAck(paymentAck));
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     rpc.set(null);
                 }
             }

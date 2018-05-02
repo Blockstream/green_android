@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 import android.util.SparseArray;
 
 import com.blockstream.libwally.Wally;
@@ -829,17 +830,18 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    public ListenableFuture<String>
+    public ListenableFuture<Pair<String, String>>
     sendRawTransaction(final Transaction tx, final Map<String, Object> twoFacData,
-                       final JSONMap privateData) {
-        return Futures.transform(mClient.sendRawTransaction(tx, twoFacData, privateData),
-                                 new Function<Map<String, Object>, String>() {
+                       final JSONMap privateData, final boolean returnTx) {
+        return Futures.transform(mClient.sendRawTransaction(tx, twoFacData, privateData, returnTx),
+                                 new Function<Map<String, Object>, Pair<String, String>>() {
                    @Override
-                   public String apply(final Map<String, Object> ret) {
+                   public Pair<String, String> apply(final Map<String, Object> ret) {
                        // FIXME: Server should return the full limits including is_fiat
                        if (ret.get("new_limit") != null)
                            mLimitsData.mData.put("total", ret.get("new_limit"));
-                       return ret.get("txhash").toString();
+                       return new Pair<>(ret.get("txhash").toString(),
+                                         ret.get("tx_hex").toString());
                    }
         }, mExecutor);
     }
