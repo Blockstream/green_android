@@ -1198,8 +1198,12 @@ public class SendFragment extends SubaccountFragment {
                                             UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
                                             return;
                                         }
-                                        Log.d(TAG, "BIP70 payment OK: " + ack.getMemo());
-                                        UI.toast(gaActivity, ack.getMemo(), mSendButton);
+                                        if (!TextUtils.isEmpty(ack.getMemo())) {
+                                            Log.d(TAG, "BIP70 payment OK: " + ack.getMemo());
+                                            // Set the tx memo to the ack memo
+                                            CB.after(service.changeMemo(txAndHash.first, ack.getMemo(), "payreq"),
+                                                new CB.Toast<Boolean>(gaActivity, mSendButton));
+                                        }
                                     }
 
                                     @Override

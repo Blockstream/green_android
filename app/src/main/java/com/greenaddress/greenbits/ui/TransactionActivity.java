@@ -368,7 +368,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
             return;
         }
 
-        CB.after(mService.changeMemo(mTxItem.txHash.toString(), newMemo),
+        CB.after(mService.changeMemo(mTxItem.txHash.toString(), newMemo, null),
                 new CB.Toast<Boolean>(this) {
                     @Override
                     public void onSuccess(final Boolean result) {

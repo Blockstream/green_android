@@ -909,8 +909,8 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getRawOutputHex(txHash);
     }
 
-    public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
-        return mClient.changeMemo(txHashHex, memo);
+    public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo, final String memoType) {
+        return mClient.changeMemo(txHashHex, memo, memoType);
     }
 
     // FIXME: Put this and other script stuff in wally
