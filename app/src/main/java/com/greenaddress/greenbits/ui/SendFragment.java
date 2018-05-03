@@ -1146,9 +1146,6 @@ public class SendFragment extends SubaccountFragment {
             // can process it appropriately
             final String payReqHex = Wally.hex_from_bytes(service.serializeProtobuf(mPayreqData));
             privateData.mData.put("payreq", payReqHex);
-            privateData.mData.put("social_destination", mPayreqRecipient);
-            privateData.mData.put("social_destination_type", 110); // 110 = PAYMENTREQUEST
-
         }
 
         final boolean returnTx = mPayreqData != null; // Return tx hex for BIP70
