@@ -578,12 +578,13 @@ public class SendFragment extends SubaccountFragment {
         final GaActivity gaActivity = getGaActivity();
 
         final JSONMap privateData = new JSONMap();
-        final String memo = UI.getText(mNoteText);
-        if (!TextUtils.isEmpty(memo))
-            privateData.mData.put("memo", memo);
-
         if (mIsExchanger)
             privateData.mData.put("memo", Exchanger.TAG_EXCHANGER_TX_MEMO);
+        else {
+            final String memo = UI.getText(mNoteText);
+            if (!TextUtils.isEmpty(memo))
+                privateData.mData.put("memo", memo);
+        }
 
         if (mSubaccount != 0)
             privateData.mData.put("subaccount", mSubaccount);
