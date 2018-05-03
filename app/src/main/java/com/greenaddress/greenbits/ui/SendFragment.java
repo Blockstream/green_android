@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.Pair;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -197,7 +198,7 @@ public class SendFragment extends SubaccountFragment {
                 }
 
                 final String recipient = UI.getText(mRecipientEdit);
-                if (recipient.isEmpty()) {
+                if (TextUtils.isEmpty(recipient)) {
                     gaActivity.toast(R.string.err_send_need_recipient);
                     return;
                 }
@@ -544,7 +545,7 @@ public class SendFragment extends SubaccountFragment {
                 if (totalAmount > 0)
                     amount = UI.setCoinText(service, null, null, Coin.valueOf(totalAmount));
 
-                if (!amount.toString().isEmpty()) {
+                if (!TextUtils.isEmpty(amount.toString())) {
                     mAmountEdit.setText(amount);
                     mAmountFields.convertBtcToFiat();
                     UI.disable(mAmountEdit, mAmountFiatEdit);
@@ -578,7 +579,7 @@ public class SendFragment extends SubaccountFragment {
 
         final JSONMap privateData = new JSONMap();
         final String memo = UI.getText(mNoteText);
-        if (!memo.isEmpty())
+        if (!TextUtils.isEmpty(memo))
             privateData.mData.put("memo", memo);
 
         if (mIsExchanger)
@@ -606,7 +607,7 @@ public class SendFragment extends SubaccountFragment {
             amount = Coin.valueOf(output.getAmount());
             recipient =  new Script(output.getScript().toByteArray()).getToAddress(Network.NETWORK).toString();
             final String bip70memo = mPayreqDetails.getMemo();
-            if (!bip70memo.isEmpty())
+            if (!TextUtils.isEmpty(bip70memo))
                 privateData.mData.put("memo", bip70memo);
         } else {
             recipient = editRecipient;
@@ -658,7 +659,7 @@ public class SendFragment extends SubaccountFragment {
             }
 
             if (feeTarget.equals(UI.FEE_TARGET.CUSTOM) &&
-                (userRate.isEmpty() || !service.isValidFeeRate(userRate))) {
+                (TextUtils.isEmpty(userRate) || !service.isValidFeeRate(userRate))) {
                 // Change invalid feerates to the minimum
                 feeRate = service.getMinFeeRate();
                 gaActivity.toast(getString(R.string.feerate_changed, feeRate.longValue()));
