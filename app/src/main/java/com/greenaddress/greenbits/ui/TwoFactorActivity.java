@@ -19,7 +19,6 @@ import com.greenaddress.greenbits.QrBitmap;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

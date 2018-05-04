@@ -620,12 +620,12 @@ public class GaService extends Service implements INotificationHandler {
     // Get the fee rate to confirm at the next blockNum blocks in BTC/1000 bytes
     public Double getFeeRate(final int blockNum) {
         final JSONMap m = new JSONMap((Map) getFeeEstimates().get(Integer.toString(blockNum)));
-        return m == null ? null : m.getDouble("feerate");
+        return m.getDouble("feerate");
     }
 
     public Integer getFeeBlocks(final int blockNum) {
         final JSONMap m = new JSONMap((Map) getFeeEstimates().get(Integer.toString(blockNum)));
-        return m == null ? null : m.getInt("blocks");
+        return m.getInt("blocks");
     }
 
     public Coin getMinFeeRate() {
@@ -770,45 +770,12 @@ public class GaService extends Service implements INotificationHandler {
         return login(new SWWallet(master), pinData.mMnemonic);
     }
 
-    private void preparePrivData(final JSONMap privateData) {
-        final int subAccount = privateData.get("subaccount", 0);
-        // Skip fetching raw previous outputs if they are not required
-        final Coin verifiedBalance = getSPVVerifiedBalance(subAccount);
-        final boolean fetchPrev = !isSPVEnabled() ||
-                !verifiedBalance.equals(getCoinBalance(subAccount)) ||
-                mClient.getSigningWallet().requiresPrevoutRawTxs();
-
-        final boolean isRegTest = Network.NETWORK == RegTestParams.get();
-        final String fetchMode = isRegTest ? "" : "http"; // Fetch inline for regtest
-        privateData.mData.put("prevouts_mode", fetchPrev ? fetchMode : "skip");
-
-        final Object rbf_optin = getUserConfig("replace_by_fee");
-        if (rbf_optin != null)
-            privateData.mData.put("rbf_optin", rbf_optin);
-    }
-
     public ListenableFuture<List<byte[]>> signTransaction(final PreparedTransaction ptx) {
         return mClient.signTransaction(mClient.getSigningWallet(), ptx);
     }
 
     public List<byte[]> signTransaction(final Transaction tx, final PreparedTransaction ptx, final List<Output> prevOuts) {
         return mClient.getSigningWallet().signTransaction(tx, ptx, prevOuts);
-    }
-
-    public ListenableFuture<Coin>
-    validateTx(final PreparedTransaction ptx, final String recipientStr, final Coin amount) {
-        return mSPV.validateTx(ptx, recipientStr, amount);
-    }
-
-    public ListenableFuture<String>
-    signAndSendTransaction(final PreparedTransaction ptx, final Object twoFacData) {
-        return Futures.transform(signTransaction(ptx),
-                                 new AsyncFunction<List<byte[]>, String>() {
-            @Override
-            public ListenableFuture<String> apply(final List<byte[]> sigs) throws Exception {
-                return sendTransaction(sigs, twoFacData);
-            }
-        }, mExecutor);
     }
 
     public ListenableFuture<String>
@@ -901,10 +868,6 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getRawUnspentOutput(txHash);
     }
 
-    public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
-        return mClient.getRawOutput(txHash);
-    }
-
     public String getRawOutputHex(final Sha256Hash txHash) throws Exception {
         return mClient.getRawOutputHex(txHash);
     }
@@ -977,7 +940,7 @@ public class GaService extends Service implements INotificationHandler {
     private ListenableFuture<JSONMap> getNewAddressAsync(final int subAccount, final boolean cacheResult) {
         return mExecutor.submit(new Callable<JSONMap>() {
             @Override
-            public JSONMap call() throws Exception {
+            public JSONMap call() {
                 final JSONMap address = getNewAddress(subAccount);
                 if (cacheResult)
                     cacheAddress(subAccount, address);
@@ -1034,7 +997,7 @@ public class GaService extends Service implements INotificationHandler {
         // Convert the address into a bitmap and return it
         final AsyncFunction<JSONMap, String> verifyAddress = new AsyncFunction<JSONMap, String>() {
             @Override
-            public ListenableFuture<String> apply(final JSONMap input) throws Exception {
+            public ListenableFuture<String> apply(final JSONMap input) {
                 if (input == null)
                     throw new IllegalArgumentException("Failed to generate a new address");
 
@@ -1076,7 +1039,7 @@ public class GaService extends Service implements INotificationHandler {
                 });
             }
         };
-        return Futures.transform(addrFn, verifyAddress, mExecutor);
+        return Futures.transformAsync(addrFn, verifyAddress, mExecutor);
     }
 
     public byte[] getBlindingPubKey(final int subAccount, final int pointer) {
@@ -1531,8 +1494,12 @@ public class GaService extends Service implements INotificationHandler {
         final Context ctx = getApplicationContext();
         final ConnectivityManager cm;
         cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni != null && ni.isConnectedOrConnecting() ? ni : null;
+        try {
+            final NetworkInfo ni = cm.getActiveNetworkInfo();
+            return ni != null && ni.isConnectedOrConnecting() ? ni : null;
+        } catch (final Exception e) {
+            return null;
+        }
     }
 
     public static Transaction buildTransaction(final String hex) {

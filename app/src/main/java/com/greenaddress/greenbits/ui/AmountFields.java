@@ -5,7 +5,6 @@ import android.text.Html;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.greenaddress.greenbits.GaService;
 

@@ -97,7 +97,7 @@ public class PinActivity extends LoginActivity implements Observer, View.OnClick
         };
 
         final ListenableFuture<LoginData> loginFuture;
-        loginFuture = Futures.transform(mService.onConnected, connectToLogin, mService.getExecutor());
+        loginFuture = Futures.transformAsync(mService.onConnected, connectToLogin, mService.getExecutor());
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override

@@ -227,7 +227,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
                     return mService.login(mnemonic);
 
                 // Encrypted mnemonic
-                return Futures.transform(askForPassphrase(), new AsyncFunction<String, LoginData>() {
+                return Futures.transformAsync(askForPassphrase(), new AsyncFunction<String, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final String passphrase) {
                         return mService.login(CryptoHelper.decrypt_mnemonic(mnemonic, passphrase));
@@ -237,7 +237,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         };
 
         final ListenableFuture<LoginData> loginFuture;
-        loginFuture = Futures.transform(mService.onConnected, connectToLogin, mService.getExecutor());
+        loginFuture = Futures.transformAsync(mService.onConnected, connectToLogin, mService.getExecutor());
 
         Futures.addCallback(loginFuture, new FutureCallback<LoginData>() {
             @Override

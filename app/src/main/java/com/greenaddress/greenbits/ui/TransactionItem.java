@@ -75,7 +75,7 @@ public class TransactionItem implements Serializable {
         String tmpCounterparty = null;
         long tmpAmount = 0;
         boolean tmpIsSpent = true;
-        String tmpReceivedOn = null;
+        String tmpReceivedOn = "";
         JSONMap tmpReceivedOnEp = null;
         boolean hasConfidentialRecipients = false;
 
@@ -131,10 +131,11 @@ public class TransactionItem implements Serializable {
                 if (!ep.getBool("is_spent"))
                     tmpIsSpent = false;
             }
-            if (tmpReceivedOn != null)
-                tmpReceivedOn += ", " + ep.get("ad");
+            final String ad = ep.getString("ad");
+            if (!tmpReceivedOn.isEmpty())
+                tmpReceivedOn.concat(", ").concat(ad);
             else {
-                tmpReceivedOn = ep.get("ad");
+                tmpReceivedOn = ad;
                 if (ep.getBool("confidential"))
                     tmpReceivedOnEp = ep; // Needed for regenerating the confidential address
             }
@@ -149,7 +150,7 @@ public class TransactionItem implements Serializable {
                         tmpCounterparty = socialSource;
                 }
         } else {
-            tmpReceivedOn = null; // don't show change addresses
+            tmpReceivedOn = ""; // don't show change addresses
             if (recipients.isEmpty() && !hasConfidentialRecipients)
                 type = TransactionItem.TYPE.REDEPOSIT;
             else {

@@ -30,7 +30,6 @@ public abstract class GaActivity extends AppCompatActivity {
 
     private static final String TAG = GaActivity.class.getSimpleName();
     protected static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
-    protected static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
 
     // Both of these variables are only assigned in the UI thread.
     // mService is available to all derived classes as soon as
@@ -97,7 +96,7 @@ public abstract class GaActivity extends AppCompatActivity {
         }
     }
 
-    private final String getLogMessage(final String caller) {
+    private String getLogMessage(final String caller) {
         return caller + " -> " + getClass().getSimpleName() +
             (mService == null ? " (no attached service)" : "");
     }

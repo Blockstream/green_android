@@ -30,7 +30,6 @@ import com.squareup.okhttp.Response;
 
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
@@ -836,11 +835,6 @@ public class WalletClient {
         return transactionCall("txs.get_raw_unspent_output", txHash.toString());
     }
 
-    // FIXME: Share this with getRawOutputHex/ un-async it
-    public ListenableFuture<Transaction> getRawOutput(final Sha256Hash txHash) {
-        return transactionCall("txs.get_raw_output", txHash.toString());
-    }
-
     public String getRawOutputHex(final Sha256Hash txHash) throws Exception {
         return syncCall("txs.get_raw_output", String.class, txHash.toString());
     }
@@ -955,7 +949,7 @@ public class WalletClient {
             }
 
             @Override
-            public void onResponse(final Response response) throws IOException {
+            public void onResponse(final Response response) {
                 try {
                     Protos.PaymentACK paymentAck = Protos.PaymentACK.parseFrom(response.body().bytes());
                     rpc.set(PaymentProtocol.parsePaymentAck(paymentAck));

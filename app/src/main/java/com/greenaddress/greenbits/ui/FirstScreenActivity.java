@@ -13,7 +13,6 @@ import com.btchip.BTChipDongle;
 import com.btchip.BTChipDongle.BTChipPublicKey;
 import com.btchip.comm.BTChipTransportFactory;
 import com.btchip.comm.BTChipTransportFactoryCallback;
-import com.btchip.utils.Dump;
 import com.btchip.utils.KeyUtils;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AsyncFunction;
@@ -211,7 +210,7 @@ public class FirstScreenActivity extends LoginActivity {
                 // And finally login
                 final BTChipPublicKey masterPublicKeyFixed = masterPublicKey;
 
-                Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
+                Futures.addCallback(Futures.transformAsync(mService.onConnected, new AsyncFunction<Void, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         if (!setup) {

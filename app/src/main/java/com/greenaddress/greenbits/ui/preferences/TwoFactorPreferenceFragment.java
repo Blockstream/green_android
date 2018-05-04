@@ -5,9 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -27,8 +25,6 @@ import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
-
-import org.bitcoinj.core.Coin;
 
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
@@ -359,7 +355,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
         } catch (final Exception e) {
             e.printStackTrace();
             UI.toast(getActivity(), "Failed", Toast.LENGTH_SHORT);
-            return;
         }
     }
 }

@@ -344,8 +344,7 @@ public class MainFragment extends SubaccountFragment {
                                 iterator.remove();
                             }
                             if (replacedTxs.containsKey(txItem.txHash))
-                                for (final Sha256Hash replaced : replacedTxs.get(txItem.txHash))
-                                    txItem.replacedHashes.add(replaced);
+                                txItem.replacedHashes.addAll(replacedTxs.get(txItem.txHash));
                         }
 
                         txView.getAdapter().notifyDataSetChanged();

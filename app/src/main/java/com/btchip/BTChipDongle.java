@@ -27,7 +27,6 @@ import com.btchip.utils.Dump;
 import com.btchip.utils.VarintUtils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.PipedInputStream;
 
 public class BTChipDongle implements BTChipConstants {
 

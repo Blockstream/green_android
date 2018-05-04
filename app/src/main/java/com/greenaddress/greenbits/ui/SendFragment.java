@@ -49,7 +49,6 @@ import com.greenaddress.greenbits.GaService;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
@@ -69,7 +68,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.schildbach.wallet.ui.ScanActivity;
-import io.netty.util.concurrent.FutureListener;
 
 public class SendFragment extends SubaccountFragment {
 
@@ -93,7 +91,6 @@ public class SendFragment extends SubaccountFragment {
 
     private Protos.PaymentRequest mPayreqData;
     private Protos.PaymentDetails mPayreqDetails;
-    private String mPayreqRecipient;
     private boolean mFromIntentURI;
     private final boolean mSummaryInBtc[] = new boolean[1]; // State for fiat/btc toggle
 
@@ -389,7 +386,6 @@ public class SendFragment extends SubaccountFragment {
         UI.hide(mBip70Progress, mFeeTargetEdit);
         mPayreqData = null;
         mPayreqDetails = null;
-        mPayreqRecipient = null;
     }
 
     private Coin getSendAmount() {
@@ -528,7 +524,6 @@ public class SendFragment extends SubaccountFragment {
                 recipient = pkiData.displayName;
             else
                 recipient = Uri.parse(mPayreqDetails.getPaymentUrl()).getHost();
-            mPayreqRecipient = recipient;
         }
 
         long total = 0;
@@ -545,7 +540,7 @@ public class SendFragment extends SubaccountFragment {
                 if (totalAmount > 0)
                     amount = UI.setCoinText(service, null, null, Coin.valueOf(totalAmount));
 
-                if (!TextUtils.isEmpty(amount.toString())) {
+                if (!TextUtils.isEmpty(amount)) {
                     mAmountEdit.setText(amount);
                     mAmountFields.convertBtcToFiat();
                     UI.disable(mAmountEdit, mAmountFiatEdit);
@@ -1036,7 +1031,7 @@ public class SendFragment extends SubaccountFragment {
                     underLimits.mData.remove("blinding_pubkeys");
                 }
                 final Map<String, Object> twoFactorData;
-                twoFactorData = underLimits == null ? null : underLimits.mData;;
+                twoFactorData = underLimits == null ? null : underLimits.mData;
                 service.requestTwoFacCode(method, ptx == null ? "send_raw_tx" : "send_tx", twoFactorData);
             }
         }
@@ -1146,7 +1141,7 @@ public class SendFragment extends SubaccountFragment {
             }
             // Store the payment request details in private data so the server
             // can process it appropriately
-            final String payReqHex = Wally.hex_from_bytes(service.serializeProtobuf(mPayreqData));
+            final String payReqHex = Wally.hex_from_bytes(GaService.serializeProtobuf(mPayreqData));
             privateData.mData.put("payreq", payReqHex);
         }
 

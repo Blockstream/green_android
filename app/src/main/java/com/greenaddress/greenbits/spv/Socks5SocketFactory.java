@@ -25,7 +25,7 @@ public class Socks5SocketFactory extends SocketFactory {
     }
 
     @Override
-    public Socket createSocket() throws IOException {
+    public Socket createSocket() {
         return new Socks5Socket();
     }
 

@@ -1,10 +1,8 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
@@ -219,9 +217,9 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         }
         final TrezorHWWallet trezor = new TrezorHWWallet(t);
 
-        Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
+        Futures.addCallback(Futures.transformAsync(mService.onConnected, new AsyncFunction<Void, LoginData>() {
             @Override
-            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+            public ListenableFuture<LoginData> apply(final Void input) {
                 return mService.login(trezor);
             }
         }), new FutureCallback<LoginData>() {
@@ -362,14 +360,14 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             mHwWallet = new BTChipHWWallet(transport);
 
         // Try to log in once we are connected
-        Futures.addCallback(Futures.transform(mService.onConnected, new AsyncFunction<Void, LoginData>() {
+        Futures.addCallback(Futures.transformAsync(mService.onConnected, new AsyncFunction<Void, LoginData>() {
             @Override
-            public ListenableFuture<LoginData> apply(final Void input) throws Exception {
+            public ListenableFuture<LoginData> apply(final Void input) {
                 if (!havePin)
                     return mService.login(mHwWallet); // Login directly
 
                 // Otherwise, log in once the users PIN is correct
-                return Futures.transform(pinCB, new AsyncFunction<Integer, LoginData>() {
+                return Futures.transformAsync(pinCB, new AsyncFunction<Integer, LoginData>() {
                     @Override
                     public ListenableFuture<LoginData> apply(final Integer remainingAttempts) {
                         if (remainingAttempts == -1)

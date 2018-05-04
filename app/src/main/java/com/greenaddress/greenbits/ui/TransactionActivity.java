@@ -20,7 +20,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.GATx;
@@ -30,9 +29,7 @@ import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.params.RegTestParams;
 
 import java.net.URI;
@@ -587,11 +584,8 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
                 randomizedChange = GATx.randomizeChangeOutput(tx);
         }
 
-        final Coin actualAmount;
-        if (!sendAll)
-            actualAmount = amount;
-        else {
-            actualAmount = total.subtract(fee);
+        if (sendAll) {
+            final Coin actualAmount = total.subtract(fee);
             if (!actualAmount.isGreaterThan(Coin.ZERO))
                 return createFailed(R.string.insufficientFundsText);
             final int amtIndex = tx.getOutputs().size() == 1 ? 0 : (randomizedChange ? 1 : 0);
@@ -659,7 +653,6 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
         UI.hide(UI.find(v, R.id.newTxRecipientLabel), UI.find(v, R.id.newTxRecipientText));
 
         final Button showFiatBtcButton = UI.find(v, R.id.newTxShowFiatBtcButton);
-        final TextView recipientText = UI.find(v, R.id.newTxRecipientText);
         final EditText newTx2FACodeText = UI.find(v, R.id.newTx2FACodeText);
         final String fiatNewFee = mService.coinToFiat(newFee);
         final String fiatOldFee = mService.coinToFiat(oldFee);
