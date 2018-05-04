@@ -333,6 +333,13 @@ public class SendFragment extends SubaccountFragment {
             if (!isZombie())
                 setIsDirty(false);
         }
+        if (!isSelected && mPayreqData != null) {
+            // When the page is changed with a payment request active, reset
+            // all data. Failing to do so can result in the user typing a
+            // new address but the payment still going to the previous payment
+            // merchant instead
+            resetAllFields();
+        }
     }
 
     public void setIsExchanger(final boolean isExchanger) {
