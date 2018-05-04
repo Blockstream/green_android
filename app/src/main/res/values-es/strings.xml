@@ -99,7 +99,6 @@
     <string name="trezor_firmware_outdated">Firmware de Hardware Wallet desactualizado. Por favor, actualice hasta al menos la versión 1.6 en https:/mytrezor.com/ desde su computadora.</string>
     <string name="btchipInvalidPIN">PIN inválido. Intentos restantes: %d. Por favor, reconecte su BTChip antes de intentar nuevamente.</string>
     <string name="btchipNotSetup">BTChip no se encuentra configurado. Por favor, configúrelo usando el cliente de escritorio para poder utilizarlo.</string>
-    <string name="instantConfirmation">Confirmación instantánea</string>
     <string name="mnemonic_passphrase">Frase clave mnemotécnica</string>
     <string name="mnemonic_passphrase_not_available">Frase clave no disponible</string>
     <string name="autologout_time">Tiempo de ingreso automático agotado</string>

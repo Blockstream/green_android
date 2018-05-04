@@ -95,7 +95,6 @@
     <string name="trezor_firmware_outdated">Ihre Hardware Wallet firmware ist veraltet. Bitte aktualisieren sie, von ihrem Computer aus, auf Version 1.6 oder neuer über https:/mytrezor.com/ .</string>
     <string name="btchipInvalidPIN">Ungültige PIN. Verbleibende Versuche: %d. Bitte Verbinden sie ihren BTChip erneut und versuchen es nochmals.</string>
     <string name="btchipNotSetup">BTChip ist nicht eingerichtet. Bitte nehmen sie alle Einstellungen am Desktop-Client vor um ihren BTChip benutzen zu können.</string>
-    <string name="instantConfirmation">Sofortige Bestätigung</string>
     <string name="mnemonic_passphrase">Mnemonischer Kennwortsatz</string>
     <string name="mnemonic_passphrase_not_available">Der Kennwortsatz ist nicht verfügbar</string>
     <string name="autologout_time">Automatische logout Zeiteinstellung</string>

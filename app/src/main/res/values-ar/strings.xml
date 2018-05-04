@@ -97,7 +97,6 @@
     <string name="trezor_firmware_outdated">نظام تشغيل Hardware Wallet قديم . الرجاء الترقية إلى 1.6 على الأقل في https:/mytrezor.com/ من جهاز الكمبيوتر الخاص بك.</string>
     <string name="btchipInvalidPIN">PIN غير صالح: %d . محاولة المتبقية: يرجى إعادة الاتصال بالBTChip الخاص بك قبل المحاولة مرة أخرى.</string>
     <string name="btchipNotSetup">لم يتم تعيين BTChip . يرجى إعداده باستخدام عميل سطح المكتب ليكون قادرا على استخدامها.</string>
-    <string name="instantConfirmation">تأكيد فوري</string>
     <string name="mnemonic_passphrase">عبارة المرور المتعلق بالذاكرة</string>
     <string name="mnemonic_passphrase_not_available">عبارة المرور غير متاحة</string>
     <string name="autologout_time">مهلة الخروج التلقائي </string>

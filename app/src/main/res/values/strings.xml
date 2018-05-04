@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name" translatable="false">GreenBits</string>
-    <string name="empty" translatable="false"></string>
+    <string name="empty" translatable="false" />
     <string name="action_settings">Settings</string>
     <string name="title_activity_mnemonic">Restore</string>
     <string name="sendToText">To</string>
@@ -154,7 +154,7 @@
     <string name="noBalanceThirdLine">Read our <a href="https://greenaddress.it/faq">FAQ</a></string>
     <string name="hw_wallet_headline">Please follow the instructions on your Hardware Wallet</string>
     <string name="hw_wallet_reconnect">Please re-connect your hardware wallet before trying again.</string>
-    <string name="hw_wallet_registering">Cerating a new GreenAddress wallet, please wait...</string>
+    <string name="hw_wallet_registering">Cerating a new GreenAddress wallet, please wait…</string>
     <string name="trezorProvidePin">Please provide your Hardware Wallet PIN. Look at the device for number positions:</string>
     <string name="trezorProvidePassphrase">Please provide your Hardware Wallet passphrase.</string>
     <string name="main_account">Main</string>
@@ -167,7 +167,6 @@
     <string name="ledger_open_bitcoin_app">Ledger Dashboard detected, please open the Bitcoin app to access.</string>
     <string name="btchipInvalidPIN">Invalid PIN. Remaining attempts: %1$d. Please re-connect your hardware wallet before trying again.</string>
     <string name="btchipNotSetup">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
-    <string name="instantConfirmation">Instant Confirmation</string>
     <string name="mnemonic_passphrase">Mnemonic passphrase</string>
     <string name="mnemonic_passphrase_not_available">Passphrase not available</string>
     <string name="autologout_time">Auto logout timeout</string>
@@ -331,7 +330,7 @@
     <string name="nfcDialogMessage">Hold your NFC tag close to the device</string>
     <string name="securePassphraseMsg">Please secure your passphrase and confirm you agree to the Terms of Service</string>
     <string name="signupInProgress">Signup in progress</string>
-    <string name="logging_in">Logging in, please wait...</string>
+    <string name="logging_in">Logging in, please wait…</string>
     <string name="notConnected">You are not connected, please wait</string>
     <string name="pinErrorLength">PIN has to be between 4 and 15 long</string>
     <string name="problemWithKey">Problem with key %1$s</string>
@@ -351,7 +350,7 @@
     <string name="exchangerPreferenceFiatInPocketDesc">in your current currency</string>
     <string name="noEnoughMoneyInPocket">No enough money in your pocket</string>
     <string name="txExchangerMemo">Exchange Calculator transaction</string>
-    <string name="waitingTransaction">Waiting for transaction...</string>
+    <string name="waitingTransaction">Waiting for transaction…</string>
     <string name="show_exchanger_menu">Show Exchange Calculator menu</string>
     <string name="buy_commission_percentage">Buy percentage commission</string>
     <string name="buy_commission_fixed">Buy fixed commission</string>

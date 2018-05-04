@@ -99,7 +99,6 @@
     <string name="trezor_firmware_outdated">Le micrologiciel du portefeuille matériel est dépassé. Veuillez au moins le mettre à jour vers la version 1.6 sur https:/mytrezor.com/ depuis votre ordinateur.</string>
     <string name="btchipInvalidPIN">Code PIN incorrect. Tentatives restantes : %d. Veuillez reconnecter votre BTChip avant de recommencer.</string>
     <string name="btchipNotSetup">Votre BTChip n\'est pas initialisé. Veuillez l\'initialiser depuis votre ordinateur pour l\'utiliser.</string>
-    <string name="instantConfirmation">Confirmation instantanée</string>
     <string name="mnemonic_passphrase">Phrase de récupération mnémonique</string>
     <string name="mnemonic_passphrase_not_available">Phrase de récupération non disponible</string>
     <string name="autologout_time">Timeout de déconnexion</string>

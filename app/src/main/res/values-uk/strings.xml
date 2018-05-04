@@ -106,7 +106,6 @@
     <string name="ledger_open_bitcoin_app">Детектовано Ledger Dashboard, будь-ласка відкрийте додаток Bitcoin для доступу.</string>
     <string name="btchipInvalidPIN">ПІН некоректний. Залишилось %1$d спроб. Будь-ласка перепідєднайте ваш BTChip перед наступною спробою.</string>
     <string name="btchipNotSetup">BTChip не встановлений. Будь-ласка встановіть його на дектоп клієнті для використання.</string>
-    <string name="instantConfirmation">Моментальне Підтвердження</string>
     <string name="mnemonic_passphrase">Відобразити мнемонічну фразу</string>
     <string name="mnemonic_passphrase_not_available">Відсутній пароль</string>
     <string name="autologout_time">Час автоматичного виходу</string>

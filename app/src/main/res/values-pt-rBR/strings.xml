@@ -97,7 +97,6 @@
     <string name="trezor_firmware_outdated">O firmware de Hardware Wallet está desatualizado. Faça o upgrade, pelo menos, para a versão 1.6 em https:/mytrezor.com/ no seu computador.</string>
     <string name="btchipInvalidPIN">PIN inválido. Tentativas restantes: %1$d. Por favor, reconecte seu BTChip antes de tentar novamente.</string>
     <string name="btchipNotSetup">BTChip não está configurado. Por favor, configure-o usando um cliente de desktop para ser capaz de usá-lo.</string>
-    <string name="instantConfirmation">Confirmação Imediata</string>
     <string name="mnemonic_passphrase">Senha mnemônica</string>
     <string name="mnemonic_passphrase_not_available">Senha não disponível</string>
     <string name="autologout_time">Tempo limite de Auto logout</string>
@@ -122,7 +121,7 @@
     <string name="hideTwoFacWarning">Esconder aviso 2FA</string>
     <string name="twoFacSetupHeader">%1$s 2FA setup</string>
     <string name="progress">Progresso:</string>
-    <string name="twoFacStep1Description">Primeiro, você precisa fornecer um código de autenticação de de alguns dos seus métodos de autenticação já criado. Isto serve para evitar que usuários mal-intencionados alterem suas configurações 2FA sem o seu consentimento.</string>
+    <string name="twoFacStep1Description">Primeiro, você precisa fornecer um código de autenticação de alguns dos seus métodos de autenticação já criado. Isto serve para evitar que usuários mal-intencionados alterem suas configurações 2FA sem o seu consentimento.</string>
     <string name="twoFacStep1SelectExisting">Selecione um método 2FA existente para autenticar a criação de um novo:</string>
     <string name="twoFacProvideGauthDetailsDescription">Você precisa fornecer um novo código do seu Google Authenticator. Você pode obter uma cópia do qrcode abaixo, no aplicativo Google Authenticator.</string>
     <string name="twoFacProvideGauthDetails">Por favor, forneça seu código Google Authenticator.</string>

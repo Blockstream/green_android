@@ -7,7 +7,7 @@
 
     <Preference
         android:key="reset_pin"
-        android:title="@string/setPin"></Preference>
+        android:title="@string/setPin" />
 
     <ListPreference
         android:key="fiat_key"
@@ -34,7 +34,7 @@
 
     <Preference
         android:key="watch_only_login"
-        android:title="@string/watchOnlyLogin"></Preference>
+        android:title="@string/watchOnlyLogin" />
 
     <ListPreference
         android:key="default_tx_priority"

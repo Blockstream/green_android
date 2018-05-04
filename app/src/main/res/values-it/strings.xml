@@ -93,7 +93,6 @@
     <string name="trezor_firmware_outdated">Rilevato Hardware Wallet firmware obsoleto. Per piacere fai un aggiornamento almeno a 1.6 da https:/mytrezor.com/ dal tuo PC.</string>
     <string name="btchipInvalidPIN">PIN incorretto. Tentativi rimasti: %d. Per piacere ricollega il tuo Btchip prima di riprovare.</string>
     <string name="btchipNotSetup">BTChip non è inizializzato. Per piacere inizializzalo sul tuo desktop/laptop.</string>
-    <string name="instantConfirmation">Conferma istantanea</string>
     <string name="mnemonic_passphrase">Passphrase mnemonica</string>
     <string name="mnemonic_passphrase_not_available">Passphrase non disponibile</string>
     <string name="autologout_time">Logout automatico</string>

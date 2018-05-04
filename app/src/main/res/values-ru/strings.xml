@@ -105,7 +105,6 @@
     <string name="trezor_firmware_outdated">ПО Вашего Физического Кошелька устарело. Пожалуйста обновите его к, как минимум, 1.6 по адресу https:/mytrezor.com/ с Вашего компьютера.</string>
     <string name="btchipInvalidPIN">ПИН некоректный. Осталось %1$d попыток. Пожалуйста переподсоедините ваш BTChip перед следуйщей попыткой.</string>
     <string name="btchipNotSetup">BTChip не установлен. Пожалуйста установите его на дектоп клиент для использование.</string>
-    <string name="instantConfirmation">Моментальное Подтверждение</string>
     <string name="mnemonic_passphrase">Пароль для мнемонической фразы</string>
     <string name="mnemonic_passphrase_not_available">Пароль отсутствует</string>
     <string name="autologout_time">Время автоматического выхода</string>

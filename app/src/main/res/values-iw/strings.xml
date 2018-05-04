@@ -100,6 +100,5 @@
     <string name="trezor_firmware_outdated">גרסת טרזור ישנה. יש לעדכן לגרסה 1.6 לפחות באתר https:/mytrezor.com/ מהמחשב.</string>
     <string name="btchipInvalidPIN">קוד PIN שגוי. נסיונות נותרים: %d. אנא חברו מחדש את ההתקן לפני נסיון נוסף.</string>
     <string name="btchipNotSetup">התקן לא מוכן. אנא הגדירו אותו באמצעות תוכנת המחשב בכדי להשתמש בו.</string>
-    <string name="instantConfirmation">אישור מיידי</string>
 </resources>
 

@@ -4,5 +4,5 @@
     <string name="title_activity_mnemonic">Log in (elements)</string>
     <string name="title_activity_sign_up">Sign up (elements)</string>
     <!-- FIXME: Add a faucet link if/when one becomes available -->
-    <string name="noBalanceSecondLine"></string>
+    <string name="noBalanceSecondLine" />
 </resources>
