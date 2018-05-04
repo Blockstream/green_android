@@ -34,6 +34,12 @@
 
 -dontwarn org.codehaus.jackson.**
 -dontwarn com.google.common.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn com.google.j2objc.annotations.**
+-dontwarn java.lang.ClassValue
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn afu.org.checkerframework.**
+-dontwarn org.checkerframework.**
 -dontwarn org.slf4j.**
 -dontwarn sun.nio.**
 -dontwarn sun.misc.**

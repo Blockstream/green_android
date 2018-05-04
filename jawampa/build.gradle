@@ -1,16 +1,14 @@
 allprojects  {
   apply plugin: 'maven'
+  apply plugin: 'java'
 
   group = 'ws.wamp.jawampa'
-version = '0.4.2-STAGING'
+  version = '0.4.2-STAGING'
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 subprojects {
-  apply plugin: 'java'
-  sourceCompatibility = 1.7
-  targetCompatibility = 1.7
-
-  
   repositories {
     mavenLocal()
     
