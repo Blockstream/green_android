@@ -1161,70 +1161,74 @@ public class SendFragment extends SubaccountFragment {
             new CB.Toast<Pair<String, String>>(gaActivity, mSendButton) {
             @Override
             public void onSuccess(final Pair<String, String> txAndHash) {
-                if (mPayreqData != null) {
-                    final PaymentSession session;
-                    try {
-                        session = new PaymentSession(mPayreqData, true);
-                    } catch (final PaymentProtocolException e) {
-                        e.printStackTrace();
-                        Log.d(TAG, "BIP70 payment failure");
-                        return;
-                    }
+                if (mPayreqData == null) {
+                    UI.dismiss(gaActivity, SendFragment.this.mSummary);
+                    onTransactionSent();
+                }
+                final PaymentSession session;
+                try {
+                    session = new PaymentSession(mPayreqData, true);
+                } catch (final PaymentProtocolException e) {
+                    e.printStackTrace();
+                    Log.d(TAG, "BIP70 payment failure");
+                    return;
+                }
 
-                    final byte[] txbin = Wally.hex_to_bytes(txAndHash.second);
-                    final Transaction tx = new Transaction(Network.NETWORK, txbin);
+                final byte[] txbin = Wally.hex_to_bytes(txAndHash.second);
+                final Transaction tx = new Transaction(Network.NETWORK, txbin);
 
-                    // Generate new address to refund
-                    Futures.addCallback(service.getNewAddress(service.getCurrentSubAccount(), null),
-                        new CB.Toast<String>(gaActivity, mSendButton) {
-                        @Override
-                        public void onSuccess(final String refundAddr) {
-                            try {
-                                final Address address = Address.fromBase58(Network.NETWORK, refundAddr);
-                                final String memo = privateData.getString("memo");
-                                final ListenableFuture<PaymentProtocol.Ack> sendAckFn =
-                                        service.sendPayment(session, ImmutableList.of(tx), address, memo);
+                // Generate new address to refund
+                Futures.addCallback(service.getNewAddress(service.getCurrentSubAccount(), null),
+                    new CB.Toast<String>(gaActivity, mSendButton) {
+                    @Override
+                    public void onSuccess(final String refundAddr) {
+                        try {
+                            final Address address = Address.fromBase58(Network.NETWORK, refundAddr);
+                            final String memo = privateData.getString("memo");
+                            final ListenableFuture<PaymentProtocol.Ack> sendAckFn =
+                                    service.sendPayment(session, ImmutableList.of(tx), address, memo);
 
-                                if (sendAckFn == null) {
-                                    Log.d(TAG, "BIP70 payment failure");
-                                    UI.toast(gaActivity, R.string.bip70_invalid_payment, mSendButton);
-                                    return;
+                            if (sendAckFn == null) {
+                                Log.d(TAG, "BIP70 payment failure");
+                                UI.toast(gaActivity, R.string.bip70_invalid_payment, mSendButton);
+                                return;
+                            }
+
+                            // send payment to BIP70 server
+                            Futures.addCallback(sendAckFn, new CB.Toast<PaymentProtocol.Ack>(gaActivity, mSendButton) {
+                                @Override
+                                public void onSuccess(final PaymentProtocol.Ack ack) {
+                                    if (ack == null) {
+                                        Log.d(TAG, "BIP70 payment failure");
+                                        UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
+                                        return;
+                                    }
+                                    if (!TextUtils.isEmpty(ack.getMemo())) {
+                                        Log.d(TAG, "BIP70 payment OK: " + ack.getMemo());
+                                        // Set the tx memo to the ack memo
+                                        CB.after(service.changeMemo(txAndHash.first, ack.getMemo(), "payreq"),
+                                            new CB.Toast<Boolean>(gaActivity, mSendButton) {
+                                                public void onSuccess(final Boolean unused) {
+                                                    UI.dismiss(gaActivity, SendFragment.this.mSummary);
+                                                    onTransactionSent();
+                                                }
+                                            });
+                                    }
                                 }
 
-                                // send payment to BIP70 server
-                                Futures.addCallback(sendAckFn, new CB.Toast<PaymentProtocol.Ack>(gaActivity, mSendButton) {
-                                    @Override
-                                    public void onSuccess(final PaymentProtocol.Ack ack) {
-                                        if (ack == null) {
-                                            Log.d(TAG, "BIP70 payment failure");
-                                            UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
-                                            return;
-                                        }
-                                        if (!TextUtils.isEmpty(ack.getMemo())) {
-                                            Log.d(TAG, "BIP70 payment OK: " + ack.getMemo());
-                                            // Set the tx memo to the ack memo
-                                            CB.after(service.changeMemo(txAndHash.first, ack.getMemo(), "payreq"),
-                                                new CB.Toast<Boolean>(gaActivity, mSendButton));
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(final Throwable t) {
-                                        super.onFailure(t);
-                                        Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
-                                    }
-                                }, service.getExecutor());
-                            } catch (final PaymentProtocolException | IOException e) {
-                                e.printStackTrace();
-                                Log.d(TAG, "BIP70 payment failure: " + e.getMessage());
-                                UI.toast(gaActivity, e.getMessage(), mSendButton);
-                            }
+                                @Override
+                                public void onFailure(final Throwable t) {
+                                    super.onFailure(t);
+                                    Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
+                                }
+                            }, service.getExecutor());
+                        } catch (final PaymentProtocolException | IOException e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "BIP70 payment failure: " + e.getMessage());
+                            UI.toast(gaActivity, e.getMessage(), mSendButton);
                         }
-
-                    }, service.getExecutor());
-                }
-                UI.dismiss(gaActivity, SendFragment.this.mSummary);
-                onTransactionSent();
+                    }
+                }, service.getExecutor());
             }
 
             @Override
