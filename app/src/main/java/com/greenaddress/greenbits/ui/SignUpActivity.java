@@ -98,10 +98,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
         mQrCodeIcon.setOnClickListener(this);
         mContinueButton.setOnClickListener(this);
 
-        if (Build.VERSION.SDK_INT < 16)
-            UI.hide(mNfcSignupIcon);
-        else
-            mNfcSignupIcon.setOnClickListener(this);
+        mNfcSignupIcon.setOnClickListener(this);
 
         mWordChoices = new ArrayList<>(24);
         for (int i = 0; i < 24; ++i)

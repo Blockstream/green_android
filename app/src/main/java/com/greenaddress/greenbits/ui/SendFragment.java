@@ -141,7 +141,7 @@ public class SendFragment extends SubaccountFragment {
         UI.hide(mBip70Progress);
         populateFeeCombo();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < 21) {
             // pre-Material Design the label was already a part of the switch
             UI.hide(mMaxLabel);
         }
@@ -561,7 +561,7 @@ public class SendFragment extends SubaccountFragment {
     private void onScanIconClicked() {
         final GaActivity gaActivity = getGaActivity();
         final String[] perms = { "android.permission.CAMERA" };
-        if (Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1 &&
+        if (Build.VERSION.SDK_INT > 22 &&
                 gaActivity.checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED) {
             final int permsRequestCode = 100;
             gaActivity.requestPermissions(perms, permsRequestCode);

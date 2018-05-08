@@ -275,17 +275,15 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                 mViewPager.setTag(R.id.tag_bitcoin_uri, getIntent().getData());
             } else {
                 // NdefRecord#toUri not available in API < 16
-                if (Build.VERSION.SDK_INT > 16) {
-                    final Parcelable[] rawMessages;
-                    rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                    for (final Parcelable parcel : rawMessages) {
-                        final NdefMessage ndefMsg = (NdefMessage) parcel;
-                        for (final NdefRecord record : ndefMsg.getRecords())
-                            if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN &&
-                                    Arrays.equals(record.getType(), NdefRecord.RTD_URI)) {
-                                mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
-                            }
-                    }
+                final Parcelable[] rawMessages;
+                rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+                for (final Parcelable parcel : rawMessages) {
+                    final NdefMessage ndefMsg = (NdefMessage) parcel;
+                    for (final NdefRecord record : ndefMsg.getRecords())
+                        if (record.getTnf() == NdefRecord.TNF_WELL_KNOWN &&
+                            Arrays.equals(record.getType(), NdefRecord.RTD_URI)) {
+                            mViewPager.setTag(R.id.tag_bitcoin_uri, record.toUri());
+                        }
                 }
             }
             // if arrives from internal QR scan
