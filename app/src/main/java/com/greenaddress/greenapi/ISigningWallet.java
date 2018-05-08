@@ -18,8 +18,6 @@ public abstract class ISigningWallet {
     };
     private static final String GA_KEY = "GreenAddress.it HD wallet path";
 
-    public abstract boolean requiresPrevoutRawTxs(); // FIXME: Get rid of this
-
     public abstract DeterministicKey getSubAccountPublicKey(int subAccount);
     public abstract List<byte[]> signTransaction(PreparedTransaction ptx);
     public abstract List<byte[]> signTransaction(Transaction tx, PreparedTransaction ptx, List<Output> prevOuts);

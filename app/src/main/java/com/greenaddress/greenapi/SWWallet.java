@@ -29,9 +29,6 @@ public class SWWallet extends ISigningWallet {
         mRootKey = key;
     }
 
-    @Override
-    public boolean requiresPrevoutRawTxs() { return false; }
-
     private SWWallet derive(final Integer childNumber) {
         return new SWWallet(HDKey.deriveChildKey(mRootKey, childNumber));
     }

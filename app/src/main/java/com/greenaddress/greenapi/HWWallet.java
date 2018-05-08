@@ -10,9 +10,6 @@ import org.bitcoinj.crypto.DeterministicKey;
 public abstract class HWWallet extends ISigningWallet {
 
     @Override
-    public boolean requiresPrevoutRawTxs() { return true; }
-
-    @Override
     public DeterministicKey getSubAccountPublicKey(final int subAccount) {
         return getMyKey(subAccount).getPubKey();
     }
