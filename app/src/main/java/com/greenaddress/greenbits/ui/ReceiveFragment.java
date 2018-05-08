@@ -32,6 +32,7 @@ import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 
 import org.bitcoinj.core.Address;
@@ -231,7 +232,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         } else {
             if (mBitmapWorkerTask != null)
                 mBitmapWorkerTask.cancel(true);
-            mBitmapWorkerTask = new BitmapWorkerTask();
+            mBitmapWorkerTask = new BitmapWorkerTask(this);
             mBitmapWorkerTask.execute();
         }
     }
@@ -240,27 +241,40 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void calculateCommissionFinish() {
         if (mBitmapWorkerTask != null)
             mBitmapWorkerTask.cancel(true);
-        mBitmapWorkerTask = new BitmapWorkerTask();
+        mBitmapWorkerTask = new BitmapWorkerTask(this);
         mBitmapWorkerTask.execute();
     }
 
-    class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
+    static class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
+
+        private WeakReference<ReceiveFragment> mFragment;
+
+        BitmapWorkerTask(final ReceiveFragment fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
 
         @Override
         protected Bitmap doInBackground(final Object... integers) {
-            final String amount = UI.getText(mAmountEdit);
-            mCurrentAmount = null;
-            if (amount.isEmpty())
-                return mQrCodeBitmap == null ? null : resetBitmap(mCurrentAddress);
+            final ReceiveFragment fragment = mFragment.get();
+            if (fragment == null)
+                return null;
+
+            final String amount = UI.getText(fragment.mAmountEdit);
+            fragment.mCurrentAmount = null;
+            if (amount.isEmpty()) {
+                if (fragment.mQrCodeBitmap == null)
+                    return null;
+                return resetBitmap(fragment, fragment.mCurrentAddress);
+            }
 
             try {
-                mCurrentAmount = UI.parseCoinValue(getGAService(), amount);
+                fragment.mCurrentAmount = UI.parseCoinValue(fragment.getGAService(), amount);
 
-                final Address address = Address.fromBase58(Network.NETWORK, mCurrentAddress);
-                final String qrCodeText = BitcoinURI.convertToBitcoinURI(address, mCurrentAmount, null, null);
-                return resetBitmap(qrCodeText);
+                final Address address = Address.fromBase58(Network.NETWORK, fragment.mCurrentAddress);
+                final String qrCodeText = BitcoinURI.convertToBitcoinURI(address, fragment.mCurrentAmount, null, null);
+                return resetBitmap(fragment, qrCodeText);
             } catch (final ArithmeticException | IllegalArgumentException e) {
-                return resetBitmap(mCurrentAddress);
+                return resetBitmap(fragment, fragment.mCurrentAddress);
             }
         }
 
@@ -268,21 +282,24 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         protected void onPostExecute(final Bitmap bitmap) {
             if (bitmap == null)
                 return;
-            final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+            final ReceiveFragment fragment = mFragment.get();
+            if (fragment == null)
+                return;
+            final BitmapDrawable bitmapDrawable = new BitmapDrawable(fragment.getResources(), bitmap);
             bitmapDrawable.setFilterBitmap(false);
-            mAddressImage.setImageDrawable(bitmapDrawable);
-            mAddressImage.setOnClickListener(new View.OnClickListener() {
+            fragment.mAddressImage.setImageDrawable(bitmapDrawable);
+            fragment.mAddressImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    onAddressImageClicked(bitmapDrawable);
+                    fragment.onAddressImageClicked(bitmapDrawable);
                 }
             });
         }
 
-        private Bitmap resetBitmap(final String address) {
+        private Bitmap resetBitmap(final ReceiveFragment fragment, final String address) {
             final int TRANSPARENT = 0; // Transparent background
-            mQrCodeBitmap = new QrBitmap(address, TRANSPARENT);
-            return mQrCodeBitmap.getQRCode();
+            fragment.mQrCodeBitmap = new QrBitmap(address, TRANSPARENT);
+            return fragment.mQrCodeBitmap.getQRCode();
         }
     }
 
