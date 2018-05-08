@@ -723,7 +723,9 @@ public class SendFragment extends SubaccountFragment {
         final List<JSONMap> usedUtxos = new ArrayList<>();
 
         final Transaction tx = new Transaction(Network.NETWORK);
-        tx.addOutput(amount, Address.fromBase58(Network.NETWORK, recipient));
+
+        if (!GATx.addTxOutput(service, tx, amount, recipient))
+            return R.string.invalidAddress;
 
         Coin total = Coin.ZERO;
         Coin fee;

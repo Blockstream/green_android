@@ -59,7 +59,9 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.RegTestParams;
+import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
@@ -271,6 +273,29 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
+    private static String getBech32Prefix() {
+        if (Network.NETWORK == MainNetParams.get())
+            return "bc";
+        if (Network.NETWORK == TestNet3Params.get())
+            return "tb";
+        return "bcrt";
+    }
+
+    public static byte[] decodeBech32Address(final String address) {
+        try {
+            final byte decoded[] = Wally.addr_segwit_to_bytes(address, getBech32Prefix(), 0);
+            // Valid native segwit addresses are v0 p2wphk or v0 p2wsh, i.e.
+            // 0 PUSH(hash160 or sha256)
+            if ((decoded.length == Wally.WALLY_SCRIPTPUBKEY_P2WPKH_LEN ||
+                 decoded.length == Wally.WALLY_SCRIPTPUBKEY_P2WSH_LEN) &&
+                decoded[0] == 0 && decoded[1] == decoded.length - 2)
+                return decoded;
+        } catch (final Exception e) {
+            // Fall through
+        }
+        return null;
+    }
+
     public static boolean isValidAddress(final String address) {
         try {
             if (IS_ELEMENTS)
@@ -279,7 +304,9 @@ public class GaService extends Service implements INotificationHandler {
                 Address.fromBase58(Network.NETWORK, address);
             return true;
         } catch (final AddressFormatException e) {
-            return false;
+            if (IS_ELEMENTS)
+                return false; // No bech32 for elements yet
+            return decodeBech32Address(address) != null;
         }
     }
 

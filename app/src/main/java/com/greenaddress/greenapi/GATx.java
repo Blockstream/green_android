@@ -18,6 +18,7 @@ import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import com.blockstream.libwally.Wally;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -124,6 +125,34 @@ public class GATx {
         tx.addInput(in);
         if (witness != null)
             tx.setWitness(tx.getInputs().size() - 1, witness);
+    }
+
+    public static boolean addTxOutput(final GaService service, final Transaction tx,
+                                      final Coin amount, final String recipient) {
+        if (GaService.IS_ELEMENTS)
+            return false; // Only base58 supported for elements currently
+        try {
+            tx.addOutput(amount, Address.fromBase58(Network.NETWORK, recipient));
+            return true;
+        } catch (final Exception e) {
+            try {
+                final byte[] decoded = GaService.decodeBech32Address(recipient);
+                if (decoded == null || decoded[0] != 0)
+                    return false; // Only v0 segwit scripts are supported
+
+                final byte[] scriptHash = Arrays.copyOfRange(decoded, 2, decoded.length);
+                if (decoded.length == Wally.WALLY_SCRIPTPUBKEY_P2WPKH_LEN) {
+                    tx.addOutput(amount, Address.fromP2WPKHHash(Network.NETWORK, scriptHash));
+                    return true;
+                } else if (decoded.length == Wally.WALLY_SCRIPTPUBKEY_P2WSH_LEN) {
+                    tx.addOutput(amount, Address.fromP2WSHHash(Network.NETWORK, scriptHash));
+                    return true;
+                }
+            } catch (final Exception e2) {
+                // Fall through
+            }
+        }
+        return false;
     }
 
     private static Address createChangeAddress(final JSONMap addrInfo) {
