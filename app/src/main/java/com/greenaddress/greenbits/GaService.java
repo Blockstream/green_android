@@ -60,7 +60,6 @@ import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
-import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
@@ -795,10 +794,6 @@ public class GaService extends Service implements INotificationHandler {
         final PinData pinData = PinData.fromEncrypted(pinIdentifier, salt, encryptedData, password);
         final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
         return login(new SWWallet(master), pinData.mMnemonic);
-    }
-
-    public ListenableFuture<List<byte[]>> signTransaction(final PreparedTransaction ptx) {
-        return mClient.signTransaction(mClient.getSigningWallet(), ptx);
     }
 
     public List<byte[]> signTransaction(final Transaction tx, final PreparedTransaction ptx, final List<Output> prevOuts) {
