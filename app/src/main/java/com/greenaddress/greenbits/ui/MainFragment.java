@@ -155,7 +155,7 @@ public class MainFragment extends SubaccountFragment {
         makeBalanceObserver(mSubaccount);
         if (isPageSelected() && service.getCoinBalance(mSubaccount) != null) {
             updateBalance();
-            reloadTransactions(false, true);
+            reloadTransactions(true);
         }
 
         if (!mIsExchanger) {
@@ -179,7 +179,7 @@ public class MainFragment extends SubaccountFragment {
     protected void onBalanceUpdated() {
         Log.d(TAG, "onBalanceUpdated -> " + TAG);
         updateBalance();
-        reloadTransactions(false, false);
+        reloadTransactions(false);
     }
 
     @Override
@@ -231,7 +231,7 @@ public class MainFragment extends SubaccountFragment {
             setIsDirty(true);
             return;
         }
-        reloadTransactions(false, false);
+        reloadTransactions(false);
     }
 
     // Called when a new verified transaction is seen
@@ -253,7 +253,7 @@ public class MainFragment extends SubaccountFragment {
             UI.hideIf(doShow, UI.find(mView, R.id.mainEmptyTransText));
     }
 
-    private void reloadTransactions(final boolean newAdapter, final boolean showWaitDialog) {
+    private void reloadTransactions(final boolean showWaitDialog) {
         final Activity activity = getActivity();
         final GaService service = getGAService();
         final RecyclerView txView;
@@ -273,17 +273,15 @@ public class MainFragment extends SubaccountFragment {
             popupWaitDialog(R.string.loading_transactions);
         }
 
-        if (mTxItems == null || newAdapter) {
+        if (mTxItems == null) {
             mTxItems = new ArrayList<>();
             txView.setAdapter(new ListTransactionsAdapter(activity, service, mTxItems, mIsExchanger));
             // FIXME, more efficient to use swap
             // txView.swapAdapter(lta, false);
         }
 
-        if (replacedTxs == null || newAdapter)
+        if (replacedTxs == null)
             replacedTxs = new HashMap<>();
-
-
 
         Futures.addCallback(service.getMyTransactions(mSubaccount),
             new FutureCallback<Map<String, Object>>() {
@@ -383,7 +381,7 @@ public class MainFragment extends SubaccountFragment {
             setIsDirty(true);
             return;
         }
-        reloadTransactions(false, true);
+        reloadTransactions(true);
         updateBalance();
     }
 
@@ -400,7 +398,7 @@ public class MainFragment extends SubaccountFragment {
         super.setPageSelected(isSelected);
         if (needReload) {
             Log.d(TAG, "Dirty, reloading");
-            reloadTransactions(false, true);
+            reloadTransactions(true);
             updateBalance();
             if (!isZombie())
                 setIsDirty(false);
