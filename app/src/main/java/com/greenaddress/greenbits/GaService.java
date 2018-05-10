@@ -830,7 +830,7 @@ public class GaService extends Service implements INotificationHandler {
                        if (ret.get("new_limit") != null)
                            mLimitsData.mData.put("total", ret.get("new_limit"));
                        return new Pair<>(ret.get("txhash").toString(),
-                                         ret.get("tx_hex").toString());
+                                         ret.get("tx").toString());
                    }
         }, mExecutor);
     }
