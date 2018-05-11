@@ -12,7 +12,7 @@ if [ -d libwally-core ]; then
 else
     git clone https://github.com/ElementsProject/libwally-core.git
     cd libwally-core
-    git checkout tags/release_0.6.0 -b release_0.6.0
+    git checkout tags/release_0.6.1 -b release_0.6.1
 fi
 
 source ./tools/android_helpers.sh

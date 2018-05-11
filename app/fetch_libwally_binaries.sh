@@ -4,8 +4,8 @@ set -e
 
 # The version of wally to fetch and its sha256 checksum for integrity checking
 TARBALL="wallycore-android-jni.tar.gz"
-URL="https://github.com/ElementsProject/libwally-core/releases/download/release_0.6.0/${TARBALL}"
-SHA256="f9bb9a606ba889c935ff75c4b51f3446cb7e0d2626acc17e7a6e241a08027cb5"
+URL="https://github.com/ElementsProject/libwally-core/releases/download/release_0.6.1/${TARBALL}"
+SHA256="9edb634ba4e195495f9d4a37ad71eb68b437e83be09acf1fcf016a0610cf494d"
 
 # Pre-requisites
 function check_command() {
