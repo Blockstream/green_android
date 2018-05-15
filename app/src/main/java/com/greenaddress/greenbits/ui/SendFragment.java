@@ -628,6 +628,8 @@ public class SendFragment extends SubaccountFragment {
             messageId = R.string.invalidAddress;
         else if (!validAmount)
             messageId = R.string.invalidAmount;
+        else if (amount.isLessThan(service.getDustThreshold()))
+            messageId = R.string.invalidAmountTooSmall;
 
         if (messageId != 0) {
             gaActivity.toast(messageId);

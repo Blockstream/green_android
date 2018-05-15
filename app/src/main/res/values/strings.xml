@@ -148,6 +148,7 @@
     <string name="invalidAmountAndAddress">Invalid amount and address</string>
     <string name="invalidAddress">Invalid address</string>
     <string name="invalidAmount">Invalid amount</string>
+    <string name="invalidAmountTooSmall">The entered amount is too small to send</string>
     <string name="invalidPhoneNumber">Invalid phone number format</string>
     <string name="noBalanceFirstLine">Getting <a href="https://bitcoin.org/en/getting-started">started</a> with Bitcoin</string>
     <string name="noBalanceSecondLine">Where to <a href="https://howtobuybitcoins.info">buy</a> them</string>
