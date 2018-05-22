@@ -211,10 +211,17 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                                  (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0);
         }
 
-        if (isFirmwareOutdated) {
-            showInstructions(R.string.trezor_firmware_outdated);
+        if (!isFirmwareOutdated) {
+            onTrezorConnected(t);
             return true;
         }
+
+        showFirmwareOutdated(R.string.trezor_firmware_outdated,
+                             new Runnable() { public void run() { onTrezorConnected(t); } });
+        return true;
+    }
+
+    private void onTrezorConnected(final Trezor t) {
         final TrezorHWWallet trezor = new TrezorHWWallet(t);
 
         Futures.addCallback(Futures.transformAsync(mService.onConnected, new AsyncFunction<Void, LoginData>() {
@@ -257,7 +264,6 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                 finishOnUiThread();
             }
         });
-        return true;
     }
 
     private void showPinDialog() {
@@ -335,19 +341,22 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                     (major == 0x3001 && minor == 2 && patch < 5);
             }
 
-            if (isFirmwareOutdated) {
-                showInstructions(R.string.ledger_firmware_outdated);
-                // FIXME: Close and set mUsb to null
+            if (!isFirmwareOutdated) {
+                onLedgerConnected(transport, pin);
                 return;
             }
+
+            showFirmwareOutdated(R.string.ledger_firmware_outdated,
+                                 new Runnable() { public void run() { onLedgerConnected(transport, pin); } });
         } catch (final BTChipException e) {
             if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
                 e.printStackTrace();
             // We are in dashboard mode, prompt the user to open the btcoin app.
             showInstructions(R.string.ledger_open_bitcoin_app);
-            return;
         }
+    }
 
+    private void onLedgerConnected(final BTChipTransport transport, final String pin) {
         runOnUiThread(new Runnable() { public void run() { UI.show(mLoginProgress); } });
 
         final SettableFuture<Integer> pinCB = SettableFuture.create();
@@ -532,6 +541,26 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
             public void run() {
                 mInstructionsText.setText(resId);
                 UI.show(mInstructionsText);
+            }
+        });
+    }
+
+    private void showFirmwareOutdated(final int resId, final Runnable onContinue) {
+        // FIXME: Close and set mUsb to null for ledger in onNegative/onCancel
+        final Runnable closeCB = new Runnable() { public void run() { finishOnUiThread(); } };
+        runOnUiThread(new Runnable() {
+            public void run() {
+                final MaterialDialog d;
+                d = UI.popup(RequestLoginActivity.this, R.string.warning, R.string.continueText, R.string.cancel)
+                      .content(resId)
+                      .onPositive(new MaterialDialog.SingleButtonCallback() {
+                          @Override
+                          public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                              onContinue.run();
+                          }
+                      }).build();
+                UI.setDialogCloseHandler(d, closeCB);
+                d.show();
             }
         });
     }
