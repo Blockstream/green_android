@@ -547,6 +547,13 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
 
     private void showFirmwareOutdated(final int resId, final Runnable onContinue) {
         // FIXME: Close and set mUsb to null for ledger in onNegative/onCancel
+
+        if (!BuildConfig.DEBUG) {
+            // Only allow the user to skip firmware checks in debug builds.
+            showInstructions(resId);
+            return;
+        }
+
         final Runnable closeCB = new Runnable() { public void run() { finishOnUiThread(); } };
         runOnUiThread(new Runnable() {
             public void run() {
