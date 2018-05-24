@@ -40,13 +40,13 @@ android {
         exclude 'com/mysql/jdbc/configs/maxPerformance.properties'
         exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
     }
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 203
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!

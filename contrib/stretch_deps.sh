@@ -14,7 +14,7 @@ cd /opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} &&
 #FIXME: avoid installing emulator
 yes | /opt/tools/bin/sdkmanager "tools" "platform-tools"
 yes | /opt/tools/bin/sdkmanager "build-tools;26.0.2"
-yes | /opt/tools/bin/sdkmanager "platforms;android-26"
+yes | /opt/tools/bin/sdkmanager "platforms;android-27"
 yes | /opt/tools/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
 apt-get -yqq autoremove && apt-get -yqq clean
 rm -rf /var/lib/apt/lists/* /var/cache/* /tmp/*
