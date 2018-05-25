@@ -381,4 +381,6 @@
     <string name="bip70_invalid_payment">Invalid payment</string>
     <string name="bip70_payment_failure">Payment failure</string>
     <string name="bip70_invalid_pki">Impossible to verify the service "%s". Continue anyway?</string>
+    <string name="important_message">Important Message</string>
+    <string name="i_confirm_i_have_read">I confirm I have read and understood the above message</string>
 </resources>

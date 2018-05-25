@@ -675,6 +675,24 @@ public class WalletClient {
         return password.getBytes();
     }
 
+    public JSONMap getNextSystemMessage(final int messageId) {
+        try {
+            return new JSONMap((Map<String, Object>) syncCall("login.get_system_message", Map.class, messageId));
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean ackSystemMessage(final int messageId, final byte[] messageHash, final byte[] sig) {
+        try {
+            return syncCall("login.ack_system_message", Boolean.class, messageId, h(messageHash), h(sig));
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public JSONMap getNewAddress(final int subAccount, final String addrType) {
         try {
             final JSONMap m = new JSONMap((Map<String, Object>) syncCall("vault.fund", Map.class, subAccount, true, addrType));

@@ -166,6 +166,7 @@
         <activity android:name=".FailHardActivity"/>
         <activity android:name=".AboutActivity"/>
         <activity android:name=".WatchOnlyLoginActivity"/>
+        <activity android:name=".MessagesActivity"/>
         <activity android:name=".MainExchanger"
             android:configChanges="orientation|screenSize"
             android:label="@string/exchanger"

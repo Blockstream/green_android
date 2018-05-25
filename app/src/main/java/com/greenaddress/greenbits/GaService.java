@@ -146,6 +146,7 @@ public class GaService extends Service implements INotificationHandler {
     private String mReceivingId;
     private Coin mDustThreshold = Coin.valueOf(546); // Per 0.13.0, updated on login
     private Coin mMinFeeRate = Coin.valueOf(1000); // Per 0.12.0, updated on login
+    private int mNextSystemMessageId = 0; // 0 if no outstanding messages
     private Map<?, ?> mTwoFactorConfig;
     private final GaObservable mTwoFactorConfigObservable = new GaObservable();
     private String mDeviceId;
@@ -422,6 +423,7 @@ public class GaService extends Service implements INotificationHandler {
     public void onConnectionClosed(final int code) {
         HDKey.resetCache(null);
         HDClientKey.resetCache(null, null);
+        mNextSystemMessageId = 0;
 
         // Server error codes FIXME: These should be in a class somewhere
         // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
@@ -579,6 +581,10 @@ public class GaService extends Service implements INotificationHandler {
             getAvailableTwoFactorMethods();
             mSPV.startAsync();
         }
+
+        final Integer nextMessageId = loginData.get("next_system_message_id");
+        mNextSystemMessageId = nextMessageId == null ? 0 : nextMessageId;
+
         mState.transitionTo(ConnState.LOGGEDIN);
     }
 
@@ -625,6 +631,40 @@ public class GaService extends Service implements INotificationHandler {
                });
     }
 
+    public Pair<String, Integer> getNextSystemMessage() {
+        if (isWatchOnly() || mNextSystemMessageId == 0)
+            return null;
+
+        final JSONMap msgData = mClient.getNextSystemMessage(mNextSystemMessageId);
+        if (msgData == null)
+            return null; // Exception, leave mNextSystemMessageId as is
+
+        final String message = msgData.get("message");
+        final int messageId = msgData.get("message_id");
+        mNextSystemMessageId = msgData.getInt("next_message_id");
+        if (TextUtils.isEmpty(message))
+           return null;
+        return new Pair<>(message, messageId);
+    }
+
+    public boolean signAndAckSystemMessage(final int messageId, final String message) {
+        // Compute the hash to sign from the message text
+        final byte[] sha256d = Wally.sha256d(message.getBytes());
+
+        // Compute the path to sign with
+        final int[] path = new int[] {
+            0x4741b11e,
+            HDKey.BRANCH_MESSAGES,
+           ((sha256d[28] & 0x7f) << 24) | ((sha256d[29] & 0xff) << 16) |
+           ((sha256d[30] & 0xff) << 8) | (sha256d[31] & 0xff) };
+
+        // Sign the message hash with the users key derived from the path
+        final byte[] sig = getSigningWallet().signBitcoinMessageHash(sha256d, path);
+
+        // Ack the message with the server
+        return mClient.ackSystemMessage(messageId, sha256d, sig);
+    }
+
     public ListenableFuture<LoginData> signup(final String mnemonic) {
         final SWWallet sw = new SWWallet(mnemonic);
         return signup(sw, mnemonic, /*agent*/ null, sw.getMasterKey().getPubKey(),
@@ -660,6 +700,10 @@ public class GaService extends Service implements INotificationHandler {
 
     public Coin getDustThreshold() {
         return mDustThreshold;
+    }
+
+    public int getNextSystemMessageId() {
+        return mNextSystemMessageId;
     }
 
     public void disconnect(final boolean autoReconnect) {

@@ -28,6 +28,7 @@ public class HDKey {
 
     public static final int BRANCH_REGULAR = 1;
     public static final int BRANCH_BLINDED = 5;
+    public static final int BRANCH_MESSAGES = 6;
 
     private static final SparseArray<DeterministicKey> mServerKeys = new SparseArray<>();
     private static int[] mGaUserPath;

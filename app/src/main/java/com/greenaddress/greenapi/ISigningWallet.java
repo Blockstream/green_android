@@ -38,6 +38,8 @@ public abstract class ISigningWallet {
 
     public abstract byte[] getGAPath();
 
+    public abstract byte[] signBitcoinMessageHash(final byte[] sha256d, final int[] path);
+
     protected static byte[] extendedKeyToPath(final byte[] publicKey, final byte[] chainCode) {
         final byte[] data = new byte[publicKey.length + chainCode.length];
         System.arraycopy(chainCode, 0, data, 0, chainCode.length);

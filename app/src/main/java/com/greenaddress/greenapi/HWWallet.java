@@ -41,6 +41,20 @@ public abstract class HWWallet extends ISigningWallet {
         return new String[]{signature.r.toString(), signature.s.toString(), String.valueOf(recId)};
     }
 
+    @Override
+    public byte[] signBitcoinMessageHash(final byte[] sha256d, final int[] path) {
+        if (sha256d.length != Wally.SHA256_LEN)
+            return null; // Dont sign anything but a message hash
+        if (path.length < 2 || path[0] != 0x4741b11e || path[1] != HDKey.BRANCH_MESSAGES)
+            return null; // Dont sign on any path except messages paths
+
+        HWWallet key = this;
+        for (int i : path)
+            key = key.derive(i);
+
+        return key.signMessage(Wally.hex_from_bytes(sha256d)).encodeToDER();
+    }
+
     private HWWallet getMyKey(final int subAccount) {
         if (subAccount != 0)
             return derive(HARDENED | 3).derive(HARDENED | subAccount);
