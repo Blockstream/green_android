@@ -133,7 +133,7 @@ public class TransactionItem implements Serializable {
             }
             final String ad = ep.getString("ad");
             if (!tmpReceivedOn.isEmpty())
-                tmpReceivedOn.concat(", ").concat(ad);
+                tmpReceivedOn = tmpReceivedOn.concat(", ").concat(ad);
             else {
                 tmpReceivedOn = ad;
                 if (ep.getBool("confidential"))
