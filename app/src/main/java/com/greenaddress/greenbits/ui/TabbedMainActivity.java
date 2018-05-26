@@ -117,20 +117,23 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     }
 
     private void showWarningBanner(final int messageId, final String hideCfgName) {
-        if (mService.cfg().getBoolean(hideCfgName, false))
+        if (hideCfgName != null && mService.cfg().getBoolean(hideCfgName, false))
             return;
 
         final Snackbar snackbar = Snackbar
-                .make(findViewById(R.id.main_content), getString(messageId), Snackbar.LENGTH_INDEFINITE)
-                .setActionTextColor(Color.RED)
-                .setAction(getString(R.string.set2FA), new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        final Intent intent = new Intent(TabbedMainActivity.this, SettingsActivity.class);
-                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, TwoFactorPreferenceFragment.class.getName());
-                        startActivityForResult(intent, REQUEST_SETTINGS);
-                    }
-                });
+                .make(findViewById(R.id.main_content), getString(messageId), Snackbar.LENGTH_INDEFINITE);
+
+        if (hideCfgName != null) {
+            snackbar.setActionTextColor(Color.RED);
+            snackbar.setAction(getString(R.string.set2FA), new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    final Intent intent = new Intent(TabbedMainActivity.this, SettingsActivity.class);
+                    intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, TwoFactorPreferenceFragment.class.getName());
+                    startActivityForResult(intent, REQUEST_SETTINGS);
+                }
+            });
+        }
 
         final View snackbarView = snackbar.getView();
         snackbarView.setBackgroundColor(Color.DKGRAY);
@@ -260,6 +263,10 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         // Re-show our 2FA warning if config is changed to remove all methods
         // Fake a config change to show the warning if no current 2FA method
         mTwoFactorObserver.update(null, null);
+
+        // Show a warning if the user is watch only and has unacked messages
+        if (mService.isWatchOnly() && mService.getNextSystemMessageId() != 0)
+            showWarningBanner(R.string.unacked_system_messages, null);
 
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 
