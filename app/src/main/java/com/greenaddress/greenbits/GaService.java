@@ -49,6 +49,7 @@ import com.greenaddress.greenapi.WalletClient;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
@@ -165,6 +166,16 @@ public class GaService extends Service implements INotificationHandler {
 
     public ISigningWallet getSigningWallet() {
         return mClient.getSigningWallet();
+    }
+
+    public boolean isHardwareWallet() {
+        final ISigningWallet wallet = getSigningWallet();
+        return wallet != null && !(wallet instanceof SWWallet);
+    }
+
+    public boolean haveUnattendedSigning() {
+        final ISigningWallet wallet = getSigningWallet();
+        return wallet != null && !(wallet instanceof TrezorHWWallet);
     }
 
     public String getBitcoinUnit() {

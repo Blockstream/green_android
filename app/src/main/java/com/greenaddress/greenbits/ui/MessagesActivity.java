@@ -10,7 +10,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.concurrent.Callable;
+import android.util.Log;
 
 public class MessagesActivity extends GaActivity
     implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -18,6 +20,9 @@ public class MessagesActivity extends GaActivity
     private TextView mMessageText;
     private CheckBox mAckedCheckBox;
     private Button mContinueButton;
+    private MaterialDialog mWaitDialog;
+    private final Runnable mDialogCB = new Runnable() { public void run() { mWaitDialog = null; } };
+
     private String mCurrentMessage;
     private Integer mCurrentMessageId;
 
@@ -90,11 +95,21 @@ public class MessagesActivity extends GaActivity
             mService.getExecutor().submit(new Callable<Void>() {
                 @Override
                 public Void call() {
-                    if (!mService.signAndAckSystemMessage(mCurrentMessageId, mCurrentMessage)) {
-                        toast(R.string.err_send_not_connected_will_resume);
-                        return null;
+                    if (mService.isHardwareWallet()) {
+                        runOnUiThread(new Runnable() { public void run() {
+                            final int id = mService.haveUnattendedSigning() ? R.string.signing_ack : R.string.sign_ack_hw;
+                            mWaitDialog = UI.popupWait(MessagesActivity.this, id);
+                            UI.setDialogCloseHandler(mWaitDialog, mDialogCB);
+                        }});
                     }
-                    runOnUiThread(new Runnable() { public void run() { processNextMessage(); } });
+                    final boolean ok = mService.signAndAckSystemMessage(mCurrentMessageId, mCurrentMessage);
+                    runOnUiThread(new Runnable() { public void run() {
+                        mWaitDialog = UI.dismiss(MessagesActivity.this, mWaitDialog);
+                        if (ok)
+                            processNextMessage();
+                        else
+                            toast(R.string.err_send_not_connected_will_resume);
+                    }});
                     return null;
                 }
             });
