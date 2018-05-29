@@ -247,6 +247,7 @@ public class BTChipHWWallet extends HWWallet {
 
             return sigs;
         } catch (final BTChipException | IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
