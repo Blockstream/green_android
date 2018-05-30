@@ -305,6 +305,11 @@ public abstract class UI {
 
     public static void disable(final View... views) { enableIf(false, views); }
 
+    public static void setText(final Activity activity, final int id, final int msgId) {
+        final TextView t = find(activity, id);
+        t.setText(msgId);
+    }
+
     public static String getText(final View v, final int id) {
         return getText((TextView) find(v, id));
     }
