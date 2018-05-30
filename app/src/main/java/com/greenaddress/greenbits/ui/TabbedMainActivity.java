@@ -551,7 +551,9 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             id = R.menu.main;
         getMenuInflater().inflate(id, menu);
 
-        if (!isResetActive) {
+        if (isResetActive)
+            setMenuItemVisible(menu, R.id.action_cancel_twofactor_reset, !mService.isWatchOnly());
+        else {
             setMenuItemVisible(menu, R.id.action_network,
                                !GaService.IS_ELEMENTS && mService.isSPVEnabled());
             setMenuItemVisible(menu, R.id.action_sweep, !GaService.IS_ELEMENTS);
