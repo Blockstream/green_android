@@ -300,12 +300,11 @@ public class TwoFactorActivity extends GaActivity {
 
     private void requestTwoFactorReset(final int stepNum, final int numSteps) {
         final LoginData loginData = mService.getLoginData();
-        final boolean isDispute = loginData.get("reset_2fa_disputed");
         mService.getExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() {
                 try {
-                    final JSONMap m = mService.requestTwoFactorReset(mResetEmail, isDispute);
+                    final JSONMap m = mService.requestTwoFactorReset(mResetEmail);
                     mService.updateTwoFactorResetStatus(m);
                     runOnUiThread(new Runnable() {
                         public void run() {
@@ -314,7 +313,6 @@ public class TwoFactorActivity extends GaActivity {
                     });
                     return null;
                 } catch (final Exception e) {
-                    // FIXME: check exception type and warn user that a dispute has started so they can retry
                     UI.toast(TwoFactorActivity.this, e.getMessage(), mContinueButton);
                     e.printStackTrace();
                 }

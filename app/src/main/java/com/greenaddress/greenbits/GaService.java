@@ -1428,8 +1428,8 @@ public class GaService extends Service implements INotificationHandler {
         mClient.updateTwoFactorResetStatus(data);
     }
 
-    public JSONMap requestTwoFactorReset(final String email, final boolean isDispute) throws Exception {
-        return mClient.requestTwoFactorReset(email, isDispute);
+    public JSONMap requestTwoFactorReset(final String email) throws Exception {
+        return mClient.requestTwoFactorReset(email);
     }
 
     public JSONMap confirmTwoFactorReset(final String email, final boolean isDispute, final Object twoFacData) throws Exception {

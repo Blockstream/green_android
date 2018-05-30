@@ -894,8 +894,8 @@ public class WalletClient {
         mLoginData.mRawData.put("reset_2fa_disputed", data.getBool("reset_2fa_disputed"));
     }
 
-    public JSONMap requestTwoFactorReset(final String email, final boolean isDispute) throws Exception {
-        return new JSONMap((Map<String, Object>) syncCall("twofactor.request_reset", Map.class, email, isDispute));
+    public JSONMap requestTwoFactorReset(final String email) throws Exception {
+        return new JSONMap((Map<String, Object>) syncCall("twofactor.request_reset", Map.class, email));
     }
 
     public JSONMap confirmTwoFactorReset(final String email, final boolean isDispute, final Object twoFacData) throws Exception {
