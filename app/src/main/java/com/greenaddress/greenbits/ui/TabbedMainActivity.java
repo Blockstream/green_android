@@ -536,15 +536,24 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        final int id = mService.isWatchOnly() ? R.menu.watchonly : R.menu.main;
+        final boolean isResetActive = mService.isTwoFactorResetActive();
+        final int id;
+        if (isResetActive)
+            id = R.menu.reset_active;
+        else if (mService.isWatchOnly())
+           id = R.menu.watchonly;
+        else
+            id = R.menu.main;
         getMenuInflater().inflate(id, menu);
 
-        setMenuItemVisible(menu, R.id.action_network,
-                           !GaService.IS_ELEMENTS && mService.isSPVEnabled());
-        setMenuItemVisible(menu, R.id.action_sweep, !GaService.IS_ELEMENTS);
+        if (!isResetActive) {
+            setMenuItemVisible(menu, R.id.action_network,
+                               !GaService.IS_ELEMENTS && mService.isSPVEnabled());
+            setMenuItemVisible(menu, R.id.action_sweep, !GaService.IS_ELEMENTS);
 
-        final boolean isExchanger = mService.cfg().getBoolean("show_exchanger_menu", false);
-        setMenuItemVisible(menu, R.id.action_exchanger, isExchanger);
+            final boolean isExchanger = mService.cfg().getBoolean("show_exchanger_menu", false);
+            setMenuItemVisible(menu, R.id.action_exchanger, isExchanger);
+        }
 
         mMenu = menu;
         return true;
@@ -587,7 +596,10 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             case R.id.action_about:
                 startActivity(new Intent(caller, AboutActivity.class));
                 return true;
-        }
+            case R.id.action_cancel_twofactor_reset:
+                onCancelTwoFactorReset();
+                return true;
+         }
         return super.onOptionsItemSelected(item);
     }
 
@@ -617,6 +629,10 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         else if (requestCode == 100 &&
                  isPermissionGranted(granted, R.string.err_qrscan_requires_camera_permissions))
             startActivityForResult(new Intent(this, ScanActivity.class), REQUEST_SEND_QR_SCAN);
+    }
+
+    private void onCancelTwoFactorReset() {
+        // FIXME: Implement
     }
 
     SectionsPagerAdapter getPagerAdapter() {

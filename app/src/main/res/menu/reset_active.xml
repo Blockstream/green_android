@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/network_unavailable"
+        android:icon="@drawable/plug_ffffff"
+        android:orderInCategory="90"
+        android:title="@string/network_unavailable"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="60"
+        android:title="@string/action_logout"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_cancel_twofactor_reset"
+        android:orderInCategory="58"
+        android:title="@string/cancel_twofactor_reset"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="55"
+        android:title="@string/action_about"
+        app:showAsAction="never" />
+</menu>
