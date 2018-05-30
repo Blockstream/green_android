@@ -15,9 +15,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.greenaddress.greenapi.LoginData;
+import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenbits.QrBitmap;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.concurrent.Callable;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,8 @@ import java.util.Map;
 public class TwoFactorActivity extends GaActivity {
 
     private String mMethod; // Current 2FA Method
+    private boolean mIsReset;
+    private String mResetEmail;
     private Map<String, String> mLocalizedMap; // 2FA method to localized description
 
     private Button mContinueButton;
@@ -38,6 +43,14 @@ public class TwoFactorActivity extends GaActivity {
         mPromptText = UI.find(this, R.id.prompt);
         mProgressBar = UI.find(this, R.id.progressBar);
         mCodeText = UI.find(this, R.id.code);
+        if (mIsReset && id == R.layout.activity_two_factor_3_provide_details) {
+            UI.setText(this, R.id.twofactor_setup_blurb_header, R.string.twofactor_reset_blurb_header);
+            UI.setText(this, R.id.twofactor_setup_blurb, R.string.twofactor_reset_blurb);
+            if (mService.getLoginData().get("reset_2fa_disputed"))
+                UI.setText(this, R.id.twofactor_setup_confirm, R.string.twofactor_reset_disputed);
+            else
+                UI.setText(this, R.id.twofactor_setup_confirm, R.string.twofactor_reset_confirm);
+        }
     }
 
     private String getTypeString(final String fmt, final String type) {
@@ -52,8 +65,16 @@ public class TwoFactorActivity extends GaActivity {
             return;
         }
 
-        mMethod = getIntent().getStringExtra("method");
         mLocalizedMap = UI.getTwoFactorLookup(getResources());
+
+        mMethod = getIntent().getStringExtra("method");
+        mIsReset = mMethod.equals("reset");
+
+        if (mIsReset) {
+            setTitle(R.string.request_twofactor_reset);
+            showProvideDetails(1, 2, null);
+            return;
+        }
 
         setTitle(getTypeString(getTitle().toString(), mLocalizedMap.get(mMethod)));
 
@@ -101,7 +122,7 @@ public class TwoFactorActivity extends GaActivity {
     private void showProvideDetails(final int stepNum, final int numSteps, final String proxyCode) {
         setView(R.layout.activity_two_factor_3_provide_details);
 
-        final boolean isEmail = mMethod.equals("email");
+        final boolean isEmail = mIsReset || mMethod.equals("email");
         final TextView detailsText = UI.find(this, R.id.details);
         detailsText.setInputType(isEmail ?  InputType.TYPE_CLASS_TEXT : InputType.TYPE_CLASS_PHONE);
 
@@ -128,6 +149,11 @@ public class TwoFactorActivity extends GaActivity {
                     return;
                 }
                 UI.disable(mContinueButton);
+                if (mIsReset) {
+                    mResetEmail = details;
+                    requestTwoFactorReset(stepNum, numSteps);
+                    return;
+                }
                 final Map<String, String> twoFacData = mService.make2FAData("proxy", proxyCode);
                 CB.after(mService.initEnableTwoFac(mMethod, details, twoFacData),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
@@ -234,7 +260,8 @@ public class TwoFactorActivity extends GaActivity {
     private void showProvideConfirmationCode(final int stepNum, final int numSteps) {
 
         setView(R.layout.activity_two_factor_2_4_provide_code);
-        mPromptText.setText(getTypeString(UI.getText(mPromptText), mLocalizedMap.get(mMethod)));
+        final String method = mIsReset ? "email" : mMethod;
+        mPromptText.setText(getTypeString(UI.getText(mPromptText), mLocalizedMap.get(method)));
 
         mProgressBar.setProgress(stepNum);
         mProgressBar.setMax(numSteps);
@@ -246,6 +273,10 @@ public class TwoFactorActivity extends GaActivity {
                 if (enteredCode.length() != 6)
                     return;
                 mContinueButton.setEnabled(false);
+                if (mIsReset) {
+                    confirmTwoFactorReset(enteredCode);
+                    return;
+                }
                 CB.after(mService.enableTwoFactor(mMethod, enteredCode, null),
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
@@ -265,5 +296,53 @@ public class TwoFactorActivity extends GaActivity {
             return !stripped.startsWith("00") && stripped.matches("\\d+?");
         }
         return false;
+    }
+
+    private void requestTwoFactorReset(final int stepNum, final int numSteps) {
+        final LoginData loginData = mService.getLoginData();
+        final boolean isDispute = loginData.get("reset_2fa_disputed");
+        mService.getExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                try {
+                    final JSONMap m = mService.requestTwoFactorReset(mResetEmail, isDispute);
+                    mService.updateTwoFactorResetStatus(m);
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            showProvideConfirmationCode(stepNum + 1, numSteps);
+                        }
+                    });
+                    return null;
+                } catch (final Exception e) {
+                    // FIXME: check exception type and warn user that a dispute has started so they can retry
+                    UI.toast(TwoFactorActivity.this, e.getMessage(), mContinueButton);
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
+    }
+
+    private void confirmTwoFactorReset(final String code) {
+        final LoginData loginData = mService.getLoginData();
+        final boolean isDispute = loginData.get("reset_2fa_disputed");
+        mService.getExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                try {
+                    final Map<String, String> twoFacData = mService.make2FAData("email", code);
+                    final JSONMap m = mService.confirmTwoFactorReset(mResetEmail, isDispute, twoFacData);
+                    mService.updateTwoFactorResetStatus(m);
+                    setResult(RESULT_OK);
+                    exitApp();
+                    return null;
+                } catch (final Exception e) {
+                    // FIXME: check exception type and warn user that a dispute has started so they can retry
+                    UI.toast(TwoFactorActivity.this, e.getMessage(), mContinueButton);
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
     }
 }

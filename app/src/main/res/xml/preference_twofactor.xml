@@ -37,4 +37,9 @@
         android:title="@string/request_nlocktime_email"
         android:dependency="twoFacNLocktimeEmails" />
 
+    <Preference
+        android:key="reset_twofactor"
+        android:title="@string/request_twofactor_reset"
+        android:summary="@string/request_twofactor_reset_summary" />
+
 </PreferenceScreen>
