@@ -123,6 +123,12 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         else
             mView = inflater.inflate(R.layout.fragment_receive, container, false);
 
+        final boolean isResetActive = getGAService().isTwoFactorResetActive();
+        if (isResetActive) {
+            UI.hide(UI.find(mView, R.id.receiveAddressLayout));
+            return mView;
+        }
+
         mAddressText = UI.find(mView, R.id.receiveAddressText);
         mAddressImage = UI.find(mView, R.id.receiveQrImageView);
         mCopyIcon = UI.find(mView, R.id.receiveCopyIcon);
@@ -309,7 +315,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     private void generateNewAddress(final boolean clear, final FutureCallback<Void> onDone) {
         Log.d(TAG, "Generating new address for subaccount " + mSubaccount);
-        if (isZombie())
+        if (isZombie() || getGAService().isTwoFactorResetActive())
             return;
 
         Long amount = null;
@@ -339,7 +345,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     private void destroyCurrentAddress(final boolean clear) {
         Log.d(TAG, "Destroying address for subaccount " + mSubaccount);
-        if (isZombie())
+        if (isZombie() || getGAService().isTwoFactorResetActive())
             return;
         mCurrentAddress = "";
         if (clear)

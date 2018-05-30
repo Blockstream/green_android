@@ -1416,6 +1416,10 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.getTwoFactorResetDaysRemaining();
     }
 
+    public boolean isTwoFactorResetActive() {
+        return getTwoFactorResetDaysRemaining() != null;
+    }
+
     public boolean isTwoFactorResetDisputed() {
         return mClient.isTwoFactorResetDisputed();
     }
