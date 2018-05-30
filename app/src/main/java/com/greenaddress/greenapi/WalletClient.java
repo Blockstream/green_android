@@ -879,6 +879,15 @@ public class WalletClient {
         return syncCall("twofactor.disable_" + type, Boolean.class, twoFacData);
     }
 
+    public Integer getTwoFactorResetDaysRemaining() {
+        final boolean isActive = mLoginData.get("reset_2fa_active");
+        return isActive ? mLoginData.get("reset_2fa_days_remaining") : null;
+    }
+
+    public boolean isTwoFactorResetDisputed() {
+        return mLoginData.get("reset_2fa_disputed");
+    }
+
     public void updateTwoFactorResetStatus(final JSONMap data) {
         mLoginData.mRawData.put("reset_2fa_active", data.getBool("reset_2fa_active"));
         mLoginData.mRawData.put("reset_2fa_days_remaining", data.getInt("reset_2fa_days_remaining"));

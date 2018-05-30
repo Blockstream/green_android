@@ -116,12 +116,16 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         launch(isBitcoinUri);
     }
 
-    private void showWarningBanner(final int messageId, final String hideCfgName) {
+    private TextView showWarningBanner(final int messageId, final String hideCfgName) {
+        return showWarningBanner(getString(messageId), hideCfgName);
+    }
+
+    private TextView showWarningBanner(final String message, final String hideCfgName) {
         if (hideCfgName != null && mService.cfg().getBoolean(hideCfgName, false))
-            return;
+            return null;
 
         final Snackbar snackbar = Snackbar
-                .make(findViewById(R.id.main_content), getString(messageId), Snackbar.LENGTH_INDEFINITE);
+                .make(findViewById(R.id.main_content), message, Snackbar.LENGTH_INDEFINITE);
 
         if (hideCfgName != null) {
             snackbar.setActionTextColor(Color.RED);
@@ -140,6 +144,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         final TextView textView = UI.find(snackbarView, android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackbar.show();
+        return textView;
     }
 
     private void onTwoFactorConfigChange() {
@@ -267,6 +272,19 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         // Show a warning if the user is watch only and has unacked messages
         if (mService.isWatchOnly() && mService.getNextSystemMessageId() != 0)
             showWarningBanner(R.string.unacked_system_messages, null);
+
+        TextView banner = null;
+        if (mService.isTwoFactorResetDisputed())
+            banner = showWarningBanner(R.string.twofactor_reset_disputed_banner, null);
+        else {
+            final Integer days = mService.getTwoFactorResetDaysRemaining();
+            if (days != null) {
+                final String message = getString(R.string.twofactor_reset_banner, days);
+                banner = showWarningBanner(message, null);
+            }
+        }
+        if (banner != null)
+            banner.setTextColor(Color.RED);
 
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 

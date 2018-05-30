@@ -1411,6 +1411,15 @@ public class GaService extends Service implements INotificationHandler {
         return enabled;
     }
 
+    // Get the number of days before a two factor reset is completed, or null if none underway
+    public Integer getTwoFactorResetDaysRemaining() {
+        return mClient.getTwoFactorResetDaysRemaining();
+    }
+
+    public boolean isTwoFactorResetDisputed() {
+        return mClient.isTwoFactorResetDisputed();
+    }
+
     public void updateTwoFactorResetStatus(final JSONMap data) {
         mClient.updateTwoFactorResetStatus(data);
     }
