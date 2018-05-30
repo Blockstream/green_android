@@ -879,6 +879,20 @@ public class WalletClient {
         return syncCall("twofactor.disable_" + type, Boolean.class, twoFacData);
     }
 
+    public void updateTwoFactorResetStatus(final JSONMap data) {
+        mLoginData.mRawData.put("reset_2fa_active", data.getBool("reset_2fa_active"));
+        mLoginData.mRawData.put("reset_2fa_days_remaining", data.getInt("reset_2fa_days_remaining"));
+        mLoginData.mRawData.put("reset_2fa_disputed", data.getBool("reset_2fa_disputed"));
+    }
+
+    public JSONMap requestTwoFactorReset(final String email, final boolean isDispute) throws Exception {
+        return new JSONMap((Map<String, Object>) syncCall("twofactor.request_reset", Map.class, email, isDispute));
+    }
+
+    public JSONMap confirmTwoFactorReset(final String email, final boolean isDispute, final Object twoFacData) throws Exception {
+        return new JSONMap((Map<String, Object>) syncCall("twofactor.confirm_reset", Map.class, email, isDispute, twoFacData));
+    }
+
     public JSONMap getSpendingLimits() throws Exception {
         return new JSONMap((Map<String, Object>) syncCall("login.get_spending_limits", Map.class));
     }

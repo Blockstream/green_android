@@ -1411,6 +1411,18 @@ public class GaService extends Service implements INotificationHandler {
         return enabled;
     }
 
+    public void updateTwoFactorResetStatus(final JSONMap data) {
+        mClient.updateTwoFactorResetStatus(data);
+    }
+
+    public JSONMap requestTwoFactorReset(final String email, final boolean isDispute) throws Exception {
+        return mClient.requestTwoFactorReset(email, isDispute);
+    }
+
+    public JSONMap confirmTwoFactorReset(final String email, final boolean isDispute, final Object twoFacData) throws Exception {
+        return mClient.confirmTwoFactorReset(email, isDispute, twoFacData);
+    }
+
     private static class GaObservable extends Observable {
         public void doNotify() {
             setChanged();
