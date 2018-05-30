@@ -123,12 +123,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         else
             mView = inflater.inflate(R.layout.fragment_receive, container, false);
 
-        final boolean isResetActive = getGAService().isTwoFactorResetActive();
-        if (isResetActive) {
-            UI.hide(UI.find(mView, R.id.receiveAddressLayout));
-            return mView;
-        }
-
         mAddressText = UI.find(mView, R.id.receiveAddressText);
         mAddressImage = UI.find(mView, R.id.receiveQrImageView);
         mCopyIcon = UI.find(mView, R.id.receiveCopyIcon);

@@ -289,9 +289,10 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 
         // by default go to center tab
-        int goToTab = 1;
+        final boolean isResetActive = mService.isTwoFactorResetActive();
+        int goToTab = isResetActive ? 0 : 1;
 
-        if (isBitcoinUri) {
+        if (isBitcoinUri && !isResetActive) {
             // go to send page tab
             goToTab = 2;
 
@@ -334,6 +335,10 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         tabLayout.setupWithViewPager(mViewPager);
 
         mViewPager.setCurrentItem(goToTab);
+        if (isResetActive) {
+            sectionsPagerAdapter.onViewPageSelected(0);
+            return;
+        }
 
         final boolean segwit = mService.getLoginData().get("segwit_server");
         if (segwit && mService.isSegwitUnconfirmed()) {
@@ -658,6 +663,9 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         @Override
         public Fragment getItem(final int index) {
             Log.d(TAG, "SectionsPagerAdapter -> getItem " + index);
+            if (mService.isTwoFactorResetActive())
+                return new MainFragment();
+
             switch (index) {
                 case 0: return new ReceiveFragment();
                 case 1: return new MainFragment();
@@ -698,6 +706,9 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
 
         @Override
         public int getCount() {
+            // Only show the tx list when 2FA reset is active
+            if (mService.isTwoFactorResetActive())
+                return 1;
             // We don't show the send tab in watch only mode
             return mService.isWatchOnly() ? 2 : 3;
         }
@@ -705,7 +716,9 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         @Override
         public CharSequence getPageTitle(final int index) {
             final Locale l = Locale.getDefault();
-            switch (index) {
+            if (mService.isTwoFactorResetActive())
+                return getString(R.string.main_title).toUpperCase(l);
+             switch (index) {
                 case 0: return getString(R.string.receive_title).toUpperCase(l);
                 case 1: return getString(R.string.main_title).toUpperCase(l);
                 case 2: return getString(R.string.send_title).toUpperCase(l);

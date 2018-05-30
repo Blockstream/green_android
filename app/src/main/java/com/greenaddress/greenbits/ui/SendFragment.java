@@ -118,12 +118,6 @@ public class SendFragment extends SubaccountFragment {
         final int viewId = mIsExchanger ? R.layout.fragment_exchanger_sell : R.layout.fragment_send;
         mView = inflater.inflate(viewId, container, false);
 
-        final boolean isResetActive = service.isTwoFactorResetActive();
-        if (isResetActive) {
-            UI.hide(UI.find(mView, R.id.sendLayout));
-            return mView;
-        }
-
         if (mIsExchanger)
             mExchanger = new Exchanger(getContext(), service, mView, false, null);
         else
