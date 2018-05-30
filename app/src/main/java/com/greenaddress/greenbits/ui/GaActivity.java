@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
@@ -184,4 +185,15 @@ public abstract class GaActivity extends AppCompatActivity {
         }
         return true;
     }
-}
+
+    protected void exitApp() {
+        if (mService != null)
+            mService.disconnect(false);
+
+        // FIXME: Should pass flag to activity so it shows it was forced logged out
+        Intent intent = new Intent(GaActivity.this, FirstScreenActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finishOnUiThread();
+    }
+ }
