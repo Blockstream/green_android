@@ -30,13 +30,13 @@ public class NetworkPreferenceFragment extends GAPreferenceFragment {
         addPreferencesFromResource(R.xml.pref_network);
         setHasOptionsMenu(true);
 
-        final Preference host = findPreference("proxy_host");
+        final Preference host = find("proxy_host");
         host.setOnPreferenceChangeListener(mListener);
         host.setSummary(mService.getProxyHost());
-        final Preference port = findPreference("proxy_port");
+        final Preference port = find("proxy_port");
         port.setSummary(mService.getProxyPort());
         port.setOnPreferenceChangeListener(mListener);
-        final Preference torEnabled  = findPreference("tor_enabled");
+        final Preference torEnabled  = find("tor_enabled");
         if (Network.GAIT_ONION == null)
             torEnabled.setEnabled(false);
         else {
