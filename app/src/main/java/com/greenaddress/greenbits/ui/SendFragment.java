@@ -296,6 +296,7 @@ public class SendFragment extends SubaccountFragment {
         outState.putBoolean("isExchanger", mIsExchanger);
     }
 
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView -> " + TAG);
