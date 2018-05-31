@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -77,6 +78,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     private Menu mMenu;
     private Boolean mInternalQr = false;
     private String mSendAmount;
+    private Dialog mTwoFactorDialog;
+    private Dialog mTwoFactorResetDialog;
     private MaterialDialog mSegwitDialog;
     private MaterialDialog mSubaccountDialog;
     private FloatingActionButton mSubaccountButton;
@@ -391,6 +394,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     public void onDestroy() {
         super.onDestroy();
         UI.unmapClick(mSubaccountButton);
+        mTwoFactorDialog = UI.dismiss(this, mTwoFactorDialog);
+        mTwoFactorResetDialog = UI.dismiss(this, mTwoFactorResetDialog);
     }
 
     @Override
@@ -604,7 +609,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                 startActivity(new Intent(caller, AboutActivity.class));
                 return true;
             case R.id.action_cancel_twofactor_reset:
-                onCancelTwoFactorReset();
+                onCancelTwoFactorResetSelected();
                 return true;
          }
         return super.onOptionsItemSelected(item);
@@ -638,9 +643,56 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             startActivityForResult(new Intent(this, ScanActivity.class), REQUEST_SEND_QR_SCAN);
     }
 
-    private void onCancelTwoFactorReset() {
-        // FIXME: Implement
+    private void onCancelTwoFactorResetSelected() {
+        mTwoFactorDialog = UI.popupTwoFactorChoice(this, mService, false, new CB.Runnable1T<String>() {
+            public void run(final String method) {
+                onCancelTwoFactorReset(method);
+            }
+        });
+        if (mTwoFactorDialog != null)
+            mTwoFactorDialog.show();
     }
+
+    private void onCancelTwoFactorReset(final String method) {
+        // Request a two factor code for the 2FA reset
+        if (!method.equals("gauth"))
+            mService.requestTwoFacCode(method, "cancel_reset", null);
+
+        // Prompt the user to enter the code
+        final View v = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
+
+        UI.hide(UI.find(v, R.id.btchipPinPrompt));
+        final TextView codeText = UI.find(v, R.id.btchipPINValue);
+
+        mTwoFactorResetDialog = UI.popup(this, R.string.pref_header_twofactor, R.string.continueText, R.string.cancel)
+            .customView(v, true)
+            .autoDismiss(false)
+            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                    mTwoFactorResetDialog = UI.dismiss(null, mTwoFactorResetDialog);
+                }
+            })
+            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                    final String enteredCode = UI.getText(codeText).trim();
+                    if (enteredCode.length() != 6)
+                        return;
+                    // Cancel the reset and exit
+                    try {
+                        mTwoFactorResetDialog = UI.dismiss(null, mTwoFactorResetDialog);
+                        mService.cancelTwoFactorReset(mService.make2FAData(method, enteredCode));
+                        exitApp();
+                    } catch (final Exception e) {
+                        UI.toast(TabbedMainActivity.this, e.getMessage(), null);
+                        e.printStackTrace();
+                    }
+                }
+            }).build();
+        UI.mapEnterToPositive(mTwoFactorResetDialog, R.id.btchipPINValue);
+        mTwoFactorResetDialog.show();
+      }
 
     SectionsPagerAdapter getPagerAdapter() {
         if (mViewPager == null)

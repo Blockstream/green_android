@@ -902,6 +902,10 @@ public class WalletClient {
         return new JSONMap((Map<String, Object>) syncCall("twofactor.confirm_reset", Map.class, email, isDispute, twoFacData));
     }
 
+    public void cancelTwoFactorReset(final Object twoFacData) throws Exception {
+        syncCall("twofactor.cancel_reset", Map.class, twoFacData);
+    }
+
     public JSONMap getSpendingLimits() throws Exception {
         return new JSONMap((Map<String, Object>) syncCall("login.get_spending_limits", Map.class));
     }

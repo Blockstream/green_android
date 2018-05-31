@@ -1436,6 +1436,10 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.confirmTwoFactorReset(email, isDispute, twoFacData);
     }
 
+    public void cancelTwoFactorReset(final Object twoFacData) throws Exception {
+        mClient.cancelTwoFactorReset(twoFacData);
+    }
+
     private static class GaObservable extends Observable {
         public void doNotify() {
             setChanged();
