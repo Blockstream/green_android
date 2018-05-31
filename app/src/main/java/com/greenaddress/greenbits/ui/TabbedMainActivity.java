@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -683,6 +684,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                     try {
                         mTwoFactorResetDialog = UI.dismiss(null, mTwoFactorResetDialog);
                         mService.cancelTwoFactorReset(mService.make2FAData(method, enteredCode));
+                        UI.toast(TabbedMainActivity.this, R.string.twofactor_reset_cancelled, Toast.LENGTH_LONG);
                         exitApp();
                     } catch (final Exception e) {
                         UI.toast(TabbedMainActivity.this, e.getMessage(), null);

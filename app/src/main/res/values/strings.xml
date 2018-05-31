@@ -395,4 +395,6 @@
     <string name="twofactor_reset_disputed">WARNING: There is already a request to reset twofactor for your wallet. If you now request with a new email address, your wallet will become disputed and likely permanently unavailable to you.</string>
     <string name="twofactor_reset_banner">WARNING: Wallet locked for two factor reset in %d days. Contact support for more information.</string>
     <string name="twofactor_reset_disputed_banner">WARNING: Wallet locked by two factor dispute. Contact support for more information.</string>
+    <string name="twofactor_reset_complete">Reset successful, your wallet is now locked.</string>
+    <string name="twofactor_reset_cancelled">Reset cancelled, your wallet is now unlocked.</string>
 </resources>

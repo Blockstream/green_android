@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.JSONMap;
@@ -332,6 +333,7 @@ public class TwoFactorActivity extends GaActivity {
                     final JSONMap m = mService.confirmTwoFactorReset(mResetEmail, isDispute, twoFacData);
                     mService.updateTwoFactorResetStatus(m);
                     setResult(RESULT_OK);
+                    UI.toast(TwoFactorActivity.this, R.string.twofactor_reset_complete, Toast.LENGTH_LONG);
                     exitApp();
                     return null;
                 } catch (final Exception e) {
