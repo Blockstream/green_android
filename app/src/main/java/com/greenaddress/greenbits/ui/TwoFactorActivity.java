@@ -16,7 +16,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenbits.QrBitmap;
 import com.google.common.collect.ImmutableMap;
@@ -47,7 +46,7 @@ public class TwoFactorActivity extends GaActivity {
         if (mIsReset && id == R.layout.activity_two_factor_3_provide_details) {
             UI.setText(this, R.id.twofactor_setup_blurb_header, R.string.twofactor_reset_blurb_header);
             UI.setText(this, R.id.twofactor_setup_blurb, R.string.twofactor_reset_blurb);
-            if (mService.getLoginData().get("reset_2fa_disputed"))
+            if (mService.isTwoFactorResetDisputed())
                 UI.setText(this, R.id.twofactor_setup_confirm, R.string.twofactor_reset_disputed);
             else
                 UI.setText(this, R.id.twofactor_setup_confirm, R.string.twofactor_reset_confirm);
@@ -300,7 +299,6 @@ public class TwoFactorActivity extends GaActivity {
     }
 
     private void requestTwoFactorReset(final int stepNum, final int numSteps) {
-        final LoginData loginData = mService.getLoginData();
         mService.getExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() {
@@ -323,8 +321,7 @@ public class TwoFactorActivity extends GaActivity {
     }
 
     private void confirmTwoFactorReset(final String code) {
-        final LoginData loginData = mService.getLoginData();
-        final boolean isDispute = loginData.get("reset_2fa_disputed");
+        final boolean isDispute = mService.isTwoFactorResetDisputed();
         mService.getExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() {
