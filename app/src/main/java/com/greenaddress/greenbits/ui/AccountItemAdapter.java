@@ -57,7 +57,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         final View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                mOnAccountSelected.onAccountSelected(position);
+                mOnAccountSelected.onAccountSelected(holder.getAdapterPosition());
             }
         };
         holder.mView.setOnClickListener(listener);
