@@ -363,7 +363,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private void onAddressImageClicked(final BitmapDrawable bd) {
         mQrCodeDialog = UI.dismiss(getActivity(), mQrCodeDialog);
 
-        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+        final View v = UI.inflateDialog(this, R.layout.dialog_qrcode);
         if (mIsExchanger) {
             final Button cancelButton = UI.find(v, R.id.qrInDialogCancel);
             UI.show(cancelButton, UI.find(v, R.id.qrInDialogWaiting));

@@ -162,7 +162,7 @@ public class PinSaveActivity extends GaActivity {
     private void onSaveNonNativePin() {
         final String currentPin = UI.getText(mPinText);
 
-        final View v = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
+        final View v = UI.inflateDialog(this, R.layout.dialog_btchip_pin);
 
         UI.hide(UI.find(v, R.id.btchipPinPrompt));
         final TextView newPin = UI.find(v, R.id.btchipPINValue);

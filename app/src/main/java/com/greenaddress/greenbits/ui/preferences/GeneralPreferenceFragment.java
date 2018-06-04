@@ -141,7 +141,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         watchOnlyLogin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
-                final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_set_watchonly, null, false);
+                final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_watchonly);
                 final EditText inputUser = UI.find(v, R.id.input_user);
                 try {
                     // refetch username

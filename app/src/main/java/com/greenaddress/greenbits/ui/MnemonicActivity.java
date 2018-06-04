@@ -270,7 +270,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         final SettableFuture<String> fn = SettableFuture.create();
         runOnUiThread(new Runnable() {
             public void run() {
-                final View v = getLayoutInflater().inflate(R.layout.dialog_passphrase, null, false);
+                final View v = UI.inflateDialog(MnemonicActivity.this, R.layout.dialog_passphrase);
                 final EditText passphraseValue = UI.find(v, R.id.passphraseValue);
                 passphraseValue.requestFocus();
                 final MaterialDialog dialog = UI.popup(MnemonicActivity.this, "Encryption passphrase")

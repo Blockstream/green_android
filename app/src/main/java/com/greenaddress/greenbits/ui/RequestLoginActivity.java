@@ -132,7 +132,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                 final SettableFuture<String> ret = SettableFuture.create();
                 RequestLoginActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_pin, null, false);
+                        final View v = UI.inflateDialog(RequestLoginActivity.this, R.layout.dialog_trezor_pin);
                         final Button[] buttons = new Button[]{
                                 // upside down
                                 UI.find(v, R.id.trezorPinButton7),
@@ -179,7 +179,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                 final SettableFuture<String> ret = SettableFuture.create();
                 RequestLoginActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        final View v = getLayoutInflater().inflate(R.layout.dialog_trezor_passphrase, null, false);
+                        final View v = UI.inflateDialog(RequestLoginActivity.this, R.layout.dialog_trezor_passphrase);
                         final EditText passphraseValue = UI.find(v, R.id.trezorPassphraseValue);
                         UI.popup(RequestLoginActivity.this, "Hardware Wallet passphrase")
                                 .customView(v, true)
@@ -269,7 +269,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     private void showPinDialog() {
         mPinDialog = UI.dismiss(this, mPinDialog);
 
-        final View v = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
+        final View v = UI.inflateDialog(this, R.layout.dialog_btchip_pin);
 
         mPinDialog = UI.popup(this, R.string.pinTitleText)
             .customView(v, true)

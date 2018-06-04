@@ -254,7 +254,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     }
 
     private View inflatePinDialog(final String withMethod) {
-        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
+        final View v = UI.inflateDialog(getActivity(), R.layout.dialog_btchip_pin);
 
         final TextView promptText = UI.find(v, R.id.btchipPinPrompt);
         promptText.setText(getString(R.string.twoFacProvideConfirmationCode,
@@ -274,7 +274,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     }
 
     private boolean onLimitsPreferenceClicked(final Preference preference) {
-        final View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_set_limits, null, false);
+        final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_limits);
         final Spinner currencySpinner = UI.find(v, R.id.set_limits_currency);
         final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
 

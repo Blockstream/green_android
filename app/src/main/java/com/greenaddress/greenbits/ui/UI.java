@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -90,6 +91,14 @@ public abstract class UI {
             else
                 a.runOnUiThread(new Runnable() { public void run() { d.dismiss(); } });
         return null;
+    }
+
+    public static View inflateDialog(final Fragment f, final int id) {
+        return inflateDialog(f.getActivity(), id);
+    }
+
+    public static View inflateDialog(final Activity a, final int id) {
+        return a.getLayoutInflater().inflate(id, null, false);
     }
 
     private static boolean isEnterKeyDown(final KeyEvent e) {

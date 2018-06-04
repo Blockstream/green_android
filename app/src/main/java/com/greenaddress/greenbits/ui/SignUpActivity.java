@@ -75,7 +75,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         mNfcPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, SignUpActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        mNfcView = getLayoutInflater().inflate(R.layout.dialog_nfc_write, null, false);
+        mNfcView = UI.inflateDialog(SignUpActivity.this, R.layout.dialog_nfc_write);
 
         mMnemonicText = UI.find(this, R.id.signupMnemonicText);
         mQrCodeIcon = UI.find(this, R.id.signupQrCodeIcon);
@@ -153,7 +153,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
 
     private void onQrCodeButtonClicked() {
         if (mMnemonicDialog == null) {
-            final View v = getLayoutInflater().inflate(R.layout.dialog_qrcode, null, false);
+            final View v = UI.inflateDialog(this, R.layout.dialog_qrcode);
             mQrCodeBitmap = UI.find(v, R.id.qrInDialogImageView);
             mQrCodeBitmap.setLayoutParams(UI.getScreenLayout(SignUpActivity.this, 0.8));
             mMnemonicDialog = new Dialog(SignUpActivity.this);
@@ -192,7 +192,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
             mChoiceIsValid[i] = false;
 
         // Show the verification dialog
-        final View v = getLayoutInflater().inflate(R.layout.dialog_verify_words, null, false);
+        final View v = UI.inflateDialog(this, R.layout.dialog_verify_words);
         mVerifyDialog = new MaterialDialog.Builder(SignUpActivity.this)
                 .title(R.string.enter_matching_words)
                 .customView(v, true)

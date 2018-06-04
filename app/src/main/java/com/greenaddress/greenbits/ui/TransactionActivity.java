@@ -643,7 +643,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
             }
         }
 
-        final View v = getLayoutInflater().inflate(R.layout.dialog_new_transaction, null, false);
+        final View v = UI.inflateDialog(this, R.layout.dialog_new_transaction);
 
         final TextView amountLabel = UI.find(v, R.id.newTxAmountLabel);
         amountLabel.setText(R.string.newFeeText);

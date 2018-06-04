@@ -442,7 +442,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                 final FutureCallback<Map<?, ?>> callback = new CB.Toast<Map<?, ?>>(caller) {
                     @Override
                     public void onSuccess(final Map<?, ?> sweepResult) {
-                        final View v = getLayoutInflater().inflate(R.layout.dialog_sweep_address, null, false);
+                        final View v = UI.inflateDialog(TabbedMainActivity.this, R.layout.dialog_sweep_address);
                         final TextView passwordPrompt = UI.find(v, R.id.sweepAddressPasswordPromptText);
                         final TextView mainText = UI.find(v, R.id.sweepAddressMainText);
                         final TextView addressText = UI.find(v, R.id.sweepAddressAddressText);
@@ -660,7 +660,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             mService.requestTwoFacCode(method, "cancel_reset", null);
 
         // Prompt the user to enter the code
-        final View v = getLayoutInflater().inflate(R.layout.dialog_btchip_pin, null, false);
+        final View v = UI.inflateDialog(this, R.layout.dialog_btchip_pin);
 
         UI.hide(UI.find(v, R.id.btchipPinPrompt));
         final TextView codeText = UI.find(v, R.id.btchipPINValue);
