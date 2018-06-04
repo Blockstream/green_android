@@ -67,6 +67,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     private static final boolean IS_MAINNET = Network.NETWORK == MainNetParams.get();
     private static final int BIP32_NETWORK = IS_MAINNET ? Wally.BIP38_KEY_MAINNET : Wally.BIP38_KEY_TESTNET;
     private static final int BIP38_FLAGS = BIP32_NETWORK | Wally.BIP38_KEY_COMPRESSED;
+    private static final int REQUEST_ENABLE_2FA = 0;
 
     public static final int
             REQUEST_SEND_QR_SCAN = 0,
@@ -548,18 +549,20 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         final boolean isResetActive = mService.isTwoFactorResetActive();
+        final boolean isWatchOnly = mService.isWatchOnly();
         final int id;
         if (isResetActive)
             id = R.menu.reset_active;
-        else if (mService.isWatchOnly())
+        else if (isWatchOnly)
            id = R.menu.watchonly;
         else
             id = R.menu.main;
         getMenuInflater().inflate(id, menu);
 
-        if (isResetActive)
-            setMenuItemVisible(menu, R.id.action_cancel_twofactor_reset, !mService.isWatchOnly());
-        else {
+        if (isResetActive) {
+            setMenuItemVisible(menu, R.id.action_dispute_twofactor_reset, !isWatchOnly);
+            setMenuItemVisible(menu, R.id.action_cancel_twofactor_reset, !isWatchOnly);
+        } else {
             setMenuItemVisible(menu, R.id.action_network,
                                !GaService.IS_ELEMENTS && mService.isSPVEnabled());
             setMenuItemVisible(menu, R.id.action_sweep, !GaService.IS_ELEMENTS);
@@ -612,6 +615,9 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             case R.id.action_cancel_twofactor_reset:
                 onCancelTwoFactorResetSelected();
                 return true;
+             case R.id.action_dispute_twofactor_reset:
+                onDisputeTwoFactorResetSelected();
+                return true;
          }
         return super.onOptionsItemSelected(item);
     }
@@ -652,6 +658,12 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         });
         if (mTwoFactorDialog != null)
             mTwoFactorDialog.show();
+    }
+
+    private void onDisputeTwoFactorResetSelected() {
+        final Intent intent = new Intent(this, TwoFactorActivity.class);
+        intent.putExtra("method", "reset");
+        startActivityForResult(intent, REQUEST_ENABLE_2FA);
     }
 
     private void onCancelTwoFactorReset(final String method) {

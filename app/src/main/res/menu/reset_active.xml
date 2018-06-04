@@ -22,6 +22,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_dispute_twofactor_reset"
+        android:orderInCategory="57"
+        android:title="@string/dispute_twofactor_reset"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_about"
         android:orderInCategory="55"
         android:title="@string/action_about"
