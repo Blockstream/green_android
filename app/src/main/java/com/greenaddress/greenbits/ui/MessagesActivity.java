@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.concurrent.Callable;
-import android.util.Log;
 
 public class MessagesActivity extends GaActivity
     implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
