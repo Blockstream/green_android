@@ -2,10 +2,13 @@ package com.greenaddress.greenbits;
 
 import org.bitcoinj.crypto.MnemonicCode;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
@@ -16,6 +19,7 @@ import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.MnemonicHelper;
+import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
 
@@ -34,6 +38,16 @@ public class GreenAddressApplication extends MultiDexApplication {
         fail.putExtra("errorContent", String.format("%s. %s", message, supportMessage));
         fail.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(fail);
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel nc = new NotificationChannel("spv_channel", getString(R.string.spv_channel_name),
+                                                             NotificationManager.IMPORTANCE_LOW);
+            nc.setDescription(getString(R.string.spv_channel_description));
+            NotificationManager nm = getSystemService(NotificationManager.class);
+            nm.createNotificationChannel(nc);
+        }
     }
 
     @Override
@@ -57,6 +71,8 @@ public class GreenAddressApplication extends MultiDexApplication {
             failHard("Initialization failed", "Cryptographic initialization failed");
             return;
         }
+
+        createNotificationChannel();
 
         // Provide bitcoinj with Mnemonics. These are used if we need to create a fake
         // wallet during SPV syncing to prevent an exception.

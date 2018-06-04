@@ -512,7 +512,7 @@ public class SPV {
 
             if (mNotifyManager == null) {
                 mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
-                mNotificationBuilder = new NotificationCompat.Builder(mService);
+                mNotificationBuilder = new NotificationCompat.Builder(mService, "spv_channel");
                 mNotificationBuilder.setContentTitle("GreenBits SPV Sync")
                                     .setSmallIcon(R.drawable.ic_sync_black_24dp);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
