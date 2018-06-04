@@ -321,6 +321,11 @@ public class TwoFactorActivity extends GaActivity {
     }
 
     private void confirmTwoFactorReset(final String code) {
+        if (mService == null || !mService.isLoggedIn()) {
+            // Logged out/disconnected while waiting for user to enter code
+            toast(R.string.err_send_not_connected_will_resume);
+            return;
+        }
         final boolean isDispute = mService.isTwoFactorResetDisputed();
         mService.getExecutor().submit(new Callable<Void>() {
             @Override
