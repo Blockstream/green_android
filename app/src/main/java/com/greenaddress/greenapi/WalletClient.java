@@ -262,11 +262,15 @@ public class WalletClient {
                 logCallDetails(procedure, e.getMessage(), args);
             throw new GAException("rejected");
         } catch (final Exception e) {
-            Log.d(TAG, "Sync RPC exception: (" + procedure + ")->" + e.toString());
             String uri = GAException.INTERNAL;
             String error = e.toString();
-            if (e instanceof ApplicationError) {
-                final ArrayNode a = ((ApplicationError) e).arguments();
+            Log.d(TAG, "Sync RPC exception: (" + procedure + ")->" + error);
+            if (e instanceof ApplicationError || e.getCause() instanceof ApplicationError) {
+                final ArrayNode a;
+                if (e instanceof ApplicationError)
+                    a = ((ApplicationError) e).arguments();
+                else
+                    a = ((ApplicationError) e.getCause()).arguments();
                 if (a != null && a.size() >= 2) {
                     uri = a.get(0).asText();
                     error = a.get(1).asText();
