@@ -304,8 +304,7 @@ public class GATx {
 
         if (Network.NETWORK == MainNetParams.get() && isInstant) {
             // On mainnet disallow instant until a rate is available
-            throw new GAException("#internal",
-                                  "Instant transactions are not available at this time. Please try again later.");
+            throw new GAException("Instant transactions are not available at this time. Please try again later.");
         }
         // Return the minimum fee rate, x3 if testing instant on testnet
         return service.getMinFeeRate().multiply(isInstant ? 3 : 1);
