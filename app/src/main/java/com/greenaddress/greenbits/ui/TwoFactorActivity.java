@@ -16,6 +16,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenbits.QrBitmap;
 import com.google.common.collect.ImmutableMap;
@@ -326,25 +329,60 @@ public class TwoFactorActivity extends GaActivity {
             toast(R.string.err_send_not_connected_will_resume);
             return;
         }
-        final boolean isDispute = mService.isTwoFactorResetDisputed();
         mService.getExecutor().submit(new Callable<Void>() {
             @Override
             public Void call() {
-                try {
-                    final Map<String, String> twoFacData = mService.make2FAData("email", code);
-                    final JSONMap m = mService.confirmTwoFactorReset(mResetEmail, isDispute, twoFacData);
-                    mService.updateTwoFactorResetStatus(m);
-                    setResult(RESULT_OK);
-                    UI.toast(TwoFactorActivity.this, R.string.twofactor_reset_complete, Toast.LENGTH_LONG);
-                    exitApp();
-                    return null;
-                } catch (final Exception e) {
-                    // FIXME: check exception type and warn user that a dispute has started so they can retry
-                    UI.toast(TwoFactorActivity.this, e.getMessage(), mContinueButton);
-                    e.printStackTrace();
-                }
+                sendTwoFactorReset(mService.isTwoFactorResetDisputed(),
+                                   mService.make2FAData("email", code));
                 return null;
             }
         });
+    }
+
+    private void confirmTwoFactorDispute(final Map<String, String> twoFacData) {
+        // Warn user that confirming will cause a dispute, then action the confirm
+        UI.popup(this, R.string.dispute_twofactor_reset)
+          .content(R.string.twofactor_reset_confirm_dispute)
+          .onPositive(new MaterialDialog.SingleButtonCallback() {
+              @Override
+              public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                  mService.getExecutor().submit(new Callable<Void>() {
+                      @Override
+                      public Void call() {
+                          sendTwoFactorReset(true, twoFacData);
+                          return null;
+                      }
+                  });
+              }
+          })
+          .onNegative(new MaterialDialog.SingleButtonCallback() {
+              @Override
+              public void onClick(final MaterialDialog dialog, final DialogAction which) {
+                  finishOnUiThread();
+              }
+          })
+          .build().show();
+    }
+
+    private void sendTwoFactorReset(final boolean isDispute, final Map<String, String> twoFacData) {
+        try {
+            final JSONMap m = mService.confirmTwoFactorReset(mResetEmail, isDispute, twoFacData);
+            mService.updateTwoFactorResetStatus(m);
+            setResult(RESULT_OK);
+            UI.toast(TwoFactorActivity.this, R.string.twofactor_reset_complete, Toast.LENGTH_LONG);
+            exitApp();
+        } catch (final Exception e) {
+            if (e instanceof GAException && ((GAException) e).mUri.equals(GAException.DISPUTE)) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        confirmTwoFactorDispute(twoFacData);
+                    }
+                });
+                return;
+            }
+
+            UI.toast(TwoFactorActivity.this, e.getMessage(), mContinueButton);
+            e.printStackTrace();
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.greenaddress.greenapi;
 public class GAException extends Exception {
     public static final String AUTH = "#auth";
     public static final String INTERNAL = "#internal";
+    public static final String DISPUTE = "#unexpecteddispute";
 
     public final String mUri;
     public final String mMessage;
