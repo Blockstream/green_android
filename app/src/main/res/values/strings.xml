@@ -393,7 +393,7 @@
     <string name="cancel_twofactor_reset">Cancel two factor reset</string>
     <string name="dispute_twofactor_reset">Dispute two factor reset</string>
     <string name="twofactor_reset_blurb_header">Two factor reset process</string>
-    <string name="twofactor_reset_blurb">After entering and confirming a new email address, the wallet will be placed into a locked down state for a period of 12 months. During this time you will not be able to transact or generate new addresses. Once the lockout period expires, the email address you enter here will be enabled as your two factor email address.</string>
+    <string name="twofactor_reset_blurb">After entering and confirming a new email address, the wallet will be placed into a locked down state for a period of 12 months plus any remaining nlocktime. During this time you will not be able to transact or generate new addresses. Once the lockout period expires, the email address you enter here will be enabled as your two factor email address.</string>
     <string name="twofactor_reset_confirm">You will need to confirm your email in the next step.</string>
     <string name="twofactor_reset_disputed">WARNING: There is already a request to reset twofactor for your wallet. If you now request with a new email address, your wallet will become disputed and likely permanently unavailable to you.</string>
     <string name="twofactor_reset_confirm_dispute">WARNING: There is already a request to reset twofactor for your wallet. If you click OK, your wallet will become disputed and likely permanently unavailable to you.</string>
