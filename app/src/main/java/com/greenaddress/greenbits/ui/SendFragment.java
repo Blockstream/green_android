@@ -629,7 +629,7 @@ public class SendFragment extends SubaccountFragment {
             messageId = R.string.invalidAddress;
         else if (!validAmount)
             messageId = R.string.invalidAmount;
-        else if (amount.isLessThan(service.getDustThreshold()))
+        else if (!sendAll && amount.isLessThan(service.getDustThreshold()))
             messageId = R.string.invalidAmountTooSmall;
 
         if (messageId != 0) {
