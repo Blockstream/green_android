@@ -1,5 +1,5 @@
 build_tag_release:
-  image: greenaddress/android@sha256:da4344cf07badff07f3967ac2d82bf75acd925ffbba2d8f9e3cc78343d7cbe23
+  image: greenaddress/android@sha256:a8e600a26c792eb67001da9259632aefc5477f10bd733a58f7998b9b8f6e8a4d
   artifacts:
     name: "greenbits-release-$CI_COMMIT_REF_NAME"
     expire_in: 1 hour

@@ -1,4 +1,4 @@
-FROM debian:stretch@sha256:c908a4fcb2b2a1953bd40ebc12d9a4116868d72540efc27502ee6c2395b8a1e9
+FROM debian:stretch@sha256:de3eac83cd481c04c5d6c7344cd7327625a1d8b2540e82a8231b5675cef0ae5f
 
 COPY stretch_deps.sh /deps.sh
 RUN /deps.sh && rm /deps.sh
