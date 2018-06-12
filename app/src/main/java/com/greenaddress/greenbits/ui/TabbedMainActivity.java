@@ -85,6 +85,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     private MaterialDialog mSegwitDialog;
     private MaterialDialog mSubaccountDialog;
     private FloatingActionButton mSubaccountButton;
+    private boolean mTwoFactorResetShowing = false;
 
     private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private final Runnable mSubaccountCB = new Runnable() { public void run() { mDialogCB.run(); mSubaccountDialog = null; } };
@@ -153,8 +154,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     }
 
     private void onTwoFactorConfigChange() {
-        if (mService.getTwoFactorConfig() == null)
-            return; // Not loaded
+        if (mService.getTwoFactorConfig() == null || mTwoFactorResetShowing)
+            return; // Not loaded, or reset in progress
 
         if (!mService.hasAnyTwoFactor())
             showWarningBanner(R.string.noTwoFactorWarning, "hideTwoFacWarning");
@@ -270,14 +271,6 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         // shown.
         mViewPager.setOffscreenPageLimit(3);
 
-        // Re-show our 2FA warning if config is changed to remove all methods
-        // Fake a config change to show the warning if no current 2FA method
-        mTwoFactorObserver.update(null, null);
-
-        // Show a warning if the user is watch only and has unacked messages
-        if (mService.isWatchOnly() && mService.getNextSystemMessageId() != 0)
-            showWarningBanner(R.string.unacked_system_messages, null);
-
         TextView banner = null;
         if (mService.isTwoFactorResetDisputed())
             banner = showWarningBanner(R.string.twofactor_reset_disputed_banner, null);
@@ -286,10 +279,20 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             if (days != null) {
                 final String message = getString(R.string.twofactor_reset_banner, days);
                 banner = showWarningBanner(message, null);
+            } else {
+                // Show a warning if the user is watch only and has unacked messages
+                if (mService.isWatchOnly() && mService.getNextSystemMessageId() != 0)
+                    showWarningBanner(R.string.unacked_system_messages, null);
             }
         }
-        if (banner != null)
+        if (banner != null) {
+            mTwoFactorResetShowing = true;
             banner.setTextColor(Color.RED);
+        }
+
+        // Re-show our 2FA warning if config is changed to remove all methods
+        // Fake a config change to show the warning if no current 2FA method
+        mTwoFactorObserver.update(null, null);
 
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 
