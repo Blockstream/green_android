@@ -26,7 +26,6 @@ import android.widget.MultiAutoCompleteTextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libwally.Wally;
-import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -47,7 +46,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     private static final int CAMERA_PERMISSION = 150;
 
     private MultiAutoCompleteTextView mMnemonicText;
-    private CircularProgressButton mOkButton;
+    private CircularButton mOkButton;
     private TextView mScanButton;
 
     final private MultiAutoCompleteTextView.Tokenizer mTokenizer = new MultiAutoCompleteTextView.Tokenizer() {
@@ -95,7 +94,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         mOkButton = UI.find(this,R.id.mnemonicOkButton);
         mScanButton = UI.find(this,R.id.mnemonicScanIcon);
 
-        mOkButton.setIndeterminateProgressMode(true);
         mOkButton.setOnClickListener(this);
 
         final boolean haveCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
@@ -172,7 +170,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     }
 
     private void enableLogin() {
-        mOkButton.setProgress(0);
+        mOkButton.stopLoading();
         mMnemonicText.setEnabled(true);
     }
 
@@ -180,7 +178,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         final String mnemonic = getMnemonic();
         setMnemonic(mnemonic); // Trim mnemonic when OK pressed
 
-        if (mOkButton.getProgress() != 0)
+        if (mOkButton.isLoading())
             return;
 
         if (mService.isLoggedIn()) {
@@ -216,7 +214,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             return;
         }
 
-        mOkButton.setProgress(50);
+        mOkButton.startLoading();;
         mMnemonicText.setEnabled(false);
         hideKeyboardFrom(mMnemonicText);
 

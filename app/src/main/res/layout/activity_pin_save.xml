@@ -72,16 +72,15 @@
             android:textColor="@color/accent"
             android:background="@color/hide" />
 
-        <com.dd.CircularProgressButton
+        <com.greenaddress.greenbits.ui.CircularButton
             android:id="@+id/pinSaveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            style="@style/myButton"
-            app:cpb_colorIndicator="@color/accent"
-            app:cpb_selectorIdle="@drawable/buttonprogressselector"
-            android:textColor="@color/white"
-            app:cpb_textIdle="@string/pinSaveText" />
+            android:layout_margin="3dp"
+            app:cardBackgroundColor="@color/colorAccent"
+            app:textColor="@color/white"
+            app:text="@string/pinSaveText" />
 
     </LinearLayout>
 </LinearLayout>

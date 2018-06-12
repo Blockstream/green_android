@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -55,7 +54,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
 
     private TextView mMnemonicText;
     private CheckBox mAcceptCheckBox;
-    private CircularProgressButton mContinueButton;
+    private CircularButton mContinueButton;
     private TextView mQrCodeIcon;
     private ImageView mQrCodeBitmap;
 
@@ -121,8 +120,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
         if (mNfcAdapter != null)
             mNfcAdapter.disableForegroundDispatch(this);
         if (mContinueButton != null) {
-            mContinueButton.setIndeterminateProgressMode(false);
-            mContinueButton.setProgress(0);
+            mContinueButton.stopLoading();
         }
     }
 
@@ -180,8 +178,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
             return;
         }
 
-        mContinueButton.setIndeterminateProgressMode(true);
-        mContinueButton.setProgress(50);
+        mContinueButton.startLoading();
         UI.hide(mMnemonicText, mQrCodeIcon);
 
         // Create a random shuffle of word orders; the user will be asked
@@ -244,7 +241,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     private void setComplete(final boolean isComplete) {
         runOnUiThread(new Runnable() {
             public void run() {
-                mContinueButton.setProgress(isComplete ? 100 : 0);
+                mContinueButton.setComplete(isComplete);
             }
         });
     }
@@ -395,8 +392,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     private void onVerifyDismissed() {
         if (mVerifyDialog != null) {
             UI.show(mMnemonicText, mQrCodeIcon);
-            mContinueButton.setIndeterminateProgressMode(false);
-            mContinueButton.setProgress(0);
+            mContinueButton.stopLoading();
             mVerifyDialog = null;
             if (areAllChoicesValid())
                 onMnemonicVerified();

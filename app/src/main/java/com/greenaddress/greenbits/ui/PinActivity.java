@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.dd.CircularProgressButton;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -52,13 +51,13 @@ public class PinActivity extends LoginActivity implements Observer, View.OnClick
     private Menu mMenu;
     private static final String KEYSTORE_KEY = "NativeAndroidAuth";
     private static final int ACTIVITY_REQUEST_CODE = 1;
-    private CircularProgressButton mPinLoginButton;
+    private CircularButton mPinLoginButton;
     private EditText mPinText;
     private TextView mPinError;
 
     private void login() {
 
-        if (mPinLoginButton.getProgress() != 0)
+        if (mPinLoginButton.isLoading())
             return;
 
         if (mPinText.length() < 4) {
@@ -71,14 +70,14 @@ public class PinActivity extends LoginActivity implements Observer, View.OnClick
             return;
         }
 
-        mPinLoginButton.setProgress(50);
+        mPinLoginButton.startLoading();
         mPinText.setEnabled(false);
         hideKeyboardFrom(mPinText);
 
         setUpLogin(UI.getText(mPinText), new Runnable() {
              public void run() {
                  UI.clear(mPinText);
-                 mPinLoginButton.setProgress(0);
+                 mPinLoginButton.stopLoading();
                  UI.enable(mPinText);
                  UI.show(mPinError);
                  final int counter = mService.cfg("pin").getInt("counter", 1);
@@ -169,7 +168,6 @@ public class PinActivity extends LoginActivity implements Observer, View.OnClick
 
         setContentView(R.layout.activity_pin);
         mPinLoginButton = UI.find(this, R.id.pinLoginButton);
-        mPinLoginButton.setIndeterminateProgressMode(true);
         mPinText = UI.find(this, R.id.pinText);
         mPinError = UI.find(this, R.id.pinErrorText);
 
@@ -187,7 +185,7 @@ public class PinActivity extends LoginActivity implements Observer, View.OnClick
             mPinLoginButton.setOnClickListener(this);
         } else  {
             mPinText.setEnabled(false);
-            mPinLoginButton.setProgress(50);
+            mPinLoginButton.startLoading();
             tryDecrypt();
         }
     }

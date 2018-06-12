@@ -72,16 +72,15 @@
 
                 android:gravity="center">
 
-                <com.dd.CircularProgressButton
+                <com.greenaddress.greenbits.ui.CircularButton
                     android:id="@+id/mnemonicOkButton"
-                    style="@style/myButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:textColor="@color/white"
-                    app:cpb_colorIndicator="@color/accent"
-                    app:cpb_selectorIdle="@drawable/buttonprogressselector"
-                    app:cpb_textIdle="OK" />
+                    android:layout_margin="3dp"
+                    app:cardBackgroundColor="@color/colorAccent"
+                    app:textColor="@color/white"
+                    app:text="@android:string/ok" />
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

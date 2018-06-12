@@ -50,20 +50,16 @@
             android:layout_marginTop="24dp"
             android:text="@string/remember_watch_only" />
 
-        <com.dd.CircularProgressButton
+        <com.greenaddress.greenbits.ui.CircularButton
             android:id="@+id/btn_login"
-            style="@style/myButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="24dp"
-            android:layout_marginTop="24dp"
+            app:cardBackgroundColor="@color/colorAccent"
+            android:layout_margin="3dp"
             android:padding="12dp"
-            android:text="@string/pinLoginText"
-            android:textColor="@color/white"
-            app:cpb_colorIndicator="@color/accent"
-            app:cpb_selectorIdle="@drawable/buttonprogressselector"
-            app:cpb_textIdle="@string/pinLoginText" />
+            app:textColor="@color/white"
+            app:text="@string/pinLoginText" />
 
     </LinearLayout>
 </ScrollView>

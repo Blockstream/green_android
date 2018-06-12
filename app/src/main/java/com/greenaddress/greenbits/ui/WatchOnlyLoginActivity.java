@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.dd.CircularProgressButton;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -22,7 +21,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
     private EditText mUsernameText;
     private EditText mPasswordText;
-    private CircularProgressButton mLoginButton;
+    private CircularButton mLoginButton;
     private CheckBox mRememberCheckBox;
 
 
@@ -35,7 +34,6 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         mLoginButton = UI.find(this, R.id.btn_login);
         mRememberCheckBox = UI.find(this, R.id.remember_watch_only);
 
-        mLoginButton.setIndeterminateProgressMode(true);
         mLoginButton.setOnClickListener(this);
 
         final TextView.OnEditorActionListener listener;
@@ -89,7 +87,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
     }
 
     private void onLoginButtonClicked() {
-        if (mLoginButton.getProgress() != 0)
+        if (mLoginButton.isLoading())
             return;
 
         if (!validate()) {
@@ -128,7 +126,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
     }
 
     private void onLoginBegin() {
-        mLoginButton.setProgress(50);
+        mLoginButton.startLoading();
         mUsernameText.setEnabled(false);
         mPasswordText.setEnabled(false);
         mRememberCheckBox.setEnabled(false);
@@ -137,7 +135,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
     }
 
     private void onLoginFailed(final String msg) {
-        mLoginButton.setProgress(0);
+        mLoginButton.stopLoading();
         mUsernameText.setEnabled(true);
         mPasswordText.setEnabled(true);
         mRememberCheckBox.setEnabled(true);

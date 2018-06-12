@@ -4,4 +4,8 @@
     <attr name="textSizeMax" format="dimension"/>
     <attr name="textSizeMin" format="dimension"/>
 </declare-styleable>
+<declare-styleable name="CircularButton">
+    <attr name="text" format="string"/>
+    <attr name="textColor" format="color"/>
+</declare-styleable>
 </resources>
