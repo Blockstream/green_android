@@ -175,7 +175,17 @@ public class SendFragment extends SubaccountFragment {
                         processBitcoinURI(null, res.first, res.second);
                 }
             } catch (final BitcoinURIParseException e) {
-                gaActivity.toast(R.string.err_send_invalid_bitcoin_uri);
+                // bitcoinj doesn't understand the address, if its valid (e.g. bech32), use it
+                int errId = R.string.err_send_invalid_bitcoin_uri;
+                if (uri.toLowerCase().startsWith("bitcoin:")) {
+                    final String inner = uri.substring(8);
+                    if (service.isValidAddress(inner)) {
+                        processBitcoinURIDetails(inner, null, null);
+                        errId = 0;
+                    }
+                }
+                if (errId != 0)
+                    gaActivity.toast(errId);
             }
             // set intent uri flag only if the call arrives from non internal qr scan
             if (container.getTag(R.id.internal_qr) == null) {
@@ -406,20 +416,21 @@ public class SendFragment extends SubaccountFragment {
     }
 
     private void processBitcoinURI(final BitcoinURI URI, final String confidentialAddress, Coin amount) {
-        final GaService service = getGAService();
-        final GaActivity gaActivity = getGaActivity();
-
         if (URI != null && URI.getPaymentRequestUrl() != null) {
             processPaymentRequestUrl(URI.getPaymentRequestUrl());
             return;
         }
-
-        if (confidentialAddress != null)
-            mRecipientEdit.setText(confidentialAddress);
-        else {
-            mRecipientEdit.setText(URI.getAddress().toString());
+        final String address = URI == null ? null : URI.getAddress().toString();
+        if (confidentialAddress == null)
             amount = URI.getAmount();
-        }
+        processBitcoinURIDetails(address, confidentialAddress, amount);
+    }
+
+    private void processBitcoinURIDetails(final String address, final String confidentialAddress, Coin amount) {
+        final GaService service = getGAService();
+        final GaActivity gaActivity = getGaActivity();
+
+        mRecipientEdit.setText(confidentialAddress == null ? address : confidentialAddress);
         if (amount == null)
             return;
 
