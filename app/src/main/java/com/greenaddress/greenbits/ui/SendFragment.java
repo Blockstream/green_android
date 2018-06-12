@@ -1169,6 +1169,7 @@ public class SendFragment extends SubaccountFragment {
                 if (mPayreqData == null) {
                     UI.dismiss(gaActivity, SendFragment.this.mSummary);
                     onTransactionSent();
+                    return;
                 }
                 final PaymentSession session;
                 try {
