@@ -58,6 +58,8 @@ public class CircularButton extends CardView {
         mButton = new Button(context);
         mButton.setBackgroundColor(Color.TRANSPARENT);
         mButton.setClickable(false);
+        mButton.setPadding((int)getPx(15), mButton.getPaddingTop(), (int)getPx(15),
+                mButton.getPaddingBottom());
         final String text = typedArray.getString(R.styleable.CircularButton_text);
         mButton.setText(text);
         mButton.setTextColor(typedArray.getColor(R.styleable.CircularButton_textColor, Color.BLACK));
