@@ -133,13 +133,13 @@ public class CircularButton extends CardView {
         mProgressBar.setVisibility(View.GONE);
         setRadius(getPx(DEFAULT_RADIUS));
         setClickable(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mLinearLayout.setBackground(mTransStopLoading);
-            mTransStopLoading.startTransition(DEFAULT_DURATION);
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             setCardBackgroundColor(mBackgroundColor);
             mLinearLayout.setBackgroundColor(mBackgroundColor);
+            return;
         }
+        mLinearLayout.setBackground(mTransStopLoading);
+        mTransStopLoading.startTransition(DEFAULT_DURATION);
     }
 
     public void setComplete(final Boolean complete) {
