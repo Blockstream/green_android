@@ -282,17 +282,17 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             } else {
                 // Show a warning if the user is watch only and has unacked messages
                 if (mService.isWatchOnly() && mService.getNextSystemMessageId() != 0)
-                    showWarningBanner(R.string.unacked_system_messages, null);
+                    banner = showWarningBanner(R.string.unacked_system_messages, null);
             }
         }
         if (banner != null) {
             mTwoFactorResetShowing = true;
             banner.setTextColor(Color.RED);
+        } else {
+            // Re-show our 2FA warning if config is changed to remove all methods
+            // Fake a config change to show the warning if no current 2FA method
+            mTwoFactorObserver.update(null, null);
         }
-
-        // Re-show our 2FA warning if config is changed to remove all methods
-        // Fake a config change to show the warning if no current 2FA method
-        mTwoFactorObserver.update(null, null);
 
         configureSubaccountsFooter(mService.getCurrentSubAccount());
 
