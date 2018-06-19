@@ -240,8 +240,10 @@ public class MainFragment extends SubaccountFragment {
           return;
 
         final GaService service = getGAService();
+        final boolean isSPVEnabled = service.isSPVEnabled();
+
         for (final TransactionItem txItem : mTxItems)
-            txItem.spvVerified = service.isSPVVerified(txItem.txHash);
+            txItem.spvVerified = isSPVEnabled ? service.isSPVVerified(txItem.txHash) : true;
 
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
