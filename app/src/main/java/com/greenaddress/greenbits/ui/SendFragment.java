@@ -31,6 +31,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libwally.Wally;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -624,6 +625,8 @@ public class SendFragment extends SubaccountFragment {
             final String bip70memo = mPayreqDetails.getMemo();
             if (!TextUtils.isEmpty(bip70memo))
                 privateData.mData.put("memo", bip70memo);
+            privateData.mData.put("social_destination", ImmutableMap.of("name", editRecipient));
+            privateData.mData.put("social_destination_type", 110); // 110 = PAYMENTREQUEST
         } else {
             recipient = editRecipient;
             amount = getSendAmount();
