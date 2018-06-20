@@ -90,14 +90,6 @@
         <item>Economy</item>
         <item>Custom</item>
     </string-array>
-    <string-array name="send_fee_target_choices_instant">
-        <item>High</item>
-        <item>Normal</item>
-        <item>Low</item>
-        <item>Economy</item>
-        <item>Custom</item>
-        <item>Instant</item>
-    </string-array>
     <string-array name="available_networks">
         <item>Bitcoin</item>
         <item>Testnet</item>
@@ -254,7 +246,6 @@
     <string name="oldFeeText">Old Fee:</string>
     <string name="feeIncreaseTitle">Fee increase</string>
     <string name="insufficientFundsText">Insufficient funds</string>
-    <string name="instantUnavailable">Instant transactions are not available at this time. Please try again later.</string>
     <string name="app_version">Version %1$s %2$s</string>
     <string name="invalidWord">\'%1$s\' is an invalid word, do you want it corrected to %2$s?</string>
     <string name="app_description">GreenAddress Logo</string>

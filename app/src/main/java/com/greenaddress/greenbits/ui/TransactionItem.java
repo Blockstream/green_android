@@ -27,7 +27,6 @@ public class TransactionItem implements Serializable {
     public final String counterparty;
     public final String receivedOn;
     public final JSONMap receivedOnEp;
-    public final boolean instant;
     public final boolean replaceable;
     public final Sha256Hash txHash;
     public final String doubleSpentBy;
@@ -56,7 +55,6 @@ public class TransactionItem implements Serializable {
     }
 
     public TransactionItem(final GaService service, final JSONMap m, final int currentBlock) throws ParseException {
-        instant = m.getBool("instant");
         doubleSpentBy = m.get("double_spent_by");
 
         this.currentBlock = currentBlock;
@@ -173,8 +171,7 @@ public class TransactionItem implements Serializable {
         receivedOnEp = tmpReceivedOnEp;
         spvVerified = service.isSPVVerified(txHash);
         date = m.getDate("created_at");
-        // FIXME: Implement RBF for instant transactions
-        replaceable = !service.isElements() && !instant &&
+        replaceable = !service.isElements() &&
                       m.getBool("rbf_optin") && type != TransactionItem.TYPE.IN;
     }
 

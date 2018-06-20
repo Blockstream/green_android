@@ -245,9 +245,8 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
             // No fastest fee rate is available: allow the user to RBF to the
             // current new transaction rate for 1 block confirmation if it is
             // higher than the current rate
-            final boolean isInstant = false; // FIXME: Support instant RBF
             try {
-                mChosenFeeRate = GATx.getFeeEstimateForRBF(mService, isInstant);
+                mChosenFeeRate = GATx.getFeeEstimateForRBF(mService);
             } catch (final Throwable e) {
                 toast(e);
                 return;
@@ -473,7 +472,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
 
         // We can't shrink the change output; add new inputs (and possibly
         // a new change output) in order to increase the fee.
-        final int numConfs = 1; // FIXME: 6 if instant
+        final int numConfs = 1;
         final boolean is2Of3 = mService.findSubaccountByType(subAccount, "2of3") != null;
         final boolean minimizeInputs = is2Of3;
         final boolean filterAsset = true;
