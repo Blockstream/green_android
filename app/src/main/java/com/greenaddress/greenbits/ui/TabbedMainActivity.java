@@ -282,8 +282,14 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                 banner = showWarningBanner(message, null);
             } else {
                 // Show a warning if the user has unacked messages
-                if (mService.haveUnackedMessages())
-                    banner = showWarningBanner(R.string.unacked_system_messages, null);
+                if (mService.haveUnackedMessages()) {
+                    final int msgId;
+                    if (mService.isWatchOnly())
+                       msgId = R.string.unacked_system_messages_wo;
+                    else
+                       msgId = R.string.unacked_system_messages;
+                    banner = showWarningBanner(msgId, null);
+                }
             }
         }
         if (banner != null) {
