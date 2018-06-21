@@ -281,8 +281,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                 final String message = getString(R.string.twofactor_reset_banner, days);
                 banner = showWarningBanner(message, null);
             } else {
-                // Show a warning if the user is watch only and has unacked messages
-                if (mService.isWatchOnly() && mService.getNextSystemMessageId() != 0)
+                // Show a warning if the user has unacked messages
+                if (mService.haveUnackedMessages())
                     banner = showWarningBanner(R.string.unacked_system_messages, null);
             }
         }

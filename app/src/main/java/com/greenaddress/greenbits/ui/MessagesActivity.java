@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import java.util.concurrent.Callable;
 public class MessagesActivity extends GaActivity
     implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
+    private static final String TAG = MessagesActivity.class.getSimpleName();
     private TextView mMessageText;
     private CheckBox mAckedCheckBox;
     private Button mContinueButton;
@@ -24,7 +26,6 @@ public class MessagesActivity extends GaActivity
     private final Runnable mDialogCB = new Runnable() { public void run() { mWaitDialog = null; } };
 
     private String mCurrentMessage;
-    private Integer mCurrentMessageId;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -58,34 +59,36 @@ public class MessagesActivity extends GaActivity
             return;
         }
 
-        if (mService.getNextSystemMessageId() != 0) {
-            setTitle(R.string.important_message);
-            mAckedCheckBox.setChecked(false);
-            UI.disable(mAckedCheckBox, mContinueButton);
-            // Fetch the next message from the server and show it
-            mService.getExecutor().submit(new Callable<Void>() {
-                @Override
-                public Void call() {
-                    final Pair<String, Integer> messageInfo = mService.getNextSystemMessage();
-                    if (messageInfo == null) {
-                        toast(R.string.err_send_not_connected_will_resume);
-                        return null;
-                    }
-                    mCurrentMessage = messageInfo.first;
-                    mCurrentMessageId = messageInfo.second;
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            mMessageText.setText(mCurrentMessage);
-                            UI.enable(mAckedCheckBox);
-                        }
-                    });
-                    return null;
-                }
-            });
+        if (!mService.haveUnackedMessages()) {
+            Log.d(TAG, "processNextMessage: : all messages acked");
+            goToMainTab();
             return;
         }
 
-        goToMainTab();
+        Log.d(TAG, "processNextMessage: : have unacked");
+        setTitle(R.string.important_message);
+        mAckedCheckBox.setChecked(false);
+        UI.disable(mAckedCheckBox, mContinueButton);
+
+        // Fetch the next message from the server and show it
+        mService.getExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                final Pair<String, Integer> messageInfo = mService.getNextSystemMessage();
+                if (messageInfo == null) {
+                    toast(R.string.err_send_not_connected_will_resume);
+                    return null;
+                }
+                mCurrentMessage = messageInfo.first;
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        mMessageText.setText(mCurrentMessage);
+                        UI.enable(mAckedCheckBox);
+                    }
+                });
+                return null;
+            }
+        });
     }
 
     private void goToMainTab() {
@@ -111,7 +114,7 @@ public class MessagesActivity extends GaActivity
                             UI.setDialogCloseHandler(mWaitDialog, mDialogCB);
                         }});
                     }
-                    final boolean ok = mService.signAndAckSystemMessage(mCurrentMessageId, mCurrentMessage);
+                    final boolean ok = mService.signAndAckSystemMessage(mCurrentMessage);
                     runOnUiThread(new Runnable() { public void run() {
                         mWaitDialog = UI.dismiss(MessagesActivity.this, mWaitDialog);
                         if (ok)
