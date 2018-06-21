@@ -27,15 +27,32 @@
         android:layout_marginTop="24dp"
         android:text="@string/i_confirm_i_have_read" />
 
-    <Button
-        android:id="@+id/system_message_continue"
-        style="@style/myButton"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/continueText"
-        android:textColor="@color/accent"
-        android:background="@color/hide" />
+        android:layout_gravity="center">
 
+        <Button
+            android:id="@+id/system_message_skip"
+            style="@style/myButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/pinSkipText"
+            android:textColor="@color/accent"
+            android:background="@color/hide" />
+
+        <Button
+            android:id="@+id/system_message_continue"
+            style="@style/myButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/signupContinueButtonText"
+            android:textColor="@color/accent"
+            android:background="@color/hide" />
+
+    </LinearLayout>
 
 </LinearLayout>

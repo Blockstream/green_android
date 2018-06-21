@@ -19,6 +19,7 @@ public class MessagesActivity extends GaActivity
     private TextView mMessageText;
     private CheckBox mAckedCheckBox;
     private Button mContinueButton;
+    private Button mSkipButton;
     private MaterialDialog mWaitDialog;
     private final Runnable mDialogCB = new Runnable() { public void run() { mWaitDialog = null; } };
 
@@ -32,10 +33,12 @@ public class MessagesActivity extends GaActivity
         mMessageText = UI.find(this, R.id.system_message_text);
         mAckedCheckBox = UI.find(this, R.id.system_message_acked);
         mContinueButton = UI.find(this, R.id.system_message_continue);
+        mSkipButton = UI.find(this, R.id.system_message_skip);
 
         mMessageText.setMovementMethod(LinkMovementMethod.getInstance());
         mAckedCheckBox.setOnCheckedChangeListener(this);
         UI.mapClick(this, R.id.system_message_continue, this);
+        UI.mapClick(this, R.id.system_message_skip, this);
 
         processNextMessage();
     }
@@ -44,6 +47,7 @@ public class MessagesActivity extends GaActivity
     public void onDestroy() {
         super.onDestroy();
         UI.unmapClick(mContinueButton);
+        UI.unmapClick(mSkipButton);
         mAckedCheckBox.setOnCheckedChangeListener(null);
     }
 
@@ -81,6 +85,10 @@ public class MessagesActivity extends GaActivity
             return;
         }
 
+        goToMainTab();
+    }
+
+    private void goToMainTab() {
         final Intent intent = new Intent(MessagesActivity.this, TabbedMainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -89,7 +97,9 @@ public class MessagesActivity extends GaActivity
 
     @Override
     public void onClick(final View v) {
-        if (v == mContinueButton) {
+        if (v == mSkipButton)
+            goToMainTab();
+        else if (v == mContinueButton) {
             // Sign and ack the current message, then move to the next
             mService.getExecutor().submit(new Callable<Void>() {
                 @Override
