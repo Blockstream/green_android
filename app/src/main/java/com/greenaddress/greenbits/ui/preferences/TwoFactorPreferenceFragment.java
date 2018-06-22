@@ -217,7 +217,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     }
 
     private void change2FA(final String method, final Boolean checked) {
-        if (method == "reset")
+        if (method.equals("reset"))
             return;
 
         getPref(method).setChecked(checked);
