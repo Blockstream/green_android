@@ -884,7 +884,7 @@ public class WalletClient {
     }
 
     public Integer getTwoFactorResetDaysRemaining() {
-        final boolean isActive = mLoginData.get("reset_2fa_active");
+        final boolean isActive = mLoginData == null ? false : mLoginData.get("reset_2fa_active");
         return isActive ? mLoginData.get("reset_2fa_days_remaining") : null;
     }
 
