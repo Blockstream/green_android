@@ -1151,18 +1151,18 @@ public class SendFragment extends SubaccountFragment {
             twoFacData.put("code", code);
         }
 
+        PaymentSession session = null;
         if (mPayreqData != null) {
-            final PaymentSession session;
             try {
                 session = new PaymentSession(mPayreqData, true);
                 if (session.isExpired()) {
                     UI.toast(gaActivity, R.string.bip70_session_expired, mSendButton);
-                    Log.d(TAG, "BIP70 payment failure: " + R.string.bip70_session_expired);
+                    Log.e(TAG, "BIP70 payment failure: PaymentSession Expired");
                     return;
                 }
             } catch (final PaymentProtocolException e) {
                 UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
-                Log.d(TAG, "BIP70 payment failure");
+                Log.e(TAG, "BIP70 payment failure (PaymentSession): " + e.toString());
                 return;
             }
             // Store the payment request details in private data so the server
@@ -1176,6 +1176,7 @@ public class SendFragment extends SubaccountFragment {
         sendFn = service.sendRawTransaction(signedRawTx, twoFacData, privateData, returnTx);
 
         // Send tx to GA server to broadcast to bitcoin network
+        final PaymentSession sendSession = session;
         Futures.addCallback(sendFn,
             new CB.Toast<Pair<String, String>>(gaActivity, mSendButton) {
             @Override
@@ -1183,14 +1184,6 @@ public class SendFragment extends SubaccountFragment {
                 if (mPayreqData == null) {
                     UI.dismiss(gaActivity, SendFragment.this.mSummary);
                     onTransactionSent();
-                    return;
-                }
-                final PaymentSession session;
-                try {
-                    session = new PaymentSession(mPayreqData, true);
-                } catch (final PaymentProtocolException e) {
-                    e.printStackTrace();
-                    Log.d(TAG, "BIP70 payment failure");
                     return;
                 }
 
@@ -1206,10 +1199,10 @@ public class SendFragment extends SubaccountFragment {
                             final Address address = Address.fromBase58(Network.NETWORK, refundAddr);
                             final String memo = privateData.getString("memo");
                             final ListenableFuture<PaymentProtocol.Ack> sendAckFn =
-                                    service.sendPayment(session, ImmutableList.of(tx), address, memo);
+                                    service.sendPayment(sendSession, ImmutableList.of(tx), address, memo);
 
                             if (sendAckFn == null) {
-                                Log.d(TAG, "BIP70 payment failure");
+                                Log.e(TAG, "BIP70 payment failure (sendAckFn)");
                                 UI.toast(gaActivity, R.string.bip70_invalid_payment, mSendButton);
                                 return;
                             }
@@ -1219,7 +1212,7 @@ public class SendFragment extends SubaccountFragment {
                                 @Override
                                 public void onSuccess(final PaymentProtocol.Ack ack) {
                                     if (ack == null) {
-                                        Log.d(TAG, "BIP70 payment failure");
+                                        Log.e(TAG, "BIP70 payment failure (null PaymentProtocol.Ack)");
                                         UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
                                         return;
                                     }
@@ -1239,12 +1232,12 @@ public class SendFragment extends SubaccountFragment {
                                 @Override
                                 public void onFailure(final Throwable t) {
                                     super.onFailure(t);
-                                    Log.d(TAG, "BIP70 payment failure: " + t.getMessage());
+                                    Log.e(TAG, "BIP70 payment failure (PaymentProtocol.Ack): " + t.getMessage());
                                 }
                             }, service.getExecutor());
                         } catch (final PaymentProtocolException | IOException e) {
                             e.printStackTrace();
-                            Log.d(TAG, "BIP70 payment failure: " + e.getMessage());
+                            Log.e(TAG, "BIP70 payment failure: " + e.getMessage());
                             UI.toast(gaActivity, e.getMessage(), mSendButton);
                         }
                     }
