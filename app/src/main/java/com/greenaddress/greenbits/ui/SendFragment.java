@@ -1142,6 +1142,7 @@ public class SendFragment extends SubaccountFragment {
 
         final GaActivity gaActivity = getGaActivity();
         final GaService service = getGAService();
+        final boolean isRBF = service.isRBFEnabled();
 
         if (twoFacData != null && !twoFacMethod.equals("limit")) {
             if (code.length() < 6) {
@@ -1213,7 +1214,15 @@ public class SendFragment extends SubaccountFragment {
                                 public void onSuccess(final PaymentProtocol.Ack ack) {
                                     if (ack == null) {
                                         Log.e(TAG, "BIP70 payment failure (null PaymentProtocol.Ack)");
-                                        UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
+                                        if (isRBF && sendSession.getPaymentUrl().contains("bitpay.com")) {
+                                            // Ignore failure to ack from bitpay.com for RBF txs.
+                                            // Bitpay process RBF txs fine but for political
+                                            // reasons refuse to ack them. Ignore their failure
+                                            // to ack in this case since the payment is sent.
+                                            UI.dismiss(gaActivity, SendFragment.this.mSummary);
+                                            onTransactionSent();
+                                        } else
+                                            UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
                                         return;
                                     }
                                     if (!TextUtils.isEmpty(ack.getMemo())) {
