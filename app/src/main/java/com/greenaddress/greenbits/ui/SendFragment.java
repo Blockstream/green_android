@@ -1183,7 +1183,6 @@ public class SendFragment extends SubaccountFragment {
             @Override
             public void onSuccess(final Pair<String, String> txAndHash) {
                 if (mPayreqData == null) {
-                    UI.dismiss(gaActivity, SendFragment.this.mSummary);
                     onTransactionSent();
                     return;
                 }
@@ -1219,7 +1218,6 @@ public class SendFragment extends SubaccountFragment {
                                             // Bitpay process RBF txs fine but for political
                                             // reasons refuse to ack them. Ignore their failure
                                             // to ack in this case since the payment is sent.
-                                            UI.dismiss(gaActivity, SendFragment.this.mSummary);
                                             onTransactionSent();
                                         } else
                                             UI.toast(gaActivity, R.string.bip70_payment_failure, mSendButton);
@@ -1227,7 +1225,6 @@ public class SendFragment extends SubaccountFragment {
                                     }
                                     if (TextUtils.isEmpty(ack.getMemo())) {
                                         Log.d(TAG, "BIP70 payment OK (no memo)");
-                                        UI.dismiss(gaActivity, SendFragment.this.mSummary);
                                         onTransactionSent();
                                     } else {
                                         Log.d(TAG, "BIP70 payment OK: " + ack.getMemo());
@@ -1235,7 +1232,6 @@ public class SendFragment extends SubaccountFragment {
                                         CB.after(service.changeMemo(txAndHash.first, ack.getMemo(), "payreq"),
                                             new CB.Toast<Boolean>(gaActivity, mSendButton) {
                                                 public void onSuccess(final Boolean unused) {
-                                                    UI.dismiss(gaActivity, SendFragment.this.mSummary);
                                                     onTransactionSent();
                                                 }
                                             });
@@ -1285,6 +1281,8 @@ public class SendFragment extends SubaccountFragment {
 
         if (gaActivity == null)
             return; // App was paused/deleted while callback ran
+
+        UI.dismiss(gaActivity, mSummary);
 
         gaActivity.runOnUiThread(new Runnable() {
             public void run() {
