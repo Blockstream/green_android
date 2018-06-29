@@ -890,7 +890,9 @@ public class GaService extends Service implements INotificationHandler {
                    @Override
                    public Pair<String, String> apply(final Map<String, Object> ret) {
                        // FIXME: Server should return the full limits including is_fiat
-                       if (ret.get("new_limit") != null)
+                       if (ret.get("new_limit") == null)
+                           mLimitsData.mData.put("total", 0); // Limit exhausted or not set
+                       else
                            mLimitsData.mData.put("total", ret.get("new_limit"));
                        return new Pair<>(ret.get("txhash").toString(),
                                          ret.get("tx").toString());
