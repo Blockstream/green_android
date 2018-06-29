@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
@@ -37,6 +38,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public abstract class UI {
+    private static final String TAG = UI.class.getSimpleName();
+
     public static final int INVALID_RESOURCE_ID = 0;
     public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
     public enum FEE_TARGET {
@@ -203,45 +206,36 @@ public abstract class UI {
         return dialog;
     }
 
-    public static void toast(final Activity activity, final int id, final int len) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(activity, id, len).show();
-            }
-        });
-    }
-
-    public static void toast(final Activity activity, final String s, final int len) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(activity, s, len).show();
-            }
-        });
-    }
-
-    public static void toast(final Activity activity, final Throwable t, final Button reenable) {
-        t.printStackTrace();
-        toast(activity, t.getMessage(), reenable);
-    }
-
-    public static void toast(final Activity activity, final String msg, final Button reenable) {
+    public static void toast(final Activity activity, final String msg, final Button reenable, final int len) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (reenable != null)
                     reenable.setEnabled(true);
-                Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Toast: " + msg);
+                Toast.makeText(activity, msg, len).show();
             }
         });
     }
 
     public static void toast(final Activity activity, final int id, final Button reenable) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                if (reenable != null)
-                    reenable.setEnabled(true);
-                Toast.makeText(activity, id, Toast.LENGTH_LONG).show();
-            }
-        });
+        toast(activity, activity.getString(id), reenable);
+    }
+
+    public static void toast(final Activity activity, final String msg, final Button reenable) {
+        toast(activity, msg, reenable, Toast.LENGTH_LONG);
+    }
+
+    public static void toast(final Activity activity, final Throwable t, final Button reenable) {
+        t.printStackTrace();
+        toast(activity, t.getMessage(), reenable, Toast.LENGTH_LONG);
+    }
+
+    public static void toast(final Activity activity, final int id, final int len) {
+        toast(activity, activity.getString(id), null, len);
+    }
+
+    public static void toast(final Activity activity, final String s, final int len) {
+        toast(activity, s, null, len);
     }
 
     // Dummy TextWatcher for simple overrides
