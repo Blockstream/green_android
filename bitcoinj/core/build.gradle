@@ -14,7 +14,7 @@ configurations.all {
 
 repositories {
      maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-     maven { url "http://repo.maven.apache.org/maven2" }
+     maven { url "https://repo.maven.apache.org/maven2" }
 }
 dependencies {
     compile group: 'com.h2database', name: 'h2', version:'1.3.167'
