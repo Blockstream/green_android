@@ -11,48 +11,59 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.greenaddress.greenbits.ui.MessagesActivity">
 
-    <TextView
-        android:id="@+id/system_message_text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <CheckBox
-        android:id="@+id/system_message_acked"
-        android:layout_width="wrap_content"
-        android:textColor="@color/textColor"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="24dp"
-        android:layout_marginTop="24dp"
-        android:text="@string/i_confirm_i_have_read" />
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
-
-        <Button
-            android:id="@+id/system_message_skip"
-            style="@style/myButton"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/pinSkipText"
-            android:textColor="@color/accent"
-            android:background="@color/hide" />
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/system_message_continue"
-            style="@style/myButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/signupContinueButtonText"
-            android:textColor="@color/accent"
-            android:background="@color/hide" />
+            <TextView
+                android:id="@+id/system_message_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
 
-    </LinearLayout>
+            <CheckBox
+                android:id="@+id/system_message_acked"
+                android:layout_width="wrap_content"
+                android:textColor="@color/textColor"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/i_confirm_i_have_read" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <Button
+                    android:id="@+id/system_message_skip"
+                    style="@style/myButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/pinSkipText"
+                    android:textColor="@color/accent"
+                    android:background="@color/hide" />
+
+                <Button
+                    android:id="@+id/system_message_continue"
+                    style="@style/myButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/signupContinueButtonText"
+                    android:textColor="@color/accent"
+                    android:background="@color/hide" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
