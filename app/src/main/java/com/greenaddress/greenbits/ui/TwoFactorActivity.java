@@ -70,7 +70,7 @@ public class TwoFactorActivity extends GaActivity {
 
         mLocalizedMap = UI.getTwoFactorLookup(getResources());
 
-        mMethod = getIntent().getStringExtra("method");
+        mMethod = getIntent().getStringExtra("method").toLowerCase();
         mIsReset = mMethod.equals("reset");
 
         if (mIsReset) {

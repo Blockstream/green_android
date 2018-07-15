@@ -38,7 +38,6 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     private static final int REQUEST_ENABLE_2FA = 0;
     private static final String NLOCKTIME_EMAILS = "NLocktimeEmails";
 
-    private String mMethod; // Current 2FA Method
     private Map<String, String> mLocalizedMap; // 2FA method to localized description
     private Preference mLimitsPref;
     private Preference mSendNLocktimePref;
@@ -149,8 +148,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     private void prompt2FAChange(final String method, final Boolean newValue) {
         if (newValue) {
             final Intent intent = new Intent(getActivity(), TwoFactorActivity.class);
-            intent.putExtra("method", method.toLowerCase());
-            mMethod = method;
+            intent.putExtra("method", method);
             startActivityForResult(intent, REQUEST_ENABLE_2FA);
             return;
         }
@@ -210,8 +208,8 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (resultCode == Activity.RESULT_OK)
-            change2FA(mMethod, true);
+        if (requestCode == REQUEST_ENABLE_2FA && resultCode == Activity.RESULT_OK)
+            change2FA(data.getStringExtra("method"), true);
         else
             super.onActivityResult(requestCode, resultCode, data);
     }
