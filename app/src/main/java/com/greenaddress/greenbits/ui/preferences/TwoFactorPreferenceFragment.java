@@ -208,10 +208,9 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == REQUEST_ENABLE_2FA && resultCode == Activity.RESULT_OK)
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_ENABLE_2FA && resultCode == Activity.RESULT_OK && data != null)
             change2FA(data.getStringExtra("method"), true);
-        else
-            super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void change2FA(final String method, final Boolean checked) {

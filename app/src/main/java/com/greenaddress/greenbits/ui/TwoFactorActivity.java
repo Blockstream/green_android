@@ -252,7 +252,7 @@ public class TwoFactorActivity extends GaActivity {
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
-                        setResult(RESULT_OK);
+                        setResult(RESULT_OK, getIntent());
                         finishOnUiThread();
                     }
                 });
@@ -284,7 +284,7 @@ public class TwoFactorActivity extends GaActivity {
                          new CB.Toast<Boolean>(TwoFactorActivity.this, mContinueButton) {
                     @Override
                     public void onSuccess(final Boolean result) {
-                        setResult(RESULT_OK);
+                        setResult(RESULT_OK, getIntent());
                         finishOnUiThread();
                     }
                 });
@@ -368,7 +368,7 @@ public class TwoFactorActivity extends GaActivity {
         try {
             final JSONMap m = mService.confirmTwoFactorReset(mResetEmail, isDispute, twoFacData);
             mService.updateTwoFactorResetStatus(m);
-            setResult(RESULT_OK);
+            setResult(RESULT_OK, getIntent());
             UI.toast(TwoFactorActivity.this, R.string.twofactor_reset_complete, Toast.LENGTH_LONG);
             exitApp();
         } catch (final Exception e) {
