@@ -35,6 +35,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.satoshilabs.trezor.Trezor;
@@ -88,7 +89,11 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
 
         final Intent intent = getIntent();
         if (intent != null && ACTION_USB_ATTACHED.equalsIgnoreCase(intent.getAction())) {
-            // A new USB device was plugged in and the app wasn't running
+            // A new USB device was plugged in
+            if (!mService.isConnected()) {
+                // The user previously manually logged out, connect again
+                mService.onConnectionClosed(GaService.LOGOFF_BY_USER_RECONNECT);
+            }
             onUsbAttach((UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
         }
     }

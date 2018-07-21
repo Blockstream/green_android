@@ -531,7 +531,7 @@ public class WalletClient {
                                 else
                                     if (connected)
                                         // Client got disconnected from the remote router
-                                        mNotificationHandler.onConnectionClosed(0);
+                                        mNotificationHandler.onConnectionClosed(GaService.LOGOFF_NO_CONNECTION);
                                     else {
                                         // or the last possible connect attempt failed
                                         final Throwable t = ((WampClient.DisconnectedState) newStatus).disconnectReason();

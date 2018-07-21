@@ -100,6 +100,14 @@ public class GaService extends Service implements INotificationHandler {
     private static final String TAG = GaService.class.getSimpleName();
     public static final boolean IS_ELEMENTS = Network.NETWORK == ElementsRegTestParams.get();
 
+    // Codes for logoff
+    public static final int LOGOFF_NO_CONNECTION = 0;
+    public static final int LOGOFF_CONCURRENT = 4000;
+    public static final int LOGOFF_CONCURRENT_SAME_DEVICE = 4001;
+    public static final int LOGOFF_NORMAL_CLOSE = 1000;
+    public static final int LOGOFF_SERVER_RESTART = 1006;
+    public static final int LOGOFF_BY_USER_RECONNECT = 9999;
+
     private enum ConnState {
         OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
     }
@@ -438,11 +446,7 @@ public class GaService extends Service implements INotificationHandler {
         mCurrentSystemMessageId = 0;
         mNextSystemMessageId = 0;
 
-        // Server error codes FIXME: These should be in a class somewhere
-        // 4000 (concurrentLoginOnDifferentDeviceId) && 4001 (concurrentLoginOnSameDeviceId!)
-        // 1000 NORMAL_CLOSE
-        // 1006 SERVER_RESTART
-        mState.setForcedLogout(code == 4000);
+        mState.setForcedLogout(code == LOGOFF_CONCURRENT);
         mState.transitionTo(ConnState.DISCONNECTED);
 
         if (getNetworkInfo() == null) {
@@ -453,7 +457,7 @@ public class GaService extends Service implements INotificationHandler {
         Log.i(TAG, "onConnectionClosed code=" + String.valueOf(code));
         // FIXME: some callback to UI so you see what's happening.
         mReconnectDelay = 0;
-        if (mAutoReconnect)
+        if (mAutoReconnect || code == LOGOFF_BY_USER_RECONNECT)
             reconnect();
     }
 
