@@ -223,14 +223,7 @@ public class PinActivity extends LoginActivity implements Observer, View.OnClick
             Futures.addCallback(mService.onConnected, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void result) {
-
-                    if (mService.isConnected()) {
-                        setUpLogin(pin, null);
-                        return;
-                    }
-
-                    // try again
-                    tryDecrypt();
+                    setUpLogin(pin, null);
                 }
 
                 @Override
