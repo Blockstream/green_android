@@ -164,6 +164,7 @@ public class GaService extends Service implements INotificationHandler {
     public byte[] mAssetId;
     private String mAssetSymbol;
     private MonetaryFormat mAssetFormat;
+    public byte[] mLocalEncryptionPassword;
 
     private final SPV mSPV = new SPV(this);
 
@@ -180,6 +181,12 @@ public class GaService extends Service implements INotificationHandler {
     public boolean isHardwareWallet() {
         final ISigningWallet wallet = getSigningWallet();
         return wallet != null && !(wallet instanceof SWWallet);
+    }
+
+    private byte[] getLocalEncryptionPassword() {
+        if (mLocalEncryptionPassword == null)
+            mLocalEncryptionPassword = getSigningWallet().getLocalEncryptionPassword();
+        return mLocalEncryptionPassword;
     }
 
     public boolean haveUnattendedSigning() {
@@ -443,6 +450,7 @@ public class GaService extends Service implements INotificationHandler {
     public void onConnectionClosed(final int code) {
         HDKey.resetCache(null);
         HDClientKey.resetCache(null, null);
+        mLocalEncryptionPassword = null;
         mCurrentSystemMessageId = 0;
         mNextSystemMessageId = 0;
 
@@ -562,6 +570,10 @@ public class GaService extends Service implements INotificationHandler {
             mDustThreshold = Coin.valueOf((int) loginData.get("dust"));
 
         HDKey.resetCache(loginData.mGaitPath);
+        mLocalEncryptionPassword = null;
+        // Cache the local encryption password as it is slow to generate,
+        // especially on hardware wallets.
+        getLocalEncryptionPassword();
 
         mBalanceObservables.put(0, new GaObservable());
         if (IS_ELEMENTS) {
@@ -994,7 +1006,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     private void cacheAddress(final int subAccount, final JSONMap address) {
-        final byte[] password = getSigningWallet().getLocalEncryptionPassword();
+        final byte[] password = getLocalEncryptionPassword();
         final byte[] salt = CryptoHelper.randomBytes(16);
         storeCachedAddress(subAccount, salt, CryptoHelper.encryptJSON(address, password, salt));
     }
@@ -1015,7 +1027,7 @@ public class GaService extends Service implements INotificationHandler {
         JSONMap json;
         try {
             json = CryptoHelper.decryptJSON(Wally.hex_to_bytes(encryptedAddressHex),
-                                            getSigningWallet().getLocalEncryptionPassword(),
+                                            getLocalEncryptionPassword(),
                                             Wally.hex_to_bytes(saltHex));
             final String expectedType = isSegwitEnabled() ? "p2wsh" : "p2sh";
             if (!json.getString("addr_type").equals(expectedType))
