@@ -112,7 +112,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         mVendorId = usb.getVendorId();
         Log.d(TAG, "Vendor: " + mVendorId + " Product: " + usb.getProductId());
 
-        if (mVendorId == VENDOR_TREZOR) {
+        if (mVendorId == VENDOR_TREZOR || mVendorId == VENDOR_TREZOR_V2) {
             onTrezor();
         } else if (mVendorId == VENDOR_BTCHIP || mVendorId == VENDOR_LEDGER) {
             if (BTChipTransportAndroid.isLedgerWithScreen(usb)) {
@@ -206,10 +206,15 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
 
         final List<Integer> version = t.getFirmwareVersion();
         boolean isFirmwareOutdated = false;
-        if (t.getVendorId() == VENDOR_TREZOR) {
+        final int vendorId = t.getVendorId();
+        if (vendorId == VENDOR_TREZOR) {
             isFirmwareOutdated = version.get(0) < 1 ||
                                  (version.get(0) == 1 && version.get(1) < 6) ||
                                  (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0);
+        } else if (vendorId == VENDOR_TREZOR_V2) {
+            isFirmwareOutdated = version.get(0) < 2 ||
+                                 (version.get(0) == 2 && version.get(1) < 0) ||
+                                 (version.get(0) == 2 && version.get(1) == 0 && version.get(2) < 7);
         }
 
         if (!isFirmwareOutdated) {
