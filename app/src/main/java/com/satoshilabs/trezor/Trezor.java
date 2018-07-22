@@ -98,8 +98,13 @@ public class Trezor {
         for (final UsbDevice device: manager.getDeviceList().values()) {
             // Check if the device is TREZOR (or AvalonWallet or BWALLET)
 
-            if ((device.getVendorId() != 0x534c || device.getProductId() != 0x0001) &&
-                    (device.getVendorId() != 0x10c4 || device.getProductId() != 0xea80)) {
+            final int vendorId = device.getVendorId();
+            final int productId = device.getProductId();
+
+            if ((vendorId != 0x534c || productId != 0x0001) &&
+                (vendorId != 0x1209 || productId != 0x53c0) &&
+                (vendorId != 0x1209 || productId != 0x53c1) &&
+                (vendorId != 0x10c4 || productId != 0xea80)) {
                 continue;
             }
 

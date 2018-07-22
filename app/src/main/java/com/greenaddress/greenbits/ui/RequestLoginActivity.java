@@ -55,9 +55,10 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
     private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
-    private static final int VENDOR_BTCHIP = 0x2581;
-    private static final int VENDOR_LEDGER = 0x2c97;
-    private static final int VENDOR_TREZOR = 0x534c;
+    private static final int VENDOR_BTCHIP    = 0x2581;
+    private static final int VENDOR_LEDGER    = 0x2c97;
+    private static final int VENDOR_TREZOR    = 0x534c;
+    private static final int VENDOR_TREZOR_V2 = 0x1209;
 
     private UsbManager mUsbManager;
     private UsbDevice mUsb;

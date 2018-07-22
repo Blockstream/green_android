@@ -4,6 +4,10 @@
     <usb-device vendor-id="21324" product-id="1" />
     <!-- VID 0x10c4 PID 0xea80 - TREZOR rpi bridge  -->
     <usb-device vendor-id="4292" product-id="60032" />
+    <!-- VID 0x1209 PID 0x53c0 - TREZOR V2 -->
+    <usb-device vendor-id="" product-id="" />
+    <!-- VID 0x1209 PID 0x53c1 - TREZOR V2 -->
+    <usb-device vendor-id="" product-id="" />
 
     <!-- VID 0x2581 PID 0x2b7c - BTChip HID -->
     <usb-device vendor-id="9601" product-id="11132"/>
