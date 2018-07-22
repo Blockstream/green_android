@@ -285,7 +285,7 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    private static String getBech32Prefix() {
+    public static String getBech32Prefix() {
         if (Network.NETWORK == MainNetParams.get())
             return "bc";
         if (Network.NETWORK == TestNet3Params.get())

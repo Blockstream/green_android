@@ -67,6 +67,7 @@ import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.core.WrongNetworkException;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.script.Script;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -434,15 +435,25 @@ public class Trezor {
         final TxOutputType.Builder txout;
         txout = TxOutputType.newBuilder().setAmount(txOut.getValue().longValue());
 
-        if (!txOut.getScriptPubKey().isPayToScriptHash()) {
+        final Script.ScriptType scriptType = txOut.getScriptPubKey().getScriptType();
+        if (scriptType == Script.ScriptType.P2PKH) {
             // p2pkh output
             return txout.setAddress(txOut.getAddressFromP2PKHScript(NETWORK).toString())
                         .setScriptType(OutputScriptType.PAYTOADDRESS);
         }
 
-        // p2sh
+        if (scriptType == Script.ScriptType.P2WPKH || scriptType == Script.ScriptType.P2WSH) {
+            // Native segwit (bech32) p2wpkh or p2wsh non-change output
+            final byte[] script = txOut.getScriptPubKey().getProgram();
+            final String bech32Prefix = GaService.getBech32Prefix();
+            // Trezor does not recognise the regtest prefix, use testnet instead
+            final String prefix = bech32Prefix.equals("brct") ? "tb" : bech32Prefix;
+            return txout.setScriptType(OutputScriptType.PAYTOWITNESS)
+                        .setAddress(Wally.addr_segwit_from_bytes(script, prefix, 0));
+        }
+
         if (getChangePointer() == null ||
-                !txOut.getAddressFromP2SH(NETWORK).equals(mChangeAddress)) {
+            !txOut.getAddressFromP2SH(NETWORK).equals(mChangeAddress)) {
             // p2sh non-change output
             return txout.setScriptType(OutputScriptType.PAYTOSCRIPTHASH)
                         .setAddress(txOut.getAddressFromP2SH(NETWORK).toString());
