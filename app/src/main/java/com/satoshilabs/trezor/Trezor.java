@@ -352,8 +352,8 @@ public class Trezor {
         case "Success":
             return ((Success) resp).hasMessage() ? ((Success) resp).getMessage() : "";
         case "Failure":
-            Log.e(TAG, "Failure response");
-            throw new IllegalStateException();
+            Log.e(TAG, "Failure response: " + ((Failure) resp).getCode().toString());
+            throw new IllegalStateException(((Failure) resp).getCode().toString());
         /* User can catch ButtonRequest to Cancel by not calling _get */
         case "ButtonRequest":
             return io(ButtonAck.newBuilder());
