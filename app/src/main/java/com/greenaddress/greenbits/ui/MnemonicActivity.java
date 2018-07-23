@@ -12,16 +12,18 @@ import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.StrikethroughSpan;
 import android.text.TextUtils;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -111,6 +113,17 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             public void onTextChanged(final CharSequence t, final int start,
                                       final int before, final int count) {
                 markInvalidWords();
+            }
+        });
+
+        mMnemonicText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(final TextView textView, final int actionId, final KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_GO || keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    doLogin();
+                    return true;
+                }
+                return false;
             }
         });
 

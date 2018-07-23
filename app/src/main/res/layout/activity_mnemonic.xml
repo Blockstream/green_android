@@ -54,8 +54,7 @@
                     android:gravity="bottom"
 
                     android:hint="@string/mnemonicHint"
-                    android:imeActionId="2"
-                    android:imeActionLabel="Login"
+                    android:imeActionLabel="@android:string/ok"
                     android:imeOptions="actionGo"
                     android:inputType="textMultiLine|textVisiblePassword"
                     android:minLines="2"
