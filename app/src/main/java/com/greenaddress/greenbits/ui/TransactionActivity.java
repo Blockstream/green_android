@@ -205,7 +205,7 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
         final double satoshiPerKb;
         final int vSize;
 
-        if (mTxItem.data != null && mService.isSegwitEnabled()) {
+        if (mTxItem.data != null) {
             // Compute the correct fee rate as we have tx data available
             final Transaction tx = GaService.buildTransaction(mTxItem.data, mService.getNetworkParameters());
             vSize = GATx.getTxVSize(tx, mService.getNetwork());

@@ -382,12 +382,9 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.isWatchOnly();
     }
 
+    // Returns True if the user hasn't elected to use segwit yet
     public boolean isSegwitUnconfirmed() {
         return mClient.isSegwitUnconfirmed();
-    }
-
-    public boolean isSegwitEnabled() {
-        return mClient.isSegwitEnabled();
     }
 
     // Sugar for fetching/editing preferences
@@ -405,8 +402,6 @@ public class GaService extends Service implements INotificationHandler {
     public String getProxyHost() { return cfg().getString("proxy_host", ""); }
     public String getProxyPort() { return cfg().getString("proxy_port", ""); }
     public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
-    public boolean isSegwitUnlocked() { return !cfgIn("CONFIG").getBoolean("sw_locked", false); }
-    private void setSegwitLocked() { cfgInEdit("CONFIG").putBoolean("sw_locked", true).apply(); }
     public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
     public int getCurrentSubAccount() { return cfgIn("CONFIG").getInt("current_subaccount", 0); }
     public void setCurrentSubAccount(final int subAccount) { cfgInEdit("CONFIG").putInt("current_subaccount", subAccount).apply(); }
@@ -584,8 +579,7 @@ public class GaService extends Service implements INotificationHandler {
             @Override
             public Boolean call() {
                 final byte[] multisig = createOutScript(subAccount, pointer);
-                if (isSegwitEnabled() &&
-                    Arrays.equals(gotP2SH, Wally.hash160(getSegWitScript(multisig))))
+                if (Arrays.equals(gotP2SH, Wally.hash160(getSegWitScript(multisig))))
                     return true;
                 return Arrays.equals(gotP2SH, Wally.hash160(multisig));
             }
@@ -1077,10 +1071,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public JSONMap getNewAddress(final int subAccount) {
-        final boolean userSegwit = isSegwitEnabled();
-        if (userSegwit && isSegwitUnlocked())
-            setSegwitLocked(); // Locally store that we have generated a SW address
-        return mClient.getNewAddress(subAccount, userSegwit ? "p2wsh" : "p2sh");
+        return mClient.getNewAddress(subAccount, "p2wsh");
     }
 
     private void storeCachedAddress(final int subAccount, final byte[] salt, final byte[] encryptedAddress) {
@@ -1114,8 +1105,7 @@ public class GaService extends Service implements INotificationHandler {
             json = CryptoHelper.decryptJSON(Wally.hex_to_bytes(encryptedAddressHex),
                                             getLocalEncryptionPassword(),
                                             Wally.hex_to_bytes(saltHex));
-            final String expectedType = isSegwitEnabled() ? "p2wsh" : "p2sh";
-            if (!json.getString("addr_type").equals(expectedType))
+            if (!json.getString("addr_type").equals("p2wsh"))
                 json = null; // User has enabled SW, cached address is non-SW
         } catch (final RuntimeException e) {
             e.printStackTrace();

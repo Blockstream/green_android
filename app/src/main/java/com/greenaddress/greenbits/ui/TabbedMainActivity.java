@@ -351,24 +351,10 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             return;
         }
 
-        final boolean segwit = mService.getLoginData().get("segwit_server");
-        if (segwit && mService.isSegwitUnconfirmed()) {
-            // The user has not yet enabled segwit. Opt them in and display
-            // a dialog explaining how to opt-out.
-            CB.after(mService.setUserConfig("use_segwit", true, false),
-                     new CB.Toast<Boolean>(this) {
-                @Override
-                public void onSuccess(final Boolean result) {
-                    TabbedMainActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            mSegwitDialog = UI.popup(TabbedMainActivity.this, R.string.segwit_dialog_title, 0)
-                                              .content(R.string.segwit_dialog_content).build();
-                            UI.setDialogCloseHandler(mSegwitDialog, mSegwitCB);
-                            mSegwitDialog.show();
-                        }
-                    });
-                }
-            });
+
+        if (mService.isSegwitUnconfirmed()) {
+            // The user has not yet enabled segwit. Opt them in
+            mService.setUserConfig("use_segwit", true, false);
         }
     }
 

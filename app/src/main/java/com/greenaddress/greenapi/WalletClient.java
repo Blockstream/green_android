@@ -765,11 +765,6 @@ public class WalletClient {
         return getUserConfig("use_segwit") == null;
     }
 
-    // Returns True iff the user has elected to use segwit
-    public boolean isSegwitEnabled() {
-        return !isSegwitUnconfirmed() && (Boolean) getUserConfig("use_segwit");
-    }
-
     private static <T> ByteArrayOutputStream serializeJSON(final T src) throws GAException {
         final ByteArrayOutputStream b = new ByteArrayOutputStream();
         try {

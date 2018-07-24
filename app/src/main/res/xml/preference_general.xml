@@ -53,9 +53,4 @@
         android:title="@string/showAmountInReceive"
         android:summary="@string/showAmountInReceiveDetail" />
 
-    <Preference
-        android:key="toggle_segwit"
-        android:title="@string/segwit_disable"
-        android:enabled="false" />
-
 </PreferenceScreen>

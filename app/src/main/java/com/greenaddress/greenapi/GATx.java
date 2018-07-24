@@ -394,8 +394,6 @@ public class GATx {
             ptx.mPrevoutRawTxs.put(Wally.hex_from_bytes(prevTx.getHash().getBytes()), prevTx);
         }
 
-        final boolean isSegwitEnabled = service.isSegwitEnabled();
-
         // Sign the tx
         final List<byte[]> signatures = service.signTransaction(tx, ptx, prevOuts);
         for (int i = 0; i < signatures.size(); ++i) {
@@ -407,7 +405,7 @@ public class GATx {
             final byte[] inscript = createInScript(userSigs, outscript, scriptType);
 
             tx.getInput(i).setScriptSig(new Script(inscript));
-            if (isSegwitEnabled && getOutScriptType(scriptType) == P2SH_P2WSH_FORTIFIED_OUT) {
+            if (getOutScriptType(scriptType) == P2SH_P2WSH_FORTIFIED_OUT) {
                 // Replace the witness data with just the user signature:
                 // the server will recreate the witness data to include the
                 // dummy OP_CHECKMULTISIG push, user + server sigs and script.

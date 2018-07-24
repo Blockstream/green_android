@@ -941,8 +941,6 @@ public class SendFragment extends SubaccountFragment {
                 arraycpy(vbfs, numInputs + i, output.getVbf());
         }
 
-        final boolean isSegwitEnabled = service.isSegwitEnabled();
-
         // fee output:
         tx.addOutWitness(new byte[0], new byte[0], new byte[0]);
 
@@ -995,7 +993,7 @@ public class SendFragment extends SubaccountFragment {
             final byte[] inscript = GATx.createInScript(userSigs, outscript, scriptType);
 
             tx.getInput(i).setScriptSig(new Script(inscript));
-            if (isSegwitEnabled && scriptType == GATx.P2SH_P2WSH_FORTIFIED_OUT) {
+            if (scriptType == GATx.P2SH_P2WSH_FORTIFIED_OUT) {
                 final TransactionWitness witness = new TransactionWitness(1);
                 witness.setPush(0, sig);
                 tx.setWitness(i, witness);
