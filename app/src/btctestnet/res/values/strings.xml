@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name" translatable="false">GreenBits (testnet)</string>
-    <string name="title_activity_mnemonic">Log in (testnet)</string>
-    <string name="title_activity_sign_up">Sign up (testnet)</string>
-    <string name="noBalanceSecondLine">Where to <a href="http://tpfaucet.appspot.com/">get</a> some testcoins</string>
-</resources>

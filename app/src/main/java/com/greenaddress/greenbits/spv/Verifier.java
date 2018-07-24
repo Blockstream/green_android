@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.spv;
 
-import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.PreparedTransaction;
 import com.greenaddress.greenbits.GaService;
 
@@ -44,7 +43,7 @@ class Verifier {
         }
         final TransactionOutput output = ptx.mDecoded.getOutputs().get(1 - Math.abs(changeIdx));
         if (recipient != null) {
-            final Address gotAddress = output.getScriptPubKey().getToAddress(Network.NETWORK);
+            final Address gotAddress = output.getScriptPubKey().getToAddress(service.getNetworkParameters());
             if (!gotAddress.equals(recipient))
                 throw new IllegalArgumentException("Verification: Invalid recipient address.");
         }
@@ -73,7 +72,7 @@ class Verifier {
         final Coin feeRate = Coin.valueOf((int) satoshiPerKiloByte);
 
         final Coin minFeeRate = service.getMinFeeRate();
-        if (feeRate.isLessThan(minFeeRate) && Network.NETWORK != RegTestParams.get())
+        if (feeRate.isLessThan(minFeeRate) && service.getNetworkParameters() != RegTestParams.get())
             feeError("small", feeRate, minFeeRate);
 
         final Coin maxFeeRate = Coin.valueOf(15000 * 1000); // FIXME: Get max fee rate from server

@@ -1,6 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources>
-  <string name="title_activity_mnemonic">Anmelden (testnet)</string>
-  <string name="title_activity_sign_up">Registrieren (testnet)</string>
-  <string name="noBalanceSecondLine">Testcoins <a href="http://tpfaucet.appspot.com/">besorgen</a></string>
-</resources>

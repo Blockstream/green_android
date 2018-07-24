@@ -98,6 +98,10 @@
         <item>Custom</item>
         <item>Instant</item>
     </string-array>
+    <string-array name="available_networks">
+        <item>Bitcoin</item>
+        <item>Testnet</item>
+    </string-array>
 
     <string name="custom_requires_rbf">Custom fees require transaction replacement functionality to be enabled.</string>
     <string name="default_custom_feerate">Default custom feerate</string>
@@ -402,4 +406,19 @@
     <string name="twofactor_reset_disputed_banner">WARNING: Wallet locked by two factor dispute. Contact support for more information.</string>
     <string name="twofactor_reset_complete">Reset successful, your wallet is now locked.</string>
     <string name="twofactor_reset_cancelled">Reset cancelled, your wallet is now unlocked.</string>
+    <string name="select_network">Select network</string>
+    <string name="choose_and_default">Choose and don\'t ask me again</string>
+    <string name="network_cant_connect">Can\'t connect to this URL</string>
+    <string name="network_config_invalid">Invalid network configuration</string>
+    <string name="network_invalid_url">Invalid URL</string>
+    <string name="network_select_bitcoin_by_def">One network must be selected. Selecting Bitcoin by default</string>
+    <string name="network_cannot_parse">Cannot parse network configuration</string>
+    <string name="network_already_present">Custom network with this name already present</string>
+    <string name="network_added">Custom network added, enable it in the network selector chooser</string>
+    <string name="network_cant_remove">Custom network not found</string>
+    <string name="network_disable_before_remove">Cannot remove enabled network, please disable first</string>
+    <string name="custom_networks_enable">Enable custom networks debug options</string>
+    <string name="custom_network_by_url">Add custom network by URL</string>
+    <string name="custom_network_by_qr">Add custom network by QR code</string>
+    <string name="custom_network_remove">Remove custom network</string>
 </resources>

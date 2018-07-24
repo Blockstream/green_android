@@ -33,7 +33,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.GeneratedMessage;
 import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.CryptoHelper;
-import com.greenaddress.greenapi.ElementsRegTestParams;
 import com.greenaddress.greenapi.HDClientKey;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.INotificationHandler;
@@ -55,6 +54,7 @@ import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
@@ -70,6 +70,7 @@ import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.ExchangeRate;
 import org.bitcoinj.utils.Fiat;
 import org.bitcoinj.utils.MonetaryFormat;
+import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -83,11 +84,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -98,7 +101,6 @@ import java.util.concurrent.TimeUnit;
 
 public class GaService extends Service implements INotificationHandler {
     private static final String TAG = GaService.class.getSimpleName();
-    public static final boolean IS_ELEMENTS = Network.NETWORK == ElementsRegTestParams.get();
 
     // Codes for logoff
     public static final int LOGOFF_NO_CONNECTION = 0;
@@ -107,6 +109,40 @@ public class GaService extends Service implements INotificationHandler {
     public static final int LOGOFF_NORMAL_CLOSE = 1000;
     public static final int LOGOFF_SERVER_RESTART = 1006;
     public static final int LOGOFF_BY_USER_RECONNECT = 9999;
+
+    private Network network;
+
+    public Network getNetwork() {
+        return network;
+    }
+
+    public NetworkParameters getNetworkParameters() {
+        return network.getNetworkParameters();
+    }
+
+    public boolean isElements() {
+        return network.isElements();
+    }
+
+    public SharedPreferences getPinPref() {
+        return getPinPref(getNetwork());
+    }
+
+    public SharedPreferences getPinPref(final Network network) {
+        if(network.isMainnet()) {
+            return cfg("pin");
+        } else {
+            return cfg(network.getName() + "_pin");
+        }
+    }
+
+    public SharedPreferences.Editor getEditPinPref() {
+        return getEditPinPref(getNetwork());
+    }
+
+    public SharedPreferences.Editor getEditPinPref(final Network network) {
+        return getPinPref(network).edit();
+    }
 
     private enum ConnState {
         OFFLINE, DISCONNECTED, CONNECTING, CONNECTED, LOGGINGIN, LOGGEDIN
@@ -233,9 +269,20 @@ public class GaService extends Service implements INotificationHandler {
         }
     }
 
-    public File getSPVChainFile() {
-        final String dirName = "blockstore_" + mReceivingId;
+    public File getSPVChainFile(final String networkName) {
+        final String dirName;
+        if (getNetwork().isMainnet()) {
+            dirName = "blockstore_" + mReceivingId;
+        } else {
+            dirName = "blockstore_" + networkName;
+        }
+
+        Log.i(TAG, "dirName:" + dirName);
         return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
+    }
+
+    public File getSPVChainFile() {
+        return getSPVChainFile(getNetwork().getName());
     }
 
     private void getAvailableTwoFactorMethods() {
@@ -300,17 +347,17 @@ public class GaService extends Service implements INotificationHandler {
         }, mExecutor);
     }
 
-    public static String getBech32Prefix() {
-        if (Network.NETWORK == MainNetParams.get())
+    public static String getBech32Prefix(final NetworkParameters params) {
+        if (params == MainNetParams.get())
             return "bc";
-        if (Network.NETWORK == TestNet3Params.get())
+        if (params == TestNet3Params.get())
             return "tb";
         return "bcrt";
     }
 
-    public static byte[] decodeBech32Address(final String address) {
+    public static byte[] decodeBech32Address(final String address, final NetworkParameters params) {
         try {
-            final byte decoded[] = Wally.addr_segwit_to_bytes(address, getBech32Prefix(), 0);
+            final byte decoded[] = Wally.addr_segwit_to_bytes(address, getBech32Prefix(params), 0);
             // Valid native segwit addresses are v0 p2wphk or v0 p2wsh, i.e.
             // 0 PUSH(hash160 or sha256)
             if ((decoded.length == Wally.WALLY_SCRIPTPUBKEY_P2WPKH_LEN ||
@@ -323,17 +370,17 @@ public class GaService extends Service implements INotificationHandler {
         return null;
     }
 
-    public static boolean isValidAddress(final String address) {
+    public static boolean isValidAddress(final String address, final Network network) {
         try {
-            if (IS_ELEMENTS)
-                ConfidentialAddress.fromBase58(Network.NETWORK, address);
+            if (network.isElements())
+                ConfidentialAddress.fromBase58(network.getNetworkParameters(), address);
             else
-                Address.fromBase58(Network.NETWORK, address);
+                Address.fromBase58(network.getNetworkParameters(), address);
             return true;
         } catch (final AddressFormatException e) {
-            if (IS_ELEMENTS)
+            if (network.isElements())
                 return false; // No bech32 for elements yet
-            return decodeBech32Address(address) != null;
+            return decodeBech32Address(address, network.getNetworkParameters()) != null;
         }
     }
 
@@ -425,8 +472,51 @@ public class GaService extends Service implements INotificationHandler {
             mDeviceId = UUID.randomUUID().toString();
             cfgEdit("service").putString("device_id", mDeviceId).apply();
         }
+        final Set<String> networkSelector = cfg("network").getStringSet("enabled", new HashSet<>());
+        final String networkSelected = cfg("network").getString("active", "Bitcoin");
+        if (networkSelector.isEmpty()) {
+            networkSelector.add("Bitcoin");
+            cfg("network").edit()
+                    .putString("active", networkSelected)
+                    .putStringSet("enabled", networkSelector)
+                    .apply();
+            cfg().edit()
+                    .putStringSet("network_selector", networkSelector)
+                    .apply();
+        }
+        cfgEdit("network")
+                .putBoolean("asked",false)
+                .putBoolean("redirect",false).apply();
 
         mClient = new WalletClient(this, mExecutor);
+
+        updateSelectedNetwork();
+    }
+
+    public void updateSelectedNetwork() {
+        final String activeNetwork = cfg("network").getString("active", "Bitcoin");
+        Log.i(TAG,"updateSelectedNetwork to " + activeNetwork);
+
+        try {
+            if("Bitcoin".equals(activeNetwork)) {
+                network = new Network(getAssets().open("production/config.json"));
+            } else if("Testnet".equals(activeNetwork)) {
+                network = new Network(getAssets().open("btctestnet/config.json"));
+            } else if (cfg("network").contains(activeNetwork + "_json")) {
+                network = Network.from(cfg("network").getString(activeNetwork + "_json",null));
+                if (network == null) {
+                    throw new JSONException("Invalid Network");
+                }
+            } else {
+                //TODO handle custom networks
+                throw new RuntimeException("Selected network not selectable");
+            }
+        } catch (JSONException | IOException e ) {
+            //TODO defaulting to bitcoin?
+            e.printStackTrace();
+        }
+        Log.i(TAG, "network is "+ network);
+        reconnect();
     }
 
     @Override
@@ -470,9 +560,10 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public static byte[] createOutScript(final int subAccount, final Integer pointer,
-                                         final byte[] backupPubkey, final byte[] backupChaincode) {
+                                         final byte[] backupPubkey, final byte[] backupChaincode,
+                                         final Network network) {
         final List<ECKey> pubkeys = new ArrayList<>();
-        pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer)[1]);
+        pubkeys.add(HDKey.getGAPublicKeys(subAccount, pointer, network)[1]);
         pubkeys.add(HDClientKey.getMyPublicKey(subAccount, pointer));
         if (backupPubkey != null && backupChaincode != null)
             pubkeys.add(HDKey.getRecoveryKeys(backupChaincode, backupPubkey, pointer)[1]);
@@ -487,7 +578,7 @@ public class GaService extends Service implements INotificationHandler {
             backupPubkey = Wally.hex_to_bytes((String) m.get("2of3_backup_pubkey"));
             backupChaincode = Wally.hex_to_bytes((String) m.get("2of3_backup_chaincode"));
         }
-        return createOutScript(subAccount, pointer, backupPubkey, backupChaincode);
+        return createOutScript(subAccount, pointer, backupPubkey, backupChaincode, getNetwork());
     }
 
     private ListenableFuture<Boolean> verifyP2SHSpendableBy(final Script scriptHash, final int subAccount, final Integer pointer) {
@@ -576,7 +667,7 @@ public class GaService extends Service implements INotificationHandler {
         getLocalEncryptionPassword();
 
         mBalanceObservables.put(0, new GaObservable());
-        if (IS_ELEMENTS) {
+        if (isElements()) {
             // ignore login data from elements since it doesn't include confidential values
             updateBalance(0);
             for (final Map<String, Object> data : mSubAccounts)
@@ -631,7 +722,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<LoginData> login(final String mnemonic) {
-        return login(new SWWallet(mnemonic), mnemonic);
+        return login(new SWWallet(mnemonic, getNetwork()), mnemonic);
     }
 
     private ListenableFuture<LoginData> login(final ISigningWallet signingWallet, final String mnemonic) {
@@ -701,7 +792,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<LoginData> signup(final String mnemonic) {
-        final SWWallet sw = new SWWallet(mnemonic);
+        final SWWallet sw = new SWWallet(mnemonic, getNetwork());
         return signup(sw, mnemonic, /*agent*/ null, sw.getMasterKey().getPubKey(),
                       sw.getMasterKey().getChainCode());
     }
@@ -786,7 +877,7 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<Map<String, Object>> getSubaccountBalance(final int subAccount) {
-        if (IS_ELEMENTS)
+        if (isElements())
             return getBalanceFromUtxo(subAccount);
         return mClient.getSubaccountBalance(subAccount);
     }
@@ -855,7 +946,7 @@ public class GaService extends Service implements INotificationHandler {
                 // As this is a new PIN, save it to config
                 final String encrypted = Base64.encodeToString(pinData.mSalt, Base64.NO_WRAP) + ';' +
                                          Base64.encodeToString(pinData.mEncryptedData, Base64.NO_WRAP);
-                cfgEdit("pin").putString("ident", pinData.mPinIdentifier)
+                getEditPinPref().putString("ident", pinData.mPinIdentifier)
                               .putInt("counter", 0)
                               .putString("encrypted", encrypted)
                               .apply();
@@ -865,14 +956,14 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<LoginData> pinLogin(final String pin) throws Exception {
-        final String pinIdentifier = cfg("pin").getString("ident", null);
+        final String pinIdentifier = getPinPref().getString("ident", null);
         final byte[] password = mClient.getPinPassword(pinIdentifier, pin);
-        final String[] split = cfg("pin").getString("encrypted", null).split(";");
+        final String[] split = getPinPref().getString("encrypted", null).split(";");
         final byte[] salt = split[0].getBytes();
         final byte[] encryptedData = Base64.decode(split[1], Base64.NO_WRAP);
         final PinData pinData = PinData.fromEncrypted(pinIdentifier, salt, encryptedData, password);
         final DeterministicKey master = HDKey.createMasterKeyFromSeed(pinData.mSeed);
-        return login(new SWWallet(master), pinData.mMnemonic);
+        return login(new SWWallet(master, getNetwork()), pinData.mMnemonic);
     }
 
     public List<byte[]> signTransaction(final Transaction tx, final PreparedTransaction ptx, final List<Output> prevOuts) {
@@ -918,7 +1009,7 @@ public class GaService extends Service implements INotificationHandler {
 
     private List<JSONMap> unblindValues(final List<JSONMap> values, final boolean filterAsset,
                                         final boolean isUtxo) {
-        if (!IS_ELEMENTS)
+        if (!isElements())
             return values;
 
         final List<JSONMap> result = new ArrayList<>(values.size());
@@ -1132,11 +1223,11 @@ public class GaService extends Service implements INotificationHandler {
                             throw new IllegalArgumentException("Address validation failed");
 
                         final String address;
-                        if (IS_ELEMENTS) {
+                        if (isElements()) {
                             final byte[] pubKey = getBlindingPubKey(subAccount, pointer);
-                            address = ConfidentialAddress.fromP2SHHash(Network.NETWORK, scriptHash, pubKey).toString();
+                            address = ConfidentialAddress.fromP2SHHash(getNetworkParameters(), scriptHash, pubKey).toString();
                         } else
-                            address = Address.fromP2SHHash(Network.NETWORK, scriptHash).toString();
+                            address = Address.fromP2SHHash(getNetworkParameters(), scriptHash).toString();
                         return address;
                     }
                 });
@@ -1407,7 +1498,7 @@ public class GaService extends Service implements INotificationHandler {
     // Get the users spending limit in BTC/the primary asset
     private Coin getSpendingLimitAmount() {
         final Coin unconverted = mLimitsData.getCoin("total");
-        if (IS_ELEMENTS)
+        if (isElements())
             return unconverted.multiply(100);
         if (!mLimitsData.getBool("is_fiat"))
             return unconverted;
@@ -1634,7 +1725,7 @@ public class GaService extends Service implements INotificationHandler {
         }
     }
 
-    public static Transaction buildTransaction(final String hex) {
-        return new Transaction(Network.NETWORK, Wally.hex_to_bytes(hex));
+    public static Transaction buildTransaction(final String hex, final NetworkParameters params) {
+        return new Transaction(params, Wally.hex_to_bytes(hex));
     }
 }

@@ -23,4 +23,33 @@
         android:dependency="proxy_host"
         android:title="@string/enableTor" />
 
+    <MultiSelectListPreference
+        android:key="network_selector"
+        android:title="Network selector" />
+
+    <CheckBoxPreference
+        android:key="custom_networks_enabled"
+        android:title="@string/custom_networks_enable" />
+
+    <PreferenceCategory
+        android:key="custom_networks_category"
+        android:title="Custom Networks">
+
+        <EditTextPreference
+            android:key="custom_networks_add"
+            android:title="@string/custom_network_by_url"
+            android:inputType="textUri"
+            />
+
+        <Preference
+            android:key="custom_networks_add_qr"
+            android:title="@string/custom_network_by_qr"
+            />
+
+        <ListPreference
+            android:key="custom_networks_remove"
+            android:title="@string/custom_network_remove"
+            />
+
+    </PreferenceCategory>
 </PreferenceScreen>

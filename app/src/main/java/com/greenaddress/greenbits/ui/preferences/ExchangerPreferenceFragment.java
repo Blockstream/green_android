@@ -7,7 +7,6 @@ import android.text.InputType;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -73,7 +72,7 @@ public class ExchangerPreferenceFragment extends GAPreferenceFragment implements
         mFiatBtns.getEditText().setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         mFiatBtns.setOnPreferenceChangeListener(this);
 
-        if (GaService.IS_ELEMENTS) {
+        if (mService.isElements()) {
             mBuyCommissionFixed.setTitle(R.string.buy_commission_fixed_elements);
             mSellCommissionFixed.setTitle(R.string.sell_commission_fixed_elements);
             mBuyCommissionPerc.setTitle(R.string.buy_commission_percentage_elements);

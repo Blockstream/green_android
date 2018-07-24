@@ -84,11 +84,11 @@ public class ConfidentialAddress extends VersionedChecksummedBytes {
         throw new IllegalArgumentException("Could not figure out how to serialize address");
     }
 
-    public Address getBitcoinAddress() {
-        if (bytes[0] == Network.NETWORK.getP2SHHeader())
-            return Address.fromP2SHHash(Network.NETWORK, Arrays.copyOfRange(bytes, 34, 54));
-        if (bytes[0] == Network.NETWORK.getP2WPKHHeader())
-            return Address.fromP2WPKHHash(Network.NETWORK, Arrays.copyOfRange(bytes, 34, 54));
+    public Address getBitcoinAddress(final NetworkParameters params) {
+        if (bytes[0] == params.getP2SHHeader())
+            return Address.fromP2SHHash(params, Arrays.copyOfRange(bytes, 34, 54));
+        if (bytes[0] == params.getP2WPKHHeader())
+            return Address.fromP2WPKHHash(params, Arrays.copyOfRange(bytes, 34, 54));
         throw new RuntimeException();  // Cannot happen.
     }
 

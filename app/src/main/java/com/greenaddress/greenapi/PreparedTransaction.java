@@ -7,6 +7,7 @@ import com.greenaddress.greenbits.GaService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.params.RegTestParams;
 import org.json.JSONException;
@@ -65,7 +66,7 @@ public class PreparedTransaction {
         final OkHttpClient mClient;
     }
 
-    public PreparedTransaction(final PreparedData pte) {
+    public PreparedTransaction(final PreparedData pte, final NetworkParameters params) {
 
         if (pte.mPrivateData == null || pte.mPrivateData.get("subaccount") == null) {
             mSubAccount = 0;
@@ -99,9 +100,9 @@ public class PreparedTransaction {
         }
 
         mRequiresTwoFactor = (Boolean) pte.mValues.get("requires_2factor");
-        mDecoded = GaService.buildTransaction((String) pte.mValues.get("tx"));
+        mDecoded = GaService.buildTransaction((String) pte.mValues.get("tx"), params);
 
-        if (Network.NETWORK == RegTestParams.get()) {
+        if (params == RegTestParams.get()) {
             // For REGTEST we fetch the previous outputs inline
             // FIXME: Do this for the other environments too after more testing
             final Map<String, String> txs;
@@ -109,7 +110,7 @@ public class PreparedTransaction {
             // if txs is null, the caller passed 'skip' to avoid returning previous txs
             if (txs != null)
                 for (final String txHash : txs.keySet())
-                    mPrevoutRawTxs.put(txHash, GaService.buildTransaction(txs.get(txHash)));
+                    mPrevoutRawTxs.put(txHash, GaService.buildTransaction(txs.get(txHash), params));
             return;
         }
 
@@ -132,7 +133,7 @@ public class PreparedTransaction {
 
             while (keys.hasNext()) {
                 final String k = (String)keys.next();
-                mPrevoutRawTxs.put(k, GaService.buildTransaction(prevout_rawtxs.getString(k)));
+                mPrevoutRawTxs.put(k, GaService.buildTransaction(prevout_rawtxs.getString(k), params));
             }
 
         } catch (final IOException | JSONException e) {

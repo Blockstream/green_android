@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name" translatable="false">GreenBits (regtest)</string>
-    <string name="title_activity_mnemonic">Log in (regtest)</string>
-    <string name="title_activity_sign_up">Sign up (regtest)</string>
-    <string name="noBalanceSecondLine">Where to <a href="https://regtestwss.greenaddress.it/">get</a> some regtest coins</string>
-</resources>
-

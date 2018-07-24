@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableList;
 import com.greenaddress.greenbits.ui.BuildConfig;
 
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
@@ -17,25 +16,14 @@ import java.util.ArrayList;
 
 import static com.blockstream.libwally.Wally.BIP32_FLAG_KEY_PUBLIC;
 import static com.blockstream.libwally.Wally.BIP32_FLAG_SKIP_HASH;
-import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PRIVATE;
-import static com.blockstream.libwally.Wally.BIP32_VER_MAIN_PUBLIC;
-import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PRIVATE;
-import static com.blockstream.libwally.Wally.BIP32_VER_TEST_PUBLIC;
 
 public class HDKey {
-    private final static int VER_PUBLIC = isMain() ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC;
-    private final static int VER_PRIVATE = isMain() ? BIP32_VER_MAIN_PRIVATE : BIP32_VER_TEST_PRIVATE;
-
     public static final int BRANCH_REGULAR = 1;
     public static final int BRANCH_BLINDED = 5;
     public static final int BRANCH_MESSAGES = 6;
 
     private static final SparseArray<DeterministicKey> mServerKeys = new SparseArray<>();
     private static int[] mGaUserPath;
-
-    private static boolean isMain() {
-        return NetworkParameters.fromID(NetworkParameters.ID_MAINNET).equals(Network.NETWORK);
-    }
 
     //
     // Temporary methods for use while converting from DeterministicKey
@@ -64,12 +52,12 @@ public class HDKey {
 
     // Get the key derived from the servers public key/chaincode plus the users path (plus parent).
     // This is the key used on the servers side of 2of2/2of3 transactions.
-    public static DeterministicKey[] getGAPublicKeys(final int subAccount, final Integer pointer) {
+    public static DeterministicKey[] getGAPublicKeys(final int subAccount, final Integer pointer, final Network network) {
         final DeterministicKey[] ret = new DeterministicKey[2];
         synchronized (mServerKeys) {
             // Fetch the parent key. This is expensive so we cache it
             if ((ret[0] = mServerKeys.get(subAccount)) == null)
-                mServerKeys.put(subAccount, ret[0] = getServerKeyImpl(subAccount));
+                mServerKeys.put(subAccount, ret[0] = getServerKeyImpl(subAccount, network));
         }
         // Compute the child key if we were asked for it
         if (pointer != null)
@@ -84,11 +72,11 @@ public class HDKey {
         }
     }
 
-    private static DeterministicKey getServerKeyImpl(final int subAccount) {
+    private static DeterministicKey getServerKeyImpl(final int subAccount, final Network network) {
         final boolean reconcile = BuildConfig.DEBUG;
         DeterministicKey k = null;
         if (reconcile) {
-            k = createMasterKey(h2b(Network.depositChainCode), h2b(Network.depositPubkey));
+            k = createMasterKey(h2b(network.getDepositChainCode()), h2b(network.getDepositPubkey()));
             k = deriveChildKey(k, subAccount == 0 ? 1 : 3);
             for (final int i : mGaUserPath)
                 k = deriveChildKey(k, i);
@@ -96,8 +84,8 @@ public class HDKey {
                 k = deriveChildKey(k, subAccount);
         }
 
-        final Object master = Wally.bip32_key_init(VER_PUBLIC, 0, 0,
-                                                   h2b(Network.depositChainCode), h2b(Network.depositPubkey),
+        final Object master = Wally.bip32_key_init(network.getVerPublic(), 0, 0,
+                                                   h2b(network.getDepositChainCode()), h2b(network.getDepositPubkey()),
                                                    null, null, null);
         final int[] path = new int[mGaUserPath.length + (subAccount == 0 ? 1 : 2)];
         path[0] = subAccount == 0 ? 1 : 3;

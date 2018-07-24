@@ -80,7 +80,6 @@ import java.util.List;
 public class Trezor {
 
     private static final String TAG = Trezor.class.getSimpleName();
-    private static final NetworkParameters NETWORK = Network.NETWORK;
 
     private final int mVendorId;
     private final UsbDeviceConnection mConn;
@@ -335,16 +334,16 @@ public class Trezor {
         return parseMessageFromBytes(type, Arrays.copyOfRange(data.array(), 0, msg_size));
     }
 
-    private String io(final Message.Builder builder) {
+    private String io(final Message.Builder builder, final NetworkParameters params) {
         messageWrite(builder.build());
-        return _get(messageRead());
+        return _get(messageRead(), params);
     }
 
-    private String ioTx(final TransactionType.Builder builder) {
-        return io(TxAck.newBuilder().setTx(builder));
+    private String ioTx(final TransactionType.Builder builder, final NetworkParameters params) {
+        return io(TxAck.newBuilder().setTx(builder), params);
     }
 
-    private String _get(final Message resp) {
+    private String _get(final Message resp, final NetworkParameters params) {
         switch (resp.getClass().getSimpleName()) {
         case "Features": {
             final Features r = (Features) resp;
@@ -357,12 +356,12 @@ public class Trezor {
             throw new IllegalStateException(((Failure) resp).getCode().toString());
         /* User can catch ButtonRequest to Cancel by not calling _get */
         case "ButtonRequest":
-            return io(ButtonAck.newBuilder());
+            return io(ButtonAck.newBuilder(), params);
         case "PinMatrixRequest":
-            return io(PinMatrixAck.newBuilder().setPin(mGuiFn.pinMatrixRequest()));
+            return io(PinMatrixAck.newBuilder().setPin(mGuiFn.pinMatrixRequest()), params);
         case "PassphraseRequest":
             /* TODO: UTF8 VS Unicode... Fight! */
-            return io(PassphraseAck.newBuilder().setPassphrase(mGuiFn.passphraseRequest()));
+            return io(PassphraseAck.newBuilder().setPassphrase(mGuiFn.passphraseRequest()), params);
         case "PublicKey": {
             final PublicKey r = (PublicKey) resp;
             if (!r.hasNode())
@@ -394,14 +393,14 @@ public class Trezor {
             TransactionType.Builder ackTx = TransactionType.newBuilder();
 
             if (r.getRequestType().equals(RequestType.TXINPUT))
-                return ioTx(ackTx.clearInputs().addInputs(createInput(txRequest)));
+                return ioTx(ackTx.clearInputs().addInputs(createInput(txRequest)), params);
 
             if (r.getRequestType().equals(RequestType.TXOUTPUT)) {
                 if (txRequest.hasTxHash())
-                    return ioTx(ackTx.clearOutputs().addBinOutputs(createBinOutput(txRequest)));
+                    return ioTx(ackTx.clearOutputs().addBinOutputs(createBinOutput(txRequest)), params);
 
                 return ioTx(ackTx.clearOutputs()
-                                 .addOutputs(createOutput(txRequest.getRequestIndex())));
+                                 .addOutputs(createOutput(txRequest.getRequestIndex(), params)), params);
             }
 
             if (r.getRequestType().equals(RequestType.TXMETA)) {
@@ -410,7 +409,7 @@ public class Trezor {
                 return ioTx(ackTx.setInputsCnt(tx.getInputs().size())
                                  .setOutputsCnt(tx.getOutputs().size())
                                  .setVersion((int) tx.getVersion())
-                                 .setLockTime((int) tx.getLockTime()));
+                                 .setLockTime((int) tx.getLockTime()), params);
             }
             break; // Fall through
         }
@@ -429,7 +428,7 @@ public class Trezor {
         return multisig.setM(2).build();
     }
 
-    private TxOutputType.Builder createOutput(final int index) {
+    private TxOutputType.Builder createOutput(final int index, final NetworkParameters params) {
         final TransactionOutput txOut = mTx.mDecoded.getOutputs().get(index);
 
         final TxOutputType.Builder txout;
@@ -438,14 +437,14 @@ public class Trezor {
         final Script.ScriptType scriptType = txOut.getScriptPubKey().getScriptType();
         if (scriptType == Script.ScriptType.P2PKH) {
             // p2pkh output
-            return txout.setAddress(txOut.getAddressFromP2PKHScript(NETWORK).toString())
+            return txout.setAddress(txOut.getAddressFromP2PKHScript(params).toString())
                         .setScriptType(OutputScriptType.PAYTOADDRESS);
         }
 
         if (scriptType == Script.ScriptType.P2WPKH || scriptType == Script.ScriptType.P2WSH) {
             // Native segwit (bech32) p2wpkh or p2wsh non-change output
             final byte[] script = txOut.getScriptPubKey().getProgram();
-            final String bech32Prefix = GaService.getBech32Prefix();
+            final String bech32Prefix = GaService.getBech32Prefix(params);
             // Trezor does not recognise the regtest prefix, use testnet instead
             final String prefix = bech32Prefix.equals("brct") ? "tb" : bech32Prefix;
             return txout.setScriptType(OutputScriptType.PAYTOWITNESS)
@@ -453,13 +452,13 @@ public class Trezor {
         }
 
         if (getChangePointer() == null ||
-            !txOut.getAddressFromP2SH(NETWORK).equals(mChangeAddress)) {
+            !txOut.getAddressFromP2SH(params).equals(mChangeAddress)) {
             // p2sh non-change output
             return txout.setScriptType(OutputScriptType.PAYTOSCRIPTHASH)
-                        .setAddress(txOut.getAddressFromP2SH(NETWORK).toString());
+                        .setAddress(txOut.getAddressFromP2SH(params).toString());
         }
 
-        Log.d(TAG, "Matched change address: " + txOut.getAddressFromP2SH(NETWORK).toString());
+        Log.d(TAG, "Matched change address: " + txOut.getAddressFromP2SH(params).toString());
         if (mTx.mChangeOutput.mIsSegwit) {
             // p2sh-p2wsh change output
             txout.setScriptType(OutputScriptType.PAYTOP2SHWITNESS);
@@ -505,33 +504,33 @@ public class Trezor {
         return txin.setScriptType(InputScriptType.SPENDMULTISIG);
     }
 
-    public Pair<byte[], byte[]> getUserKey(final List<Integer> path) {
-        final String xpub = io(GetPublicKey.newBuilder().clearAddressN().addAllAddressN(path));
+    public Pair<byte[], byte[]> getUserKey(final List<Integer> path, final NetworkParameters params) {
+        final String xpub = io(GetPublicKey.newBuilder().clearAddressN().addAllAddressN(path), params);
         final String[] data = xpub.split("%", -1);
         // Pubkey, Chaincode
         return new Pair<>(h2b(data[data.length - 2]), h2b(data[data.length - 4]));
     }
 
-    public ECKey.ECDSASignature signMessage(final List<Integer> path, final String message) {
+    public ECKey.ECDSASignature signMessage(final List<Integer> path, final String message, final NetworkParameters params) {
         final byte[] sig;
         sig = h2b(io(SignMessage.newBuilder()
                                 .clearAddressN().addAllAddressN(path)
-                                .setMessage(ByteString.copyFromUtf8(message))));
+                                .setMessage(ByteString.copyFromUtf8(message)), params));
         return new ECKey.ECDSASignature(new BigInteger(1, Arrays.copyOfRange(sig, 1, 33)),
                                         new BigInteger(1, Arrays.copyOfRange(sig, 33, 65)));
     }
 
-    public List<Integer> getFirmwareVersion() {
+    public List<Integer> getFirmwareVersion(final NetworkParameters params) {
         LinkedList<Integer> versionParts = new LinkedList<>();
-        for (final String s : Splitter.on(".").split(io(Initialize.newBuilder())))
+        for (final String s : Splitter.on(".").split(io(Initialize.newBuilder(), params)))
             versionParts.add(Integer.valueOf(s));
         return versionParts;
     }
 
-    public List<byte[]> signTransaction(final PreparedTransaction ptx, final String coinName) {
+    public List<byte[]> signTransaction(final PreparedTransaction ptx, final String coinName, final Network network) {
         mTx = ptx;
-
-        mGAKey = makeHDKey(HDKey.getGAPublicKeys(ptx.mSubAccount, null)[0]);
+        final NetworkParameters params = network.getNetworkParameters();
+        mGAKey = makeHDKey(HDKey.getGAPublicKeys(ptx.mSubAccount, null, network)[0]);
 
         mBackupKey = null;
         if (ptx.mTwoOfThreeBackupChaincode != null)
@@ -542,11 +541,11 @@ public class Trezor {
         if (getChangePointer() != null) {
             byte[] script = GaService.createOutScript(ptx.mSubAccount, getChangePointer(),
                                                       ptx.mTwoOfThreeBackupPubkey,
-                                                      ptx.mTwoOfThreeBackupChaincode);
+                                                      ptx.mTwoOfThreeBackupChaincode, network);
             try {
                 if (mTx.mChangeOutput.mIsSegwit)
                     script = GaService.getSegWitScript(script);
-                mChangeAddress = new org.bitcoinj.core.Address(NETWORK, NETWORK.getP2SHHeader(),
+                mChangeAddress = new org.bitcoinj.core.Address(params, params.getP2SHHeader(),
                                                                Wally.hash160(script));
                 Log.d(TAG, "Change address: " + mChangeAddress.toString());
             } catch (final WrongNetworkException e) {
@@ -566,7 +565,7 @@ public class Trezor {
         sigs = io(SignTx.newBuilder().setInputsCount(numInputs)
                                      .setOutputsCount(numOutputs)
                                      .setCoinName(coinName)
-                                     .setLockTime((int) ptx.mDecoded.getLockTime()))
+                                     .setLockTime((int) ptx.mDecoded.getLockTime()), params)
                                      .split(";");
 
         final LinkedList<byte[]> signaturesList = new LinkedList<>();

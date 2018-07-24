@@ -209,7 +209,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         if (t == null)
             return false;
 
-        final List<Integer> version = t.getFirmwareVersion();
+        final List<Integer> version = t.getFirmwareVersion(mService.getNetworkParameters());
         boolean isFirmwareOutdated = false;
         final int vendorId = t.getVendorId();
         if (vendorId == VENDOR_TREZOR) {
@@ -233,7 +233,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
     }
 
     private void onTrezorConnected(final Trezor t) {
-        final TrezorHWWallet trezor = new TrezorHWWallet(t);
+        final TrezorHWWallet trezor = new TrezorHWWallet(t, mService.getNetwork());
 
         Futures.addCallback(Futures.transformAsync(mService.onConnected, new AsyncFunction<Void, LoginData>() {
             @Override
@@ -375,9 +375,9 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
         final boolean havePin = !TextUtils.isEmpty(pin);
         Log.d(TAG, "Creating HW wallet" + (havePin ? " with PIN" : ""));
         if (havePin)
-            mHwWallet = new BTChipHWWallet(transport, pin, pinCB);
+            mHwWallet = new BTChipHWWallet(transport, pin, pinCB, mService.getNetwork());
         else
-            mHwWallet = new BTChipHWWallet(transport);
+            mHwWallet = new BTChipHWWallet(transport, mService.getNetwork());
 
         // Try to log in once we are connected
         Futures.addCallback(Futures.transformAsync(mService.onConnected, new AsyncFunction<Void, LoginData>() {
@@ -487,7 +487,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
 
         if (mUsb == null) {
             // No hardware wallet, jump to PIN or mnemonic entry
-            if (mService.cfg("pin").getString("ident", null) != null)
+            if (mService.getPinPref().getString("ident", null) != null)
                 startActivityForResult(new Intent(this, PinActivity.class), 0);
             else
                 startActivityForResult(new Intent(this, MnemonicActivity.class), 0);

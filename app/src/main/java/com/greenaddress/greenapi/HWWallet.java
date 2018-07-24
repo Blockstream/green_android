@@ -4,6 +4,7 @@ import com.blockstream.libwally.Wally;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.DeterministicKey;
 
@@ -66,9 +67,9 @@ public abstract class HWWallet extends ISigningWallet {
         return CryptoHelper.pbkdf2_hmac_sha512(pubkey, PASSWORD_SALT);
     }
 
-    protected Object[] getChallengeArguments(final boolean isTrezor) {
-        final byte[] id = getPubKey().toAddress(Network.NETWORK).getHash160();
-        final Address addr = new Address(Network.NETWORK, id);
+    protected Object[] getChallengeArguments(final boolean isTrezor, final NetworkParameters params) {
+        final byte[] id = getPubKey().toAddress(params).getHash160();
+        final Address addr = new Address(params, id);
         return new Object[]{ "login.get_trezor_challenge", addr.toString(), !isTrezor };
     }
 

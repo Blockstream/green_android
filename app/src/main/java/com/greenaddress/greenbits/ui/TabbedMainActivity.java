@@ -34,7 +34,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.FutureCallback;
-import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.monitor.NetworkMonitorActivity;
 import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
@@ -47,7 +46,6 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.crypto.TransactionSignature;
-import org.bitcoinj.params.MainNetParams;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,9 +62,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
 
-    private static final boolean IS_MAINNET = Network.NETWORK == MainNetParams.get();
-    private static final int BIP32_NETWORK = IS_MAINNET ? Wally.BIP38_KEY_MAINNET : Wally.BIP38_KEY_TESTNET;
-    private static final int BIP38_FLAGS = BIP32_NETWORK | Wally.BIP38_KEY_COMPRESSED;
+
     private static final int REQUEST_ENABLE_2FA = 0;
 
     public static final int
@@ -439,7 +435,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                 ECKey keyNonFinal = null;
                 final String qrText = data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT);
                 try {
-                    keyNonFinal = DumpedPrivateKey.fromBase58(Network.NETWORK,
+                    keyNonFinal = DumpedPrivateKey.fromBase58(mService.getNetworkParameters(),
                             qrText).getKey();
                 } catch (final AddressFormatException e) {
                     try {
@@ -470,7 +466,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                             final String valueStr = formatValuePostfix(outputsValue);
                             mainText.setText(Html.fromHtml("Are you sure you want to sweep <b>all</b> ("
                                     + valueStr + ") funds from the address below?"));
-                            address = keyNonBip38.toAddress(Network.NETWORK).toString();
+                            address = keyNonBip38.toAddress(mService.getNetworkParameters()).toString();
                         } else {
                             passwordPrompt.setText(R.string.sweep_bip38_passphrase_prompt);
                             txNonBip38 = null;
@@ -523,7 +519,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                                     try {
                                         final String password = UI.getText(passwordEdit);
                                         final byte[] passbytes = password.getBytes();
-                                        final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, BIP38_FLAGS);
+                                        final byte[] decryptedPKey = Wally.bip38_to_private_key(qrText, passbytes, mService.getNetwork().getBip38Flags());
                                         key = ECKey.fromPrivate(decryptedPKey);
 
                                         CB.after(mService.prepareSweepSocial(key.getPubKey(), true),
@@ -552,7 +548,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     }
 
     private Transaction getSweepTx(final Map<?, ?> sweepResult) {
-        return GaService.buildTransaction((String) sweepResult.get("tx"));
+        return GaService.buildTransaction((String) sweepResult.get("tx"), mService.getNetworkParameters());
     }
 
     @Override
@@ -574,8 +570,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             setMenuItemVisible(menu, R.id.action_cancel_twofactor_reset, !isWatchOnly);
         } else {
             setMenuItemVisible(menu, R.id.action_network,
-                               !GaService.IS_ELEMENTS && mService.isSPVEnabled());
-            setMenuItemVisible(menu, R.id.action_sweep, !GaService.IS_ELEMENTS);
+                               !mService.isElements() && mService.isSPVEnabled());
+            setMenuItemVisible(menu, R.id.action_sweep, !mService.isElements());
 
             final boolean isExchanger = mService.cfg().getBoolean("show_exchanger_menu", false);
             setMenuItemVisible(menu, R.id.action_exchanger, isExchanger);

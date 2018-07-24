@@ -77,7 +77,7 @@ public class MainFragment extends SubaccountFragment {
 
         UI.setAmountText(balanceFiatText, service.getFiatBalance(mSubaccount));
 
-        if (!GaService.IS_ELEMENTS)
+        if (!service.isElements())
             AmountFields.changeFiatIcon(balanceFiatIcon, service.getFiatCurrency());
         else {
             balanceUnit.setText(service.getAssetSymbol() + ' ');
@@ -127,7 +127,7 @@ public class MainFragment extends SubaccountFragment {
             final TextView secondP = UI.find(mView, R.id.mainSecondParagraphText);
             final TextView thirdP = UI.find(mView, R.id.mainThirdParagraphText);
 
-            if (GaService.IS_ELEMENTS)
+            if (service.isElements())
                 UI.hide(firstP); // Don't show a Bitcoin message for elements
             else
                 firstP.setMovementMethod(LinkMovementMethod.getInstance());

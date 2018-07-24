@@ -28,7 +28,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.JSONMap;
-import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
@@ -37,6 +36,7 @@ import java.util.concurrent.Callable;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.uri.BitcoinURI;
 
 import java.text.ParseException;
@@ -201,9 +201,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                         @Override
                         public void onSuccess(final Void aVoid) {
                             String exchangerAddress = mCurrentAddress;
-                            if (GaService.IS_ELEMENTS) {
+                            if (getGAService().isElements()) {
                                 final String currentBtcAddress = mCurrentAddress.replace("bitcoin:", "").split("\\?")[0];
-                                exchangerAddress = ConfidentialAddress.fromBase58(Network.NETWORK, currentBtcAddress).getBitcoinAddress().toString();
+                                exchangerAddress = ConfidentialAddress.fromBase58(getGAService().getNetworkParameters(), currentBtcAddress)
+                                        .getBitcoinAddress(getGAService().getNetworkParameters()).toString();
                             }
                             getGAService().cfg().edit().putBoolean("exchanger_address_" + exchangerAddress, true).apply();
                             final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), mQrCodeBitmap.getQRCode());
@@ -268,9 +269,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             }
 
             try {
-                fragment.mCurrentAmount = UI.parseCoinValue(fragment.getGAService(), amount);
+                final GaService service = fragment.getGAService();
+                fragment.mCurrentAmount = UI.parseCoinValue(service, amount);
 
-                final Address address = Address.fromBase58(Network.NETWORK, fragment.mCurrentAddress);
+                final Address address = Address.fromBase58(service.getNetworkParameters(), fragment.mCurrentAddress);
                 final String qrCodeText = BitcoinURI.convertToBitcoinURI(address, fragment.mCurrentAmount, null, null);
                 return resetBitmap(fragment, qrCodeText);
             } catch (final ArithmeticException | IllegalArgumentException e) {
@@ -315,7 +317,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Long amount = null;
         if (clear)
             UI.clear(mAmountEdit, mAmountFiatEdit);
-        if (mIsExchanger && GaService.IS_ELEMENTS) {
+        if (mIsExchanger && getGAService().isElements()) {
             // TODO: non-fiat / non-assets values
             final String amountText = UI.getText(mAmountEdit);
             if (amountText.isEmpty())
@@ -403,7 +405,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mAddressImage.setImageDrawable(bd);
 
         final String qrData = result.getData();
-        if (GaService.IS_ELEMENTS) {
+        if (getGAService().isElements()) {
             mAddressText.setText(String.format("%s\n" +
                             "%s\n%s\n" +
                             "%s\n%s\n" +
@@ -461,11 +463,12 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     private String getAddressUri() {
         final String addr;
-        if (GaService.IS_ELEMENTS)
-            addr = ConfidentialAddress.fromBase58(Network.NETWORK, mCurrentAddress).toString();
+        final NetworkParameters params = getGAService().getNetworkParameters();
+        if (getGAService().isElements())
+            addr = ConfidentialAddress.fromBase58(params, mCurrentAddress).toString();
         else
-            addr = Address.fromBase58(Network.NETWORK, mCurrentAddress).toString();
-        return BitcoinURI.convertToBitcoinURI(Network.NETWORK, addr, mCurrentAmount, null, null);
+            addr = Address.fromBase58(params, mCurrentAddress).toString();
+        return BitcoinURI.convertToBitcoinURI(params, addr, mCurrentAmount, null, null);
     }
 
     @Override
@@ -548,13 +551,13 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
                                 if (replacedList == null) {
                                     final TransactionItem txItem = new TransactionItem(service, txJSON, currentBlock);
-                                    if (!GaService.IS_ELEMENTS) {
+                                    if (!service.isElements()) {
                                         matched = txItem.receivedOn != null && txItem.receivedOn.equals(mCurrentAddress);
                                     } else {
                                         final int subaccount = txItem.receivedOnEp.getInt("subaccount", 0);
                                         final int pointer = txItem.receivedOnEp.getInt("pubkey_pointer");
                                         final String receivedOn = ConfidentialAddress.fromP2SHHash(
-                                            Network.NETWORK,
+                                            service.getNetworkParameters(),
                                             Wally.hash160(service.createOutScript(subaccount, pointer)),
                                             service.getBlindingPubKey(subaccount, pointer)
                                         ).toString();

@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
 
 
@@ -45,7 +44,7 @@ public class MainExchanger extends GaActivity {
             }
         });
 
-        if (GaService.IS_ELEMENTS) {
+        if (mService.isElements()) {
             sellBtn.setText(R.string.cash_in);
             buyBtn.setText(R.string.cash_out);
         }

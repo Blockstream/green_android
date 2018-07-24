@@ -68,7 +68,7 @@ public class ListTransactionsAdapter extends
                                  !mService.isSPVEnabled();
         UI.hideIf(verified, holder.textValueQuestionMark);
 
-        if (GaService.IS_ELEMENTS) {
+        if (mService.isElements()) {
             holder.textValue.setText(mService.getAssetFormat().format(coin));
             UI.hide(holder.textValueQuestionMark);
         }
@@ -98,7 +98,7 @@ public class ListTransactionsAdapter extends
 
         final boolean humanCpty = txItem.type == TransactionItem.TYPE.OUT &&
                 txItem.counterparty != null && !txItem.counterparty.isEmpty() &&
-                !GaService.isValidAddress(txItem.counterparty);
+                !GaService.isValidAddress(txItem.counterparty, mService.getNetwork());
 
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {

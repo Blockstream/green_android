@@ -49,7 +49,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
         final FontAwesomeTextView fiatView = UI.find(mView, R.id.commissionFiatIcon);
         AmountFields.changeFiatIcon(fiatView, currency);
 
-        if (GaService.IS_ELEMENTS) {
+        if (mService.isElements()) {
             bitcoinUnitText.setText(mService.getAssetSymbol() + ' ');
             UI.hide(UI.find(mView, R.id.commissionFiatColumn));
         }
@@ -70,7 +70,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
                     @Override
                     public void onClick(final View view) {
                         mAmountFiatEdit.setText(value);
-                        if (GaService.IS_ELEMENTS)
+                        if (mService.isElements())
                             mAmountBtcEdit.setText(value);
                     }
                 });
@@ -117,7 +117,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
         final Double percentage = 100.0 - Double.valueOf(getCommissionConfig("percentage", "0"));
 
 
-        if (GaService.IS_ELEMENTS) {
+        if (mService.isElements()) {
             final String amountBtcTxt = UI.getText(mAmountBtcEdit);
 
             final Coin coin = amountBtcTxt.isEmpty() ? Coin.ZERO : UI.parseCoinValue(mService, amountBtcTxt);

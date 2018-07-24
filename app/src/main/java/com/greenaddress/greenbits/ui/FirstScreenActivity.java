@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenapi.LoginData;
 import com.greenaddress.greenapi.LoginFailed;
-import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenbits.ui.preferences.NetworkSettingsActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.ledger.tbase.comm.LedgerTransportTEEProxy;
@@ -143,8 +142,8 @@ public class FirstScreenActivity extends LoginActivity {
                         // Not setup ? Create the wallet
                         dongle.setup(new BTChipDongle.OperationMode[]{BTChipDongle.OperationMode.WALLET},
                                 new BTChipDongle.Feature[]{BTChipDongle.Feature.RFC6979}, // TEE doesn't need NO_2FA_P2SH
-                                Network.NETWORK.getAddressHeader(),
-                                Network.NETWORK.getP2SHHeader(),
+                                mService.getNetworkParameters().getAddressHeader(),
+                                mService.getNetworkParameters().getP2SHHeader(),
                                 new byte[4], null,
                                 null,
                                 null, null);
@@ -215,10 +214,10 @@ public class FirstScreenActivity extends LoginActivity {
                     public ListenableFuture<LoginData> apply(final Void input) throws Exception {
                         if (!setup) {
                             Log.d(TAG, "TEE login");
-                            return mService.login(new BTChipHWWallet(dongle));
+                            return mService.login(new BTChipHWWallet(dongle, mService.getNetwork()));
                         } else {
                             Log.d(TAG, "TEE signup");
-                            return mService.signup(new BTChipHWWallet(dongle), /*mnemonic*/ null, "HW", KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode());
+                            return mService.signup(new BTChipHWWallet(dongle, mService.getNetwork()), /*mnemonic*/ null, "HW", KeyUtils.compressPublicKey(masterPublicKeyFixed.getPublicKey()), masterPublicKeyFixed.getChainCode());
                         }
                     }
                 }), new FutureCallback<LoginData>() {
@@ -277,9 +276,10 @@ public class FirstScreenActivity extends LoginActivity {
         //FIXME : recheck state, properly handle TEE link anyway
         if (mService.isLoggedIn()) {
             onLoginSuccess();
-        } else if (mService.cfg("pin").getString("ident", null) != null && !userCancelled) {
-            startActivity(new Intent(this, PinActivity.class));
-            finish();
+        } else if (!userCancelled) {
+            if (!checkPinExist(false)) {
+                chooseNetworkIfMany(false);
+            }
         }
     }
 }

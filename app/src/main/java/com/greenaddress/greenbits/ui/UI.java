@@ -386,7 +386,7 @@ public abstract class UI {
                                      final TextView amount, final Coin value) {
         if (symbol != null) {
             symbol.setAwesomeTypeface();
-            if (GaService.IS_ELEMENTS)
+            if (service.isElements())
                 symbol.setText(service.getAssetSymbol());
             else
                 symbol.setText(getUnitSymbol(service));

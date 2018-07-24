@@ -20,7 +20,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.greenaddress.greenapi.JSONMap;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.R;
@@ -106,7 +105,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
         setLimitsText(haveAny);
 
         mSendNLocktimePref = find("send_nlocktime");
-        if (GaService.IS_ELEMENTS) {
+        if (mService.isElements()) {
             removePreference(getPref(NLOCKTIME_EMAILS));
             removePreference(mSendNLocktimePref);
         } else {
@@ -135,7 +134,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     }
 
     private void setNlocktimeConfig(final Boolean enabled) {
-        if (GaService.IS_ELEMENTS || isNlocktimeConfig(enabled))
+        if (mService.isElements() || isNlocktimeConfig(enabled))
             return; // Nothing to do
         final Map<String, Object> inner, outer;
         inner = ImmutableMap.of("email_incoming", (Object) enabled,
@@ -221,7 +220,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
         if (method.equals("Email")) {
             // Reset nlocktime prefs when the user changes email 2FA
             setNlocktimeConfig(checked);
-            if (!GaService.IS_ELEMENTS)
+            if (!mService.isElements())
                 getPref(NLOCKTIME_EMAILS).setEnabled(checked);
         }
         final boolean haveAny = checked || mService.hasAnyTwoFactor();
@@ -242,7 +241,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
         String trimmed = unscaled.movePointLeft(isFiat ? 2 : 8).toPlainString();
         trimmed = trimmed.indexOf('.') < 0 ? trimmed : trimmed.replaceAll("0*$", "").replaceAll("\\.$", "");
         final String limitText;
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             limitText = mService.getAssetSymbol() + ' ' + trimmed;
         else
             limitText = trimmed + ' ' + (isFiat ? mService.getFiatCurrency() : "BTC");
@@ -276,7 +275,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
         final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
 
         final String[] currencies;
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             currencies = new String[]{mService.getAssetSymbol()};
         else if (!mService.hasFiatRate())
             currencies = new String[]{"BTC"};

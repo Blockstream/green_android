@@ -5,8 +5,6 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.view.View;
 
-import com.greenaddress.greenbits.GaService;
-
 import de.schildbach.wallet.ui.ScanActivity;
 
 
@@ -15,7 +13,7 @@ public class SellActivity extends GaActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_sell);
 
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             setTitle(R.string.cash_in);
 
         final Intent intent = getIntent();

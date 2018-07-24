@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="title_activity_mnemonic">Accedi (testnet)</string>
-    <string name="title_activity_sign_up">Registrati (testnet)</string>
-    <string name="noBalanceSecondLine">Dove <a href="http://tpfaucet.appspot.com/">ottenere</a> dei testcoin</string>
-</resources>

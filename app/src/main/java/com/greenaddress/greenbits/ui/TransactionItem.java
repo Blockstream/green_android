@@ -174,7 +174,7 @@ public class TransactionItem implements Serializable {
         spvVerified = service.isSPVVerified(txHash);
         date = m.getDate("created_at");
         // FIXME: Implement RBF for instant transactions
-        replaceable = !GaService.IS_ELEMENTS && !instant &&
+        replaceable = !service.isElements() && !instant &&
                       m.getBool("rbf_optin") && type != TransactionItem.TYPE.IN;
     }
 

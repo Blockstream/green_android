@@ -15,7 +15,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -97,7 +96,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
 
         // Currency and bitcoin denomination
         final ListPreference bitcoinDenomination = find("denomination_key");
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             removePreference(bitcoinDenomination);
         else {
             bitcoinDenomination.setEntries(UI.UNITS.toArray(new String[4]));
@@ -114,7 +113,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         }
 
         final ListPreference fiatCurrency = find("fiat_key");
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             removePreference(fiatCurrency);
         else
             fiatCurrency.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -180,7 +179,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
 
         // Transaction priority, i.e. default fees
         final ListPreference defaultTxPriority = find("default_tx_priority");
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             removePreference(defaultTxPriority);
         else {
             final String[] prioritySummaries = getResources().getStringArray(R.array.fee_target_summaries);
@@ -204,7 +203,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
 
         // Default custom feerate
         mFeeRate = find("default_feerate");
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             removePreference(mFeeRate);
         else {
             setFeeRateSummary(mService.cfg().getString("default_feerate", ""));
@@ -252,7 +251,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
 
         // Opt-in RBF
         final CheckBoxPreference optInRbf = find("optin_rbf");
-        if (GaService.IS_ELEMENTS || !(boolean) mService.getLoginData().get("rbf"))
+        if (mService.isElements() || !(boolean) mService.getLoginData().get("rbf"))
             removePreference(optInRbf);
         else {
             optInRbf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -291,14 +290,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment
         }
 
         mToggleSW = find("toggle_segwit");
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             removePreference(mToggleSW);
         else {
             mToggleSW.setOnPreferenceClickListener(this);
             setupSWToggle();
         }
 
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             removePreference("settings_currency");
 
         getActivity().setResult(Activity.RESULT_OK, null);

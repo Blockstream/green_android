@@ -10,6 +10,7 @@ import org.bitcoinj.crypto.TransactionSignature;
 import java.util.List;
 
 public abstract class ISigningWallet {
+    protected Network mNetwork;
     protected static final int HARDENED = 0x80000000;
     protected static final int PASSWORD_PATH = 0x70617373 | HARDENED; // 'pass'
     protected static final int GA_PATH = 0x4741 | HARDENED; // 'GA'

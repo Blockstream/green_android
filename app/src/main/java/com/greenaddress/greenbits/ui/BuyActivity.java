@@ -3,15 +3,13 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.greenaddress.greenbits.GaService;
-
 
 public class BuyActivity extends GaActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_sell);
 
-        if (GaService.IS_ELEMENTS)
+        if (mService.isElements())
             setTitle(R.string.cash_out);
 
         final ReceiveFragment buyFragment = new ReceiveFragment();

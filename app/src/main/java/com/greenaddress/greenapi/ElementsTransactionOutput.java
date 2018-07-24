@@ -78,7 +78,7 @@ public class ElementsTransactionOutput extends TransactionOutput {
     }
 
     public ElementsTransactionOutput(final NetworkParameters params, final Transaction parent, final Coin value, final ConfidentialAddress to) {
-        super(params, parent, value, to.getBitcoinAddress());
+        super(params, parent, value, to.getBitcoinAddress(params));
     }
 
     public ElementsTransactionOutput(final NetworkParameters params, final Transaction parent, final Coin value) {

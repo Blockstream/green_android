@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.ISigningWallet;
+import com.greenaddress.greenapi.Network;
 import com.greenaddress.greenapi.Output;
 import com.greenaddress.greenapi.PreparedTransaction;
 
@@ -45,28 +46,30 @@ public class BTChipHWWallet extends HWWallet {
 
     private static final String TAG = BTChipHWWallet.class.getSimpleName();
 
-    private BTChipHWWallet(final BTChipDongle dongle, final String pin, final List<Integer> addrn) {
+    private BTChipHWWallet(final BTChipDongle dongle, final String pin, final List<Integer> addrn, final Network network) {
         mDongle = dongle;
         mPin = pin;
         mAddrn = addrn;
+        mNetwork = network;
     }
 
-    public BTChipHWWallet(final BTChipDongle dongle) {
-        this(dongle, "0000", new LinkedList<Integer>());
+    public BTChipHWWallet(final BTChipDongle dongle, final Network network) {
+        this(dongle, "0000", new LinkedList<Integer>(), network);
     }
 
-    private BTChipHWWallet(final BTChipTransport transport, final String pin) {
+    private BTChipHWWallet(final BTChipTransport transport, final String pin, final Network network) {
         mDongle = new BTChipDongle(transport);
         mPin = pin;
         mAddrn = new LinkedList<>();
+        mNetwork = network;
     }
 
-    public BTChipHWWallet(final BTChipTransport transport) {
-        this(transport, null);
+    public BTChipHWWallet(final BTChipTransport transport, final Network network) {
+        this(transport, null, network);
     }
 
-    public BTChipHWWallet(final BTChipTransport transport, final String pin, final SettableFuture<Integer> remainingAttemptsFuture) {
-        this(transport, pin);
+    public BTChipHWWallet(final BTChipTransport transport, final String pin, final SettableFuture<Integer> remainingAttemptsFuture, final Network network) {
+        this(transport, pin, network);
         ES.submit(new Callable<Object>() {
             @Override
             public Object call() {
@@ -305,7 +308,7 @@ public class BTChipHWWallet extends HWWallet {
     protected HWWallet derive(final Integer childNumber) {
         final LinkedList<Integer> addrn_child = new LinkedList<>(mAddrn);
         addrn_child.add(childNumber);
-        return new BTChipHWWallet(mDongle, mPin, addrn_child);
+        return new BTChipHWWallet(mDongle, mPin, addrn_child, this.mNetwork);
     }
 
     public BTChipDongle getDongle() {
@@ -342,6 +345,6 @@ public class BTChipHWWallet extends HWWallet {
 
     @Override
     public Object[] getChallengeArguments() {
-        return getChallengeArguments(false);
+        return getChallengeArguments(false, mNetwork.getNetworkParameters());
     }
 }
