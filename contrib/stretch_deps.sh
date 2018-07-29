@@ -4,8 +4,8 @@ set -e
 export SDK_FILENAME=sdk-tools-linux-3859397.zip
 
 sed -i 's/deb.debian.org/httpredir.debian.org/g' /etc/apt/sources.list
-apt-get -yqq update && apt-get -yqq upgrade
-apt-get -yqq install openjdk-8-jdk ca-certificates-java unzip curl gzip perl
+apt-get -qq update && apt-get -yqq --no-install-recommends upgrade
+apt-get -yqq --no-install-recommends install openjdk-8-jdk ca-certificates-java unzip curl gzip perl
 update-java-alternatives -s java-1.8.0-openjdk-amd64
 
 cd /opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} && rm ${SDK_FILENAME}
