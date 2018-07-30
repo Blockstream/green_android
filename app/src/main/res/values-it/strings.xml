@@ -155,7 +155,7 @@
     <string name="set2FA">Configura 2FA</string>
     <string name="resetSPV">Azzera SPV</string>
     <string name="err_send_invalid_bitcoin_uri">Indirizzo Bitcoin invalido</string>
-    <string name="err_send_not_connected_will_resume">Disonnessi dal server, connessione in corso.</string>
+    <string name="err_send_not_connected_will_resume">Disconnessi dal server, connessione in corso.</string>
     <string name="err_send_need_recipient">Per piacere fornisci un destinatario</string>
     <string name="err_request_login_no_pin">PIN necessario, grazie.</string>
     <string name="err_tabbed_sweep_failed">Validazione fallita: indirizzo invalido</string>
@@ -179,7 +179,7 @@
     <string name="watchOnlyLoginStatus">Abilitato: %1$s</string>
     <string name="watchOnlyLoginSetup">Tocca per configurare</string>
     <string name="watchOnlyLoginDisabled">Watch Only disabilitato</string>
-    <string name="enter_valid_username">Per piacere inserisci un valido username</string>
+    <string name="enter_valid_username">Per piacere inserisci un username valido</string>
     <string name="enter_valid_password">La password non deve essere vuota</string>
     <string name="error_username_not_found_or_wrong_password">Utente inesistente o password non corretta</string>
     <string name="error_username_not_available">Username non disponibile</string>
@@ -209,7 +209,7 @@
     <string name="showQrCode">Mostra QR code</string>
     <string name="bip70_session_expired">Sessione scaduta, prova di nuovo</string>
     <string name="bip70_invoice_not_found">Fattura non trovata, prova di nuovo</string>
-    <string name="bip70_invalid_payment_url">Indirizzo pagamento invalido, prova di nuovo</string>
+    <string name="bip70_invalid_payment_url">Indirizzo di pagamento invalido, prova di nuovo</string>
     <string name="bip70_invalid_payment">Pagamento invalido</string>
     <string name="bip70_payment_failure">Pagamento fallito</string>
     <string name="bip70_invalid_pki">Impossibile verificare il servizio "%s". Continuare ugualmente?</string>
