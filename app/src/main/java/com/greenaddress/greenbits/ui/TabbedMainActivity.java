@@ -82,6 +82,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     private MaterialDialog mSubaccountDialog;
     private FloatingActionButton mSubaccountButton;
     private boolean mTwoFactorResetShowing = false;
+    private boolean mIsBitcoinUri = false;
 
     private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private final Runnable mSubaccountCB = new Runnable() { public void run() { mDialogCB.run(); mSubaccountDialog = null; } };
@@ -104,18 +105,18 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         final Intent intent = getIntent();
         mInternalQr = intent.getBooleanExtra("internal_qr", false);
         mSendAmount = intent.getStringExtra("sendAmount");
-        final boolean isBitcoinUri = isBitcoinScheme(intent) ||
+        mIsBitcoinUri = isBitcoinScheme(intent) ||
                                      intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
                                      NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
 
-        if (isBitcoinUri && !mService.isLoggedOrLoggingIn()) {
+        if (mIsBitcoinUri && !mService.isLoggedOrLoggingIn()) {
             // Not logged in, force the user to login
             final Intent login = new Intent(this, RequestLoginActivity.class);
             startActivityForResult(login, REQUEST_BITCOIN_URL_LOGIN);
             return;
         }
 
-        launch(isBitcoinUri);
+        launch();
     }
 
     private TextView showWarningBanner(final int messageId, final String hideCfgName) {
@@ -251,7 +252,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     }
 
     @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
-    private void launch(final boolean isBitcoinUri) {
+    private void launch() {
 
         setContentView(R.layout.activity_tabbed_main);
         final Toolbar toolbar = UI.find(this, R.id.toolbar);
@@ -303,7 +304,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         final boolean isResetActive = mService.isTwoFactorResetActive();
         int goToTab = isResetActive ? 0 : 1;
 
-        if (isBitcoinUri && !isResetActive) {
+        if (mIsBitcoinUri && !isResetActive) {
             // go to send page tab
             goToTab = 2;
 
@@ -365,7 +366,7 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
 
         final SectionsPagerAdapter adapter = getPagerAdapter();
 
-        if (adapter == null || mService.isForcedOff()) {
+        if ((adapter == null || mService.isForcedOff()) && !mIsBitcoinUri) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
@@ -412,8 +413,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
                     finish();
                     return;
                 }
-                final boolean isBitcoinUri = true;
-                launch(isBitcoinUri);
+                mIsBitcoinUri = true;
+                launch();
                 break;
             case REQUEST_SWEEP_PRIVKEY:
                 if (data == null)
