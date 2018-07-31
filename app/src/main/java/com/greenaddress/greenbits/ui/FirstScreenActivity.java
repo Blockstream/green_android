@@ -268,6 +268,7 @@ public class FirstScreenActivity extends LoginActivity {
 
     @Override
     public void onResumeWithService() {
+        setAppNameTitle();
 
         // Make a note if the user cancelled PIN entry
         final boolean userCancelled = mService.getUserCancelledPINEntry();

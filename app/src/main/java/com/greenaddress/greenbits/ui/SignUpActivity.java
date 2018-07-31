@@ -70,6 +70,7 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
+        setTitleWithNetwork(R.string.title_activity_sign_up);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         mNfcPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, SignUpActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);

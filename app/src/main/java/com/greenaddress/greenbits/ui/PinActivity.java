@@ -270,6 +270,7 @@ public class PinActivity extends LoginActivity implements Observer, View.OnClick
     @Override
     public void onResumeWithService() {
         mService.addConnectionObserver(this);
+        setAppNameTitle();
         if (!checkPinExist(true)) {
             chooseNetworkIfMany(true);
         }

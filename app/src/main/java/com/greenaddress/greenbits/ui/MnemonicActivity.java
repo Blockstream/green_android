@@ -92,6 +92,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     protected void onCreateWithService(final Bundle savedInstanceState) {
         Log.i(TAG, getIntent().getType() + ' ' + getIntent());
 
+        setTitleWithNetwork(R.string.title_activity_mnemonic);
         mMnemonicText = UI.find(this, R.id.mnemonicText);
         mOkButton = UI.find(this,R.id.mnemonicOkButton);
         mScanButton = UI.find(this,R.id.mnemonicScanIcon);

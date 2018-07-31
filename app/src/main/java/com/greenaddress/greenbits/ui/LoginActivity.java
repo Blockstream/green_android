@@ -74,12 +74,14 @@ public abstract class LoginActivity extends GaActivity {
                         selectedNetwork(text.toString(), false);
                         mService.cfgEdit("network").putBoolean("asked", true).apply();
                         checkPinExist(fromPinActivity);
+                        setAppNameTitle();
                         return true;
                     })
                     .onNegative((dialog, which) -> {
                         selectedNetwork(networkSelectorList.get(dialog.getSelectedIndex()), true);
                         mService.cfgEdit("network").putBoolean("asked", true).apply();
                         checkPinExist(fromPinActivity);
+                        setAppNameTitle();
                     })
                     .cancelable(false)
                     .build();

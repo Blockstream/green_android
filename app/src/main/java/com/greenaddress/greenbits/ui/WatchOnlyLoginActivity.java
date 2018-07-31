@@ -27,6 +27,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        setAppNameTitle();
         setContentView(R.layout.activity_watchonly);
 
         mUsernameText = UI.find(this, R.id.input_user);

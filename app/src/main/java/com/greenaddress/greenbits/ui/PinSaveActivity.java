@@ -110,6 +110,7 @@ public class PinSaveActivity extends GaActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
+        setAppNameTitle();
         mPinText = UI.find(this, R.id.pinSaveText);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

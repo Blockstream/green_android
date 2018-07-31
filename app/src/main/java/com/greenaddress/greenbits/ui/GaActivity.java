@@ -195,4 +195,21 @@ public abstract class GaActivity extends AppCompatActivity {
         startActivity(intent);
         finishOnUiThread();
     }
+
+    protected void setAppNameTitle() {
+        setTitleWithNetwork(R.string.app_name);
+    }
+
+    protected void setTitleWithNetwork(final int resource) {
+        if (mService == null || mService.getNetwork() == null)
+            return;
+
+        if (!mService.getNetwork().isMainnet())
+            setTitle(String.format("%s (%s)",
+                    getString(resource),
+                    mService.getNetwork().getName().toString()));
+        else
+            setTitle(resource);
+    }
+
  }
