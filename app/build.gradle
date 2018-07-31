@@ -75,12 +75,9 @@ android {
             universalApk true
         }
     }
-    project.ext.versionCodes = ['armeabi-v7a': 2, 'arm64-v8a': 3, 'x86': 8, 'x86_64': 9]
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            output.versionCodeOverride =
-                    variant.mergedFlavor.minSdkVersion.apiLevel * 1000000 + project.ext.versionCodes.get(output.getFilter(
-                            com.android.build.OutputFile.ABI), 0) * 10000 + android.defaultConfig.versionCode
+            output.versionCodeOverride = 22000000 + android.defaultConfig.versionCode
         }
     }
     productFlavors {
