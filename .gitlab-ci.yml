@@ -12,7 +12,7 @@ build_tag_release:
   script:
     - cd $CI_PROJECT_DIR
     - ./app/fetch_libwally_binaries.sh
-    - ./gradlew assembleProductionRelease assembleProduction_21Release
+    - ./gradlew assembleProductionRelease
 
 build_tag_osx_release:
   tags:
@@ -20,7 +20,7 @@ build_tag_osx_release:
   script:
     - cd $CI_PROJECT_DIR
     - ./app/fetch_libwally_binaries.sh
-    - ./gradlew assembleProductionRelease assembleProduction_21Release
+    - ./gradlew assembleProductionRelease
 
 package_release:
   tags:
