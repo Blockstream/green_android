@@ -480,6 +480,8 @@ public class WalletClient {
         mScheduler.createWorker().schedule(new Action0() {
             @Override
             public void call() {
+                setProxy(mService.getProxyHost(), mService.getProxyPort());
+                setTorEnabled(mService.getTorEnabled());
                 final String wsuri = getUri(mService.getNetwork());
                 Log.i(TAG, "Proxy is configured " + mProxyAddress);
                 Log.i(TAG, "Connecting to " + wsuri);

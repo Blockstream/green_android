@@ -308,13 +308,7 @@ public class GaService extends Service implements INotificationHandler {
         mUserCancelledPINEntry = value;
     }
 
-    private void reloadSettings() {
-        mClient.setProxy(getProxyHost(), getProxyPort());
-        mClient.setTorEnabled(getTorEnabled());
-    }
-
     private void reconnect() {
-        reloadSettings();
         Log.i(TAG, "Submitting reconnect after " + mReconnectDelay);
         onConnected = mClient.connect();
         mState.transitionTo(ConnState.CONNECTING);
@@ -410,7 +404,7 @@ public class GaService extends Service implements INotificationHandler {
 
     public String getProxyHost() { return cfg().getString("proxy_host", ""); }
     public String getProxyPort() { return cfg().getString("proxy_port", ""); }
-    private boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
+    public boolean getTorEnabled() { return cfg().getBoolean("tor_enabled", false); }
     public boolean isSegwitUnlocked() { return !cfgIn("CONFIG").getBoolean("sw_locked", false); }
     private void setSegwitLocked() { cfgInEdit("CONFIG").putBoolean("sw_locked", true).apply(); }
     public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
