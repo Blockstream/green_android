@@ -203,11 +203,11 @@ public abstract class GaActivity extends AppCompatActivity {
     protected void setTitleWithNetwork(final int resource) {
         if (mService == null || mService.getNetwork() == null)
             return;
-
-        if (!mService.getNetwork().isMainnet())
+        final String netname = mService.getNetwork().getName();
+        if (!"Bitcoin".equals(netname))
             setTitle(String.format("%s (%s)",
                     getString(resource),
-                    mService.getNetwork().getName().toString()));
+                    netname));
         else
             setTitle(resource);
     }
