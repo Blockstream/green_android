@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -251,7 +250,6 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         sendBroadcast(data);
     }
 
-    @SuppressLint("NewApi") // NdefRecord#toUri disabled for API < 16
     private void launch() {
 
         setContentView(R.layout.activity_tabbed_main);
@@ -312,7 +310,6 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             if (!NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
                 mViewPager.setTag(R.id.tag_bitcoin_uri, getIntent().getData());
             } else {
-                // NdefRecord#toUri not available in API < 16
                 final Parcelable[] rawMessages;
                 rawMessages = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
                 for (final Parcelable parcel : rawMessages) {

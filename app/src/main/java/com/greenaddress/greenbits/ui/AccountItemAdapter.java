@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.annotation.SuppressLint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +46,6 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         UI.setCoinText(mService, holder.mUnit, holder.mBalance, balance);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
         holder.mName.setText(mNames.get(position));

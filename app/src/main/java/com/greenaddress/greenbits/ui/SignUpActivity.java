@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -261,7 +260,6 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     }
 
     @Override
-    @SuppressLint("NewApi") // mNfcSignupIcon is hidden for API < 16
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
 
