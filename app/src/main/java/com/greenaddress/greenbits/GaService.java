@@ -698,9 +698,12 @@ public class GaService extends Service implements INotificationHandler {
 
         HDKey.resetCache(loginData.mGaitPath);
         mLocalEncryptionPassword = null;
-        // Cache the local encryption password as it is slow to generate,
-        // especially on hardware wallets.
-        getLocalEncryptionPassword();
+
+        if (!isWatchOnly()) {
+            // Cache the local encryption password as it is slow to generate,
+            // especially on hardware wallets.
+            getLocalEncryptionPassword();
+        }
 
         mBalanceObservables.put(0, new GaObservable());
         if (isElements()) {
