@@ -33,6 +33,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.GeneratedMessage;
 import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.CryptoHelper;
+import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.HDClientKey;
 import com.greenaddress.greenapi.HDKey;
 import com.greenaddress.greenapi.INotificationHandler;
@@ -70,7 +71,6 @@ import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.utils.ExchangeRate;
 import org.bitcoinj.utils.Fiat;
 import org.bitcoinj.utils.MonetaryFormat;
-import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -110,38 +110,26 @@ public class GaService extends Service implements INotificationHandler {
     public static final int LOGOFF_SERVER_RESTART = 1006;
     public static final int LOGOFF_BY_USER_RECONNECT = 9999;
 
-    private Network network;
+    private Network mNetwork;
 
     public Network getNetwork() {
-        return network;
+        return mNetwork;
     }
 
     public NetworkParameters getNetworkParameters() {
-        return network.getNetworkParameters();
+        return mNetwork.getNetworkParameters();
     }
 
     public boolean isElements() {
-        return network.isElements();
+        return mNetwork.isElements();
     }
 
-    public SharedPreferences getPinPref() {
-        return getPinPref(getNetwork());
+    public boolean isMainnet() {
+        return mNetwork.isMainnet();
     }
 
-    public SharedPreferences getPinPref(final Network network) {
-        if(network.isMainnet()) {
-            return cfg("pin");
-        } else {
-            return cfg(network.getName() + "_pin");
-        }
-    }
-
-    public SharedPreferences.Editor getEditPinPref() {
-        return getEditPinPref(getNetwork());
-    }
-
-    public SharedPreferences.Editor getEditPinPref(final Network network) {
-        return getPinPref(network).edit();
+    public boolean isRegtest() {
+        return mNetwork.isRegtest();
     }
 
     private enum ConnState {
@@ -201,6 +189,11 @@ public class GaService extends Service implements INotificationHandler {
     private String mAssetSymbol;
     private MonetaryFormat mAssetFormat;
     public byte[] mLocalEncryptionPassword;
+
+    // This could be a local variable in theory but since there is a warning in the documentation
+    // about possibly being garbage collected has been made a member of the class
+    // https://developer.android.com/reference/android/content/SharedPreferences
+    private SharedPreferences.OnSharedPreferenceChangeListener mSyncListener;
 
     private final SPV mSPV = new SPV(this);
 
@@ -388,8 +381,28 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     // Sugar for fetching/editing preferences
-    public SharedPreferences cfg() { return PreferenceManager.getDefaultSharedPreferences(this); }
-    public SharedPreferences cfg(final String name) { return getSharedPreferences(name, MODE_PRIVATE); }
+    public SharedPreferences cfg() {
+        return PreferenceManager.getDefaultSharedPreferences(this);
+    }
+
+    public SharedPreferences cfg(final String name, final String networkName) {
+        if ("Bitcoin".equals(networkName))
+            return getSharedPreferences(name, MODE_PRIVATE);
+        return getSharedPreferences(String.format("%s_%s", networkName, name), MODE_PRIVATE);
+    }
+
+    public SharedPreferences cfg(final String name) {
+        return cfg(name, getNetwork().getName());
+    }
+
+    public SharedPreferences cfgGlobal(final String name) {
+        return getSharedPreferences(name, MODE_PRIVATE);
+    }
+
+    public SharedPreferences.Editor cfgGlobalEdit(final String name) {
+        return cfgGlobal(name).edit();
+    }
+
     public SharedPreferences.Editor cfgEdit(final String name) { return cfg(name).edit(); }
     public SharedPreferences cfgIn(final String name) { return cfg(name + mReceivingId); }
     public SharedPreferences.Editor cfgInEdit(final String name) { return cfgIn(name).edit(); }
@@ -455,56 +468,96 @@ public class GaService extends Service implements INotificationHandler {
         mTimerExecutor = new ScheduledThreadPoolExecutor(1);
         mTimerExecutor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 
+        mClient = new WalletClient(this, mExecutor);
+        updateSelectedNetwork();
+
         mDeviceId = cfg("service").getString("device_id", null);
         if (mDeviceId == null) {
             // Generate a unique device id
             mDeviceId = UUID.randomUUID().toString();
             cfgEdit("service").putString("device_id", mDeviceId).apply();
         }
-        final Set<String> networkSelector = cfg("network").getStringSet("enabled", new HashSet<>());
-        final String networkSelected = cfg("network").getString("active", "Bitcoin");
+        final Set<String> networkSelector = cfgGlobal("network").getStringSet("network_enabled", new HashSet<>());
+        final String networkSelected = cfgGlobal("network").getString("network_active", "Bitcoin");
         if (networkSelector.isEmpty()) {
             networkSelector.add("Bitcoin");
-            cfg("network").edit()
-                    .putString("active", networkSelected)
-                    .putStringSet("enabled", networkSelector)
+            cfgGlobal("network").edit()
+                    .putString("network_active", networkSelected)
+                    .putStringSet("network_enabled", networkSelector)
                     .apply();
             cfg().edit()
-                    .putStringSet("network_selector", networkSelector)
+                    .putStringSet("network_enabled", networkSelector)
                     .apply();
         }
-        cfgEdit("network")
-                .putBoolean("asked",false)
-                .putBoolean("redirect",false).apply();
+        cfgGlobalEdit("network")
+                .putBoolean("network_asked", false)
+                .putBoolean("network_redirect", false).apply();
 
-        mClient = new WalletClient(this, mExecutor);
+        mSyncListener = (sharedPreferences, key) -> {
+            // keep the DEFAULT_COPY{_[networkName]} in sync
+            final SharedPreferences.Editor defaultByNetwork = cfgEdit("DEFAULT_COPY");
+            writePreference(key,sharedPreferences.getAll().get(key), defaultByNetwork).apply();
+        };
+        cfg().registerOnSharedPreferenceChangeListener(mSyncListener);
 
-        updateSelectedNetwork();
+    }
+
+    private static void copyPreferences(final SharedPreferences source, final SharedPreferences destination) {
+        if (source.getAll().isEmpty())
+            return;
+        final SharedPreferences.Editor destinationEditor = destination.edit();
+        for (final Map.Entry<String, ?> entry : source.getAll().entrySet())
+            writePreference(entry.getKey(), entry.getValue(), destinationEditor);
+        destinationEditor.apply();
+    }
+
+    private static SharedPreferences.Editor writePreference(final String key, final Object value, final SharedPreferences.Editor preferences) {
+        if (value instanceof Boolean)
+            return preferences.putBoolean(key, (Boolean) value);
+        else if (value instanceof String)
+            return preferences.putString(key, (String) value);
+        else if (value instanceof Long)
+            return preferences.putLong(key, (Long) value);
+        else if (value instanceof Integer)
+            return preferences.putInt(key, (Integer) value);
+        else if (value instanceof Float)
+            return preferences.putFloat(key, (Float) value);
+        else if (value instanceof Set)
+            return preferences.putStringSet(key, (Set<String>) value);
+        else
+            throw new RuntimeException("Unknown preference type");
     }
 
     public void updateSelectedNetwork() {
-        final String activeNetwork = cfg("network").getString("active", "Bitcoin");
+        final String activeNetwork = cfgGlobal("network").getString("network_active", "Bitcoin");
+        final String networkNameJsonPref = String.format("network_%s_json", activeNetwork);
         Log.i(TAG,"updateSelectedNetwork to " + activeNetwork);
 
         try {
-            if("Bitcoin".equals(activeNetwork)) {
-                network = new Network(getAssets().open("production/config.json"));
-            } else if("Testnet".equals(activeNetwork)) {
-                network = new Network(getAssets().open("btctestnet/config.json"));
-            } else if (cfg("network").contains(activeNetwork + "_json")) {
-                network = Network.from(cfg("network").getString(activeNetwork + "_json",null));
-                if (network == null) {
-                    throw new JSONException("Invalid Network");
-                }
-            } else {
-                //TODO handle custom networks
+            if("Bitcoin".equals(activeNetwork))
+                mNetwork = new Network(getAssets().open("production/config.json"));
+            else if("Testnet".equals(activeNetwork))
+                mNetwork = new Network(getAssets().open("btctestnet/config.json"));
+            else if (cfgGlobal("network").contains(networkNameJsonPref))
+                mNetwork = Network.from(cfgGlobal("network").getString(networkNameJsonPref,null));
+            else
                 throw new RuntimeException("Selected network not selectable");
-            }
-        } catch (JSONException | IOException e ) {
-            //TODO defaulting to bitcoin?
+        } catch (final GAException | IOException e ) {
+            // Keep the previous network
             e.printStackTrace();
+            return;
         }
-        Log.i(TAG, "network is "+ network);
+        Log.i(TAG, "network is " + mNetwork);
+
+        final SharedPreferences defaultBitcoin = cfg("DEFAULT_COPY", "Bitcoin");
+        if (defaultBitcoin.getAll().isEmpty()) {
+            // Copy default preferences to migrate old users
+            copyPreferences(cfg(), defaultBitcoin);
+        }
+        cfg().edit().clear().apply();
+        copyPreferences(cfg("DEFAULT_COPY"), cfg());
+        copyPreferences(cfgGlobal("network"), cfg());
+
         reconnect();
     }
 
@@ -934,7 +987,7 @@ public class GaService extends Service implements INotificationHandler {
                 // As this is a new PIN, save it to config
                 final String encrypted = Base64.encodeToString(pinData.mSalt, Base64.NO_WRAP) + ';' +
                                          Base64.encodeToString(pinData.mEncryptedData, Base64.NO_WRAP);
-                getEditPinPref().putString("ident", pinData.mPinIdentifier)
+                cfgEdit("pin").putString("ident", pinData.mPinIdentifier)
                               .putInt("counter", 0)
                               .putString("encrypted", encrypted)
                               .apply();
@@ -944,9 +997,9 @@ public class GaService extends Service implements INotificationHandler {
     }
 
     public ListenableFuture<LoginData> pinLogin(final String pin) throws Exception {
-        final String pinIdentifier = getPinPref().getString("ident", null);
+        final String pinIdentifier = cfg("pin").getString("ident", null);
         final byte[] password = mClient.getPinPassword(pinIdentifier, pin);
-        final String[] split = getPinPref().getString("encrypted", null).split(";");
+        final String[] split = cfg("pin").getString("encrypted", null).split(";");
         final byte[] salt = split[0].getBytes();
         final byte[] encryptedData = Base64.decode(split[1], Base64.NO_WRAP);
         final PinData pinData = PinData.fromEncrypted(pinIdentifier, salt, encryptedData, password);

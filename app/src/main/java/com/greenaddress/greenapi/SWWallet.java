@@ -33,7 +33,7 @@ public class SWWallet extends ISigningWallet {
     }
 
     private SWWallet derive(final Integer childNumber) {
-        return new SWWallet(HDKey.deriveChildKey(mRootKey, childNumber), this.mNetwork);
+        return new SWWallet(HDKey.deriveChildKey(mRootKey, childNumber), mNetwork);
     }
 
     @Override

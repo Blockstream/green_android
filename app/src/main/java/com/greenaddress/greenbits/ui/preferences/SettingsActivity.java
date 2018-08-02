@@ -11,7 +11,7 @@ public class SettingsActivity extends GaPreferenceActivity {
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onBuildHeaders(final List<Header> target) {
-        if (((GreenAddressApplication)getApplication()).mService.isElements())
+        if (getGAApp().mService.isElements())
             loadHeadersFromResource(R.xml.pref_headers_elements, target);
         else
             loadHeadersFromResource(R.xml.pref_headers, target);

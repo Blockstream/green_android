@@ -448,16 +448,16 @@ public class WalletClient {
         });
     }
 
-    private NettyWampConnectionConfig getNettyConfig(final Network network) throws SSLException {
+    private NettyWampConnectionConfig getNettyConfig() throws SSLException {
         final int TWO_MB = 2 * 1024 * 1024; // Max message size in bytes
 
         final NettyWampConnectionConfig.Builder configBuilder;
         configBuilder = new NettyWampConnectionConfig.Builder()
                                                      .withMaxFramePayloadLength(TWO_MB);
 
-        if (network.getGaitWampCertPins() != null && !isTorEnabled()) {
+        if (mService.getNetwork().getWampCertPins() != null && !isTorEnabled()) {
             final TrustManagerFactory tmf;
-            tmf = new FingerprintTrustManagerFactorySHA256(network.getGaitWampCertPins());
+            tmf = new FingerprintTrustManagerFactorySHA256(mService.getNetwork().getWampCertPins());
             final SslContext ctx = SslContextBuilder.forClient().trustManager(tmf).build();
             configBuilder.withSslContext(ctx);
         }
@@ -465,10 +465,10 @@ public class WalletClient {
         return configBuilder.build();
     }
 
-    private String getUri(final Network network) {
+    private String getUri() {
         if (isTorEnabled())
-            return String.format("ws://%s/v2/ws/", network.getGaitOnion());
-        return network.getGaitWampUrl();
+            return mService.getNetwork().getOnion();
+        return mService.getNetwork().getWampUrl();
     }
 
     private boolean isTorEnabled() {
@@ -482,7 +482,7 @@ public class WalletClient {
             public void call() {
                 setProxy(mService.getProxyHost(), mService.getProxyPort());
                 setTorEnabled(mService.getTorEnabled());
-                final String wsuri = getUri(mService.getNetwork());
+                final String wsuri = getUri();
                 Log.i(TAG, "Proxy is configured " + mProxyAddress);
                 Log.i(TAG, "Connecting to " + wsuri);
 
@@ -494,7 +494,7 @@ public class WalletClient {
                             .withUri(wsuri)
                             .withRealm("realm1")
                             .withNrReconnects(0)
-                            .withConnectionConfiguration(getNettyConfig(mService.getNetwork()));
+                            .withConnectionConfiguration(getNettyConfig());
                 } catch (final ApplicationError | SSLException e) {
                     e.printStackTrace();
                     rpc.setException(e);

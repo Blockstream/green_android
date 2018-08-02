@@ -658,10 +658,10 @@ public class SPV {
                 Log.d(TAG, "Creating block store");
                 mBlockStore = new SPVBlockStore(mService.getNetworkParameters(), mService.getSPVChainFile());
                 final StoredBlock storedBlock = mBlockStore.getChainHead(); // detect corruptions as early as possible
-                if (storedBlock.getHeight() == 0 && mService.getNetworkParameters() != RegTestParams.get()) {
+                if (storedBlock.getHeight() == 0 && mService.isRegtest()) {
                     InputStream is = null;
                     try {
-                        is = mService.getAssets().open( mService.getNetworkParameters() == MainNetParams.get() ? "production/checkpoints" : "btctestnet/checkpoints");
+                        is = mService.getAssets().open( mService.isMainnet() ? "production/checkpoints" : "btctestnet/checkpoints");
                         final int keyTime = mService.getLoginData().get("earliest_key_creation_time");
                         CheckpointManager.checkpoint(mService.getNetworkParameters(), is,
                                                      mBlockStore, keyTime);

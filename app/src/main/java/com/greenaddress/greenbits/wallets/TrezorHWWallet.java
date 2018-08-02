@@ -37,23 +37,23 @@ public class TrezorHWWallet extends HWWallet {
 
     @Override
     protected HWWallet derive(final Integer childNumber) {
-        return new TrezorHWWallet(this, childNumber, this.mNetwork);
+        return new TrezorHWWallet(this, childNumber, mNetwork);
     }
 
     @Override
     protected ECKey.ECDSASignature signMessage(final String message) {
-        return trezor.signMessage(addrn, message, mNetwork.getNetworkParameters());
+        return trezor.signMessage(addrn, message);
     }
 
     @Override
     public DeterministicKey getPubKey() {
-        final Pair<byte[], byte[]> xpub = trezor.getUserKey(addrn, mNetwork.getNetworkParameters());
+        final Pair<byte[], byte[]> xpub = trezor.getUserKey(addrn);
         return HDKey.createMasterKey(xpub.second, xpub.first);
     }
 
     @Override
     public List<byte[]> signTransaction(final PreparedTransaction ptx) {
-        return trezor.signTransaction(ptx, mNetwork.isMainnet() ? "Bitcoin" : "Testnet", mNetwork);
+        return trezor.signTransaction(ptx, mNetwork.isMainnet() ? "Bitcoin" : "Testnet");
     }
 
     @Override

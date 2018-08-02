@@ -35,16 +35,16 @@ public abstract class LoginActivity extends GaActivity {
     }
 
     protected boolean checkPinExist(final boolean fromPinActivity) {
-        final String ident = mService.getPinPref().getString("ident", null);
+        final String ident = mService.cfg("pin").getString("ident", null);
 
         if (fromPinActivity && ident == null) {
-            mService.cfgEdit("network").putBoolean("redirect", true).apply();
+            mService.cfgGlobalEdit("network").putBoolean("network_redirect", true).apply();
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
             return true;
         }
         if (!fromPinActivity && ident != null) {
-            mService.cfgEdit("network").putBoolean("redirect", true).apply();
+            mService.cfgGlobalEdit("network").putBoolean("network_redirect", true).apply();
             startActivity(new Intent(this, PinActivity.class));
             finish();
             return true;
@@ -53,52 +53,52 @@ public abstract class LoginActivity extends GaActivity {
     }
 
     protected void chooseNetworkIfMany(final boolean fromPinActivity) {
-        final boolean asked = mService.cfg("network").getBoolean("asked", false);
-        final boolean redirect = mService.cfg("network").getBoolean("redirect", false);
-        mService.cfgEdit("network")
-                .putBoolean("asked",false)
-                .putBoolean("redirect",false).apply();
-        if(asked && redirect) {
+        final boolean asked = mService.cfgGlobal("network").getBoolean("network_asked", false);
+        final boolean redirect = mService.cfgGlobal("network").getBoolean("network_redirect", false);
+        mService.cfgGlobalEdit("network")
+                .putBoolean("network_asked", false)
+                .putBoolean("network_redirect", false).apply();
+        if(asked && redirect)
             return;
-        }
 
-        final Set<String> networkSelector = mService.cfg("network").getStringSet("enabled", new HashSet<>());
-        if (networkSelector.size()>1) {
-            final Set<String> networkSelectorSet = mService.cfg("network").getStringSet("enabled", new HashSet<>());
-            final List<String> networkSelectorList = new ArrayList<>(networkSelectorSet);
-            Collections.sort(networkSelectorList);
+        final Set<String> networkSelector = mService.cfgGlobal("network").getStringSet("network_enabled", new HashSet<>());
+        if (networkSelector.size() == 1)
+            return;
 
-            final MaterialDialog materialDialog = UI.popup(this, R.string.select_network, R.string.choose, R.string.choose_and_default)
-                    .items(networkSelectorList)
-                    .itemsCallbackSingleChoice(0, (dialog, v, which, text) -> {
-                        selectedNetwork(text.toString(), false);
-                        mService.cfgEdit("network").putBoolean("asked", true).apply();
-                        checkPinExist(fromPinActivity);
-                        setAppNameTitle();
-                        return true;
-                    })
-                    .onNegative((dialog, which) -> {
-                        selectedNetwork(networkSelectorList.get(dialog.getSelectedIndex()), true);
-                        mService.cfgEdit("network").putBoolean("asked", true).apply();
-                        checkPinExist(fromPinActivity);
-                        setAppNameTitle();
-                    })
-                    .cancelable(false)
-                    .build();
+        final Set<String> networkSelectorSet = mService.cfgGlobal("network").getStringSet("network_enabled", new HashSet<>());
+        final List<String> networkSelectorList = new ArrayList<>(networkSelectorSet);
+        Collections.sort(networkSelectorList);
 
-            materialDialog.show();
-        }
+        final MaterialDialog materialDialog = UI.popup(this, R.string.select_network, R.string.choose, R.string.choose_and_default)
+                .items(networkSelectorList)
+                .itemsCallbackSingleChoice(0, (dialog, v, which, text) -> {
+                    selectedNetwork(text.toString(), false);
+                    mService.cfgGlobalEdit("network").putBoolean("network_asked", true).apply();
+                    checkPinExist(fromPinActivity);
+                    setAppNameTitle();
+                    return true;
+                })
+                .onNegative((dialog, which) -> {
+                    selectedNetwork(networkSelectorList.get(dialog.getSelectedIndex()), true);
+                    mService.cfgGlobalEdit("network").putBoolean("network_asked", true).apply();
+                    checkPinExist(fromPinActivity);
+                    setAppNameTitle();
+                })
+                .cancelable(false)
+                .build();
+
+        materialDialog.show();
     }
 
     protected void selectedNetwork(final String which, final boolean makeDefault) {
         Log.i("TAG", "which " + which + " default:" + makeDefault);
-        final SharedPreferences.Editor editor = mService.cfg("network").edit();
+        final SharedPreferences.Editor editor = mService.cfgGlobalEdit("network");
         if (makeDefault) {
             final Set<String> networkSelectorNew = new HashSet<>();
             networkSelectorNew.add(which);
-            editor.putStringSet("enabled", networkSelectorNew);
+            editor.putStringSet("network_enabled", networkSelectorNew);
         }
-        editor.putString("active", which);
+        editor.putString("network_active", which);
         editor.apply();
         mService.updateSelectedNetwork();
     }

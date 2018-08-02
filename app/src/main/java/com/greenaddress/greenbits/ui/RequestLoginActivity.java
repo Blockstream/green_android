@@ -204,12 +204,12 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                     return "";
                 }
             }
-        });
+        }, mService.getNetwork());
 
         if (t == null)
             return false;
 
-        final List<Integer> version = t.getFirmwareVersion(mService.getNetworkParameters());
+        final List<Integer> version = t.getFirmwareVersion();
         boolean isFirmwareOutdated = false;
         final int vendorId = t.getVendorId();
         if (vendorId == VENDOR_TREZOR) {
@@ -487,7 +487,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
 
         if (mUsb == null) {
             // No hardware wallet, jump to PIN or mnemonic entry
-            if (mService.getPinPref().getString("ident", null) != null)
+            if (mService.cfg("pin").getString("ident", null) != null)
                 startActivityForResult(new Intent(this, PinActivity.class), 0);
             else
                 startActivityForResult(new Intent(this, MnemonicActivity.class), 0);

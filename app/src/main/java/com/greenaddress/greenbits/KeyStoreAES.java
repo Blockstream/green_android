@@ -111,7 +111,7 @@ public class KeyStoreAES {
 
     private static void setPINConfig(final GaService gaService,
                                      final String encryptedPIN, final String iv) {
-        gaService.getEditPinPref()
+        gaService.cfgEdit("pin")
                  .putString("native", encryptedPIN)
                  .putString("nativeiv", iv)
                  .apply();

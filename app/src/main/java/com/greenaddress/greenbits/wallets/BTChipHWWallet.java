@@ -308,7 +308,7 @@ public class BTChipHWWallet extends HWWallet {
     protected HWWallet derive(final Integer childNumber) {
         final LinkedList<Integer> addrn_child = new LinkedList<>(mAddrn);
         addrn_child.add(childNumber);
-        return new BTChipHWWallet(mDongle, mPin, addrn_child, this.mNetwork);
+        return new BTChipHWWallet(mDongle, mPin, addrn_child, mNetwork);
     }
 
     public BTChipDongle getDongle() {

@@ -647,7 +647,7 @@ public class SendFragment extends SubaccountFragment {
 
         UI.disable(mSendButton);
         final int numConfs;
-        if (service.getNetworkParameters() == MainNetParams.get())
+        if (service.isMainnet())
             numConfs = 1; // Require 1 conf before spending on mainnet
         else
             numConfs = 0; // Allow 0 conf for networks with no real-world value

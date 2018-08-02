@@ -399,13 +399,12 @@
     <string name="network_config_invalid">Invalid network configuration</string>
     <string name="network_invalid_url">Invalid URL</string>
     <string name="network_select_bitcoin_by_def">One network must be selected. Selecting Bitcoin by default</string>
-    <string name="network_cannot_parse">Cannot parse network configuration</string>
     <string name="network_already_present">Custom network with this name already present</string>
     <string name="network_added">Custom network added, enable it in the network selector chooser</string>
     <string name="network_cant_remove">Custom network not found</string>
     <string name="network_disable_before_remove">Cannot remove enabled network, please disable first</string>
-    <string name="custom_networks_enable">Enable custom networks debug options</string>
-    <string name="custom_network_by_url">Add custom network by URL</string>
-    <string name="custom_network_by_qr">Add custom network by QR code</string>
-    <string name="custom_network_remove">Remove custom network</string>
+    <string name="network_customs_enable">Enable custom networks debug options</string>
+    <string name="network_by_url">Add custom network by URL</string>
+    <string name="network_by_qr">Add custom network by QR code</string>
+    <string name="network_remove">Remove custom network</string>
 </resources>

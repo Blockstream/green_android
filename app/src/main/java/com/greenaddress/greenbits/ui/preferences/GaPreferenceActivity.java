@@ -62,7 +62,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
         return true;
     }
 
-    private GreenAddressApplication getGAApp() {
+    protected GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
 
