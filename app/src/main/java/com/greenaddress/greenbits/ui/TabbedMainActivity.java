@@ -77,13 +77,11 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
     private String mSendAmount;
     private Dialog mTwoFactorDialog;
     private Dialog mTwoFactorResetDialog;
-    private MaterialDialog mSegwitDialog;
     private MaterialDialog mSubaccountDialog;
     private FloatingActionButton mSubaccountButton;
     private boolean mTwoFactorResetShowing = false;
     private boolean mIsBitcoinUri = false;
 
-    private final Runnable mSegwitCB = new Runnable() { public void run() { mSegwitDialog = null; } };
     private final Runnable mSubaccountCB = new Runnable() { public void run() { mDialogCB.run(); mSubaccountDialog = null; } };
     private final Runnable mDialogCB = new Runnable() { public void run() { setBlockWaitDialog(false); } };
 
@@ -349,9 +347,8 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
             return;
         }
 
-
-        if (mService.isSegwitUnconfirmed()) {
-            // The user has not yet enabled segwit. Opt them in
+        if (!Boolean.TRUE.equals(mService.getUserConfig("use_segwit"))) {
+            // Set SegWit to true if it's false or not set
             mService.setUserConfig("use_segwit", true, false);
         }
     }
@@ -379,7 +376,6 @@ public class TabbedMainActivity extends GaActivity implements Observer, View.OnC
         mService.deleteTwoFactorObserver(mTwoFactorObserver);
         mService.deleteConnectionObserver(this);
         mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
-        mSegwitDialog = UI.dismiss(this, mSegwitDialog);
     }
 
     @Override

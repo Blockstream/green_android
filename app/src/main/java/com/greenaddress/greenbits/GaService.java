@@ -375,11 +375,6 @@ public class GaService extends Service implements INotificationHandler {
         return mClient.isWatchOnly();
     }
 
-    // Returns True if the user hasn't elected to use segwit yet
-    public boolean isSegwitUnconfirmed() {
-        return mClient.isSegwitUnconfirmed();
-    }
-
     // Sugar for fetching/editing preferences
     public SharedPreferences cfg() {
         return PreferenceManager.getDefaultSharedPreferences(this);
