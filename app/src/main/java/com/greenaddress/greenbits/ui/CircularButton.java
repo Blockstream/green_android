@@ -99,6 +99,7 @@ public class CircularButton extends CardView {
                     mBackgroundColor, PorterDuff.Mode.SRC_IN);
         }
 
+        typedArray.recycle();
         mLinearLayout.addView(mButton);
         mLinearLayout.addView(mProgressBar);
         addView(mLinearLayout);
