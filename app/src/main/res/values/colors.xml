@@ -28,14 +28,7 @@
     <color name="scan_result_view">#b0000000</color>
     <color name="scan_result_dots">#c099cc00</color>
 
-
-    <color name="markColorPrimary">#4872c4</color>
-    <color name="markColorPrimaryDark">#2b3a6c</color>
-    <color name="markColorAccent">#95d3ff</color>
-
     <color name="markPrimary">#4872c4</color>
     <color name="markPrimaryDark">#2b3a6c</color>
     <color name="markAccent">#95d3ff</color>
-    <color name="markAccentLight">#c0e5ff</color>
-    <color name="markAccentPressed">#a68eff</color>
 </resources>
