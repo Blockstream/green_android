@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -22,7 +23,7 @@ public class JSONMap implements Serializable {
     private static final SimpleDateFormat DATE_FORMAT = getDateFormat();
 
     private static SimpleDateFormat getDateFormat() {
-        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return df;
     }

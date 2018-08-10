@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.schildbach.wallet.ui.ScanActivity;
@@ -177,7 +178,7 @@ public class SendFragment extends SubaccountFragment {
             } catch (final BitcoinURIParseException e) {
                 // bitcoinj doesn't understand the address, if its valid (e.g. bech32), use it
                 int errId = R.string.err_send_invalid_bitcoin_uri;
-                if (uri.toLowerCase().startsWith("bitcoin:")) {
+                if (uri.toLowerCase(Locale.US).startsWith("bitcoin:")) {
                     final String inner = uri.substring(8);
                     if (service.isValidAddress(inner, service.getNetwork())) {
                         processBitcoinURIDetails(inner, null, null);

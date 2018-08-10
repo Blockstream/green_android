@@ -23,6 +23,7 @@ import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenbits.QrBitmap;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.Formatter;
 import java.util.List;
@@ -70,7 +71,7 @@ public class TwoFactorActivity extends GaActivity {
 
         mLocalizedMap = UI.getTwoFactorLookup(getResources());
 
-        mMethod = getIntent().getStringExtra("method").toLowerCase();
+        mMethod = getIntent().getStringExtra("method").toLowerCase(Locale.US);
         mIsReset = mMethod.equals("reset");
 
         if (mIsReset) {

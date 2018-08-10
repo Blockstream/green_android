@@ -14,6 +14,8 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
+import java.util.Locale;
+
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,
                Preference.OnPreferenceClickListener {
@@ -115,7 +117,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                 return false;
             }
 
-        if (peers.toLowerCase().contains(".onion")) {
+        if (peers.toLowerCase(Locale.US).contains(".onion")) {
             // Tor address
             if (!mService.isProxyEnabled()) {
                 UI.popup(getActivity(), R.string.enterValidAddressTitleTorDisabled, android.R.string.ok)

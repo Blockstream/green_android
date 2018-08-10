@@ -26,6 +26,7 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     }
 
     private static boolean isEnabled(final Map<?, ?> twoFacConfig, final String method) {
-        return twoFacConfig.get(method.toLowerCase()).equals(true);
+        return twoFacConfig.get(method.toLowerCase(Locale.US)).equals(true);
     }
 
     private CheckBoxPreference setupCheckbox(final Map<?, ?> twoFacConfig, final String method) {
@@ -166,7 +167,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
     private void disable2FA(final String method, final String withMethod) {
         if (!withMethod.equals("gauth")) {
             final Map<String, String> data = new HashMap<>();
-            data.put("method", method.toLowerCase());
+            data.put("method", method.toLowerCase(Locale.US));
             mService.requestTwoFacCode(withMethod, "disable_2fa", data);
         }
 
@@ -191,7 +192,7 @@ public class TwoFactorPreferenceFragment extends GAPreferenceFragment
 
     private void disable2FAImpl(final String method, final String withMethod, final String code) {
         try {
-            if (mService.disableTwoFactor(method.toLowerCase(), mService.make2FAData(withMethod, code))) {
+            if (mService.disableTwoFactor(method.toLowerCase(Locale.US), mService.make2FAData(withMethod, code))) {
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         change2FA(method, false);
