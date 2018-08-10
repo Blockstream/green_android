@@ -44,6 +44,7 @@ import com.satoshilabs.trezor.TrezorGUICallback;
 import org.bitcoinj.crypto.DeterministicKey;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -157,7 +158,7 @@ public class RequestLoginActivity extends LoginActivity implements OnDiscoveredT
                             buttons[i].setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(final View v) {
-                                    pinValue.setText(UI.getText(pinValue) + (ii + 1));
+                                    pinValue.setText(String.format(Locale.US, "%s%d", UI.getText(pinValue), (ii + 1)));
                                     pinValue.setSelection(UI.getText(pinValue).length());
                                 }
                             });

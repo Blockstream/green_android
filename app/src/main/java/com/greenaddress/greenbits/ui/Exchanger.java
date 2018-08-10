@@ -50,7 +50,7 @@ class Exchanger implements AmountFields.OnConversionFinishListener {
         AmountFields.changeFiatIcon(fiatView, currency);
 
         if (mService.isElements()) {
-            bitcoinUnitText.setText(mService.getAssetSymbol() + ' ');
+            bitcoinUnitText.setText(String.format("%s ", mService.getAssetSymbol()));
             UI.hide(UI.find(mView, R.id.commissionFiatColumn));
         }
 

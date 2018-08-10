@@ -191,9 +191,8 @@ public class TransactionActivity extends GaActivity implements View.OnClickListe
     private void showFeeInfo(final long fee, final long vSize, final Coin feeRate) {
         final FontAwesomeTextView feeUnit = UI.find(this, R.id.txFeeUnit);
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
-        feeText.setText(UI.setCoinText(mService, feeUnit, null, Coin.valueOf(fee)) +
-                        " / " + String.valueOf(vSize) + " / " +
-                        UI.setCoinText(mService, feeUnit, null, feeRate));
+        feeText.setText(String.format("%s / %s / %s", UI.setCoinText(mService, feeUnit, null, Coin.valueOf(fee)),
+                String.valueOf(vSize), UI.setCoinText(mService, feeUnit, null, feeRate)));
     }
 
     private void showUnconfirmed() {
