@@ -104,6 +104,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
+        abortOnError true
+        ignoreWarnings false
         disable 'MissingTranslation'
     }
 }
