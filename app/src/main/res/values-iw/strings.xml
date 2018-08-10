@@ -62,7 +62,7 @@
     <string name="madeBy">מאת GreenAddress</string>
     <string name="welcomeGreenBits">ברוכים הבאים אל ארנק GreenBits</string>
     <string name="attemptsFinished">קוד PIN שגוי, אזלו מספר הנסיונות. אנא כנסו באמצעות הסיסמא.</string>
-    <string name="attemptsLeftLong">קוד PIN שגוי, נותרו %s נסיונות.</string>
+    <string name="attemptsLeftLong">קוד PIN שגוי, נותרו %1$d נסיונות.</string>
     <string name="warnOnPaste">שימו לב! אפליקציות אחרות יכולות לקרוא ולשנות את תוכן העתק-הדבק.</string>
     <string name="toastOnCopyAddress">הועתקה הכתובת.</string>
     <string name="receiveAddressSubTitle">כתובת</string>

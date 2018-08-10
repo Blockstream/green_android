@@ -60,7 +60,7 @@
     <string name="madeBy">من قبل GreenAddress</string>
     <string name="welcomeGreenBits">مرحبا بكم في GreenBits</string>
     <string name="attemptsFinished">رقم PIN غير صالح، ليس لديك أي محاولة متبقية. يرجى تسجيل الدخول باستخدام عبارة المرور الخاصة بك.</string>
-    <string name="attemptsLeftLong">رقم PIN غير صالح، لديك %s محاولات متبقية</string>
+    <string name="attemptsLeftLong">رقم PIN غير صالح، لديك %1$d محاولات متبقية</string>
     <string name="warnOnPaste">كن على علم، يمكن لتطبيقات الأخرى قراءة ذاكرة النصوص</string>
     <string name="toastOnCopyAddress">العنوان نسخ إلى الحافظة.</string>
     <string name="receiveAddressSubTitle">عنوان</string>
