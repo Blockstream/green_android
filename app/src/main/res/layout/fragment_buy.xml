@@ -21,7 +21,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
 
                 <LinearLayout
@@ -54,9 +55,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal|center_vertical"
-                        android:layout_toEndOf="@id/sendFiatGroup"
-                        android:layout_toRightOf="@id/sendFiatGroup"
-                        android:hint="0.00"
+                        android:hint="@string/zeroDecimal"
                         android:inputType="numberDecimal"
                         android:paddingLeft="14dp"
                         android:textColor="@color/textColor"
@@ -99,9 +98,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal|center_vertical"
-                            android:layout_toEndOf="@id/sendBitcoinGroup"
-                            android:layout_toRightOf="@id/sendBitcoinGroup"
-                            android:hint="0.00"
+                            android:hint="@string/zeroDecimal"
                             android:inputType="numberDecimal"
                             android:paddingLeft="14dp"
                             android:textColor="@color/textColor"
@@ -129,7 +126,7 @@
                     android:lines="3"
                     android:maxLines="3"
                     android:singleLine="false"
-                    android:text="\n\n"
+                    android:text="@string/doubleNewLine"
                     android:textColor="@color/secondaryTextColor"
                     android:textIsSelectable="true"
                     android:textSize="24sp"
@@ -160,7 +157,8 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:baselineAligned="false">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -184,7 +182,7 @@
                                 android:layout_height="wrap_content"
                                 android:maxLines="1"
                                 android:paddingLeft="14dp"
-                                android:text="0"
+                                android:text="@string/zero"
                                 android:textSize="20sp" />
 
                         </LinearLayout>
@@ -215,7 +213,7 @@
                                 android:layout_height="wrap_content"
                                 android:maxLines="1"
                                 android:paddingLeft="14dp"
-                                android:text="0"
+                                android:text="@string/zero"
                                 android:textSize="30sp" />
 
                         </LinearLayout>
@@ -323,7 +321,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
-            android:contentDescription="Bitcoin address QrCode"
+            android:contentDescription="@string/bitcoinAddressQrcode"
             android:paddingBottom="70dp" />
 
     </RelativeLayout>

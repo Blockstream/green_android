@@ -15,7 +15,7 @@
             android:id="@+id/receiveQrImageView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:contentDescription="Bitcoin address QrCode"
+            android:contentDescription="@string/bitcoinAddressQrcode"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="10dp"
@@ -91,7 +91,7 @@
                         android:layout_toRightOf="@id/sendBitcoinGroup"
                         android:textColor="@color/textColor"
                         android:gravity="end|center_vertical"
-                        android:hint="0.00"
+                        android:hint="@string/zeroDecimal"
                         android:inputType="numberDecimal"
                         android:textSize="24sp" />
 
@@ -135,7 +135,7 @@
                     android:layout_toEndOf="@id/sendFiatGroup"
                     android:gravity="end"
                     android:textColor="@color/textColor"
-                    android:hint="0.00"
+                    android:hint="@string/zeroDecimal"
                     android:inputType="numberDecimal"
                     android:textSize="24sp" />
             </RelativeLayout>
@@ -156,7 +156,7 @@
                 android:lines="3"
                 android:maxLines="3"
                 android:singleLine="false"
-                android:text="            \n\n"
+                android:text="@string/doubleNewLine"
                 android:textColor="@color/secondaryTextColor"
                 android:textIsSelectable="true"
                 android:textSize="24sp"

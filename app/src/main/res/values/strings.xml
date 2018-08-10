@@ -126,6 +126,7 @@
     <string name="txTypeOut">Sent</string>
     <string name="txTypeRedeposit">Redeposited</string>
     <string name="mnemonicHint">Type your GreenAddress passphrase or scan its qrcode</string>
+    <string name="mnemonicQrCode">GreenAddress Mnemonics QrCode</string>
     <string name="title_activity_settings">Settings</string>
     <string name="ago">%1$d %2$s ago</string>
     <string name="txSubTitle">Transaction details</string>
@@ -215,6 +216,7 @@
     <string name="newAddress">New</string>
     <string name="copyAddress">Copy</string>
     <string name="txReceivedOn">Received on</string>
+    <string name="twoFacGauthQrCode">Google Authenticator QrCode</string>
     <string name="twoFacGauthTextCode">Or you can use the following code (touch to copy) : %1$s. Remember to back it up!</string>
     <string name="trustedspv">Only connect to trusted node[s] for SPV</string>
     <string name="trustedspvExample">Example: 8.90.14.2:8333,40.116.12.85:8333</string>
@@ -375,7 +377,7 @@
     <string name="bip70_payment_failure">Payment failure</string>
     <string name="bip70_invalid_pki">Impossible to verify the service "%s". Continue anyway?</string>
     <string name="sign_ack_hw">Please sign the message acknowledgement on your hardware wallet</string>
-    <string name="signing_ack">Signing acknowledgement reply, please wait...</string>
+    <string name="signing_ack">Signing acknowledgement reply, please wait&#8230;</string>
     <string name="unacked_system_messages">You have unacknowledged system messages. Please log in again to view them.</string>
     <string name="unacked_system_messages_wo">You have unacknowledged system messages. Please use a full control login to view them.</string>
     <string name="important_message">Important Message</string>
@@ -407,4 +409,18 @@
     <string name="network_by_url">Add custom network by URL</string>
     <string name="network_by_qr">Add custom network by QR code</string>
     <string name="network_remove">Remove custom network</string>
+    <string name="nfcTagsWritten">NFC TAGs Written:</string>
+    <string name="nfcTagOptionalPassword">Optional password</string>
+    <string name="nfcLogo">NFC Logo</string>
+    <string name="amount">amount</string>
+    <string name="bitcoinAddressQrcode">Bitcoin address QrCode</string>
+    <string name="share">Share</string>
+
+    <string name="zero" translatable="false">0</string>
+    <string name="zeroDecimal" translatable="false">0.00</string>
+    <string name="questionMark" translatable="false">\?</string>
+    <string name="nfcTagDefault" translatable="false">0</string>
+    <string name="one" translatable="false">1</string>
+    <string name="doubleNewLine" translatable="false">\\n\\n</string>
+    <string name="default123" translatable="false">123</string>
 </resources>

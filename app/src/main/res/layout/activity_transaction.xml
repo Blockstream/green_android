@@ -30,9 +30,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="\? "
+                    android:text="@string/questionMark"
                     android:textColor="@color/accent"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    android:layout_marginRight="4dp"/>
 
                 <TextView
                     android:id="@+id/txUnconfirmedText"
@@ -150,7 +151,7 @@
                     android:id="@+id/txAmountText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="amount"
+                    android:text="@string/amount"
                     android:textColor="@color/accent"
                     android:textIsSelectable="true"
                     android:textSize="20sp" />

@@ -10,7 +10,7 @@
         android:layout_width="360dp"
         android:layout_height="360dp"
         android:background="@color/white"
-        android:contentDescription="GreenAddress Mnemonics QrCode"
+        android:contentDescription="@string/mnemonicQrCode"
         android:padding="15dp" />
 
     <TextView

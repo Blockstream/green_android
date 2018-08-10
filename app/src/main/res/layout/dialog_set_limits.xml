@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:hint="0.00"
+        android:hint="@string/zeroDecimal"
         android:inputType="numberDecimal" />
 
 </LinearLayout>

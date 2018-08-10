@@ -41,7 +41,7 @@
                     android:paddingLeft="2dp"
                     android:paddingRight="2dp"
 
-                    android:text="1"
+                    android:text="@string/one"
                     android:textColor="@color/white"
 
                     />
@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="16dp"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="@string/one"
                 android:padding="2dp"
                 android:textSize="20sp" />
 
@@ -107,7 +107,7 @@
                         android:id="@+id/listValueText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="123"
+                        android:text="@string/default123"
 
                         android:textColor="@color/secondaryTextColor"
                         android:textSize="20sp" />
@@ -116,7 +116,7 @@
                         android:id="@+id/listValueQuestionMark"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="\?"
+                        android:text="@string/questionMark"
                         android:textColor="@color/accent"
                         android:textSize="17sp" />
                 </LinearLayout>

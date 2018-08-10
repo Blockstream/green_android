@@ -73,13 +73,13 @@
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Google Authenticator"
+                    android:text="@string/twoFacGauth"
                     android:checked="false" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SMS"
+                    android:text="@string/twoFacSMS"
                     android:checked="false" />
 
             </RadioGroup>

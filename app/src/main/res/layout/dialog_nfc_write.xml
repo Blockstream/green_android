@@ -11,7 +11,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NFC TAGs Written:"
+            android:text="@string/nfcTagsWritten"
             android:textColor="@color/whiteSecondary"
             android:textSize="20sp" />
 
@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/nfcTagsWrittenText"
-                android:text="0"
+                android:text="@string/nfcTagDefault"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
         </LinearLayout>
@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:text="Optional password"
+        android:text="@string/nfcTagOptionalPassword"
         android:textColor="@color/whiteSecondary" />
 
     <EditText

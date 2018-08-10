@@ -14,13 +14,13 @@
             android:layout_height="match_parent">
 
             <Button
-                android:text="Sell"
+                android:text="@string/exchangerSellTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/sell_btn" />
 
             <Button
-                android:text="Buy"
+                android:text="@string/exchangerBuyTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/buy_btn" />

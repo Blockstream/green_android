@@ -43,7 +43,8 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_marginTop="10sp">
+            android:layout_marginTop="10sp"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -84,13 +85,15 @@
                 android:paddingRight="10sp">
 
                 <TextView
+                    android:id="@+id/twofactor_setup_blurb_header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Address change notice"
+                    android:text="@string/recoveryAndNotifications"
                     android:layout_gravity="center_horizontal" />
 
                 <TextView
+                    android:id="@+id/twofactor_setup_blurb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/twoFacEmailChangeNotice"
@@ -98,6 +101,7 @@
                     android:layout_margin="10sp" />
 
                 <TextView
+                    android:id="@+id/twofactor_setup_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/twoFacEmailConfirmNotice"

@@ -63,7 +63,7 @@
                     <ImageView
                         android:id="@+id/signupNfcIcon"
                         android:padding="12dp"
-                        android:contentDescription="NFC Logo"
+                        android:contentDescription="@string/nfcLogo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_nfc_48px_accent"

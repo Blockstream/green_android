@@ -144,7 +144,7 @@
                             android:textColor="@color/textColor"
                             android:gravity="end|center_vertical"
                             android:paddingLeft="14dp"
-                            android:hint="0.00"
+                            android:hint="@string/zeroDecimal"
                             android:inputType="numberDecimal"
                             android:textSize="24sp" />
 
@@ -210,7 +210,7 @@
                         android:layout_toEndOf="@id/sendFiatGroup"
                         android:gravity="end"
                         android:textColor="@color/textColor"
-                        android:hint="0.00"
+                        android:hint="@string/zeroDecimal"
                         android:inputType="numberDecimal"
                         android:textSize="24sp" />
                 </RelativeLayout>

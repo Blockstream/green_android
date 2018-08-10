@@ -35,7 +35,7 @@
                 style="@style/myButton"
                 android:layout_width="25sp"
                 android:layout_height="30sp"
-                android:text="\?"
+                android:text="@string/questionMark"
                 android:id="@+id/mainBalanceQuestionMark"
                 android:textColor="@color/white"
                 android:padding="0dp" />
@@ -60,7 +60,7 @@
                 android:textSize="24sp"
 
                 android:id="@+id/mainLocalBalanceIcon"
-                android:layout_weight="0"
+                android:layout_weight="@string/zero"
                 android:layout_gravity="top" />
 
             <TextView
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/secondaryTextColor"
                 android:textSize="24sp"
-                android:layout_weight="0"
+                android:layout_weight="@string/zero"
                 android:layout_gravity="top" />
         </LinearLayout>
 

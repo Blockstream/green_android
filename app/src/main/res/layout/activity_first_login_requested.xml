@@ -32,7 +32,7 @@
             android:id="@+id/firstLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="GreenAddress Logo"
+            android:contentDescription="@string/app_description"
             android:src="@drawable/logo_big" />
 
         <View

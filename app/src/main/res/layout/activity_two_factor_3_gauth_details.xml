@@ -64,7 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:id="@+id/imageView"
-                    android:contentDescription="Google Authenticator QrCode"
+                    android:contentDescription="@string/twoFacGauthQrCode"
                     android:layout_gravity="center_horizontal" />
 
                 <TextView
