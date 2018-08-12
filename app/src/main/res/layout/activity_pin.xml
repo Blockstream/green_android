@@ -37,6 +37,7 @@
             android:textColor="@color/secondaryTextColor"
             android:textSize="34sp"
             android:inputType="numberPassword"
+            android:importantForAccessibility="no"
         />
         <requestFocus />
     </android.support.design.widget.TextInputLayout>

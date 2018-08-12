@@ -117,6 +117,7 @@
         android:textColor="@color/whiteSecondary"
         android:visibility="gone"
         android:inputType="numberPassword"
+        android:importantForAccessibility="no"
         android:imeOptions="actionSend" />
 
 

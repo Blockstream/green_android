@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:inputType="textPassword"
+        android:importantForAccessibility="no"
         android:textColor="@color/whiteSecondary" />
 
 
