@@ -126,7 +126,7 @@
     <string name="twoFacProvideConfirmationCodeDescription">Sie müssen den Bestätigungscode angeben um sicher zu gehen, dass sie Zugriff auf die neue 2-Faktor-Authentifizierungsmethode haben. Nach der Eingabe des Codes, wird die neue Methode aktiviert.</string>
     <string name="twoFacProvideConfirmationCode">Bitte geben sie ihren %s Code an.</string>
     <string name="continueText">Weiter</string>
-    <string name="twoFacProvideAuthCodeDescription">Bitte geben sie einen bereits existierenden 2-Faktor-Authentifizierungscode an. Dies verhindert den Zugriff unbefugte Benutzer auf ihre 2FA Einstellung.</string>
+    <string name="twoFacProvideAuthCodeDescription">Bitte geben sie einen bereits existierenden 2-Faktor-Authentifizierungscode an. Dies verhindert den Zugriff unbefugter Benutzer auf ihre 2FA Einstellung.</string>
     <string name="recoveryAndNotifications">Wiederherstellen und Benachrichtigungen</string>
     <string name="emailAddress">Email Adresse</string>
     <string name="phoneNumber">Telefonnummer</string>
