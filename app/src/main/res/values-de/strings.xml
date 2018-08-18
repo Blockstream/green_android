@@ -44,7 +44,7 @@
         <item>Monate</item>
         <item>Tage</item>
         <item>Stunden</item>
-        <item>Minutes</item>
+        <item>Minuten</item>
         <item>Sekunden</item>
     </string-array>
     <string name="send">SENDEN</string>
@@ -59,8 +59,8 @@
     <string name="sendOptionalMemo">Optionales Memo</string>
     <string name="madeBy">by GreenAddress</string>
     <string name="welcomeGreenBits">Willkommen zu GreenBits</string>
-    <string name="attemptsFinished">Ungültiger PIN. Sie haben keine Versuche mehr übrig. Bitte loggen sie sich mit ihrem Kennwortsatz ein.</string>
-    <string name="attemptsLeftLong">Ungültiger PIN. Sie haben %1$d Versuche übrig</string>
+    <string name="attemptsFinished">Ungültige PIN. Sie haben keine Versuche mehr übrig. Bitte loggen sie sich mit ihrem Kennwortsatz ein.</string>
+    <string name="attemptsLeftLong">Ungültige PIN. Sie haben %1$d Versuche übrig</string>
     <string name="warnOnPaste">Beachten sie bitte das andere Apps die Zwischenablage lesen oder verändern können</string>
     <string name="toastOnCopyAddress">Adresse in Zwischenablage kopiert.</string>
     <string name="receiveAddressSubTitle">Adresse</string>
@@ -69,9 +69,9 @@
     <string name="txTypeIn">Eingang</string>
     <string name="txTypeOut">Ausgang</string>
     <string name="txTypeRedeposit">Rückzahlung</string>
-    <string name="mnemonicHint">GreenAddress Kennwortsatz eingeben oder qrcode einscannen</string>
+    <string name="mnemonicHint">GreenAddress Kennwortsatz eingeben oder QR-Code einscannen</string>
     <string name="title_activity_settings">Einstellungen</string>
-    <string name="ago">%1$d %2$s vor</string>
+    <string name="ago">vor %1$d %2$s</string>
     <string name="txSubTitle">Transaktionsdetails</string>
     <string name="txRecipientText">Empfänger</string>
     <!--Example settings for Notifications-->
@@ -80,13 +80,13 @@
     <string name="newTxAmount">Betrag:</string>
     <string name="newTxRecipient">Empfänger:</string>
     <string name="newTxFee">Gebühr:</string>
-    <string name="invalidAmountAndAddress">Ungültiger Betrag und Adresse</string>
+    <string name="invalidAmountAndAddress">Betrag und Adresse ungültig</string>
     <string name="invalidAddress">Ungültige Adresse</string>
     <string name="invalidAmount">Ungültiger Betrag</string>
     <string name="noBalanceFirstLine"><a href="https://bitcoin.org/de/erste-schritte">Erste Schritte</a> mit Bitcoin</string>
     <string name="noBalanceSecondLine">Bitcoin <a href="https://howtobuybitcoins.info">Börse finden</a></string>
     <string name="noBalanceThirdLine">Unsere <a href="https://greenaddress.it/faq">FAQ</a> lesen</string>
-    <string name="hw_wallet_headline">Bitte den Anweisungen von ihrem Hardware Wallet folgen</string>
+    <string name="hw_wallet_headline">Bitte den Anweisungen von ihrem Hardware Wallet folgen.</string>
     <string name="trezorProvidePin">Bitte geben sie ihren Hardware Wallet PIN ein. Schauen sie auf dem Gerät nach den Nummernstellen:</string>
     <string name="trezorProvidePassphrase">Bitte geben sie ihren Hardware Wallet Kennwortsatz an.</string>
     <string name="main_account">Hauptkonto</string>
@@ -96,14 +96,14 @@
     <string name="btchipInvalidPIN">Ungültige PIN. Verbleibende Versuche: %d. Bitte verbinden sie ihren BTChip erneut und versuchen es nochmals.</string>
     <string name="btchipNotSetup">BTChip ist nicht eingerichtet. Bitte nehmen sie alle Einstellungen am Desktop-Client vor um ihren BTChip benutzen zu können.</string>
     <string name="mnemonic_passphrase">Mnemonischer Kennwortsatz</string>
-    <string name="mnemonic_passphrase_not_available">Der Kennwortsatz ist nicht verfügbar</string>
-    <string name="autologout_time">Automatische logout Zeiteinstellung</string>
+    <string name="mnemonic_passphrase_not_available">Der Kennwortsatz ist nicht verfügbar.</string>
+    <string name="autologout_time">Dauer bis zum automatischen Logout</string>
     <string name="autologout_time_default">%1$d Minuten</string>
-    <string name="touch_to_display">Hier berühren zum anzeigen</string>
-    <string name="txUnconfirmedTx">Unbestätigte Transaktion. Bitte warten sie auf Blockbestätigungen, für ein erhöhtes Vertrauen in diese Transaktion.</string>
+    <string name="touch_to_display">Hier berühren zum Anzeigen</string>
+    <string name="txUnconfirmedTx">Unbestätigte Transaktion. Bitte warten sie auf Blockbestätigungen, um das Vertrauen in diese Transaktion zu stärken.</string>
     <string name="txUnverifiedTx">Ungeprüfte Transaktion. Bitte warte sie auf Synchronisierung, um das Vertrauen in diese Transaktion zu stärken. Verbleibende Blöcke: </string>
     <string name="unconfirmedBalanceTitle">Unbestätigte Bilanz</string>
-    <string name="unconfirmedBalanceText">Kontostand ist nicht bestätigt. Dies liegt entweder an unbestätigten eingehenden Transaktionen, oder daran das die einfache Zahlungsbestätigung noch nicht beendet ist.</string>
+    <string name="unconfirmedBalanceText">Kontostand ist nicht bestätigt. Dies liegt entweder an unbestätigten eingehenden Transaktionen oder daran, dass die einfache Zahlungsbestätigung noch nicht beendet ist.</string>
     <string name="spvNoWiFiTitle">EZB-Synchronizierung</string>
     <string name="enableSPV">EZB aktivieren</string>
     <string name="enableSPVSummary">Die einfache Zahlungsbestätigung, oder EZB, erlaubt ihnen ein erhöhtes Vertrauen in Transaktionen und Kontostände dank der Synchronisierung mit dem Bitcoin-Netzwerk. Dies erhöht allerdings Bandbreiten- und Verarbeitungsanforderungen, weshalb sie diese Option bei mangelnder Verbindung und Low-End-Geräten eventuell lieber ausschalten.</string>
@@ -116,14 +116,14 @@
     <string name="hideTwoFacWarning">2FA Warnung nicht anzeigen</string>
     <string name="twoFacSetupHeader">%s 2FA einrichten</string>
     <string name="progress">Fortschritt:</string>
-    <string name="twoFacStep1Description">Bitte geben sie als erstes den code einer ihrer bereits eingestellten 2-Faktor-Authentifizierungsmethoden an. Dies verhindert den Zugriff unbefugte Benutzer auf ihre 2FA Einstellung.</string>
+    <string name="twoFacStep1Description">Bitte geben sie als Erstes den code einer ihrer bereits eingestellten 2-Faktor-Authentifizierungsmethoden an. Dies verhindert den Zugriff unbefugte Benutzer auf ihre 2FA Einstellung.</string>
     <string name="twoFacStep1SelectExisting">Wählen sie die existierende 2FA Methode, um eine neue anlegen zu können:</string>
     <string name="twoFacProvideGauthDetailsDescription">Sie müssen einen Code von ihrem neuen Google Authenticator angeben. Diesen Code können sie erhalten indem sie den folgenden QR Code mit der Google Authenticator-App scannen.</string>
     <string name="twoFacProvideGauthDetails">Bitte geben sie ihren Google Authenticator Code an.</string>
     <string name="twoFacProvideDetails">Bitte %s angeben.</string>
     <string name="twoFacEmailChangeNotice">Das hinterlegen einer Email-Adresse ermöglicht es Benachrichtigungen zu erhalten und Transaktionen wiederherzustellen</string>
     <string name="twoFacEmailConfirmNotice">Sie müssen ihre Email-Adresse im nächsten Schritt bestätigen, um Benachrichtigungen erhalten zu können.</string>
-    <string name="twoFacProvideConfirmationCodeDescription">Sie müssen den Bestätigungscode angeben um sicher zu gehen dass sie Zugriff auf die neue 2-Faktor-Authentifizierungsmethode haben. Nach der Eingabe des Codes, wird die neue Methode aktiviert.</string>
+    <string name="twoFacProvideConfirmationCodeDescription">Sie müssen den Bestätigungscode angeben um sicher zu gehen, dass sie Zugriff auf die neue 2-Faktor-Authentifizierungsmethode haben. Nach der Eingabe des Codes, wird die neue Methode aktiviert.</string>
     <string name="twoFacProvideConfirmationCode">Bitte geben sie ihren %s Code an.</string>
     <string name="continueText">Weiter</string>
     <string name="twoFacProvideAuthCodeDescription">Bitte geben sie einen bereits existierenden 2-Faktor-Authentifizierungscode an. Dies verhindert den Zugriff unbefugte Benutzer auf ihre 2FA Einstellung.</string>
