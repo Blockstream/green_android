@@ -10,7 +10,7 @@
     <string name="title_activity_qr_scanner">QR Scanner</string>
     <string name="title_activity_sign_up">Registrieren</string>
     <string name="signupContinueButtonText">WEITER</string>
-    <string name="signupCheckBoxText">Ich habe das Kennwortsatz gesichert und die AGBs gelesen.</string>
+    <string name="signupCheckBoxText">Ich habe den Kennwortsatz gesichert und die AGBs gelesen.</string>
     <string name="termsofservice"><a href="https://greenaddress.it/de/tos/">AGBs</a></string>
     <string name="firstSignUpText">REGISTRIEREN</string>
     <string name="firstLogInText">ANMELDEN</string>
