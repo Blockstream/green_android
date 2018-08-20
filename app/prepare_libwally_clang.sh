@@ -12,13 +12,12 @@ if [ -d libwally-core ]; then
 else
     git clone https://github.com/ElementsProject/libwally-core.git
     cd libwally-core
-    git checkout tags/release_0.6.1 -b release_0.6.1
+    git checkout tags/release_0.6.3 -b release_0.6.3
 fi
 
 source ./tools/android_helpers.sh
 
-# FIXME: sed only needed until wally 0.6.1 is released
-all_archs=$(android_get_arch_list | sed 's/mips mips64 //g' | sed 's/armeabi //g')
+all_archs=$(android_get_arch_list)
 if [ -n "$1" ]; then
     all_archs="$1"
 fi
@@ -35,7 +34,7 @@ for arch in $all_archs; do
     echo Building $arch
     echo '============================================================'
     # Use API level 14 for non-64 bit targets for better device coverage
-    api="14"
+    api="19"
     if [[ $arch == *"64"* ]]; then
         api="21"
     fi
