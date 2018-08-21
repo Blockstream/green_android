@@ -34,19 +34,29 @@
                 android:textColor="@color/textColor"
                 android:text="@string/save_password_now" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/signupMnemonicText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:textColor="@color/secondaryTextColor"
+                    android:textIsSelectable="true"
+                    android:hyphenationFrequency="none"
+                    android:textSize="24sp" />
 
                 <LinearLayout
                     android:layout_width="72dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
                     android:id="@+id/signUpIcons"
-                    android:layout_centerVertical="true"
-
+                    android:layout_gravity="center_vertical"
                     android:padding="8dp"
                     android:orientation="vertical">
 
@@ -70,22 +80,8 @@
                         android:gravity="center" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/signupMnemonicText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@id/signUpIcons"
-                    android:layout_toStartOf="@id/signUpIcons"
-                    android:textAlignment="center"
-                    android:textColor="@color/secondaryTextColor"
-                    android:textIsSelectable="true"
-                    android:hyphenationFrequency="none"
-                    android:textSize="24sp" />
 
-
-            </RelativeLayout>
+            </LinearLayout>
 
 
             <LinearLayout
