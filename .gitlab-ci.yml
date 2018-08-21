@@ -12,6 +12,7 @@ build_tag_release:
   script:
     - cd $CI_PROJECT_DIR
     - ./app/fetch_libwally_binaries.sh
+    - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
 build_tag_osx_release:
@@ -20,6 +21,7 @@ build_tag_osx_release:
   script:
     - cd $CI_PROJECT_DIR
     - ./app/fetch_libwally_binaries.sh
+    - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
 package_release:
