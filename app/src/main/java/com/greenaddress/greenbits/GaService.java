@@ -37,8 +37,6 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.params.MainNetParams;
-import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.utils.Fiat;
 
 import java.io.File;
@@ -69,8 +67,6 @@ public class GaService extends Service  {
 
     private String mSignUpMnemonic;
     private Bitmap mSignUpQRCode;
-    private boolean mAutoReconnect = true;
-    private Coin mMinFeeRate = Coin.valueOf(1000); // Per 0.12.0, updated on login
     private String mDeviceId;
     private boolean mUserCancelledPINEntry = false;
 
@@ -187,15 +183,6 @@ public class GaService extends Service  {
 
     public void setUserCancelledPINEntry(final boolean value) {
         mUserCancelledPINEntry = value;
-    }
-
-
-    public static String getBech32Prefix(final NetworkParameters params) {
-        if (params == MainNetParams.get())
-            return "bc";
-        if (params == TestNet3Params.get())
-            return "tb";
-        return "bcrt";
     }
 
     public String getBitcoinUnit() {
@@ -395,17 +382,6 @@ public class GaService extends Service  {
 
     public List<Long> getFeeEstimates() {
         return mModel.getFeeObservable().getFees();
-    }
-
-    // Get the fee rate to confirm at the next blockNum blocks in BTC/1000 bytes
-    public Double getFeeRate(final int blockNum) {
-        final Long aLong = getFeeEstimates().get(blockNum);
-        return aLong.doubleValue();  //TODO gdk
-    }
-
-    public Integer getFeeBlocks(final int blockNum) {
-        return getFeeEstimates().get(blockNum).intValue();
-
     }
 
     public ListenableFuture<Void> setPin(final String mnemonic, final String pin) {
