@@ -83,8 +83,12 @@
     <PreferenceCategory android:title="ADVANCED" />
 
     <Preference
+        android:key="pgp_key"
+        android:title="@string/id_pgp_key" />
+
+    <Preference
         android:key="spv_synchronization"
-        android:title="SPV Synchronization" />
+        android:title="@string/id_spv_synchronization" />
 
     <Preference
         android:key="network_monitor"

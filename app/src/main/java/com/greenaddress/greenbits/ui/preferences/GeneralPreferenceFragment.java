@@ -227,6 +227,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             return false;
         });
 
+        findPreference(PrefKeys.PGP_KEY).setOnPreferenceClickListener(this::onPGPKeyClicked);
+
         // Version
         final Preference version = find(PrefKeys.VERSION);
         version.setSummary(String.format("%s %s",
@@ -264,9 +266,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 getActivity(), settings.toObjectNode());
             gdkTwoFactorCall.resolve(GDKTwoFactorCall.EMAIL_RESOLVER, GDKTwoFactorCall.CODE_555555_RESOLVER); // should use null
             mService.getModel().getSettingsObservable().setSettings(settings);
-        } catch (Exception e) {
-            UI.toast(getActivity(), R.string.id_error, Toast.LENGTH_LONG);
-            Log.e(TAG,e.getMessage());
+            UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
+        } catch (final Exception e) {
+            final String msg = UI.i18n(getResources(), e.getMessage());
+            UI.toast(getActivity(), msg, Toast.LENGTH_LONG);
+            Log.e(TAG, msg);
         }
     }
 
@@ -277,7 +281,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private boolean onWatchOnlyLoginClicked(final Preference watchOnlyLogin) {
-        GDKSession session = mService.getSession();
+        final GDKSession session = mService.getSession();
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_watchonly);
         final EditText inputUser = UI.find(v, R.id.input_user);
         try {
@@ -305,6 +309,29 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 watchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username));
             } catch (final Exception e) {
                 UI.toast(getActivity(), R.string.id_username_not_available, Toast.LENGTH_LONG);
+            }
+        }).build();
+        UI.showDialog(dialog);
+        return false;
+    }
+
+    private boolean onPGPKeyClicked(final Preference pgpKey) {
+        final GDKSession session = mService.getSession();
+        final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_pgp_key);
+        final EditText inputPGPKey = UI.find(v, R.id.input_pgp_key);
+        final SettingsData settings = mService.getModel().getSettings();
+        final String oldValue = settings.getPgp() == null ? "" : settings.getPgp();
+        try {
+            inputPGPKey.setText(oldValue);
+        } catch (final Exception e) {}
+
+        final MaterialDialog dialog = UI.popup(getActivity(), R.string.id_pgp_key)
+                                      .customView(v, true)
+                                      .onPositive((dlg, which) -> {
+            final String newValue = UI.getText(inputPGPKey);
+            if (!newValue.equals(oldValue)) {
+                settings.setPgp(newValue);
+                mService.getExecutor().execute(() -> updateSettings(settings));
             }
         }).build();
         UI.showDialog(dialog);

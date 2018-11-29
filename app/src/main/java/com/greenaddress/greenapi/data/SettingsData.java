@@ -13,6 +13,7 @@ public class SettingsData extends JSONData {
     private Integer requiredNumBlocks;
     private boolean sound;
     private String unit;
+    private String pgp;
 
     public Integer getAltimeout() {
         return altimeout;
@@ -52,6 +53,14 @@ public class SettingsData extends JSONData {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getPgp() {
+        return pgp;
+    }
+
+    public void setPgp(String pgp) {
+        this.pgp = pgp;
     }
 
     @JsonIgnore

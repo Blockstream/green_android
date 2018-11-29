@@ -23,6 +23,7 @@ public class PrefKeys {
     public static final String PREF_MIGRATED_V2_v3 = "pref_migrated_v2_v3";
     public static final String DEVICE_ID = "device_id";
     public static final String TRUSTED_ADDRESS = "trusted_address";
+    public static final String PGP_KEY = "pgp_key";
     public static final String SPV_ENABLED = "spv_enabled";
     public static final String SPV_MOBILE_SYNC_ENABLED = "spv_mobile_sync_enabled";
     public static final String SPV_SYNCRONIZATION = "spv_synchronization";

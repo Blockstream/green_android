@@ -87,6 +87,7 @@
   <string name="id_enable_touch_id">Enable Touch ID</string>
   <string name="id_enabled_1s">Enabled: %1$s</string>
   <string name="id_enter">Enter</string>
+  <string name="id_enter_a_pgp_public_key_to_have">Enter a PGP public key to have emails encrypted for better privacy.</string>
   <string name="id_enter_a_valid_onion_or_ip">Enter a valid .onion or IP address (.onion preferred)</string>
   <string name="id_enter_a_valid_username">Enter a valid username</string>
   <string name="id_enter_new_email">Enter new email</string>
@@ -137,6 +138,7 @@
   <string name="id_invalid_mnemonic">Invalid mnemonic</string>
   <string name="id_invalid_mnemonic_must_be_24_or">Invalid mnemonic (must be 24 or 27 words)</string>
   <string name="id_invalid_network_configuration">Invalid network configuration</string>
+  <string name="id_invalid_pgp_key">Invalid PGP key</string>
   <string name="id_invalid_phone_number_format">Invalid phone number format</string>
   <string name="id_invalid_pin_remaining_attempts">Invalid PIN. Remaining attempts: %1$d.</string>
   <string name="id_invalid_pin_you_dont_have_any">Invalid PIN, you don\'t have any attempts left. Please log in using your mnemonic.</string>
@@ -197,6 +199,7 @@
   <string name="id_outdated_hardware_wallet">Outdated hardware wallet firmware. Please upgrade to the latest firmware from your desktop.</string>
   <string name="id_outgoing">Outgoing</string>
   <string name="id_password">Password</string>
+  <string name="id_pgp_key">PGP Key</string>
   <string name="id_phone_call">Phone call</string>
   <string name="id_phone_number">phone number</string>
   <string name="id_pin">PIN</string>
@@ -265,6 +268,7 @@
   <string name="id_set_twofactor_threshold">Set Two-Factor Threshold</string>
   <string name="id_set_up_twofactor_authentication">Set up Two-Factor Authentication</string>
   <string name="id_set_watchonly">Set Watch-Only</string>
+  <string name="id_setting_updated">Setting updated</string>
   <string name="id_settings">Settings</string>
   <string name="id_share">Share</string>
   <string name="id_share_address">Share Address</string>
@@ -280,6 +284,7 @@
   <string name="id_something_went_wrong">Something went wrong</string>
   <string name="id_spv_is_always_synchronized_on">SPV is always synchronized on non mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
   <string name="id_spv_notifications">SPV notifications</string>
+  <string name="id_spv_synchronization">SPV Synchronization</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
   <string name="id_synchronize_spv_on_mobile">Synchronize SPV on mobile</string>
@@ -308,7 +313,7 @@
   <string name="id_twofactor_settings">Two-Factor Settings</string>
   <string name="id_twofactor_threshold">Two-Factor threshold</string>
   <string name="id_unable_to_contact_the_green">Unable to contact the Green service. Please check your network connection and wait to be reconnected.</string>
-  <string name="id_unconfirmed">unconfirmed</string>
+  <string name="id_unconfirmed">Unconfirmed</string>
   <string name="id_unknown_bip21_parameter">Unknown bip21 parameter</string>
   <string name="id_unknown_custom">Unknown (Custom)</string>
   <string name="id_updated">updated</string>
