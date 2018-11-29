@@ -1,15 +1,18 @@
 package com.greenaddress.greenapi.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SettingsData extends JSONData {
     private Integer altimeout;
     private PricingData pricing;
+    private NotificationsData notifications;
     private Integer requiredNumBlocks;
     private boolean sound;
     private String unit;
@@ -29,6 +32,14 @@ public class SettingsData extends JSONData {
 
     public void setPricing(PricingData pricing) {
         this.pricing = pricing;
+    }
+
+    public NotificationsData getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(NotificationsData notifications) {
+        this.notifications = notifications;
     }
 
     public Integer getRequiredNumBlocks() {

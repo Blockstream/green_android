@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.PricingData;
+import com.greenaddress.greenapi.data.NotificationsData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.AvailableCurrenciesObservable;
@@ -62,7 +64,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private Preference mSendNLocktimePref;
     private Preference mTwoFactorRequestResetPref;
 
-    private Preference mEnableNLocktimePref;
+    private SwitchPreference mEnableNLocktimePref;
     private Preference mDeleteOrConfigurePin;
     private Preference mPassphrase;
 
@@ -163,7 +165,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mFeeRate.setOnPreferenceClickListener(this::onFeeRatePreferenceClicked);
 
         // Two-factor Authentication Submenu
-        mTwoFactorPref = findPreference(PrefKeys.TWO_FACTOR);
+        mTwoFactorPref = find(PrefKeys.TWO_FACTOR);
         mTwoFactorPref.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SecurityActivity.class);
             startActivity(intent);
@@ -176,6 +178,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Enable nlocktime recovery emails
         mEnableNLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);
+        mEnableNLocktimePref.setOnPreferenceChangeListener((preference, o) -> {
+            final boolean value = (Boolean) o;
+            final SettingsData settings = mService.getModel().getSettings();
+            settings.getNotifications().setEmailOutgoing(value);
+            settings.getNotifications().setEmailIncoming(value);
+            mService.getExecutor().execute(() -> updateSettings(settings));
+            return true;
+        });
 
         // Send nlocktime recovery emails
         mSendNLocktimePref = find(PrefKeys.SEND_NLOCKTIME);
@@ -486,9 +496,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final boolean anyEnabled = mService.getModel().getTwoFactorConfig().isAnyEnabled();
         mLimitsPref.setVisible(anyEnabled);
         mSendNLocktimePref.setVisible(anyEnabled);
-        mEnableNLocktimePref.setVisible(anyEnabled);
         mTwoFactorRequestResetPref.setVisible(anyEnabled);
 
+        final boolean emailConfirmed = mService.getModel().getTwoFactorConfig().getEmail().isConfirmed();
+        mEnableNLocktimePref.setVisible(emailConfirmed);
     }
 
     @Override

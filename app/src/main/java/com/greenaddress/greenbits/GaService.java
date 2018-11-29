@@ -362,6 +362,8 @@ public class GaService extends Service  {
                     final SharedPreferences.Editor edit = pref.edit();
                     if (settings.getPricing() != null)
                         edit.putString(PrefKeys.PRICING, settings.getPricing().toString());
+                    if (settings.getNotifications() != null)
+                        edit.putBoolean(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS, settings.getNotifications().isEmailIncoming());
                     if (settings.getAltimeout() != null)
                         edit.putString(PrefKeys.ALTIMEOUT, String.valueOf(settings.getAltimeout()));
                     if (settings.getUnit() != null)
