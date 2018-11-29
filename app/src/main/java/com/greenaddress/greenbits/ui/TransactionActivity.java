@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
@@ -214,44 +215,27 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final double feePerByte = feePerKB / 1000.0;
         return (new DecimalFormat(".##")).format(feePerByte);
     }
+
     private void showUnconfirmed() {
-        UI.show(mEstimatedBlocks);
-
-        // FIXME: The fee rate for segwit txs without txdata is not
-        // correct, because the backend does not provide vSize. So,
-        // we re-compute it here.
-
-        final int vSize = mTxItem.size;
-        final double satoshiPerKb = mTxItem.feeRate;
-
-        final double currentFeeRate = satoshiPerKb / 100000000.0; // ->BTC/KB
-
-        // Compute the number of expected blocks before this tx confirms
-        int estimatedBlocks = 25;
-        for (final int blockNum : FEE_BLOCK_NUMBERS) {
-            final double blockFeeRate = mService.getFeeRate(blockNum);
-            if (blockFeeRate >= 0 && currentFeeRate >= blockFeeRate) {
-                estimatedBlocks = mService.getFeeBlocks(blockNum);
+        final List<Long> estimates = mService.getFeeEstimates();
+        int block = 1;
+        while (block < estimates.size()) {
+            if (mTxItem.feeRate >= estimates.get(block)) {
                 break;
             }
+            ++block;
         }
 
-        mEstimatedBlocks.setText(getString(R.string.id_will_confirm_after_blocks, estimatedBlocks));
+        UI.show(mEstimatedBlocks);
+        mEstimatedBlocks.setText(getString(R.string.id_will_confirm_after_blocks, block));
+
         if (mService.isWatchOnly() || mService.isElements() || !mTxItem.replaceable)
             return; // FIXME: Implement RBF for elements
 
-        // If the fastest number of blocks is less than the expected number,
-        // then allow the user to RBF the fee up to the fastest fee rate
-        final int fastestBlocks = mService.getFeeBlocks(1);
-        boolean allowRbf = fastestBlocks < estimatedBlocks;
-
-        if (!allowRbf) {
-            if (!mService.getNetwork().alwaysAllowRBF())
-                return;
-        }
+        // Allow RBF if it might decrease the number of blocks until confirmation
+        final boolean allowRbf = block > 1 || mService.getNetwork().alwaysAllowRBF();
 
         UI.show(mBumpFeeButton);
-        final String msg = getResources().getQuantityString(R.plurals.blocks, fastestBlocks);
         mBumpFeeButton.setOnClickListener(this);
     }
 
