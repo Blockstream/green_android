@@ -29,6 +29,7 @@ import java.util.Set;
 public class SecurityActivity extends GaActivity implements View.OnClickListener, Observer {
     private static final int REQUEST_2FA = 100;
     private ViewAdapter mMethodsAdapter;
+    private boolean mFromOnboarding;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -45,8 +46,8 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
             R.drawable.onboarding_ga
         };
 
-        final boolean fromOnboarding = getIntent().getBooleanExtra("from_onboarding", false);
-        if (!fromOnboarding) {
+        mFromOnboarding = getIntent().getBooleanExtra("from_onboarding", false);
+        if (!mFromOnboarding) {
             UI.hide(UI.find(this, R.id.nextButton));
             setTitleBack();
         }
@@ -113,7 +114,8 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
             return;
         final List<String> enabledMethods = twoFactorConfig.getEnabledMethods();
         mMethodsAdapter.setEnabled(enabledMethods);
-        if (twoFactorConfig.getAllMethods().size() == enabledMethods.size()) {
+        if (mFromOnboarding && twoFactorConfig.getAllMethods().size() == enabledMethods.size()) {
+            // The user has enabled all methods, so continue to the main activity
             finish();
             goToTabbedMainActivity();
         }
