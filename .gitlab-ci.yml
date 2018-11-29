@@ -1,0 +1,38 @@
+build_tag_release:
+  image: greenaddress/android@sha256:979d4491884a2eb7c42beed2918c0ea6a413616a27fae48634f46322e08dfb06
+  artifacts:
+    name: "greenbits-release-$CI_COMMIT_REF_NAME"
+    expire_in: 1 hour
+    when: on_success
+    paths:
+    - app/build/outputs/apk/*/release/*.apk
+    - app/build/outputs/mapping/*/release/mapping.txt
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./app/fetch_gdk_binaries.sh
+    - ./gradlew lintProductionRelease
+    - ./gradlew assembleProductionRelease
+
+build_tag_osx_release:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./app/fetch_gdk_binaries.sh
+    - ./gradlew lintProductionRelease
+    - ./gradlew assembleProductionRelease
+
+package_release:
+  tags:
+    - garelease
+  stage: deploy
+  artifacts:
+    expire_in: 14 days
+    paths:
+    - app/build/outputs/*
+    when: on_success
+  script: cd $CI_PROJECT_DIR/app/build/outputs/apk && /opt/process_release
+  dependencies:
+  - build_tag_release

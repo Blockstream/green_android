@@ -1,0 +1,10 @@
+#!/bin/sh
+# Use uncrustify to reformat the source
+if test -z "$1"; then
+    files=`ls ./app/src/main/java/com/greenaddress/*/*/*.java ./app/src/main/java/com/greenaddress/*/*/*/*.java | grep -v SwipeButton.java`
+else
+    files="$*"
+fi
+uncrustify --replace --no-backup -c tools/uncrustify.cfg $files
+# Work around an uncrustify bug that splits member references
+sed -i 's/ : : /::/g' $files

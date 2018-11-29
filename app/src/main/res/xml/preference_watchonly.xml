@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="network_category"
+        android:title="NETWORK" />
+
+    <Preference
+        android:key="logout"
+        android:layout="@layout/view_logout" />
+
+    <PreferenceCategory android:title="ABOUT" />
+
+    <Preference
+        android:key="version"
+        android:summary="@string/id_version_1s_2s"
+        android:title="@string/id_version" />
+
+    <Preference
+        android:key="terms_of_use"
+        android:title="@string/id_terms_of_use" />
+
+    <Preference
+        android:key="privacy_policy"
+        android:title="@string/id_privacy_policy" />
+
+
+    <PreferenceCategory />
+</PreferenceScreen>

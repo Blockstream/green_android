@@ -1,0 +1,6 @@
+<resources>
+    <tech-list>
+        <tech>android.nfc.tech.NfcA</tech>
+        <tech>android.nfc.tech.IsoDep</tech>
+    </tech-list>
+</resources>

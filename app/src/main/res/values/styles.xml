@@ -1,0 +1,107 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="actionMenuTextAppearance">@style/MenuTextAppearance</item>
+        <item name="android:actionMenuTextAppearance">@style/MenuTextAppearance</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="colorPrimaryDark">@color/windowBackground</item>
+    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat"/>
+
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat">
+        <!-- Customize your theme here. -->
+
+        <!-- colorPrimary is used for the default action bar background -->
+        <item name="colorPrimary">@color/primary</item>
+
+        <!-- colorPrimaryDark is used for the status bar -->
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+
+        <!-- colorAccent is used as the default value for colorControlActivated
+             which is used to tint widgets -->
+        <item name="colorAccent">@color/accent</item>
+
+        <!-- You can also set colorControlNormal, colorControlActivated
+             colorControlHighlight & colorSwitchThumbNormal. -->
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="actionMenuTextAppearance">@style/MenuTextAppearance</item>
+        <item name="android:actionMenuTextAppearance">@style/MenuTextAppearance</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="AppTheme.Button">
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textAllCaps">false</item>
+        <!--<item name="android:textStyle">bold</item>-->
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="myButton" parent="AppTheme.Button">
+        <item name="android:background">@drawable/material_button</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="gradientButton" parent="AppTheme.Button">
+        <item name="android:background">@drawable/material_button</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="borderButton" parent="AppTheme.Button">
+        <item name="android:background">@drawable/material_button_border</item>
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="networkButton" parent="AppTheme.Button">
+        <item name="android:background">@drawable/material_button_selection</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingTop">16dp</item>
+
+    </style>
+
+    <style name="settingsButton" parent="AppTheme.Button">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@color/grey_light</item>
+        <item name="android:drawableEnd">@drawable/arrow_down</item>
+    </style>
+
+    <style name="MenuTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="preferenceTheme" parent="@style/PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceCategoryStyle">@style/FixForPreferenceCategoryStyle</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="textColor">@color/white</item>
+        <item name="colorAccent">@color/grey_light</item>
+    </style>
+
+    <style name="FixForPreferenceCategoryStyle" parent="@style/Preference.Category.Material">
+        <item name="android:layout">@layout/_preference_category_material</item>
+    </style>
+    <color name="_preference_fallback_accent_color">@color/grey_light</color>
+
+    <style name="AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:headerDividersEnabled">true</item>
+        <item name="android:background">@color/windowBackground</item>
+    </style>
+
+</resources>

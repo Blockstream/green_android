@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.greenaddress.greenbits.ui.TrezorPinActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:orientation="vertical"
+             >
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/id_enter_the_pin_for_your_hardware"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingTop="10dp"
+                android:paddingBottom="15dp"
+                android:textSize="22sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/id_look_at_the_device_for_the"
+                android:textColor="@color/whiteSecondary"
+                android:paddingBottom="20dp"
+                android:textSize="16sp" />
+
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:rowCount="3"
+                android:columnCount="3">
+
+                <Button
+                    android:id="@+id/trezorPinButton1"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton2"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton3"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton4"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton5"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton6"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton7"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton8"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+                <Button
+                    android:id="@+id/trezorPinButton9"
+                    android:height="80dp"
+                    style="@style/gradientButton"
+                    android:textSize="20sp"
+                    android:text="@string/questionMark" />
+
+            </GridLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/asteriskTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="28sp"
+                    android:padding="20dp"/>
+
+                <ImageView
+                    android:id="@+id/eraseButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="20dp"
+                    android:src="@drawable/erase"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/trezorPinNextButton"
+        style="@style/gradientButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:text="@string/id_next"
+        android:textAllCaps="false"
+        />
+
+</LinearLayout>

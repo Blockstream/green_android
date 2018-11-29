@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                app:cardBackgroundColor="@color/primaryDark">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_from"/>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"/>
+
+                    <TextView
+                        android:id="@+id/subaccountText"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/wallet_pattern_small"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/white"
+                        android:paddingStart="16dp"/>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_to"/>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"/>
+
+                    <TextView
+                        android:id="@+id/addressText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/account"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"/>
+
+                    <LinearLayout
+                        android:id="@+id/changeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:orientation="vertical">
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/id_change"/>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"/>
+
+                        <TextView
+                            android:id="@+id/changeAddressText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawablePadding="8dp"
+                            android:drawableStart="@drawable/account"
+                            android:gravity="center_vertical"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                app:cardBackgroundColor="@color/primaryDark">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_sending"/>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_amount" />
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin">
+
+                        <TextView
+                            android:id="@+id/sendAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textColor"
+                            android:textIsSelectable="true" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_fee" />
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin">
+
+                        <TextView
+                            android:id="@+id/sendFee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textColor"
+                            android:textIsSelectable="true" />
+
+
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"/>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                app:cardBackgroundColor="@color/primaryDark">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_my_notes"/>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"/>
+
+                    <MultiAutoCompleteTextView
+                        android:id="@+id/noteText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lines="3"
+                        android:hint="@string/id_optional"/>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primaryDark"
+        android:padding="16dp">
+
+        <com.greenaddress.greenbits.ui.components.SwipeButton
+            android:id="@+id/swipeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            app:button_background="@drawable/shape_button"
+            app:button_bottom_padding="15dp"
+            app:button_image_disabled="@drawable/send_white"
+            app:button_image_enabled="@drawable/send_white"
+            app:button_image_height="60dp"
+            app:button_image_width="60dp"
+            app:button_left_padding="15dp"
+            app:button_right_padding="15dp"
+            app:button_top_padding="15dp"
+            app:button_trail_enabled="true"
+            app:has_activate_state="false"
+            app:initial_state="disabled"
+            app:inner_text="@string/id_slide_to_send"
+            app:inner_text_background="@drawable/shape_rounded"
+            app:inner_text_bottom_padding="18dp"
+            app:inner_text_color="@android:color/white"
+            app:inner_text_size="16sp"
+            app:inner_text_top_padding="18dp"
+            />
+    </FrameLayout>
+</LinearLayout>

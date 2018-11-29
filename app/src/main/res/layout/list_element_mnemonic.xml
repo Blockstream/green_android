@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="4dp"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/numericText"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:textColor="@color/accent"
+        android:textSize="16sp" />
+
+    <View
+        android:layout_width="4dp"
+        android:layout_height="wrap_content" />
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/mnemonicText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:imeActionLabel="@android:string/ok"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:importantForAccessibility="no"
+        android:singleLine="true"
+        android:digits="abcdefghijklmnopqrstuvwxyz "
+        android:text=""
+        android:textColor="@color/secondaryTextColor"
+        android:textSize="16sp" />
+
+</LinearLayout>

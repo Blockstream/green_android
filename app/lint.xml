@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Ignore everything in not main greenaddress -->
+    <issue id="all">
+        <ignore path="src/main/java/com/ledger" />
+        <ignore path="src/main/java/com/btchip" />
+        <ignore path="src/main/java/com/satoshilabs" />
+    </issue>
+
+    <issue id="InvalidPackage">
+        <ignore regexp="java.awt" />
+	<ignore regexp="java.lang.instrument" />
+	<ignore regexp="javax.servlet" />
+	<ignore regexp="java.lang.management" />
+	<ignore regexp="java.rmi.server" />
+	<ignore regexp="javax.management" />
+	<ignore regexp="javax.naming" />
+	<ignore regexp="javax.transaction" />
+        <ignore regexp="javax.stream" />
+        <ignore regexp="javax.xml" />
+   </issue>
+</lint>

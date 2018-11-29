@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- VID 0x534c PID 0x0001 - TREZOR, BWALLET, AvalonWallet -->
+    <usb-device vendor-id="21324" product-id="1" />
+    <!-- VID 0x10c4 PID 0xea80 - TREZOR rpi bridge  -->
+    <usb-device vendor-id="4292" product-id="60032" />
+    <!-- VID 0x1209 PID 0x53c0 - TREZOR V2 -->
+    <usb-device vendor-id="" product-id="" />
+    <!-- VID 0x1209 PID 0x53c1 - TREZOR V2 -->
+    <usb-device vendor-id="" product-id="" />
+
+    <!-- VID 0x2581 PID 0x2b7c - BTChip HID -->
+    <usb-device vendor-id="9601" product-id="11132"/>
+    <!-- VID 0x2581 PID 0x1b7c - BTChip WinUSB -->
+    <usb-device vendor-id="9601" product-id="7036"/>
+    <!-- VID 0x2581 PID 0x3b7c - Ledger HID -->
+    <usb-device vendor-id="9601" product-id="15228"/>
+    <!-- VID 0x2581 PID 0x4b7c - Ledger Proton HID -->
+    <usb-device vendor-id="9601" product-id="19324"/>
+
+    <!-- VID 0x2c97 PID 0x0000 - Ledger Nano S -->
+    <usb-device vendor-id="11415" product-id="0000"/>
+    <!-- VID 0x2c97 PID 0x0001 - Ledger Blue -->
+    <usb-device vendor-id="11415" product-id="0001"/>
+
+
+
+</resources>

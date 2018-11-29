@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="spvEnabled"
+        android:title="@string/id_enable_spv"
+        android:summary="@string/id_simple_payment_verification" />
+    <CheckBoxPreference
+        android:key="spvSyncMobile"
+        android:title="@string/id_synchronize_spv_on_mobile"
+        android:summary="@string/id_spv_is_always_synchronized_on" />
+    <EditTextPreference
+        android:key="trusted_peer"
+        android:title="@string/id_only_connect_to_trusted_nodes"
+        android:summary="@string/id_example_89014283334011612858333"
+        android:dependency="spvEnabled" />
+    <Preference
+        android:key="reset_spv"
+        android:title="@string/id_reset_spv"
+        android:summary="@string/id_tap_to_restart_the_simplified"
+        android:dependency="spvEnabled" />
+</PreferenceScreen>

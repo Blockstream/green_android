@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'org.bitcoinj'
+version = '0.15'
+
+description = """bitcoinj Tools"""
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+configurations.all {
+}
+
+repositories {
+     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+     maven { url "https://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile group: 'org.bitcoinj', name: 'bitcoinj-core', version:'0.14.3'
+    compile group: 'net.sf.jopt-simple', name: 'jopt-simple', version:'4.3'
+    compile group: 'org.slf4j', name: 'slf4j-jdk14', version:'1.7.20'
+    compile group: 'com.h2database', name: 'h2', version:'1.3.167'
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.20'
+}
+
+task buildMainnetCheckpoints(type: JavaExec) {
+   classpath = files('./build/libs/bitcoinj-tools-0.14.3.jar')
+   classpath += sourceSets.main.runtimeClasspath
+   main = 'org.bitcoinj.tools.BuildCheckpoints'
+   args = ['-net', 'MAIN', '-peer', '127.0.0.1']
+}
+
+task buildTestnetCheckpoints(type: JavaExec) {
+   classpath = files('./build/libs/bitcoinj-tools-0.14.3.jar')
+   classpath += sourceSets.main.runtimeClasspath
+   main = 'org.bitcoinj.tools.BuildCheckpoints'
+   args = ['-net', 'TEST', '-peer', '127.0.0.1']
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="colorPrimaryDark">@color/windowBackground</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/windowBackground</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:colorButtonNormal">@color/accent</item>
+    </style>
+
+    <style name="myButton">
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/qrInDialogImageView"
+        android:layout_width="360dp"
+        android:layout_height="360dp"
+        android:background="@color/white"
+        android:contentDescription="@string/id_green_mnemonic_qr_code"
+        android:padding="15dp" />
+
+    <TextView
+        android:layout_marginBottom="15dp"
+        android:textSize="@dimen/font_size_large"
+        android:text="@string/id_waiting_for_transaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <Button
+        android:layout_marginBottom="15dp"
+        android:text="@string/id_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+</LinearLayout>

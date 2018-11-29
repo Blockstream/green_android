@@ -1,0 +1,239 @@
+package com.greenaddress.greenapi.data;
+
+import com.blockstream.libwally.Wally;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.greenaddress.greenapi.ElementsRegTestParams;
+import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.greenbits.ui.R;
+
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.params.RegTestParams;
+import org.bitcoinj.params.TestNet3Params;
+
+import java.util.List;
+
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+public class NetworkData extends JSONData {
+    private String addressExplorerUrl;
+    private String txExplorerUrl;
+    private String bech32Prefix;
+    private Boolean development;
+    private Boolean liquid;
+    private Boolean mainnet;
+    private String name;
+    private String network;
+    private Integer p2pkhVersion;
+    private Integer p2shVersion;
+    private String serviceChainCode;
+    private String servicePubkey;
+    private String wampOnionUrl;
+    private String wampUrl;
+    private List<String> wampCertPins;
+    private List<String> wampCertRoots;
+    private List<String> defaultPeers;
+
+    @JsonIgnore
+    public NetworkParameters getNetworkParameters() {
+        switch (network == null ? "mainnet" : network) {
+        case "mainnet":
+            return MainNetParams.get();
+        case "testnet":
+            return TestNet3Params.get();
+        case "regtest":
+            return RegTestParams.get();
+        case "localtest":
+            return RegTestParams.get();
+        default:
+            return null;
+        }
+    }
+
+    @JsonIgnore
+    public boolean isElements() { return getNetworkParameters() == ElementsRegTestParams.get(); }
+
+    @JsonIgnore
+    public boolean IsNetworkMainnet() {
+        return getNetworkParameters() == MainNetParams.get();
+    }
+
+    @JsonIgnore
+    public boolean isTestnet() {
+        return getNetworkParameters() == TestNet3Params.get();
+    }
+
+    @JsonIgnore
+    public boolean isRegtest() { return getNetworkParameters() == RegTestParams.get(); }
+
+    @JsonIgnore
+    public int getBip32Network() {
+        return IsNetworkMainnet() ? Wally.BIP38_KEY_MAINNET : Wally.BIP38_KEY_TESTNET;
+    }
+
+    @JsonIgnore
+    public int getBip38Flags() {
+        return getBip32Network() | Wally.BIP38_KEY_COMPRESSED;
+    }
+
+    @JsonIgnore
+    public boolean alwaysAllowRBF() {
+        return BuildConfig.DEBUG || isRegtest() || isTestnet();
+    }
+
+    @JsonIgnore
+    public int getVerPublic() {
+        return IsNetworkMainnet() ? Wally.BIP32_VER_MAIN_PUBLIC : Wally.BIP32_VER_TEST_PUBLIC;
+    }
+
+    @JsonIgnore
+    public int getVerPrivate() {
+        return IsNetworkMainnet() ? Wally.BIP32_VER_MAIN_PRIVATE : Wally.BIP32_VER_TEST_PRIVATE;
+    }
+
+    @JsonIgnore
+    public int getIcon() {
+        if (network.equals("mainnet"))
+            return R.drawable.btc;
+        if (network.equals("testnet"))
+            return R.drawable.btc_testnet;
+        return R.drawable.btc_testnet;
+    }
+
+    public Boolean getDevelopment() {
+        return development;
+    }
+
+    public void setDevelopment(Boolean development) {
+        this.development = development;
+    }
+
+    public String getAddressExplorerUrl() {
+        return addressExplorerUrl;
+    }
+
+    public void setAddressExplorerUrl(final String addressExplorerUrl) {
+        this.addressExplorerUrl = addressExplorerUrl;
+    }
+
+    public String getBech32Prefix() {
+        return bech32Prefix;
+    }
+
+    public void setBech32Prefix(final String bech32Prefix) {
+        this.bech32Prefix = bech32Prefix;
+    }
+
+    public Boolean getLiquid() {
+        return liquid;
+    }
+
+    public void setLiquid(final Boolean liquid) {
+        this.liquid = liquid;
+    }
+
+    public Boolean getMainnet() {
+        return mainnet;
+    }
+
+    public void setMainnet(final Boolean mainnet) {
+        this.mainnet = mainnet;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(final String network) {
+        this.network = network;
+    }
+
+    public Integer getP2pkhVersion() {
+        return p2pkhVersion;
+    }
+
+    public void setP2pkhVersion(final Integer p2pkhVersion) {
+        this.p2pkhVersion = p2pkhVersion;
+    }
+
+    public Integer getP2shVersion() {
+        return p2shVersion;
+    }
+
+    public void setP2shVersion(final Integer p2shVersion) {
+        this.p2shVersion = p2shVersion;
+    }
+
+    public String getServiceChainCode() {
+        return serviceChainCode;
+    }
+
+    public void setServiceChainCode(final String serviceChainCode) {
+        this.serviceChainCode = serviceChainCode;
+    }
+
+    public String getServicePubkey() {
+        return servicePubkey;
+    }
+
+    public void setServicePubkey(final String servicePubkey) {
+        this.servicePubkey = servicePubkey;
+    }
+
+    public String getTxExplorerUrl() {
+        return txExplorerUrl;
+    }
+
+    public void setTxExplorerUrl(final String txExplorerUrl) {
+        this.txExplorerUrl = txExplorerUrl;
+    }
+
+    public String getWampOnionUrl() {
+        return wampOnionUrl;
+    }
+
+    public void setWampOnionUrl(final String wampOnionUrl) {
+        this.wampOnionUrl = wampOnionUrl;
+    }
+
+    public String getWampUrl() {
+        return wampUrl;
+    }
+
+    public void setWampUrl(final String wampUrl) {
+        this.wampUrl = wampUrl;
+    }
+
+    public List<String> getWampCertPins() {
+        return wampCertPins;
+    }
+
+    public void setWampCertPins(final List<String> wampCertPins) {
+        this.wampCertPins = wampCertPins;
+    }
+
+    public List<String> getWampCertRoots() {
+        return wampCertRoots;
+    }
+
+    public void setWampCertRoots(final List<String> wampCertRoots) {
+        this.wampCertRoots = wampCertRoots;
+    }
+
+    public List<String> getDefaultPeers() {
+        return defaultPeers;
+    }
+
+    public void setDefaultPeers(final List<String> defaultPeers) {
+        this.defaultPeers = defaultPeers;
+    }
+}

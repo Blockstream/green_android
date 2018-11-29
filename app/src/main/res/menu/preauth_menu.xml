@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/network_preferences"
+        android:title="@string/id_network_configuration" />
+    <item
+        android:id="@+id/watchonly_preference"
+        android:title="@string/id_watchonly_login" />
+</menu>

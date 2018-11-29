@@ -1,0 +1,119 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="network_category"
+        android:title="NETWORK" />
+
+    <Preference
+        android:key="delete_or_configure_pin" />
+
+    <Preference
+        android:key="watch_only_login"
+        android:iconSpaceReserved="false"
+        android:title="@string/id_watchonly_login" />
+
+    <Preference
+        android:key="logout"
+        android:layout="@layout/view_logout" />
+    <Preference
+        android:layout="@layout/view_space"
+        />
+
+    <PreferenceCategory android:title="ACCOUNT" />
+
+    <ListPreference
+        android:key="unit"
+        android:title="@string/id_bitcoin_denomination" />
+
+
+    <ListPreference
+        android:layout_height="match_parent"
+        android:iconSpaceReserved="false"
+        android:key="pricing"
+        android:title="@string/id_reference_exchange_rate" />
+
+
+    <ListPreference
+        android:entries="@array/fee_target_entries"
+        android:entryValues="@array/fee_target_values"
+        android:key="required_num_blocks"
+        android:title="@string/id_default_transaction_priority" />
+
+    <Preference
+        android:key="default_feerate_satbyte"
+        android:title="@string/id_default_custom_fee_rate" />
+
+    <PreferenceCategory android:title="TWO FACTOR" />
+
+    <Preference
+        android:key="two_factor_authentication"
+        android:title="Two-factor Authentication"
+        android:summary="@string/id_set_up_twofactor_authentication" />
+
+
+    <Preference
+        android:key="twoFacLimits"
+        android:title="@string/id_set_twofactor_threshold"
+        android:summary="@string/id_you_must_enable_twofactor" />
+
+    <SwitchPreference
+        android:key="twoFacNLocktimeEmails"
+        android:title="@string/id_enable_nlocktime_recovery_emails" />
+
+    <Preference
+        android:key="send_nlocktime"
+        android:title="@string/id_request_nlocktime_transactions"
+        android:dependency="twoFacNLocktimeEmails" />
+
+    <Preference
+        android:key="reset_twofactor"
+        android:title="@string/id_request_twofactor_reset" />
+
+    <PreferenceCategory android:title="SECURITY" />
+
+    <Preference
+        android:key="mnemonic_passphrase"
+        android:title="@string/id_mnemonic"
+        android:summary="@string/id_mnemonic_not_available" />
+
+    <ListPreference
+        android:key="altimeout"
+        android:title="@string/id_auto_logout_timeout" />
+
+    <PreferenceCategory android:title="ADVANCED" />
+
+    <Preference
+        android:key="spv_synchronization"
+        android:title="SPV Synchronization" />
+
+    <Preference
+        android:key="network_monitor"
+        android:title="@string/id_network_monitor" />
+
+    <PreferenceCategory
+        android:title="ABOUT" />
+
+    <Preference
+        android:key="version"
+        android:summary="@string/id_version_1s_2s"
+        android:title="@string/id_version" />
+
+    <Preference
+        android:key="terms_of_use"
+        android:title="@string/id_terms_of_use" />
+
+    <Preference
+        android:key="privacy_policy"
+        android:title="@string/id_privacy_policy" />
+
+    <Preference
+        android:layout="@layout/view_space" />
+    <Preference
+        android:layout="@layout/view_space" />
+    <Preference
+        android:layout="@layout/view_space" />
+    <Preference
+        android:layout="@layout/view_space" />
+
+    <PreferenceCategory />
+</PreferenceScreen>

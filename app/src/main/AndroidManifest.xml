@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+ F-DROID HACK (for some reason checkupdates expects package name to match appid)
+    package="com.greenaddress.greenbits_android_wallet"
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.greenaddress.greenbits.ui">
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.NFC" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
+
+    <application
+        android:name="com.greenaddress.greenbits.GreenAddressApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:name=".MnemonicActivity"
+            android:label="@string/id_restore" />
+
+        <activity-alias
+            android:name=".NFC"
+            android:label="@string/app_name"
+            android:targetActivity=".MnemonicActivity">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <data android:mimeType="x-gait/mnc" />
+                <data android:mimeType="x-ga/en" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity
+            android:name=".TabbedMainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+
+        </activity>
+
+        <service
+            android:name="com.greenaddress.greenbits.GaService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity
+            android:name=".PinActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <data android:scheme="bitcoin" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <data android:scheme="bitcoin" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <data android:mimeType="application/bitcoin-paymentrequest" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".PinSaveActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateVisible" />
+        <activity
+            android:name=".FirstScreenActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".SignUpActivity"
+            android:label="@string/id_create" />
+        <activity
+            android:name="de.schildbach.wallet.ui.ScanActivity"
+            android:label="@string/id_qr_scanner"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".monitor.NetworkMonitorActivity"
+            android:label="@string/id_network_monitor" />
+        <activity
+            android:name=".RequestLoginActivity"
+            android:label="Login"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
+                android:resource="@xml/device_filter" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
+        <activity
+            android:name=".TransactionActivity"
+            android:label="@string/id_transaction_details" />
+        <activity
+            android:name=".TwoFactorActivity"
+            android:label="@string/id_1s_twofactor_set_up" />
+        <activity
+            android:name=".preferences.SettingsActivity"
+            android:label="@string/id_settings" />
+        <activity android:name=".FailHardActivity" />
+        <activity android:name=".WatchOnlyLoginActivity" />
+        <activity android:name=".ReceiveActivity"
+            android:label="@string/id_receive" />
+        <activity android:name=".ScanActivity"
+            android:label="@string/id_send_to" />
+        <activity android:name=".onboarding.TermsActivity" />
+        <activity android:name=".onboarding.WordsActivity" />
+        <activity android:name=".onboarding.SelectionActivity" />
+        <activity android:name=".onboarding.SuccessActivity" />
+        <activity android:name=".onboarding.InfoActivity" />
+        <activity
+            android:name=".onboarding.SecurityActivity"/>
+        <activity android:name=".SendActivity"
+            android:label="@string/id_send"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".MessagesActivity" />
+        <activity android:name=".TrezorPinActivity" />
+        <activity android:name=".TrezorPassphraseActivity"></activity>
+
+    </application>
+
+</manifest>

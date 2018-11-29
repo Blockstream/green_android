@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/id_currency"
+        android:textColor="@color/whiteSecondary"
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/set_limits_currency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/id_amount"
+        android:textColor="@color/whiteSecondary"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/set_limits_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:hint="@string/zeroDecimal"
+        android:inputType="numberDecimal" />
+
+</LinearLayout>

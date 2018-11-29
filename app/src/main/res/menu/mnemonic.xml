@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.greenaddress.greenbits.ui.MainActivity">
+
+    <item
+        android:id="@+id/action_scan"
+        android:orderInCategory="90"
+        android:title="@string/fa_camera"
+        app:showAsAction="always" />
+</menu>

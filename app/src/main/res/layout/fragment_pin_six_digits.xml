@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin">
+
+    <com.greenaddress.greenbits.ui.components.PinEntryView
+        android:id="@+id/pin_entry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        app:numDigits="6"
+        app:digitWidth="30dp"
+        app:digitTextSize="28sp"
+        app:accentType="all"
+        app:digitTextColor="@color/textColor"
+        app:pinAccentColor="@color/textColor" />
+
+    <TextView
+        android:id="@+id/skipButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:textSize="16sp"
+        android:text="@string/id_skip"/>
+
+    <android.inputmethodservice.KeyboardView
+        android:id="@+id/keyboardView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:keyBackground="@drawable/material_button_keyboard"
+        android:keyTextSize="32sp"/>
+
+</LinearLayout>
