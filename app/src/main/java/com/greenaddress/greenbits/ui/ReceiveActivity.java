@@ -9,7 +9,7 @@ public class ReceiveActivity extends LoggedActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_receive);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        UI.preventScreenshots(this);
         setTitleBack();
 
         getSupportFragmentManager()

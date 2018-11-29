@@ -68,7 +68,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        UI.preventScreenshots(this);
         final Intent intent = getIntent();
         mIsBitcoinUri = isBitcoinScheme(intent) ||
                         intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||

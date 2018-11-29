@@ -16,7 +16,7 @@ public class SendActivity extends LoggedActivity implements SendInputFragment.On
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_send);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        UI.preventScreenshots(this);
 
         setTitleBack();
 

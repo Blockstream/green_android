@@ -18,6 +18,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -321,6 +322,12 @@ public abstract class UI {
 
     public static < T extends View > T find(final Dialog dialog, final int id) {
         return (T) dialog.findViewById(id);
+    }
+
+    public static void preventScreenshots(final Activity activity) {
+        if (!BuildConfig.DEBUG) {
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
     }
 
     public static LinearLayout.LayoutParams getScreenLayout(final Activity activity,

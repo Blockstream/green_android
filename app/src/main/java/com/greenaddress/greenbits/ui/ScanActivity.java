@@ -104,7 +104,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        UI.preventScreenshots(this);
 
         mAction = getIntent().getAction();
 

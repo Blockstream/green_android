@@ -8,7 +8,7 @@ public class MainActivity extends LoggedActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        UI.preventScreenshots(this);
 
         final Bundle bundle = new Bundle();
         final MainFragment fragment = new MainFragment();

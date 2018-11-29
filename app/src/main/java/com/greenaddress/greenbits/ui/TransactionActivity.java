@@ -59,7 +59,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setResult(RESULT_OK);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        UI.preventScreenshots(this);
 
         setTitleBackTransparent();
 
