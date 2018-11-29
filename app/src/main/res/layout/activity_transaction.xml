@@ -213,7 +213,7 @@
                     android:id="@+id/txUnconfirmedEstimatedBlocks"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_will_confirm_after_blocks" />
+                    android:text="@string/id_estimated_blocks_until" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
