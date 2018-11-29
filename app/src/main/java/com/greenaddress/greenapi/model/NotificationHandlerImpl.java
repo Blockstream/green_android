@@ -127,7 +127,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     mModel.getEventDataObservable().pushEvent(new EventData(R.string.id_twofactor_authentication,
                                                                             R.string.id_days_remaining_s,
                                                                             new String[] {daysRemaining}, new Date(),
-                        null));
+                                                                            null));
                 } else{
                     SparseArray<ReceiveAddressObservable> receiveAddressObservables =
                         mModel.getReceiveAddressObservables();

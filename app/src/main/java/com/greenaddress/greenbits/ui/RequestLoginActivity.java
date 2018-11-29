@@ -382,7 +382,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
                 transport.setDebug(BuildConfig.DEBUG);
                 transport.exchange(DUMMY_COMMAND).get();
                 Log.d(TAG, "NFC transport checked");
-            }catch (final Exception e)  {
+            } catch (final Exception e) {
                 Log.d(TAG, "Tag was lost", e);
                 if (card != null) {
                     try {
@@ -432,7 +432,8 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
             return;
         }
 
-        final Runnable closeCB = new Runnable() { public void run() { finishOnUiThread(); }
+        final Runnable closeCB = new Runnable() {
+            public void run() { finishOnUiThread(); }
         };
         runOnUiThread(new Runnable() {
             public void run() {

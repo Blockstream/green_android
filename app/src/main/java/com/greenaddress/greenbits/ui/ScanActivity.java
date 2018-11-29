@@ -497,7 +497,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
             final PlanarYUVLuminanceSource source = cameraManager.buildLuminanceSource(data);
             final BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
-            try{
+            try {
                 hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, new ResultPointCallback()
                 {
                     @Override
@@ -532,10 +532,10 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                         handleResult(scanResult, thumbnailImage, thumbnailScaleFactor);
                     }
                 });
-            }catch (final ReaderException x) {
+            } catch (final ReaderException x) {
                 // retry
                 cameraHandler.post(fetchAndDecodeRunnable);
-            }finally{
+            } finally {
                 reader.reset();
             }
         }

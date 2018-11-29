@@ -54,32 +54,6 @@ public class SettingsData extends JSONData {
         this.unit = unit;
     }
 
-    public class PricingData extends JSONData {
-        private String currency;
-        private String exchange;
-
-        public String getCurrency() {
-            return currency;
-        }
-
-        public void setCurrency(String currency) {
-            this.currency = currency;
-        }
-
-        public String getExchange() {
-            return exchange;
-        }
-
-        public void setExchange(String exchange) {
-            this.exchange = exchange;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s %s", currency, exchange);
-        }
-    }
-
     @JsonIgnore
     public ObjectNode toObjectNode() {
         return new ObjectMapper().convertValue(this,ObjectNode.class);

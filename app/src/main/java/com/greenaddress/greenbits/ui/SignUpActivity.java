@@ -58,9 +58,11 @@ public class SignUpActivity extends LoginActivity implements View.OnClickListene
     private boolean[] mChoiceIsValid;
 
     private ListenableFuture<Void> mOnSignUp;
-    private final Runnable mNfcDialogCB = new Runnable() { public void run() { mWriteMode = false; }
+    private final Runnable mNfcDialogCB = new Runnable() {
+        public void run() { mWriteMode = false; }
     };
-    private final Runnable mVerifyDialogCB = new Runnable() { public void run() { onVerifyDismissed(); }
+    private final Runnable mVerifyDialogCB = new Runnable() {
+        public void run() { onVerifyDismissed(); }
     };
 
     @Override

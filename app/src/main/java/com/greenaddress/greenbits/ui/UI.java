@@ -469,7 +469,7 @@ public abstract class UI {
         try {
             int resId = res.getIdentifier(textOrIdentifier, "string", "com.greenaddress.greenbits_android_wallet");
             return res.getString(resId);
-        }catch (final Exception e) {
+        } catch (final Exception e) {
             return textOrIdentifier; // Unknown id
         }
     }

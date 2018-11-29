@@ -46,7 +46,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     private TagDispatcher mTagDispatcher;
     private TextView mAddressText;
     private ImageView mAddressImage;
-    private final Runnable mDialogCB = new Runnable() { public void run() { mQrCodeDialog = null; }
+    private final Runnable mDialogCB = new Runnable() {
+        public void run() { mQrCodeDialog = null; }
     };
     private CurrencyView mCurrency;
 

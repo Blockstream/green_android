@@ -73,18 +73,18 @@ public class EventDataObservable extends Observable implements Observer {
                 final Integer days = twoFactorData.getTwoFactorResetDaysRemaining();
                 pushEventIfNotExist(new EventData(R.string.id_twofactor_authentication,
                                                   R.string.id_warning_wallet_locked_for,
-                new String[] {String.valueOf(days)}, new Date(), days));
+                                                  new String[] {String.valueOf(days)}, new Date(), days));
             } // TODO not show in watch only or twoFactorData null
             else if (!twoFactorData.isAnyEnabled() ) {
                 removeIfExist(R.string.id_set_up_twofactor_authentication);
                 pushEventIfNotExist(new EventData(R.string.id_set_up_twofactor_authentication,
                                                   R.string.id_your_wallet_is_not_yet_fully, new String[] {}, new Date(),
-                null));
+                                                  null));
             } else if (twoFactorData.getEnabledMethods().size() == 1) {
                 removeIfExist(R.string.id_set_up_twofactor_authentication);
                 pushEventIfNotExist(new EventData(R.string.id_set_up_twofactor_authentication,
                                                   R.string.id_you_only_have_one_twofactor, new String[] {}, new Date(),
-                null));
+                                                  null));
             } else {
                 removeIfExist(R.string.id_set_up_twofactor_authentication);
             }

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
+import com.greenaddress.greenapi.data.PricingData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.AvailableCurrenciesObservable;
@@ -387,7 +388,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mPricing.setEntryValues(valuesArr);
     }
 
-    private void setPricingSummary(final SettingsData.PricingData pricing) {
+    private void setPricingSummary(final PricingData pricing) {
         final String summary = pricing == null ? "" : String.format(getString(
                                                                         R.string.id_s_from_s),
                                                                     pricing.getCurrency(), pricing.getExchange());
