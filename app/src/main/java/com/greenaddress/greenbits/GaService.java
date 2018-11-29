@@ -360,13 +360,13 @@ public class GaService extends Service  {
                     final SettingsData settings = ((SettingsObservable) observable).getSettings();
                     final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(GaService.this);
                     final SharedPreferences.Editor edit = pref.edit();
-                    if (pref.getString(PrefKeys.PRICING, null) == null)
+                    if (settings.getPricing() != null)
                         edit.putString(PrefKeys.PRICING, settings.getPricing().toString());
-                    if (pref.getString(PrefKeys.ALTIMEOUT, null) == null)
+                    if (settings.getAltimeout() != null)
                         edit.putString(PrefKeys.ALTIMEOUT, String.valueOf(settings.getAltimeout()));
-                    if (pref.getString(PrefKeys.UNIT, null) == null)
+                    if (settings.getUnit() != null)
                         edit.putString(PrefKeys.UNIT, settings.getUnit());
-                    if (pref.getString(PrefKeys.REQUIRED_NUM_BLOCKS, null) == null)
+                    if (settings.getRequiredNumBlocks() != null)
                         edit.putString(PrefKeys.REQUIRED_NUM_BLOCKS, String.valueOf(settings.getRequiredNumBlocks()));
                     edit.apply();
                     mModel.getSettingsObservable().deleteObserver(this);
