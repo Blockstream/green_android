@@ -139,11 +139,18 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final String[] split = o.toString().split(" ");
             final String currency = split[0];
             final String exchange = split[1];
-            final SettingsData settings = mService.getModel().getSettings();
+            final Model model = mService.getModel();
+            final SettingsData settings = model.getSettings();
+
             settings.getPricing().setCurrency(currency);
             settings.getPricing().setExchange(exchange);
             setPricingSummary(null);
             mService.getExecutor().execute(() -> updateSettings(settings));
+
+            final TwoFactorConfigDataObservable twoFaData = model.getTwoFactorConfigDataObservable();
+            if (twoFaData.getTwoFactorConfigData() != null) {
+                setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
+            }
             return true;
         });
 
