@@ -69,7 +69,8 @@ public class SubaccountDataObservable extends Observable {
             mBalanceDataObservables.put(pointer, balanceDataObservable);
         }
         if (mReceiveAddressObservables.get(pointer) == null) {
-            final ReceiveAddressObservable addressObservable = new ReceiveAddressObservable(mSession, mExecutor, pointer);
+            final ReceiveAddressObservable addressObservable =
+                new ReceiveAddressObservable(mSession, mExecutor, pointer);
             mReceiveAddressObservables.put(pointer, addressObservable);
             mActiveAccountObservable.addObserver(addressObservable);
         }
