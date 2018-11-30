@@ -65,6 +65,9 @@ public class GDKTwoFactorCall {
                         value = codeResolver.code(mStatus.getMethod()).get();
                     }
                     Log.d("RSV", "resolve_code input " + value);
+                    if (value == null) {
+                        throw new Exception("id_action_canceled");
+                    }
                     twofactorResolveCode(value);
                     break;
                 case "error":
