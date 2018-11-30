@@ -9,6 +9,7 @@ public class SettingsActivity extends GaPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
         final String preference;
         try {
             preference = getIntent().getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT);
