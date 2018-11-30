@@ -6,8 +6,9 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.gdk.GDKSession;
 
 import java.util.Observable;
+import java.util.Observer;
 
-public class ReceiveAddressObservable extends Observable {
+public class ReceiveAddressObservable extends Observable implements Observer {
     private String mReceiveAddress;
     private GDKSession mSession;
     private ListeningExecutorService mExecutor;
@@ -42,5 +43,14 @@ public class ReceiveAddressObservable extends Observable {
         this.mReceiveAddress = receiveAddress;
         setChanged();
         notifyObservers();
+    }
+
+    @Override
+    public void update(Observable observable, Object arg) {
+        if (observable instanceof ActiveAccountObservable) {
+            if ( ((ActiveAccountObservable) observable).getActiveAccount().equals(mSubaccount)
+                    && mReceiveAddress == null)
+                refresh();
+        }
     }
 }

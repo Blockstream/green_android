@@ -128,12 +128,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                                                                             R.string.id_days_remaining_s,
                                                                             new String[] {daysRemaining}, new Date(),
                                                                             null));
-                } else{
-                    SparseArray<ReceiveAddressObservable> receiveAddressObservables =
-                        mModel.getReceiveAddressObservables();
-                    for (int i = 0, nsize = receiveAddressObservables.size(); i < nsize; i++) {
-                        receiveAddressObservables.valueAt(i).refresh();
-                    }
                 }
                 break;
             }
