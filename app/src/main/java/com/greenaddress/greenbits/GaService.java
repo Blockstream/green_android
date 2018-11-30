@@ -370,6 +370,8 @@ public class GaService extends Service  {
                         edit.putString(PrefKeys.UNIT, settings.getUnit());
                     if (settings.getRequiredNumBlocks() != null)
                         edit.putString(PrefKeys.REQUIRED_NUM_BLOCKS, String.valueOf(settings.getRequiredNumBlocks()));
+                    if (settings.getPgp() != null)
+                        edit.putString(PrefKeys.PGP_KEY, settings.getPgp());
                     edit.apply();
                     mModel.getSettingsObservable().deleteObserver(this);
                 }

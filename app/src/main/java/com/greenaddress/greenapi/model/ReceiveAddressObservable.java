@@ -47,10 +47,8 @@ public class ReceiveAddressObservable extends Observable implements Observer {
 
     @Override
     public void update(Observable observable, Object arg) {
-        if (observable instanceof ActiveAccountObservable) {
-            if ( ((ActiveAccountObservable) observable).getActiveAccount().equals(mSubaccount)
-                    && mReceiveAddress == null)
+        if (mReceiveAddress == null && observable instanceof ActiveAccountObservable
+            && ((ActiveAccountObservable) observable).getActiveAccount().equals(mSubaccount) )
                 refresh();
-        }
     }
 }
