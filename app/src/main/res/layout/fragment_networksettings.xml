@@ -34,6 +34,7 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/socks5Host"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/id_socks5_hostname"
@@ -51,6 +52,7 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/socks5Port"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/id_socks5_port"

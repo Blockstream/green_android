@@ -14,8 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
@@ -155,15 +160,32 @@ public class NetworkSettingsFragment extends DialogFragment {
         final RecyclerView recyclerView = UI.find(v, R.id.networksRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        final HashMap<String, NetworkData> networks = getGAService().getSession().getNetworks();
+        final HashMap<String, NetworkData> networks = GDKSession.getNetworks();
 
         mNetworksViewAdapter = new NetworksViewAdapter(getContext(), networks, getNetworksDefault());
         recyclerView.setAdapter(mNetworksViewAdapter);
 
-        final View viewById = v.findViewById(R.id.selectNetworkButton);
-        viewById.setOnClickListener(view -> {
-            final String which = mNetworksViewAdapter.mKeys[mNetworksViewAdapter.mSelectedItem];
-            getGAService().setCurrentNetworkId(which);
+        final EditText socks5HostText = UI.find(v, R.id.socks5Host);
+        final EditText socks5PortText = UI.find(v, R.id.socks5Port);
+
+        final View selectButton = v.findViewById(R.id.selectNetworkButton);
+        selectButton.setOnClickListener(view -> {
+            String networkName = mNetworksViewAdapter.mKeys[mNetworksViewAdapter.mSelectedItem];
+            final String socksHost = UI.getText(socks5HostText);
+            //final String socksPort = UI.getText(socks5PortText);
+
+            if (socksHost.startsWith("{")) {
+                try {
+                    final NetworkData newNetwork = (new ObjectMapper()).readValue(socksHost, NetworkData.class);
+                    GDKSession.registerNetwork(newNetwork.getName(), socksHost);
+                    networkName = newNetwork.getNetwork();
+                } catch (final Exception e) {
+                    UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
+                }
+            }
+
+            // FIXME: Use host and port to connect if given
+            getGAService().setCurrentNetworkId(networkName);
             getGAService().reconnect();  // FIXME another thread
             mListener.onSelectNetwork();
             dismiss();
