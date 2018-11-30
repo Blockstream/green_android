@@ -42,6 +42,18 @@ public class TwoFactorActivity extends LoggedActivity {
         setContentView(id);
         mContinueButton = UI.find(this, R.id.continueButton);
         mPromptText = UI.find(this, R.id.prompt);
+        switch (mMethod) {
+        case "reset":
+            mContinueButton.setText(R.string.id_request_twofactor_reset);
+            break;
+        case "dispute":
+            mContinueButton.setText(R.string.id_dispute_twofactor_reset);
+            showResetEmail(true);
+            break;
+        case "cancel":
+            mContinueButton.setText(R.string.id_cancel_twofactor_reset);
+            break;
+        }
     }
 
     private String getTypeString(final String fmt, final String type) {
