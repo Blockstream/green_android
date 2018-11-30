@@ -541,9 +541,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
     private void setLimitsText(final ObjectNode limitsData) {
         getActivity().runOnUiThread(() -> {
-            final boolean isFiat = limitsData.get("is_fiat").asBoolean();
-            final String limit = mService.getValueString(limitsData, isFiat, true);
-            mLimitsPref.setSummary(getString(R.string.id_your_transaction_threshold_is_s, limit));
+            try {
+                final boolean isFiat = limitsData.get("is_fiat").asBoolean();
+                final String limit = mService.getValueString(limitsData, isFiat, true);
+                mLimitsPref.setSummary(getString(R.string.id_your_transaction_threshold_is_s, limit));
+            } catch (final Exception e) {
+                // We can throw because we have been logged out here, e.g. when
+                // requesting a two-factor reset and unwinding the activity stack.
+                // Since this is harmless, ignore the error here.
+            }
         });
     }
 
