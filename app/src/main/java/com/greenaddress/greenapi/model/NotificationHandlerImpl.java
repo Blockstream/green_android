@@ -119,9 +119,9 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 if (isActive) {
                     final String daysRemaining;
                     if (twofactorReset.get("is_disputed").asBoolean()) {
-                        daysRemaining = String.valueOf(twofactorReset.get("days_remaining").asInt());
-                    } else{
                         daysRemaining = "disputed";     // FIXME: id_disputed
+                    } else{
+                        daysRemaining = String.valueOf(twofactorReset.get("days_remaining").asInt());
                     }
                     mModel.setTwoFAReset(true);
                     mModel.getEventDataObservable().pushEvent(new EventData(R.string.id_twofactor_authentication,
