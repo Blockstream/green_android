@@ -35,30 +35,32 @@ public abstract class LoginActivity extends GaActivity implements Observer {
 
     private synchronized void checkState() {
         final ConnectionManager cm = mService.getConnectionManager();
-        if (cm.isDisconnectedOrLess()) {
-            cm.connect();
-        } else if (cm.isConnected() && pinBeforeConnect != null) {
-            loginWithPin(pinBeforeConnect);
-        } else if (cm.isLoggedIn()) {
-            mService.onPostLogin();
-            runOnUiThread(this::onLoginSuccess);
-        } else if (cm.isConnectedWasLoggingIn()) {
-            runOnUiThread(this::onLoginFailure);
-        } else if (cm.isPostLogin()) {
-            runOnUiThread(this::onLoggedIn);
+        cm.deleteObserver(this);
+        try {
+            if (cm.isDisconnectedOrLess()) {
+                cm.connect();
+            } else if (cm.isConnected() && pinBeforeConnect != null) {
+                loginWithPin(pinBeforeConnect);
+            } else if (cm.isLoggedIn()) {
+                mService.onPostLogin();
+                runOnUiThread(this::onLoginSuccess);
+            } else if (cm.isConnectedWasLoggingIn()) {
+                runOnUiThread(this::onLoginFailure);
+            } else if (cm.isPostLogin()) {
+                runOnUiThread(this::onLoggedIn);
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
+        cm.addObserver(this);
     }
 
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null)
-            return;
-        final ConnectionManager cm = mService.getConnectionManager();
-
-        cm.deleteObserver(this);
-        checkState();
-        cm.addObserver(this);
+        if (mService != null) {
+            checkState();
+        }
     }
 
     protected void loginWithPin(String pin) {
