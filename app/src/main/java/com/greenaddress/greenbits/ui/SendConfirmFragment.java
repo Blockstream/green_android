@@ -21,6 +21,7 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.CreateTransactionData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
+import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.components.SwipeButton;
 
@@ -136,6 +137,8 @@ public class SendConfirmFragment extends GAFragment {
                             //emptying list to avoid showing replaced txs
                             service.getModel().getTransactionDataObservable(subaccount)
                             .setTransactionDataList(new ArrayList<>());
+                            final String hash = tx.get("previous_transaction").get("txhash").asText();
+                            service.getModel().getEventDataObservable().removeTx(hash);
                         }
                         UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
 

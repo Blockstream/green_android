@@ -437,8 +437,9 @@ public class SPV {
                             Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
                             if (blocksLeft > 0) {
                                 mService.getModel().getEventDataObservable().pushEvent(
-                                    new EventData(R.string.id_spv_notifications, R.string.id_s_blocks_left,
-                                                  new String[] {String.valueOf(blocksLeft)}, new Date(), null));
+                                    new EventData(R.string.id_spv_notifications,
+                                                  R.string.id_s_blocks_left,
+                                                  blocksLeft));
                             }
                             mBlocksRemaining = blocksLeft;
                             super.onChainDownloadStarted(peer, blocksLeft);
@@ -469,8 +470,7 @@ public class SPV {
                         protected void doneDownload() {
                             Log.d(TAG, "doneDownLoad");
                             mService.getModel().getEventDataObservable().pushEvent(
-                                new EventData(R.string.id_spv_notifications, R.string.id_download_finished,
-                                              new String[] {}, new Date(), null));
+                                new EventData(R.string.id_spv_notifications, R.string.id_download_finished));
                             mNotifyManager.cancel(mNotificationId);
                         }
                     });

@@ -1,23 +1,24 @@
 package com.greenaddress.greenapi.data;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
 
 public class EventData implements Serializable {
     private int title;
-    private int descriptionFormat;
-    private String[] descriptionArgs;
-    private Date date;
+    private int description;
     private Object value;
 
-    public EventData(final int title, final int descriptionFormat, final String[] descriptionArgs, final Date date,
-                     final Object value) {
+    public EventData(int title, int description) {
+        init(title, description, null);
+    }
+
+    public EventData(final int title, final int description, final Object value) {
+        init(title, description, value);
+    }
+
+    private void init(int title, int descriptionFormat, Object value) {
         this.title = title;
-        this.descriptionFormat = descriptionFormat;
-        this.descriptionArgs = descriptionArgs;
-        this.date = date;
+        this.description = descriptionFormat;
         this.value = value;
     }
 
@@ -29,28 +30,12 @@ public class EventData implements Serializable {
         this.title = title;
     }
 
-    public int getDescriptionFormat() {
-        return descriptionFormat;
+    public int getDescription() {
+        return description;
     }
 
-    public void setDescriptionFormat(final int descriptionFormat) {
-        this.descriptionFormat = descriptionFormat;
-    }
-
-    public String[] getDescriptionArgs() {
-        return descriptionArgs;
-    }
-
-    public void setDescriptionArgs(final String[] descriptionArgs) {
-        this.descriptionArgs = descriptionArgs;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(final Date date) {
-        this.date = date;
+    public void setDescription(final int description) {
+        this.description = description;
     }
 
     public Object getValue() {
@@ -62,30 +47,18 @@ public class EventData implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "EventData{" +
-               "title=" + title +
-               ", descriptionFormat=" + descriptionFormat +
-               ", descriptionArgs=" + Arrays.toString(descriptionArgs) +
-               ", date=" + date +
-               '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EventData eventData = (EventData) o;
         return title == eventData.title &&
-               descriptionFormat == eventData.descriptionFormat &&
-               Arrays.equals(descriptionArgs, eventData.descriptionArgs);
+                description == eventData.description &&
+                Objects.equals(value, eventData.value);
     }
 
     @Override
     public int hashCode() {
 
-        int result = Objects.hash(title, descriptionFormat);
-        result = 31 * result + Arrays.hashCode(descriptionArgs);
-        return result;
+        return Objects.hash(title, description, value);
     }
 }

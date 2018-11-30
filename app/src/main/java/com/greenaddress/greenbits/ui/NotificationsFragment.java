@@ -50,8 +50,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         for (final EventData e: events) {
             final Preference preference = new Preference(mContextThemeWrapper);
             preference.setTitle(e.getTitle());
-            final String description =
-                String.format(getResources().getString(e.getDescriptionFormat(), (Object[]) e.getDescriptionArgs()));
+            final String description = getDescription(e);
             preference.setSummary(description);
             if (e.getTitle() == R.string.id_system_message) {
                 preference.setOnPreferenceClickListener(preference1 -> {
@@ -99,6 +98,30 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         } else {
             getPreferenceScreen().removePreference(mEmptyNotifications);
         }
+    }
+
+    private String getDescription(final EventData event) {
+        final int d = event.getDescription();
+
+        if (d == R.string.id_new_s_transaction_of_s_in) {
+            TransactionData tx = (TransactionData) event.getValue();
+            final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
+                    tx.getSubaccount()).getName();
+            final String inout = tx.getType();
+            final long satoshi = tx.getSatoshi();
+            final String amount = mService.getValueString(mService.getSession().convertSatoshi(
+                    satoshi), false, true);
+            final Object[] formatArgs = {inout, amount, accountName};
+            return getString(d, formatArgs);
+        }
+        if (d == R.string.notification_format_string ||
+            d == R.string.id_warning_wallet_locked_for ||
+            d == R.string.id_days_remaining_s ||
+            d == R.string.id_s_blocks_left) {
+            return getString(d, event.getValue());
+        }
+
+        return getString(d);
     }
 
     @Override

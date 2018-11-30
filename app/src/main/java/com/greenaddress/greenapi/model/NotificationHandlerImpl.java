@@ -83,16 +83,8 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                                                                                        TransactionData.class);
                     transactionData.setSubaccount(subaccount);
                     Log.d("OBSNTF", "transactionData " + transactionData);
-                    final String accountName = mModel.getSubaccountDataObservable().getSubaccountDataWithPointer(
-                        subaccount).getName();
-                    final String inout = transactionData.getType();
-                    final long satoshi = transactionData.getSatoshi();
-                    final String amount = mService.getValueString(mService.getSession().convertSatoshi(
-                                                                      satoshi), false, true);
                     mModel.getEventDataObservable().pushEvent(new EventData(R.string.id_new_transaction,
                                                                             R.string.id_new_s_transaction_of_s_in,
-                                                                            new String[] {inout, amount, accountName},
-                                                                            new Date(),
                                                                             transactionData));
                 }
                 break;
@@ -126,8 +118,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     mModel.setTwoFAReset(true);
                     mModel.getEventDataObservable().pushEvent(new EventData(R.string.id_twofactor_authentication,
                                                                             R.string.id_days_remaining_s,
-                                                                            new String[] {daysRemaining}, new Date(),
-                                                                            null));
+                                                                            daysRemaining));
                 }
                 break;
             }
