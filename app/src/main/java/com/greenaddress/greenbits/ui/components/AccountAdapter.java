@@ -54,15 +54,11 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
         final int pointer = mSubaccountList.get(position).getPointer();
         final SubaccountData subaccount = mSubaccountList.get(position);
         final BalanceData balance = mService.getModel().getBalanceDataObservable(pointer).getBalanceData();
-        final String address = mService.getModel().getReceiveAddressObservable(pointer).getReceiveAddress();
 
         // Setup subaccount info
         holder.mAccountView.setTitle(subaccount.getName());
-        if (balance != null && mService.getModel().getSettings() != null)
+        if (balance != null && mService.getModel().getSettings() != null) {
             holder.mAccountView.setBalance(mService, balance);
-        if (address != null) {
-            holder.mAccountView.setReceiveAddress(address);
-            holder.mAccountView.setReceiveQrImageView(holder.mView.getContext(), address);
         }
         holder.mAccountView.hideActions();
         holder.mAccountView.setOnClickListener(listener);

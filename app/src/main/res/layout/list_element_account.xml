@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/green"
-                    android:textSize="18sp"/>
+                    android:textSize="20sp"/>
 
                 <TextView
                     android:id="@+id/mainBalanceText"
@@ -72,7 +72,7 @@
                     android:lines="1"
                     android:padding="4dp"
                     android:textColor="@color/secondaryTextColor"
-                    android:textSize="18sp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -92,7 +92,7 @@
                     android:textColor="@color/tertiaryTextColor"
                     android:paddingTop="2dp"
                     android:paddingEnd="4dp"
-                    android:textSize="12sp"/>
+                    android:textSize="18sp"/>
             </LinearLayout>
 
             <ImageView
