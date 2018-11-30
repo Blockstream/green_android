@@ -254,9 +254,9 @@ public class GDKSession {
             String networkName = node.asText();
             try {
                 final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
-//                if (!(isProduction && data.getDevelopment())) {
+                if (!(isProduction && data.getDevelopment())) {
                     networksMap.put(networkName, data);
-//                }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
