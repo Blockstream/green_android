@@ -124,6 +124,8 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
 
     public void detachObservers() {
         hideWaitDialog();
+        if (mBalanceDataObservable == null)
+            return;
         mBalanceDataObservable.deleteObserver(this);
         mReceiveAddressObservable.deleteObserver(this);
         mTransactionDataObservable.deleteObserver(this);
