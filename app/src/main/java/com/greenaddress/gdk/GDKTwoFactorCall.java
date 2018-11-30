@@ -52,9 +52,12 @@ public class GDKTwoFactorCall {
                 case "request_code":
                     Log.d("RSV", "request_code " + mStatus);
                     final SettableFuture<String> method = methodResolver.method(mStatus.getMethods());
-                    final String choosenMethod = method.get();
-                    Log.d("RSV", "request_code choosen method " + choosenMethod);
-                    twofactorRequestCode(choosenMethod);
+                    final String chosenMethod = method.get();
+                    Log.d("RSV", "request_code choosen method " + chosenMethod);
+                    if (chosenMethod == null) {
+                        throw new Exception("id_action_canceled");
+                    }
+                    twofactorRequestCode(chosenMethod);
                     break;
                 case "resolve_code":
                     Log.d("RSV", "resolve_code " + mStatus);
