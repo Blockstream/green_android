@@ -275,6 +275,10 @@ public class GaService extends Service  {
         mSession = GDKSession.getInstance();
         final String activeNetwork = getCurrentNetworkId();
         setCurrentNetworkId(activeNetwork);
+        if (mNetwork == null) {
+            // Handle a previously registered network being deleted
+            setCurrentNetworkId("mainnet");
+        }
         mConnectionManager = new ConnectionManager(mSession, mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getTorEnabled());
         mExecutor.execute(() -> mConnectionManager.connect());
 
