@@ -50,9 +50,6 @@ public class AddressDialog extends AppCompatDialogFragment implements Observer {
     final Integer[] mChoices =  { R.string.id_generate_new_address, R.string.id_copy_to_clipboard,
                                   R.string.id_share, R.string.id_sweep_from_paper_wallet  };
 
-    final Integer[] mChoicesWatchOnly =  { R.string.id_generate_new_address,
-                                           R.string.id_copy_to_clipboard, R.string.id_share };
-
     final static SparseArray<Integer> mIcons = new SparseArray<>();
     static {
         mIcons.put(R.string.id_generate_new_address, R.drawable.qr_generate);
@@ -111,7 +108,7 @@ public class AddressDialog extends AppCompatDialogFragment implements Observer {
         // Setup listview of actions
 
         final List<Integer> ids = new ArrayList<>();
-        for (final int resource : isWatchOnly() ? mChoicesWatchOnly : mChoices) {
+        for (final int resource : mChoices) {
             ids.add(resource);
         }
         final ChoiceAdapter choiceAdapter = new ChoiceAdapter(getGaActivity(), ids);
