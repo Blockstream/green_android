@@ -36,6 +36,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         for (Object element : mTemp) {
             process(element);
         }
+        mTemp.clear();
     }
 
     @Override
