@@ -35,7 +35,6 @@ public abstract class LoginActivity extends GaActivity implements Observer {
 
     private synchronized void checkState() {
         final ConnectionManager cm = mService.getConnectionManager();
-        cm.deleteObserver(this);
         try {
             if (cm.isDisconnectedOrLess()) {
                 cm.connect();
@@ -52,14 +51,16 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         } catch (final Exception e) {
             e.printStackTrace();
         }
-        cm.addObserver(this);
     }
 
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
         if (mService != null) {
+            final ConnectionManager cm = mService.getConnectionManager();
+            cm.deleteObserver(this);
             checkState();
+            cm.addObserver(this);
         }
     }
 
@@ -82,7 +83,6 @@ public abstract class LoginActivity extends GaActivity implements Observer {
             checkState();
         }
     }
-
 
     protected boolean checkPinExist() {
         if (mService.hasPin()) {
