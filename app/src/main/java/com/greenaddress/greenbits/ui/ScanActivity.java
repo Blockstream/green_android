@@ -428,7 +428,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 return;
             }
             if (!error.isEmpty()) {
-                UI.toast(this, R.string.id_error, Toast.LENGTH_LONG);
+                UI.toast(this, error, Toast.LENGTH_LONG);
                 finish();
                 return;
             }
@@ -449,9 +449,8 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 cameraHandler.post(fetchAndDecodeRunnable);
                 return;
             } catch (final Exception e) {
-                final String error = e.getMessage();
-                if (error != null)
-                    UI.toast(this, UI.i18n(getResources(), error), Toast.LENGTH_SHORT);
+                if (e.getMessage() != null)
+                    UI.toast(this, e.getMessage(), Toast.LENGTH_SHORT);
                 cameraHandler.post(fetchAndDecodeRunnable);
                 return;
             }

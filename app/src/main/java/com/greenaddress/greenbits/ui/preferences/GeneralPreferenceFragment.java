@@ -285,9 +285,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             mService.getModel().getSettingsObservable().setSettings(settings);
             UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
         } catch (final Exception e) {
-            final String msg = UI.i18n(getResources(), e.getMessage());
-            UI.toast(getActivity(), msg, Toast.LENGTH_LONG);
-            Log.e(TAG, msg);
+            e.printStackTrace();
+            UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
         }
     }
 

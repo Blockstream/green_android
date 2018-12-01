@@ -116,8 +116,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             intent.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
         } catch (final AddressFormatException e) {
             e.printStackTrace();
-            final String error = e.getMessage();
-            UI.toast(this, UI.i18n(getResources(), error), Toast.LENGTH_SHORT);
+            UI.toast(this, e.getMessage(), Toast.LENGTH_SHORT);
             return;
         }
         intent.putExtra("internal_qr", getIntent().getBooleanExtra("internal_qr", false));

@@ -193,11 +193,12 @@ public abstract class UI {
                 if (reenable != null)
                     reenable.setEnabled(true);
                 Log.d(TAG, "Toast: " + msg);
-                Toast t = Toast.makeText(activity, msg, len);
+                final Resources res = activity.getResources();
+                final String translated = i18n(res, msg);
+                Toast t = Toast.makeText(activity, translated, len);
                 View v = t.getView();
                 v.setBackgroundColor(0xaf000000);
-                ((TextView) v.findViewById(android.R.id.message)).setTextColor(activity.getResources().getColor(R.color.
-                                                                                                                accentLight));
+                ((TextView) v.findViewById(android.R.id.message)).setTextColor(res.getColor(R.color.accentLight));
                 t.show();
             }
         });

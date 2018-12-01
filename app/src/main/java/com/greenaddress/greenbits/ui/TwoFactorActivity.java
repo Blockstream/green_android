@@ -291,7 +291,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 setEnableDisableResult(true);
             } catch (final Exception e) {
                 e.printStackTrace();
-                UI.toast(this, UI.i18n(getResources(), e.getMessage()), Toast.LENGTH_LONG);
+                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
             }
             finishOnUiThread();
         });
@@ -329,7 +329,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 setEnableDisableResult(false);
             } catch (final Exception e) {
                 e.printStackTrace();
-                UI.toast(this, UI.i18n(getResources(),e.getMessage()), Toast.LENGTH_LONG);
+                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
             }
             finishOnUiThread();
         });
@@ -353,7 +353,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 setResult(Activity.RESULT_OK, intent);
             } catch (final Exception e) {
                 e.printStackTrace();
-                UI.toast(this, UI.i18n(getResources(),e.getMessage()), Toast.LENGTH_LONG);
+                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
             }
             finishOnUiThread();
         });
@@ -374,7 +374,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 setResult(Activity.RESULT_OK);
             } catch (final Exception e) {
                 e.printStackTrace();
-                UI.toast(this, UI.i18n(getResources(),e.getMessage()), Toast.LENGTH_LONG);
+                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
             }
             finishOnUiThread();
         });
