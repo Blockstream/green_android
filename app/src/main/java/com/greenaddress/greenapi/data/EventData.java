@@ -52,8 +52,8 @@ public class EventData implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         EventData eventData = (EventData) o;
         return title == eventData.title &&
-                description == eventData.description &&
-                Objects.equals(value, eventData.value);
+               description == eventData.description &&
+               Objects.equals(value, eventData.value);
     }
 
     @Override

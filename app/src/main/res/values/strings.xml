@@ -144,6 +144,7 @@
   <string name="id_invalid_pin_remaining_attempts">Invalid PIN. Remaining attempts: %1$d.</string>
   <string name="id_invalid_pin_you_dont_have_any">Invalid PIN, you don\'t have any attempts left. Please log in using your mnemonic.</string>
   <string name="id_invalid_pin_you_have_1d">Invalid PIN, you have %1$d attempts left</string>
+  <string name="id_invalid_private_key">Invalid private key</string>
   <string name="id_invalid_replacement_fee_rate">Invalid replacement fee rate</string>
   <string name="id_invalid_twofactor_code">Invalid Two-Factor code</string>
   <string name="id_invalid_url">Invalid URL</string>

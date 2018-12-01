@@ -63,7 +63,7 @@ public class EventDataObservable extends Observable implements Observer {
     private EventData findTx(final String hash) {
         for (final EventData e : mEventDataList) {
             if (e.getTitle() == R.string.id_new_transaction &&
-                    hash.equals( ((TransactionData)e.getValue()).getTxhash()))
+                hash.equals(((TransactionData) e.getValue()).getTxhash()))
                 return e;
         }
         return null;
