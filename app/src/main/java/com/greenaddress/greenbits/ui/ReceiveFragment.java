@@ -118,10 +118,12 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     public void onUpdateTransactions(final TransactionDataObservable observable) {
-        List<TransactionData> newTxList = observable.getTransactionDataList();
-        if (newTxList.size() != mTxList.size())
-            toast(R.string.id_a_new_transaction_has_just);
-        mTxList = newTxList;
+        final List<TransactionData> newTxList = observable.getTransactionDataList();
+        if (newTxList != null) {
+            if (newTxList.size() != mTxList.size())
+                toast(R.string.id_a_new_transaction_has_just);
+            mTxList = newTxList;
+        }
     }
 
     @Override
