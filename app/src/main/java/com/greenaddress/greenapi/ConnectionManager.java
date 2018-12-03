@@ -36,8 +36,8 @@ public class ConnectionManager extends Observable {
     private boolean mTorEnabled;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
-    private static int CONNECTION_RETRY = 3;
-    private int connectionCounter = CONNECTION_RETRY;
+    private static int CONNECTION_RETRY_ATTEMPTS = 3;
+    private int mConnectionCounter = CONNECTION_RETRY_ATTEMPTS;
 
     public ConnectionManager(final GDKSession session, final String network,
                              final String proxyHost, final String proxyPort, final boolean torEnabled) {
@@ -140,17 +140,17 @@ public class ConnectionManager extends Observable {
                 Log.d(TAG, "connecting with proxy " + proxyAsString);
                 mSession.connectWithProxy(mNetwork, proxyAsString, mTorEnabled, isDebug);
             }
-            connectionCounter = CONNECTION_RETRY;
+            mConnectionCounter = CONNECTION_RETRY_ATTEMPTS;
             setState(ConnState.CONNECTED);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.i(TAG, "cannot connect " + e.getMessage());
-            if( connectionCounter <= 0) {
-                Log.w(TAG, "Cannot connect for " + CONNECTION_RETRY + " times, going offline");
+            --mConnectionCounter;
+            if (mConnectionCounter < 0) {
+                Log.w(TAG, "Failed to connect for " + CONNECTION_RETRY_ATTEMPTS + " times, going offline");
                 setState(ConnState.OFFLINE);
             } else {
                 setState(ConnState.DISCONNECTED);
             }
-            connectionCounter--;
         }
     }
 
