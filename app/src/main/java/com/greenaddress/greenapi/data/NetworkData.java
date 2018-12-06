@@ -4,7 +4,6 @@ import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.greenaddress.greenapi.ElementsRegTestParams;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
 
@@ -52,7 +51,7 @@ public class NetworkData extends JSONData {
     }
 
     @JsonIgnore
-    public boolean isElements() { return getNetworkParameters() == ElementsRegTestParams.get(); }
+    public boolean isElements() { return false; /* FIXME: Elements support through GDK */ }
 
     @JsonIgnore
     public boolean IsNetworkMainnet() {
