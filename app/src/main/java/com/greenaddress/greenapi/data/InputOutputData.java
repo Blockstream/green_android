@@ -147,15 +147,20 @@ public class InputOutputData extends JSONData {
 
     public void setSubtype(Integer subtype) { this.subtype = subtype; }
 
+    // FIXME: Put this somewhere common
     @JsonIgnore
-    public byte[] getTxid() {
-        final byte[] buf = Wally.hex_to_bytes(txhash);
+    public static byte[] reverseBytes(final byte[] buf) {
         for (int i = 0; i < buf.length / 2; ++i) {
             byte b = buf[i];
             buf[i] = buf[buf.length - i - 1];
             buf[buf.length - i - 1] = b;
         }
         return buf;
+    }
+
+    @JsonIgnore
+    public byte[] getTxid() {
+        return reverseBytes(Wally.hex_to_bytes(txhash));
     }
 
     public String getTxhash() { return txhash; }

@@ -16,10 +16,6 @@ import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
 import com.satoshilabs.trezor.protobuf.TrezorType;
 
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionInput;
-import org.bitcoinj.core.TransactionOutput;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +31,7 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mUserXPubs = new HashMap<>();
     private final Map<String, TrezorType.HDNodeType> mServiceXPubs = new HashMap<>();
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
-    private final Map<String, Transaction> mPrevTxs = new HashMap<>();
+    private final Map<String, Object> mPrevTxs = new HashMap<>();
 
     public TrezorHWWallet(final Trezor t, final NetworkData network) {
         mTrezor = t;
@@ -87,18 +83,31 @@ public class TrezorHWWallet extends HWWallet {
                                         final Map<String, String> transactions,
                                         final List<String> addressTypes)
     {
+        try {
+            return signTransactionImpl(parent, tx, inputs, outputs, transactions, addressTypes);
+        } finally {
+            // Free all wally txs to ensure we don't leak any memory
+            for (Map.Entry<String, Object> entry : mPrevTxs.entrySet()) {
+                Wally.tx_free(entry.getValue());
+            }
+            mPrevTxs.clear();
+        }
+    }
+
+    private List<String> signTransactionImpl(final GaActivity parent, final ObjectNode tx,
+                                        final List<InputOutputData> inputs,
+                                        final List<InputOutputData> outputs,
+                                        final Map<String, String> transactions,
+                                        final List<String> addressTypes)
+    {
         final String[] signatures = new String[inputs.size()];
 
         final int txVersion = tx.get("transaction_version").asInt();
         final int txLocktime = tx.get("transaction_locktime").asInt();
 
-        // FIXME: Move to use wally_tx instead of bitcoinj Transaction
-        mPrevTxs.clear();
         if (transactions != null) {
-            for (Map.Entry<String, String> t : transactions.entrySet()) {
-                final byte[] txdata = Wally.hex_to_bytes(t.getValue());
-                mPrevTxs.put(t.getKey(), new Transaction(mNetwork.getNetworkParameters(), txdata));
-            }
+            for (Map.Entry<String, String> t : transactions.entrySet())
+                mPrevTxs.put(t.getKey(), Wally.tx_from_hex(t.getValue(), Wally.WALLY_TX_FLAG_USE_WITNESS));
         }
 
         // Fetch and cache all required pubkeys before signing
@@ -142,11 +151,11 @@ public class TrezorHWWallet extends HWWallet {
                     continue;
                 } else if (r.getRequestType().equals(TrezorType.RequestType.TXMETA)) {
                     if (txRequest.hasTxHash()) {
-                        final Transaction prevTx = findPrevTx(txRequest);
-                        m = txio(ack.setInputsCnt(prevTx.getInputs().size())
-                                 .setOutputsCnt(prevTx.getOutputs().size())
-                                 .setVersion((int) prevTx.getVersion())
-                                 .setLockTime((int) prevTx.getLockTime()));
+                        final Object prevTx = findPrevTx(txRequest);
+                        m = txio(ack.setInputsCnt(Wally.tx_get_num_inputs(prevTx))
+                                 .setOutputsCnt(Wally.tx_get_num_outputs(prevTx))
+                                 .setVersion(Wally.tx_get_version(prevTx))
+                                 .setLockTime(Wally.tx_get_locktime(prevTx)));
                     } else {
                         m = txio(ack.setInputsCnt(inputs.size())
                                  .setOutputsCnt(outputs.size())
@@ -166,7 +175,8 @@ public class TrezorHWWallet extends HWWallet {
     private Message txio(final TrezorType.TransactionType.Builder ack) {
         return mTrezor.io(TrezorMessage.TxAck.newBuilder().setTx(ack));
     }
-    private Transaction findPrevTx(final TrezorType.TxRequestDetailsType txRequest) {
+
+    private Object findPrevTx(final TrezorType.TxRequestDetailsType txRequest) {
         final String key = Wally.hex_from_bytes(txRequest.getTxHash().toByteArray());
         return mPrevTxs.get(key);
     }
@@ -243,11 +253,10 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     private TrezorType.TxOutputBinType.Builder createBinOutput(final TrezorType.TxRequestDetailsType txRequest) {
-        final Transaction tx = findPrevTx(txRequest);
-        final TransactionOutput out = tx.getOutput(txRequest.getRequestIndex());
+        final Object prevTx = findPrevTx(txRequest);
         return TrezorType.TxOutputBinType.newBuilder()
-               .setAmount(out.getValue().longValue())
-               .setScriptPubkey(ByteString.copyFrom(out.getScriptBytes()));
+               .setAmount(Wally.tx_get_output_satoshi(prevTx, txRequest.getRequestIndex()))
+               .setScriptPubkey(ByteString.copyFrom(Wally.tx_get_output_script(prevTx, txRequest.getRequestIndex())));
     }
 
     private TrezorType.TxInputType.Builder createInput(final GaActivity parent,
@@ -257,13 +266,13 @@ public class TrezorHWWallet extends HWWallet {
 
         final boolean isPrevTx = txRequest.hasTxHash();
         if (isPrevTx) {
-            final Transaction tx = findPrevTx(txRequest);
-            final TransactionInput in = tx.getInput(index);
+            final Object prevTx = findPrevTx(txRequest);
+            final byte[] txhash = InputOutputData.reverseBytes(Wally.tx_get_input_txhash(prevTx, index));
             return TrezorType.TxInputType.newBuilder()
-                   .setPrevHash(ByteString.copyFrom(in.getOutpoint().getHash().getBytes()))
-                   .setPrevIndex((int) in.getOutpoint().getIndex())
-                   .setSequence((int) in.getSequenceNumber())
-                   .setScriptSig(ByteString.copyFrom(in.getScriptBytes()));
+                   .setPrevHash(ByteString.copyFrom(txhash))
+                   .setPrevIndex(Wally.tx_get_input_index(prevTx, index))
+                   .setSequence((int) Wally.tx_get_input_sequence(prevTx, index))
+                   .setScriptSig(ByteString.copyFrom(Wally.tx_get_input_script(prevTx, index)));
         }
 
         final InputOutputData in = inputs.get(index);
