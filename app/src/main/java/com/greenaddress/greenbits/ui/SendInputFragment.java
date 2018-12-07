@@ -49,9 +49,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private static final int mButtonIds[] =
     { R.id.feeLowButton, R.id.feeMediumButton, R.id.feeHighButton, R.id.feeCustomButton };
-    private static final int mBlockTargets[] = { 12, 6, 2, 0 };
+    private static final int mBlockTargets[] = { 12, 6, 3, 0 };
     private static final int mBlockTimes[] =
-    { R.string.id_2_hours, R.string.id_1_hour, R.string.id_1020_minutes, R.string.id_unknown_custom };
+    { R.string.id_4_hours, R.string.id_2_hours, R.string.id_1030_minutes, R.string.id_unknown_custom };
     private Button[] mFeeButtons = new Button[4];
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;

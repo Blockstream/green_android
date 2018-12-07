@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="id_1020_minutes">~ 10-20 Minutes</string>
-  <string name="id_1_hour">~ 1 Hour</string>
+  <string name="id_1030_minutes">~ 10-30 Minutes</string>
   <string name="id_1d_2s_ago">%1$d %2$s ago</string>
   <string name="id_1d_minutes">%1$d minutes</string>
   <string name="id_1s_blocks_left_2d">%1$s blocks left %2$d</string>
   <string name="id_1s_twofactor_set_up">%1$s Two-Factor set up</string>
   <string name="id_2_hours">~ 2 Hours</string>
+  <string name="id_4_hours">~ 4 Hours</string>
   <string name="id_5_seconds_minimum">5 seconds minimum</string>
   <string name="id_a_new_transaction_has_just">A new transaction has just arrived in your wallet.</string>
   <string name="id_accept">ACCEPT</string>
@@ -43,8 +43,8 @@
   <string name="id_completed">Completed</string>
   <string name="id_confirmation">Confirmation</string>
   <string name="id_confirmation_in_12_blocks_2">Confirmation in 12 blocks, 2 hours on average</string>
+  <string name="id_confirmation_in_24_blocks_4">Confirmation in 24 blocks, 4 hours on average</string>
   <string name="id_confirmation_in_3_blocks_30">Confirmation in 3 blocks, 30 minutes on average</string>
-  <string name="id_confirmation_in_6_blocks_1_hour">Confirmation in 6 blocks, 1 hour on average</string>
   <string name="id_congratulations">Congratulations!</string>
   <string name="id_connecting_to_tor_onion_nodes">Connecting to Tor (.onion) nodes allows maximum privacy and security. Press "OK" to continue.</string>
   <string name="id_continue">Continue</string>
