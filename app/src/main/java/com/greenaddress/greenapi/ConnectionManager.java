@@ -104,7 +104,7 @@ public class ConnectionManager extends Observable {
     }
 
     public boolean isWatchOnly() {
-        return mWatchOnlyUsername!=null;
+        return mWatchOnlyUsername != null;
     }
 
     public boolean isHW() {
@@ -184,9 +184,11 @@ public class ConnectionManager extends Observable {
             final Activity parent = null; // FIXME: Pass this in/split this call up
             if (!TextUtils.isEmpty(mnenonic) && mnemonicPassword != null) {
                 Log.d(TAG, "logging with mnemonic");
+                mWatchOnlyUsername = null;
                 mSession.login(parent, null, mnenonic, mnemonicPassword).resolve(null, null);
             } else if (!TextUtils.isEmpty(pin) && pinData != null) {
                 Log.d(TAG, "logging with pin");
+                mWatchOnlyUsername = null;
                 mSession.loginWithPin(pin, pinData);
             } else if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
                 Log.d(TAG, "logging watch only");
