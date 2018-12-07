@@ -11,11 +11,9 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -347,17 +345,6 @@ public abstract class UI {
         dialog.show();
     }
 
-    private static int getUnitSymbol(final GaService service) {
-        final String unit = service.getBitcoinUnit();
-        if (MonetaryFormat.CODE_BTC.equals(unit))
-            return R.string.fa_btc_space;
-        if (MonetaryFormat.CODE_MBTC.equals(unit))
-            return R.string.fa_mbtc_space;
-        if (MICRO_BTC.equals(unit))
-            return R.string.fa_ubtc_space;
-        return R.string.fa_bits_space;
-    }
-
     private static MonetaryFormat getUnitFormat(final GaService service) {
         final String unit = service.getBitcoinUnit();
         if (MonetaryFormat.CODE_BTC.equals(unit))
@@ -377,69 +364,6 @@ public abstract class UI {
 
     public static Coin parseCoinValue(final GaService service, final String value) {
         return getUnitFormat(service).parse(value);
-    }
-
-    public static String setCoinText(final GaService service, final FontAwesomeTextView symbol,
-                                     final TextView amount, final Coin value) {
-        if (symbol != null) {
-            symbol.setAwesomeTypeface();
-            if (service.isElements())
-                symbol.setText(/*service.getAssetSymbol()*/ ""); //TODO gdk
-            else
-                symbol.setText(getUnitSymbol(service));
-        }
-        if (value == null)
-            return null;
-        final String formatted = formatCoinValue(service, value);
-        if (amount != null)
-            amount.setText(formatted);
-        return formatted;
-    }
-
-    public static String setCoinText(final GaService service, final View v,
-                                     final int symbolId, final int amountId,
-                                     final Coin value) {
-        return setCoinText(service, find(v, symbolId),
-                           find(v, amountId), value);
-    }
-
-    public static String setCoinText(final GaActivity activity,
-                                     final int symbolId, final int amountId,
-                                     final Coin value) {
-        return setCoinText(activity.mService, find(activity, symbolId),
-                           find(activity, amountId), value);
-    }
-
-    public static void setAmountText(final TextView v, final String value) {
-        try {
-            v.setText(mDecimalFmt.format(Double.valueOf(value)));
-        } catch (final NumberFormatException e) {
-            v.setText(value);
-        }
-    }
-
-    public static void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
-        final String symbol;
-        switch (currency) {
-        case "AUD": symbol = "&#xf155; "; break;
-        case "BRL": symbol = "R&#xf155; "; break;
-        case "CAD": symbol = "&#xf155; "; break;
-        case "CNY": symbol = "&#xf157; "; break;
-        case "EUR": symbol = "&#xf153; "; break;
-        case "GBP": symbol = "&#xf154; "; break;
-        case "ILS": symbol = "&#xf20b; "; break;
-        case "NZD": symbol = "&#xf155; "; break;
-        case "RUB": symbol = "&#xf158; "; break;
-        case "USD": symbol = "&#xf155; "; break;
-        default:
-            fiatIcon.setText(currency);
-            fiatIcon.setDefaultTypeface();
-            fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            return;
-        }
-        fiatIcon.setText(Html.fromHtml(symbol));
-        fiatIcon.setAwesomeTypeface();
-        fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
     }
 
     private static final int SCALE = 4;

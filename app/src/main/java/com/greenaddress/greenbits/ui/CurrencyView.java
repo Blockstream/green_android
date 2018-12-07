@@ -2,10 +2,8 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -120,7 +118,6 @@ public class CurrencyView extends RelativeLayout implements View.OnClickListener
         mUnitButton.setText(mService.getFiatCurrency());
         mUnitButton.setPressed(false);
         mUnitButton.setSelected(false);
-        //changeFiatIcon(mUnitView, mService.getFiatCurrency());
         if (mFiatValue != null)
             mAmountEdit.setText(mFiatValue.toPlainString());
         if (mCoinValue != null)
@@ -133,7 +130,6 @@ public class CurrencyView extends RelativeLayout implements View.OnClickListener
         mUnitButton.setText(mService.getBitcoinUnit());
         mUnitButton.setPressed(true);
         mUnitButton.setSelected(true);
-        //UI.setCoinText(mService, mUnitView, null, null);
         if (mCoinValue != null)
             mAmountEdit.setText(UI.formatCoinValue(mService, mCoinValue));
         if (mFiatValue != null)
@@ -161,30 +157,6 @@ public class CurrencyView extends RelativeLayout implements View.OnClickListener
 
     Boolean isPausing() {
         return mIsPausing;
-    }
-
-    public static void changeFiatIcon(final FontAwesomeTextView fiatIcon, final String currency) {
-        final String symbol;
-        switch (currency) {
-        case "AUD": symbol = "&#xf155; "; break;
-        case "BRL": symbol = "R&#xf155; "; break;
-        case "CAD": symbol = "&#xf155; "; break;
-        case "CNY": symbol = "&#xf157; "; break;
-        case "EUR": symbol = "&#xf153; "; break;
-        case "GBP": symbol = "&#xf154; "; break;
-        case "ILS": symbol = "&#xf20b; "; break;
-        case "NZD": symbol = "&#xf155; "; break;
-        case "RUB": symbol = "&#xf158; "; break;
-        case "USD": symbol = "&#xf155; "; break;
-        default:
-            fiatIcon.setText(currency);
-            fiatIcon.setDefaultTypeface();
-            fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            return;
-        }
-        fiatIcon.setText(Html.fromHtml(symbol));
-        fiatIcon.setAwesomeTypeface();
-        fiatIcon.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
     }
 
     void convert() {
