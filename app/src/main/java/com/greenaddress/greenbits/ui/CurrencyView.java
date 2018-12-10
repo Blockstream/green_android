@@ -218,10 +218,16 @@ public class CurrencyView extends RelativeLayout implements View.OnClickListener
         mFiatValue = null;
         mCoinValue = null;
     }
+
     private void finishConversion() {
         mConverting = false;
-        if (mOnConversionFinishListener != null)
-            mOnConversionFinishListener.conversionFinish();
+        if (mOnConversionFinishListener != null) {
+            try {
+                mOnConversionFinishListener.conversionFinish();
+            } catch (final Exception e) {
+                onError();
+            }
+        }
     }
 
     @Override
