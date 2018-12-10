@@ -1,20 +1,23 @@
 package com.greenaddress.greenbits.ui;
 
 
-import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.greenaddress.greenapi.ConfidentialAddress;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -41,14 +44,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     CurrencyView.OnConversionFinishListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
-    private QrBitmap mQrCodeBitmap;
-    private Dialog mQrCodeDialog;
     private TagDispatcher mTagDispatcher;
     private TextView mAddressText;
     private ImageView mAddressImage;
-    private final Runnable mDialogCB = new Runnable() {
-        public void run() { mQrCodeDialog = null; }
-    };
     private CurrencyView mCurrency;
 
     private String mCurrentAddress = "";
@@ -74,7 +72,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (mCurrency != null)
             mCurrency.setIsPausing(true);
         Log.d(TAG, "onPause -> " + TAG);
-        mQrCodeDialog = UI.dismiss(getActivity(), mQrCodeDialog);
         if (mTagDispatcher != null)
             mTagDispatcher.disableExclusiveNfc();
     }
@@ -104,12 +101,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             mCurrency.setIsPausing(pausing);
         }
 
-        UI.find(mView, R.id.shareButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onShareClicked();
-            }
-        });
+        UI.find(mView, R.id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
+        UI.find(mView, R.id.copyAddressButton).setOnClickListener((final View v) -> { onCopyClicked(); });
+        UI.find(mView, R.id.generateAddressButton).setOnClickListener((final View v) -> { onNewAddressClicked(); });
 
         final int subaccount = getGAService().getSession().getCurrentSubaccount();
         mTxList = getGAService().getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
@@ -143,14 +137,9 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onUpdateReceiveAddress(final ReceiveAddressObservable observable) {
         if (isZombie())
             return;
-        getGaActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mCurrentAddress = observable.getReceiveAddress();
-                mCurrentAmount = mCurrency.getCoin();
-                mAddressText.setText(mCurrentAddress);
-                conversionFinish();
-            }
+        getGaActivity().runOnUiThread(() -> {
+            mCurrentAddress = observable.getReceiveAddress();
+            conversionFinish();
         });
     }
 
@@ -164,6 +153,10 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         mCurrentAmount = mCurrency.getCoin();
         mBitmapWorkerTask = new BitmapWorkerTask();
         mBitmapWorkerTask.execute();
+        if (mCurrentAmount == null || mCurrentAmount.value == 0)
+            mAddressText.setText(mCurrentAddress);
+        else
+            mAddressText.setText(getAddressUri());
     }
 
     class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
@@ -202,17 +195,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
             bitmapDrawable.setFilterBitmap(false);
             mAddressImage.setImageDrawable(bitmapDrawable);
-            mAddressImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    // Show address fragment
-                    final Bundle bundle = new Bundle();
-                    bundle.putLong("amount", amount != null ? amount.getValue() : 0);
-                    final DialogFragment addressDialog = new AddressDialog();
-                    addressDialog.setArguments(bundle);
-                    addressDialog.show(getFragmentManager(), "addressDialog");
-                }
-            });
+            mAddressImage.setOnClickListener((final View v) -> { onNewAddressClicked(); });
         }
     }
 
@@ -239,7 +222,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
     @Override
     public void onShareClicked() {
-        if (mCurrentAddress == null)
+        if (TextUtils.isEmpty(mCurrentAddress))
             return;
 
         final Intent intent = new Intent();
@@ -247,6 +230,20 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         intent.putExtra(Intent.EXTRA_TEXT, getAddressUri());
         intent.setType("text/plain");
         startActivity(intent);
+    }
+
+    public void onCopyClicked() {
+        if (TextUtils.isEmpty(mCurrentAddress))
+            return;
+
+        final ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setPrimaryClip(ClipData.newPlainText("address", UI.getText(mAddressText)));
+        UI.toast(getGaActivity(), R.string.id_address_copied_to_clipboard, Toast.LENGTH_LONG);
+    }
+
+    public void onNewAddressClicked() {
+        final int subaccount = getGAService().getSession().getCurrentSubaccount();
+        getGAService().getModel().getReceiveAddressObservable(subaccount).refresh();
     }
 
     @Override
@@ -263,5 +260,4 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (mCurrency != null)
             outState.putBoolean("pausing", mCurrency.isPausing());
     }
-
 }

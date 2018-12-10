@@ -244,11 +244,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         } else if (view.getId() == R.id.sendButton) {
             final Intent intent = new Intent(getActivity(), ScanActivity.class);
             getActivity().startActivity(intent);
-        } else {
-            if (getGAService() != null && !getGAService().getModel().isTwoFAReset()) {
-                final DialogFragment addressDialog = new AddressDialog();
-                addressDialog.show(getFragmentManager(), "addressDialog");
-            }
         }
     }
 

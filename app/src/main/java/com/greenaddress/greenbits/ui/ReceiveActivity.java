@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.WindowManager;
 
 public class ReceiveActivity extends LoggedActivity {
 
