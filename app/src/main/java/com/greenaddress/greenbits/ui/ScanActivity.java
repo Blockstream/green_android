@@ -138,11 +138,11 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
 
         final View addressLayout = UI.find(this, R.id.addressLayout);
         final View buttonLayout = UI.find(this, R.id.buttonLayout);
-        if ("sweep".equals(mAction)) {
-            setTitle(R.string.id_sweep_from_paper_wallet);
-            addressLayout.setVisibility(View.GONE);
-            buttonLayout.setVisibility(View.GONE);
-        }
+//        if ("sweep".equals(mAction)) {
+//            setTitle(R.string.id_sweep_from_paper_wallet);
+//            addressLayout.setVisibility(View.GONE);
+//            buttonLayout.setVisibility(View.GONE);
+//        }
     }
 
     @Override
@@ -407,34 +407,24 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         final Intent result = new Intent(this, SendActivity.class);
         result.putExtra("internal_qr", true);
 
-        if ("sweep".equals(mAction)) {
-            final Long feeRate = service.getFeeEstimates().get(0);
-            final Integer currentSubaccount = service.getSession().getCurrentSubaccount();
-            final String receiveAddress =
-                service.getModel().getReceiveAddressObservable(currentSubaccount).getReceiveAddress();
-            final BalanceData balanceData=new BalanceData();
-            balanceData.setAddress(receiveAddress);
-            final List<BalanceData> balanceDataList = new ArrayList<>();
-            balanceDataList.add(balanceData);
-            SweepData sweepData=new SweepData();
-            sweepData.setFeeRate(feeRate);
-            sweepData.setPrivateKey(scanned);
-            sweepData.setAddressees(balanceDataList);
-            final ObjectNode transactionRaw = service.getSession().createTransactionRaw(sweepData);
-            final String error = transactionRaw.get("error").asText();
-            if ("id_no_utxos_found".equals(error)) {
-                UI.toast(this, R.string.id_no_utxos_found, Toast.LENGTH_LONG);
-                finish();
-                return;
-            }
-            if (!error.isEmpty()) {
-                UI.toast(this, error, Toast.LENGTH_LONG);
-                finish();
-                return;
-            }
+        // See if the address is a private key, and if so, sweep it
+        final Long feeRate = service.getFeeEstimates().get(0);
+        final Integer subaccount = service.getSession().getCurrentSubaccount();
+        final String receiveAddress = service.getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
+        final BalanceData balanceData = new BalanceData();
+        balanceData.setAddress(receiveAddress);
+        final List<BalanceData> balanceDataList = new ArrayList<>();
+        balanceDataList.add(balanceData);
+        SweepData sweepData = new SweepData();
+        sweepData.setPrivateKey(scanned);
+        sweepData.setFeeRate(feeRate);
+        sweepData.setAddressees(balanceDataList);
+        final ObjectNode transactionRaw = service.getSession().createTransactionRaw(sweepData);
+        final String error = transactionRaw.get("error").asText();
+        if (error.isEmpty()) {
             result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
-        } else {
-            // Parse bitcoin uri / address
+        } else if ("id_invalid_private_key".equals(error)) {
+            // Not a private key, try as a send
             final String text;
             if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
                 text = String.format("bitcoin:%s", scanned);
@@ -454,6 +444,10 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 cameraHandler.post(fetchAndDecodeRunnable);
                 return;
             }
+        } else {
+            UI.toast(this, error, Toast.LENGTH_LONG);
+            finish();
+            return;
         }
 
         // Open send activity
