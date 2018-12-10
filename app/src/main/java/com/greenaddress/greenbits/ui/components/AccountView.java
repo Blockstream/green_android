@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +27,11 @@ import com.greenaddress.greenbits.ui.UI;
 public class AccountView extends CardView {
 
     private View mView;
-    private ImageView mReceiveQrImageView;
     private Button mSendButton, mReceiveButton;
+    private AppCompatImageButton mBackButton;
     private RelativeLayout mBodyLayout;
     private LinearLayout mActionLayout, mActionReceiveLayout, mActionSendLayout, mActionDividerLayout;
-    private TextView mReceiveAddressText, mTitleText, mBalanceText, mBalanceFiatText;
-    private FontAwesomeTextView mBalanceUnit;
+    private TextView mTitleText, mBalanceText, mBalanceFiatText;
 
     public AccountView(final Context context) {
         super(context);
@@ -67,15 +68,13 @@ public class AccountView extends CardView {
         mReceiveButton = UI.find(view, R.id.receiveButton);
         mBodyLayout = UI.find(view, R.id.body);
         mActionLayout = UI.find(view, R.id.actionLayout);
-        mReceiveAddressText = UI.find(view, R.id.receiveAddressText);
         mTitleText = UI.find(view, R.id.name);
         mBalanceText = UI.find(view, R.id.mainBalanceText);
-        mReceiveQrImageView = UI.find(view, R.id.receiveQrImageView);
-        mBalanceUnit = UI.find(view, R.id.mainBalanceUnit);
         mBalanceFiatText = UI.find(view, R.id.mainLocalBalanceText);
         mActionReceiveLayout = UI.find(view, R.id.actionReceiveLayout);
         mActionSendLayout = UI.find(view, R.id.actionSendLayout);
         mActionDividerLayout = UI.find(view, R.id.actionDividerLayout);
+        mBackButton = UI.find(view, R.id.backButton);
     }
 
     // Show actions
@@ -97,20 +96,16 @@ public class AccountView extends CardView {
         mActionLayout.setVisibility(VISIBLE);
     }
 
-
-    // Get/Set properties
-    public void setReceiveAddress(final String address) {
-        mReceiveAddressText.setText(address);
+    public void showBack(boolean show) {
+        mBackButton.setVisibility(show ? VISIBLE : GONE);
     }
 
-    public String getReceiveAddress() {
-        if (mReceiveAddressText == null)
-            return null;
-        return mReceiveAddressText.getText().toString();
-    }
 
     public void setTitle(final String text) {
-        mTitleText.setText(text);
+        if (TextUtils.isEmpty(text))
+            mTitleText.setText(R.string.id_main);
+        else
+            mTitleText.setText(text);
     }
 
     public void setBalance(final GaService service, final BalanceData balance) {
@@ -127,25 +122,6 @@ public class AccountView extends CardView {
            }*/
     }
 
-    public void setReceiveQrImageView(final Context context, final String address) {
-        mReceiveQrImageView.setVisibility(VISIBLE);
-        mReceiveQrImageView.setImageDrawable(UI.getQrBitmapDrawable(context, address));
-    }
-
-    public void setReceiveQrImageView(final Bitmap qrImageView) {
-        mReceiveQrImageView.setVisibility(VISIBLE);
-        mReceiveQrImageView.setImageBitmap(qrImageView);
-    }
-
-    public void setReceiveQrImageView(final BitmapDrawable qrDrawable) {
-        mReceiveQrImageView.setVisibility(VISIBLE);
-        mReceiveQrImageView.setImageDrawable(qrDrawable);
-    }
-
-    public BitmapDrawable getQrBitmapDrawable(final Context context) {
-        return UI.getQrBitmapDrawable(context, mReceiveAddressText.getText().toString());
-    }
-
     // Set on click listener
     @Override
     public void setOnClickListener(final OnClickListener onClickListener) {
@@ -153,6 +129,7 @@ public class AccountView extends CardView {
         mReceiveButton.setOnClickListener(onClickListener);
         mBodyLayout.setOnClickListener(onClickListener);
         mBalanceText.setOnClickListener(onClickListener);
+        mBackButton.setOnClickListener(onClickListener);
     }
 
 }

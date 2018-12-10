@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,10 +37,7 @@ import java.util.Observer;
 
 public class MainFragment extends SubaccountFragment implements View.OnClickListener, OnGdkListener {
     private static final String TAG = MainFragment.class.getSimpleName();
-
-    private AppBarLayout mAppbar;
     private AccountView mAccountView;
-
     private final List<TransactionItem> mTxItems = new ArrayList<>();
     private Map<Sha256Hash, List<Sha256Hash>> replacedTxs;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -57,7 +55,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         popupWaitDialog(R.string.id_loading_transactions);
 
         mView = inflater.inflate(R.layout.fragment_main, container, false);
-        mAppbar = UI.find(mView, R.id.appbar);
 
         // Setup recycler & adapter
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
@@ -83,6 +80,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
         // Setup account card view
         mAccountView = UI.find(mView, R.id.accountView);
+        mAccountView.showBack(true);
         mAccountView.setOnClickListener(this);
         if (service.getModel().isTwoFAReset())
             mAccountView.hideActions();
@@ -244,6 +242,10 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         } else if (view.getId() == R.id.sendButton) {
             final Intent intent = new Intent(getActivity(), ScanActivity.class);
             getActivity().startActivity(intent);
+        } else if (view.getId() == R.id.backButton) {
+            final TabbedMainActivity activity = (TabbedMainActivity) getActivity();
+            activity.showSubaccountList(true);
+            activity.getPagerAdapter().notifyDataSetChanged();
         }
     }
 
@@ -254,11 +256,10 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         if (isZombie() || balanceData == null)
             return;
 
-        final GaService service = getGAService();
-        final int subaccount = service.getSession().getCurrentSubaccount();
-        final SubaccountData subaccountData = service.getSubaccountData(subaccount);
-
         getGaActivity().runOnUiThread(() -> {
+            final GaService service = getGAService();
+            final int subaccount = service.getSession().getCurrentSubaccount();
+            final SubaccountData subaccountData = service.getSubaccountData(subaccount);
             mAccountView.setTitle(subaccountData.getName());
             mAccountView.setBalance(service, balanceData);
             if (service.isElements()) {
@@ -275,10 +276,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         if (isZombie() || currentAddress == null)
             return;
 
-        getGaActivity().runOnUiThread(() -> {
-            mAccountView.setReceiveAddress(currentAddress);
-            mAccountView.setReceiveQrImageView(getContext(), currentAddress);
-        });
     }
 
     @Override

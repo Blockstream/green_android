@@ -81,15 +81,6 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
         });
     }
 
-    private void onUpdateReceiveAddress(final ReceiveAddressObservable observable) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mAccountsView.getAdapter().notifyDataSetChanged();
-            }
-        });
-    }
-
     @Override
     public void update(final Observable observable, final Object o) {
         Log.d(TAG, "update " + observable);
@@ -101,9 +92,6 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
         } else if (observable instanceof BalanceDataObservable) {
             Log.d(TAG,"Update balance " + ((BalanceDataObservable) observable).getSubaccount());
             onUpdateBalance((BalanceDataObservable) observable);
-        } else if (observable instanceof ReceiveAddressObservable) {
-            Log.d(TAG,"Update receive address" + ((ReceiveAddressObservable) observable).getSubaccount());
-            onUpdateReceiveAddress((ReceiveAddressObservable) observable);
         }
     }
 
@@ -129,7 +117,6 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
         onUpdateSubaccounts(subaccountObservable);
         for (final SubaccountData s : subaccountObservable.getSubaccountDataList()) {
             mModel.getBalanceDataObservable(s.getPointer()).addObserver(this);
-            mModel.getReceiveAddressObservable(s.getPointer()).addObserver(this);
         }
     }
 
@@ -140,20 +127,16 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
             final Observable obsBalance = mModel.getBalanceDataObservable(s.getPointer());
             if (obsBalance != null)
                 obsBalance.deleteObserver(this);
-            final Observable obsReceive = mModel.getReceiveAddressObservable(s.getPointer());
-            if (obsReceive != null)
-                obsReceive.deleteObserver(this);
         }
     }
 
     @Override
     public void onAccountSelected(final int subaccount) {
         getGAService().getSession().setCurrentSubaccount(subaccount);
+        getGAService().getModel().getActiveAccountObservable().setActiveAccount(subaccount);
     }
 
     class OverlapDecoration extends RecyclerView.ItemDecoration {
-
-        private final static int vertOverlap = -160;
 
         @Override
         public void getItemOffsets (final Rect outRect, final View view, final RecyclerView parent,
@@ -161,7 +144,8 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
             final int itemPosition = parent.getChildAdapterPosition(view);
             if (itemPosition == 0)
                 return;
-            final int dip = (int) convertDpToPixel(vertOverlap, getContext());
+            final double vertOverlap = 40.0 - convertPixelsToDp(getResources().getDimension(R.dimen.card_size), getContext());
+            final int dip = (int) convertDpToPixel((float) vertOverlap, getContext());
             outRect.set(0, dip, 0, 0);
         }
         public float convertPixelsToDp(final float px, final Context context){

@@ -12,6 +12,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -46,8 +47,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     BottomNavigationView.OnNavigationItemSelectedListener  {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
-
-
+    private boolean mShowSubbaccountList = false;
     private static final int REQUEST_ENABLE_2FA = 0;
 
     public static final int
@@ -307,21 +307,26 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     }
 
     public void onUpdateActiveAccount() {
-        final Intent intent = new Intent(this, MainActivity.class);
-        startActivityForResult(intent, REQUEST_TX_DETAILS);
+        showSubaccountList(false);
+        getPagerAdapter().notifyDataSetChanged();
     }
 
-    SectionsPagerAdapter getPagerAdapter() {
+    public SectionsPagerAdapter getPagerAdapter() {
         if (mViewPager == null)
             return null;
         return (SectionsPagerAdapter) mViewPager.getAdapter();
+    }
+
+
+    public void showSubaccountList(final boolean newValue) {
+        mShowSubbaccountList = newValue;
     }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
         private final Fragment[] mFragments = new Fragment[3];
         public int mSelectedPage = -1;
         private int mInitialSelectedPage = -1;
@@ -342,12 +347,28 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             else
                 preferenceFragment = new GeneralPreferenceFragment();
 
+            final Fragment centerFragment;
+
+            //TODO cache this values?
+            if (!mShowSubbaccountList)
+                centerFragment = new MainFragment();
+            else
+                centerFragment = new HomeFragment();
+
             switch (index) {
             case 0: return preferenceFragment;
-            case 1: return new HomeFragment();
+            case 1: return centerFragment;
             case 2: return new NotificationsFragment();
             }
             return null;
+        }
+
+        @Override
+        public int getItemPosition(Object item) {
+            if (item instanceof MainFragment || item instanceof HomeFragment)
+                return POSITION_NONE;
+            else
+                return POSITION_UNCHANGED;
         }
 
         @Override

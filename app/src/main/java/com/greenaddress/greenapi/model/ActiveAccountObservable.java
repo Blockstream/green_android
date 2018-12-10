@@ -12,7 +12,7 @@ public class ActiveAccountObservable extends Observable {
     }
 
     public void setActiveAccount(final Integer activeAccount) {
-        Log.d("OBS", "setActiveAccount(" +  activeAccount + ")");
+        Log.d("OBS", "setActiveAccount(" + activeAccount + ")");
         this.activeAccount = activeAccount;
         setChanged();
         notifyObservers();

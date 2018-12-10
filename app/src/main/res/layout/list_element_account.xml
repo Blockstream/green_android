@@ -19,7 +19,7 @@
         <RelativeLayout
             android:id="@+id/body"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="@dimen/card_size"
             android:layout_weight="1">
 
 
@@ -29,19 +29,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
                 android:scaleType="fitXY"
-                android:src="@drawable/wallet_pattern" />
-
-            <TextView
-                android:id="@+id/receiveAddressText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="16dp"
-                android:textAlignment="center"
-                android:textColor="@color/textColor"
-                android:textSize="12sp" />
-
+                android:src="@drawable/wallet_pattern_small" />
 
             <LinearLayout
                 android:id="@+id/mainBalance"
@@ -56,9 +44,22 @@
                 android:gravity="right"
                 android:orientation="horizontal">
 
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="?attr/homeAsUpIndicator"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:layout_gravity="center_vertical"
+                    android:paddingEnd="8dp"
+                    android:visibility="gone"
+                    />
+
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="0dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/green"
@@ -94,20 +95,6 @@
                     android:paddingEnd="4dp"
                     android:textSize="18sp"/>
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/receiveQrImageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_above="@+id/receiveAddressText"
-                android:layout_alignParentEnd="false"
-                android:layout_alignParentTop="false"
-                android:layout_below="@+id/mainBalance"
-                android:layout_centerHorizontal="true"
-                android:layout_centerInParent="true"
-                android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:visibility="invisible" />
 
         </RelativeLayout>
 

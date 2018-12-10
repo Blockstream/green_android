@@ -183,9 +183,6 @@
         <activity android:name=".SendActivity"
             android:label="@string/id_send"
             android:windowSoftInputMode="stateHidden|adjustPan" />
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".MessagesActivity" />
         <activity android:name=".TrezorPinActivity" />
         <activity android:name=".TrezorPassphraseActivity"></activity>
