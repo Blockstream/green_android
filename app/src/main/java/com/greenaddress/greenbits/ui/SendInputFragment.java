@@ -159,37 +159,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             throw new RuntimeException(e);
         }
 
-        attachHideKeyboardListener(mView);
+        UI.attachHideKeyboardListener(getActivity(), mView);
 
         return mView;
-    }
-
-    // Keyboard hiding taken from https://stackoverflow.com/a/11656129
-    public void attachHideKeyboardListener(View view) {
-        // Set up touch listener for non-text box views to hide keyboard.
-        if (!(view instanceof EditText) && !(view instanceof Button)) {
-            view.setOnClickListener(v -> hideSoftKeyboard(getActivity()));
-        }
-
-        //If a layout container, iterate over children and seed recursion.
-        if (view instanceof ViewGroup) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                View innerView = ((ViewGroup) view).getChildAt(i);
-                attachHideKeyboardListener(innerView);
-            }
-        }
-    }
-
-    public static void hideSoftKeyboard(Activity activity) {
-        if (activity == null)
-            return;
-        final InputMethodManager inputMethodManager =
-            (InputMethodManager) activity.getSystemService(
-                Activity.INPUT_METHOD_SERVICE);
-        if (inputMethodManager == null || activity.getCurrentFocus() == null)
-            return;
-        inputMethodManager.hideSoftInputFromWindow(
-            activity.getCurrentFocus().getWindowToken(), 0);
     }
 
     private Long getOldFeeRate(final ObjectNode mTx) {

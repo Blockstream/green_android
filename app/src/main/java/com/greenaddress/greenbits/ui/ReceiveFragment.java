@@ -107,6 +107,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         final int subaccount = getGAService().getSession().getCurrentSubaccount();
         mTxList = getGAService().getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
+        UI.attachHideKeyboardListener(getActivity(), mView);
         return mView;
     }
 

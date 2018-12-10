@@ -138,11 +138,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
 
         final View addressLayout = UI.find(this, R.id.addressLayout);
         final View buttonLayout = UI.find(this, R.id.buttonLayout);
-//        if ("sweep".equals(mAction)) {
-//            setTitle(R.string.id_sweep_from_paper_wallet);
-//            addressLayout.setVisibility(View.GONE);
-//            buttonLayout.setVisibility(View.GONE);
-//        }
+        UI.attachHideKeyboardListener(this, findViewById(R.id.activity_send_scan));
     }
 
     @Override

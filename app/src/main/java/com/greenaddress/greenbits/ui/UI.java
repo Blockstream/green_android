@@ -16,9 +16,11 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -262,6 +264,34 @@ public abstract class UI {
                 md.onClick(md.getActionButton(DialogAction.POSITIVE));
             }
         }));
+    }
+
+    // Keyboard hiding taken from https://stackoverflow.com/a/11656129
+    public static void attachHideKeyboardListener(final Activity activity, final View view) {
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText) && !(view instanceof Button)) {
+            view.setOnClickListener(v -> hideSoftKeyboard(activity));
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                attachHideKeyboardListener(activity, innerView);
+            }
+        }
+    }
+
+    private static void hideSoftKeyboard(Activity activity) {
+        if (activity == null)
+            return;
+        final InputMethodManager inputMethodManager =
+            (InputMethodManager) activity.getSystemService(
+                Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null || activity.getCurrentFocus() == null)
+            return;
+        inputMethodManager.hideSoftInputFromWindow(
+            activity.getCurrentFocus().getWindowToken(), 0);
     }
 
     // Show/Hide controls
