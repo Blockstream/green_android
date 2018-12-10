@@ -184,8 +184,7 @@ public class CurrencyView extends RelativeLayout implements View.OnClickListener
             mFiatValue = mService.coinToFiat(mCoinValue);
             mAmountText.setText(mFiatValue.toFriendlyString());
         } catch (final Exception e) {
-            UI.clear(mAmountEdit);
-            UI.clear(mAmountText);
+            onError();
         }
         finishConversion();
     }
@@ -208,12 +207,17 @@ public class CurrencyView extends RelativeLayout implements View.OnClickListener
             mCoinValue = mService.fiatToCoin(mFiatValue);
             mAmountText.setText(UI.formatCoinValue(mService, mCoinValue) + " " + mService.getBitcoinUnit());
         } catch (final Exception e) {
-            UI.clear(mAmountEdit);
-            UI.clear(mAmountText);
+            onError();
         }
         finishConversion();
     }
 
+    private void onError() {
+        UI.clear(mAmountEdit);
+        UI.clear(mAmountText);
+        mFiatValue = null;
+        mCoinValue = null;
+    }
     private void finishConversion() {
         mConverting = false;
         if (mOnConversionFinishListener != null)
