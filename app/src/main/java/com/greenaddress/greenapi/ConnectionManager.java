@@ -95,12 +95,19 @@ public class ConnectionManager extends Observable {
         setState(ConnState.POSTLOGGEDIN);
     }
 
-    public void setState(ConnState state) {
+    private void setState(ConnState state) {
         Log.d(TAG, "setting to " + state);
         this.mPreviousState = this.mState;
         this.mState = state;
         setChanged();
         notifyObservers();
+    }
+
+    public void clearPreviousLoginError() {
+        if (isConnectedWasLoggingIn()) {
+            Log.d(TAG, "clearing previous login error");
+            this.mPreviousState = ConnState.CONNECTED;
+        }
     }
 
     public boolean isWatchOnly() {

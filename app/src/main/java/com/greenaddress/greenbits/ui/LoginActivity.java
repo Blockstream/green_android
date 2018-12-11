@@ -59,6 +59,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         if (mService != null) {
             final ConnectionManager cm = mService.getConnectionManager();
             cm.deleteObserver(this);
+            cm.clearPreviousLoginError();
             checkState();
             cm.addObserver(this);
         }
