@@ -82,24 +82,14 @@ public class AccountView extends CardView {
         mActionLayout.setVisibility(GONE);
     }
 
-    public void showActions() {
-        mActionReceiveLayout.setVisibility(VISIBLE);
-        mActionSendLayout.setVisibility(VISIBLE);
-        mActionDividerLayout.setVisibility(VISIBLE);
-        mActionLayout.setVisibility(VISIBLE);
-    }
-
-    public void showActionOnlyReceive() {
-        mActionReceiveLayout.setVisibility(VISIBLE);
-        mActionSendLayout.setVisibility(GONE);
-        mActionDividerLayout.setVisibility(GONE);
-        mActionLayout.setVisibility(VISIBLE);
+    public void showActions(final boolean isWatchOnly) {
+        if (isWatchOnly)
+            mSendButton.setText(R.string.id_sweep);
     }
 
     public void showBack(boolean show) {
         mBackButton.setVisibility(show ? VISIBLE : GONE);
     }
-
 
     public void setTitle(final String text) {
         if (TextUtils.isEmpty(text))

@@ -84,10 +84,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         mAccountView.setOnClickListener(this);
         if (service.getModel().isTwoFAReset())
             mAccountView.hideActions();
-        else if (service.isWatchOnly())
-            mAccountView.showActionOnlyReceive();
         else
-            mAccountView.showActions();
+            mAccountView.showActions(service.isWatchOnly());
 
         return mView;
     }
