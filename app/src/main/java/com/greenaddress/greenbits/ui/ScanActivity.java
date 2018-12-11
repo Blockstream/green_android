@@ -419,7 +419,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         final String error = transactionRaw.get("error").asText();
         if (error.isEmpty()) {
             result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
-        } else if ("id_invalid_private_key".equals(error)) {
+        } else if ("id_invalid_private_key".equals(error) && !service.isWatchOnly()) {
             // Not a private key, try as a send
             final String text;
             if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
