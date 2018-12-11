@@ -188,6 +188,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mEnableNLocktimePref.setOnPreferenceChangeListener((preference, o) -> {
             final boolean value = (Boolean) o;
             final SettingsData settings = mService.getModel().getSettings();
+            if (settings.getNotifications() == null)
+                settings.setNotifications(new NotificationsData());
             settings.getNotifications().setEmailOutgoing(value);
             settings.getNotifications().setEmailIncoming(value);
             mService.getExecutor().execute(() -> updateSettings(settings));
