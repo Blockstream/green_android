@@ -38,10 +38,11 @@ public class TwoFactorActivity extends LoggedActivity {
 
     private TwoFactorConfigData twoFactorConfigData;
 
-    private void setView(final int id) {
-        setContentView(id);
+    private void setView(final int layoutId, final int viewId) {
+        setContentView(layoutId);
         mContinueButton = UI.find(this, R.id.continueButton);
         mPromptText = UI.find(this, R.id.prompt);
+
         switch (mMethod) {
         case "reset":
             mContinueButton.setText(R.string.id_request_twofactor_reset);
@@ -53,6 +54,7 @@ public class TwoFactorActivity extends LoggedActivity {
             mContinueButton.setText(R.string.id_cancel_twofactor_reset);
             break;
         }
+        UI.attachHideKeyboardListener(this, findViewById(viewId));
     }
 
     private String getTypeString(final String fmt, final String type) {
@@ -196,7 +198,7 @@ public class TwoFactorActivity extends LoggedActivity {
     }
 
     private void showProvideGAuth() {
-        setView(R.layout.activity_two_factor_3_gauth_details);
+        setView(R.layout.activity_two_factor_3_gauth_details, R.id.activity_two_factor_3_gauth_details);
         final ImageView imageView = UI.find(this, R.id.imageView);
         final TextView textCode = UI.find(this, R.id.textCode);
         final LinearLayout layoutCode = UI.find(this, R.id.layoutCode);
@@ -236,7 +238,7 @@ public class TwoFactorActivity extends LoggedActivity {
     }
 
     private TextView setupDetailsView(final int inputType, final String hint) {
-        setView(R.layout.activity_two_factor_3_provide_details);
+        setView(R.layout.activity_two_factor_3_provide_details, R.id.activity_two_factor_3_provide_details);
 
         final TextView detailsText = UI.find(this, R.id.details);
         detailsText.setInputType(inputType);
