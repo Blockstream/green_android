@@ -48,7 +48,6 @@ public class TwoFactorActivity extends LoggedActivity {
             break;
         case "dispute":
             mContinueButton.setText(R.string.id_dispute_twofactor_reset);
-            showResetEmail(true);
             break;
         case "cancel":
             mContinueButton.setText(R.string.id_cancel_twofactor_reset);
