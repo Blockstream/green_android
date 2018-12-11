@@ -5,7 +5,7 @@
     <dimen name="font_size_large">24sp</dimen>
     <dimen name="font_size_medium">14sp</dimen>
     <dimen name="activity_vertical_divider">6dp</dimen>
-
+    <dimen name="sections_padding">12dp</dimen>
 
     <dimen name="appbar_padding_top">8dp</dimen>
 

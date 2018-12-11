@@ -13,6 +13,7 @@ import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.params.TestNet3Params;
 
 import java.util.List;
+import java.util.Objects;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class NetworkData extends JSONData {
@@ -48,6 +49,15 @@ public class NetworkData extends JSONData {
         default:
             return null;
         }
+    }
+
+    @JsonIgnore
+    public static NetworkData find(final String networkName, final List<NetworkData> list) {
+        for (NetworkData n : list) {
+            if(n.getNetwork().equals(networkName))
+                return n;
+        }
+        return null;
     }
 
     @JsonIgnore
@@ -234,5 +244,19 @@ public class NetworkData extends JSONData {
 
     public void setDefaultPeers(final List<String> defaultPeers) {
         this.defaultPeers = defaultPeers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NetworkData that = (NetworkData) o;
+        return Objects.equals(network, that.network);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(network);
     }
 }

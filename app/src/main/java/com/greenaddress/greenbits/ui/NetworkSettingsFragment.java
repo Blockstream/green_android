@@ -14,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,21 +29,20 @@ import com.greenaddress.greenbits.GreenAddressApplication;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class NetworkSettingsFragment extends DialogFragment {
 
     class NetworksViewAdapter extends RecyclerView.Adapter<NetworksViewAdapter.ViewHolder> {
 
-        private HashMap<String, NetworkData> mData;
-        private String[] mKeys;
+        private List<NetworkData> mData;
         private int mSelectedItem = -1;
         private LayoutInflater mInflater;
 
-        NetworksViewAdapter(final Context context, final HashMap<String, NetworkData> data, String selectedItem) {
+        NetworksViewAdapter(final Context context, final List<NetworkData> data, NetworkData selectedItem) {
             mInflater = LayoutInflater.from(context);
             mData = data;
-            mKeys = mData.keySet().toArray(new String[data.size()]);
-            mSelectedItem = Arrays.asList(mKeys).indexOf(selectedItem);
+            mSelectedItem = data.indexOf(selectedItem);
         }
 
         @Override
@@ -57,20 +58,23 @@ public class NetworkSettingsFragment extends DialogFragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            final String networkId = mKeys[position];
-            final NetworkData networkData = mData.get(networkId);
-            holder.setText(networkData.getName());
+            final NetworkData networkData = mData.get(position);
+            holder.setText("     " + networkData.getName());
             holder.setIcon(networkData.getIcon());
             holder.setSelected(position == mSelectedItem);
             holder.itemView.setOnClickListener(view -> {
                 mSelectedItem = holder.getAdapterPosition();
-                notifyItemRangeChanged(0, mKeys.length);
+                notifyItemRangeChanged(0, mData.size());
             });
         }
 
         @Override
         public int getItemCount() {
             return mData.size();
+        }
+
+        public NetworkData getSelected() {
+            return mData.get( mSelectedItem );
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
@@ -80,12 +84,17 @@ public class NetworkSettingsFragment extends DialogFragment {
                 super(itemView);
                 mButton = new Button(new ContextThemeWrapper(getContext(), R.style.networkButton));
                 mButton.setBackgroundResource(R.drawable.material_button_selection);
+
                 final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
+                mButton.setTextSize(16);
+                mButton.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
                 mButton.setLayoutParams(layoutParams);
+
                 mButton.setClickable(false);
                 final LinearLayout linearLayout=(LinearLayout)itemView;
+
                 linearLayout.addView(mButton);
             }
 
@@ -95,7 +104,7 @@ public class NetworkSettingsFragment extends DialogFragment {
 
             public void setIcon(final int resource) {
                 final Drawable top = getResources().getDrawable(resource);
-                mButton.setCompoundDrawablesWithIntrinsicBounds(null, top, null, null);
+                mButton.setCompoundDrawablesWithIntrinsicBounds(top, null, null, null);
             }
 
             public void setSelected(boolean selected) {
@@ -117,6 +126,8 @@ public class NetworkSettingsFragment extends DialogFragment {
     public void setListener(final Listener listener) {
         this.mListener = listener;
     }
+
+    private LinearLayout mProxySection;
 
     NetworksViewAdapter mNetworksViewAdapter;
 
@@ -157,20 +168,25 @@ public class NetworkSettingsFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_networksettings, container, false);
 
+        mProxySection = UI.find(v, R.id.proxySection);
+
         final RecyclerView recyclerView = UI.find(v, R.id.networksRecyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-        final HashMap<String, NetworkData> networks = GDKSession.getNetworks();
+        final List<NetworkData> networks = GDKSession.getNetworks();
 
-        mNetworksViewAdapter = new NetworksViewAdapter(getContext(), networks, getNetworksDefault());
+        mNetworksViewAdapter = new NetworksViewAdapter(getContext(), networks, getGAService().getNetwork());
         recyclerView.setAdapter(mNetworksViewAdapter);
 
         final EditText socks5HostText = UI.find(v, R.id.socks5Host);
         final EditText socks5PortText = UI.find(v, R.id.socks5Port);
 
+        final Switch switchEnableProxySettings = UI.find(v, R.id.switchEnableProxySettings);
+        switchEnableProxySettings.setOnCheckedChangeListener(this::onProxyChange);
+
         final View selectButton = v.findViewById(R.id.selectNetworkButton);
         selectButton.setOnClickListener(view -> {
-            String networkName = mNetworksViewAdapter.mKeys[mNetworksViewAdapter.mSelectedItem];
+            String networkName = mNetworksViewAdapter.getSelected().getNetwork();
             final String socksHost = UI.getText(socks5HostText);
             //final String socksPort = UI.getText(socks5PortText);
 
@@ -192,6 +208,10 @@ public class NetworkSettingsFragment extends DialogFragment {
         });
 
         return v;
+    }
+
+    private void onProxyChange(CompoundButton compoundButton, boolean b) {
+        mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
     private String getNetworksDefault(){

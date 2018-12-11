@@ -211,10 +211,10 @@ public class GaService extends Service  {
     public void setCurrentNetworkId(final String networkId) {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PrefKeys.NETWORK_ID_ACTIVE, networkId).apply();
 
-        final HashMap<String, NetworkData> networks = GDKSession.getNetworks();
+        final List<NetworkData> networks = GDKSession.getNetworks();
 
         mNetwork = null;
-        for (final NetworkData n : networks.values()) {
+        for (final NetworkData n : networks) {
             if (n.getNetwork().equals(networkId)) {
                 mNetwork = n;
                 break;

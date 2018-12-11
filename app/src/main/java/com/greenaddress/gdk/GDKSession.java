@@ -34,6 +34,7 @@ import org.bitcoinj.core.AddressFormatException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -244,8 +245,8 @@ public class GDKSession {
         return mObjectMapper.treeToValue(availableCurrencies, Map.class);
     }
 
-    public static HashMap<String, NetworkData> getNetworks()  {
-        final HashMap<String, NetworkData> networksMap = new HashMap<>();
+    public static List<NetworkData> getNetworks()  {
+        final List<NetworkData> networksMap = new LinkedList<>();
         final ObjectNode networks = (ObjectNode) GDK.get_networks();
         final ArrayNode nodes = (ArrayNode) networks.get("all_networks");
         final boolean isProduction = !BuildConfig.DEBUG;
@@ -255,7 +256,7 @@ public class GDKSession {
             try {
                 final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
                 if (!(isProduction && data.getDevelopment())) {
-                    networksMap.put(networkName, data);
+                    networksMap.add(data);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
