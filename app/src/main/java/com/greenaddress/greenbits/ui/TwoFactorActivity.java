@@ -332,9 +332,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
                 try {
                     mService.getModel().getTwoFactorConfigDataObservable().refresh();
-                } catch (final Exception ignore)
-                {
-                }
+                } catch (final Exception ignore) {}
             }
             finishOnUiThread();
         });

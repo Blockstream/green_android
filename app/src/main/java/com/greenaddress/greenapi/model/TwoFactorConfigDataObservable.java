@@ -15,9 +15,6 @@ public class TwoFactorConfigDataObservable extends Observable {
     private GDKSession mSession;
     private ListeningExecutorService mExecutor;
 
-
-    private TwoFactorConfigDataObservable() {}
-
     public TwoFactorConfigDataObservable(final GDKSession session,
                                          final ListeningExecutorService executor,
                                          final EventDataObservable eventDataObservable) {

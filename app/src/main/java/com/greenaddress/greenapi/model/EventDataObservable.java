@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi.model;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -10,7 +11,6 @@ import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -33,15 +33,13 @@ public class EventDataObservable extends Observable implements Observer {
     }
 
     public void refresh() {
-        mExecutor.submit(() -> {
-            // Add system messages
-            final String systemMessage = mSession.getSystemMessage();
-            if (systemMessage != null && !systemMessage.isEmpty()) {
-                pushEvent(new EventData(R.string.id_system_message,
-                                        R.string.notification_format_string,
+        final String systemMessage = mSession.getSystemMessage();
+        if (!TextUtils.isEmpty(systemMessage))
+            mExecutor.submit(() -> {
+                // Add to system messages
+                pushEvent(new EventData(R.string.id_system_message, R.string.notification_format_string,
                                         systemMessage));
-            }
-        });
+            });
     }
 
     public List<EventData> getEventDataList() {
@@ -50,9 +48,7 @@ public class EventDataObservable extends Observable implements Observer {
     }
 
     public void pushEvent(final EventData eventData) {
-        if (mEventDataList.contains(eventData))
-            return;
-        if (findTx(eventData) != null)
+        if (mEventDataList.contains(eventData) || findTx(eventData) != null)
             return;
         Log.d("OBS", "pushEvent(" +  eventData + ")");
         mEventDataList.add(eventData);
@@ -73,8 +69,7 @@ public class EventDataObservable extends Observable implements Observer {
         if (eventData.getTitle() != R.string.id_new_transaction)
             return null;
         final TransactionData tx = (TransactionData) eventData.getValue();
-        final String txhash = tx.getTxhash();
-        return findTx(txhash);
+        return findTx(tx.getTxhash());
     }
 
     public void removeTx(final String txhash) {
@@ -84,29 +79,21 @@ public class EventDataObservable extends Observable implements Observer {
     }
 
     @Override
-    public void update(final Observable observable, final Object o) {
+    public void update(final Observable observable, final Object unused) {
         if (observable instanceof TwoFactorConfigDataObservable) {
-            final TwoFactorConfigData twoFactorData =
-                ((TwoFactorConfigDataObservable) observable).getTwoFactorConfigData();
-            if (twoFactorData.isTwoFactorResetDisputed())
-                pushEvent(new EventData(R.string.id_twofactor_authentication,
-                                        R.string.id_warning_wallet_locked_by));
-            else if (twoFactorData.getTwoFactorResetDaysRemaining() != null) {
-                final Integer days = twoFactorData.getTwoFactorResetDaysRemaining();
-                pushEvent(new EventData(R.string.id_twofactor_authentication,
-                                        R.string.id_warning_wallet_locked_for,
-                                        days));
-            } // TODO not show in watch only or twoFactorData null
-            else if (!twoFactorData.isAnyEnabled() ) {
-                removeType(R.string.id_set_up_twofactor_authentication);
+            final TwoFactorConfigDataObservable o = (TwoFactorConfigDataObservable) observable;
+            final TwoFactorConfigData config = o.getTwoFactorConfigData();
+
+            final boolean isReset = config.isTwoFactorResetActive();
+            final int numMethods = config.getEnabledMethods().size();
+
+            removeType(R.string.id_set_up_twofactor_authentication);
+            if (!isReset && numMethods == 0) {
                 pushEvent(new EventData(R.string.id_set_up_twofactor_authentication,
                                         R.string.id_your_wallet_is_not_yet_fully));
-            } else if (twoFactorData.getEnabledMethods().size() == 1) {
-                removeType(R.string.id_set_up_twofactor_authentication);
+            } else if (!isReset && numMethods == 1) {
                 pushEvent(new EventData(R.string.id_set_up_twofactor_authentication,
                                         R.string.id_you_only_have_one_twofactor));
-            } else {
-                removeType(R.string.id_set_up_twofactor_authentication);
             }
             notifyObservers();
         }

@@ -107,19 +107,19 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
             }
             case "twofactor_reset": {
                 //{"event":"twofactor_reset","twofactor_reset":{"days_remaining":90,"is_active":true,"is_disputed":false}}
-                final JsonNode twofactorReset = objectNode.get("twofactor_reset");
-                final boolean isActive = twofactorReset.get("is_active").asBoolean();
-                if (isActive) {
-                    final String daysRemaining;
-                    if (twofactorReset.get("is_disputed").asBoolean()) {
-                        daysRemaining = "disputed";     // FIXME: id_disputed
-                    } else{
-                        daysRemaining = String.valueOf(twofactorReset.get("days_remaining").asInt());
-                    }
+                final JsonNode resetData = objectNode.get("twofactor_reset");
+                if (resetData.get("is_active").asBoolean()) {
                     mModel.setTwoFAReset(true);
-                    mModel.getEventDataObservable().pushEvent(new EventData(R.string.id_twofactor_authentication,
-                                                                            R.string.id_days_remaining_s,
-                                                                            daysRemaining));
+                    final EventData ev;
+                    if (resetData.get("is_disputed").asBoolean()) {
+                        ev = new EventData(R.string.id_twofactor_authentication,
+                                           R.string.id_warning_wallet_locked_by);
+                    } else{
+                        final Integer days = resetData.get("days_remaining").asInt();
+                        ev = new EventData(R.string.id_twofactor_authentication,
+                                           R.string.id_warning_wallet_locked_for, days);
+                    }
+                    mModel.getEventDataObservable().pushEvent(ev);
                 }
                 break;
             }

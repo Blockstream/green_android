@@ -17,15 +17,16 @@ public class TwoFactorConfigData extends JSONData {
     private TwoFactorDetailData gauth;
     private TwoFactorDetailData phone;
     private ObjectNode limits;
+    private ObjectNode twofactorReset;
 
     @JsonIgnore
     public boolean isTwoFactorResetActive() {
-        return false;
+        return twofactorReset != null && twofactorReset.get("is_active").asBoolean();
     }
 
     @JsonIgnore
     public boolean isTwoFactorResetDisputed() {
-        return false;
+        return twofactorReset != null && twofactorReset.get("is_disputed").asBoolean();
     }
 
     @JsonIgnore
@@ -113,6 +114,12 @@ public class TwoFactorConfigData extends JSONData {
         this.phone = phone;
     }
 
+    public ObjectNode getTwofactorReset() {
+        return twofactorReset;
+    }
 
+    public void setTwofactorReset(final ObjectNode twofactorReset) {
+        this.twofactorReset = twofactorReset;
+    }
 }
 
