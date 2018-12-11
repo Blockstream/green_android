@@ -47,7 +47,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     BottomNavigationView.OnNavigationItemSelectedListener  {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
-    private boolean mShowSubbaccountList = false;
+    private boolean mShowSubaccountList = false;
     private static final int REQUEST_ENABLE_2FA = 0;
 
     public static final int
@@ -319,7 +319,11 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
 
     public void showSubaccountList(final boolean newValue) {
-        mShowSubbaccountList = newValue;
+        mShowSubaccountList = newValue;
+        if (mShowSubaccountList)
+            getSupportActionBar().show();
+        else
+            getSupportActionBar().hide();
     }
 
     /**
@@ -350,7 +354,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             final Fragment centerFragment;
 
             //TODO cache this values?
-            if (!mShowSubbaccountList)
+            if (!mShowSubaccountList)
                 centerFragment = new MainFragment();
             else
                 centerFragment = new HomeFragment();
@@ -428,6 +432,10 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
             mNavigation.getMenu().getItem(index).setChecked(true);
             mNavigation.setSelectedItemId(index);
+            if (index != 1)
+                getSupportActionBar().show();
+            else
+                showSubaccountList(mShowSubaccountList);
             getSupportActionBar().setTitle(getPageTitle(index));
             invalidateOptionsMenu();
         }
