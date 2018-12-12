@@ -54,6 +54,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     private static final int PINSAVE = 1337;
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
+    private static final int WORDS_PER_LINE = 3;
     private static final int MNEMONIC_LENGTH = 24;
 
     private RecyclerView mRecyclerView;
@@ -111,7 +112,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         mMnemonicViewAdapter = new MnemonicViewAdapter(this, data);
 
         mRecyclerView = UI.find(this, R.id.mnemonicRecyclerView);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, WORDS_PER_LINE));
         mRecyclerView.setAdapter(mMnemonicViewAdapter);
 
         NFCIntentMnemonicLogin();
