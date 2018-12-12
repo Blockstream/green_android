@@ -107,6 +107,10 @@ public class GaService extends Service  {
     }
 
     public synchronized void connect() {
+        if (mNetwork == null) {
+            // Handle a previously registered network being deleted
+            setCurrentNetworkId("mainnet");
+        }
         mConnectionManager.setNetwork(mNetwork.getNetwork());
         mConnectionManager.connect();
     }
