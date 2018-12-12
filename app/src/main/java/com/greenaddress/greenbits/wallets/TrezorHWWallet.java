@@ -95,10 +95,10 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     private List<String> signTransactionImpl(final GaActivity parent, final ObjectNode tx,
-                                        final List<InputOutputData> inputs,
-                                        final List<InputOutputData> outputs,
-                                        final Map<String, String> transactions,
-                                        final List<String> addressTypes)
+                                             final List<InputOutputData> inputs,
+                                             final List<InputOutputData> outputs,
+                                             final Map<String, String> transactions,
+                                             final List<String> addressTypes)
     {
         final String[] signatures = new String[inputs.size()];
 
