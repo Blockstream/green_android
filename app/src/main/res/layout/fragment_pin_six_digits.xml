@@ -29,6 +29,7 @@
         android:gravity="center"
         android:layout_weight="1"
         android:textSize="16sp"
+        android:textColor="@color/green"
         android:text="@string/id_skip"/>
 
     <android.inputmethodservice.KeyboardView
