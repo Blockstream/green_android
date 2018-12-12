@@ -3,7 +3,6 @@ package com.greenaddress.greenapi.model;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -18,7 +17,6 @@ import java.util.Observer;
 public class EventDataObservable extends Observable implements Observer {
     private List<EventData> mEventDataList = new ArrayList<>();
     private GDKSession mSession;
-    private ListeningExecutorService mExecutor;
 
     public boolean hasEvents() {
         return !mEventDataList.isEmpty();
@@ -26,20 +24,18 @@ public class EventDataObservable extends Observable implements Observer {
 
     private EventDataObservable() {}
 
-    public EventDataObservable(final GDKSession session, final ListeningExecutorService executor) {
+    public EventDataObservable(final GDKSession session) {
         mSession = session;
-        mExecutor = executor;
         refresh();
     }
 
     public void refresh() {
         final String systemMessage = mSession.getSystemMessage();
-        if (!TextUtils.isEmpty(systemMessage))
-            mExecutor.submit(() -> {
-                // Add to system messages
-                pushEvent(new EventData(R.string.id_system_message, R.string.notification_format_string,
-                                        systemMessage));
-            });
+        if (!TextUtils.isEmpty(systemMessage)) {
+            // Add to system messages
+            pushEvent(new EventData(R.string.id_system_message, R.string.notification_format_string,
+                                    systemMessage));
+        }
     }
 
     public List<EventData> getEventDataList() {

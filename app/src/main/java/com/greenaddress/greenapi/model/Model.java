@@ -28,7 +28,7 @@ public class Model {
     public Model(final GDKSession session, final ListeningExecutorService executor) {
         mSubaccountDataObservable = new SubaccountDataObservable(session,
                                                                  executor, this);
-        mEventDataObservable = new EventDataObservable(session, executor);
+        mEventDataObservable = new EventDataObservable(session);
         mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(session, executor, mEventDataObservable);
         mFeeObservable = new FeeObservable(session, executor);
         mAvailableCurrenciesObservable = new AvailableCurrenciesObservable(session, executor);
