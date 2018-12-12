@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.gdk.GDKSession;
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
@@ -128,6 +127,9 @@ public class NetworkSettingsFragment extends DialogFragment {
 
     private LinearLayout mProxySection;
     private Switch mSwitchTor;
+    private Switch mSwitchProxy;
+    private EditText mSocks5Host;
+    private EditText mSocks5Port;
 
     NetworksViewAdapter mNetworksViewAdapter;
 
@@ -166,6 +168,9 @@ public class NetworkSettingsFragment extends DialogFragment {
 
         mProxySection = UI.find(v, R.id.proxySection);
         mSwitchTor = UI.find(v, R.id.switchEnableTor);
+        mSocks5Host = UI.find(v, R.id.socks5Host);
+        mSocks5Port = UI.find(v, R.id.socks5Port);
+        mSwitchProxy = UI.find(v, R.id.switchEnableProxySettings);
 
         final RecyclerView recyclerView = UI.find(v, R.id.networksRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
@@ -175,20 +180,17 @@ public class NetworkSettingsFragment extends DialogFragment {
         mNetworksViewAdapter = new NetworksViewAdapter(getContext(), networks, getGAService().getNetwork());
         recyclerView.setAdapter(mNetworksViewAdapter);
 
-        final EditText socks5HostText = UI.find(v, R.id.socks5Host);
-        final EditText socks5PortText = UI.find(v, R.id.socks5Port);
-
-        final Switch switchEnableProxySettings = UI.find(v, R.id.switchEnableProxySettings);
-        switchEnableProxySettings.setOnCheckedChangeListener(this::onProxyChange);
+        mSwitchProxy.setOnCheckedChangeListener(this::onProxyChange);
+        initProxy();
+        mSwitchTor.setOnCheckedChangeListener(this::onTorChange);
         initTor(mNetworksViewAdapter.getSelected());
-        mSwitchTor.setOnCheckedChangeListener(this::onSwitchTor);
 
         final View selectButton = v.findViewById(R.id.selectNetworkButton);
         selectButton.setOnClickListener(view -> {
             final NetworkData selectedNetwork = mNetworksViewAdapter.getSelected();
             String networkName = selectedNetwork.getNetwork();
-            final String socksHost = UI.getText(socks5HostText);
-            //final String socksPort = UI.getText(socks5PortText);
+            final String socksHost = UI.getText(mSocks5Host);
+            final String socksPort = UI.getText(mSocks5Port);
 
             if (socksHost.startsWith("{")) {
                 try {
@@ -198,8 +200,14 @@ public class NetworkSettingsFragment extends DialogFragment {
                 } catch (final Exception e) {
                     UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
                 }
+            } else {
+                getGAService().cfg().edit()
+                .putString(PrefKeys.PROXY_HOST, socksHost)
+                .putString(PrefKeys.PROXY_PORT, socksPort)
+                .apply();
+                getGAService().getConnectionManager().setProxyHostAndPort(socksHost, socksPort);
             }
-            // FIXME: Use host and port to connect if given
+            getGAService().getConnectionManager().resetAttempts();
             getGAService().setCurrentNetworkId(networkName);
             getGAService().reconnect();  // FIXME another thread
             mListener.onSelectNetwork();
@@ -209,13 +217,18 @@ public class NetworkSettingsFragment extends DialogFragment {
         return v;
     }
 
-    private void onProxyChange(CompoundButton compoundButton, boolean b) {
-        mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
+    private void initProxy() {
+        mSocks5Host.setText(getGAService().cfg().getString(PrefKeys.PROXY_HOST,""));
+        mSocks5Port.setText(getGAService().cfg().getString(PrefKeys.PROXY_PORT,""));
+        final boolean isProxyEnabled = getGAService().cfg().getBoolean(PrefKeys.PROXY_ENABLED, false);
+        mSwitchProxy.setChecked(isProxyEnabled);
+        mProxySection.setVisibility(isProxyEnabled ? View.VISIBLE : View.GONE);
     }
 
-    private void onSwitchTor(CompoundButton compoundButton, boolean b) {
-        getGAService().cfg().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
-        getGAService().getConnectionManager().setTorEnabled(b);
+    private void onProxyChange(CompoundButton compoundButton, boolean b) {
+        getGAService().cfg().edit().putBoolean(PrefKeys.PROXY_ENABLED, b).apply();
+        getGAService().getConnectionManager().setProxyEnabled(b);
+        mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
     private void initTor(final NetworkData selectedNetwork) {
@@ -223,4 +236,8 @@ public class NetworkSettingsFragment extends DialogFragment {
         mSwitchTor.setEnabled(!TextUtils.isEmpty(selectedNetwork.getWampOnionUrl()));
     }
 
+    private void onTorChange(CompoundButton compoundButton, boolean b) {
+        getGAService().cfg().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
+        getGAService().getConnectionManager().setTorEnabled(b);
+    }
 }

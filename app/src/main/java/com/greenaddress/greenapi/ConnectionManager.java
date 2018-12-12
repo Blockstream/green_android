@@ -33,6 +33,7 @@ public class ConnectionManager extends Observable {
     private String mNetwork;
     private String mProxyHost;
     private String mProxyPort;
+    private boolean mProxyEnabled;
     private boolean mTorEnabled;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
@@ -40,18 +41,33 @@ public class ConnectionManager extends Observable {
     private int mConnectionCounter = CONNECTION_RETRY_ATTEMPTS;
 
     public ConnectionManager(final GDKSession session, final String network,
-                             final String proxyHost, final String proxyPort, final boolean torEnabled) {
+                             final String proxyHost, final String proxyPort,
+                             final boolean proxyEnabled, final boolean torEnabled) {
         this.mSession = session;
         this.mNetwork = network;
         this.mProxyHost = proxyHost;
         this.mProxyPort = proxyPort;
+        this.mProxyEnabled = proxyEnabled;
         this.mTorEnabled = torEnabled;
         this.mState = ConnState.DISCONNECTED;
         this.mPreviousState = ConnState.DISCONNECTED;
     }
 
+    public void resetAttempts() {
+        mConnectionCounter = CONNECTION_RETRY_ATTEMPTS;
+    }
+
     public void setTorEnabled(boolean mTorEnabled) {
         this.mTorEnabled = mTorEnabled;
+    }
+
+    public void setProxyHostAndPort(final String proxyHost, final String proxyPort) {
+        this.mProxyHost = proxyHost;
+        this.mProxyPort = proxyPort;
+    }
+
+    public void setProxyEnabled(final boolean proxyEnabled) {
+        this.mProxyEnabled = proxyEnabled;
     }
 
     public void setNetwork(final String network) {
@@ -142,16 +158,16 @@ public class ConnectionManager extends Observable {
 
         setState(ConnState.CONNECTING);
         final boolean isDebug = BuildConfig.DEBUG;
-        Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") + (mTorEnabled ? " with TOR" : "") );
+        Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") + (mTorEnabled ? " with TOR" : ""));
         try {
-            if (TextUtils.isEmpty(mProxyHost) || TextUtils.isEmpty(mProxyPort)) {
-                mSession.connect(mNetwork, isDebug);
-            } else {
+            if (mProxyEnabled) {
                 final String proxyAsString = String.format(Locale.US, "%s:%s", mProxyHost, mProxyPort);
                 Log.d(TAG, "connecting with proxy " + proxyAsString);
                 mSession.connectWithProxy(mNetwork, proxyAsString, mTorEnabled, isDebug);
+            } else {
+                mSession.connect(mNetwork, isDebug);
             }
-            mConnectionCounter = CONNECTION_RETRY_ATTEMPTS;
+            resetAttempts();
             setState(ConnState.CONNECTED);
         } catch (final Exception e) {
             Log.i(TAG, "cannot connect " + e.getMessage());

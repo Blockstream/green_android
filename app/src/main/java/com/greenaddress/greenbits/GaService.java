@@ -234,6 +234,8 @@ public class GaService extends Service  {
 
     public String getProxyHost() { return cfg().getString(PrefKeys.PROXY_HOST, ""); }
     public String getProxyPort() { return cfg().getString(PrefKeys.PROXY_PORT, ""); }
+    public boolean getProxyEnabled() { return cfg().getBoolean(PrefKeys.PROXY_ENABLED, false); }
+
     public boolean getTorEnabled() { return cfg().getBoolean(PrefKeys.TOR_ENABLED, false); }
     public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
 
@@ -279,7 +281,7 @@ public class GaService extends Service  {
             // Handle a previously registered network being deleted
             setCurrentNetworkId("mainnet");
         }
-        mConnectionManager = new ConnectionManager(mSession, mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getTorEnabled());
+        mConnectionManager = new ConnectionManager(mSession, mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
         mExecutor.execute(() -> mConnectionManager.connect());
 
         mDeviceId = cfg().getString(PrefKeys.DEVICE_ID, null);

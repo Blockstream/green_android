@@ -54,7 +54,7 @@ public class NetworkData extends JSONData {
     @JsonIgnore
     public static NetworkData find(final String networkName, final List<NetworkData> list) {
         for (NetworkData n : list) {
-            if(n.getNetwork().equals(networkName))
+            if (n.getNetwork().equals(networkName))
                 return n;
         }
         return null;
