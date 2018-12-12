@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -56,6 +57,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     private static final int CAMERA_PERMISSION = 150;
     private static final int WORDS_PER_LINE = 3;
     private static final int MNEMONIC_LENGTH = 24;
+    private static final int ENCRYPTED_MNEMONIC_LENGTH = 27;
 
     private RecyclerView mRecyclerView;
     private MnemonicViewAdapter mMnemonicViewAdapter;
@@ -146,15 +148,22 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     }
 
     private void setMnemonic(final String mnemonic) {
-        final List<String> strings = mMnemonicViewAdapter.getItems();
-        strings.clear();
-        strings.addAll(Arrays.asList(mnemonic.split(" ")));
+        if (!isValid(mnemonic)) {
+            UI.toast(this, R.string.id_invalid_mnemonic, Toast.LENGTH_LONG);
+            return;
+        }
+
+        final List<String> words = mMnemonicViewAdapter.getItems();
+        final String newWords[] = mnemonic.split(" ");
+        for (int i  = 0; i < newWords.length; ++i) {
+            words.set(i, newWords[i]);
+        }
         mMnemonicViewAdapter.notifyDataSetChanged();
     }
 
     private boolean isValid(final String mnemonic) {
         final String words[] = mnemonic.split(" ");
-        if (words.length != 24 && words.length != 27)
+        if (words.length != MNEMONIC_LENGTH && words.length != ENCRYPTED_MNEMONIC_LENGTH)
             return false;
         try {
             Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
@@ -164,9 +173,14 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         return true;
     }
 
-    private void enableLogin() {
+    private boolean enableLogin() {
         stopLoading();
-        mOkButton.setEnabled(isValid(getMnemonic()));
+        final boolean valid = isValid(getMnemonic());
+        if (valid != mOkButton.isEnabled()) {
+            mOkButton.setVisibility(View.VISIBLE);
+            mOkButton.setEnabled(valid);
+        }
+        return valid;
     }
 
     private void doLogin() {
@@ -392,8 +406,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
                     super.afterTextChanged(s);
                     final boolean isInvalid = markInvalidWord(s);
                     if (!isInvalid && s.length() > 3) {
-                        nextFocus();
-                        enableLogin();
+                        if (!enableLogin())
+                            nextFocus();
                     }
                 }
             });
@@ -403,10 +417,12 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
         @Override
         public void onBindViewHolder(final MnemonicViewAdapter.EditTextViewHolder holder, final int position) {
-            if (position > mData.size())
+            if (position >= mData.size())
                 return;
             holder.numericText.setText(String.valueOf(position + 1));
-            holder.mnemonicText.setText(mData.get(position));
+            final String word = mData.get(position);
+            if (!UI.getText(holder.mnemonicText).equals(word))
+                holder.mnemonicText.setText(word);
         }
 
         private void nextFocus() {
