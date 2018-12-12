@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/network_preferences"
-        android:title="@string/id_network_configuration" />
+        android:id="@+id/enter_pin"
+        android:enabled="false"
+        android:title="@string/id_enter_pin" />
     <item
         android:id="@+id/watchonly_preference"
         android:title="@string/id_watchonly_login" />

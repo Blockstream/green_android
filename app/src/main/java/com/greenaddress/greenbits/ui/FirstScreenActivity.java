@@ -23,8 +23,8 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
         UI.mapClick(this, R.id.firstLogInButton, new Intent(this, MnemonicActivity.class));
         UI.mapClick(this, R.id.firstSignUpButton, new Intent(this, TermsActivity.class));
         UI.mapClick(this, R.id.settingsButton, view -> openNetworkSettings());
-        UI.mapClick(this, R.id.watchOnlyButton, new Intent(this, WatchOnlyLoginActivity.class) );
-        UI.mapClick(this, R.id.goToPinButton, new Intent(this, PinActivity.class) );
+        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
+        setTitle("");
         mSelectNetwork = UI.find(this, R.id.settingsButton);
     }
 
@@ -48,23 +48,24 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
 
         switch (item.getItemId()) {
         case R.id.watchonly_preference:
-            startActivity(new Intent(FirstScreenActivity.this, WatchOnlyLoginActivity.class));
+            startActivity(new Intent(this, WatchOnlyLoginActivity.class));
             return true;
-        case R.id.network_preferences:
-            final Intent intent = new Intent(this, SettingsActivity.class);
-            intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, NetworkPreferenceFragment.class.getName() );
-            startActivity(intent);
+        case R.id.enter_pin:
+            startActivity(new Intent(this, PinActivity.class));
             return true;
-            //case R.id.action_settings:
-            //    return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+        menu.findItem(R.id.enter_pin).setEnabled( mService.hasPin());
+        return true;
+    }
+
+    @Override
     public void onResumeWithService() {
         mSelectNetwork.setText(mService.getNetwork().getName());
-        UI.showIf( mService.hasPin(), UI.find(this,R.id.goToPinButton));
         if (!mService.getUserCancelledPINEntry()) {
             mService.setUserCancelledPINEntry(false);
             checkPinExist();
@@ -74,7 +75,7 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
     @Override
     public void onSelectNetwork() {
         mSelectNetwork.setText(mService.getNetwork().getName());
-        UI.showIf( mService.hasPin(), UI.find(this,R.id.goToPinButton));
+        invalidateOptionsMenu();
         checkPinExist();
     }
 }

@@ -14,16 +14,6 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:id="@+id/watchOnlyButton"
-            android:padding="10dp"
-            android:textColor="@color/white"
-            android:layout_gravity="right"
-            android:text="@string/id_watchonly"/>
-
         <View
             android:layout_width="fill_parent"
             android:layout_height="50dp" />
@@ -78,15 +68,6 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="16dp" />
-
-            <Button
-                android:id="@+id/goToPinButton"
-                style="@style/borderButton"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/id_enter_pin"
-                android:textAllCaps="false"/>
 
             <Button
                 android:id="@+id/settingsButton"
