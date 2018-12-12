@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +22,13 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKSession;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class NetworkSettingsFragment extends DialogFragment {
@@ -36,11 +36,9 @@ public class NetworkSettingsFragment extends DialogFragment {
     class NetworksViewAdapter extends RecyclerView.Adapter<NetworksViewAdapter.ViewHolder> {
 
         private List<NetworkData> mData;
-        private int mSelectedItem = -1;
-        private LayoutInflater mInflater;
+        private int mSelectedItem;
 
         NetworksViewAdapter(final Context context, final List<NetworkData> data, NetworkData selectedItem) {
-            mInflater = LayoutInflater.from(context);
             mData = data;
             mSelectedItem = data.indexOf(selectedItem);
         }
@@ -65,6 +63,7 @@ public class NetworkSettingsFragment extends DialogFragment {
             holder.itemView.setOnClickListener(view -> {
                 mSelectedItem = holder.getAdapterPosition();
                 notifyItemRangeChanged(0, mData.size());
+                initTor(mData.get(position));
             });
         }
 
@@ -128,6 +127,7 @@ public class NetworkSettingsFragment extends DialogFragment {
     }
 
     private LinearLayout mProxySection;
+    private Switch mSwitchTor;
 
     NetworksViewAdapter mNetworksViewAdapter;
 
@@ -156,10 +156,6 @@ public class NetworkSettingsFragment extends DialogFragment {
         mApp = (GreenAddressApplication) getActivity().getApplication();
     }
 
-    protected GaActivity getGaActivity() {
-        return (GaActivity) getActivity();
-    }
-
     protected GaService getGAService() {
         return mApp.mService;
     }
@@ -169,6 +165,7 @@ public class NetworkSettingsFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_networksettings, container, false);
 
         mProxySection = UI.find(v, R.id.proxySection);
+        mSwitchTor = UI.find(v, R.id.switchEnableTor);
 
         final RecyclerView recyclerView = UI.find(v, R.id.networksRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
@@ -183,10 +180,13 @@ public class NetworkSettingsFragment extends DialogFragment {
 
         final Switch switchEnableProxySettings = UI.find(v, R.id.switchEnableProxySettings);
         switchEnableProxySettings.setOnCheckedChangeListener(this::onProxyChange);
+        initTor(mNetworksViewAdapter.getSelected());
+        mSwitchTor.setOnCheckedChangeListener(this::onSwitchTor);
 
         final View selectButton = v.findViewById(R.id.selectNetworkButton);
         selectButton.setOnClickListener(view -> {
-            String networkName = mNetworksViewAdapter.getSelected().getNetwork();
+            final NetworkData selectedNetwork = mNetworksViewAdapter.getSelected();
+            String networkName = selectedNetwork.getNetwork();
             final String socksHost = UI.getText(socks5HostText);
             //final String socksPort = UI.getText(socks5PortText);
 
@@ -199,7 +199,6 @@ public class NetworkSettingsFragment extends DialogFragment {
                     UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
                 }
             }
-
             // FIXME: Use host and port to connect if given
             getGAService().setCurrentNetworkId(networkName);
             getGAService().reconnect();  // FIXME another thread
@@ -214,8 +213,14 @@ public class NetworkSettingsFragment extends DialogFragment {
         mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
-    private String getNetworksDefault(){
-        return getGAService().getNetwork().getNetwork();
+    private void onSwitchTor(CompoundButton compoundButton, boolean b) {
+        getGAService().cfg().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
+        getGAService().getConnectionManager().setTorEnabled(b);
+    }
+
+    private void initTor(final NetworkData selectedNetwork) {
+        mSwitchTor.setChecked(getGAService().cfg().getBoolean(PrefKeys.TOR_ENABLED, false));
+        mSwitchTor.setEnabled(!TextUtils.isEmpty(selectedNetwork.getWampOnionUrl()));
     }
 
 }

@@ -50,6 +50,10 @@ public class ConnectionManager extends Observable {
         this.mPreviousState = ConnState.DISCONNECTED;
     }
 
+    public void setTorEnabled(boolean mTorEnabled) {
+        this.mTorEnabled = mTorEnabled;
+    }
+
     public void setNetwork(final String network) {
         this.mNetwork = network;
     }
@@ -138,7 +142,7 @@ public class ConnectionManager extends Observable {
 
         setState(ConnState.CONNECTING);
         final boolean isDebug = BuildConfig.DEBUG;
-        Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") );
+        Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") + (mTorEnabled ? " with TOR" : "") );
         try {
             if (TextUtils.isEmpty(mProxyHost) || TextUtils.isEmpty(mProxyPort)) {
                 mSession.connect(mNetwork, isDebug);
