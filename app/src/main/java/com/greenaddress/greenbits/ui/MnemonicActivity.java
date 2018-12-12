@@ -186,24 +186,15 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             return;
         }
 
-        final String words[] = mnemonic.split(" ");
-        if (words.length != 24 && words.length != 27) {
+        if (!isValid(mnemonic)) {
             toast(R.string.id_invalid_mnemonic_must_be_24_or);
             return;
         }
 
-        try {
-            Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
-        } catch (final IllegalArgumentException e) {
-            toast(R.string.id_invalid_mnemonic_must_be_24_or); // FIXME: Use different error message
-            return;
-        }
-
-        mService.getExecutor().execute(() -> mService.getConnectionManager().loginWithMnemonic(mnemonic,""));
+        mService.getExecutor().execute(() -> mService.getConnectionManager().loginWithMnemonic(mnemonic, ""));
 
         startLoading();
         mOkButton.setEnabled(false);
-
     }
 
     private ListenableFuture<String> askForPassphrase() {
