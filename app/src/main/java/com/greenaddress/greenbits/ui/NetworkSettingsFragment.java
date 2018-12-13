@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -9,6 +10,7 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,8 @@ import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class NetworkSettingsFragment extends DialogFragment {
 
@@ -62,6 +66,7 @@ public class NetworkSettingsFragment extends DialogFragment {
             holder.itemView.setOnClickListener(view -> {
                 mSelectedItem = holder.getAdapterPosition();
                 notifyItemRangeChanged(0, mData.size());
+                initProxy();
                 initTor(mData.get(position));
             });
         }
@@ -201,7 +206,7 @@ public class NetworkSettingsFragment extends DialogFragment {
                     UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
                 }
             } else {
-                getGAService().cfg().edit()
+                getPrefOfSelected().edit()
                 .putString(PrefKeys.PROXY_HOST, socksHost)
                 .putString(PrefKeys.PROXY_PORT, socksPort)
                 .apply();
@@ -217,27 +222,36 @@ public class NetworkSettingsFragment extends DialogFragment {
         return v;
     }
 
+    private SharedPreferences getPrefOfSelected() {
+        return getActivity().getSharedPreferences(mNetworksViewAdapter.getSelected().getNetwork(), MODE_PRIVATE);
+    }
+
     private void initProxy() {
-        mSocks5Host.setText(getGAService().cfg().getString(PrefKeys.PROXY_HOST,""));
-        mSocks5Port.setText(getGAService().cfg().getString(PrefKeys.PROXY_PORT,""));
-        final boolean isProxyEnabled = getGAService().cfg().getBoolean(PrefKeys.PROXY_ENABLED, false);
+        final boolean isProxyEnabled = getPrefOfSelected().getBoolean(PrefKeys.PROXY_ENABLED, false);
+        Log.d("NETDLG", "initProxy " + mNetworksViewAdapter.getSelected().getNetwork() + " " + isProxyEnabled);
+        mSocks5Host.setText(getPrefOfSelected().getString(PrefKeys.PROXY_HOST,""));
+        mSocks5Port.setText(getPrefOfSelected().getString(PrefKeys.PROXY_PORT,""));
         mSwitchProxy.setChecked(isProxyEnabled);
         mProxySection.setVisibility(isProxyEnabled ? View.VISIBLE : View.GONE);
     }
 
     private void onProxyChange(CompoundButton compoundButton, boolean b) {
-        getGAService().cfg().edit().putBoolean(PrefKeys.PROXY_ENABLED, b).apply();
+        Log.d("NETDLG", "onProxyChange " + mNetworksViewAdapter.getSelected().getNetwork() + " " + b);
+        getPrefOfSelected().edit().putBoolean(PrefKeys.PROXY_ENABLED, b).apply();
         getGAService().getConnectionManager().setProxyEnabled(b);
         mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
     private void initTor(final NetworkData selectedNetwork) {
-        mSwitchTor.setChecked(getGAService().cfg().getBoolean(PrefKeys.TOR_ENABLED, false));
+        final boolean torChecked = getPrefOfSelected().getBoolean(PrefKeys.TOR_ENABLED, false);
+        Log.d("NETDLG", "initTor " + mNetworksViewAdapter.getSelected().getNetwork() + " " + torChecked);
+        mSwitchTor.setChecked(torChecked);
         mSwitchTor.setEnabled(!TextUtils.isEmpty(selectedNetwork.getWampOnionUrl()));
     }
 
     private void onTorChange(CompoundButton compoundButton, boolean b) {
-        getGAService().cfg().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
+        Log.d("NETDLG", "onTorChange " + mNetworksViewAdapter.getSelected().getNetwork() + " " + b);
+        getPrefOfSelected().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
         getGAService().getConnectionManager().setTorEnabled(b);
     }
 }
