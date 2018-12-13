@@ -2,15 +2,11 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
 import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
-import com.greenaddress.greenbits.ui.preferences.NetworkPreferenceFragment;
-import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
-
 
 public class FirstScreenActivity extends LoginActivity implements NetworkSettingsFragment.Listener {
     private Button mSelectNetwork;
@@ -28,11 +24,7 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
         mSelectNetwork = UI.find(this, R.id.settingsButton);
     }
 
-    private void openNetworkSettings() {
-        final NetworkSettingsFragment dialogFragment = new NetworkSettingsFragment();
-        dialogFragment.setListener(this);
-        dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {

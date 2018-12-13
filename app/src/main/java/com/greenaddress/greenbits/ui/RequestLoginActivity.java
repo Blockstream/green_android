@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -68,6 +69,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
     private MaterialDialog mNfcWaitDialog;
     private HWDeviceData mHwDeviceData;
     private CodeResolver mHwResolver;
+    private Button mSelectNetwork;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -78,6 +80,9 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
         mInstructionsText = UI.find(this, R.id.first_login_instructions);
+        mSelectNetwork = UI.find(this, R.id.settingsButton);
+        UI.mapClick(this, R.id.settingsButton, view -> openNetworkSettings());
+
     }
 
     @Override
@@ -332,7 +337,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
-
+        mSelectNetwork.setText(mService.getNetwork().getName());
         mTagDispatcher = TagDispatcher.get(this, this);
         mTagDispatcher.enableExclusiveNfc();
 
@@ -393,6 +398,11 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
             }
         }
         return transport;
+    }
+
+    @Override
+    public void onSelectNetwork() {
+        mSelectNetwork.setText(mService.getNetwork().getName());
     }
 
     @Override

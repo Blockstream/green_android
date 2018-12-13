@@ -9,7 +9,7 @@ import com.greenaddress.greenapi.data.PinData;
 import java.util.Observable;
 import java.util.Observer;
 
-public abstract class LoginActivity extends GaActivity implements Observer {
+public abstract class LoginActivity extends GaActivity implements Observer, NetworkSettingsFragment.Listener {
     protected String pinBeforeConnect;
 
     protected void onLoggedIn() {
@@ -94,5 +94,14 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         return false;
     }
 
+    protected void openNetworkSettings() {
+        final NetworkSettingsFragment dialogFragment = new NetworkSettingsFragment();
+        dialogFragment.setListener(this);
+        dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
+    }
 
+    @Override
+    public void onSelectNetwork() {
+
+    }
 }
