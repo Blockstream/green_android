@@ -9,10 +9,10 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:layout_margin="8dp"
-        android:gravity="center_vertical" />
+        android:gravity="center" />
 
     <View
         android:layout_width="8dp"
@@ -27,7 +27,7 @@
         android:importantForAccessibility="no"
         android:singleLine="true"
         android:textColor="@color/secondaryTextColor"
-        android:textSize="20sp"/>
+        android:textSize="18sp"/>
 
     <ImageView
         android:id="@+id/imageEnabled"

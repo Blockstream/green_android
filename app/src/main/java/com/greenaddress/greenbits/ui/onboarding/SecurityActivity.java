@@ -40,10 +40,10 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
         final String[] choices = getResources().getStringArray(R.array.twoFactorChoices);
         final String[] methods = getResources().getStringArray(R.array.twoFactorMethods);
         final Integer[] images = {
-            R.drawable.onboarding_email,
-            R.drawable.onboarding_sms,
-            R.drawable.onboarding_call,
-            R.drawable.onboarding_ga
+            R.drawable.ic_2fa_email,
+            R.drawable.ic_2fa_sms,
+            R.drawable.ic_2fa_call,
+            R.drawable.ic_2fa_google
         };
 
         mFromOnboarding = getIntent().getBooleanExtra("from_onboarding", false);
