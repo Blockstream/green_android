@@ -8,100 +8,108 @@
     app:cardCornerRadius="8dp"
     app:cardUseCompatPadding="true"
     app:cardPreventCornerOverlap="false"
-    app:cardBackgroundColor="@color/colorPrimary">
+    app:cardBackgroundColor="@color/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/cardview">
+        android:background="@drawable/cardview"
 
-        <RelativeLayout
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
             android:id="@+id/body"
             android:layout_width="match_parent"
             android:layout_height="@dimen/card_size"
-            android:layout_weight="1">
-
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/wallet_pattern_small" />
+            android:padding="@dimen/card_padding"
+            android:background="@drawable/cardview"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/mainBalance"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:gravity="right"
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/backButton"
+                    android:id="@+id/networkImage"
                     android:layout_width="wrap_content"
-                    android:src="@drawable/arrow_down"
                     android:layout_height="wrap_content"
+                    android:src="@drawable/btc"
                     android:layout_gravity="center_vertical"
-                    android:paddingEnd="8dp"
-                    android:visibility="gone"
+                    android:background="@color/windowBackground"
                     />
+
+                <Space
+                    android:layout_width="@dimen/card_padding"
+                    android:layout_height="match_parent" />
 
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="0dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textColor="@color/green"
+                    android:padding="@dimen/card_padding"
+                    android:text="name"
+                    android:gravity="center_vertical"
                     android:textSize="20sp"/>
 
-                <TextView
-                    android:id="@+id/mainBalanceText"
+                <ImageButton
+                    android:id="@+id/backButton"
                     android:layout_width="wrap_content"
+                    android:src="@drawable/ic_copy"
                     android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:lines="1"
-                    android:padding="4dp"
-                    android:textColor="@color/secondaryTextColor"
-                    android:textSize="20sp" />
+                    android:layout_gravity="center_vertical"
+                    android:paddingStart="@dimen/card_padding"
+                    android:background="@color/windowBackground"
+                    />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/mainLocalBalance"
-                android:layout_width="wrap_content"
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/card_padding" />
+
+            <TextView
+                android:id="@+id/mainBalanceText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@id/mainBalance"
-                android:layout_marginEnd="8dp"
-                android:paddingBottom="8dp">
+                android:lines="1"
+                android:textAlignment="center"
+                android:textColor="@color/secondaryTextColor"
+                android:paddingStart="@dimen/card_padding"
+                android:paddingEnd="@dimen/card_padding"
+                android:text="BTC"
+                android:textSize="28sp" />
 
-                <TextView
-                    android:id="@+id/mainLocalBalanceText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/tertiaryTextColor"
-                    android:paddingTop="2dp"
-                    android:paddingEnd="4dp"
-                    android:textSize="18sp"/>
-            </LinearLayout>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/card_padding" />
 
-        </RelativeLayout>
+            <TextView
+                android:id="@+id/mainLocalBalanceText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/card_padding"
+                android:paddingEnd="@dimen/card_padding"
+                android:textColor="@color/tertiaryTextColor"
+                android:textAlignment="center"
+                android:text="USD"
+                android:textSize="18sp"/>
+
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/actionLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+
             android:visibility="visible"
             android:baselineAligned="false">
 
@@ -133,12 +141,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/actionDividerLayout"
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/windowBackground"
-                android:orientation="horizontal"/>
 
             <LinearLayout
                 android:id="@+id/actionReceiveLayout"
@@ -168,17 +170,6 @@
 
             </LinearLayout>
         </LinearLayout>
-
-
-        <RadioButton
-            android:id="@+id/radio"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/account_item_height"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="@dimen/md_listitem_control_margin"
-            android:paddingBottom="@dimen/md_content_padding_bottom"
-            android:visibility="gone"/>
-
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

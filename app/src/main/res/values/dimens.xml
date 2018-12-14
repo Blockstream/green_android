@@ -6,10 +6,11 @@
     <dimen name="font_size_medium">14sp</dimen>
     <dimen name="activity_vertical_divider">6dp</dimen>
     <dimen name="sections_padding">12dp</dimen>
+    <dimen name="card_padding">8dp</dimen>
 
     <dimen name="appbar_padding_top">8dp</dimen>
 
-    <dimen name="card_size">90dp</dimen>
+    <dimen name="card_size">160dp</dimen>
 
     <dimen name="account_item_height">60dp</dimen>
     <dimen name="account_margin_left">48dp</dimen>

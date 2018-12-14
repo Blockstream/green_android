@@ -144,7 +144,7 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
             final int itemPosition = parent.getChildAdapterPosition(view);
             if (itemPosition == 0)
                 return;
-            final double vertOverlap = 40.0 - convertPixelsToDp(getResources().getDimension(
+            final double vertOverlap = 50.0 - convertPixelsToDp(getResources().getDimension(
                                                                     R.dimen.card_size), getContext());
             final int dip = (int) convertDpToPixel((float) vertOverlap, getContext());
             outRect.set(0, dip, 0, 0);

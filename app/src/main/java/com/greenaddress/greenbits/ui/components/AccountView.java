@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.components;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -24,9 +25,8 @@ public class AccountView extends CardView {
 
     private View mView;
     private Button mSendButton, mReceiveButton;
-    private ImageButton mBackButton;
-    private RelativeLayout mBodyLayout;
-    private LinearLayout mActionLayout, mActionReceiveLayout, mActionSendLayout, mActionDividerLayout;
+    private ImageButton mBackButton, mNetworkImage;
+    private LinearLayout mBodyLayout, mActionLayout, mActionReceiveLayout, mActionSendLayout, mActionDividerLayout;
     private TextView mTitleText, mBalanceText, mBalanceFiatText;
 
     public AccountView(final Context context) {
@@ -69,13 +69,14 @@ public class AccountView extends CardView {
         mBalanceFiatText = UI.find(view, R.id.mainLocalBalanceText);
         mActionReceiveLayout = UI.find(view, R.id.actionReceiveLayout);
         mActionSendLayout = UI.find(view, R.id.actionSendLayout);
-        mActionDividerLayout = UI.find(view, R.id.actionDividerLayout);
         mBackButton = UI.find(view, R.id.backButton);
+        mNetworkImage = UI.find(view, R.id.networkImage);
     }
 
     // Show actions
     public void hideActions() {
         mActionLayout.setVisibility(GONE);
+
     }
 
     public void showActions(final boolean isWatchOnly) {
@@ -85,6 +86,11 @@ public class AccountView extends CardView {
 
     public void showBack(boolean show) {
         mBackButton.setVisibility(show ? VISIBLE : GONE);
+        mNetworkImage.setVisibility(show ? VISIBLE : GONE);
+    }
+
+    public void setIcon(final Drawable resource) {
+        mNetworkImage.setImageDrawable(resource);
     }
 
     public void setTitle(final String text) {
@@ -100,7 +106,7 @@ public class AccountView extends CardView {
         final String valueFiat = service.getValueString(balanceData, true, true);
         mBalanceText.setVisibility(VISIBLE);
         mBalanceText.setText(valueBitcoin);
-        mBalanceFiatText.setText(valueFiat);
+        mBalanceFiatText.setText("≈  " + valueFiat);
 
         /*if (service.isElements()) {
             mBalanceUnit.setText(String.format("%s ", service.getAssetSymbol()));

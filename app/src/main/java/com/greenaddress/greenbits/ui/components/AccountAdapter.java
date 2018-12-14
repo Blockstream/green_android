@@ -61,6 +61,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             holder.mAccountView.setBalance(mService, balance);
         }
         holder.mAccountView.hideActions();
+        holder.mAccountView.showBack(false);
         holder.mAccountView.setOnClickListener(listener);
         holder.mView.setOnClickListener(listener);
     }
