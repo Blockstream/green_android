@@ -45,9 +45,11 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class UI {
     private static final String TAG = UI.class.getSimpleName();
@@ -266,10 +268,17 @@ public abstract class UI {
         }));
     }
 
+    private final static Set<Integer> idsToNotReplace = new HashSet<>();
+    static {
+        idsToNotReplace.add(R.id.layoutCode);
+        idsToNotReplace.add(R.id.textCode);
+        idsToNotReplace.add(R.id.copyButton);
+    }
+
     // Keyboard hiding taken from https://stackoverflow.com/a/11656129
     public static void attachHideKeyboardListener(final Activity activity, final View view) {
         // Set up touch listener for non-text box views to hide keyboard.
-        if (!(view instanceof EditText) && !(view instanceof Button)) {
+        if (!(view instanceof EditText) && !(view instanceof Button) && !(idsToNotReplace.contains(view.getId()))) {
             view.setOnClickListener(v -> hideSoftKeyboard(activity));
         }
 

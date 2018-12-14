@@ -66,20 +66,20 @@
                     <TextView
                         android:id="@+id/textCode"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         app:autoSizeTextType="uniform"
                         app:autoSizeMinTextSize="12sp"
                         app:autoSizeMaxTextSize="16sp"
                         app:autoSizeStepGranularity="2sp"
                         android:gravity="center"
                         android:textColor="@color/green_dark"
-                        android:layout_weight="1"
-                        android:text="ccc"/>
+                        android:layout_weight="1"/>
 
                     <ImageView
+                        android:id="@+id/copyButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/qr_copy"/>
+                        android:src="@drawable/ic_copy"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
