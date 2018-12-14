@@ -52,10 +52,10 @@ public class PopupCodeResolver implements CodeResolver {
 
     private Drawable getIconFor(final String method) {
         switch (method) {
-        case "email": return ContextCompat.getDrawable(activity, R.drawable.twofa_email);
-        case "sms": return ContextCompat.getDrawable(activity, R.drawable.twofa_sms);
-        case "gauth": return ContextCompat.getDrawable(activity, R.drawable.twofa_google);
-        case "phone": return ContextCompat.getDrawable(activity, R.drawable.twofa_call);
+        case "email": return ContextCompat.getDrawable(activity, R.drawable.ic_2fa_email);
+        case "sms": return ContextCompat.getDrawable(activity, R.drawable.ic_2fa_sms);
+        case "gauth": return ContextCompat.getDrawable(activity, R.drawable.ic_2fa_google);
+        case "phone": return ContextCompat.getDrawable(activity, R.drawable.ic_2fa_call);
         default: return null;
         }
     }
