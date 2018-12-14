@@ -251,7 +251,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     public int getIconResourceId() {
-        return R.drawable.ledger;
+        return R.drawable.ic_ledger;
     }
 
     /*

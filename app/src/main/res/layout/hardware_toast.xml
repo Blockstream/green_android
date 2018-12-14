@@ -7,7 +7,7 @@
               android:background="#cf000000">
 
     <ImageView android:id="@+id/hwToastIcon"
-               android:src="@drawable/trezor"
+               android:src="@drawable/ic_trezor"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:layout_gravity="center_horizontal"

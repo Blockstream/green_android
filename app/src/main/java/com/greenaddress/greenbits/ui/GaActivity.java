@@ -263,7 +263,7 @@ public abstract class GaActivity extends AppCompatActivity {
             final Toast toast = new Toast(this);
             toast.setView(v);
             toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.setDuration(iconId == R.drawable.ledger ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
+            toast.setDuration(iconId == R.drawable.ic_ledger ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
             toast.show();
         });
     }

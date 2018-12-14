@@ -109,12 +109,12 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         switch (mVendorId) {
         case VENDOR_TREZOR:
         case VENDOR_TREZOR_V2:
-            hardwareIcon.setImageResource(R.drawable.trezor);
+            hardwareIcon.setImageResource(R.drawable.ic_trezor);
             onTrezor();
             return;
         case VENDOR_BTCHIP:
         case VENDOR_LEDGER:
-            hardwareIcon.setImageResource(R.drawable.ledger);
+            hardwareIcon.setImageResource(R.drawable.ic_ledger);
             if (BTChipTransportAndroid.isLedgerWithScreen(usb)) {
                 // User entered PIN on-device
                 onLedger(true);
