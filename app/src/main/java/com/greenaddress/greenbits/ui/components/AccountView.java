@@ -1,18 +1,15 @@
 package com.greenaddress.greenbits.ui.components;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,7 +17,6 @@ import android.widget.TextView;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.FontAwesomeTextView;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -28,7 +24,7 @@ public class AccountView extends CardView {
 
     private View mView;
     private Button mSendButton, mReceiveButton;
-    private AppCompatImageButton mBackButton;
+    private ImageButton mBackButton;
     private RelativeLayout mBodyLayout;
     private LinearLayout mActionLayout, mActionReceiveLayout, mActionSendLayout, mActionDividerLayout;
     private TextView mTitleText, mBalanceText, mBalanceFiatText;
