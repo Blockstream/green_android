@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:textSize="17sp"
             android:padding="@dimen/sections_padding"
-            android:text="I want to connect through a proxy"/>
+            android:text="@string/id_connect_through_a_proxy"/>
 
         <LinearLayout
             android:id="@+id/proxySection"
@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/sections_padding"
-            android:text="@string/id_enable_tor"/>
+            android:text="@string/id_connect_with_tor"/>
 
         <View
             android:layout_width="match_parent"

@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -11,16 +12,61 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/mnemonicOkButton"
-        >
+        android:layout_above="@+id/mnemonicOkButton">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mnemonicRecyclerView"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-             />
+            android:orientation="vertical">
 
+           <TableLayout
+               android:id="@+id/mnemonic24"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:stretchColumns="1,3,5">
+
+               <include layout="@layout/mnemonic_table_row"/>
+               <include layout="@layout/mnemonic_table_row"/>
+               <include layout="@layout/mnemonic_table_row"/>
+               <include layout="@layout/mnemonic_table_row"/>
+               <include layout="@layout/mnemonic_table_row"/>
+               <include layout="@layout/mnemonic_table_row"/>
+               <include layout="@layout/mnemonic_table_row"/>
+               <include layout="@layout/mnemonic_table_row"/>
+           </TableLayout>
+
+           <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
+
+               <Space
+                   android:layout_width="0dp"
+                   android:layout_height="0dp"
+                   android:layout_weight="1" />
+
+               <Switch
+                   android:id="@+id/mnemonicEncrypted"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:textSize="17sp"
+                   android:text="@string/id_password_protected"
+                   android:padding="@dimen/sections_padding"/>
+           </LinearLayout>
+
+           <TableLayout
+               android:id="@+id/mnemonic3"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:stretchColumns="1,3,5"
+               android:visibility="gone">
+
+               <include layout="@layout/mnemonic_table_row"/>
+           </TableLayout>
+
+        </LinearLayout>
     </ScrollView>
+
     <Button
         android:id="@+id/mnemonicOkButton"
         style="@style/gradientButton"

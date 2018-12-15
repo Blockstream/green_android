@@ -1,0 +1,7 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <TableRow>
+        <include layout="@layout/mnemonic_number_word"/>
+        <include layout="@layout/mnemonic_number_word"/>
+        <include layout="@layout/mnemonic_number_word"/>
+    </TableRow>
+</merge>

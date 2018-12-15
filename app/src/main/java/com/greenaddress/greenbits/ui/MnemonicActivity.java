@@ -2,7 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.nfc.NdefMessage;
@@ -10,58 +9,55 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.Switch;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import de.schildbach.wallet.ui.ScanActivity;
 
 import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 
-public class MnemonicActivity extends LoginActivity implements View.OnClickListener {
+public class MnemonicActivity extends LoginActivity implements View.OnClickListener,
+    View.OnKeyListener, TextView.OnEditorActionListener {
 
     private static final String TAG = MnemonicActivity.class.getSimpleName();
 
     private static final int PINSAVE = 1337;
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
-    private static final int WORDS_PER_LINE = 3;
     private static final int MNEMONIC_LENGTH = 24;
     private static final int ENCRYPTED_MNEMONIC_LENGTH = 27;
 
-    private RecyclerView mRecyclerView;
-    private MnemonicViewAdapter mMnemonicViewAdapter;
+    private final Object mWordList = Wally.bip39_get_wordlist("en");
+
     private Button mOkButton;
+    private Switch mEncryptedSwitch;
+    private final MultiAutoCompleteTextView mWordEditTexts[] = new MultiAutoCompleteTextView[ENCRYPTED_MNEMONIC_LENGTH];
+    private ArrayAdapter<String> mWordsAdapter;
 
     final private MultiAutoCompleteTextView.Tokenizer mTokenizer = new MultiAutoCompleteTextView.Tokenizer() {
         private boolean isspace(final CharSequence t, final int pos) {
@@ -106,16 +102,14 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         setTitleBackTransparent();
         setTitleWithNetwork(R.string.id_restore);
 
-        mOkButton = UI.find(this,R.id.mnemonicOkButton);
-        mOkButton.setOnClickListener(this);
+        mOkButton = UI.mapClick(this, R.id.mnemonicOkButton, this);
+        mEncryptedSwitch = UI.mapClick(this, R.id.mnemonicEncrypted, this);
 
-        final List<String> data = new ArrayList<>(MNEMONIC_LENGTH);
-        for (int i=0; i < MNEMONIC_LENGTH; i++) data.add("");
-        mMnemonicViewAdapter = new MnemonicViewAdapter(this, data);
+        mWordsAdapter =
+            new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, MnemonicHelper.mWordsArray);
 
-        mRecyclerView = UI.find(this, R.id.mnemonicRecyclerView);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, WORDS_PER_LINE));
-        mRecyclerView.setAdapter(mMnemonicViewAdapter);
+        setUpTable(R.id.mnemonic24, 1);
+        setUpTable(R.id.mnemonic3, 25);
 
         NFCIntentMnemonicLogin();
         mOkButton.setEnabled(false);
@@ -125,57 +119,89 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     public void onDestroy() {
         super.onDestroy();
         UI.unmapClick(mOkButton);
+        UI.unmapClick(mEncryptedSwitch);
     }
 
-    private boolean markInvalidWord(final Editable e) {
-        for (final StrikethroughSpan s : e.getSpans(0, e.length(), StrikethroughSpan.class))
-            e.removeSpan(s);
+    private void setUpTable(final int id, final int startWordNum) {
+        int wordNum = startWordNum;
+        final TableLayout table = UI.find(this, id);
 
-        final String word = e.toString();
-        final int end = word.length();
-        if (!MnemonicHelper.isPrefix(word))
-            e.setSpan(new StrikethroughSpan(), 0, end, 0);
-        return !MnemonicHelper.mWords.contains(word);
+        for (int y = 0; y < table.getChildCount(); ++y) {
+            final TableRow row = (TableRow) table.getChildAt(y);
+
+            for (int x = 0; x < row.getChildCount() / 2; ++x) {
+                ((TextView) row.getChildAt(x * 2)).setText(String.valueOf(wordNum));
+
+                MultiAutoCompleteTextView me = (MultiAutoCompleteTextView) row.getChildAt(x * 2 + 1);
+                me.setAdapter(mWordsAdapter);
+                me.setThreshold(3);
+                me.setTokenizer(mTokenizer);
+                me.setOnEditorActionListener(this);
+                me.setOnKeyListener(this);
+                me.addTextChangedListener(new UI.TextWatcher() {
+                    @Override
+                    public void afterTextChanged(final Editable s) {
+                        super.afterTextChanged(s);
+                        final String original = s.toString();
+                        final String trimmed = original.trim();
+                        if (!trimmed.isEmpty() && !trimmed.equals(original)) {
+                            me.setText(trimmed);
+                            return;
+                        }
+                        final boolean isInvalid = markInvalidWord(s);
+                        if (!isInvalid && s.length() > 3) {
+                            if (!enableLogin())
+                                nextFocus();
+                        }
+                    }
+                });
+                registerForContextMenu(me);
+
+                mWordEditTexts[wordNum - 1] = me;
+                ++wordNum;
+            }
+        }
     }
 
     protected int getMainViewId() { return R.layout.activity_mnemonic; }
 
     private String getMnemonic() {
         StringBuilder sb = new StringBuilder();
-        for (String s : mMnemonicViewAdapter.getItems())
-            sb.append(s).append(" ");
+        for (MultiAutoCompleteTextView me : mWordEditTexts)
+            sb.append(me.getText()).append(" ");
         return sb.toString().trim();
     }
 
     private void setMnemonic(final String mnemonic) {
-        if (!isValid(mnemonic)) {
-            UI.toast(this, R.string.id_invalid_mnemonic, Toast.LENGTH_LONG);
+        final int errId = checkValid(mnemonic);
+        if (errId != 0) {
+            UI.toast(this, errId, Toast.LENGTH_LONG);
             return;
         }
 
-        final List<String> words = mMnemonicViewAdapter.getItems();
-        final String newWords[] = mnemonic.split(" ");
-        for (int i  = 0; i < newWords.length; ++i) {
-            words.set(i, newWords[i]);
+        final String words[] = mnemonic.split(" ");
+        mEncryptedSwitch.setChecked(words.length == ENCRYPTED_MNEMONIC_LENGTH);
+        onClick(mEncryptedSwitch);
+        for (int i  = 0; i < words.length; ++i) {
+            mWordEditTexts[i].setText(words[i]);
         }
-        mMnemonicViewAdapter.notifyDataSetChanged();
     }
 
-    private boolean isValid(final String mnemonic) {
+    private int checkValid(final String mnemonic) {
         final String words[] = mnemonic.split(" ");
         if (words.length != MNEMONIC_LENGTH && words.length != ENCRYPTED_MNEMONIC_LENGTH)
-            return false;
+            return R.string.id_invalid_mnemonic_must_be_24_or;
         try {
-            Wally.bip39_mnemonic_validate(Wally.bip39_get_wordlist("en"), mnemonic);
+            Wally.bip39_mnemonic_validate(mWordList, mnemonic);
         } catch (final IllegalArgumentException e) {
-            return false;
+            return R.string.id_invalid_mnemonic;
         }
-        return true;
+        return 0;
     }
 
     private boolean enableLogin() {
         stopLoading();
-        final boolean valid = isValid(getMnemonic());
+        final boolean valid = checkValid(getMnemonic()) == 0;
         if (valid != mOkButton.isEnabled()) {
             mOkButton.setVisibility(View.VISIBLE);
             mOkButton.setEnabled(valid);
@@ -184,28 +210,36 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     }
 
     private void doLogin() {
-        final String mnemonic = getMnemonic();
-        setMnemonic(mnemonic); // Trim mnemonic when OK pressed
-
         if (isLoading())
             return;
 
-        if (mService.getConnectionManager().isPostLogin()) {
+        final ConnectionManager cm = mService.getConnectionManager();
+        if (cm.isPostLogin()) {
             toast(R.string.id_you_must_first_log_out_before);
             return;
         }
 
-        if (!mService.getConnectionManager().isConnected()) {
+        if (!cm.isConnected()) {
             toast(R.string.id_unable_to_contact_the_green);
             return;
         }
 
-        if (!isValid(mnemonic)) {
-            toast(R.string.id_invalid_mnemonic_must_be_24_or);
+        final String mnemonic = getMnemonic();
+        final int errId = checkValid(mnemonic);
+        if (errId != 0) {
+            UI.toast(this, errId, Toast.LENGTH_LONG);
             return;
         }
-
-        mService.getExecutor().execute(() -> mService.getConnectionManager().loginWithMnemonic(mnemonic, ""));
+        if (!mEncryptedSwitch.isChecked()) {
+            mService.getExecutor().execute(() -> cm.loginWithMnemonic(mnemonic, ""));
+        } else {
+            CB.after(askForPassphrase(), new CB.Toast<String>(this, mOkButton) {
+                @Override
+                public void onSuccess(final String mnemonicPassword) {
+                    cm.loginWithMnemonic(mnemonic, mnemonicPassword);
+                }
+            });
+        }
 
         startLoading();
         mOkButton.setEnabled(false);
@@ -213,27 +247,17 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
     private ListenableFuture<String> askForPassphrase() {
         final SettableFuture<String> fn = SettableFuture.create();
-        runOnUiThread(new Runnable() {
-            public void run() {
-                final View v = UI.inflateDialog(MnemonicActivity.this, R.layout.dialog_passphrase);
-                final EditText passphraseValue = UI.find(v, R.id.passphraseValue);
-                passphraseValue.requestFocus();
-                final MaterialDialog dialog = UI.popup(MnemonicActivity.this, "Encryption passphrase")
-                                              .customView(v, true)
-                                              .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                        fn.set(UI.getText(passphraseValue));
-                    }
-                })
-                                              .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                        enableLogin();
-                    }
-                }).build();
-                UI.showDialog(dialog);
-            }
+        runOnUiThread(() -> {
+            final View v = UI.inflateDialog(MnemonicActivity.this, R.layout.dialog_passphrase);
+            final EditText passEdit = UI.find(v, R.id.passphraseValue);
+            passEdit.requestFocus();
+            final MaterialDialog d = UI.popup(MnemonicActivity.this, "Encryption passphrase")
+                                     .customView(v, true)
+                                     .onPositive((dlg, w) -> fn.set(UI.getText(passEdit)))
+                                     .onNegative((dlg, w) -> enableLogin())
+                                     .build();
+            UI.mapEnterToPositive(d, R.id.passphraseValue);
+            UI.showDialog(d);
         });
         return fn;
     }
@@ -242,6 +266,14 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     public void onClick(final View v) {
         if (v == mOkButton)
             doLogin();
+        else if (v == mEncryptedSwitch) {
+            final boolean encrypted = mEncryptedSwitch.isChecked();
+            UI.showIf(encrypted, UI.find(this, R.id.mnemonic3));
+            if (!encrypted) {
+                for (int i = MNEMONIC_LENGTH; i < ENCRYPTED_MNEMONIC_LENGTH; ++i)
+                    mWordEditTexts[i].setText("");
+            }
+        }
     }
 
     private void onScanClicked() {
@@ -255,10 +287,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         }
     }
 
-    private void loginOnUiThread() {
-        runOnUiThread(new Runnable() { public void run() { doLogin(); } });
-    }
-
     private static byte[] getNFCPayload(final Intent intent) {
         final Parcelable[] extra = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
         return ((NdefMessage) extra[0]).getRecords()[0].getPayload();
@@ -270,19 +298,17 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         if (intent == null || !NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()))
             return;
 
-        if (intent.getType().equals("x-gait/mnc")) {
+        if ("x-gait/mnc".equals(intent.getType())) {
             // Unencrypted NFC
             setMnemonic(CryptoHelper.mnemonic_from_bytes(getNFCPayload(intent)));
-            loginOnUiThread();
-
-        } else if (intent.getType().equals("x-ga/en"))
+            runOnUiThread(this::doLogin);
+        } else if ("x-ga/en".equals(intent.getType()))
             // Encrypted NFC
             CB.after(askForPassphrase(), new CB.Op<String>() {
                 @Override
                 public void onSuccess(final String passphrase) {
-                    setMnemonic(CryptoHelper.decrypt_mnemonic(getNFCPayload(intent),
-                                                              passphrase));
-                    loginOnUiThread();
+                    setMnemonic(CryptoHelper.decrypt_mnemonic(getNFCPayload(intent), passphrase));
+                    runOnUiThread(() -> doLogin());
                 }
             });
     }
@@ -315,12 +341,11 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     public void onCreateContextMenu(final ContextMenu menu, final View v,
                                     final ContextMenu.ContextMenuInfo menuInfo) {
         // Handle custom paste
-        menu.add(0, v.getId(), 0, "Paste");
+        menu.add(0, v.getId(), 0, getString(R.string.id_paste));
     }
 
     @Override
     public boolean onContextItemSelected(final MenuItem menuItem) {
-        // place your TextView's text in clipboard
         final ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (clipboard.hasPrimaryClip() && clipboard.getPrimaryClipDescription().hasMimeType(MIMETYPE_TEXT_PLAIN)) {
             final ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
@@ -372,121 +397,48 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     @Override
     protected void onLoginFailure() {
         super.onLoginFailure();
-        final String message = "Login failed";
-        MnemonicActivity.this.toast(message);
+        UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
         enableLogin();
     }
 
-    class MnemonicViewAdapter extends RecyclerView.Adapter<MnemonicViewAdapter.EditTextViewHolder> implements
-        View.OnKeyListener, TextView.OnEditorActionListener {
-
-        private List<String> mData;
-        private LayoutInflater mInflater;
-        private ArrayAdapter<String> adapter;
-
-        MnemonicViewAdapter(final Context context, final List<String> data) {
-            mInflater = LayoutInflater.from(context);
-            mData = data;
-            adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line,
-                                               MnemonicHelper.mWordsArray);
-        }
-
-        @Override
-        public MnemonicViewAdapter.EditTextViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            final View view = mInflater.inflate(R.layout.list_element_mnemonic, parent, false);
-            final MultiAutoCompleteTextView mnemonicText = UI.find(view, R.id.mnemonicText);
-            mnemonicText.setAdapter(adapter);
-            mnemonicText.setThreshold(3);
-            mnemonicText.setTokenizer(mTokenizer);
-            mnemonicText.setOnEditorActionListener(this);
-            mnemonicText.setOnKeyListener(this);
-            mnemonicText.addTextChangedListener(new UI.TextWatcher() {
-                @Override
-                public void afterTextChanged(final Editable s) {
-                    super.afterTextChanged(s);
-                    final boolean isInvalid = markInvalidWord(s);
-                    if (!isInvalid && s.length() > 3) {
-                        if (!enableLogin())
-                            nextFocus();
-                    }
-                }
-            });
-            registerForContextMenu(mnemonicText);
-            return new MnemonicViewAdapter.EditTextViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final MnemonicViewAdapter.EditTextViewHolder holder, final int position) {
-            if (position >= mData.size())
-                return;
-            holder.numericText.setText(String.valueOf(position + 1));
-            final String word = mData.get(position);
-            if (!UI.getText(holder.mnemonicText).equals(word))
-                holder.mnemonicText.setText(word);
-        }
-
-        private void nextFocus() {
-            final View view = MnemonicActivity.this.getCurrentFocus();
-            if (!(view instanceof TextView))
-                return;
-            final View next = view.focusSearch(View.FOCUS_FORWARD);
-            if (next != null)
-                next.requestFocus();
-        }
-
-        @Override
-        public int getItemCount() {
-            return mData.size();
-        }
-
-        public List<String> getItems() {
-            return mData;
-        }
-
-        @Override
-        public boolean onKey(final View view, final int keyCode, final KeyEvent keyEvent) {
-            if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_SPACE) {
+    @Override
+    public boolean onEditorAction(final TextView textView, final int actionId, final KeyEvent keyEvent) {
+        if (keyEvent != null) {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
+                keyEvent.getKeyCode() == KeyEvent.KEYCODE_SPACE) {
                 nextFocus();
                 return true;
             }
-            return false;
         }
-
-        @Override
-        public boolean onEditorAction(final TextView textView, final int actionId, final KeyEvent keyEvent) {
-            if (keyEvent != null) {
-                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
-                    keyEvent.getKeyCode() == KeyEvent.KEYCODE_SPACE) {
-                    nextFocus();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public class EditTextViewHolder extends RecyclerView.ViewHolder {
-            public MultiAutoCompleteTextView mnemonicText;
-            public TextView numericText;
-
-            EditTextViewHolder(final View itemView) {
-                super(itemView);
-                mnemonicText = UI.find(itemView, R.id.mnemonicText);
-                numericText = UI.find(itemView, R.id.numericText);
-
-                mnemonicText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        mData.set(getAdapterPosition(), s.toString());
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {}
-                });
-            }
-        }
+        return false;
     }
 
+    @Override
+    public boolean onKey(final View view, final int keyCode, final KeyEvent keyEvent) {
+        if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_SPACE) {
+            nextFocus();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean markInvalidWord(final Editable e) {
+        for (final StrikethroughSpan s : e.getSpans(0, e.length(), StrikethroughSpan.class))
+            e.removeSpan(s);
+
+        final String word = e.toString();
+        final int end = word.length();
+        if (!MnemonicHelper.isPrefix(word))
+            e.setSpan(new StrikethroughSpan(), 0, end, 0);
+        return !MnemonicHelper.mWords.contains(word);
+    }
+
+    private void nextFocus() {
+        final View view = getCurrentFocus();
+        if (!(view instanceof TextView))
+            return;
+        final View next = view.focusSearch(View.FOCUS_FORWARD);
+        if (next != null)
+            next.requestFocus();
+    }
 }

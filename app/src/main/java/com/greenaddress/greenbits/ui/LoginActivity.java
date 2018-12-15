@@ -101,7 +101,5 @@ public abstract class LoginActivity extends GaActivity implements Observer, Netw
     }
 
     @Override
-    public void onSelectNetwork() {
-
-    }
+    public void onSelectNetwork() {}
 }

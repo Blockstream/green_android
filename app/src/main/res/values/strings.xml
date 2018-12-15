@@ -46,6 +46,8 @@
   <string name="id_confirmation_in_24_blocks_4">Confirmation in 24 blocks, 4 hours on average</string>
   <string name="id_confirmation_in_3_blocks_30">Confirmation in 3 blocks, 30 minutes on average</string>
   <string name="id_congratulations">Congratulations!</string>
+  <string name="id_connect_through_a_proxy">Connect through a proxy</string>
+  <string name="id_connect_with_tor">Connect with Tor</string>
   <string name="id_connecting_to_tor_onion_nodes">Connecting to Tor (.onion) nodes allows maximum privacy and security. Press "OK" to continue.</string>
   <string name="id_continue">Continue</string>
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
@@ -84,7 +86,6 @@
   <string name="id_enable_face_id">Enable Face ID</string>
   <string name="id_enable_nlocktime_recovery_emails">Enable nLocktime recovery emails</string>
   <string name="id_enable_spv">Enable SPV</string>
-  <string name="id_enable_tor">Enable Tor</string>
   <string name="id_enable_touch_id">Enable Touch ID</string>
   <string name="id_enabled_1s">Enabled: %1$s</string>
   <string name="id_enter">Enter</string>
@@ -201,6 +202,8 @@
   <string name="id_outdated_hardware_wallet">Outdated hardware wallet firmware. Please upgrade to the latest firmware from your desktop.</string>
   <string name="id_outgoing">Outgoing</string>
   <string name="id_password">Password</string>
+  <string name="id_password_protected">Password protected</string>
+  <string name="id_paste">Paste</string>
   <string name="id_pgp_key">PGP Key</string>
   <string name="id_phone_call">Phone call</string>
   <string name="id_phone_number">phone number</string>

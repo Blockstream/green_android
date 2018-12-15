@@ -238,13 +238,13 @@ public abstract class UI {
         public void afterTextChanged(final Editable s) { }
     }
 
-    public static View mapClick(final Activity activity, final int id, final View.OnClickListener fn) {
-        final View v = find(activity, id);
+    public static < T extends View > T mapClick(final Activity activity, final int id, final View.OnClickListener fn) {
+        final T v = find(activity, id);
         v.setOnClickListener(fn);
         return v;
     }
 
-    public static View mapClick(final Activity activity, final int id, final Intent activityIntent) {
+    public static < T extends View > T mapClick(final Activity activity, final int id, final Intent activityIntent) {
         return mapClick(activity, id, new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
