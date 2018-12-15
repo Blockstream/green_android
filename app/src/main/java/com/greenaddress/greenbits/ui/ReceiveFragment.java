@@ -102,7 +102,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         }
 
         UI.find(mView, R.id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
-        UI.find(mView, R.id.copyAddressButton).setOnClickListener((final View v) -> { onCopyClicked(); });
         UI.find(mView, R.id.generateAddressButton).setOnClickListener((final View v) -> { onNewAddressClicked(); });
 
         final int subaccount = getGAService().getSession().getCurrentSubaccount();
@@ -196,7 +195,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
             bitmapDrawable.setFilterBitmap(false);
             mAddressImage.setImageDrawable(bitmapDrawable);
-            mAddressImage.setOnClickListener((final View v) -> { onNewAddressClicked(); });
+            mAddressImage.setOnClickListener((final View v) -> { onCopyClicked(); });
         }
     }
 

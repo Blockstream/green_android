@@ -224,7 +224,6 @@
   <string name="id_receive">Receive</string>
   <string name="id_received">Received</string>
   <string name="id_received_on">Received on</string>
-  <string name="id_receiving">RECEIVING</string>
   <string name="id_recipient">Recipient</string>
   <string name="id_recovery_and_notifications">Recovery and Notifications</string>
   <string name="id_recovery_words">Recovery words</string>
@@ -235,6 +234,7 @@
   <string name="id_remember_username">Remember username</string>
   <string name="id_remove_custom_network">Remove custom network</string>
   <string name="id_request">Request</string>
+  <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Request Failed</string>
   <string name="id_request_nlocktime">Request nLockTime</string>
   <string name="id_request_nlocktime_transactions">Request nLocktime transactions</string>
