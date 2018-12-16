@@ -28,11 +28,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     private boolean mBlockWaitDialog;
     private boolean mIsDirty;
     protected View mView;
-    private final Runnable mDialogCB = new Runnable() {
-        public void run() {
-            mWaitDialog = null;
-        }
-    };
+    private final Runnable mDialogCB = () -> mWaitDialog = null;;
 
     protected Observer mVerifiedTxObserver;
     protected Observer mNewTxObserver;
@@ -161,12 +157,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     }
 
     public void hideWaitDialog() {
-        if (mWaitDialog != null) {
-            try {
-                mWaitDialog.cancel();
-            } catch (final IllegalArgumentException e) {}
-            mWaitDialog = null;
-        }
+        mWaitDialog = UI.hideDialog(mWaitDialog);
     }
 
     protected void setBlockWaitDialog(final boolean doBlock) {

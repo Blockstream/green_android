@@ -173,6 +173,15 @@ public abstract class UI {
         return popup(a, title, android.R.string.ok, android.R.string.cancel);
     }
 
+    public static MaterialDialog hideDialog(final MaterialDialog dialog) {
+        if (dialog != null) {
+            try {
+                dialog.cancel();
+            } catch (final IllegalArgumentException e) {}
+        }
+        return null;
+    }
+
     public static Map<String, String> getTwoFactorLookup(final Resources res) {
         final List<String> localized = Arrays.asList(res.getStringArray(R.array.twoFactorChoices));
         final List<String> methods = Arrays.asList(res.getStringArray(R.array.twoFactorMethods));

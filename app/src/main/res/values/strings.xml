@@ -358,6 +358,7 @@
   <string name="id_you_need_to_enable_twofactor">You need to enable Two-Factor Authentication before setting the threshold</string>
   <string name="id_you_need_to_set_an_email">You need to set an email address to request nLocktime transactions</string>
   <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled.\nPlease enable another authentication method to avoid losing access to your funds.</string>
+  <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>
   <string name="id_your_s_sent_to_s_has_been">Your %s sent to %s has been confirmed</string>
