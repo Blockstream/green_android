@@ -160,10 +160,15 @@ public class ConnectionManager extends Observable {
         final boolean isDebug = BuildConfig.DEBUG;
         Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") + (mTorEnabled ? " with TOR" : ""));
         try {
-            if (mProxyEnabled) {
-                final String proxyAsString = String.format(Locale.US, "%s:%s", mProxyHost, mProxyPort);
-                Log.d(TAG, "connecting with proxy " + proxyAsString);
-                mSession.connectWithProxy(mNetwork, proxyAsString, mTorEnabled, isDebug);
+            if (mProxyEnabled || mTorEnabled) {
+                final String proxyString;
+                if (!mProxyEnabled || TextUtils.isEmpty(mProxyHost)) {
+                   proxyString = "";
+                } else {
+                   proxyString = String.format(Locale.US, "%s:%s", mProxyHost, mProxyPort);
+                   Log.d(TAG, "connecting with proxy " + proxyString);
+                }
+                mSession.connectWithProxy(mNetwork, proxyString, mTorEnabled, isDebug);
             } else {
                 mSession.connect(mNetwork, isDebug);
             }
