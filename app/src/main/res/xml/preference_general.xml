@@ -58,7 +58,7 @@
 
     <SwitchPreference
         android:key="twoFacNLocktimeEmails"
-        android:title="@string/id_enable_nlocktime_recovery_emails" />
+        android:title="@string/id_nlocktime_transaction_emails" />
 
     <Preference
         android:key="send_nlocktime"

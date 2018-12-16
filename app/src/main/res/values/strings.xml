@@ -84,7 +84,6 @@
   <string name="id_email_address">email address</string>
   <string name="id_enable_custom_networks_debug">Enable custom networks debug options</string>
   <string name="id_enable_face_id">Enable Face ID</string>
-  <string name="id_enable_nlocktime_recovery_emails">Enable nLocktime recovery emails</string>
   <string name="id_enable_spv">Enable SPV</string>
   <string name="id_enable_touch_id">Enable Touch ID</string>
   <string name="id_enabled_1s">Enabled: %1$s</string>
@@ -182,6 +181,7 @@
   <string name="id_next">Next</string>
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">NFC TAGs Written:</string>
+  <string name="id_nlocktime_transaction_emails">nLocktime transaction emails</string>
   <string name="id_nlocktime_transaction_request">nLocktime transaction request sent</string>
   <string name="id_no_amount_specified">No amount specified</string>
   <string name="id_no_attempts_remaining">No attempts remaining</string>
@@ -236,14 +236,11 @@
   <string name="id_remember_me">Remember me</string>
   <string name="id_remember_username">Remember username</string>
   <string name="id_remove_custom_network">Remove custom network</string>
-  <string name="id_request">Request</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Request Failed</string>
-  <string name="id_request_nlocktime">Request nLockTime</string>
   <string name="id_request_nlocktime_transactions">Request nLocktime transactions</string>
   <string name="id_request_sent">Request Sent</string>
   <string name="id_request_twofactor_reset">Request Two-Factor reset</string>
-  <string name="id_request_will_send_nlocktimezip">Request will send nlocktime.zip to your email address</string>
   <string name="id_requested_fee_rate_too_low">Requested fee rate too low</string>
   <string name="id_reset_spv">Reset SPV</string>
   <string name="id_restore">Restore</string>
@@ -354,7 +351,6 @@
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>
   <string name="id_you_must_save_this_mnemonic_now">You MUST save this mnemonic NOW</string>
   <string name="id_you_need_to_enable_the_proxy">You need to enable the proxy configuration (Orbot Socks5) first to enable Tor.</string>
-  <string name="id_you_need_to_set_an_email">You need to set an email address to request nLocktime transactions</string>
   <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled.\nPlease enable another authentication method to avoid losing access to your funds.</string>
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
