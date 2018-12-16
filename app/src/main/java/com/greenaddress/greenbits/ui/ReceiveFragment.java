@@ -195,7 +195,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
             bitmapDrawable.setFilterBitmap(false);
             mAddressImage.setImageDrawable(bitmapDrawable);
-            mAddressImage.setOnClickListener((final View v) ->onCopyClicked());
+            mAddressImage.setOnClickListener((final View v) -> onCopyClicked());
             mAddressText.setOnClickListener((final View v) -> onCopyClicked());
         }
     }
