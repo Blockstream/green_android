@@ -351,11 +351,9 @@
   <string name="id_you_are_not_connected_to_the">You are not connected to the internet. Please connect and retry.</string>
   <string name="id_you_have_full_control_of_your">You have full control of your funds.</string>
   <string name="id_you_have_received_s">You have received %s</string>
-  <string name="id_you_must_enable_twofactor">You must enable Two-Factor Authentication before you can change this setting.</string>
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>
   <string name="id_you_must_save_this_mnemonic_now">You MUST save this mnemonic NOW</string>
   <string name="id_you_need_to_enable_the_proxy">You need to enable the proxy configuration (Orbot Socks5) first to enable Tor.</string>
-  <string name="id_you_need_to_enable_twofactor">You need to enable Two-Factor Authentication before setting the threshold</string>
   <string name="id_you_need_to_set_an_email">You need to set an email address to request nLocktime transactions</string>
   <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled.\nPlease enable another authentication method to avoid losing access to your funds.</string>
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>

@@ -47,14 +47,14 @@
 
     <Preference
         android:key="two_factor_authentication"
-        android:title="Two-factor Authentication"
+        android:title="@string/id_twofactor_authentication"
         android:summary="@string/id_set_up_twofactor_authentication" />
 
 
     <Preference
         android:key="twoFacLimits"
-        android:title="@string/id_set_twofactor_threshold"
-        android:summary="@string/id_you_must_enable_twofactor" />
+        android:title="@string/id_twofactor_threshold"
+        android:summary="@string/id_set_twofactor_threshold" />
 
     <SwitchPreference
         android:key="twoFacNLocktimeEmails"

@@ -544,8 +544,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         getActivity().runOnUiThread(() -> {
             try {
                 final boolean isFiat = limitsData.get("is_fiat").asBoolean();
-                final String limit = mService.getValueString(limitsData, isFiat, true);
-                mLimitsPref.setSummary(getString(R.string.id_your_transaction_threshold_is_s, limit));
+                if (!isFiat && limitsData.get("satoshi").asLong(0) == 0) {
+                    mLimitsPref.setSummary(R.string.id_set_twofactor_threshold);
+                } else {
+                    final String limit = mService.getValueString(limitsData, isFiat, true);
+                    mLimitsPref.setSummary(limit);
+                }
             } catch (final Exception e) {
                 // We can throw because we have been logged out here, e.g. when
                 // requesting a two-factor reset and unwinding the activity stack.
@@ -581,6 +585,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             try {
                 final String unit = unitSpinner.getSelectedItem().toString();
                 setSpendingLimits(unit, UI.getText(amountEdit));
+                UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
             } catch (final Exception e) {
                 UI.toast(getActivity(), "Error setting limits", Toast.LENGTH_LONG);
             }
