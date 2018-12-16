@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -102,7 +103,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         }
 
         UI.find(mView, R.id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
-        UI.find(mView, R.id.generateAddressButton).setOnClickListener((final View v) -> { onNewAddressClicked(); });
 
         final int subaccount = getGAService().getSession().getCurrentSubaccount();
         mTxList = getGAService().getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
@@ -208,6 +208,19 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate -> " + TAG);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.action_generate_new:
+            onNewAddressClicked();
+            return true;
+        default:
+            break;
+        }
+        return false;
     }
 
     private String getAddressUri() {
