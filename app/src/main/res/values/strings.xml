@@ -38,7 +38,7 @@
   <string name="id_cant_connect_to_this_url">Can\'t connect to this URL</string>
   <string name="id_change">CHANGE</string>
   <string name="id_choose">Choose</string>
-  <string name="id_choose_twofactor_authentication">Choose Two-Factor Authentication method</string>
+  <string name="id_choose_twofactor_authentication">Choose Two-Factor authentication method</string>
   <string name="id_clear">CLEAR</string>
   <string name="id_completed">Completed</string>
   <string name="id_confirmation">Confirmation</string>
@@ -268,7 +268,7 @@
   <string name="id_set_a_new_pin">Set a new PIN</string>
   <string name="id_set_custom_fee_rate">Set custom fee rate</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor Threshold</string>
-  <string name="id_set_up_twofactor_authentication">Set up Two-Factor Authentication</string>
+  <string name="id_set_up_twofactor_authentication">Set up Two-Factor authentication</string>
   <string name="id_set_watchonly">Set Watch-Only</string>
   <string name="id_setting_updated">Setting updated</string>
   <string name="id_settings">Settings</string>
@@ -310,7 +310,7 @@
   <string name="id_transaction_already_confirmed">Transaction already confirmed</string>
   <string name="id_transaction_details">Transaction details</string>
   <string name="id_transaction_sent">Transaction Sent</string>
-  <string name="id_twofactor_authentication">Two-Factor Authentication</string>
+  <string name="id_twofactor_authentication">Two-Factor authentication</string>
   <string name="id_twofactor_reset_in_progress">Two-Factor reset in progress, your wallet is currently locked.</string>
   <string name="id_twofactor_settings">Two-Factor Settings</string>
   <string name="id_twofactor_threshold">Two-Factor threshold</string>
