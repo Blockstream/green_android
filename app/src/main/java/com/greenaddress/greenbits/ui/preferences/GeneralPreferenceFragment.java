@@ -9,7 +9,6 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -54,19 +53,18 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private static final int PINSAVE = 1337;
     public static final int REQUEST_ENABLE_2FA = 2031;
 
-    private Preference mFeeRate;
-    private ListPreference mPricing;
-    private ListPreference mUnit;
-    private ListPreference mRequiredNumBlocks;
-    private ListPreference mAltimeout;
+    private SwitchPreference mPinPref;
+    private ListPreference mUnitPref;
+    private ListPreference mPriceSourcePref;
+    private ListPreference mTxPriorityPref;
+    private Preference mCustomRatePref;
     private Preference mTwoFactorPref;
     private Preference mLimitsPref;
-    private Preference mSendNLocktimePref;
+    private SwitchPreference mLocktimePref;
+    private Preference mSendLocktimePref;
     private Preference mTwoFactorRequestResetPref;
-
-    private SwitchPreference mEnableNLocktimePref;
-    private Preference mDeleteOrConfigurePin;
-    private Preference mPassphrase;
+    private Preference mMemonicPref;
+    private ListPreference mTimeoutPref;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -76,14 +74,18 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         attachObservers();
 
         // PIN
-        mDeleteOrConfigurePin = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
-        mDeleteOrConfigurePin.setOnPreferenceClickListener(preference -> {
+        mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
+        mPinPref.setChecked(mService.hasPin());
+        mPinPref.setOnPreferenceClickListener(preference -> {
+            if (mPinPref.isChecked() == mService.hasPin())
+                return false;
             if (mService.hasPin()) {
                 UI.popup(getActivity(), R.string.id_warning)
                 .content(R.string.id_deleting_your_pin_will_remove)
+                .onNegative((dlg, which) -> mPinPref.setChecked(true))
                 .onPositive((dlg, which) -> {
                     mService.cfgPin().edit().clear().commit();
-                    initPinButtonTextAndSummary();
+                    mPinPref.setChecked(false);
                 }).show();
             } else {
                 final Intent savePin = PinSaveActivity.createIntent(getActivity(), mService.getMnemonic());
@@ -119,10 +121,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         });
 
         // Bitcoin denomination
-        mUnit = find(PrefKeys.UNIT);
-        mUnit.setEntries(UI.UNITS.toArray(new String[4]));
-        mUnit.setEntryValues(UI.UNITS.toArray(new String[4]));
-        mUnit.setOnPreferenceChangeListener((preference, newValue) -> {
+        mUnitPref = find(PrefKeys.UNIT);
+        mUnitPref.setEntries(UI.UNITS.toArray(new String[4]));
+        mUnitPref.setEntryValues(UI.UNITS.toArray(new String[4]));
+        mUnitPref.setOnPreferenceChangeListener((preference, newValue) -> {
             final SettingsData settings = mService.getModel().getSettings();
             if (!newValue.equals(settings.getUnit())) {
                 settings.setUnit(newValue.toString());
@@ -134,8 +136,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         });
 
         // Reference exchange rate
-        mPricing = find(PrefKeys.PRICING);
-        mPricing.setOnPreferenceChangeListener((preference, o) -> {
+        mPriceSourcePref = find(PrefKeys.PRICING);
+        mPriceSourcePref.setOnPreferenceChangeListener((preference, o) -> {
             final String[] split = o.toString().split(" ");
             final String currency = split[0];
             final String exchange = split[1];
@@ -155,10 +157,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         });
 
         // Transaction priority, i.e. default fees
-        mRequiredNumBlocks = find(PrefKeys.REQUIRED_NUM_BLOCKS);
+        mTxPriorityPref = find(PrefKeys.REQUIRED_NUM_BLOCKS);
         final String[] priorityValues = getResources().getStringArray(R.array.fee_target_values);
-        mRequiredNumBlocks.setOnPreferenceChangeListener((preference, newValue) -> {
-            final int index = mRequiredNumBlocks.findIndexOfValue(newValue.toString());
+        mTxPriorityPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            final int index = mTxPriorityPref.findIndexOfValue(newValue.toString());
             final SettingsData settings = mService.getModel().getSettings();
             settings.setRequiredNumBlocks(Integer.parseInt(priorityValues[index]));
             setRequiredNumBlocksSummary(null);
@@ -167,9 +169,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         });
 
         // Default custom feerate
-        mFeeRate = find(PrefKeys.DEFAULT_FEERATE_SATBYTE);
+        mCustomRatePref = find(PrefKeys.DEFAULT_FEERATE_SATBYTE);
         setFeeRateSummary();
-        mFeeRate.setOnPreferenceClickListener(this::onFeeRatePreferenceClicked);
+        mCustomRatePref.setOnPreferenceClickListener(this::onFeeRatePreferenceClicked);
 
         // Two-factor Authentication Submenu
         mTwoFactorPref = find(PrefKeys.TWO_FACTOR);
@@ -184,8 +186,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mLimitsPref.setOnPreferenceClickListener(this::onLimitsPreferenceClicked);
 
         // Enable nlocktime recovery emails
-        mEnableNLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);
-        mEnableNLocktimePref.setOnPreferenceChangeListener((preference, o) -> {
+        mLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);
+        mLocktimePref.setOnPreferenceChangeListener((preference, o) -> {
             final boolean value = (Boolean) o;
             final SettingsData settings = mService.getModel().getSettings();
             if (settings.getNotifications() == null)
@@ -197,24 +199,24 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         });
 
         // Send nlocktime recovery emails
-        mSendNLocktimePref = find(PrefKeys.SEND_NLOCKTIME);
-        mSendNLocktimePref.setOnPreferenceClickListener(this::onSendNLocktimeClicked);
+        mSendLocktimePref = find(PrefKeys.SEND_NLOCKTIME);
+        mSendLocktimePref.setOnPreferenceClickListener(this::onSendNLocktimeClicked);
 
         // Cancel two factor reset
         mTwoFactorRequestResetPref = find(PrefKeys.RESET_TWOFACTOR);
         mTwoFactorRequestResetPref.setOnPreferenceClickListener(preference -> prompt2FAChange("reset", true));
 
         // Mnemonic
-        mPassphrase = find(PrefKeys.MNEMONIC_PASSPHRASE);
+        mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
         if (!mService.getConnectionManager().isHW()) {
             final String mnemonic = mService.getMnemonic();
             if ( mnemonic != null) {
-                mPassphrase.setSummary(getString(R.string.id_touch_to_display));
-                mPassphrase.setOnPreferenceClickListener(preference -> {
-                    if (mPassphrase.getSummary().equals(mnemonic))
-                        mPassphrase.setSummary(getString(R.string.id_touch_to_display));
+                mMemonicPref.setSummary(getString(R.string.id_touch_to_display));
+                mMemonicPref.setOnPreferenceClickListener(preference -> {
+                    if (mMemonicPref.getSummary().equals(mnemonic))
+                        mMemonicPref.setSummary(getString(R.string.id_touch_to_display));
                     else
-                        mPassphrase.setSummary(mnemonic);
+                        mMemonicPref.setSummary(mnemonic);
                     return false;
                 });
             }
@@ -222,11 +224,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Auto logout timeout
         final int timeout = mService.getAutoLogoutTimeout();
-        mAltimeout = find(PrefKeys.ALTIMEOUT);
-        mAltimeout.setEntryValues(getResources().getStringArray(R.array.auto_logout_values));
-        setTimeoutValues(mAltimeout);
+        mTimeoutPref = find(PrefKeys.ALTIMEOUT);
+        mTimeoutPref.setEntryValues(getResources().getStringArray(R.array.auto_logout_values));
+        setTimeoutValues(mTimeoutPref);
         setTimeoutSummary(timeout);
-        mAltimeout.setOnPreferenceChangeListener((preference, newValue) -> {
+        mTimeoutPref.setOnPreferenceChangeListener((preference, newValue) -> {
             final Integer altimeout = Integer.parseInt(newValue.toString());
             final SettingsData settings = mService.getModel().getSettings();
             settings.setAltimeout(altimeout);
@@ -271,7 +273,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             setPricingEntries(currenciesObservable);
         if (settingsObservable.getSettings() != null) {
             setPricingSummary(settingsObservable.getSettings().getPricing());
-            mUnit.setSummary(mService.getBitcoinUnit());
+            mUnitPref.setSummary(mService.getBitcoinUnit());
             setRequiredNumBlocksSummary(model.getSettings().getRequiredNumBlocks());
             if (twoFaData.getTwoFactorConfigData() != null) {
                 setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
@@ -388,24 +390,24 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
     private void setRequiredNumBlocksSummary(final Integer currentPriority) {
         if (currentPriority == null)
-            mRequiredNumBlocks.setSummary("");
+            mTxPriorityPref.setSummary("");
         else {
             final String[] prioritySummaries = getResources().getStringArray(R.array.fee_target_summaries);
             final String[] priorityValues = getResources().getStringArray(R.array.fee_target_values);
             for (int index = 0; index < priorityValues.length; index++)
                 if (currentPriority.equals(Integer.valueOf(priorityValues[index])))
-                    mRequiredNumBlocks.setSummary(prioritySummaries[index]);
+                    mTxPriorityPref.setSummary(prioritySummaries[index]);
         }
     }
 
     private void setTimeoutSummary(final Integer altimeout) {
         if (altimeout == null)
-            mAltimeout.setSummary("");
+            mTimeoutPref.setSummary("");
         else {
             final String minutesText = altimeout == 1 ?
                                        "1 " + getString(R.string.id_minute) :
                                        getString(R.string.id_1d_minutes, altimeout);
-            mAltimeout.setSummary(minutesText);
+            mTimeoutPref.setSummary(minutesText);
         }
     }
 
@@ -429,26 +431,26 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             observable.getAvailableCurrenciesAsFormattedList(getString(R.string.id_s_from_s));
         final String[] valuesArr = values.toArray(new String[values.size()]);
         final String[] formattedArr = formatted.toArray(new String[formatted.size()]);
-        mPricing.setEntries(formattedArr);
-        mPricing.setEntryValues(valuesArr);
+        mPriceSourcePref.setEntries(formattedArr);
+        mPriceSourcePref.setEntryValues(valuesArr);
     }
 
     private void setPricingSummary(final PricingData pricing) {
         final String summary = pricing == null ? "" : String.format(getString(
                                                                         R.string.id_s_from_s),
                                                                     pricing.getCurrency(), pricing.getExchange());
-        mPricing.setSummary(summary);
+        mPriceSourcePref.setSummary(summary);
     }
 
     private void setUnitSummary(final String value) {
         final String summary = value == null ? "" : value;
-        mUnit.setSummary(summary);
+        mUnitPref.setSummary(summary);
     }
 
     private void setFeeRateSummary() {
         final Double aDouble = Double.valueOf(getDefaultFeeRate());
         final String feeRateString = SendInputFragment.getFeeRateString(Double.valueOf(aDouble * 1000).longValue());
-        mFeeRate.setSummary(feeRateString);
+        mCustomRatePref.setSummary(feeRateString);
     }
 
     private void attachObservers() {
@@ -466,17 +468,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     public void onResume() {
         super.onResume();
         initSummaries();
-        initPinButtonTextAndSummary();
+        mPinPref.setChecked(mService.hasPin());
         attachObservers();
         updatesVisibilities();
-    }
-
-    private void initPinButtonTextAndSummary() {
-        final int text = mService.hasPin() ? R.string.id_delete_pin : R.string.id_set_a_new_pin;
-        mDeleteOrConfigurePin.setTitle(text);
-        final int summaryId =
-            mService.hasPin() ? R.string.id_deleting_your_pin_will_require : R.string.id_create_a_pin_to_access_your;
-        mDeleteOrConfigurePin.setSummary(summaryId);
     }
 
     @Override
@@ -492,22 +486,22 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             return;
 
         final boolean isHW = mService.getConnectionManager().isHW();
-        mDeleteOrConfigurePin.setVisible(!isHW);
-        mPassphrase.setVisible(!isHW);
+        mPinPref.setVisible(!isHW);
+        mMemonicPref.setVisible(!isHW);
 
         final boolean isElements = mService.isElements();
-        mFeeRate.setVisible(!isElements);
-        mRequiredNumBlocks.setVisible(!isElements);
-        mPricing.setVisible(!isElements);
-        mUnit.setVisible(!isElements);
+        mCustomRatePref.setVisible(!isElements);
+        mTxPriorityPref.setVisible(!isElements);
+        mPriceSourcePref.setVisible(!isElements);
+        mUnitPref.setVisible(!isElements);
 
         final boolean anyEnabled = mService.getModel().getTwoFactorConfig().isAnyEnabled();
         mLimitsPref.setVisible(anyEnabled);
-        mSendNLocktimePref.setVisible(anyEnabled);
+        mSendLocktimePref.setVisible(anyEnabled);
         mTwoFactorRequestResetPref.setVisible(anyEnabled);
 
         final boolean emailConfirmed = mService.getModel().getTwoFactorConfig().getEmail().isConfirmed();
-        mEnableNLocktimePref.setVisible(emailConfirmed);
+        mLocktimePref.setVisible(emailConfirmed);
     }
 
     @Override

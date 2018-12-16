@@ -52,7 +52,7 @@
   <string name="id_continue">Continue</string>
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
   <string name="id_create">Create</string>
-  <string name="id_create_a_pin_to_access_your">Create a PIN to access your wallet.</string>
+  <string name="id_create_a_pin_to_access_your">Create a PIN to access your wallet</string>
   <string name="id_create_wallet">Create Wallet</string>
   <string name="id_currency">Currency</string>
   <string name="id_custom">Custom</string>
@@ -66,9 +66,7 @@
   <string name="id_days_remaining_s">Days remaining: %s</string>
   <string name="id_default_custom_fee_rate">Default custom fee rate</string>
   <string name="id_default_transaction_priority">Default transaction priority</string>
-  <string name="id_delete_pin">Delete PIN</string>
   <string name="id_deleting_your_pin_will_remove">Deleting your PIN will remove wallet access permanently unless you have your mnemonic available. Press "OK" to continue.</string>
-  <string name="id_deleting_your_pin_will_require">Deleting your PIN will require your mnemonic to log in in the future.</string>
   <string name="id_denomination">Denomination</string>
   <string name="id_deposit">Deposit</string>
   <string name="id_displays_the_progress_of_spv">Displays the progress of SPV synchronization</string>

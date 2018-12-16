@@ -4,8 +4,9 @@
         android:key="network_category"
         android:title="NETWORK" />
 
-    <Preference
-        android:key="delete_or_configure_pin" />
+    <SwitchPreference
+        android:key="delete_or_configure_pin"
+        android:title="@string/id_pin" />
 
     <Preference
         android:key="watch_only_login"
