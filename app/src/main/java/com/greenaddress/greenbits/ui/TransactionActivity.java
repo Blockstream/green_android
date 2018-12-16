@@ -136,7 +136,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set fees
         showFeeInfo(mTxItem.fee, mTxItem.vSize, mTxItem.feeRate);
-        UI.hide(mEstimatedBlocks, mBumpFeeButton);
+        UI.hide(mEstimatedBlocks);
+        UI.hide(mBumpFeeButton);
         if (mTxItem.type == TransactionItem.TYPE.OUT || mTxItem.type == TransactionItem.TYPE.REDEPOSIT ||
             mTxItem.isSpent) {
             if (mTxItem.getConfirmations() == 0)
@@ -169,8 +170,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             }
             doubleSpentByText.setText(res);
         }
-        UI.showIf(
-            mTxItem.doubleSpentBy != null || !mTxItem.replacedHashes.isEmpty(), doubleSpentByText, doubleSpentByTitle);
+        final boolean showDoubleSpent = mTxItem.doubleSpentBy != null || !mTxItem.replacedHashes.isEmpty();
+        UI.showIf(showDoubleSpent, doubleSpentByText);
+        UI.showIf(showDoubleSpent, doubleSpentByTitle);
 
         // Set recipient / received on
         final TextView receivedOnText = UI.find(this, R.id.txReceivedOnText);
@@ -179,7 +181,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);
         if (!TextUtils.isEmpty(mTxItem.counterparty)) {
             recipientText.setText(mTxItem.counterparty);
-            UI.hide(receivedOnText, receivedOnTitle);
+            UI.hide(receivedOnText);
+            UI.hide(receivedOnTitle);
         }
 
         final int subaccount = mService.getSession().getCurrentSubaccount();
@@ -187,15 +190,16 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                                    subaccount).getName());
 
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));
-        UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientText, recipientTitle);
+        UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientText);
+        UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientTitle);
 
         // Memo
         if (!TextUtils.isEmpty(mTxItem.memo)) {
             mMemoText.setText(mTxItem.memo);
-            UI.hideIf(isWatchOnly, mMemoIcon);
         } else {
-            UI.hideIf(isWatchOnly, mMemoTitle, mMemoIcon);
+            UI.hideIf(isWatchOnly, mMemoTitle);
         }
+        UI.hideIf(isWatchOnly, mMemoIcon);
 
         if (!isWatchOnly) {
             mMemoIcon.setOnClickListener(this);
@@ -285,7 +289,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private void onMemoIconClicked() {
         final boolean editInProgress = mMemoEditText.getVisibility() == View.VISIBLE;
         mMemoEditText.setText(UI.getText(mMemoText));
-        UI.hideIf(editInProgress, mMemoEditText, mMemoSaveButton);
+        UI.hideIf(editInProgress, mMemoEditText);
+        UI.hideIf(editInProgress, mMemoSaveButton);
         UI.showIf(editInProgress, mMemoText);
     }
 
@@ -310,9 +315,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private void onFinishedSavingMemo() {
         runOnUiThread(() -> {
             mMemoText.setText(UI.getText(mMemoEditText));
-            UI.hide(mMemoEditText, mMemoSaveButton);
-            UI.hideIf(UI.getText(mMemoText).isEmpty(),
-                      mMemoText);
+            UI.hide(mMemoEditText);
+            UI.hide(mMemoSaveButton);
+            UI.hideIf(UI.getText(mMemoText).isEmpty(), mMemoText);
             hideKeyboardFrom(mMemoEditText);
         });
         // Force reload tx

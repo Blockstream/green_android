@@ -17,62 +17,64 @@ import com.greenaddress.greenbits.ui.components.PinEntryView;
 
 public class PinFragment extends GAFragment implements View.OnClickListener, KeyboardView.OnKeyboardActionListener {
 
-    private boolean isSixDigit;
+    private boolean mIsSixDigit;
     private OnPinListener mPinCallback;
     private PinEntryView mPinEntryView;
     private TextView mPinLongText;
+    private CircularButton mPinButton;
+    private TextView mSkipText;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        isSixDigit = getArguments() == null || getArguments().getBoolean("is_six_digit", true);
+        mIsSixDigit = getArguments() == null || getArguments().getBoolean("is_six_digit", true);
 
         // Disable android keyboard
         getGaActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         final View rootView;
-        if (isSixDigit()) {
-            // pin fixed of six digits
+        if (mIsSixDigit) {
+            // PIN fixed at six digits length
             rootView = inflater.inflate(R.layout.fragment_pin_six_digits, container, false);
             mPinEntryView =  UI.find(rootView, R.id.pin_entry);
             mPinEntryView.requestFocus();
             mPinEntryView.disableKeyboard();
             mPinEntryView.setOnPinEnteredListener(pin -> afterPinInserted());
-            mPinEntryView.setOnTouchListener((view, motionEvent) -> true);  // prevent the keyboard from popping out
-
+            mPinEntryView.setOnTouchListener((view, motionEvent) -> true);  // prevent keyboard from popping out
         } else {
-            // long pin text
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) // API 21
-                mPinLongText.setShowSoftInputOnFocus(false);
-            else // API 11-20
-                mPinLongText.setTextIsSelectable(true);
+            // long pin text (supported for upgrading existing installs)
             rootView = inflater.inflate(R.layout.fragment_pin_text, container, false);
             mPinLongText = UI.find(rootView, R.id.pinText);
-            final CircularButton mPinButton = UI.find(rootView, R.id.pinLoginButton);
-            mPinButton.setOnClickListener(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) // API 21
+                mPinLongText.setShowSoftInputOnFocus(false);
+            else
+                mPinLongText.setTextIsSelectable(true);
+            mPinButton = UI.mapClick(rootView, R.id.pinLoginButton, this);
         }
 
         // SKIP
-        final TextView skipButton = rootView.findViewById(R.id.skipButton);
-        boolean isOnBoarding = getArguments() == null ||  getArguments().getBoolean("skip_visible", false);
-        skipButton.setVisibility(isOnBoarding ? View.VISIBLE : View.INVISIBLE);
-        skipButton.setOnClickListener(view -> getGaActivity().goToTabbedMainActivity());
+        mSkipText = UI.mapClick(rootView, R.id.skipButton, this);
+        final boolean isOnBoarding = getArguments() == null ||  getArguments().getBoolean("skip_visible", false);
+        UI.showIf(isOnBoarding, mSkipText, View.INVISIBLE);
 
         // Load custom keyboard
-        final KeyboardView mKeyboardView = UI.find(rootView, R.id.keyboardView);
-        mKeyboardView.setKeyboard(new Keyboard(getActivity(), R.xml.keyboard));
-        mKeyboardView.setOnKeyboardActionListener(this);
-        mKeyboardView.setPreviewEnabled(false);
+        final KeyboardView kv = UI.find(rootView, R.id.keyboardView);
+        kv.setKeyboard(new Keyboard(getActivity(), R.xml.keyboard));
+        kv.setOnKeyboardActionListener(this);
+        kv.setPreviewEnabled(false);
         return rootView;
     }
 
-    protected boolean isSixDigit(){
-        return isSixDigit;
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        UI.unmapClick(mPinButton);
+        UI.unmapClick(mSkipText);
     }
 
     public void clear() {
         setEnabled(false);
-        if (isSixDigit())
+        if (mIsSixDigit)
             mPinEntryView.clearText();
         else
             mPinLongText.setText("");
@@ -80,28 +82,26 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
     }
 
     public void setEnabled(final boolean enabled) {
-        if (isSixDigit())
-            mPinEntryView.setEnabled(enabled);
-        else
-            mPinLongText.setEnabled(enabled);
+        UI.enableIf(enabled, mIsSixDigit ? mPinEntryView : mPinLongText);
     }
 
     public String getPin(){
-        if (isSixDigit())
+        if (mIsSixDigit)
             return mPinEntryView.getText().toString();
-        else
-            return mPinLongText.getText().toString();
+        return mPinLongText.getText().toString();
     }
 
     private void afterPinInserted(){
-        if (mPinCallback == null)
-            return;
-        mPinCallback.onPinInserted(getPin());
+        if (mPinCallback != null)
+            mPinCallback.onPinInserted(getPin());
     }
 
     @Override
     public void onClick(final View v) {
-        afterPinInserted();
+        if (v == mPinButton)
+            afterPinInserted();
+        else if (v == mSkipText)
+            getGaActivity().goToTabbedMainActivity();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
     public void onKey(final int primaryCode, final int[] keyCodes) {
         final Editable editable;
         final View view;
-        if (isSixDigit()) {
+        if (mIsSixDigit) {
             editable = mPinEntryView.getText();
             view = mPinEntryView;
         } else {
@@ -153,13 +153,10 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
 
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
         try {
             mPinCallback = (OnPinListener) activity;
         } catch (final ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                                         + " must implement OnHeadlineSelectedListener");
+            throw new ClassCastException(activity.toString() + " must implement OnPinListener");
         }
     }
 }

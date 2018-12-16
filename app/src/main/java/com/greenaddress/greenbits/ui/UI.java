@@ -238,9 +238,17 @@ public abstract class UI {
         public void afterTextChanged(final Editable s) { }
     }
 
+    public static < T extends View > T mapClick(final View parent, final int id, final View.OnClickListener fn) {
+        final T v = find(parent, id);
+        if (v != null)
+            v.setOnClickListener(fn);
+        return v;
+    }
+
     public static < T extends View > T mapClick(final Activity activity, final int id, final View.OnClickListener fn) {
         final T v = find(activity, id);
-        v.setOnClickListener(fn);
+        if (v != null)
+            v.setOnClickListener(fn);
         return v;
     }
 
@@ -304,33 +312,35 @@ public abstract class UI {
     }
 
     // Show/Hide controls
-    public static void showIf(final boolean condition, final View ... views) {
-        for (final View v: views)
-            if (v != null)
-                v.setVisibility(condition ? View.VISIBLE : View.GONE);
+    public static void showIf(final boolean condition, final View v, final int hiddenViewState) {
+        if (v != null)
+            v.setVisibility(condition ? View.VISIBLE : hiddenViewState);
     }
 
-    public static void show(final View ... views) { showIf(true, views); }
-
-    public static void hideIf(final boolean condition, final View ... views) {
-        showIf(!condition, views);
+    public static void showIf(final boolean condition, final View v) {
+        showIf(condition, v, View.GONE);
     }
 
-    public static void hide(final View ... views) { showIf(false, views); }
+    public static void show(final View v) { showIf(true, v); }
+
+    public static void hideIf(final boolean condition, final View v) {
+        showIf(!condition, v);
+    }
+
+    public static void hide(final View v) { showIf(false, v); }
 
     // Enable/Disable controls
-    public static void enableIf(final boolean condition, final View ... views) {
-        for (final View v: views)
-            v.setEnabled(condition);
+    public static void enableIf(final boolean condition, final View v) {
+        v.setEnabled(condition);
     }
 
-    public static void enable(final View ... views) { enableIf(true, views); }
+    public static void enable(final View v) { enableIf(true, v); }
 
-    public static void disableIf(final boolean condition, final View ... views) {
-        enableIf(!condition, views);
+    public static void disableIf(final boolean condition, final View v) {
+        enableIf(!condition, v);
     }
 
-    public static void disable(final View ... views) { enableIf(false, views); }
+    public static void disable(final View v) { enableIf(false, v); }
 
     public static void setText(final Activity activity, final int id, final int msgId) {
         final TextView t = find(activity, id);
@@ -345,9 +355,8 @@ public abstract class UI {
         return text.getText().toString();
     }
 
-    public static void clear(final TextView ... views) {
-        for (final TextView v: views)
-            v.setText(R.string.empty);
+    public static void clear(final TextView v) {
+        v.setText(R.string.empty);
     }
 
     public static < T extends View > T find(final Activity activity, final int id) {
