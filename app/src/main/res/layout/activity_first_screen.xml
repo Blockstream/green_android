@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/id_green_logo"
-            android:src="@drawable/logo_big" />
+            android:src="@drawable/ic_logo_big" />
 
         <View
             android:layout_width="fill_parent"

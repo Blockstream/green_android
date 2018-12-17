@@ -18,7 +18,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:contentDescription="@string/id_green_logo"
-        android:src="@drawable/logo_big" />
+        android:src="@drawable/ic_logo_big" />
 
     <LinearLayout
         android:layout_width="wrap_content"
