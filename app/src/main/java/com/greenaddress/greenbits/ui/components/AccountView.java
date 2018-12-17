@@ -80,8 +80,11 @@ public class AccountView extends CardView {
     }
 
     public void showActions(final boolean isWatchOnly) {
-        if (isWatchOnly)
+        if (isWatchOnly) {
             mSendButton.setText(R.string.id_sweep);
+            final Drawable sweepDraw = getResources().getDrawable(R.drawable.ic_sweep);
+            mSendButton.setCompoundDrawablesWithIntrinsicBounds(sweepDraw, null, null, null);
+        }
     }
 
     public void showBack(boolean show) {
