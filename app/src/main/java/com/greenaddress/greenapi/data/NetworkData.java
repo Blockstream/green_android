@@ -104,10 +104,10 @@ public class NetworkData extends JSONData {
     @JsonIgnore
     public int getIcon() {
         if (network.equals("mainnet"))
-            return R.drawable.btc;
+            return R.drawable.ic_btc;
         if (network.equals("testnet"))
-            return R.drawable.btc_testnet;
-        return R.drawable.btc_testnet;
+            return R.drawable.ic_btc_testnet;
+        return R.drawable.ic_btc_testnet;
     }
 
     public Boolean getDevelopment() {

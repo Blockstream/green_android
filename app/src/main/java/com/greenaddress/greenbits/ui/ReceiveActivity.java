@@ -10,7 +10,7 @@ public class ReceiveActivity extends LoggedActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_receive);
         UI.preventScreenshots(this);
-        setTitleBack();
+        setTitleBackTransparent();
 
         getSupportFragmentManager()
         .beginTransaction()
@@ -23,7 +23,7 @@ public class ReceiveActivity extends LoggedActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         final int id = R.menu.receive_menu;
         getMenuInflater().inflate(id, menu);
-        menu.findItem(R.id.action_generate_new).setIcon(R.drawable.ic_sync_black_24dp);
+        menu.findItem(R.id.action_generate_new).setIcon(R.drawable.ic_refresh);
         return true;
     }
 

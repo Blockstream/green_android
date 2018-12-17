@@ -181,10 +181,10 @@ public abstract class GaActivity extends AppCompatActivity {
         final String netname = mService.getNetwork().getName();
         switch (netname) {
         case "Bitcoin":
-            resourceIcon = R.drawable.btc;
+            resourceIcon = R.drawable.ic_btc;
             break;
         case "Testnet":
-            resourceIcon = R.drawable.btc_testnet;
+            resourceIcon = R.drawable.ic_btc_testnet;
             break;
         default:
             resourceIcon = 0;

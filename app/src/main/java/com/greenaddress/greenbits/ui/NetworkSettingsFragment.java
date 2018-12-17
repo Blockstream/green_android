@@ -60,7 +60,7 @@ public class NetworkSettingsFragment extends DialogFragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             final NetworkData networkData = mData.get(position);
-            holder.setText("     " + networkData.getName());
+            holder.setText(networkData.getName());
             holder.setIcon(networkData.getIcon());
             holder.setSelected(position == mSelectedItem);
             holder.itemView.setOnClickListener(view -> {
