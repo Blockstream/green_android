@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:background="@drawable/material_button"
-            android:drawableEnd="@drawable/next"
+            android:drawableEnd="@drawable/ic_next"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/id_next"

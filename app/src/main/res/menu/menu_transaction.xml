@@ -4,7 +4,7 @@
     tools:context="com.greenaddress.greenbits.TransactionActivity">
     <item
         android:id="@+id/action_share"
-        android:icon="@drawable/ic_action_share"
+        android:icon="@drawable/ic_share_white"
         android:orderInCategory="90"
         android:title="@string/id_share"
         app:showAsAction="always" />

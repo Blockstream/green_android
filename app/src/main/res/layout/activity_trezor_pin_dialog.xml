@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:padding="20dp"
-                    android:src="@drawable/erase"/>
+                    android:src="@drawable/ic_erase"/>
 
             </LinearLayout>
 

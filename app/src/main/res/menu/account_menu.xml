@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_add"
-        android:icon="@drawable/add"
+        android:icon="@drawable/ic_add_wallet"
         android:orderInCategory="90"
         android:visible="false"
         app:showAsAction="always" />

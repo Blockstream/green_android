@@ -20,6 +20,6 @@
     <Row>
         <Key android:codes="-2" android:keyLabel="@string/id_clear" android:horizontalGap="4%p"/>
         <Key android:codes="0"  android:keyLabel="0" android:horizontalGap="4%p" />
-        <Key android:codes="-1" android:keyIcon="@drawable/erase" android:horizontalGap="4%p"/>
+        <Key android:codes="-1" android:keyIcon="@drawable/ic_erase" android:horizontalGap="4%p"/>
     </Row>
 </Keyboard>

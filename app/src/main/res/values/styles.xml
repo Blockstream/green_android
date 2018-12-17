@@ -79,7 +79,7 @@
     <style name="settingsButton" parent="AppTheme.Button">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">@color/grey_light</item>
-        <item name="android:drawableEnd">@drawable/arrow_down</item>
+        <item name="android:drawableEnd">@drawable/ic_arrow_down</item>
     </style>
 
     <style name="MenuTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Menu">

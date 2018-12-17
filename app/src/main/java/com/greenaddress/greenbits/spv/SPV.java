@@ -418,7 +418,7 @@ public class SPV {
                 mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
                 mNotificationBuilder = new NotificationCompat.Builder(mService, "spv_channel");
                 mNotificationBuilder.setContentTitle("Green SPV_SYNCRONIZATION Sync")
-                .setSmallIcon(R.drawable.ic_sync_black_24dp);
+                .setSmallIcon(R.drawable.ic_refresh);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     mNotificationBuilder.setContentIntent(getNotificationIntent());
             }

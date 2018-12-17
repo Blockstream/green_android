@@ -150,7 +150,7 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
             holder.nameText.setText(mChoices.get(position));
             holder.imageView.setImageResource(mImages.get(position));
             final boolean isEnabled = mEnabled.contains(method);
-            holder.enabled.setImageResource(isEnabled ? R.drawable.ic_done : R.drawable.next);
+            holder.enabled.setImageResource(isEnabled ? R.drawable.ic_done : R.drawable.ic_next);
             holder.itemView.setOnClickListener(view -> {
                 final Intent intent = new Intent(SecurityActivity.this, TwoFactorActivity.class);
                 intent.putExtra("method", method);
