@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.transition.Slide;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,10 +17,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -352,12 +353,19 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
                 preferenceFragment = new GeneralPreferenceFragment();
 
             final Fragment centerFragment;
+            final Slide slide;
 
-            //TODO cache this values?
-            if (!mShowSubaccountList)
+            if (!mShowSubaccountList) {
                 centerFragment = new MainFragment();
-            else
+                slide = new Slide(Gravity.BOTTOM);
+            } else {
                 centerFragment = new HomeFragment();
+                slide = new Slide(Gravity.TOP);
+            }
+
+            slide.setDuration(200);
+            centerFragment.setEnterTransition(slide);
+            centerFragment.setRetainInstance(true);
 
             switch (index) {
             case 0: return preferenceFragment;
