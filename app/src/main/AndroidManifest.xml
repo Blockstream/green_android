@@ -166,7 +166,8 @@
         <activity android:name=".FailHardActivity" />
         <activity android:name=".WatchOnlyLoginActivity" />
         <activity android:name=".ReceiveActivity"
-            android:label="@string/id_receive" />
+            android:label="@string/id_receive"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity android:name=".ScanActivity"
             android:label="@string/id_send_to" />
         <activity android:name=".onboarding.TermsActivity" />
