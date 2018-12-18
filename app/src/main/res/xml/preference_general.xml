@@ -2,7 +2,10 @@
 
     <PreferenceCategory
         android:key="network_category"
-        android:title="NETWORK" />
+        android:title="NETWORK"
+        android:icon="@drawable/ic_network"
+        android:layout="@layout/preference_category_green"
+        />
 
     <SwitchPreference
         android:key="delete_or_configure_pin"
@@ -20,7 +23,9 @@
         android:layout="@layout/view_space"
         />
 
-    <PreferenceCategory android:title="ACCOUNT" />
+    <PreferenceCategory android:title="ACCOUNT"
+        android:icon="@drawable/ic_account"
+        android:layout="@layout/preference_category_green"/>
 
     <ListPreference
         android:key="unit"
@@ -44,7 +49,9 @@
         android:key="default_feerate_satbyte"
         android:title="@string/id_default_custom_fee_rate" />
 
-    <PreferenceCategory android:title="TWO FACTOR" />
+    <PreferenceCategory android:title="TWO FACTOR"
+        android:icon="@drawable/ic_twofactor"
+        android:layout="@layout/preference_category_green"/>
 
     <Preference
         android:key="two_factor_authentication"
@@ -70,7 +77,9 @@
         android:key="reset_twofactor"
         android:title="@string/id_request_twofactor_reset" />
 
-    <PreferenceCategory android:title="SECURITY" />
+    <PreferenceCategory android:title="SECURITY"
+        android:icon="@drawable/ic_security"
+        android:layout="@layout/preference_category_green"/>
 
     <Preference
         android:key="mnemonic_passphrase"
@@ -81,7 +90,9 @@
         android:key="altimeout"
         android:title="@string/id_auto_logout_timeout" />
 
-    <PreferenceCategory android:title="ADVANCED" />
+    <PreferenceCategory android:title="ADVANCED"
+        android:icon="@drawable/ic_advanced"
+        android:layout="@layout/preference_category_green"/>
 
     <Preference
         android:key="pgp_key"
@@ -96,7 +107,9 @@
         android:title="@string/id_network_monitor" />
 
     <PreferenceCategory
-        android:title="ABOUT" />
+        android:title="ABOUT"
+        android:icon="@drawable/ic_about"
+        android:layout="@layout/preference_category_green"/>
 
     <Preference
         android:key="version"
