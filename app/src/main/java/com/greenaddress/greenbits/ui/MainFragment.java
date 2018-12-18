@@ -41,6 +41,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private final List<TransactionItem> mTxItems = new ArrayList<>();
     private Map<Sha256Hash, List<Sha256Hash>> replacedTxs;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private boolean justClicked = false;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -98,6 +99,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
+        justClicked = false;
         onUpdateBalance(mBalanceDataObservable);
         onUpdateReceiveAddress(mReceiveAddressObservable);
         onUpdateTransactions(mTransactionDataObservable);
@@ -234,10 +236,16 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
     @Override
     public void onClick(final View view) {
+        if (justClicked) {
+            justClicked = false;
+            return;
+        }
         if (view.getId() == R.id.receiveButton) {
+            justClicked = true;
             final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
             getActivity().startActivity(intent);
         } else if (view.getId() == R.id.sendButton) {
+            justClicked = true;
             final Intent intent = new Intent(getActivity(), ScanActivity.class);
             getActivity().startActivity(intent);
         } else if (view.getId() == R.id.backButton) {
