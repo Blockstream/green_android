@@ -41,9 +41,10 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
         mModel = getGAService().getModel();
 
         mAccountsView = UI.find(rootView, R.id.accountsList);
-        mAccountsView.setHasFixedSize(true);
-        mAccountsView.addItemDecoration(new OverlapDecoration());
         mAccountsView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
+        BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
+        mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
         final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this);
         mAccountsView.setAdapter(accountsAdapter);
@@ -136,28 +137,25 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
         getGAService().getModel().getActiveAccountObservable().setActiveAccount(subaccount);
     }
 
-    class OverlapDecoration extends RecyclerView.ItemDecoration {
+
+    static class BottomOffsetDecoration extends RecyclerView.ItemDecoration {
+        private int mBottomOffset;
+
+        public BottomOffsetDecoration(int bottomOffset) {
+            mBottomOffset = bottomOffset;
+        }
 
         @Override
-        public void getItemOffsets (final Rect outRect, final View view, final RecyclerView parent,
-                                    final RecyclerView.State state) {
-            final int itemPosition = parent.getChildAdapterPosition(view);
-            if (itemPosition == 0)
-                return;
-            final double vertOverlap = 50.0 - convertPixelsToDp(getResources().getDimension(
-                                                                    R.dimen.card_size), getContext());
-            final int dip = (int) convertDpToPixel((float) vertOverlap, getContext());
-            outRect.set(0, dip, 0, 0);
-        }
-        public float convertPixelsToDp(final float px, final Context context){
-            return px /
-                   ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        }
-        public float convertDpToPixel(final float dp, final Context context){
-            final Resources resources = context.getResources();
-            final DisplayMetrics metrics = resources.getDisplayMetrics();
-            final float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-            return px;
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            int dataSize = state.getItemCount();
+            int position = parent.getChildAdapterPosition(view);
+            if (dataSize > 0 && position == dataSize - 1) {
+                outRect.set(0, 0, 0, mBottomOffset);
+            } else {
+                outRect.set(0, 0, 0, 0);
+            }
+
         }
     }
 }

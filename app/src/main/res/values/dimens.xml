@@ -13,6 +13,8 @@
 
     <dimen name="card_size">160dp</dimen>
 
+    <dimen name="adapter_bar">60dp</dimen>
+
     <dimen name="account_item_height">60dp</dimen>
     <dimen name="account_margin_left">48dp</dimen>
     <style name="Divider">
