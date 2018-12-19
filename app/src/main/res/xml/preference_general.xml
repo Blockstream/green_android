@@ -18,7 +18,10 @@
 
     <Preference
         android:key="logout"
-        android:layout="@layout/view_logout" />
+        android:layout="@layout/view_logout"
+        android:title="Bitcoin Testnet"
+        android:summary="Log Out"/>
+
     <Preference
         android:layout="@layout/view_space"
         />

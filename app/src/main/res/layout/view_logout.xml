@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:background="@drawable/material_button_border_red"
-    android:text="@string/id_log_out"
-    android:textColor="@color/red"></Button>
+    android:minHeight="64dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    <Space
+        android:layout_width="72dp"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView android:id="@android:id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            />
+
+
+        <TextView android:id="@android:id/summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red"
+            />
+
+    </LinearLayout>
+
+
+</LinearLayout>

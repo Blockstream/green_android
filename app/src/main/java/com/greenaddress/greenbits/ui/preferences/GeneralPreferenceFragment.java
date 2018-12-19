@@ -111,9 +111,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         watchOnlyLogin.setOnPreferenceClickListener(this::onWatchOnlyLoginClicked);
 
         // Network & Logout
-        final PreferenceCategory cat = find(PrefKeys.NETWORK_CATEGORY);
-        cat.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName().toUpperCase()));
         final Preference logout = find(PrefKeys.LOGOUT);
+        logout.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName()));
         logout.setOnPreferenceClickListener(preference -> {
             logout.setEnabled(false);
             logout();
