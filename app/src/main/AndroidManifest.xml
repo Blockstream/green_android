@@ -173,7 +173,8 @@
         <activity android:name=".onboarding.TermsActivity" />
         <activity android:name=".onboarding.WordsActivity" />
         <activity android:name=".onboarding.SelectionActivity" />
-        <activity android:name=".onboarding.SuccessActivity" />
+        <activity android:name=".onboarding.SuccessActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".onboarding.InfoActivity" />
         <activity
             android:name=".onboarding.SecurityActivity"/>

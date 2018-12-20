@@ -14,8 +14,6 @@ public class SuccessActivity extends GaActivity implements View.OnClickListener 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_onboarding_success);
-        setTitleBackTransparent();
-        setTitle("");
     }
 
     @Override
