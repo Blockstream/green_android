@@ -22,7 +22,7 @@
             android:textColor="@color/white"
             android:textSize="17sp"
             android:padding="@dimen/sections_padding"
-            android:text="Choose Your Network"/>
+            android:text="@string/id_choose_your_network"/>
 
         <android.support.v7.widget.RecyclerView
             android:padding="@dimen/sections_padding"
@@ -49,7 +49,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PROXY SETTINGS"
+            android:text="@string/id_proxy_settings"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 
         <android.support.design.widget.TextInputLayout

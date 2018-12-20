@@ -9,7 +9,9 @@
   <string name="id_4_hours">~ 4 Hours</string>
   <string name="id_5_seconds_minimum">5 seconds minimum</string>
   <string name="id_a_new_transaction_has_just">A new transaction has just arrived in your wallet.</string>
+  <string name="id_about">ABOUT</string>
   <string name="id_accept">ACCEPT</string>
+  <string name="id_account">ACCOUNT</string>
   <string name="id_action_canceled">Action canceled</string>
   <string name="id_add_amount">Add Amount</string>
   <string name="id_add_custom_network_by_qr_code">Add custom network by QR Code</string>
@@ -18,6 +20,7 @@
   <string name="id_address">Address</string>
   <string name="id_address_1s">Address: %1$s</string>
   <string name="id_address_copied_to_clipboard">Address copied to clipboard</string>
+  <string name="id_advanced">ADVANCED</string>
   <string name="id_amount">Amount</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
   <string name="id_auto_logout_timeout">Auto logout timeout</string>
@@ -39,6 +42,7 @@
   <string name="id_change">CHANGE</string>
   <string name="id_choose">Choose</string>
   <string name="id_choose_twofactor_authentication">Choose Two-Factor authentication method</string>
+  <string name="id_choose_your_network">Choose Your Network</string>
   <string name="id_clear">CLEAR</string>
   <string name="id_completed">Completed</string>
   <string name="id_confirmation">Confirmation</string>
@@ -172,6 +176,7 @@
   <string name="id_months">months</string>
   <string name="id_my_notes">MY NOTES</string>
   <string name="id_name">Name</string>
+  <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">Network Configuration</string>
   <string name="id_network_monitor">Network Monitor</string>
   <string name="id_new_s_transaction_of_s_in">New %s transaction of %s in account %s.</string>
@@ -221,6 +226,7 @@
   <string name="id_privacy_policy">Privacy Policy</string>
   <string name="id_problem_with_key_1s">Problem with key %1$s</string>
   <string name="id_providing_an_email_enables">Providing an email enables notifications and transaction recovery.</string>
+  <string name="id_proxy_settings">PROXY SETTINGS</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_receive">Receive</string>
   <string name="id_received">Received</string>
@@ -255,6 +261,7 @@
   <string name="id_search">Search</string>
   <string name="id_second">second</string>
   <string name="id_seconds">seconds</string>
+  <string name="id_security">SECURITY</string>
   <string name="id_select_network">Select network</string>
   <string name="id_select_word_number_d">Select word number %d</string>
   <string name="id_send">Send</string>
@@ -308,6 +315,7 @@
   <string name="id_transaction_already_confirmed">Transaction already confirmed</string>
   <string name="id_transaction_details">Transaction details</string>
   <string name="id_transaction_sent">Transaction Sent</string>
+  <string name="id_two_factor">TWO FACTOR</string>
   <string name="id_twofactor_authentication">Two-Factor authentication</string>
   <string name="id_twofactor_reset_in_progress">Two-Factor reset in progress, your wallet is currently locked.</string>
   <string name="id_twofactor_settings">Two-Factor Settings</string>

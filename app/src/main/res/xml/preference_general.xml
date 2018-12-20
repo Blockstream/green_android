@@ -2,7 +2,7 @@
 
     <PreferenceCategory
         android:key="network_category"
-        android:title="NETWORK"
+        android:title="@string/id_network"
         android:icon="@drawable/ic_network"
         android:layout="@layout/preference_category_green"
         />
@@ -13,20 +13,19 @@
 
     <Preference
         android:key="watch_only_login"
-        android:iconSpaceReserved="false"
         android:title="@string/id_watchonly_login" />
 
     <Preference
         android:key="logout"
         android:layout="@layout/view_logout"
-        android:title="Bitcoin Testnet"
-        android:summary="Log Out"/>
+        android:title=""
+        android:summary="@string/id_log_out"/>
 
     <Preference
         android:layout="@layout/view_space"
         />
 
-    <PreferenceCategory android:title="ACCOUNT"
+    <PreferenceCategory android:title="@string/id_account"
         android:icon="@drawable/ic_account"
         android:layout="@layout/preference_category_green"/>
 
@@ -52,7 +51,7 @@
         android:key="default_feerate_satbyte"
         android:title="@string/id_default_custom_fee_rate" />
 
-    <PreferenceCategory android:title="TWO FACTOR"
+    <PreferenceCategory android:title="@string/id_two_factor"
         android:icon="@drawable/ic_twofactor"
         android:layout="@layout/preference_category_green"/>
 
@@ -80,7 +79,7 @@
         android:key="reset_twofactor"
         android:title="@string/id_request_twofactor_reset" />
 
-    <PreferenceCategory android:title="SECURITY"
+    <PreferenceCategory android:title="@string/id_security"
         android:icon="@drawable/ic_security"
         android:layout="@layout/preference_category_green"/>
 
@@ -93,7 +92,7 @@
         android:key="altimeout"
         android:title="@string/id_auto_logout_timeout" />
 
-    <PreferenceCategory android:title="ADVANCED"
+    <PreferenceCategory android:title="@string/id_advanced"
         android:icon="@drawable/ic_advanced"
         android:layout="@layout/preference_category_green"/>
 
@@ -110,7 +109,7 @@
         android:title="@string/id_network_monitor" />
 
     <PreferenceCategory
-        android:title="ABOUT"
+        android:title="@string/id_about"
         android:icon="@drawable/ic_about"
         android:layout="@layout/preference_category_green"/>
 
