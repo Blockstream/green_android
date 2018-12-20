@@ -53,4 +53,9 @@ public class SuccessActivity extends GaActivity implements View.OnClickListener 
         startActivity(intent);
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        goToTabbedMainActivity();
+    }
 }
