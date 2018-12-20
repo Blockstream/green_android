@@ -29,7 +29,6 @@ import java.util.Set;
 public class SecurityActivity extends GaActivity implements View.OnClickListener, Observer {
     private static final int REQUEST_2FA = 100;
     private ViewAdapter mMethodsAdapter;
-    private boolean mFromOnboarding;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -46,8 +45,7 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
             R.drawable.ic_2fa_google
         };
 
-        mFromOnboarding = getIntent().getBooleanExtra("from_onboarding", false);
-        if (!mFromOnboarding) {
+        if (!isFromOnboarding()) {
             UI.hide(UI.find(this, R.id.nextButton));
             setTitleBack();
         }
@@ -61,6 +59,10 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
         wordsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         wordsRecyclerView.setAdapter(mMethodsAdapter);
         initEnabledMethods();
+    }
+
+    private boolean isFromOnboarding() {
+        return getIntent().getBooleanExtra("from_onboarding", false);
     }
 
     @Override
@@ -114,11 +116,19 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
             return;
         final List<String> enabledMethods = twoFactorConfig.getEnabledMethods();
         mMethodsAdapter.setEnabled(enabledMethods);
-        if (mFromOnboarding && twoFactorConfig.getAllMethods().size() == enabledMethods.size()) {
+        if (isFromOnboarding() && twoFactorConfig.getAllMethods().size() == enabledMethods.size()) {
             // The user has enabled all methods, so continue to the main activity
             finish();
             goToTabbedMainActivity();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(isFromOnboarding())
+            goToTabbedMainActivity();
+        else
+            super.onBackPressed();
     }
 
     class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
