@@ -198,8 +198,17 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         }
     }
 
+
+
     private int checkValid(final String mnemonic) {
         final String words[] = mnemonic.split(" ");
+
+        //validate hex_seed
+        if (isHexSeed(words[0])) {
+            mOkButton.setEnabled(true);
+            return 0;
+        }
+
         if (words.length != MNEMONIC_LENGTH && words.length != ENCRYPTED_MNEMONIC_LENGTH)
             return R.string.id_invalid_mnemonic_must_be_24_or;
         try {
@@ -241,7 +250,10 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             UI.toast(this, errId, Toast.LENGTH_LONG);
             return;
         }
-        if (!mEncryptedSwitch.isChecked()) {
+
+        if (isHexSeed(mnemonic)) {
+            mService.getExecutor().execute(() -> cm.loginWithMnemonic(mnemonic, ""));
+        } else if (!mEncryptedSwitch.isChecked()) {
             mService.getExecutor().execute(() -> cm.loginWithMnemonic(mnemonic, ""));
         } else {
             CB.after(askForPassphrase(), new CB.Toast<String>(this, mOkButton) {
@@ -438,6 +450,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             e.removeSpan(s);
 
         final String word = e.toString();
+        if (isHexSeed(word))
+            return true;
         final int end = word.length();
         if (!MnemonicHelper.isPrefix(word))
             e.setSpan(new StrikethroughSpan(), 0, end, 0);

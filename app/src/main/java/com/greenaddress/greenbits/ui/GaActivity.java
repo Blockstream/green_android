@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.HWWallet;
@@ -142,6 +143,16 @@ public abstract class GaActivity extends AppCompatActivity {
                     item.setVisible(visible);
             }
         });
+    }
+
+    protected boolean isHexSeed(final String hexSeed) {
+        if (hexSeed.endsWith("X") && hexSeed.length() == 129) {
+            try {
+                Wally.hex_to_bytes(hexSeed.substring(0, 128));
+                return true;
+            } catch (Exception e) {}
+        }
+        return false;
     }
 
     protected void hideKeyboardFrom(final View v) {

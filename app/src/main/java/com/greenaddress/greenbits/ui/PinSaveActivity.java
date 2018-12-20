@@ -98,6 +98,9 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
+        if (isHexSeed(mnemonic))
+            goToTabbedMainActivity();
 
         setAppNameTitle();
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
