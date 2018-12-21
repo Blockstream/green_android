@@ -78,4 +78,13 @@ public class SettingsData extends JSONData {
     public ObjectNode toObjectNode() {
         return new ObjectMapper().convertValue(this,ObjectNode.class);
     }
+
+    @JsonIgnore
+    public int getFeeBuckets(int[] mBlockTargets) {
+        for (int i = 0;i<mBlockTargets.length;i++) {
+            if (mBlockTargets[i] == getRequiredNumBlocks())
+                return i;
+        }
+        return 1;
+    }
 }

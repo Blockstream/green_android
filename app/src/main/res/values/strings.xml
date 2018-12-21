@@ -47,7 +47,7 @@
   <string name="id_completed">Completed</string>
   <string name="id_confirmation">Confirmation</string>
   <string name="id_confirmation_in_12_blocks_2">Confirmation in 12 blocks, 2 hours on average</string>
-  <string name="id_confirmation_in_24_blocks_4">Confirmation in 24 blocks, 4 hours on average</string>
+  <string name="id_confirmation_in_6_blocks_1_hour">Confirmation in 6 blocks, 1 hour on average</string>
   <string name="id_confirmation_in_3_blocks_30">Confirmation in 3 blocks, 30 minutes on average</string>
   <string name="id_congratulations">Congratulations!</string>
   <string name="id_connect_through_a_proxy">Connect through a proxy</string>

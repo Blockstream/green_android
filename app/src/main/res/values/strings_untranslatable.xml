@@ -24,8 +24,8 @@
     </string-array>
     <string-array name="fee_target_values" translatable="false">
         <item>3</item>
+        <item>6</item>
         <item>12</item>
-        <item>24</item>
     </string-array>
 
     <string-array name="auto_logout_values" translatable="false">
@@ -81,8 +81,9 @@
 
     <string-array name="fee_target_summaries" translatable="false">
         <item>@string/id_confirmation_in_3_blocks_30</item>
+        <item>@string/id_confirmation_in_6_blocks_1_hour</item>
         <item>@string/id_confirmation_in_12_blocks_2</item>
-        <item>@string/id_confirmation_in_24_blocks_4</item>
+
     </string-array>
 
     <plurals name="attempts_remaining" translatable="false">

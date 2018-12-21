@@ -49,7 +49,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private static final int mButtonIds[] =
     { R.id.feeLowButton, R.id.feeMediumButton, R.id.feeHighButton, R.id.feeCustomButton };
-    private static final int mBlockTargets[] = { 12, 6, 3, 0 };
+    private  int mBlockTargets[];
     private static final int mBlockTimes[] =
     { R.string.id_4_hours, R.string.id_2_hours, R.string.id_1030_minutes, R.string.id_unknown_custom };
     private Button[] mFeeButtons = new Button[4];
@@ -63,7 +63,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                              final Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView -> " + TAG);
-
+        mBlockTargets = getBlockTargets();
         // Get arguments from bundle
         final Bundle b = this.getArguments();
         if (b == null)
@@ -87,7 +87,8 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         UI.disable(mNextButton);
 
         // Setup fee buttons
-        mSelectedFee = 1; // FIXME: Get From user config, Set custom fee from config
+        mSelectedFee = service.getModel().getSettings().getFeeBuckets(mBlockTargets);
+
         final List<Long> estimates = service.getFeeEstimates();
         mMinFeeRate = estimates.get(0);
 
@@ -162,6 +163,17 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         UI.attachHideKeyboardListener(getActivity(), mView);
 
         return mView;
+    }
+
+    private int[] getBlockTargets() {
+        final String[] stringArray = getResources().getStringArray(R.array.fee_target_values);
+        int[] blockTargets = {
+                Integer.parseInt(stringArray[2]),
+                Integer.parseInt(stringArray[1]),
+                Integer.parseInt(stringArray[0]),
+                0
+        };
+        return blockTargets;
     }
 
     private Long getOldFeeRate(final ObjectNode mTx) {
