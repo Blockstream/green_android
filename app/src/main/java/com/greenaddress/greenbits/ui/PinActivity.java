@@ -210,7 +210,11 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         try {
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
-            final SecretKey secretKey = (SecretKey) keyStore.getKey(KeyStoreAES.getKeyName(mService), null);
+            SecretKey secretKey = (SecretKey) keyStore.getKey(KeyStoreAES.getKeyName(mService), null);
+            if (secretKey == null) {
+                // support old native authentication
+                secretKey = (SecretKey) keyStore.getKey(KeyStoreAES.KEYSTORE_KEY, null);
+            }
             final Cipher cipher = getAESCipher();
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(nativeIV, Base64.NO_WRAP)));
             final byte[] decrypted = cipher.doFinal(Base64.decode(nativePIN, Base64.NO_WRAP));
