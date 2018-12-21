@@ -71,7 +71,7 @@ public class CurrencyView extends RelativeLayout implements View.OnClickListener
 
     public void enableAll() {
         mConverting = true;
-        mAmountEdit.setText("All");
+        mAmountEdit.setText(getResources().getString(R.string.id_all));
         mAmountEdit.setEnabled(false);
         mConverting = false;
         mUnitButton.setVisibility(View.INVISIBLE);

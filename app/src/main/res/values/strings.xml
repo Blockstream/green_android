@@ -13,6 +13,7 @@
   <string name="id_accept">ACCEPT</string>
   <string name="id_account">ACCOUNT</string>
   <string name="id_action_canceled">Action canceled</string>
+  <string name="id_all">All</string>
   <string name="id_add_amount">Add Amount</string>
   <string name="id_add_custom_network_by_qr_code">Add custom network by QR Code</string>
   <string name="id_add_custom_network_by_url">Add custom network by URL</string>

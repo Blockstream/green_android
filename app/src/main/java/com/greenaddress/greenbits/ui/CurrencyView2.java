@@ -99,7 +99,7 @@ public class CurrencyView2 extends RelativeLayout implements View.OnClickListene
             final String fiat = getFiat(), btc = getBTC();
 
             if (updateEditable)
-                mAmountEdit.setText(mSendAll ? "All" : isFiat() ? fiat : btc);
+                mAmountEdit.setText(mSendAll ? getResources().getString(R.string.id_all) : isFiat() ? fiat : btc);
             if (mData == null)
                 mDisplayText.setText("");
             else {
