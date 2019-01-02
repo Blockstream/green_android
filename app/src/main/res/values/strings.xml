@@ -304,6 +304,7 @@
   <string name="id_thank_you_for_downloading_green">Thank you for downloading Green! Please leave us a review when you get a chance</string>
   <string name="id_the_camera_has_a_problem_you">The camera has a problem. You probably need to restart the device.</string>
   <string name="id_the_easier_safer_and_faster">the easier, safer and faster wallet</string>
+  <string name="id_the_hardware_wallet_you_are">The hardware wallet you are using is not yet supported</string>
   <string name="id_the_password_cant_be_empty">The password can\'t be empty</string>
   <string name="id_the_recovery_key_below_will_not">The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.</string>
   <string name="id_to">TO</string>

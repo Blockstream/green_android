@@ -133,6 +133,11 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         if (t == null)
             return false;
 
+        if (t.getProductId() == 0x53c1) {  // Trezor T
+            showInstructions(R.string.id_the_hardware_wallet_you_are);
+            return false;
+        }
+
         final List<Integer> version = t.getFirmwareVersion();
         boolean isFirmwareOutdated = false;
         final int vendorId = t.getVendorId();

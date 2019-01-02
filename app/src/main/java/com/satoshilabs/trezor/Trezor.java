@@ -40,6 +40,7 @@ public class Trezor {
     private static final String TAG = Trezor.class.getSimpleName();
 
     private final int mVendorId;
+    private final int mProductId;
     private final UsbDeviceConnection mConn;
     private final String mSerial;
     private final UsbEndpoint mReadEndpoint, mWriteEndpoint;
@@ -117,6 +118,7 @@ public class Trezor {
     private Trezor(final UsbDevice device, final UsbDeviceConnection conn,
                    final UsbEndpoint readEndpoint, final UsbEndpoint writeEndpoint) {
         mVendorId = device.getVendorId();
+        mProductId = device.getProductId();
         mConn = conn;
         mReadEndpoint = readEndpoint;
         mWriteEndpoint = writeEndpoint;
@@ -130,6 +132,10 @@ public class Trezor {
 
     public int getVendorId() {
         return mVendorId;
+    }
+
+    public int getProductId() {
+        return mProductId;
     }
 
     private void logData(final String prefix, final byte[] data) {
