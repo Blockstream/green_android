@@ -41,6 +41,7 @@ public class TransactionItem implements Serializable {
     public final List<Sha256Hash> replacedHashes;
     public final String data;
     public final List<TransactionData> eps;
+    public Integer subaccount;
 
     public String toString() {
         return String.format("%s %s %s %s", date.toString(), type.name(), amount, counterparty);
@@ -74,6 +75,7 @@ public class TransactionItem implements Serializable {
         memo = txData.getMemo();
         blockHeight = txData.getBlockHeight();
         counterparty = "";
+        this.subaccount = subaccount;
 
         long tmpAmount = txData.getSatoshi();
 

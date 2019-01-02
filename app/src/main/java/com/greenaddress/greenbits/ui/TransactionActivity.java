@@ -377,7 +377,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             startLoading();
             final GDKSession session = mService.getSession();
             final String txhash = mTxItem.txHash.toString();
-            final int subaccount = session.getCurrentSubaccount();
+            final int subaccount = mTxItem.subaccount == null ? session.getCurrentSubaccount() : mTxItem.subaccount;
+            session.setCurrentSubaccount(subaccount);
             final JsonNode txToBump = session.getTransactionRaw(subaccount, txhash);
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();
