@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +22,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
     private PinFragment mPinFragment;
     private PinFragment mPinFragmentVerify;
     private TextView mTitleText;
+    private CheckBox mNativeAuthCB;
 
     static public Intent createIntent(final Context ctx, final String mnemonic) {
         final Intent intent = new Intent(ctx, PinSaveActivity.class);
@@ -115,14 +115,11 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
             try {
                 KeyStoreAES.createKey(true, mService);
 
-                final CheckBox nativeAuthCB = UI.find(this, R.id.useNativeAuthentication);
-                UI.show(nativeAuthCB);
-                nativeAuthCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
-                        if (isChecked)
-                            tryEncrypt();
-                    }
+                mNativeAuthCB = UI.find(this, R.id.useNativeAuthentication);
+                UI.show(mNativeAuthCB);
+                mNativeAuthCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+                    if (isChecked)
+                        tryEncrypt();
                 });
 
             } catch (final RuntimeException e) {
@@ -137,6 +134,8 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         final Bundle bundle = new Bundle();
         bundle.putBoolean("skip_visible", getIntent().getBooleanExtra("skip_visible", false));
         mPinFragmentVerify.setArguments(bundle);
+        if (mNativeAuthCB != null)
+            UI.hide(mNativeAuthCB);
         getSupportFragmentManager().beginTransaction()
         .replace(R.id.fragment_container, mPinFragmentVerify).commit();
     }
