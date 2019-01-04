@@ -72,8 +72,7 @@
 
     <Preference
         android:key="send_nlocktime"
-        android:title="@string/id_request_nlocktime_transactions"
-        android:dependency="twoFacNLocktimeEmails" />
+        android:title="@string/id_request_nlocktime_transactions" />
 
     <Preference
         android:key="reset_twofactor"
