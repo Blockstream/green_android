@@ -35,6 +35,7 @@ public class ConnectionManager extends Observable {
     private String mProxyPort;
     private boolean mProxyEnabled;
     private boolean mTorEnabled;
+    private boolean mLoginWithPin;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
     private static int CONNECTION_RETRY_ATTEMPTS = 3;
@@ -138,6 +139,10 @@ public class ConnectionManager extends Observable {
         return mHWDevice != null;
     }
 
+    public boolean isLoginWithPin() {
+        return mLoginWithPin;
+    }
+
     public CodeResolver getHWResolver() {
         return mHWResolver;
     }
@@ -217,14 +222,17 @@ public class ConnectionManager extends Observable {
             if (!TextUtils.isEmpty(mnenonic) && mnemonicPassword != null) {
                 Log.d(TAG, "logging with mnemonic");
                 mWatchOnlyUsername = null;
+                mLoginWithPin = false;
                 mSession.login(parent, null, mnenonic, mnemonicPassword).resolve(null, null);
             } else if (!TextUtils.isEmpty(pin) && pinData != null) {
                 Log.d(TAG, "logging with pin");
                 mWatchOnlyUsername = null;
+                mLoginWithPin = true;
                 mSession.loginWithPin(pin, pinData);
             } else if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
                 Log.d(TAG, "logging watch only");
                 mWatchOnlyUsername = username;
+                mLoginWithPin = false;
                 mSession.loginWatchOnly(username, password);
             } else {
                 throw new Exception("wrong parameters");
@@ -239,6 +247,7 @@ public class ConnectionManager extends Observable {
     public void disconnect() {
         setState(ConnState.DISCONNECTING);
         mWatchOnlyUsername = null;
+        mLoginWithPin = false;
         mHWDevice = null;
         mHWResolver = null;
         mSession.disconnect();

@@ -34,4 +34,5 @@ public class PrefKeys {
     public static final String TWO_FAC_N_LOCKTIME_EMAILS = "twoFacNLocktimeEmails";
     public static final String SEND_NLOCKTIME = "send_nlocktime";
     public static final String RESET_TWOFACTOR = "reset_twofactor";
+    public static final String ACTIVE_SUBACCOUNT = "active_subaccount";
 }

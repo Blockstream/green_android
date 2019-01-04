@@ -100,9 +100,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
             }
             case "subaccount": {
                 //{"event":"subaccount","subaccount":{"bits":"701144.66","btc":"0.70114466","fiat":"0.7712591260000000622741556099981585311432","fiat_currency":"EUR","fiat_rate":"1.10000000000000008881784197001252","has_transactions":true,"mbtc":"701.14466","name":"","pointer":0,"receiving_id":"GA3MQKVp6pP7royXDuZcw55F2TXTgg","recovery_chain_code":"","recovery_pub_key":"","satoshi":70114466,"type":"2of2","ubtc":"701144.66"}}
-                final Integer account = objectNode.get("subaccount").get("pointer").asInt();
-                mModel.getActiveAccountObservable().setActiveAccount(account);
-                Log.d("OBSNTF", "activeAccount " + account);
+                // server-side subaccount setting is ignored because we use the locally-saved one
                 break;
             }
             case "twofactor_reset": {

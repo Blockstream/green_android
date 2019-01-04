@@ -18,6 +18,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.SubaccountDataObservable;
 import com.greenaddress.greenbits.ui.components.AccountAdapter;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,9 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
     public void onAccountSelected(final int subaccount) {
         getGAService().getSession().setCurrentSubaccount(subaccount);
         getGAService().getModel().getActiveAccountObservable().setActiveAccount(subaccount);
+        if(getGAService().getConnectionManager().isLoginWithPin()) {
+            getGAService().cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
+        }
     }
 
 }
