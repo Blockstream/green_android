@@ -6,7 +6,8 @@
     <CheckBoxPreference
         android:key="spvSyncMobile"
         android:title="@string/id_synchronize_spv_on_mobile"
-        android:summary="@string/id_spv_is_always_synchronized_on" />
+        android:summary="@string/id_spv_is_always_synchronized_on"
+        android:dependency="spvEnabled" />
     <EditTextPreference
         android:key="trusted_peer"
         android:title="@string/id_only_connect_to_trusted_nodes"
