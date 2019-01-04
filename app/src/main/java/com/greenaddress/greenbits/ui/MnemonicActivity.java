@@ -155,6 +155,15 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
                         }
                     }
                 });
+                me.setOnFocusChangeListener((View v, boolean hasFocus) -> {
+                    if (!hasFocus && v instanceof EditText) {
+                        final Editable e = ((EditText)v).getEditableText();
+                        final String word = e.toString();
+                        if (!MnemonicHelper.mWords.contains(word)) {
+                            e.setSpan(new StrikethroughSpan(), 0, word.length(), 0);
+                        }
+                    }
+                });
                 registerForContextMenu(me);
 
                 mWordEditTexts[wordNum - 1] = me;
