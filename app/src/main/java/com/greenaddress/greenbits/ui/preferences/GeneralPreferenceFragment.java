@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v14.preference.SwitchPreference;
@@ -249,6 +250,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         findPreference(PrefKeys.PGP_KEY).setOnPreferenceClickListener(this::onPGPKeyClicked);
 
+
+        // Terms of service
+        final Preference termsOfUse = find(PrefKeys.TERMS_OF_USE);
+        termsOfUse.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/it/tos.html"));
+
+        // Privacy policy
+        final Preference privacyPolicy = find(PrefKeys.PRIVACY_POLICY);
+        privacyPolicy.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/it/privacy.html"));
+
         // Version
         final Preference version = find(PrefKeys.VERSION);
         version.setSummary(String.format("%s %s",
@@ -256,6 +266,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                                          getString(R.string.id_version_1s_2s,
                                                    BuildConfig.VERSION_NAME,
                                                    BuildConfig.BUILD_TYPE)));
+    }
+
+    private boolean openURI(final String uri) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+        return false;
     }
 
     private void logout() {
