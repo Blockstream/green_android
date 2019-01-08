@@ -149,7 +149,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
                             return;
                         }
                         final boolean isInvalid = markInvalidWord(s);
-                        if (!isInvalid && s.length() > 3) {
+                        if (!isInvalid && (s.length() > 3 || MnemonicHelper.mWords.contains(s.toString()))) {
                             if (!enableLogin())
                                 nextFocus();
                         }
