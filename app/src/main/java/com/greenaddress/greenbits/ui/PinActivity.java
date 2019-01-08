@@ -141,7 +141,6 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go back to the initial login screen to allow
                 // them to enter mnemonics.
-                mService.setUserCancelledPINEntry(true);
                 startActivity(new Intent(this, FirstScreenActivity.class));
                 finish();
             }
@@ -181,7 +180,6 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     @Override
     public void onBackPressed() {
-        mService.setUserCancelledPINEntry(true);
         startActivity(new Intent(this, FirstScreenActivity.class));
     }
 

@@ -68,7 +68,6 @@ public class GaService extends Service  {
     private String mSignUpMnemonic;
     private Bitmap mSignUpQRCode;
     private String mDeviceId;
-    private boolean mUserCancelledPINEntry = false;
 
     private final SPV mSPV = new SPV(this);
 
@@ -179,14 +178,6 @@ public class GaService extends Service  {
 
     public File getSPVChainFile() {
         return getSPVChainFile(getNetwork().getName());
-    }
-
-    public boolean getUserCancelledPINEntry() {
-        return mUserCancelledPINEntry;
-    }
-
-    public void setUserCancelledPINEntry(final boolean value) {
-        mUserCancelledPINEntry = value;
     }
 
     public String getBitcoinUnit() {
