@@ -2,7 +2,7 @@
 
     <PreferenceCategory
         android:key="network_category"
-        android:title="NETWORK"
+        android:title="@string/id_network"
         android:icon="@drawable/ic_network"
         android:layout="@layout/preference_category_green"
         />
@@ -10,11 +10,11 @@
     <Preference
         android:key="logout"
         android:layout="@layout/view_logout"
-        android:title="Bitcoin Testnet"
-        android:summary="Log Out"/>
+        android:title=""
+        android:summary="@string/id_log_out"/>
 
     <PreferenceCategory
-        android:title="ABOUT"
+        android:title="@string/id_about"
         android:icon="@drawable/ic_about"
         android:layout="@layout/preference_category_green"/>
 

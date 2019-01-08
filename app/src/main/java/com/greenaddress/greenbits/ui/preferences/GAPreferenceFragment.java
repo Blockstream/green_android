@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -78,5 +80,14 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
             return false;
         }
         return true;
+    }
+
+    protected void logout() {
+        ((LoggedActivity) getActivity()).logout();
+    }
+
+    protected boolean openURI(final String uri) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+        return false;
     }
 }

@@ -268,15 +268,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                                                    BuildConfig.BUILD_TYPE)));
     }
 
-    private boolean openURI(final String uri) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
-        return false;
-    }
-
-    private void logout() {
-        ((LoggedActivity) getActivity()).logout();
-    }
-
     private void initSummaries() {
         final Model model = mService.getModel();
         final AvailableCurrenciesObservable currenciesObservable = model.getAvailableCurrenciesObservable();

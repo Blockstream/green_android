@@ -16,7 +16,6 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {
     private static final String TAG = ResetActivePreferenceFragment.class.getSimpleName();
     private static final int REQUEST_2FA = 101;
-
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
@@ -24,40 +23,43 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_resetactive);
         setHasOptionsMenu(true);
 
-        // Network & Logout
-        final PreferenceCategory cat = find(PrefKeys.NETWORK_CATEGORY);
-        cat.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName().toUpperCase()));
+        //  Logout
         final Preference logout = find(PrefKeys.LOGOUT);
+        logout.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName()));
         logout.setOnPreferenceClickListener(preference -> {
             logout.setEnabled(false);
-            ((LoggedActivity) getActivity()).logout();
+            logout();
             return false;
         });
 
         // Version
-        final Preference version = find("version");
+        final Preference version = find(PrefKeys.VERSION);
         version.setSummary(String.format("%s %s",
                                          getString(R.string.app_name),
                                          getString(R.string.id_version_1s_2s,
                                                    BuildConfig.VERSION_NAME,
                                                    BuildConfig.BUILD_TYPE)));
 
+        // Terms of service
+        final Preference termsOfUse = find(PrefKeys.TERMS_OF_USE);
+        termsOfUse.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/tos.html"));
+
+        // Privacy policy
+        final Preference privacyPolicy = find(PrefKeys.PRIVACY_POLICY);
+        privacyPolicy.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/privacy.html"));
+
         // Actions
-        ((Preference) find("logout")).setOnPreferenceClickListener(this);
-        ((Preference) find("cancel_twofactor_reset")).setOnPreferenceClickListener(this);
-        ((Preference) find("dispute_twofactor_reset")).setOnPreferenceClickListener(this);
+        ((Preference) find(PrefKeys.CANCEL_TWOFACTOR_RESET)).setOnPreferenceClickListener(this);
+        ((Preference) find(PrefKeys.DISPUTE_TWOFACTOR_RESET)).setOnPreferenceClickListener(this);
     }
 
     @Override
     public boolean onPreferenceClick(final Preference preference) {
         switch (preference.getKey()) {
-        case "logout":
-            ((LoggedActivity) getActivity()).logout();
-            return true;
-        case "cancel_twofactor_reset":
+        case PrefKeys.CANCEL_TWOFACTOR_RESET:
             startTwoFactorActivity("cancel");
             return true;
-        case "dispute_twofactor_reset":
+        case PrefKeys.DISPUTE_TWOFACTOR_RESET:
             startTwoFactorActivity("dispute");
             return true;
         }
