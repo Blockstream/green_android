@@ -29,7 +29,7 @@ public class PopupCodeResolver implements CodeResolver {
 
         final MaterialDialog.Builder builder =
             UI.popup(activity, activity.getString(R.string.id_please_provide_your_1s_code,
-                                                  method), R.string.id_choose, R.string.id_cancel)
+                                                  method))
             .inputType(InputType.TYPE_CLASS_NUMBER)
             .icon(getIconFor(method))
             .cancelable(false)

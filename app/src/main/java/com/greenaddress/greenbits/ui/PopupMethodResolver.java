@@ -23,8 +23,7 @@ public class PopupMethodResolver implements MethodResolver {
         if (methods.size() == 1) {
             future.set(methods.get(0));
         } else {
-            final MaterialDialog.Builder builder = UI.popup(activity, R.string.id_choose_twofactor_authentication,
-                                                            R.string.id_choose, R.string.id_cancel)
+            final MaterialDialog.Builder builder = UI.popup(activity, R.string.id_choose_twofactor_authentication)
                                                    .cancelable(false)
                                                    .items(methods)
                                                    .itemsCallbackSingleChoice(0, (dialog, v, which, text) -> {
