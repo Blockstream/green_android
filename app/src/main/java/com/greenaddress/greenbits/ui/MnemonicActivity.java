@@ -102,6 +102,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         setTitleBackTransparent();
         setTitleWithNetwork(R.string.id_restore);
 
+        UI.preventScreenshots(this);
         mOkButton = UI.mapClick(this, R.id.mnemonicOkButton, this);
         mEncryptedSwitch = UI.mapClick(this, R.id.mnemonicEncrypted, this);
 

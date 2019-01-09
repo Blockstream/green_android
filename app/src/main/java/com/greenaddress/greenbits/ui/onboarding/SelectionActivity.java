@@ -41,6 +41,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         setTitleBackTransparent();
         setTitle("");
 
+        UI.preventScreenshots(this);
         // Generate mnemonic from GDK
         try {
             mMnemonic = getIntent().getDataString();

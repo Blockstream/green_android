@@ -37,6 +37,7 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
         setContentView(R.layout.activity_onboarding_words);
         setTitleBackTransparent();
         setTitle("");
+        UI.preventScreenshots(this);
 
         // Generate mnemonic from GDK
         mMnemonic = mService.getSignUpMnemonic();
