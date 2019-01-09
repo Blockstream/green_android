@@ -13,6 +13,10 @@
         android:title=""
         android:summary="@string/id_log_out"/>
 
+    <Preference
+        android:layout="@layout/view_space"
+        />
+
     <PreferenceCategory
         android:title="@string/id_about"
         android:icon="@drawable/ic_about"
@@ -31,6 +35,8 @@
         android:key="privacy_policy"
         android:title="@string/id_privacy_policy" />
 
+    <Preference
+        android:layout="@layout/view_space_big" />
 
     <PreferenceCategory />
 </PreferenceScreen>

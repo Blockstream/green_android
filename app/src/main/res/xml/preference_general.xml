@@ -126,13 +126,7 @@
         android:title="@string/id_privacy_policy" />
 
     <Preference
-        android:layout="@layout/view_space" />
-    <Preference
-        android:layout="@layout/view_space" />
-    <Preference
-        android:layout="@layout/view_space" />
-    <Preference
-        android:layout="@layout/view_space" />
+        android:layout="@layout/view_space_big" />
 
     <PreferenceCategory />
 </PreferenceScreen>
