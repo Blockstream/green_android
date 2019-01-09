@@ -164,6 +164,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 mWordSelected = null;
             } else {
                 // if fails, go to the previous page
+                UI.toast(this, R.string.id_wrong_choice_check_your, Toast.LENGTH_LONG);
                 finish();
             }
         } else {

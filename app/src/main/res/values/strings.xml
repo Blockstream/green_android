@@ -362,6 +362,7 @@
   <string name="id_welcome_to">Welcome to</string>
   <string name="id_write_down_the_words">Write down the words</string>
   <string name="id_write_down_your_mnemonic_words">Write down your mnemonic words on paper or on a cold storage device.</string>
+  <string name="id_wrong_choice_check_your">Wrong choice. Check your mnemonic and try again.</string>
   <string name="id_year">year</string>
   <string name="id_years">years</string>
   <string name="id_you_are_not_connected_please">You are not connected, please wait</string>
