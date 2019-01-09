@@ -39,7 +39,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     private void kickMeOutIfNotLogged() {
         if (!mService.getConnectionManager().isPostLogin()) {
             Log.i("LoggedActivity","not logged any more kicking out");
-            toFirstOrPinScreen(mService.getConnectionManager().isLoginWithPin());
+            toFirstOrPinScreen();
         }
     }
 
@@ -56,14 +56,13 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         startLoading();
         mService.getConnectionManager().deleteObserver(this);
         mService.getExecutor().execute(() -> {
-            final boolean loggedWithPin = mService.getConnectionManager().isLoginWithPin();
             mService.disconnect();
-            toFirstOrPinScreen(loggedWithPin);
+            toFirstOrPinScreen();
         });
     }
 
-    private void toFirstOrPinScreen(final boolean toPin) {
-        if (toPin)
+    private void toFirstOrPinScreen() {
+        if (mService.hasPin())
             toScreen(new Intent(this, PinActivity.class));
         else
             toScreen(new Intent(this, FirstScreenActivity.class));
