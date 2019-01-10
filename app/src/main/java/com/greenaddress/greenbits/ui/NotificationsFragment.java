@@ -99,9 +99,17 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             getPreferenceScreen().removePreference(mEmptyNotifications);
         }
 
+        addSpacingAtEnd();
+    }
+
+    private void addSpacingAtEnd() {
         // add space in the end with empty preferences to avoid truncation by the navigation buttons
-        getPreferenceScreen().addPreference(new Preference(mContextThemeWrapper));
-        getPreferenceScreen().addPreference(new Preference(mContextThemeWrapper));
+        final Preference p = new Preference(mContextThemeWrapper);
+        p.setEnabled(false);
+        final Preference p2 = new Preference(mContextThemeWrapper);
+        p2.setEnabled(false);
+        getPreferenceScreen().addPreference(p);
+        getPreferenceScreen().addPreference(p2);
     }
 
     private String getDescription(final EventData event) {
