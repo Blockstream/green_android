@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -154,8 +155,10 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
     @Override
     public boolean onPreferenceClick(final Preference preference) {
-        if (preference == mResetSPV)
+        if (preference == mResetSPV) {
+            UI.toast(getActivity(), R.string.id_spv_reset_and_restarted, Toast.LENGTH_LONG);
             mService.resetSPVAsync();
+        }
         return false;
     }
 }

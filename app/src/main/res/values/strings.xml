@@ -301,6 +301,7 @@
   <string name="id_something_went_wrong">Something went wrong</string>
   <string name="id_spv_is_always_synchronized_on">SPV is always synchronized on non mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
   <string name="id_spv_notifications">SPV notifications</string>
+  <string name="id_spv_reset_and_restarted">SPV reset and restarted</string>
   <string name="id_spv_synchronization">SPV Synchronization</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
