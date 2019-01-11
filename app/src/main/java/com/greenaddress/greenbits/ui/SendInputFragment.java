@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -101,17 +100,19 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
         // Create the initial transaction
         try {
-            final String tx = b.getString(INTENT_STRING_TX);
-            final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
-            // Fee
-            // FIXME: If default fee is custom then fetch it here
-            final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
-            txJson.set("fee_rate", fee_rate);
+            if (mTx == null) {
+                final String tx = b.getString(INTENT_STRING_TX);
+                final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
+                // Fee
+                // FIXME: If default fee is custom then fetch it here
+                final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
+                txJson.set("fee_rate", fee_rate);
 
-            // FIXME: If we didn't pass in the full transaction (with utxos)
-            // then this call will go to the server. So, we should do it in
-            // the background and display a wait icon until it returns
-            mTx = service.getSession().createTransactionRaw(txJson);
+                // FIXME: If we didn't pass in the full transaction (with utxos)
+                // then this call will go to the server. So, we should do it in
+                // the background and display a wait icon until it returns
+                mTx = service.getSession().createTransactionRaw(txJson);
+            }
 
             final JsonNode node = mTx.get("satoshi");
             if (node != null && node.asLong() != 0L) {
@@ -141,8 +142,6 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                     // Set custom rate to 1 satoshi higher than the old rate
                     mSelectedFee = mButtonIds.length - 1;
                 }
-                // Poke in the new rate
-                txJson.set("fee_rate", new LongNode(mFeeEstimates[mSelectedFee]));
             }
 
             final String defaultFeerate = service.cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
@@ -256,34 +255,31 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                            .input(hint,
                                   mPrefDefaultFeeRate != null ? String.valueOf(mPrefDefaultFeeRate) : "",
                                   false,
-                                  new MaterialDialog.InputCallback() {
-            @Override
-            public void onInput(@NonNull final MaterialDialog dialog, final CharSequence input) {
-                try {
-                    final String rateText = input.toString().trim();
-                    if (rateText.isEmpty())
-                        throw new Exception();
-                    final double feePerByte = Double.valueOf(rateText);
-                    final long feePerKB = (long) (feePerByte * 1000);
-                    if (feePerKB < mMinFeeRate) {
-                        UI.toast(getGaActivity(), R.string.id_fee_rate_must_be_higher_than, Toast.LENGTH_LONG);
-                        throw new Exception();
-                    }
-                    final Long oldFeeRate = getOldFeeRate(mTx);
-                    if (oldFeeRate != null && feePerKB < oldFeeRate) {
-                        UI.toast(getGaActivity(), R.string.id_requested_fee_rate_too_low, Toast.LENGTH_LONG);
-                        return;
-                    }
+                                   (dialog, input) -> {
+                                       try {
+                                           final String rateText = input.toString().trim();
+                                           if (rateText.isEmpty())
+                                               throw new Exception();
+                                           final double feePerByte = Double.valueOf(rateText);
+                                           final long feePerKB = (long) (feePerByte * 1000);
+                                           if (feePerKB < mMinFeeRate) {
+                                               UI.toast(getGaActivity(), R.string.id_fee_rate_must_be_higher_than, Toast.LENGTH_LONG);
+                                               throw new Exception();
+                                           }
+                                           final Long oldFeeRate = getOldFeeRate(mTx);
+                                           if (oldFeeRate != null && feePerKB < oldFeeRate) {
+                                               UI.toast(getGaActivity(), R.string.id_requested_fee_rate_too_low, Toast.LENGTH_LONG);
+                                               return;
+                                           }
 
-                    mFeeEstimates[mButtonIds.length - 1] = feePerKB;
-                    // FIXME: Probably want to do this in the background
-                    updateTransaction(mFeeButtons[mSelectedFee]);
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                    onClick(mFeeButtons[1]);         // FIXME: Get from user config
-                }
-            }
-        }).show();
+                                           mFeeEstimates[mButtonIds.length - 1] = feePerKB;
+                                           // FIXME: Probably want to do this in the background
+                                           updateTransaction(mFeeButtons[mSelectedFee]);
+                                       } catch (final Exception e) {
+                                           e.printStackTrace();
+                                           onClick(mFeeButtons[1]);         // FIXME: Get from user config
+                                       }
+                                   }).show();
     }
 
 

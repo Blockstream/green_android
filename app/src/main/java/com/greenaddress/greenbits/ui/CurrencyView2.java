@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -67,6 +68,7 @@ public class CurrencyView2 extends RelativeLayout implements View.OnClickListene
     public void setEnabled(final boolean enabled) {
         mEnabled = enabled;
         mAmountEdit.setEnabled(mEnabled && !mSendAll);
+        mAmountEdit.setTextColor(ResourcesCompat.getColor(getResources(), R.color.grey_light, null));
     }
 
     public void onPause() {
