@@ -21,7 +21,6 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.CreateTransactionData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.components.SwipeButton;
 
@@ -84,7 +83,7 @@ public class SendConfirmFragment extends GAFragment {
             final int subAccount = subaccount;
             final SubaccountData subaccountData =
                 service.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
-            subaccountText.setText(subaccountData.getName());
+            subaccountText.setText(subaccountData.getName().isEmpty() ? "Main" : subaccountData.getName());
         }
         addressText.setText(currentRecipient.getAddress());
 

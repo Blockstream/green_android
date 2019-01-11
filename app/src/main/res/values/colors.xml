@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#414D55</color>
-    <color name="colorPrimaryDark">#373f45</color>
+    <color name="colorPrimaryDark">#12171e</color>
     <color name="colorAccent">#00B45A</color>
-    <color name="windowBackground">#1E2329</color>
-    <color name="darkJungleGreen">#19222c</color>
+    <color name="windowBackground">#12171e</color>
+    <color name="darkJungleGreen">#12171e</color>
     <color name="mediumJungleGreen">#2b333b</color>
 
 

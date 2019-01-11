@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:windowBackground">@color/darkJungleGreen</item>
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="actionMenuTextAppearance">@style/MenuTextAppearance</item>
         <item name="android:actionMenuTextAppearance">@style/MenuTextAppearance</item>
