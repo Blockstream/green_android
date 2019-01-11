@@ -1,15 +1,13 @@
 package com.greenaddress.greenbits.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -252,6 +250,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
         mCustomFeeDialog = new MaterialDialog.Builder(getActivity())
                            .title(R.string.id_set_custom_fee_rate)
+                           .positiveText(android.R.string.ok)
+                           .negativeText(android.R.string.cancel)
+                           .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
                            .input(hint,
                                   mPrefDefaultFeeRate != null ? String.valueOf(mPrefDefaultFeeRate) : "",
                                   false,
