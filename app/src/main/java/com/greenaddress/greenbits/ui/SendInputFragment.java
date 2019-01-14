@@ -145,8 +145,10 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             }
 
             final String defaultFeerate = service.cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
-            final boolean isNotBump = mTx.get("previous_transaction") == null;
-            if (defaultFeerate != null && isNotBump) {
+            final boolean isBump = mTx.get("previous_transaction") != null;
+            if (isBump) {
+                mFeeEstimates[3] = getOldFeeRate(mTx) + mMinFeeRate;
+            } else if (defaultFeerate != null) {
                 mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
                 mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate*1000.0).longValue();
             }
