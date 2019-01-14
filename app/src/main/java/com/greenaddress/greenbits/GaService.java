@@ -41,7 +41,6 @@ import org.bitcoinj.utils.Fiat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -68,6 +67,7 @@ public class GaService extends Service  {
     private String mSignUpMnemonic;
     private Bitmap mSignUpQRCode;
     private String mDeviceId;
+    private boolean pinJustSaved = false;
 
     private final SPV mSPV = new SPV(this);
 
@@ -402,9 +402,14 @@ public class GaService extends Service  {
                         .putInt("counter", 0)
                         .putBoolean("is_six_digit", pin.length() == 6)
                         .apply();
-               return null;
+                pinJustSaved = true;
+                return null;
             }
         });
+    }
+
+    public boolean isPinJustSaved() {
+        return pinJustSaved;
     }
 
     public void resetSignUp() {

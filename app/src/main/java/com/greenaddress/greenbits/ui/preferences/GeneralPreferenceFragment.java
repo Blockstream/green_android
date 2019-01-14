@@ -2,13 +2,11 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceCategory;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,7 +30,6 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.PopupMethodResolver;
@@ -508,6 +505,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final boolean emailConfirmed = mService.getModel().getTwoFactorConfig().getEmail().isConfirmed();
         mLocktimePref.setVisible(emailConfirmed);
         mSendLocktimePref.setVisible(emailConfirmed);
+
+        mPinPref.setVisible(mService.getConnectionManager().isLoginWithPin() || mService.isPinJustSaved());
     }
 
     @Override
