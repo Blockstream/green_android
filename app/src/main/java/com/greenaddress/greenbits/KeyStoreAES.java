@@ -39,8 +39,11 @@ public class KeyStoreAES {
     private static final int SECONDS_AUTH_VALID = 10;
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
+    public static String getKeyName(final GaService service, final boolean temporary) {
+        return KEYSTORE_KEY + "_" + service.getNetwork().getNetwork() + (temporary ? "temp" : "");
+    }
     public static String getKeyName(final GaService service) {
-        return KEYSTORE_KEY + "_" + service.getNetwork().getNetwork();
+        return getKeyName(service, false);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -53,7 +56,7 @@ public class KeyStoreAES {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance(
                     KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
 
-            keyGenerator.init(new KeyGenParameterSpec.Builder(getKeyName(service),
+            keyGenerator.init(new KeyGenParameterSpec.Builder(getKeyName(service, deleteImmediately),
                     KeyProperties.PURPOSE_ENCRYPT
                             | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
@@ -71,7 +74,7 @@ public class KeyStoreAES {
         } finally {
             if (deleteImmediately && keyStore != null) {
                 try {
-                    keyStore.deleteEntry(getKeyName(service));
+                    keyStore.deleteEntry(getKeyName(service, true));
                 } catch (final KeyStoreException e) {
                 }
             }
