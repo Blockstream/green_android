@@ -63,7 +63,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         txView.addItemDecoration(new DividerItem(getActivity()));
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         txView.setLayoutManager(layoutManager);
-        final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration(360);
+        float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
+        final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
         txView.setAdapter(new ListTransactionsAdapter(getGaActivity(), service, mTxItems,
                                                       service.getSession().getCurrentSubaccount()));
