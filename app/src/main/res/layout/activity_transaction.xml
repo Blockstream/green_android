@@ -25,29 +25,24 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="textEnd" />
 
-            <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_divider"
-            android:layout_marginTop="@dimen/activity_vertical_divider"
-            app:cardBackgroundColor="@color/primaryDark">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/activity_vertical_margin">
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_hash" />
 
                 <TextView
                     android:id="@+id/txHashText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
 
@@ -58,13 +53,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_date" />
 
                 <TextView
                     android:id="@+id/txDateText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
 
@@ -76,76 +71,58 @@
                     android:id="@+id/txDoubleSpentByTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_double_spend_by" />
 
                 <TextView
                     android:id="@+id/txDoubleSpentByText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
 
             </LinearLayout>
-        </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/txRecipientReceiverView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_divider"
-            android:layout_marginTop="@dimen/activity_vertical_divider"
-            app:cardBackgroundColor="@color/primaryDark">
 
             <LinearLayout
+                android:id="@+id/txRecipientReceiverView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/activity_vertical_margin">
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin">
 
                 <TextView
                     android:id="@+id/txRecipientTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_recipient" />
 
                 <TextView
                     android:id="@+id/txRecipientText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/activity_vertical_margin" />
 
                 <TextView
                     android:id="@+id/txReceivedOnTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_received_on" />
 
                 <TextView
                     android:id="@+id/txReceivedOnText"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@drawable/wallet_pattern_small"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:textColor="@color/white"
-                    android:paddingStart="16dp"/>
+                    />
 
             </LinearLayout>
-        </android.support.v7.widget.CardView>
 
-
-            <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_divider"
-            android:layout_marginTop="@dimen/activity_vertical_divider"
-            app:cardBackgroundColor="@color/primaryDark">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -156,26 +133,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_amount" />
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+
+                <TextView
+                    android:id="@+id/txAmountText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
+                    android:textColor="@color/textColor"
+                    android:textIsSelectable="true" />
 
-                    <TextView
-                        android:id="@+id/txAmountText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/textColor"
-                        android:textIsSelectable="true" />
-
-                    <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin"
-                        android:textColor="@color/textColor" />
-                </LinearLayout>
 
                 <View
                     android:layout_width="wrap_content"
@@ -184,26 +152,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_fee_amount_size_fee_rate" />
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                <TextView
+                    android:id="@+id/txFeeInfoText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
-
-                    <TextView
-                        android:id="@+id/txFeeInfoText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/textColor"
-                        android:textIsSelectable="true" />
-
-                    <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin"
-                        android:textColor="@color/textColor" />
-                </LinearLayout>
+                    android:textColor="@color/textColor"
+                    android:textIsSelectable="true" />
 
                 <View
                     android:layout_width="wrap_content"
@@ -213,17 +170,11 @@
                     android:id="@+id/txUnconfirmedEstimatedBlocks"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
                     android:text="@string/id_estimated_blocks_until" />
 
             </LinearLayout>
-        </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/activity_vertical_divider"
-                android:layout_marginTop="@dimen/activity_vertical_divider"
-                app:cardBackgroundColor="@color/primaryDark">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -241,6 +192,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            style="@style/SectionTitle"
                             android:text="@string/id_memo" />
 
                         <com.greenaddress.greenbits.ui.FontAwesomeTextView
@@ -271,7 +223,6 @@
                         android:id="@+id/txMemoText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin"
                         android:textIsSelectable="true" />
 
                     <EditText
@@ -284,7 +235,6 @@
                         android:textColor="@color/textColor" />
 
                 </LinearLayout>
-            </android.support.v7.widget.CardView>
         </LinearLayout>
     </ScrollView>
 
