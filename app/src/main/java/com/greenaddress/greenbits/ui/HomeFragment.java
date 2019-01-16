@@ -134,7 +134,6 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
 
     @Override
     public void onAccountSelected(final int subaccount) {
-        getGAService().getSession().setCurrentSubaccount(subaccount);
         getGAService().getModel().getActiveAccountObservable().setActiveAccount(subaccount);
         if(getGAService().getConnectionManager().isLoginWithPin()) {
             getGAService().cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();

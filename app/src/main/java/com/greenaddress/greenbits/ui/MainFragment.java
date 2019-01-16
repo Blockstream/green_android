@@ -67,7 +67,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
         txView.setAdapter(new ListTransactionsAdapter(getGaActivity(), service, mTxItems,
-                                                      service.getSession().getCurrentSubaccount()));
+                                                      service.getModel().getCurrentSubaccount()));
         // FIXME, more efficient to use swap
         // txView.swapAdapter(lta, false);
         mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
@@ -76,7 +76,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             @Override
             public void onRefresh() {
                 Log.d(TAG, "onRefresh -> " + TAG);
-                final int subaccount = service.getSession().getCurrentSubaccount();
+                final int subaccount = service.getModel().getCurrentSubaccount();
                 service.getModel().getTransactionDataObservable(subaccount).refresh();
             }
         });
@@ -147,7 +147,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
     private void reloadTransactions(final List<TransactionData> txList, final boolean showWaitDialog) {
         final GaService service = getGAService();
-        final int subaccount = service.getSession().getCurrentSubaccount();
+        final int subaccount = service.getModel().getCurrentSubaccount();
         final RecyclerView txView;
 
         if (isZombie())
@@ -266,7 +266,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
         getGaActivity().runOnUiThread(() -> {
             final GaService service = getGAService();
-            final int subaccount = service.getSession().getCurrentSubaccount();
+            final int subaccount = service.getModel().getCurrentSubaccount();
             final SubaccountData subaccountData = service.getSubaccountData(subaccount);
             mAccountView.setTitle(subaccountData.getName());
             mAccountView.setIcon(getResources().getDrawable(getGAService().getNetwork().getIcon()));

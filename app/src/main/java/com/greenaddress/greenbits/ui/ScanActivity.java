@@ -405,7 +405,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
 
         // See if the address is a private key, and if so, sweep it
         final Long feeRate = service.getFeeEstimates().get(0);
-        final Integer subaccount = service.getSession().getCurrentSubaccount();
+        final Integer subaccount = service.getModel().getCurrentSubaccount();
         final String receiveAddress = service.getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
         final BalanceData balanceData = new BalanceData();
         balanceData.setAddress(receiveAddress);
@@ -415,6 +415,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         sweepData.setPrivateKey(scanned);
         sweepData.setFeeRate(feeRate);
         sweepData.setAddressees(balanceDataList);
+        sweepData.setSubaccount(subaccount);
         final ObjectNode transactionRaw = service.getSession().createTransactionRaw(sweepData);
         final String error = transactionRaw.get("error").asText();
         if (error.isEmpty()) {
@@ -428,7 +429,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 text = scanned;
             }
             try {
-                final ObjectNode transactionFromUri = service.getSession().createTransactionFromUri(text);
+                final ObjectNode transactionFromUri = service.getSession().createTransactionFromUri(text, subaccount);
                 result.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
             } catch (final AddressFormatException e) {
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);

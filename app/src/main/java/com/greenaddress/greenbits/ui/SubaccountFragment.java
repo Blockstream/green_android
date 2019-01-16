@@ -102,11 +102,11 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     }
 
     public void setupObservers() {
-        final int subAccount = getGAService().getSession().getCurrentSubaccount();
+        mActiveAccountObservable = getGAService().getModel().getActiveAccountObservable();
+        final int subAccount = mActiveAccountObservable.getActiveAccount();
         mBalanceDataObservable = getGAService().getModel().getBalanceDataObservable(subAccount);
         mReceiveAddressObservable = getGAService().getModel().getReceiveAddressObservable(subAccount);
         mTransactionDataObservable = getGAService().getModel().getTransactionDataObservable(subAccount);
-        mActiveAccountObservable = getGAService().getModel().getActiveAccountObservable();
     }
 
     public void attachObservers() {

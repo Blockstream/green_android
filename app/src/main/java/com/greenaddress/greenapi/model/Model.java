@@ -123,4 +123,8 @@ public class Model {
     public SettingsData getSettings() {
         return mSettingsObservable.getSettings();
     }
+
+    public int getCurrentSubaccount() {
+        return getActiveAccountObservable().getActiveAccount();
+    }
 }

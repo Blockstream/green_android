@@ -192,7 +192,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
         // Setup balance
         final GaService service = getGAService();
-        final BalanceData balanceData = service.getBalanceData(service.getSession().getCurrentSubaccount());
+        final BalanceData balanceData = service.getBalanceData(service.getModel().getCurrentSubaccount());
         final TextView accountBalance = UI.find(mView, R.id.accountBalanceText);
         accountBalance.setText(service.getValueString(balanceData.toObjectNode(), false, true));
 

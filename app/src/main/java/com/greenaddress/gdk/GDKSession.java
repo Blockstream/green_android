@@ -46,7 +46,6 @@ public class GDKSession {
 
     private Object mNativeSession;
     private NotificationHandlerImpl mNotification;
-    private int mCurrentSubaccount;
 
     static {
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -93,16 +92,6 @@ public class GDKSession {
 
     public void loginWatchOnly(final String username, final String password) {
         GDK.login_watch_only(mNativeSession, username, password);
-    }
-
-    public void setCurrentSubaccount(final int subaccount) {
-        Log.d("NATIVE", "set_current_subaccount " + subaccount);
-        GDK.set_current_subaccount(mNativeSession, subaccount);
-        mCurrentSubaccount = subaccount;
-    }
-
-    public int getCurrentSubaccount() {
-        return mCurrentSubaccount;
     }
 
     public List<TransactionData> getTransactions(final int subAccount, final int pageId) throws IOException {
@@ -184,13 +173,14 @@ public class GDKSession {
         return (ObjectNode) GDK.create_transaction(mNativeSession, tx);
     }
 
-    public ObjectNode createTransactionFromUri(final String uri) throws AddressFormatException {
+    public ObjectNode createTransactionFromUri(final String uri, final int subaccount) throws AddressFormatException {
         final BalanceData balanceData = new BalanceData();
         balanceData.setAddress(uri);
         final List<BalanceData> balanceDataList = new ArrayList<>();
         balanceDataList.add(balanceData);
         final CreateTransactionData createTransactionData = new CreateTransactionData();
         createTransactionData.setAddressees(balanceDataList);
+        createTransactionData.setSubaccount(subaccount);
         final ObjectNode transaction = createTransactionRaw(createTransactionData);
         final String error = transaction.get("error").asText();
         if ("id_invalid_address".equals(error)) {

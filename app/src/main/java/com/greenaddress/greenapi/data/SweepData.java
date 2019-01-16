@@ -10,6 +10,7 @@ public class SweepData extends JSONData {
     private Long feeRate;
     private String privateKey;
     private List<BalanceData> addressees;
+    private Integer subaccount;
 
     public List<BalanceData> getAddressees() {
         return addressees;
@@ -33,5 +34,13 @@ public class SweepData extends JSONData {
 
     public void setPrivateKey(String privateKey) {
         this.privateKey = privateKey;
+    }
+
+    public Integer getSubaccount() {
+        return subaccount;
+    }
+
+    public void setSubaccount(Integer subaccount) {
+        this.subaccount = subaccount;
     }
 }

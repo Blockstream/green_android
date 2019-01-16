@@ -26,6 +26,7 @@ public class CreateTransactionData extends JSONData {
     private Long changeAmount;
     private InputOutputData changeAddress;
     private Integer changeSubaccount;
+    private Integer subaccount;
     private Long satoshi;
     private Boolean serverSigned;
     private Integer transactionSize;
@@ -289,6 +290,14 @@ public class CreateTransactionData extends JSONData {
 
     public void setChangeAddress(final InputOutputData changeAddress) {
         this.changeAddress = changeAddress;
+    }
+
+    public Integer getSubaccount() {
+        return subaccount;
+    }
+
+    public void setSubaccount(Integer subaccount) {
+        this.subaccount = subaccount;
     }
 
     public Integer getChangeSubaccount() {

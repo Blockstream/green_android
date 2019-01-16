@@ -62,7 +62,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (mCurrency != null)
             mCurrency.setIsPausing(false);
 
-        final int subaccount = getGAService().getSession().getCurrentSubaccount();
+        final int subaccount = getGAService().getModel().getCurrentSubaccount();
         onUpdateReceiveAddress(getGAService().getModel().getReceiveAddressObservable(subaccount));
         onUpdateTransactions(getGAService().getModel().getTransactionDataObservable(subaccount));
     }
@@ -104,7 +104,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         UI.find(mView, R.id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
 
-        final int subaccount = getGAService().getSession().getCurrentSubaccount();
+        final int subaccount = getGAService().getModel().getCurrentSubaccount();
         mTxList = getGAService().getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
         UI.attachHideKeyboardListener(getActivity(), mView);
         return mView;
@@ -256,7 +256,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     public void onNewAddressClicked() {
-        final int subaccount = getGAService().getSession().getCurrentSubaccount();
+        final int subaccount = getGAService().getModel().getCurrentSubaccount();
         getGAService().getModel().getReceiveAddressObservable(subaccount).refresh();
     }
 

@@ -347,7 +347,6 @@ public class GaService extends Service  {
         mSession.setNotificationModel(this);
         final int activeAccount = mConnectionManager.isLoginWithPin() ? cfg().getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
         mModel.getActiveAccountObservable().setActiveAccount(activeAccount);
-        mSession.setCurrentSubaccount(activeAccount);
         mConnectionManager.goPostLogin();
 
         if (!isWatchOnly()) {

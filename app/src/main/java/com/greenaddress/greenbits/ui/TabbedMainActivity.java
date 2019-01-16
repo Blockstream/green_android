@@ -113,7 +113,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final Intent intent = new Intent(this, SendActivity.class);
         final String text = uri.toString();
         try {
-            final ObjectNode transactionFromUri = mService.getSession().createTransactionFromUri(text);
+            final int subaccount = mService.getModel().getCurrentSubaccount();
+            final ObjectNode transactionFromUri = mService.getSession().createTransactionFromUri(text, subaccount);
             intent.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
         } catch (final AddressFormatException e) {
             e.printStackTrace();

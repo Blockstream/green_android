@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.BumpTxData;
+import com.greenaddress.greenapi.model.Model;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -185,7 +186,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             UI.hide(receivedOnTitle);
         }
 
-        final int subaccount = mService.getSession().getCurrentSubaccount();
+        final int subaccount = mService.getModel().getCurrentSubaccount();
         final String name = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subaccount).getName();
         receivedOnText.setText( TextUtils.isEmpty(name) ? "Main" : name);
 
@@ -321,7 +322,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             hideKeyboardFrom(mMemoEditText);
         });
         // Force reload tx
-        final int subaccount = mService.getSession().getCurrentSubaccount();
+        final int subaccount = mService.getModel().getCurrentSubaccount();
         mService.getModel().getTransactionDataObservable(subaccount).refresh();
     }
 
@@ -376,9 +377,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         try {
             startLoading();
             final GDKSession session = mService.getSession();
+            final Model model = mService.getModel();
             final String txhash = mTxItem.txHash.toString();
-            final int subaccount = mTxItem.subaccount == null ? session.getCurrentSubaccount() : mTxItem.subaccount;
-            session.setCurrentSubaccount(subaccount);
+            final int subaccount = mTxItem.subaccount == null ? model.getCurrentSubaccount() : mTxItem.subaccount;
             final JsonNode txToBump = session.getTransactionRaw(subaccount, txhash);
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();
