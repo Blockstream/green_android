@@ -12,6 +12,7 @@ import android.util.Base64;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenbits.KeyStoreAES;
 
 import java.io.IOException;
@@ -58,8 +59,6 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             pinBeforeConnect = pin;
     }
 
-
-
     @Override
     protected void onLoginFailure() {
         super.onLoginFailure();
@@ -67,14 +66,20 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         final SharedPreferences prefs = mService.cfgPin();
         final int counter = prefs.getInt("counter", 0) + 1;
         final SharedPreferences.Editor editor = prefs.edit();
-        if (counter < 3) {
-            editor.putInt("counter", counter);
-            message = getString(R.string.id_invalid_pin_you_have_1d, 3 - counter);
+        final boolean notAuthorized = mService.getConnectionManager().getLastLoginCode() == GDK.GA_NOT_AUTHORIZED;
+        if (notAuthorized) {
+            if (counter < 3) {
+                mService.getConnectionManager().clearPreviousLoginError();
+                editor.putInt("counter", counter);
+                message = getString(R.string.id_invalid_pin_you_have_1d, 3 - counter);
+            } else {
+                message = getString(R.string.id_invalid_pin_you_dont_have_any);
+                editor.clear();
+            }
+            editor.apply();
         } else {
-            message = getString(R.string.id_invalid_pin_you_dont_have_any);
-            editor.clear();
+            message = getString(R.string.id_error);
         }
-        editor.apply();
 
         PinActivity.this.runOnUiThread(new Runnable() {
             public void run() {
@@ -92,6 +97,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 }
             }
         });
+
     }
 
     @Override

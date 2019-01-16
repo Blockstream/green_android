@@ -43,7 +43,7 @@ public abstract class LoginActivity extends GaActivity implements Observer, Netw
             } else if (cm.isLoggedIn()) {
                 mService.onPostLogin();
                 runOnUiThread(this::onLoginSuccess);
-            } else if (cm.isConnectedWasLoggingIn()) {
+            } else if (cm.isLastLoginFailed()) {
                 runOnUiThread(this::onLoginFailure);
             } else if (cm.isPostLogin()) {
                 runOnUiThread(this::onLoggedIn);

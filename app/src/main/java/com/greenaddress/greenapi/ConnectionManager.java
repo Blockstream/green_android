@@ -26,7 +26,6 @@ public class ConnectionManager extends Observable {
         }
     }
 
-    private ConnState mPreviousState;
     private ConnState mState;
     private GDKSession mSession;
     private String mWatchOnlyUsername;
@@ -36,6 +35,7 @@ public class ConnectionManager extends Observable {
     private boolean mProxyEnabled;
     private boolean mTorEnabled;
     private boolean mLoginWithPin;
+    private int mLastLoginCode = 0;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
     private static int CONNECTION_RETRY_ATTEMPTS = 3;
@@ -51,7 +51,6 @@ public class ConnectionManager extends Observable {
         this.mProxyEnabled = proxyEnabled;
         this.mTorEnabled = torEnabled;
         this.mState = ConnState.DISCONNECTED;
-        this.mPreviousState = ConnState.DISCONNECTED;
     }
 
     public void resetAttempts() {
@@ -81,9 +80,8 @@ public class ConnectionManager extends Observable {
 
     public boolean isPostLogin() { return mState == ConnState.POSTLOGGEDIN; }
 
-    public boolean isConnectedWasLoggingIn() {
-        //means login failed
-        return mState == ConnState.CONNECTED && mPreviousState == ConnState.LOGGINGIN;
+    public boolean isLastLoginFailed() {
+        return mLastLoginCode != 0;
     }
 
     public boolean isDisconnectedOrLess() {
@@ -118,17 +116,20 @@ public class ConnectionManager extends Observable {
 
     private void setState(ConnState state) {
         Log.d(TAG, "setting to " + state);
-        this.mPreviousState = this.mState;
         this.mState = state;
         setChanged();
         notifyObservers();
     }
 
     public void clearPreviousLoginError() {
-        if (isConnectedWasLoggingIn()) {
+        if (isLastLoginFailed()) {
             Log.d(TAG, "clearing previous login error");
-            this.mPreviousState = ConnState.CONNECTED;
+            mLastLoginCode = 0;
         }
+    }
+
+    public int getLastLoginCode() {
+        return mLastLoginCode;
     }
 
     public boolean isWatchOnly() {
@@ -197,9 +198,11 @@ public class ConnectionManager extends Observable {
             this.mHWDevice = hwDevice;
             this.mHWResolver = hwResolver;
             mSession.login(parent, hwDevice, "", "").resolve(null, hwResolver);
+            mLastLoginCode = 0;
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
             Log.e(TAG, "Error while logging in " + e.getMessage() );
+            mLastLoginCode = getCode(e);
             setState(ConnState.CONNECTED);
         }
     }
@@ -237,11 +240,21 @@ public class ConnectionManager extends Observable {
             } else {
                 throw new Exception("wrong parameters");
             }
+            mLastLoginCode = 0;
             setState(ConnState.LOGGEDIN);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Error while logging " + e.getMessage() );
+            mLastLoginCode = getCode(e);
             setState(ConnState.CONNECTED);
         }
+    }
+
+    private int getCode(final Exception e) {
+        try {
+            final String stringCode = e.getMessage().split(" ")[1];
+            return Integer.parseInt(stringCode);
+        } catch (final Exception ignored) {}
+        return 1;
     }
 
     public void disconnect() {
