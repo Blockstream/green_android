@@ -15,30 +15,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="0dp"
-        app:cardBackgroundColor="@color/darkJungleGreen">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="@dimen/activity_horizontal_margin">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/id_recipient"
-                android:textAllCaps="true"/>
-
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="8dp"/>
+                style="@style/SectionTitle"/>
 
             <TextView
                 android:id="@+id/addressText"
@@ -49,44 +33,30 @@
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textSize="12sp"/>
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="0dp"
-        app:cardBackgroundColor="@color/darkJungleGreen">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sections_spacing" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/SectionTitle"
                 android:text="@string/id_sending"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="8dp"/>
 
             <com.greenaddress.greenbits.ui.CurrencyView2
                 android:id="@+id/sendAmountCurrency"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
+            
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="8dp"/>
+                android:layout_height="8dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
 
                 <Button
                     android:id="@+id/sendallButton"
@@ -104,24 +74,14 @@
                     android:layout_marginLeft="8dp"/>
             </LinearLayout>
 
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="0dp"
-        app:cardBackgroundColor="@color/darkJungleGreen">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sections_spacing" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/SectionTitle"
                 android:text="@string/id_miner_fee"/>
 
             <LinearLayout
@@ -187,9 +147,6 @@
                 android:id="@+id/amountWithFeeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
 
         </LinearLayout>
     </ScrollView>

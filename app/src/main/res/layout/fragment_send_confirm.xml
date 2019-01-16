@@ -15,193 +15,115 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin">
 
-            <android.support.v7.widget.CardView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                app:cardBackgroundColor="@color/primaryDark">
+                style="@style/SectionTitle"
+                android:text="@string/id_from"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/id_from"/>
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"/>
-
-                    <TextView
-                        android:id="@+id/subaccountText"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:background="@drawable/wallet_pattern_small"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/white"
-                        android:paddingStart="16dp"/>
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/id_to"/>
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"/>
-
-                    <TextView
-                        android:id="@+id/addressText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="8dp"
-                        android:drawableStart="@drawable/account"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"/>
-
-                    <LinearLayout
-                        android:id="@+id/changeLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:orientation="vertical">
-                        <Space
-                            android:layout_width="match_parent"
-                            android:layout_height="8dp"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/id_change"/>
-
-                        <Space
-                            android:layout_width="match_parent"
-                            android:layout_height="8dp"/>
-
-                        <TextView
-                            android:id="@+id/changeAddressText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/account"
-                            android:gravity="center_vertical"
-                            android:textColor="@color/white"
-                            android:textSize="12sp"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-
-            <android.support.v7.widget.CardView
+            <TextView
+                android:id="@+id/subaccountText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                app:cardBackgroundColor="@color/primaryDark">
+                android:gravity="center_vertical"
+                android:textColor="@color/white" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sections_spacing" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/id_sending"/>
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/id_amount" />
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin">
-
-                        <TextView
-                            android:id="@+id/sendAmount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/textColor"
-                            android:textIsSelectable="true" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/id_fee" />
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin">
-
-                        <TextView
-                            android:id="@+id/sendFee"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/textColor"
-                            android:textIsSelectable="true" />
-
-
-                    </LinearLayout>
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"/>
-
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                app:cardBackgroundColor="@color/primaryDark">
+                style="@style/SectionTitle"
+                android:text="@string/id_to"/>
 
-                <LinearLayout
+            <TextView
+                android:id="@+id/addressText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:drawableStart="@drawable/account"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textSize="12sp"/>
+
+            <LinearLayout
+                android:id="@+id/changeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:text="@string/id_change"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/id_my_notes"/>
+                <TextView
+                    android:id="@+id/changeAddressText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/account"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"/>
+            </LinearLayout>
 
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sections_spacing" />
 
-                    <MultiAutoCompleteTextView
-                        android:id="@+id/noteText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:lines="3"
-                        android:hint="@string/id_optional"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SectionTitle"
+                android:text="@string/id_sending"/>
 
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/id_amount" />
 
+            <TextView
+                android:id="@+id/sendAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:textIsSelectable="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/id_fee" />
+
+            <TextView
+                android:id="@+id/sendFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:textIsSelectable="true" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sections_spacing" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SectionTitle"
+                android:text="@string/id_my_notes"/>
+
+            <MultiAutoCompleteTextView
+                android:id="@+id/noteText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="3"
+                android:hint="@string/id_optional"/>
         </LinearLayout>
     </ScrollView>
 
