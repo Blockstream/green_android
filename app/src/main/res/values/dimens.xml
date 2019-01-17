@@ -12,7 +12,7 @@
 
     <dimen name="appbar_padding_top">8dp</dimen>
 
-    <dimen name="card_size">160dp</dimen>
+    <dimen name="card_size">200dp</dimen>
 
     <dimen name="adapter_bar">120dp</dimen>
 

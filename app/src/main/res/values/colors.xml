@@ -6,6 +6,7 @@
     <color name="windowBackground">#12171e</color>
     <color name="darkJungleGreen">#12171e</color>
     <color name="mediumJungleGreen">#2b333b</color>
+    <color name="buttonJungleGreen">#19222c</color>
 
 
     <color name="primary">@color/colorPrimary</color>

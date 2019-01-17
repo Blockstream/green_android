@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.components;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,16 +19,18 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
     private final ArrayList<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
     private final GaService mService;
+    private final Resources mResources;
 
     public interface OnAccountSelected {
         void onAccountSelected(int account);
     }
 
     public AccountAdapter(final ArrayList<SubaccountData> subaccountList, final GaService service,
-                          final OnAccountSelected cb) {
+                          final OnAccountSelected cb, final Resources resources) {
         mSubaccountList = subaccountList;
         mService = service;
         mOnAccountSelected = cb;
+        mResources = resources;
     }
 
     @Override
@@ -61,7 +64,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             holder.mAccountView.setBalance(mService, balance);
         }
         holder.mAccountView.hideActions();
-        holder.mAccountView.showBack(false);
+        holder.mAccountView.listMode(false);
+        holder.mAccountView.setIcon(mResources.getDrawable(mService.getNetwork().getIcon()));
         holder.mAccountView.setOnClickListener(listener);
         holder.mView.setOnClickListener(listener);
     }

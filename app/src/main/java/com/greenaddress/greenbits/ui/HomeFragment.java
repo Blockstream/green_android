@@ -47,7 +47,7 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
-        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this);
+        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this, getResources());
         mAccountsView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
 

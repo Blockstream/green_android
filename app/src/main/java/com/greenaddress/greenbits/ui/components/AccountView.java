@@ -26,8 +26,8 @@ public class AccountView extends CardView {
     private View mView;
     private Button mSendButton, mReceiveButton;
     private ImageButton mBackButton, mNetworkImage;
-    private LinearLayout mBodyLayout, mActionLayout, mActionReceiveLayout, mActionSendLayout, mActionDividerLayout;
-    private TextView mTitleText, mBalanceText, mBalanceFiatText;
+    private LinearLayout mBodyLayout, mActionLayout;
+    private TextView mTitleText, mBalanceText, mBalanceUnitText, mBalanceFiatText;
 
     public AccountView(final Context context) {
         super(context);
@@ -66,9 +66,8 @@ public class AccountView extends CardView {
         mActionLayout = UI.find(view, R.id.actionLayout);
         mTitleText = UI.find(view, R.id.name);
         mBalanceText = UI.find(view, R.id.mainBalanceText);
+        mBalanceUnitText = UI.find(view, R.id.mainBalanceUnitText);
         mBalanceFiatText = UI.find(view, R.id.mainLocalBalanceText);
-        mActionReceiveLayout = UI.find(view, R.id.actionReceiveLayout);
-        mActionSendLayout = UI.find(view, R.id.actionSendLayout);
         mBackButton = UI.find(view, R.id.backButton);
         mNetworkImage = UI.find(view, R.id.networkImage);
     }
@@ -87,9 +86,11 @@ public class AccountView extends CardView {
         }
     }
 
-    public void showBack(boolean show) {
-        mBackButton.setVisibility(show ? VISIBLE : GONE);
-        mNetworkImage.setVisibility(show ? VISIBLE : GONE);
+    public void listMode(boolean mode) {
+        mBackButton.setImageDrawable(mode
+                ? getResources().getDrawable(R.drawable.ic_stack_wallets)
+                : getResources().getDrawable(R.drawable.ic_arrow_forward_24dp)
+                );
     }
 
     public void setIcon(final Drawable resource) {
@@ -105,10 +106,12 @@ public class AccountView extends CardView {
 
     public void setBalance(final GaService service, final BalanceData balance) {
         final ObjectNode balanceData = balance.toObjectNode();
-        final String valueBitcoin = service.getValueString(balanceData, false, true);
+        final String valueBitcoin = service.getValueString(balanceData, false, false);
         final String valueFiat = service.getValueString(balanceData, true, true);
         mBalanceText.setVisibility(VISIBLE);
         mBalanceText.setText(valueBitcoin);
+        mBalanceUnitText.setVisibility(VISIBLE);
+        mBalanceUnitText.setText(" " + service.getBitcoinUnit());
         mBalanceFiatText.setText("≈  " + valueFiat);
 
         /*if (service.isElements()) {

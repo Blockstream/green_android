@@ -2,9 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -83,7 +80,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
         // Setup account card view
         mAccountView = UI.find(mView, R.id.accountView);
-        mAccountView.showBack(true);
+        mAccountView.setIcon(getResources().getDrawable(getGAService().getNetwork().getIcon()));
+        mAccountView.listMode(true);
         mAccountView.setOnClickListener(this);
         if (service.getModel().isTwoFAReset())
             mAccountView.hideActions();
