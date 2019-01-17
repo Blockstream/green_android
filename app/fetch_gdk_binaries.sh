@@ -5,8 +5,8 @@ set -e
 # The version of gdk to fetch and its sha256 checksum for integrity checking
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
-URL="https://github.com/Blockstream/gdk/releases/download/release_0.0.3/${TARBALL}"
-SHA256="b81ec6c244977bd2be7c335488b4e7779a16f95f751c3df641734f907a9c220f"
+URL="https://github.com/Blockstream/gdk/releases/download/release_0.0.4/${TARBALL}"
+SHA256="7d0ed1d18a0eb5a2c5b25f520d64641afb3c724c82cc7fa9dff8e5d8f08effa5"
 
 # Pre-requisites
 function check_command() {
