@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.blockstream.libwally.Wally;
+import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.MnemonicHelper;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -75,12 +76,15 @@ public class SelectionFragment extends Fragment {
         MnemonicHelper.initWordList(dictionary, null);
         for (int i = 0; i < WORDS_SELECTION; i++)
             randoms.add(dictionary.get(random.nextInt(Wally.BIP39_WORDLIST_LEN)));
+
         if (!randoms.contains(word))
             randoms.set(random.nextInt(WORDS_SELECTION), word);
 
+        final String correctIfDebug = BuildConfig.DEBUG ? word : "";
+
         // Setup words recyclerview
         final SelectionActivity activity = (SelectionActivity) getActivity();
-        final SelectionViewAdapter selectionViewAdapter = new SelectionViewAdapter(getContext(), randoms, activity);
+        final SelectionViewAdapter selectionViewAdapter = new SelectionViewAdapter(getContext(), randoms, correctIfDebug, activity);
         final RecyclerView wordsRecyclerView = UI.find(view, R.id.selectionRecyclerView);
         wordsRecyclerView.setHasFixedSize(true);
         wordsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -93,13 +97,15 @@ public class SelectionFragment extends Fragment {
         private final List<String> mData;
         private final LayoutInflater mInflater;
         private final View.OnClickListener mOnClickListener;
+        private final String mCorrect;
         private int mSelected = -1;
 
-        SelectionViewAdapter(final Context context, final List<String> data,
+        SelectionViewAdapter(final Context context, final List<String> data, final String correct,
                              final View.OnClickListener onClickListener) {
             mInflater = LayoutInflater.from(context);
             mData = data;
             mOnClickListener = onClickListener;
+            mCorrect = correct;
         }
 
         @Override
@@ -112,8 +118,9 @@ public class SelectionFragment extends Fragment {
         public void onBindViewHolder(final SelectionViewAdapter.ViewHolder holder, final int position) {
             if (position > mData.size())
                 return;
-            holder.wordButton.setText(mData.get(position));
-            holder.wordButton.setSelected(position == mSelected);
+            final String current = mData.get(position);
+            holder.wordButton.setText(current);
+            holder.wordButton.setSelected(position == mSelected || mCorrect.equals(current));
             holder.wordButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {

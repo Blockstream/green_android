@@ -56,7 +56,6 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
 
         // Initialization
         mSectionsPagerAdapter.selectFragment(this, 0);
-        UI.disable(UI.find(this, R.id.nextButton));
     }
 
     private void onMnemonicVerified() {
@@ -118,13 +117,11 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     protected void onResumeWithService() {
         //super.onResumeWithService(); not pass activity if logged
         mService.getConnectionManager().addObserver(this);
-        UI.mapClick(this, R.id.nextButton, this);
     }
 
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        UI.unmapClick(UI.find(this, R.id.nextButton));
     }
 
     @Override
@@ -151,31 +148,25 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         final int selected = mSectionsPagerAdapter.getSelected();
         final String wordExpected = mSectionsPagerAdapter.getFragment(selected)
                                     .getArguments().getString("word");
-        if (view.getId() == R.id.nextButton) {
-            // Press next button
-            UI.disable(UI.find(this, R.id.nextButton));
-            final boolean youWin = wordExpected.equals(mWordSelected);
-            if (youWin) {
-                // if right, continue or finish (if completed)
-                if (selected == mSectionsPagerAdapter.getCount() - 1)
-                    onMnemonicVerified();
-                else
-                    mSectionsPagerAdapter.selectFragment(this, selected + 1);
-                mWordSelected = null;
-            } else {
-                // if fails, go to the previous page
-                UI.toast(this, R.string.id_wrong_choice_check_your, Toast.LENGTH_LONG);
-                finish();
-            }
+
+        // Press string selection button
+        mWordSelected = ((Button) view).getText().toString();
+
+        final boolean youWin = wordExpected.equals(mWordSelected);
+        if (youWin) {
+            // if right, continue or finish (if completed)
+            if (selected == mSectionsPagerAdapter.getCount() - 1)
+                onMnemonicVerified();
+            else
+                mSectionsPagerAdapter.selectFragment(this, selected + 1);
+            mWordSelected = null;
         } else {
-            // Press string selection button
-            UI.enable(UI.find(this, R.id.nextButton));
-            mWordSelected = ((Button) view).getText().toString();
-            final SelectionFragment fragment = mSectionsPagerAdapter.getFragment(mSectionsPagerAdapter.getSelected());
-            final boolean isOkAndDebug = mWordSelected.equals(wordExpected) && BuildConfig.DEBUG &&
-                                         !mService.isMainnet();
-            fragment.setHiddenWordText(mWordSelected + (isOkAndDebug ? " *" :  "" ));
+            // if fails, go to the previous page
+            UI.toast(this, R.string.id_wrong_choice_check_your, Toast.LENGTH_LONG);
+            finish();
         }
+
+
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
