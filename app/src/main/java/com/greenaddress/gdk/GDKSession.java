@@ -85,6 +85,10 @@ public class GDKSession {
         GDK.login_with_pin(mNativeSession, pin, pinData);
     }
 
+    public String getWatchOnlyUsername() {
+        return GDK.get_watch_only_username(mNativeSession);
+    }
+
     public GDKTwoFactorCall login(final Activity parent, final HWDeviceData hwDevice, final String mnemonic, final String mnemonicPassword) {
         final ObjectNode hw = hwDevice == null ? mObjectMapper.createObjectNode() : mObjectMapper.valueToTree(hwDevice);
         return new GDKTwoFactorCall(parent, GDK.login(mNativeSession, hw, mnemonic, mnemonicPassword));

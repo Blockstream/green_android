@@ -52,6 +52,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     public static final int REQUEST_ENABLE_2FA = 2031;
 
     private SwitchPreference mPinPref;
+    private Preference mWatchOnlyLogin;
     private ListPreference mUnitPref;
     private ListPreference mPriceSourcePref;
     private ListPreference mTxPriorityPref;
@@ -94,19 +95,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         });
 
         // Watch-Only Login
-        final Preference watchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
-        try {
-            final String username = mService.getWatchOnlyUsername();
-            if (username != null) {
-                watchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username));
-            } else {
-                watchOnlyLogin.setSummary(R.string.id_touch_to_set_up);
-            }
-        } catch (final Exception e ) {
-            e.printStackTrace();
-            watchOnlyLogin.setVisible(false);
-        }
-        watchOnlyLogin.setOnPreferenceClickListener(this::onWatchOnlyLoginClicked);
+        mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
+        initWatchOnlySummary();
+        mWatchOnlyLogin.setOnPreferenceClickListener((preference) -> onWatchOnlyLoginClicked());
 
         // Network & Logout
         final Preference logout = find(PrefKeys.LOGOUT);
@@ -283,6 +274,24 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         }
     }
 
+    private void initWatchOnlySummary() {
+        final String username = mService.getWatchOnlyUsername();
+        if (username != null) {
+            mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username));
+        } else {
+            mWatchOnlyLogin.setSummary("");
+            mService.getExecutor().submit(() -> {
+                final String username2 = mService.getSession().getWatchOnlyUsername();
+                getActivity().runOnUiThread(() -> {
+                    if (username2.isEmpty())
+                        mWatchOnlyLogin.setSummary(R.string.id_touch_to_set_up);
+                    else
+                        mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username2));
+                });
+            });
+        }
+    }
+
     private void updateSettings(final SettingsData settings) {
         try {
             final GDKTwoFactorCall gdkTwoFactorCall = mService.getSession().changeSettings(
@@ -302,7 +311,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         return mService.cfg().getString( PrefKeys.DEFAULT_FEERATE_SATBYTE, minFeeRateText);
     }
 
-    private boolean onWatchOnlyLoginClicked(final Preference watchOnlyLogin) {
+    private boolean onWatchOnlyLoginClicked() {
         final GDKSession session = mService.getSession();
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_watchonly);
         final EditText inputUser = UI.find(v, R.id.input_user);
@@ -316,19 +325,13 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                                       .onPositive((dlg, which) -> {
             final String username = UI.getText(inputUser);
             final String password = UI.getText(inputPassword);
-            if (username.isEmpty() && password.isEmpty()) {
-                try {
-                    //mService.disableWatchOnly(); //TODO gdk
-                    UI.toast(getActivity(), R.string.id_watchonly_disabled, Toast.LENGTH_LONG);
-                    watchOnlyLogin.setSummary(R.string.id_touch_to_set_up);
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
+            if (username.isEmpty() || password.isEmpty()) {
+                UI.toast(getActivity(), R.string.id_the_password_cant_be_empty, Toast.LENGTH_LONG);
                 return;
             }
             try {
                 session.setWatchOnly(username, password);
-                watchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username));
+                initWatchOnlySummary();
             } catch (final Exception e) {
                 UI.toast(getActivity(), R.string.id_username_not_available, Toast.LENGTH_LONG);
             }
