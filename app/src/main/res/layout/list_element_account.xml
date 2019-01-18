@@ -7,13 +7,18 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="8dp"
     app:cardUseCompatPadding="true"
+    android:elevation="0dp"
     app:cardPreventCornerOverlap="false"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp"
     app:cardBackgroundColor="@color/windowBackground">
 
     <LinearLayout
+        android:id="@+id/subaccount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:visibility="visible"
         android:background="@color/buttonJungleGreen"
         >
 
@@ -117,8 +122,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-
-            android:visibility="visible"
             android:baselineAligned="false">
 
             <LinearLayout
@@ -185,6 +188,46 @@
 
             </LinearLayout>
         </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/addSubaccount"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="@dimen/card_size"
+        android:orientation="vertical"
+        android:background="@drawable/cardview_add"
+        >
+
+        <ImageView
+            android:id="@+id/networkImage2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:src="@drawable/ic_btc"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_add_wallet_48"
+            />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:text="@string/id_add_new_subaccount"/>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

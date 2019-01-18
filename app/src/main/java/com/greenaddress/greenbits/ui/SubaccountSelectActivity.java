@@ -5,11 +5,9 @@ import android.util.SparseArray;
 import android.widget.TextView;
 
 import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,8 +25,9 @@ public class AccountView extends CardView {
 
     private View mView;
     private Button mSendButton, mReceiveButton;
+    private ImageView mNetworkImage2;
     private ImageButton mSelectButton, mNetworkImage;
-    private LinearLayout mBodyLayout, mActionLayout;
+    private LinearLayout mBodyLayout, mActionLayout, mSubaccount, mAddSubaccount;
     private TextView mTitleText, mBalanceText, mBalanceUnitText, mBalanceFiatText;
 
     public AccountView(final Context context) {
@@ -69,6 +71,9 @@ public class AccountView extends CardView {
         mBalanceFiatText = UI.find(view, R.id.mainLocalBalanceText);
         mSelectButton = UI.find(view, R.id.selectSubaccount);
         mNetworkImage = UI.find(view, R.id.networkImage);
+        mNetworkImage2 = UI.find(view, R.id.networkImage2);
+        mSubaccount= UI.find(view, R.id.subaccount);
+        mAddSubaccount = UI.find(view, R.id.addSubaccount);
     }
 
     // Show actions
@@ -112,11 +117,6 @@ public class AccountView extends CardView {
         mBalanceUnitText.setVisibility(VISIBLE);
         mBalanceUnitText.setText(" " + service.getBitcoinUnit());
         mBalanceFiatText.setText("≈  " + valueFiat);
-
-        /*if (service.isElements()) {
-            mBalanceUnit.setText(String.format("%s ", service.getAssetSymbol()));
-            mBalanceText.setText(service.getAssetFormat().format(balance));
-           }*/
     }
 
     // Set on click listener
@@ -127,6 +127,13 @@ public class AccountView extends CardView {
         mBodyLayout.setOnClickListener(onClickListener);
         mBalanceText.setOnClickListener(onClickListener);
         mSelectButton.setOnClickListener(onClickListener);
+        mAddSubaccount.setOnClickListener(onClickListener);
     }
 
+    public void showAdd(final Drawable resource) {
+        mSubaccount.setVisibility(GONE);
+        mAddSubaccount.setVisibility(VISIBLE);
+        mNetworkImage2.setImageDrawable(resource);
+        hideActions();
+    }
 }

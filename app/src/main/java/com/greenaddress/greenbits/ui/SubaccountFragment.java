@@ -104,6 +104,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void setupObservers() {
         mActiveAccountObservable = getGAService().getModel().getActiveAccountObservable();
         final int subAccount = mActiveAccountObservable.getActiveAccount();
+        Log.d(TAG, "subaccount is " + subAccount);
         mBalanceDataObservable = getGAService().getModel().getBalanceDataObservable(subAccount);
         mReceiveAddressObservable = getGAService().getModel().getReceiveAddressObservable(subAccount);
         mTransactionDataObservable = getGAService().getModel().getTransactionDataObservable(subAccount);

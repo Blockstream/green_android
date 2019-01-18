@@ -42,7 +42,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
-        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this, getResources());
+        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this, getResources(), getActivity());
         mAccountsView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
 

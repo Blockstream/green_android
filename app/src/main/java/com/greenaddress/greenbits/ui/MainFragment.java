@@ -102,6 +102,9 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     public void onResume() {
         super.onResume();
         justClicked = false;
+        mTxItems.clear();
+        mTransactionsAdapter.notifyDataSetChanged();
+        UI.find(mView, R.id.loadingList).setVisibility(View.VISIBLE);
         onUpdateBalance(mBalanceDataObservable);
         onUpdateReceiveAddress(mReceiveAddressObservable);
         onUpdateTransactions(mTransactionDataObservable);
@@ -253,8 +256,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         } else if (view.getId() == R.id.selectSubaccount) {
             final Intent intent = new Intent(getActivity(), SubaccountSelectActivity.class);
             getActivity().startActivity(intent);
-            mTxItems.clear();
-            mTransactionsAdapter.notifyDataSetChanged();
         }
     }
 
