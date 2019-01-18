@@ -48,7 +48,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
         Log.d(this.getClass().getName(),"Update position " + String.valueOf(position) + " of " + mSubaccountList.size());
-
+        holder.mAccountView.hideActions();
         if (position < mSubaccountList.size()) {
             // Set click listener
             final View.OnClickListener listener = new View.OnClickListener() {
@@ -69,12 +69,13 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             if (balance != null && mService.getModel().getSettings() != null) {
                 holder.mAccountView.setBalance(mService, balance);
             }
-            holder.mAccountView.hideActions();
             holder.mAccountView.listMode(false);
             holder.mAccountView.setIcon(mResources.getDrawable(mService.getNetwork().getIcon()));
             holder.mAccountView.setOnClickListener(listener);
+            holder.mAccountView.showAdd(false);
         } else {
-            holder.mAccountView.showAdd(mResources.getDrawable(mService.getNetwork().getIcon()));
+            holder.mAccountView.setIcon2(mResources.getDrawable(mService.getNetwork().getIcon()));
+            holder.mAccountView.showAdd(true);
             holder.mAccountView.setOnClickListener( view -> {
                 new MaterialDialog.Builder(mActivity).content(mResources.getString(R.string.id_adding_new_subaccounts)).build().show();
             });

@@ -101,6 +101,10 @@ public class AccountView extends CardView {
         mNetworkImage.setImageDrawable(resource);
     }
 
+    public void setIcon2(final Drawable resource) {
+        mNetworkImage2.setImageDrawable(resource);
+    }
+
     public void setTitle(final String text) {
         if (TextUtils.isEmpty(text))
             mTitleText.setText(R.string.id_main);
@@ -130,10 +134,8 @@ public class AccountView extends CardView {
         mAddSubaccount.setOnClickListener(onClickListener);
     }
 
-    public void showAdd(final Drawable resource) {
-        mSubaccount.setVisibility(GONE);
-        mAddSubaccount.setVisibility(VISIBLE);
-        mNetworkImage2.setImageDrawable(resource);
-        hideActions();
+    public void showAdd(final boolean value) {
+        mSubaccount.setVisibility(value ? GONE : VISIBLE);
+        mAddSubaccount.setVisibility(value ? VISIBLE : GONE);
     }
 }
