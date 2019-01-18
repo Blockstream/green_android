@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -25,7 +24,7 @@ public class AccountView extends CardView {
 
     private View mView;
     private Button mSendButton, mReceiveButton;
-    private ImageButton mBackButton, mNetworkImage;
+    private ImageButton mSelectButton, mNetworkImage;
     private LinearLayout mBodyLayout, mActionLayout;
     private TextView mTitleText, mBalanceText, mBalanceUnitText, mBalanceFiatText;
 
@@ -68,7 +67,7 @@ public class AccountView extends CardView {
         mBalanceText = UI.find(view, R.id.mainBalanceText);
         mBalanceUnitText = UI.find(view, R.id.mainBalanceUnitText);
         mBalanceFiatText = UI.find(view, R.id.mainLocalBalanceText);
-        mBackButton = UI.find(view, R.id.backButton);
+        mSelectButton = UI.find(view, R.id.selectSubaccount);
         mNetworkImage = UI.find(view, R.id.networkImage);
     }
 
@@ -87,7 +86,7 @@ public class AccountView extends CardView {
     }
 
     public void listMode(boolean mode) {
-        mBackButton.setImageDrawable(mode
+        mSelectButton.setImageDrawable(mode
                 ? getResources().getDrawable(R.drawable.ic_stack_wallets)
                 : getResources().getDrawable(R.drawable.ic_arrow_forward_24dp)
                 );
@@ -127,7 +126,7 @@ public class AccountView extends CardView {
         mReceiveButton.setOnClickListener(onClickListener);
         mBodyLayout.setOnClickListener(onClickListener);
         mBalanceText.setOnClickListener(onClickListener);
-        mBackButton.setOnClickListener(onClickListener);
+        mSelectButton.setOnClickListener(onClickListener);
     }
 
 }

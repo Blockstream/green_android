@@ -119,6 +119,10 @@
             android:name=".FirstScreenActivity"
             android:label="@string/app_name" />
         <activity
+            android:name=".SubaccountSelectActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name="de.schildbach.wallet.ui.ScanActivity"
             android:label="@string/id_qr_scanner"
             android:screenOrientation="landscape" />

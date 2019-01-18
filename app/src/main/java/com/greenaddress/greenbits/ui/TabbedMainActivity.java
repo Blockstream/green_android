@@ -48,7 +48,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     BottomNavigationView.OnNavigationItemSelectedListener  {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
-    private boolean mShowSubaccountList = false;
     private static final int REQUEST_ENABLE_2FA = 0;
 
     public static final int
@@ -311,7 +310,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     }
 
     public void onUpdateActiveAccount() {
-        showSubaccountList(false);
         getPagerAdapter().notifyDataSetChanged();
     }
 
@@ -319,15 +317,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         if (mViewPager == null)
             return null;
         return (SectionsPagerAdapter) mViewPager.getAdapter();
-    }
-
-
-    public void showSubaccountList(final boolean newValue) {
-        mShowSubaccountList = newValue;
-        if (mShowSubaccountList)
-            getSupportActionBar().show();
-        else
-            getSupportActionBar().hide();
     }
 
     /**
@@ -355,20 +344,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             else
                 preferenceFragment = new GeneralPreferenceFragment();
 
-            final Fragment centerFragment;
-            final Slide slide;
-
-            if (!mShowSubaccountList) {
-                centerFragment = new MainFragment();
-                slide = new Slide(Gravity.BOTTOM);
-            } else {
-                centerFragment = new HomeFragment();
-                slide = new Slide(Gravity.TOP);
-            }
-
-            slide.setDuration(200);
-            centerFragment.setEnterTransition(slide);
-            centerFragment.setRetainInstance(true);
+            final Fragment centerFragment = new MainFragment();
 
             switch (index) {
             case 0: return preferenceFragment;
@@ -376,14 +352,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             case 2: return new NotificationsFragment();
             }
             return null;
-        }
-
-        @Override
-        public int getItemPosition(Object item) {
-            if (item instanceof MainFragment || item instanceof HomeFragment)
-                return POSITION_NONE;
-            else
-                return POSITION_UNCHANGED;
         }
 
         @Override
@@ -446,7 +414,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             if (index != 1)
                 getSupportActionBar().show();
             else
-                showSubaccountList(mShowSubaccountList);
+                getSupportActionBar().hide();
             getSupportActionBar().setTitle(getPageTitle(index));
             invalidateOptionsMenu();
         }

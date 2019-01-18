@@ -39,6 +39,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private Map<Sha256Hash, List<Sha256Hash>> replacedTxs;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private boolean justClicked = false;
+    private ListTransactionsAdapter mTransactionsAdapter;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -63,8 +64,9 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        txView.setAdapter(new ListTransactionsAdapter(getGaActivity(), service, mTxItems,
-                                                      service.getModel().getCurrentSubaccount()));
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), service, mTxItems,
+                service.getModel().getCurrentSubaccount());
+        txView.setAdapter(mTransactionsAdapter);
         // FIXME, more efficient to use swap
         // txView.swapAdapter(lta, false);
         mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
@@ -248,10 +250,11 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             justClicked = true;
             final Intent intent = new Intent(getActivity(), ScanActivity.class);
             getActivity().startActivity(intent);
-        } else if (view.getId() == R.id.backButton) {
-            final TabbedMainActivity activity = (TabbedMainActivity) getActivity();
-            activity.showSubaccountList(true);
-            activity.getPagerAdapter().notifyDataSetChanged();
+        } else if (view.getId() == R.id.selectSubaccount) {
+            final Intent intent = new Intent(getActivity(), SubaccountSelectActivity.class);
+            getActivity().startActivity(intent);
+            mTxItems.clear();
+            mTransactionsAdapter.notifyDataSetChanged();
         }
     }
 

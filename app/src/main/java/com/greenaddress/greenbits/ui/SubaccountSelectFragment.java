@@ -1,12 +1,8 @@
 package com.greenaddress.greenbits.ui;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +11,6 @@ import android.view.ViewGroup;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.SubaccountDataObservable;
 import com.greenaddress.greenbits.ui.components.AccountAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -25,9 +20,9 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-public class HomeFragment extends GAFragment implements Observer, AccountAdapter.OnAccountSelected {
+public class SubaccountSelectFragment extends GAFragment implements Observer, AccountAdapter.OnAccountSelected {
 
-    private static final String TAG = HomeFragment.class.getSimpleName();
+    private static final String TAG = SubaccountSelectFragment.class.getSimpleName();
 
     private RecyclerView mAccountsView;
     private Model mModel;
@@ -138,6 +133,7 @@ public class HomeFragment extends GAFragment implements Observer, AccountAdapter
         if(getGAService().getConnectionManager().isLoginWithPin()) {
             getGAService().cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
         }
+        getGaActivity().finish();
     }
 
 }
