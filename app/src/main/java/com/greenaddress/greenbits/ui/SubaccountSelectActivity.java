@@ -1,8 +1,21 @@
 package com.greenaddress.greenbits.ui;
 
 import android.os.Bundle;
+import android.util.SparseArray;
+import android.widget.TextView;
 
-public class SubaccountSelectActivity extends LoggedActivity {
+import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.SubaccountData;
+import com.greenaddress.greenapi.model.BalanceDataObservable;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+public class SubaccountSelectActivity extends LoggedActivity implements Observer {
+    private TextView mTotalAmountBtc;
+    private TextView mTotalAmountFiat;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_subaccount_select; }
@@ -12,8 +25,54 @@ public class SubaccountSelectActivity extends LoggedActivity {
         SubaccountSelectFragment fragment = new SubaccountSelectFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, fragment).commit();
-
-
+        mTotalAmountBtc = findViewById(R.id.total_amount_btc);
+        mTotalAmountFiat = findViewById(R.id.total_amount_fiat);
     }
 
+    private void initTotalAmount() {
+        final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
+        long totalSatoshi = 0L;
+        for (int i = 0 ; i < balanceObservables.size(); i++) {
+            final BalanceData balanceData = balanceObservables.valueAt(i).getBalanceData();
+            totalSatoshi += balanceData.getSatoshi();
+        }
+        final BalanceData balanceReq = new BalanceData();
+        balanceReq.setSatoshi(totalSatoshi);
+        try {
+            final BalanceData total = mService.getSession().convertBalance(balanceReq);
+            final String btcString = mService.getValueString(total.toObjectNode(), false, true);
+            final String fiatString = mService.getValueString(total.toObjectNode(), true, true);
+            mTotalAmountBtc.setText(btcString);
+            mTotalAmountFiat.setText(" ≈ " + fiatString);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onResumeWithService() {
+        super.onResumeWithService();
+        initTotalAmount();
+        final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
+        for (int i = 0 ; i < balanceObservables.size(); i++) {
+            balanceObservables.valueAt(i).addObserver(this);
+        }
+    }
+
+    @Override
+    protected void onPauseWithService() {
+        super.onPauseWithService();
+        final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
+        for (int i = 0 ; i < balanceObservables.size(); i++) {
+            balanceObservables.valueAt(i).deleteObserver(this);
+        }
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        super.update(observable, o);
+        if (observable instanceof BalanceDataObservable) {
+            initTotalAmount();
+        }
+    }
 }
