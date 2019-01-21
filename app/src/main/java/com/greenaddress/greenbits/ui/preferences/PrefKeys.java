@@ -39,5 +39,5 @@ public class PrefKeys {
     public static final String PRIVACY_POLICY = "privacy_policy";
     public static final String CANCEL_TWOFACTOR_RESET = "cancel_twofactor_reset";
     public static final String DISPUTE_TWOFACTOR_RESET = "dispute_twofactor_reset";
-
+    public static final String DONT_ASK_AGAIN_TO_OPEN_URL = "dont_ask_again_to_open_url";
 }

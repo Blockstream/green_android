@@ -227,7 +227,7 @@
             android:textAlignment="center"
             android:textSize="20sp"
             android:textColor="@color/white"
-            android:text="@string/id_add_new_subaccount"/>
+            android:text="@string/id_add_new_account"/>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

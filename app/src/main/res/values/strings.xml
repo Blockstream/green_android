@@ -17,9 +17,9 @@
   <string name="id_add_amount">Add Amount</string>
   <string name="id_add_custom_network_by_qr_code">Add custom network by QR Code</string>
   <string name="id_add_custom_network_by_url">Add custom network by URL</string>
-  <string name="id_add_new_subaccount">Add New Subaccount</string>
+  <string name="id_add_new_account">Add New Account</string>
   <string name="id_add_wallet">Add Wallet</string>
-  <string name="id_adding_new_subaccounts">Adding New Subaccounts functionality coming soon.</string>
+  <string name="id_adding_new_accounts">Adding New Accounts functionality coming soon.</string>
   <string name="id_address">Address</string>
   <string name="id_address_1s">Address: %1$s</string>
   <string name="id_address_copied_to_clipboard">Address copied to clipboard</string>
@@ -83,6 +83,7 @@
   <string name="id_dispute_twofactor_reset">Dispute Two-Factor reset</string>
   <string name="id_disputed">Disputed</string>
   <string name="id_done">Done</string>
+  <string name="id_dont_ask_me_again">Don\'t ask me again</string>
   <string name="id_dont_store_your_mnemonic_in">Don\'t store your mnemonic in email, on your mobile device, on your desktop, or in any online service.</string>
   <string name="id_dont_take_screenshots_of_your">Don\'t take screenshots of your mnemonic!</string>
   <string name="id_double_spend">double spend</string>
@@ -224,15 +225,15 @@
   <string name="id_pin">PIN</string>
   <string name="id_pin_has_to_be_between_4_and_15">PIN has to be between 4 and 15 digits</string>
   <string name="id_pins_do_not_match_please_try">PINs do not match, please try again.</string>
-  <string name="id_please_add_pin_authentication">Please add PIN authentication before adding or removing biometric authentication</string>
+  <string name="id_please_disable_biometric">Please disable biometric authentication before deleting PIN</string>
   <string name="id_please_enable_camera">Please enable camera permissions to use the camera.</string>
+  <string name="id_please_enable_pin">Please enable PIN authentication before adding or removing biometric authentication</string>
   <string name="id_please_enter_the_passphrase_for">Please enter the passphrase for your hardware wallet.</string>
   <string name="id_please_follow_the_instructions">Please follow the instructions on your hardware wallet</string>
   <string name="id_please_provide_your_1s">Please provide your %1$s.</string>
   <string name="id_please_provide_your_1s_code">Please provide your %1$s code.</string>
   <string name="id_please_provide_your_passphrase">Please provide your passphrase:</string>
   <string name="id_please_reconnect_your_hardware">Please re-connect your hardware wallet before trying again.</string>
-  <string name="id_please_remove_biometric">Please remove biometric authentication before removing PIN</string>
   <string name="id_please_secure_your_mnemonic_and">Please secure your mnemonic and confirm you agree to the Terms of Service</string>
   <string name="id_please_select_the_checkbox">Please select the checkbox</string>
   <string name="id_please_tap_card">Please tap card</string>

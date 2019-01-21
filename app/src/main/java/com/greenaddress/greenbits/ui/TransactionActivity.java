@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,7 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -366,16 +369,20 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                 return;
 
             final String stripped = domain.startsWith("www.") ? domain.substring(4) : domain;
-
-            UI.popup(TransactionActivity.this, R.string.id_view_in_explorer, R.string.id_continue, R.string.id_cancel)
-            .content(getString(R.string.id_are_you_sure_you_want_to_view, stripped))
-            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                    final String fullUrl = TextUtils.concat(url, identifier).toString();
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl)));
-                }
-            }).build().show();
+            final Uri uri = Uri.parse(TextUtils.concat(url, identifier).toString());
+            final boolean dontAskAgain = mService.cfg().getBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, false);
+            if (dontAskAgain) {
+                startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            } else {
+                new MaterialDialog.Builder(this)
+                        .checkBoxPromptRes(R.string.id_dont_ask_me_again, false,
+                                (buttonView, isChecked) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, isChecked).apply())
+                        .content(getString(R.string.id_are_you_sure_you_want_to_view, stripped))
+                        .positiveText(android.R.string.ok)
+                        .negativeText(android.R.string.cancel)
+                        .onPositive((dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, uri)))
+                        .build().show();
+            }
         });
     }
 
