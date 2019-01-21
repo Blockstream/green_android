@@ -8,6 +8,7 @@
         <item name="colorPrimaryDark">@color/windowBackground</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/windowBackground</item>
+        <item name="colorBackgroundFloating">@color/buttonJungleGreen</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">

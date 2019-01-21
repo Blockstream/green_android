@@ -11,6 +11,7 @@
         <item name="actionMenuTextAppearance">@style/MenuTextAppearance</item>
         <item name="android:actionMenuTextAppearance">@style/MenuTextAppearance</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="colorBackgroundFloating">@color/buttonJungleGreen</item>
     </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -20,7 +21,6 @@
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat"/>
-
 
     <style name="AppTheme.Base" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
