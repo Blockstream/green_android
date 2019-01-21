@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -293,6 +295,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         UI.hideIf(editInProgress, mMemoEditText);
         UI.hideIf(editInProgress, mMemoSaveButton);
         UI.showIf(editInProgress, mMemoText);
+        if(!editInProgress) {
+            mMemoEditText.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(mMemoEditText, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     @Override
