@@ -13,6 +13,15 @@ public class BumpTxData extends JSONData {
 
     private JsonNode previousTransaction;
     private Long feeRate;
+    private int subaccount;
+
+    public int getSubaccount() {
+        return subaccount;
+    }
+
+    public void setSubaccount(int subaccount) {
+        this.subaccount = subaccount;
+    }
 
     public JsonNode getPreviousTransaction() {
         return previousTransaction;
