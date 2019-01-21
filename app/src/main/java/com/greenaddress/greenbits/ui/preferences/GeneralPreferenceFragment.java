@@ -322,6 +322,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final EditText inputPassword = UI.find(v, R.id.input_password);
         final MaterialDialog dialog = UI.popup(getActivity(), R.string.id_watchonly_login)
                                       .customView(v, true)
+                                      .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                                       .onPositive((dlg, which) -> {
             final String username = UI.getText(inputUser);
             final String password = UI.getText(inputPassword);
@@ -352,6 +353,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         final MaterialDialog dialog = UI.popup(getActivity(), R.string.id_pgp_key)
                                       .customView(v, true)
+                                      .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                                       .onPositive((dlg, which) -> {
             final String newValue = UI.getText(inputPGPKey);
             if (!newValue.equals(oldValue)) {
@@ -373,6 +375,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final MaterialDialog dialog;
         dialog = UI.popup(getActivity(), R.string.id_set_custom_fee_rate)
                  .customView(v, true)
+                 .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                  .onPositive((dlg, which) -> {
             try {
                 final Long minFeeRateKB = mService.getModel().getFeeObservable().getFees().get(0);
@@ -583,6 +586,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         dialog = UI.popup(getActivity(), R.string.id_set_twofactor_threshold)
                  .cancelable(false)
                  .customView(v, true)
+                 .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                  .onPositive((dlg, which) -> {
             try {
                 final String unit = unitSpinner.getSelectedItem().toString();

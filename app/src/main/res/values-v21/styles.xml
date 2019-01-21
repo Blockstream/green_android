@@ -9,10 +9,13 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/windowBackground</item>
         <item name="colorBackgroundFloating">@color/buttonJungleGreen</item>
+
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:colorButtonNormal">@color/accent</item>
+        <item name="android:itemBackground">@color/buttonJungleGreen</item>
+
     </style>
 
     <style name="myButton">
