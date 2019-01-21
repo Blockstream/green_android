@@ -276,6 +276,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             passEdit.requestFocus();
             final MaterialDialog d = UI.popup(MnemonicActivity.this, "Encryption passphrase")
                                      .customView(v, true)
+                                     .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                                      .onPositive((dlg, w) -> fn.set(UI.getText(passEdit)))
                                      .onNegative((dlg, w) -> enableLogin())
                                      .build();

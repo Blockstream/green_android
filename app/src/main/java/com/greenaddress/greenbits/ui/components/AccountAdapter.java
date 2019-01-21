@@ -77,7 +77,10 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             holder.mAccountView.setIcon2(mResources.getDrawable(mService.getNetwork().getIcon()));
             holder.mAccountView.showAdd(true);
             holder.mAccountView.setOnClickListener( view -> {
-                new MaterialDialog.Builder(mActivity).content(mResources.getString(R.string.id_adding_new_accounts)).build().show();
+                new MaterialDialog.Builder(mActivity)
+                        .content(mResources.getString(R.string.id_adding_new_accounts))
+                        .backgroundColor(mResources.getColor(R.color.buttonJungleGreen))
+                        .build().show();
             });
         }
     }

@@ -183,6 +183,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
 
         mPinDialog = UI.popup(this, R.string.id_pin)
                      .customView(v, true)
+                     .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                      .onPositive(new MaterialDialog.SingleButtonCallback() {
             @Override
             public void onClick(final MaterialDialog dialog, final DialogAction which) {
