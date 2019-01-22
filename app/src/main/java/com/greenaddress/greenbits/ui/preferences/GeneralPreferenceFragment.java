@@ -82,6 +82,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 if (mService.hasPin()) {
                     UI.popup(getActivity(), R.string.id_warning)
                             .content(R.string.id_deleting_your_pin_will_remove)
+                            .cancelable(false)
                             .onNegative((dlg, which) -> mPinPref.setChecked(true))
                             .onPositive((dlg, which) -> {
                                 mService.cfgPin().edit().clear().commit();
