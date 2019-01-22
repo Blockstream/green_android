@@ -378,6 +378,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                         .checkBoxPromptRes(R.string.id_dont_ask_me_again, false,
                                 (buttonView, isChecked) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, isChecked).apply())
                         .content(getString(R.string.id_are_you_sure_you_want_to_view, stripped))
+                        .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                         .positiveText(android.R.string.ok)
                         .negativeText(android.R.string.cancel)
                         .onPositive((dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, uri)))

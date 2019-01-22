@@ -149,6 +149,7 @@ public abstract class UI {
             .positiveColorRes(R.color.accent)
             .negativeColorRes(R.color.accent)
             .contentColorRes(R.color.white)
+            .backgroundColor(a.getResources().getColor(R.color.buttonJungleGreen))
             .theme(Theme.DARK);
         if (pos != INVALID_RESOURCE_ID)
             b.positiveText(pos);
