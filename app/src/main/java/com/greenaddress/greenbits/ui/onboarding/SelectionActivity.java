@@ -18,6 +18,7 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.UI;
 
 import java.util.ArrayList;
@@ -80,9 +81,15 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         super.onLoginSuccess();
         stopLoading();
         mService.resetSignUp();
-        final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
-        savePin.putExtra("skip_visible", true);
-        startActivityForResult(savePin, PINSAVE);
+        if(mService.hasPin()) {
+            final Intent intent = new Intent(this, TabbedMainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        } else {
+            final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
+            savePin.putExtra("skip_visible", true);
+            startActivityForResult(savePin, PINSAVE);
+        }
     }
 
     @Override

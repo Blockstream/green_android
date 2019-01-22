@@ -74,25 +74,30 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // PIN
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
-        mPinPref.setChecked(mService.hasPin());
-        mPinPref.setOnPreferenceClickListener(preference -> {
-            if (mPinPref.isChecked() == mService.hasPin())
+        if (mService.getConnectionManager().isLoginWithPin() || mService.isPinJustSaved()) {
+            mPinPref.setChecked(mService.hasPin());
+            mPinPref.setOnPreferenceClickListener(preference -> {
+                if (mPinPref.isChecked() == mService.hasPin())
+                    return false;
+                if (mService.hasPin()) {
+                    UI.popup(getActivity(), R.string.id_warning)
+                            .content(R.string.id_deleting_your_pin_will_remove)
+                            .onNegative((dlg, which) -> mPinPref.setChecked(true))
+                            .onPositive((dlg, which) -> {
+                                mService.cfgPin().edit().clear().commit();
+                                mPinPref.setChecked(false);
+                            }).show();
+                } else {
+                    final Intent savePin = PinSaveActivity.createIntent(getActivity(), mService.getMnemonic());
+                    savePin.putExtra("skip_visible", false);
+                    startActivityForResult(savePin, PINSAVE);
+                }
                 return false;
-            if (mService.hasPin()) {
-                UI.popup(getActivity(), R.string.id_warning)
-                .content(R.string.id_deleting_your_pin_will_remove)
-                .onNegative((dlg, which) -> mPinPref.setChecked(true))
-                .onPositive((dlg, which) -> {
-                    mService.cfgPin().edit().clear().commit();
-                    mPinPref.setChecked(false);
-                }).show();
-            } else {
-                final Intent savePin = PinSaveActivity.createIntent(getActivity(), mService.getMnemonic());
-                savePin.putExtra("skip_visible", false);
-                startActivityForResult(savePin, PINSAVE);
-            }
-            return false;
-        });
+            });
+        } else {
+            mPinPref.setEnabled(false);
+            mPinPref.setSummary(getString(R.string.id_there_is_already_a_pin_set_for, mService.getNetwork().getNetwork()));
+        }
 
         // Watch-Only Login
         mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
@@ -512,8 +517,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final boolean emailConfirmed = mService.getModel().getTwoFactorConfig().getEmail().isConfirmed();
         mLocktimePref.setVisible(emailConfirmed);
         mSendLocktimePref.setVisible(emailConfirmed);
-
-        mPinPref.setVisible(mService.getConnectionManager().isLoginWithPin() || mService.isPinJustSaved());
     }
 
     @Override

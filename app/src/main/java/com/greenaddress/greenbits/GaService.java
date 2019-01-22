@@ -68,6 +68,7 @@ public class GaService extends Service  {
     private Bitmap mSignUpQRCode;
     private String mDeviceId;
     private boolean pinJustSaved = false;
+    private boolean dryRun = false;
 
     private final SPV mSPV = new SPV(this);
 

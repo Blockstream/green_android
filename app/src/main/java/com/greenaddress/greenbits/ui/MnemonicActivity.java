@@ -410,8 +410,14 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     protected void onLoginSuccess() {
         super.onLoginSuccess();
         if (getCallingActivity() == null) {
-            final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, mService.getMnemonic());
-            startActivityForResult(savePin, PINSAVE);
+            if(mService.hasPin()) {
+                final Intent intent = new Intent(this, TabbedMainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            } else {
+                final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, mService.getMnemonic());
+                startActivityForResult(savePin, PINSAVE);
+            }
         } else {
             setResult(RESULT_OK);
             finishOnUiThread();
