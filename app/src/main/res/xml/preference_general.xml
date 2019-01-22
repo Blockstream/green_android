@@ -51,7 +51,7 @@
         android:key="default_feerate_satbyte"
         android:title="@string/id_default_custom_fee_rate" />
 
-    <PreferenceCategory android:title="@string/id_two_factor"
+    <PreferenceCategory android:title="@string/id_twofactor"
         android:icon="@drawable/ic_twofactor"
         android:layout="@layout/preference_category_green"/>
 

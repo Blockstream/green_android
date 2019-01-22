@@ -383,7 +383,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 final Double enteredFeeRateKB = Double.valueOf(enteredFeeRate) * 1000;
 
                 if (enteredFeeRateKB < minFeeRateKB) {
-                    UI.toast(getActivity(), R.string.id_fee_rate_must_be_higher_than, Toast.LENGTH_LONG);
+                    UI.toast(getActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
+                            String.format("%.2f",(minFeeRateKB/1000.0) )), Toast.LENGTH_LONG);
                 } else {
                     mService.cfg().edit().putString(PrefKeys.DEFAULT_FEERATE_SATBYTE, enteredFeeRate).apply();
                     setFeeRateSummary();

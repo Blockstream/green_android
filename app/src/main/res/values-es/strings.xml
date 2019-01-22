@@ -25,6 +25,7 @@
   <string name="id_address_copied_to_clipboard">Address copied to clipboard</string>
   <string name="id_advanced">ADVANCED</string>
   <string name="id_all">All</string>
+  <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
   <string name="id_amount">Cantidad</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
   <string name="id_auto_logout_timeout">Tiempo de espera para cierre de sesión automático</string>
@@ -121,7 +122,7 @@
   <string name="id_fee_amount_size_fee_rate">Importe, tamaño, tarifa</string>
   <string name="id_fee_rate">Fee rate</string>
   <string name="id_fee_rate_is_below_minimum">La tarifa está por debajo de la tarifa mínima aceptada.</string>
-  <string name="id_fee_rate_must_be_higher_than">La tarifa debe ser más alta que la tarifa mínima de retransmisión.</string>
+  <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
   <string name="id_from">DESDE</string>
   <string name="id_generate_new_address">Generar dirección nueva</string>
   <string name="id_get_code">Conseguir código</string>
@@ -286,7 +287,7 @@
   <string name="id_sending_request">Enviando solicitud...</string>
   <string name="id_set_a_new_pin">Establecer un nuevo PIN</string>
   <string name="id_set_custom_fee_rate">Establecer tarifa personalizada</string>
-  <string name="id_set_twofactor_threshold">Establecer umbral de dos factores</string>
+  <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
   <string name="id_set_up_twofactor_authentication">Set up Two-Factor authentication</string>
   <string name="id_set_watchonly">Establecer modo de solo lectura</string>
   <string name="id_setting_updated">Setting updated</string>
@@ -296,7 +297,7 @@
   <string name="id_share_address">Compartir direcciones</string>
   <string name="id_show_fiat">Mostrar fiat</string>
   <string name="id_signup_in_progress">Suscripción en curso</string>
-  <string name="id_simple_payment_verification">La verificación simple de pago (SPV) le permite confiar en sus transacciones y saldo gracias a la sincronización con la red. Tiene requisitos adicionales de procesamiento y ancho de banda, por lo cual conviene apagarlo cuando la conexión es mala o se usan teléfonos de gama baja.</string>
+  <string name="id_simple_payment_verification">Simple Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
   <string name="id_skip">OMITIR</string>
   <string name="id_skip_not_recommended">Omitir (no recomendado)</string>
   <string name="id_slide_to_send">Deslizar para enviar</string>
@@ -322,6 +323,7 @@
   <string name="id_the_hardware_wallet_you_are">The hardware wallet you are using is not yet supported</string>
   <string name="id_the_password_cant_be_empty">La contraseña no puede quedar vacía</string>
   <string name="id_the_recovery_key_below_will_not">The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.</string>
+  <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
   <string name="id_to">A</string>
   <string name="id_tor_connectivity_disabled">¡Conectividad Tor deshabilitada!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor usará %1$s y solo funcionará si tu proxy está habilitado para Orbot o Tor</string>
@@ -332,13 +334,15 @@
   <string name="id_touchface_id_not_available">Touch/Face ID no disponible</string>
   <string name="id_transaction_already_confirmed">Transaction already confirmed</string>
   <string name="id_transaction_details">Detalles de la transacción</string>
+  <string name="id_transaction_id">Transaction ID</string>
   <string name="id_transaction_sent">Transacción enviada</string>
-  <string name="id_two_factor">TWO FACTOR</string>
   <string name="id_two_factor_authentication">TWO FACTOR AUTHENTICATION</string>
+  <string name="id_twofactor">TWO-FACTOR</string>
   <string name="id_twofactor_authentication">Two-Factor authentication</string>
   <string name="id_twofactor_reset_in_progress">Restablecimiento de la autenticación de dos factores en curso. Su monedero se encuentra bloqueado.</string>
   <string name="id_twofactor_settings">Configuración de dos factores</string>
   <string name="id_twofactor_threshold">Two-Factor threshold</string>
+  <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">No se puede conectar con el servicio de Green. Verifica tu conexión de red y espera a ser reconectado.</string>
   <string name="id_unconfirmed">Unconfirmed</string>
   <string name="id_unknown_bip21_parameter">Parámetro bip21 desconocido</string>

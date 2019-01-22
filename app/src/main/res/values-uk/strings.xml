@@ -25,6 +25,7 @@
   <string name="id_address_copied_to_clipboard">Адресу скопійовано в буфер обміну</string>
   <string name="id_advanced">ПРОСУНУТИЙ</string>
   <string name="id_all">Усі</string>
+  <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
   <string name="id_amount">Сума</string>
   <string name="id_are_you_sure_you_want_to_view">Ви впевнені, що бажаєте переглянути транзакцію за допомогою %s?</string>
   <string name="id_auto_logout_timeout">Автоматичний вихід</string>
@@ -121,7 +122,7 @@
   <string name="id_fee_amount_size_fee_rate">Сума комісії, розмір, комісія</string>
   <string name="id_fee_rate">Комісія</string>
   <string name="id_fee_rate_is_below_minimum">Комісія нижча за мінімально прийнятну</string>
-  <string name="id_fee_rate_must_be_higher_than">Комісія має бути вища за мінімальну плату за поширення транзакції в мережі</string>
+  <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
   <string name="id_from">ВІД</string>
   <string name="id_generate_new_address">Згенерувати нову адресу</string>
   <string name="id_get_code">Отримати код</string>
@@ -286,7 +287,7 @@
   <string name="id_sending_request">Відправка запиту...</string>
   <string name="id_set_a_new_pin">Встановити новий PIN-код</string>
   <string name="id_set_custom_fee_rate">Встановити розмір комісії</string>
-  <string name="id_set_twofactor_threshold">Встановити двофакторний поріг</string>
+  <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
   <string name="id_set_up_twofactor_authentication">Встановити двофакторну аутентифікацію</string>
   <string name="id_set_watchonly">Встановити холодний гаманець</string>
   <string name="id_setting_updated">Налаштування оновлені</string>
@@ -296,7 +297,7 @@
   <string name="id_share_address">Поділитися адресою</string>
   <string name="id_show_fiat">Показати фіат</string>
   <string name="id_signup_in_progress">Реєстрація продовжується</string>
-  <string name="id_simple_payment_verification">Функція Simple Payment Verification дозволяє довіряти вашим транзакціям і балансу завдяки синхронізації з мережею. Вона підвищує вимоги до пропускної здатності і опрацювання, тому ви можете її відключити, якщо з\'єднання повільне або телефон не підтримує цю функцію.</string>
+  <string name="id_simple_payment_verification">Simple Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
   <string name="id_skip">ПРОПУСТИТИ</string>
   <string name="id_skip_not_recommended">Пропустити (не рекомендовано)</string>
   <string name="id_slide_to_send">Змахнути, щоб відправити</string>
@@ -322,6 +323,7 @@
   <string name="id_the_hardware_wallet_you_are">Апаратний гаманець, який ви використовуєте, ще не підтримується</string>
   <string name="id_the_password_cant_be_empty">Поле пароля не може залишатись порожнім</string>
   <string name="id_the_recovery_key_below_will_not">Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. </string>
+  <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
   <string name="id_to">ДО</string>
   <string name="id_tor_connectivity_disabled">З\'єднання з Tor розірвано!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor використовуватиме %1$s і працюватиме тільки в тому випадку, якщо ви використовуєте проксі Orbot або увімкнений Tor</string>
@@ -332,13 +334,15 @@
   <string name="id_touchface_id_not_available">Відсутній Touch/Face ID</string>
   <string name="id_transaction_already_confirmed">Транзакція підтверджена</string>
   <string name="id_transaction_details">Деталі транзакції</string>
+  <string name="id_transaction_id">Transaction ID</string>
   <string name="id_transaction_sent">Транзакція надіслана</string>
-  <string name="id_two_factor">ДВА ФАКТОРИ</string>
   <string name="id_two_factor_authentication">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>
+  <string name="id_twofactor">TWO-FACTOR</string>
   <string name="id_twofactor_authentication">Двофакторна аутентифікація</string>
   <string name="id_twofactor_reset_in_progress">Виконується двофакторне скидання, ваш гаманець заблоковано.</string>
   <string name="id_twofactor_settings">Двофакторне налаштування</string>
   <string name="id_twofactor_threshold">Двофакторний поріг</string>
+  <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Не вдалося зв\'язатися зі службою підтримки Green. Перевірте підключення до мережі і дочекайтеся повторного підключення.</string>
   <string name="id_unconfirmed">Не підтверджена</string>
   <string name="id_unknown_bip21_parameter">Невідомий параметр bip21</string>

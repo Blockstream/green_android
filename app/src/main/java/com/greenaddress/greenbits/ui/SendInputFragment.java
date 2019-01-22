@@ -265,7 +265,8 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                                            final double feePerByte = Double.valueOf(rateText);
                                            final long feePerKB = (long) (feePerByte * 1000);
                                            if (feePerKB < mMinFeeRate) {
-                                               UI.toast(getGaActivity(), R.string.id_fee_rate_must_be_higher_than, Toast.LENGTH_LONG);
+                                               UI.toast(getGaActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
+                                                       String.format("%.2f",mMinFeeRate)), Toast.LENGTH_LONG);
                                                throw new Exception();
                                            }
                                            final Long oldFeeRate = getOldFeeRate(mTx);
