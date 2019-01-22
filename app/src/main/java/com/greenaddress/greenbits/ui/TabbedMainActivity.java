@@ -81,13 +81,14 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             return;
         }
 
+        launch();
         final boolean isResetActive = mService.getModel().isTwoFAReset();
         if (mIsBitcoinUri && !isResetActive) {
             // If logged in, open send activity
             onBitcoinUri();
             return;
         }
-        launch();
+
     }
 
     private void onBitcoinUri() {
