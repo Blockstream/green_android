@@ -131,6 +131,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Reference exchange rate
         mPriceSourcePref = find(PrefKeys.PRICING);
+        mPriceSourcePref.setSingleLineTitle(false);
         mPriceSourcePref.setOnPreferenceChangeListener((preference, o) -> {
             final String[] split = o.toString().split(" ");
             final String currency = split[0];
@@ -152,6 +153,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Transaction priority, i.e. default fees
         mTxPriorityPref = find(PrefKeys.REQUIRED_NUM_BLOCKS);
+        mTxPriorityPref.setSingleLineTitle(false);
         final String[] priorityValues = getResources().getStringArray(R.array.fee_target_values);
         mTxPriorityPref.setOnPreferenceChangeListener((preference, newValue) -> {
             final int index = mTxPriorityPref.findIndexOfValue(newValue.toString());

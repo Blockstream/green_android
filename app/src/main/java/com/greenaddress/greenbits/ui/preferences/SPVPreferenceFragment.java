@@ -38,6 +38,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mSPVEnabled = find("spvEnabled");
         mSPVSyncOnMobile = find("spvSyncMobile");
 
+        mSPVEnabled.setSingleLineTitle(false);
+        mSPVSyncOnMobile.setSingleLineTitle(false);
+
         if (mService.isWatchOnly()) {
             // Do not allow editing of SPV_SYNCRONIZATION prefs from watch only logins
             mTrustedPeer.setEnabled(false);
