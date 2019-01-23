@@ -331,7 +331,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                 // The tx is valid so show the updated amount
                 mAmountView.setAmounts(session.convertSatoshi(addressee.get("satoshi").asLong()));
 
-                mFeeRateText.setText(getFeeRateString(mTx.get("fee_rate").asLong()));
+                mFeeRateText.setText(getString(R.string.id_fee_rate_s, getFeeRateString(mTx.get("fee_rate").asLong())));
                 mFeeTimeText.setText(getString(R.string.id_time_s, getString(mBlockTimes[mSelectedFee])));
                 final ObjectNode fee = session.convertSatoshi(mTx.get("fee").asLong());
                 final String fiatFee = getGAService().getValueString(fee, true, true);

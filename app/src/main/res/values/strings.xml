@@ -124,6 +124,7 @@
   <string name="id_fee_rate">Fee rate</string>
   <string name="id_fee_rate_is_below_minimum">Fee rate is below minimum accepted fee rate</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
   <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">FROM</string>
   <string name="id_generate_new_address">Generate New Address</string>
