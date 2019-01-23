@@ -214,7 +214,6 @@ public class NetworkSettingsFragment extends DialogFragment {
             }
             getGAService().getConnectionManager().resetAttempts();
             getGAService().setCurrentNetworkId(networkName);
-            getGAService().reconnect();  // FIXME another thread
             mListener.onSelectNetwork();
             dismiss();
         });

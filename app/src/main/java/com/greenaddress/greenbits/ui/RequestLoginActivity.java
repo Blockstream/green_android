@@ -409,6 +409,11 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
     @Override
     public void onSelectNetwork() {
         mSelectNetwork.setText(mService.getNetwork().getName());
+        mService.getExecutor().submit(() -> {
+            startLoading();
+            mService.reconnect();
+            stopLoading();
+        });
     }
 
     @Override
