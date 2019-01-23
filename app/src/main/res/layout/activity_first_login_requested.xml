@@ -64,14 +64,12 @@
             android:layout_width="fill_parent"
             android:layout_height="32dp" />
 
-        <Button
-            android:id="@+id/settingsButton"
-            style="@style/settingsButton"
+        <TextView
+            android:id="@+id/activeNetwork"
             android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/id_select_network"
             />
 
     </LinearLayout>
