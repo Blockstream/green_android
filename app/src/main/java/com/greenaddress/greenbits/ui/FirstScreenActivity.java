@@ -79,6 +79,7 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
     @Override
     public void onResumeWithService() {
         mSelectNetwork.setText(mService.getNetwork().getName());
+        mService.setPinJustSaved(false);
     }
 
     @Override

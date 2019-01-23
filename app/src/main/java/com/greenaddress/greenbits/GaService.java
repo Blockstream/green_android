@@ -68,7 +68,6 @@ public class GaService extends Service  {
     private Bitmap mSignUpQRCode;
     private String mDeviceId;
     private boolean pinJustSaved = false;
-    private boolean dryRun = false;
 
     private final SPV mSPV = new SPV(this);
 
@@ -405,7 +404,7 @@ public class GaService extends Service  {
                         .putInt("counter", 0)
                         .putBoolean("is_six_digit", pin.length() == 6)
                         .apply();
-                pinJustSaved = true;
+                setPinJustSaved(true);
                 return null;
             }
         });
@@ -413,6 +412,10 @@ public class GaService extends Service  {
 
     public boolean isPinJustSaved() {
         return pinJustSaved;
+    }
+
+    public void setPinJustSaved(boolean pinJustSaved) {
+        this.pinJustSaved = pinJustSaved;
     }
 
     public void resetSignUp() {
