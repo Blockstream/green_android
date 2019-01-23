@@ -238,7 +238,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             }
             // Set the block time in case the tx didn't change, if it did change
             // or the tx is invalid this will be overridden in updateTransaction()
-            mFeeTimeText.setText("Time: " + getString(mBlockTimes[mSelectedFee]));
+            mFeeTimeText.setText(getString(R.string.id_time_s, getString(mBlockTimes[mSelectedFee])));
             if (mSelectedFee == mButtonIds.length -1)
                 onCustomFeeClicked();
             else
@@ -332,11 +332,11 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                 mAmountView.setAmounts(session.convertSatoshi(addressee.get("satoshi").asLong()));
 
                 mFeeRateText.setText(getFeeRateString(mTx.get("fee_rate").asLong()));
-                mFeeTimeText.setText("Time: " + getString(mBlockTimes[mSelectedFee]));
+                mFeeTimeText.setText(getString(R.string.id_time_s, getString(mBlockTimes[mSelectedFee])));
                 final ObjectNode fee = session.convertSatoshi(mTx.get("fee").asLong());
                 final String fiatFee = getGAService().getValueString(fee, true, true);
                 final String btcFee = getGAService().getValueString(fee, false, true);
-                mSummaryText.setText(String.format("Fee: %s / %s", btcFee, fiatFee));
+                mSummaryText.setText(getString(R.string.id_fee_s__s, btcFee, fiatFee));
             } else {
                 mFeeRateText.setText("");
                 mFeeTimeText.setText("");

@@ -125,10 +125,10 @@ public class ListTransactionsAdapter extends
             confirmations = mActivity.getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
         } else if (txItem.getConfirmations() == 0) {
-            confirmations = String.format(mActivity.getString(R.string.id_unconfirmed));
+            confirmations = mActivity.getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
         } else if (!txItem.hasEnoughConfirmations()) {
-            confirmations = String.format(Locale.US,"%d/6", txItem.getConfirmations());
+            confirmations = mActivity.getString(R.string.id_d6_confirmations, txItem.getConfirmations());
             confirmationsColor = R.color.grey_light;
         } else {
             confirmations = mActivity.getString(R.string.id_completed);

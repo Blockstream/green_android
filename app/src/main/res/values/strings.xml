@@ -68,6 +68,7 @@
   <string name="id_custom_network_added_enable_it">Custom network added, enable it in the network settings</string>
   <string name="id_custom_network_not_found">Custom network not found</string>
   <string name="id_custom_network_with_this_name">Custom network with this name already present</string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">%d attempts remaining</string>
   <string name="id_date">Date</string>
   <string name="id_day">day</string>
@@ -123,6 +124,7 @@
   <string name="id_fee_rate">Fee rate</string>
   <string name="id_fee_rate_is_below_minimum">Fee rate is below minimum accepted fee rate</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">FROM</string>
   <string name="id_generate_new_address">Generate New Address</string>
   <string name="id_get_code">Get Code</string>
@@ -324,6 +326,7 @@
   <string name="id_the_password_cant_be_empty">The password can\'t be empty</string>
   <string name="id_the_recovery_key_below_will_not">The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">TO</string>
   <string name="id_tor_connectivity_disabled">Tor Connectivity Disabled!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor will use %1$s and only work if your proxy is Orbot or Tor enabled</string>

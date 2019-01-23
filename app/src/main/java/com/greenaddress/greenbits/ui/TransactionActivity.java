@@ -118,7 +118,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             confirmations = getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
         } else if (!mTxItem.hasEnoughConfirmations()) {
-            confirmations = String.format(Locale.US, "%d/6", mTxItem.getConfirmations());
+            confirmations = getString(R.string.id_d6_confirmations, mTxItem.getConfirmations());
             confirmationsColor = R.color.grey_light;
         } else {
             confirmations = getString(R.string.id_completed);
