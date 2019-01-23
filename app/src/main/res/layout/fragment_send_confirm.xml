@@ -29,7 +29,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:textColor="@color/white" />
+                android:background="@drawable/cardview"
+                android:height="40dp"
+                android:paddingStart="15dp"
+                android:textColor="@color/white"
+                />
 
             <Space
                 android:layout_width="match_parent"
