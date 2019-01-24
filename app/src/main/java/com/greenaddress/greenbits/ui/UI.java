@@ -42,6 +42,7 @@ import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -422,6 +423,14 @@ public abstract class UI {
 
     public static Coin parseCoinValue(final GaService service, final String value) {
         return getUnitFormat(service).parse(value);
+    }
+
+    public static String getFeeRateString(final long feePerKB) {
+        final double feePerByte = feePerKB / 1000.0;
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        DecimalFormat df = (DecimalFormat)nf;
+        df.applyPattern(".##");
+        return df.format(feePerByte);
     }
 
     private static final int SCALE = 4;

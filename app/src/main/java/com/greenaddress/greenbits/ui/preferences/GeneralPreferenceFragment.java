@@ -464,7 +464,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
     private void setFeeRateSummary() {
         final Double aDouble = Double.valueOf(getDefaultFeeRate());
-        final String feeRateString = SendInputFragment.getFeeRateString(Double.valueOf(aDouble * 1000).longValue());
+        final String feeRateString = UI.getFeeRateString(Double.valueOf(aDouble * 1000).longValue());
         mCustomRatePref.setSummary(feeRateString);
     }
 

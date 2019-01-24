@@ -21,8 +21,8 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 
@@ -247,7 +247,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     }
 
     private void onCustomFeeClicked() {
-        final String hint = getFeeRateString(mFeeEstimates[mButtonIds.length -1]);
+        final String hint = UI.getFeeRateString(mFeeEstimates[mButtonIds.length -1]);
 
         mCustomFeeDialog = new MaterialDialog.Builder(getActivity())
                            .title(R.string.id_set_custom_fee_rate)
@@ -266,7 +266,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                                            final long feePerKB = (long) (feePerByte * 1000);
                                            if (feePerKB < mMinFeeRate) {
                                                UI.toast(getGaActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
-                                                       String.format("%.2f", mMinFeeRate/1000.0)), Toast.LENGTH_LONG);
+                                                       String.format(Locale.US, "%.2f", mMinFeeRate/1000.0)), Toast.LENGTH_LONG);
                                                throw new Exception();
                                            }
                                            final Long oldFeeRate = getOldFeeRate(mTx);
@@ -331,7 +331,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                 // The tx is valid so show the updated amount
                 mAmountView.setAmounts(session.convertSatoshi(addressee.get("satoshi").asLong()));
 
-                mFeeRateText.setText(getString(R.string.id_fee_rate_s, getFeeRateString(mTx.get("fee_rate").asLong())));
+                mFeeRateText.setText(getString(R.string.id_fee_rate_s, UI.getFeeRateString(mTx.get("fee_rate").asLong())));
                 mFeeTimeText.setText(getString(R.string.id_time_s, getString(mBlockTimes[mSelectedFee])));
                 final ObjectNode fee = session.convertSatoshi(mTx.get("fee").asLong());
                 final String fiatFee = getGAService().getValueString(fee, true, true);
@@ -344,12 +344,6 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             }
             UI.enableIf(error.isEmpty(), mNextButton);
         }
-    }
-
-    // FIXME move to common place?
-    public static String getFeeRateString(final long feePerKB) {
-        final double feePerByte = feePerKB / 1000.0;
-        return (new DecimalFormat(".##")).format(feePerByte) +  " satoshi / vbyte";
     }
 
     public ObjectNode convertAmount(final ObjectNode amount) {

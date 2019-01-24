@@ -31,10 +31,8 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 
@@ -218,12 +216,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
         final String btcFee = mService.getValueString(mService.getSession().convertSatoshi(fee), false, true);
         feeText.setText(String.format("%s, %s vbytes, %s sat/vbyte", btcFee,
-                                      String.valueOf(vSize), getFeeRateString(feeRate)));
-    }
-
-    private String getFeeRateString(final long feePerKB) {
-        final double feePerByte = feePerKB / 1000.0;
-        return (new DecimalFormat(".##")).format(feePerByte);
+                                      String.valueOf(vSize), UI.getFeeRateString(feeRate)));
     }
 
     private void showUnconfirmed() {
