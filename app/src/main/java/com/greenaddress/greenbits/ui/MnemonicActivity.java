@@ -112,8 +112,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         setUpTable(R.id.mnemonic24, 1);
         setUpTable(R.id.mnemonic3, 25);
 
-        NFCIntentMnemonicLogin();
         mOkButton.setEnabled(false);
+        NFCIntentMnemonicLogin();
     }
 
     @Override
