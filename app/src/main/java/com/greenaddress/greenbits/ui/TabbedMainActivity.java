@@ -290,10 +290,11 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void onBackPressed() {
         if (mViewPager.getCurrentItem() == 1)
-            finish();
+            logout();
         else
             mViewPager.setCurrentItem(1);
     }
