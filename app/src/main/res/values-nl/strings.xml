@@ -26,6 +26,7 @@
   <string name="id_advanced">ADVANCED</string>
   <string name="id_all">All</string>
   <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_always">Always</string>
   <string name="id_amount">Bedrag</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
   <string name="id_auto_logout_timeout">Time-out auto-afmelding</string>
@@ -68,6 +69,7 @@
   <string name="id_custom_network_added_enable_it">Eigen netwerk toegevoegd, inschakelen is mogelijk via de netwerkinstellingen</string>
   <string name="id_custom_network_not_found">Eigen netwerk niet gevonden</string>
   <string name="id_custom_network_with_this_name">Er bestaat al een eigen netwerk met deze naam</string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">%d pogingen resterend</string>
   <string name="id_date">Datum</string>
   <string name="id_day">dag</string>
@@ -118,11 +120,14 @@
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
   <string name="id_example_89014283334011612858333">Voorbeeld: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
+  <string name="id_fast">Fast</string>
   <string name="id_fee">Tarief</string>
   <string name="id_fee_amount_size_fee_rate">Transactiekosten, grootte, tarief</string>
   <string name="id_fee_rate">Fee rate</string>
   <string name="id_fee_rate_is_below_minimum">Het tarief is lager dan het geaccepteerde minimum</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">VAN</string>
   <string name="id_generate_new_address">Genereer nieuw adres</string>
   <string name="id_get_code">Verkrijg code</string>
@@ -207,9 +212,11 @@
   <string name="id_no_utxos_found">Geen UTXO\'s gevonden</string>
   <string name="id_normal">Normaal</string>
   <string name="id_notifications">Notificaties</string>
+  <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Nog één poging te gaan</string>
   <string name="id_one_network_must_be_selected">Er moet één netwerk worden geselecteerd. Standaard is dit bitcoin.</string>
   <string name="id_only_connect_to_trusted_nodes">Verbind alleen met vertrouwde SPV-nodes</string>
+  <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Mislukte operatie</string>
   <string name="id_optional">Optioneel</string>
   <string name="id_optional_memo">Optionele memo</string>
@@ -252,9 +259,9 @@
   <string name="id_redeposited">Opnieuw gestort</string>
   <string name="id_reference_exchange_rate">Standaard wisselkoers</string>
   <string name="id_refresh">Vernieuwen</string>
-  <string name="id_remember_me">Onthoud mij</string>
   <string name="id_remember_username">Onthoud mijn gebruikersnaam</string>
   <string name="id_remove_custom_network">Eigen netwerk verwijderen</string>
+  <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Verzoek mislukt</string>
   <string name="id_request_nlocktime_transactions">Verzoek nLockTime-transacties</string>
@@ -285,6 +292,7 @@
   <string name="id_send_to">Verzenden naar</string>
   <string name="id_sending">VERZENDEN</string>
   <string name="id_sending_request">Verzoek verzenden…</string>
+  <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Kies een nieuwe PIN</string>
   <string name="id_set_custom_fee_rate">Aangepast transactietarief instellen</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
@@ -301,6 +309,7 @@
   <string name="id_skip">OVERSLAAN</string>
   <string name="id_skip_not_recommended">Overslaan (wordt afgeraden)</string>
   <string name="id_slide_to_send">Sleep om te verzenden</string>
+  <string name="id_slow">Slow</string>
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
@@ -324,6 +333,7 @@
   <string name="id_the_password_cant_be_empty">Het wachtwoord mag niet leeg zijn</string>
   <string name="id_the_recovery_key_below_will_not">The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">NAAR</string>
   <string name="id_tor_connectivity_disabled">Tor-connectiviteit uitgeschakeld!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor maakt gebruik van %1$s en werkt alleen als je proxy Orbot of Tor ondersteunt</string>
@@ -388,6 +398,7 @@
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>
+  <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Je %s (verstuurd naar %s) is bevestigd</string>
   <string name="id_your_sent_and_received">Your sent and received transactions will be shown here.</string>
   <string name="id_your_transaction_threshold_is_s">Your transaction threshold is %s.</string>

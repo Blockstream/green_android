@@ -17,7 +17,7 @@
   <string name="id_add_amount">Inserisci Importo</string>
   <string name="id_add_custom_network_by_qr_code">Aggiungi un network custom con un QR Code</string>
   <string name="id_add_custom_network_by_url">Aggiungi un network custom con un URL</string>
-  <string name="id_add_new_account">Add New Account</string>
+  <string name="id_add_new_account">Aggiungi Nuovo Account</string>
   <string name="id_add_wallet">Aggiungi Wallet</string>
   <string name="id_adding_new_accounts">Adding New Accounts functionality coming soon.</string>
   <string name="id_address">Indirizzo</string>
@@ -26,6 +26,7 @@
   <string name="id_advanced">AVANZATE</string>
   <string name="id_all">Tutto</string>
   <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_always">Always</string>
   <string name="id_amount">Importo</string>
   <string name="id_are_you_sure_you_want_to_view">Sei sicuro di voler vedere la transazione usando %s?</string>
   <string name="id_auto_logout_timeout">Timeout per auto logout</string>
@@ -68,6 +69,7 @@
   <string name="id_custom_network_added_enable_it">Network custom aggiunto, abilitalo nelle Impostazioni di Network</string>
   <string name="id_custom_network_not_found">Network custom non trovato</string>
   <string name="id_custom_network_with_this_name">Il network custom è già presente.</string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">%d tentativi rimasti</string>
   <string name="id_date">Data</string>
   <string name="id_day">giorno</string>
@@ -118,11 +120,14 @@
   <string name="id_estimated_blocks_until">Blocchi stimati per la conferma: %d</string>
   <string name="id_example_89014283334011612858333">Es.: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
+  <string name="id_fast">Fast</string>
   <string name="id_fee">Commissione</string>
   <string name="id_fee_amount_size_fee_rate">Commissioni totali, Dimensione Transazione, Tasso Commissioni</string>
   <string name="id_fee_rate">Tasso commissione</string>
   <string name="id_fee_rate_is_below_minimum">La commissione è inferiore al minimo accettato dalla rete</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">DA</string>
   <string name="id_generate_new_address">Genera Nuovo Indirizzo</string>
   <string name="id_get_code">Ottieni Codice</string>
@@ -207,9 +212,11 @@
   <string name="id_no_utxos_found">Nessun UTXO trovato</string>
   <string name="id_normal">Normale</string>
   <string name="id_notifications">Notifiche</string>
+  <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Un tentativo rimasto</string>
   <string name="id_one_network_must_be_selected">Un network dev\'essere selezionato. Bitcoin selezionato di default</string>
   <string name="id_only_connect_to_trusted_nodes">Connettiti solo a nodi fidati per SPV</string>
+  <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Operazione fallita</string>
   <string name="id_optional">Opzionale</string>
   <string name="id_optional_memo">Memo opzionale</string>
@@ -252,9 +259,9 @@
   <string name="id_redeposited">Ridepositati</string>
   <string name="id_reference_exchange_rate">Tasso di cambio di riferimento</string>
   <string name="id_refresh">Aggiorna</string>
-  <string name="id_remember_me">Ricordami</string>
   <string name="id_remember_username">Ricorda l\'username</string>
   <string name="id_remove_custom_network">Rimuovi il network custom</string>
+  <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">RECHIEDI SOMMA</string>
   <string name="id_request_failed">Richiesta fallita</string>
   <string name="id_request_nlocktime_transactions">Richiedi transazioni nLockTime</string>
@@ -285,6 +292,7 @@
   <string name="id_send_to">Invia a</string>
   <string name="id_sending">INVIO</string>
   <string name="id_sending_request">Invio richiesta…</string>
+  <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Imposta un nuovo PIN</string>
   <string name="id_set_custom_fee_rate">Imposta commissione custom</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
@@ -301,6 +309,7 @@
   <string name="id_skip">SALTA</string>
   <string name="id_skip_not_recommended">Salta (non raccomandato)</string>
   <string name="id_slide_to_send">Scorri per Inviare</string>
+  <string name="id_slow">Slow</string>
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
@@ -324,6 +333,7 @@
   <string name="id_the_password_cant_be_empty">La password non può essere vuota</string>
   <string name="id_the_recovery_key_below_will_not">La chiave qua sotto non verrà mostrata in futuro. Trascrivila e conservala adesso per assicurarti di poter sempre accedere ai tuoi fondi.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">A</string>
   <string name="id_tor_connectivity_disabled">Connessione Tor Disabilitata!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor userà %1$s e funzionerà solo se hai una proxy Orbot o Tor abilitata.</string>
@@ -388,6 +398,7 @@
   <string name="id_you_will_need_to_reenter_your">Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi "OK" per continuare.</string>
   <string name="id_your_green_wallet_is_now_ready">Il tuo wallet Green è ora pronto all\'uso.</string>
   <string name="id_your_notifications_will_be">Vedrai qui le tue notifiche.</string>
+  <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">I tuoi %s inviati a %s sono stati confermati</string>
   <string name="id_your_sent_and_received">Vedrai qui le transazioni inviate e ricevute.</string>
   <string name="id_your_transaction_threshold_is_s">Il tuo limite per le transazioni è %s.</string>

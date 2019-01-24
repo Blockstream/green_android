@@ -26,6 +26,7 @@
   <string name="id_advanced">ADVANCED</string>
   <string name="id_all">All</string>
   <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_always">Always</string>
   <string name="id_amount">Cantidad</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
   <string name="id_auto_logout_timeout">Tiempo de espera para cierre de sesión automático</string>
@@ -68,6 +69,7 @@
   <string name="id_custom_network_added_enable_it">Red personalizada agregada. Habilítala en configuración de red</string>
   <string name="id_custom_network_not_found">No se encuentra la red personalizada</string>
   <string name="id_custom_network_with_this_name">Ya existe una red personalizada con este nombre</string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">%d intentos restantes</string>
   <string name="id_date">Fecha</string>
   <string name="id_day">día</string>
@@ -118,11 +120,14 @@
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
   <string name="id_example_89014283334011612858333">Ejemplo: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
+  <string name="id_fast">Fast</string>
   <string name="id_fee">Comisión</string>
   <string name="id_fee_amount_size_fee_rate">Importe, tamaño, tarifa</string>
   <string name="id_fee_rate">Fee rate</string>
   <string name="id_fee_rate_is_below_minimum">La tarifa está por debajo de la tarifa mínima aceptada.</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">DESDE</string>
   <string name="id_generate_new_address">Generar dirección nueva</string>
   <string name="id_get_code">Conseguir código</string>
@@ -207,9 +212,11 @@
   <string name="id_no_utxos_found">No se encontraron UTXO</string>
   <string name="id_normal">Normal</string>
   <string name="id_notifications">Notificaciones</string>
+  <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Un intento restante</string>
   <string name="id_one_network_must_be_selected">Debe seleccionarse una red. Se selecciona Bitcoin por defecto.</string>
   <string name="id_only_connect_to_trusted_nodes">Conectarse únicamente con un nodo o nodos de confianza para SPV</string>
+  <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Error de operación</string>
   <string name="id_optional">Opcional</string>
   <string name="id_optional_memo">Memo opcional</string>
@@ -252,9 +259,9 @@
   <string name="id_redeposited">Redepositado</string>
   <string name="id_reference_exchange_rate">Tipo de cambio de referencia</string>
   <string name="id_refresh">Actualizar</string>
-  <string name="id_remember_me">Recordar mi cuenta</string>
   <string name="id_remember_username">Recordar nombre de usuario</string>
   <string name="id_remove_custom_network">Eliminar red personalizada</string>
+  <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">La solicitud falló</string>
   <string name="id_request_nlocktime_transactions">Solicitar transacciones nLocktime</string>
@@ -285,6 +292,7 @@
   <string name="id_send_to">Enviar a</string>
   <string name="id_sending">ENVIANDO</string>
   <string name="id_sending_request">Enviando solicitud...</string>
+  <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Establecer un nuevo PIN</string>
   <string name="id_set_custom_fee_rate">Establecer tarifa personalizada</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
@@ -301,6 +309,7 @@
   <string name="id_skip">OMITIR</string>
   <string name="id_skip_not_recommended">Omitir (no recomendado)</string>
   <string name="id_slide_to_send">Deslizar para enviar</string>
+  <string name="id_slow">Slow</string>
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Nombre de host de Soks5</string>
   <string name="id_socks5_port">Puerta Socks5</string>
@@ -324,6 +333,7 @@
   <string name="id_the_password_cant_be_empty">La contraseña no puede quedar vacía</string>
   <string name="id_the_recovery_key_below_will_not">The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">A</string>
   <string name="id_tor_connectivity_disabled">¡Conectividad Tor deshabilitada!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor usará %1$s y solo funcionará si tu proxy está habilitado para Orbot o Tor</string>
@@ -388,6 +398,7 @@
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>
+  <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Tu %s enviado a %s fue confirmado</string>
   <string name="id_your_sent_and_received">Your sent and received transactions will be shown here.</string>
   <string name="id_your_transaction_threshold_is_s">Your transaction threshold is %s.</string>

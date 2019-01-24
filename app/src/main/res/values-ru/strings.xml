@@ -26,6 +26,7 @@
   <string name="id_advanced">ПРОДВИНУТЫЙ</string>
   <string name="id_all">Все</string>
   <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_always">Always</string>
   <string name="id_amount">Сумма</string>
   <string name="id_are_you_sure_you_want_to_view">Вы уверены, что хотите просмотреть транзакцию, используя %s?</string>
   <string name="id_auto_logout_timeout">Автоматический выход</string>
@@ -68,6 +69,7 @@
   <string name="id_custom_network_added_enable_it">Настраиваемая сеть добавлена, включите ее в сетевых настройках</string>
   <string name="id_custom_network_not_found">Настраиваемая сеть не найдена</string>
   <string name="id_custom_network_with_this_name">Настраиваемая сеть с таким именем уже существует</string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">Осталось попыток %d </string>
   <string name="id_date">Дата</string>
   <string name="id_day">день</string>
@@ -118,11 +120,14 @@
   <string name="id_estimated_blocks_until">Приблизительно блоков до подтверждения: %d</string>
   <string name="id_example_89014283334011612858333">Пример: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
+  <string name="id_fast">Fast</string>
   <string name="id_fee">Комиссия</string>
   <string name="id_fee_amount_size_fee_rate">Сумма комиссии, размер, комиссия</string>
   <string name="id_fee_rate">Комиссия</string>
   <string name="id_fee_rate_is_below_minimum">Комиссия ниже минимальной принятой ставки</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">ОТ</string>
   <string name="id_generate_new_address">Сгенерировать новый адрес</string>
   <string name="id_get_code">Получить код</string>
@@ -207,9 +212,11 @@
   <string name="id_no_utxos_found">UTXO не обнаружен</string>
   <string name="id_normal">Нормальный</string>
   <string name="id_notifications">Уведомления</string>
+  <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Осталась одна попытка</string>
   <string name="id_one_network_must_be_selected">Необходимо выбрать одну из сетей. Биткоин установлен по умолчанию</string>
   <string name="id_only_connect_to_trusted_nodes">Подключаться только к доверенному узлу [ам] для SPV</string>
+  <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Сбой в работе</string>
   <string name="id_optional">Опциональный</string>
   <string name="id_optional_memo">Дополнительное уведомление</string>
@@ -252,9 +259,9 @@
   <string name="id_redeposited">Внесенный повторно</string>
   <string name="id_reference_exchange_rate">Обменный курс</string>
   <string name="id_refresh">Обновление</string>
-  <string name="id_remember_me">Запомнить меня</string>
   <string name="id_remember_username">Запомнить имя пользователя</string>
   <string name="id_remove_custom_network">Удалить настраиваемую сеть</string>
+  <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">ЗАПРОСИТЬ СУММУ</string>
   <string name="id_request_failed">Ошибка запроса</string>
   <string name="id_request_nlocktime_transactions">Запрос транзакций nLockTime </string>
@@ -285,6 +292,7 @@
   <string name="id_send_to">Отправить</string>
   <string name="id_sending">ОТПРАВКА</string>
   <string name="id_sending_request">Отправка запроса...</string>
+  <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Установить новый PIN-код </string>
   <string name="id_set_custom_fee_rate">Установить размер комиссии</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
@@ -301,6 +309,7 @@
   <string name="id_skip">ПРОПУСТИТЬ</string>
   <string name="id_skip_not_recommended">Пропустить (не рекоменлуется)</string>
   <string name="id_slide_to_send">Смахните, чтобы отправить</string>
+  <string name="id_slow">Slow</string>
   <string name="id_sms">СМС</string>
   <string name="id_socks5_hostname">Имя узла Socks5</string>
   <string name="id_socks5_port">Порт Socks5</string>
@@ -324,6 +333,7 @@
   <string name="id_the_password_cant_be_empty">Поле пароля не может быть пустым</string>
   <string name="id_the_recovery_key_below_will_not">Ключ восстановления больше не будет показан. Сделайте резервное копирование для того, чтобы всегда иметь доступ к своим средствам.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">ДО</string>
   <string name="id_tor_connectivity_disabled">Соединение с Tor разорвано!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor будет использовать %1$s и будет работать только в том случае, если вы используете прокси Orbot или включен Tor</string>
@@ -388,6 +398,7 @@
   <string name="id_you_will_need_to_reenter_your">Если вы не установите PIN-код, каждый раз, чтобы войти, вам придется вводить вашу мнемоническую фразу. Нажмите "OK" для продолжения.</string>
   <string name="id_your_green_wallet_is_now_ready">Ваш Green-кошелек готов к использованию.</string>
   <string name="id_your_notifications_will_be">Здесь будут показаны ваши уведомления.</string>
+  <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Ваша %s отправленная на %s подтверждена</string>
   <string name="id_your_sent_and_received">Здесь будет показана история ваших отправленных и полученных транзакций.</string>
   <string name="id_your_transaction_threshold_is_s">Порог вашей транзакции %s.</string>

@@ -41,7 +41,7 @@
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:textSize="8sp"
-            android:text="replaceable"
+            android:text="@string/id_replaceable"
             android:textColor="@color/grey_light"
             android:textAllCaps="true"
             android:background="@drawable/view_border_grey"/>

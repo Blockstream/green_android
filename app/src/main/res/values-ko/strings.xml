@@ -26,6 +26,7 @@
   <string name="id_advanced">고급</string>
   <string name="id_all">다</string>
   <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_always">Always</string>
   <string name="id_amount">양</string>
   <string name="id_are_you_sure_you_want_to_view">정말로 %s를 사용하여 거래를 보시겠습니까?</string>
   <string name="id_auto_logout_timeout">자동 로그아웃 시간</string>
@@ -68,6 +69,7 @@
   <string name="id_custom_network_added_enable_it">사용자 지정 네트워크 추가됨. 네트워크 설정에서 활성화하십시오</string>
   <string name="id_custom_network_not_found">사용자 지정 네트워크 찾지 못함</string>
   <string name="id_custom_network_with_this_name">이 이름을 가진 사용자 지정 네트워크는 이미 존재합니다</string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">%d의 시도 남음</string>
   <string name="id_date">날짜</string>
   <string name="id_day">일</string>
@@ -118,11 +120,14 @@
   <string name="id_estimated_blocks_until">컴펌되기까지 예상 블록:%d</string>
   <string name="id_example_89014283334011612858333">예: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
+  <string name="id_fast">Fast</string>
   <string name="id_fee">수수료</string>
   <string name="id_fee_amount_size_fee_rate">수수료 양, 사이즈, 수수료율</string>
   <string name="id_fee_rate">수수료율</string>
   <string name="id_fee_rate_is_below_minimum">수수료율이 최소 허용 수수료율보다 적습니다</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">보낸이</string>
   <string name="id_generate_new_address">새로운 주소 생성하기</string>
   <string name="id_get_code">코드 받기</string>
@@ -207,9 +212,11 @@
   <string name="id_no_utxos_found">UTXO 찾지 못함</string>
   <string name="id_normal">보통</string>
   <string name="id_notifications">알람</string>
+  <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">시도 한번 남음</string>
   <string name="id_one_network_must_be_selected">하나의 네트워크만 선택해야 합니다. 기존값대로 비트코인을 선택합니다.</string>
   <string name="id_only_connect_to_trusted_nodes">SPV를 사용할때는 신뢰하는 노드[들]에게만 연결하십시오</string>
+  <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">작동 실패</string>
   <string name="id_optional">선택</string>
   <string name="id_optional_memo">선택 메모</string>
@@ -252,9 +259,9 @@
   <string name="id_redeposited">재예치됨</string>
   <string name="id_reference_exchange_rate">기준 환율</string>
   <string name="id_refresh">새로고침</string>
-  <string name="id_remember_me">저장</string>
   <string name="id_remember_username">사용자 명 기억하기</string>
   <string name="id_remove_custom_network">사용자 지정 네트워크 제거</string>
+  <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">금액 요청하기</string>
   <string name="id_request_failed">요청 실패</string>
   <string name="id_request_nlocktime_transactions">nLocktime 거래들 요청하기</string>
@@ -285,6 +292,7 @@
   <string name="id_send_to">수령인</string>
   <string name="id_sending">보내는 중</string>
   <string name="id_sending_request">요청 보내는 중.</string>
+  <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">새로운 비밀번호 설정</string>
   <string name="id_set_custom_fee_rate">사용자 지정</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
@@ -301,6 +309,7 @@
   <string name="id_skip">넘기기</string>
   <string name="id_skip_not_recommended">넘기기 (권장하지 않음)</string>
   <string name="id_slide_to_send">밀어서 보내기</string>
+  <string name="id_slow">Slow</string>
   <string name="id_sms">문자</string>
   <string name="id_socks5_hostname">Socks5 호스트 명</string>
   <string name="id_socks5_port">Socks5 포트</string>
@@ -324,6 +333,7 @@
   <string name="id_the_password_cant_be_empty">비밀번호는 비워 둘 수 없습니다</string>
   <string name="id_the_recovery_key_below_will_not">밑의 복원 키는 다시 표시되지 않습니다. 자산을 잃어버리지 않도록 안전하게 보관해두십시오.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">받는 분</string>
   <string name="id_tor_connectivity_disabled">Tor 연결이 비활성화됐습니다!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor는 %1$s를(을) 사용하고 있고 프록시가 Orbot이거나 Tor이 활성화되어있어야 작동합니다.</string>
@@ -388,6 +398,7 @@
   <string name="id_you_will_need_to_reenter_your">비밀번호를 설정하지 않으시면 니노닉(복원 코드)을 사용하여 로그인 하여야 합니다. 계속하시려면 "확인"을 눌러주세요.</string>
   <string name="id_your_green_wallet_is_now_ready">이제 Green 지갑을 사용하실 수 있습니다</string>
   <string name="id_your_notifications_will_be">알람은 여기에 표시됩니다.</string>
+  <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">%s으로 보낸 거래 %s가 컨펌되었습니다.</string>
   <string name="id_your_sent_and_received">거래들은 여기에 표시됩니다.</string>
   <string name="id_your_transaction_threshold_is_s">거래 최소한도는 %s입니다.</string>

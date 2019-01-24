@@ -26,6 +26,7 @@
   <string name="id_advanced">ADVANCED</string>
   <string name="id_all">All</string>
   <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_always">Always</string>
   <string name="id_amount">Montant</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
   <string name="id_auto_logout_timeout">Déconnexion automatique si inactif</string>
@@ -68,6 +69,7 @@
   <string name="id_custom_network_added_enable_it">Réseau personnalisé ajouté, vous pouvez l\'activer dans les configurations réseau</string>
   <string name="id_custom_network_not_found">Réseau personnalisé non trouvé</string>
   <string name="id_custom_network_with_this_name">Il existe déjà un réseau personnalisé avec le même nom</string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">%d tentatives restantes</string>
   <string name="id_date">Date</string>
   <string name="id_day">jour</string>
@@ -118,11 +120,14 @@
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
   <string name="id_example_89014283334011612858333">Exemple : 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
+  <string name="id_fast">Fast</string>
   <string name="id_fee">Frais</string>
   <string name="id_fee_amount_size_fee_rate">Montant des frais, taille, taux de frais</string>
   <string name="id_fee_rate">Fee rate</string>
   <string name="id_fee_rate_is_below_minimum">Les frais de transactions sont inférieurs au minimum accepté</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">DE</string>
   <string name="id_generate_new_address">Générer une nouvelle adresse</string>
   <string name="id_get_code">Obtenir le code</string>
@@ -207,9 +212,11 @@
   <string name="id_no_utxos_found">Pas d\'UTXO trouvés</string>
   <string name="id_normal">Normal</string>
   <string name="id_notifications">Notifications</string>
+  <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Un essai restant</string>
   <string name="id_one_network_must_be_selected">Un réseau doit être sélectionné. Sélection de Bitcoin par défaut.</string>
   <string name="id_only_connect_to_trusted_nodes">Se connecter uniquement à un ou des nœud(s) de confiance pour le SPV</string>
+  <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Échec de l\'opération</string>
   <string name="id_optional">Optionnel</string>
   <string name="id_optional_memo">Mémo optionnel</string>
@@ -252,9 +259,9 @@
   <string name="id_redeposited">Redéposé</string>
   <string name="id_reference_exchange_rate">Taux de change de référence</string>
   <string name="id_refresh">Rafraîchir</string>
-  <string name="id_remember_me">Se souvenir de moi</string>
   <string name="id_remember_username">Se souvenir de mon nom d\'utilisateur</string>
   <string name="id_remove_custom_network">Retirer le réseau personnalisé</string>
+  <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Échec de la demande</string>
   <string name="id_request_nlocktime_transactions">Demander des transactions nLocktime</string>
@@ -285,6 +292,7 @@
   <string name="id_send_to">Envoyer à </string>
   <string name="id_sending">ENVOI EN COURS</string>
   <string name="id_sending_request">Envoi de la demande...</string>
+  <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Définir un nouveau PIN</string>
   <string name="id_set_custom_fee_rate">Fixer le taux de frais</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
@@ -301,6 +309,7 @@
   <string name="id_skip">PASSER</string>
   <string name="id_skip_not_recommended">Passer (non recommandé)</string>
   <string name="id_slide_to_send">Glisser pour envoyer</string>
+  <string name="id_slow">Slow</string>
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Nom d\'hôte Socks5</string>
   <string name="id_socks5_port">Port Socks5</string>
@@ -324,6 +333,7 @@
   <string name="id_the_password_cant_be_empty">Le mot de passe ne peut pas être vide</string>
   <string name="id_the_recovery_key_below_will_not">The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">À</string>
   <string name="id_tor_connectivity_disabled">Connexion Tor désactivée !</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor utilisera %1$s et ne fonctionnera que si votre proxy est Orbot ou si Tor est activé</string>
@@ -388,6 +398,7 @@
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>
+  <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Votre envoi de %s à %s a été confirmé</string>
   <string name="id_your_sent_and_received">Your sent and received transactions will be shown here.</string>
   <string name="id_your_transaction_threshold_is_s">Your transaction threshold is %s.</string>

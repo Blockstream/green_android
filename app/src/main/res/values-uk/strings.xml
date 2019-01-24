@@ -26,6 +26,7 @@
   <string name="id_advanced">ПРОСУНУТИЙ</string>
   <string name="id_all">Усі</string>
   <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_always">Always</string>
   <string name="id_amount">Сума</string>
   <string name="id_are_you_sure_you_want_to_view">Ви впевнені, що бажаєте переглянути транзакцію за допомогою %s?</string>
   <string name="id_auto_logout_timeout">Автоматичний вихід</string>
@@ -68,6 +69,7 @@
   <string name="id_custom_network_added_enable_it">Мережу, що налаштовується, додано, увімкніть її у налаштуваннях мережі</string>
   <string name="id_custom_network_not_found">Мережу, що налаштовується, не знайдено</string>
   <string name="id_custom_network_with_this_name">Мережа, що налаштовується, вже існує з таким ім\'ям </string>
+  <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_attempts_remaining">Залишилося спроб %d</string>
   <string name="id_date">Дата</string>
   <string name="id_day">день</string>
@@ -118,11 +120,14 @@
   <string name="id_estimated_blocks_until">Приблизно блоків до підтвердження: %d</string>
   <string name="id_example_89014283334011612858333">Приклад: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
+  <string name="id_fast">Fast</string>
   <string name="id_fee">Комісія</string>
   <string name="id_fee_amount_size_fee_rate">Сума комісії, розмір, комісія</string>
   <string name="id_fee_rate">Комісія</string>
   <string name="id_fee_rate_is_below_minimum">Комісія нижча за мінімально прийнятну</string>
   <string name="id_fee_rate_must_be_at_least_s">Fee rate must be at least %s satoshi/vbyte.</string>
+  <string name="id_fee_rate_s">Fee rate: %s</string>
+  <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_from">ВІД</string>
   <string name="id_generate_new_address">Згенерувати нову адресу</string>
   <string name="id_get_code">Отримати код</string>
@@ -207,9 +212,11 @@
   <string name="id_no_utxos_found">UTXO не знайдено</string>
   <string name="id_normal">Нормальний</string>
   <string name="id_notifications">Повідомлення</string>
+  <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Залишилась одна спроба</string>
   <string name="id_one_network_must_be_selected">Виберіть одну з мереж. За початковими налаштуваннями встановлено Біткоїн</string>
   <string name="id_only_connect_to_trusted_nodes">Підключатися тільки до перевіреного вузла [ів] для SPV</string>
+  <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Збій у роботі</string>
   <string name="id_optional">Опціональний</string>
   <string name="id_optional_memo">Додаткове повідомлення</string>
@@ -252,9 +259,9 @@
   <string name="id_redeposited">Внесений повторно</string>
   <string name="id_reference_exchange_rate">Курс обміну</string>
   <string name="id_refresh">Оновлення</string>
-  <string name="id_remember_me">Запам\'ятати мене</string>
   <string name="id_remember_username">Запам\'ятати ім\'я користувача</string>
   <string name="id_remove_custom_network">Видалити мережу, що налаштовується</string>
+  <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">ЗАПИТАТИ СУМУ</string>
   <string name="id_request_failed">Помилка запиту</string>
   <string name="id_request_nlocktime_transactions">Запитати транзакції nLockTime</string>
@@ -285,6 +292,7 @@
   <string name="id_send_to">Надіслати</string>
   <string name="id_sending">ВІДПРАВЛЕННЯ</string>
   <string name="id_sending_request">Відправка запиту...</string>
+  <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Встановити новий PIN-код</string>
   <string name="id_set_custom_fee_rate">Встановити розмір комісії</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
@@ -301,6 +309,7 @@
   <string name="id_skip">ПРОПУСТИТИ</string>
   <string name="id_skip_not_recommended">Пропустити (не рекомендовано)</string>
   <string name="id_slide_to_send">Змахнути, щоб відправити</string>
+  <string name="id_slow">Slow</string>
   <string name="id_sms">СМС</string>
   <string name="id_socks5_hostname">Ім\'я вузла Socks5</string>
   <string name="id_socks5_port">Порт Socks5</string>
@@ -324,6 +333,7 @@
   <string name="id_the_password_cant_be_empty">Поле пароля не може залишатись порожнім</string>
   <string name="id_the_recovery_key_below_will_not">Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. </string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
+  <string name="id_time_s">Time: %s</string>
   <string name="id_to">ДО</string>
   <string name="id_tor_connectivity_disabled">З\'єднання з Tor розірвано!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor використовуватиме %1$s і працюватиме тільки в тому випадку, якщо ви використовуєте проксі Orbot або увімкнений Tor</string>
@@ -388,6 +398,7 @@
   <string name="id_you_will_need_to_reenter_your">Якщо ви не встановите PIN-код, кожного разу, для входу, вам потрібно буде вводити вашу мнемонічну фразу. Натисність "OK" для продовження.</string>
   <string name="id_your_green_wallet_is_now_ready">Ваш Green-гаманець готовий для використання.</string>
   <string name="id_your_notifications_will_be">Ваші повідомлення будуть відображені тут.</string>
+  <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Ваша %s надіслана на %s підтверджена</string>
   <string name="id_your_sent_and_received">Ваші надіслані і отримані транзакції будуть відображені тут.</string>
   <string name="id_your_transaction_threshold_is_s">Поріг вашої транзакції %s.</string>
