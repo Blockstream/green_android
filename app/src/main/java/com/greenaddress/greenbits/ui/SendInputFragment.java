@@ -26,7 +26,7 @@ import java.util.Locale;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 
-public class SendInputFragment extends GAFragment implements View.OnClickListener,
+public class SendInputFragment extends GAFragment implements View.OnClickListener, CurrencyView2.Listener,
     CurrencyView2.BalanceConversionProvider {
     private static final String TAG = SendInputFragment.class.getSimpleName();
 
@@ -40,20 +40,21 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private CurrencyView2 mAmountView;
     private Button mNextButton;
     private Button mSendAllButton;
-    private TextView mFeeRateText;
-    private TextView mFeeTimeText;
-    private TextView mSummaryText;
 
-    private static final int mButtonIds[] =
-    { R.id.feeLowButton, R.id.feeMediumButton, R.id.feeHighButton, R.id.feeCustomButton };
     private  int mBlockTargets[];
     private static final int mBlockTimes[] =
-    { R.string.id_4_hours, R.string.id_2_hours, R.string.id_1030_minutes, R.string.id_unknown_custom };
-    private Button[] mFeeButtons = new Button[4];
+    { R.string.id_1030_minutes, R.string.id_2_hours, R.string.id_4_hours, R.string.id_unknown_custom };
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;
     private long mMinFeeRate;
     private Double mPrefDefaultFeeRate;
+    private Long mVsize;
+
+    private static final int mButtonIds[] =
+            { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
+    private static final int mButtonText[] =
+            { R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom };
+    private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -72,12 +73,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         mView = inflater.inflate(R.layout.fragment_send_input, container, false);
         mRecipientText = UI.find(mView, R.id.addressText);
         mAmountView = UI.find(mView, R.id.sendAmountCurrency);
+        mAmountView.setListener(this);
 
         mSendAllButton = UI.find(mView, R.id.sendallButton);
-
-        mFeeRateText = UI.find(mView, R.id.feeText);
-        mFeeTimeText = UI.find(mView, R.id.feeTimeText);
-        mSummaryText = UI.find(mView, R.id.amountWithFeeText);
 
         mNextButton = UI.find(mView, R.id.nextButton);
         mNextButton.setOnClickListener(this);
@@ -91,7 +89,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
         for (int i = 0; i < mButtonIds.length; ++i) {
             mFeeEstimates[i] = estimates.get(mBlockTargets[i]);
-            mFeeButtons[i] = UI.find(mView, mButtonIds[i]);
+            mFeeButtons[i] = mView.findViewById(mButtonIds[i]);
+            final String summary = String.format("(%s)", UI.getFeeRateString(estimates.get(mBlockTargets[i])));
+            mFeeButtons[i].init(getString(mButtonText[i]), summary, i==3);
             mFeeButtons[i].setOnClickListener(this);
         }
 
@@ -167,9 +167,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private int[] getBlockTargets() {
         final String[] stringArray = getResources().getStringArray(R.array.fee_target_values);
         int[] blockTargets = {
-                Integer.parseInt(stringArray[2]),
-                Integer.parseInt(stringArray[1]),
                 Integer.parseInt(stringArray[0]),
+                Integer.parseInt(stringArray[1]),
+                Integer.parseInt(stringArray[2]),
                 0
         };
         return blockTargets;
@@ -238,7 +238,6 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             }
             // Set the block time in case the tx didn't change, if it did change
             // or the tx is invalid this will be overridden in updateTransaction()
-            mFeeTimeText.setText(getString(R.string.id_time_s, getString(mBlockTimes[mSelectedFee])));
             if (mSelectedFee == mButtonIds.length -1)
                 onCustomFeeClicked();
             else
@@ -330,19 +329,28 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             if (error.isEmpty()) {
                 // The tx is valid so show the updated amount
                 mAmountView.setAmounts(session.convertSatoshi(addressee.get("satoshi").asLong()));
-
-                mFeeRateText.setText(getString(R.string.id_fee_rate_s, UI.getFeeRateString(mTx.get("fee_rate").asLong())));
-                mFeeTimeText.setText(getString(R.string.id_time_s, getString(mBlockTimes[mSelectedFee])));
-                final ObjectNode fee = session.convertSatoshi(mTx.get("fee").asLong());
-                final String fiatFee = getGAService().getValueString(fee, true, true);
-                final String btcFee = getGAService().getValueString(fee, false, true);
-                mSummaryText.setText(getString(R.string.id_fee_s__s, btcFee, fiatFee));
+                if (mTx.get("transaction_vsize") != null)
+                    mVsize = mTx.get("transaction_vsize").asLong();
+                updateFeeSummaries();
+                mNextButton.setText(R.string.id_review);
             } else {
-                mFeeRateText.setText("");
-                mFeeTimeText.setText("");
-                mSummaryText.setText(UI.i18n(getResources(), error));
+                mNextButton.setText(UI.i18n(getResources(), error));
             }
             UI.enableIf(error.isEmpty(), mNextButton);
+        }
+    }
+
+    private void updateFeeSummaries() {
+        if (mVsize == null)
+            return;
+        for (int i = 0; i < mButtonIds.length; ++i) {
+            long currentEstimate = mFeeEstimates[i];
+            long satoshi = (currentEstimate * mVsize)/1000L;
+            final String feeRateString = UI.getFeeRateString(currentEstimate);
+            final String summary = String.format("%s (%s)",
+                    getGAService().getValueString(satoshi, mAmountView.isFiat(), true),
+                    feeRateString);
+            mFeeButtons[i].setSummary(summary);
         }
     }
 
@@ -352,6 +360,11 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     public void amountEntered() {
         updateTransaction(null);
+    }
+
+    @Override
+    public void onCurrencyChange() {
+        updateFeeSummaries();
     }
 
     public interface OnCallbackListener {

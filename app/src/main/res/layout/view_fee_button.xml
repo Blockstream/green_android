@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/fee_button_selected">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:text="Fast"/>
+
+    <TextView
+        android:id="@+id/summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="8dp"
+        android:text="11.25 USD (3 satoshi/byte)"/>
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_done"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>

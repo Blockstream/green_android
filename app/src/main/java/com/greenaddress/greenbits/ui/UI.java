@@ -292,12 +292,20 @@ public abstract class UI {
         idsToNotReplace.add(R.id.layoutCode);
         idsToNotReplace.add(R.id.textCode);
         idsToNotReplace.add(R.id.copyButton);
+        idsToNotReplace.add(R.id.fastButton);
+        idsToNotReplace.add(R.id.mediumButton);
+        idsToNotReplace.add(R.id.slowButton);
+        idsToNotReplace.add(R.id.customButton);
+
     }
 
     // Keyboard hiding taken from https://stackoverflow.com/a/11656129
     public static void attachHideKeyboardListener(final Activity activity, final View view) {
+        if (idsToNotReplace.contains(view.getId()))
+            return;
         // Set up touch listener for non-text box views to hide keyboard.
-        if (!(view instanceof EditText) && !(view instanceof Button) && !(idsToNotReplace.contains(view.getId()))) {
+        if (!(view instanceof EditText) &&
+                !(view instanceof Button)) {
             view.setOnClickListener(v -> hideSoftKeyboard(activity));
         }
 
@@ -430,7 +438,7 @@ public abstract class UI {
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
         DecimalFormat df = (DecimalFormat)nf;
         df.applyPattern(".##");
-        return df.format(feePerByte);
+        return df.format(feePerByte) + " satoshi / vbyte";
     }
 
     private static final int SCALE = 4;

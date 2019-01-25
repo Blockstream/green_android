@@ -85,7 +85,7 @@ public class CurrencyView2 extends RelativeLayout implements View.OnClickListene
         onClick(mUnitButton);
     }
 
-    private boolean isFiat() { return mIsFiat; }
+    public boolean isFiat() { return mIsFiat; }
 
     private String getUnit() {
         return mUnit.equals("\u00B5BTC") ? "ubtc" : mUnit.toLowerCase(Locale.US);
@@ -129,6 +129,13 @@ public class CurrencyView2 extends RelativeLayout implements View.OnClickListene
         updateFields(true);
 
         mConverting = false;
+        if (mListener != null)
+            mListener.onCurrencyChange();
+    }
+
+    private Listener mListener;
+    public void setListener(final Listener listener) {
+        mListener = listener;
     }
 
     @Override
@@ -160,5 +167,9 @@ public class CurrencyView2 extends RelativeLayout implements View.OnClickListene
     interface BalanceConversionProvider {
         ObjectNode convertAmount(final ObjectNode amount);
         void amountEntered();
+    }
+
+    interface Listener {
+        void onCurrencyChange();
     }
 }

@@ -404,4 +404,5 @@
   <string name="id_your_transaction_threshold_is_s">Your transaction threshold is %s.</string>
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
   <string name="id_your_watchonly_username_will_be">Your Watch-Only username will be stored un-encrypted on this device. If your device is compromised then your transactions may be able to be watched by a third party. Press "OK" to continue.</string>
+
 </resources>

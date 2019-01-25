@@ -86,51 +86,37 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/feeLowButton"
-                    android:layout_width="0dp"
+                <com.greenaddress.greenbits.ui.FeeButtonView
+                    android:id="@+id/fastButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/material_button_selection"
-                    android:minHeight="30dp"
-                    android:text="@string/id_low"
-                    android:textSize="12sp" />
+                    android:padding="4dp"
+                    />
 
-                <Button
-                    android:id="@+id/feeMediumButton"
-                    android:layout_width="0dp"
+                <com.greenaddress.greenbits.ui.FeeButtonView
+                    android:id="@+id/mediumButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/material_button_selection"
-                    android:minHeight="30dp"
-                    android:text="@string/id_medium"
-                    android:textSize="12sp" />
+                    android:padding="4dp"
+                    />
 
-                <Button
-                    android:id="@+id/feeHighButton"
-                    android:layout_width="0dp"
+                <com.greenaddress.greenbits.ui.FeeButtonView
+                    android:id="@+id/slowButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/material_button_selection"
-                    android:minHeight="30dp"
-                    android:text="@string/id_high"
-                    android:textSize="12sp" />
+                    android:padding="4dp"
+                    />
 
-                <Button
-                    android:id="@+id/feeCustomButton"
-                    android:layout_width="0dp"
+                <com.greenaddress.greenbits.ui.FeeButtonView
+                    android:id="@+id/customButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/material_button_selection"
-                    android:minHeight="30dp"
-                    android:text="@string/id_custom"
-                    android:textSize="12sp"/>
+                    android:padding="4dp"
+                    />
+
             </LinearLayout>
 
             <TextView

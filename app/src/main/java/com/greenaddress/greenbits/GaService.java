@@ -189,6 +189,9 @@ public class GaService extends Service  {
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 
+    public String getValueString(final long amount, final boolean asFiat, boolean withUnit) {
+        return getValueString(mSession.convertSatoshi(amount), asFiat, withUnit);
+    }
     public String getValueString(final ObjectNode amount, final boolean asFiat, boolean withUnit) {
         if (asFiat)
             return amount.get("fiat").asText() + (withUnit ? (" " + getFiatCurrency()) : "");
