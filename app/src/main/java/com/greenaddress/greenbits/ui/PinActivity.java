@@ -186,7 +186,9 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(this, FirstScreenActivity.class));
+        final Intent intent = new Intent(this, FirstScreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override
