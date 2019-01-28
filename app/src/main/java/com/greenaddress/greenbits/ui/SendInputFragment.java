@@ -151,6 +151,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             } else if (defaultFeerate != null) {
                 mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
                 mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate*1000.0).longValue();
+                updateFeeSummaries();
             }
 
             updateTransaction(mRecipientText);
@@ -246,7 +247,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     }
 
     private void onCustomFeeClicked() {
-        final String hint = UI.getFeeRateString(mFeeEstimates[mButtonIds.length -1]);
+        long customValue = mFeeEstimates[mButtonIds.length - 1];
+        final String hint = UI.getFeeRateString(customValue);
+        final String initValue = String.format(Locale.US, "%d", customValue/1000);
 
         mCustomFeeDialog = new MaterialDialog.Builder(getActivity())
                            .title(R.string.id_set_custom_fee_rate)
@@ -254,7 +257,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                            .negativeText(android.R.string.cancel)
                            .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
                            .input(hint,
-                                  mPrefDefaultFeeRate != null ? String.valueOf(mPrefDefaultFeeRate) : "",
+                                 initValue,
                                   false,
                                    (dialog, input) -> {
                                        try {
@@ -275,6 +278,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                                            }
 
                                            mFeeEstimates[mButtonIds.length - 1] = feePerKB;
+                                           updateFeeSummaries();
                                            // FIXME: Probably want to do this in the background
                                            updateTransaction(mFeeButtons[mSelectedFee]);
                                        } catch (final Exception e) {
@@ -341,16 +345,15 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     }
 
     private void updateFeeSummaries() {
-        if (mVsize == null)
-            return;
         for (int i = 0; i < mButtonIds.length; ++i) {
             long currentEstimate = mFeeEstimates[i];
-            long satoshi = (currentEstimate * mVsize)/1000L;
             final String feeRateString = UI.getFeeRateString(currentEstimate);
-            final String summary = String.format("%s (%s)",
-                    getGAService().getValueString(satoshi, mAmountView.isFiat(), true),
-                    feeRateString);
-            mFeeButtons[i].setSummary(summary);
+            mFeeButtons[i].setSummary(mVsize == null ?
+                    String.format("(%s)", feeRateString) :
+                    String.format("%s (%s)", getGAService().getValueString(
+                            (currentEstimate * mVsize)/1000L,
+                            mAmountView.isFiat(), true),
+                            feeRateString));
         }
     }
 
