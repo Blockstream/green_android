@@ -26,6 +26,16 @@ public class FeeButtonView extends RelativeLayout {
         setup(context);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        mTitle.setTextColor(enabled ?
+                getResources().getColor(R.color.white) :
+                getResources().getColor(R.color.grey_light)
+                );
+
+    }
+
     private void setup(final Context context) {
         final LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
