@@ -131,7 +131,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             if (oldRate != null) {
                 mFeeEstimates[mButtonIds.length - 1] = oldRate + 1;
                 boolean found = false;
-                for (int i = 0; i < mButtonIds.length -1 && !found; ++i) {
+                for (int i = 0; i < mButtonIds.length -1; ++i) {
                     if ((oldRate + mMinFeeRate) < mFeeEstimates[i]) {
                         mSelectedFee = i;
                         found = true;
