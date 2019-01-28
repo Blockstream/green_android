@@ -255,6 +255,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                            .title(R.string.id_set_custom_fee_rate)
                            .positiveText(android.R.string.ok)
                            .negativeText(android.R.string.cancel)
+                           .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                            .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
                            .input(hint,
                                  initValue,
