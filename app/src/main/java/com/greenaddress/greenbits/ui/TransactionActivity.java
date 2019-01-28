@@ -121,9 +121,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         if (!verified) {
             confirmations = getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
+            mStatusIcon.setVisibility(View.GONE);
         } else if (mTxItem.getConfirmations() == 0) {
             confirmations = getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
+            mStatusIcon.setVisibility(View.GONE);
         } else if (!mTxItem.hasEnoughConfirmations()) {
             confirmations = getString(R.string.id_d6_confirmations, mTxItem.getConfirmations());
             confirmationsColor = R.color.grey_light;
@@ -253,6 +255,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         UI.show(mStatusIncreaseFee);
         mStatusLayout.setOnClickListener(this);
         mStatusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigate_next_black_24dp));
+        mStatusIcon.setVisibility(View.VISIBLE);
     }
 
     @Override
