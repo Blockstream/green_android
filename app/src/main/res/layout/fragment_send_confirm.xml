@@ -16,7 +16,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/activity_horizontal_margin">
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_horizontal_margin">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SectionTitle"
+                android:text="@string/id_sending"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/id_amount" />
+
+            <TextView
+                android:id="@+id/sendAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:textIsSelectable="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/id_fee" />
+
+            <TextView
+                android:id="@+id/sendFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:textIsSelectable="true" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sections_spacing" />
+
 
             <TextView
                 android:layout_width="match_parent"
@@ -77,44 +114,6 @@
                     android:textColor="@color/white"
                     android:textSize="12sp"/>
             </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/sections_spacing" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/SectionTitle"
-                android:text="@string/id_sending"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/id_amount" />
-
-            <TextView
-                android:id="@+id/sendAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/textColor"
-                android:textIsSelectable="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/id_fee" />
-
-            <TextView
-                android:id="@+id/sendFee"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/textColor"
-                android:textIsSelectable="true" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/sections_spacing" />
 
             <TextView
                 android:layout_width="match_parent"
