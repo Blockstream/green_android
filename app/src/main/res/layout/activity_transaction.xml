@@ -283,7 +283,6 @@
 
     <Button
         android:id="@+id/txExplorer"
-        style="@style/borderButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/id_view_in_explorer"
