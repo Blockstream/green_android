@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="20dp" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/status_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,29 +42,30 @@
                 >
                 <TextView
                     android:id="@+id/txUnconfirmedText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
                     android:textSize="18sp"
                     android:text="aaa"
                     />
                 <TextView
                     android:id="@+id/status_increase_fee"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="@string/id_increase_fee"
                     android:textColor="@color/grey_light"
-                    android:layout_toLeftOf="@id/status_icon"
                     android:paddingEnd="8dp"
-
                     />
                 <ImageView
                     android:id="@+id/status_icon"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:src="@drawable/ic_done"/>
 
-            </RelativeLayout>
+            </LinearLayout>
 
 
 

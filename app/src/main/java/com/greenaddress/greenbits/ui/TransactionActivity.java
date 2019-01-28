@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,7 +60,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private ImageView mStatusIcon;
-    private RelativeLayout mStatusLayout;
+    private LinearLayout mStatusLayout;
 
     private TransactionItem mTxItem;
 
