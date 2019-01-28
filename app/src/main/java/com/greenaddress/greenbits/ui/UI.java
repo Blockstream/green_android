@@ -296,6 +296,7 @@ public abstract class UI {
         idsToNotReplace.add(R.id.mediumButton);
         idsToNotReplace.add(R.id.slowButton);
         idsToNotReplace.add(R.id.customButton);
+        idsToNotReplace.add(R.id.status_layout);
 
     }
 

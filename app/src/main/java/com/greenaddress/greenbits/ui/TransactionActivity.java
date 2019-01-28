@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +36,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 
@@ -44,16 +48,18 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     private Menu mMenu;
     private TextView mEstimatedBlocks;
-    private Button mBumpFeeButton;
     private View mMemoTitle;
     private TextView mMemoIcon;
     private TextView mMemoText;
     private TextView mMemoEditText;
     private TextView mUnconfirmedText;
+    private TextView mStatusIncreaseFee;
     private Button mMemoSaveButton;
     private Button mExplorerButton;
     private Dialog mSummary;
     private Dialog mTwoFactor;
+    private ImageView mStatusIcon;
+    private RelativeLayout mStatusLayout;
 
     private TransactionItem mTxItem;
 
@@ -73,9 +79,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mMemoEditText = UI.find(this, R.id.sendToNoteText);
         mMemoSaveButton = UI.find(this, R.id.saveMemo);
         mEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
-        mBumpFeeButton = UI.find(this, R.id.txUnconfirmedIncreaseFee);
         mExplorerButton = UI.find(this, R.id.txExplorer);
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
+        mStatusIncreaseFee = UI.find(this, R.id.status_increase_fee);
+        mStatusIcon = UI.find(this, R.id.status_icon);
+        mStatusLayout =  UI.find(this, R.id.status_layout);
 
         final TextView doubleSpentByText = UI.find(this, R.id.txDoubleSpentByText);
         final TextView doubleSpentByTitle = UI.find(this, R.id.txDoubleSpentByTitle);
@@ -100,7 +108,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         else if (mTxItem.type == TransactionItem.TYPE.REDEPOSIT)
             title = getString(R.string.id_redeposited);
         else
-            title = getString(R.string.id_incoming);
+            title = getString(R.string.id_received_on);
         setTitle(title);
 
         // Set state: unconfirmed, completed, pending
@@ -118,9 +126,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         } else if (!mTxItem.hasEnoughConfirmations()) {
             confirmations = getString(R.string.id_d6_confirmations, mTxItem.getConfirmations());
             confirmationsColor = R.color.grey_light;
+            mStatusIcon.setVisibility(View.GONE);
         } else {
             confirmations = getString(R.string.id_completed);
             confirmationsColor = R.color.grey_light;
+            mStatusIcon.setVisibility(View.VISIBLE);
         }
         mUnconfirmedText.setText(confirmations);
         mUnconfirmedText.setTextColor(getResources().getColor(confirmationsColor));
@@ -136,12 +146,13 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set date/time
         final TextView dateText = UI.find(this, R.id.txDateText);
-        dateText.setText(SimpleDateFormat.getInstance().format(mTxItem.date));
+        final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm, MMM dd, yyyy", Locale.US);
+        dateText.setText(timeFormat.format(mTxItem.date));
 
         // Set fees
         showFeeInfo(mTxItem.fee, mTxItem.vSize, mTxItem.feeRate);
         UI.hide(mEstimatedBlocks);
-        UI.hide(mBumpFeeButton);
+        UI.hide(mStatusIncreaseFee);
         if (mTxItem.type == TransactionItem.TYPE.OUT || mTxItem.type == TransactionItem.TYPE.REDEPOSIT ||
             mTxItem.isSpent) {
             if (mTxItem.getConfirmations() == 0)
@@ -215,7 +226,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
         final String btcFee = mService.getValueString(mService.getSession().convertSatoshi(fee), false, true);
-        feeText.setText(String.format("%s, %s vbytes, %s sat/vbyte", btcFee,
+        feeText.setText(String.format("%s, %s vbytes, %s", btcFee,
                                       String.valueOf(vSize), UI.getFeeRateString(feeRate)));
     }
 
@@ -238,8 +249,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         // Allow RBF if it might decrease the number of blocks until confirmation
         final boolean allowRbf = block > 1 || mService.getNetwork().alwaysAllowRBF();
 
-        UI.show(mBumpFeeButton);
-        mBumpFeeButton.setOnClickListener(this);
+        UI.show(mStatusIncreaseFee);
+        mStatusLayout.setOnClickListener(this);
+        mStatusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigate_next_black_24dp));
     }
 
     @Override
@@ -265,7 +277,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         super.onDestroy();
         UI.unmapClick(mMemoIcon);
         UI.unmapClick(mMemoSaveButton);
-        UI.unmapClick(mBumpFeeButton);
+        UI.unmapClick(mStatusLayout);
     }
 
     @Override
@@ -281,7 +293,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             onMemoIconClicked();
         else if (v == mMemoSaveButton)
             onMemoSaveButtonClicked();
-        else if (v == mBumpFeeButton)
+        else if (v == mStatusLayout)
             onBumpFeeButtonClicked();
     }
 

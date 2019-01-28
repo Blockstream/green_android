@@ -16,14 +16,56 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin">
+            android:paddingRight="@dimen/activity_horizontal_margin">
 
             <TextView
-                android:id="@+id/txUnconfirmedText"
+                android:id="@+id/txDateText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey_light"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:textIsSelectable="true" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
+
+            <RelativeLayout
+                android:id="@+id/status_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="textEnd" />
+                android:background="@color/buttonJungleGreen"
+                android:layout_marginStart="@dimen/activity_vertical_margin"
+                android:layout_marginEnd="@dimen/activity_vertical_margin"
+                android:padding="@dimen/activity_vertical_margin"
+                >
+                <TextView
+                    android:id="@+id/txUnconfirmedText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="aaa"
+                    />
+                <TextView
+                    android:id="@+id/status_increase_fee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_increase_fee"
+                    android:textColor="@color/grey_light"
+                    android:layout_toLeftOf="@id/status_icon"
+                    android:paddingEnd="8dp"
+
+                    />
+                <ImageView
+                    android:id="@+id/status_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_done"/>
+
+            </RelativeLayout>
+
 
 
             <LinearLayout
@@ -33,35 +75,7 @@
                 android:paddingStart="@dimen/activity_vertical_margin"
                 android:paddingEnd="@dimen/activity_vertical_margin">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_hash" />
 
-                <TextView
-                    android:id="@+id/txHashText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:textIsSelectable="true" />
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/activity_vertical_margin" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_date" />
-
-                <TextView
-                    android:id="@+id/txDateText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:textIsSelectable="true" />
 
                 <View
                     android:layout_width="wrap_content"
@@ -106,23 +120,6 @@
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
 
-                <TextView
-                    android:id="@+id/txReceivedOnTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_received_on" />
-
-                <TextView
-                    android:id="@+id/txReceivedOnText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/cardview"
-                    android:height="40dp"
-                    android:paddingStart="15dp"
-                    android:textColor="@color/white"
-                    />
 
             </LinearLayout>
 
@@ -131,7 +128,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/activity_vertical_margin"
                 android:paddingStart="@dimen/activity_vertical_margin"
                 android:paddingEnd="@dimen/activity_vertical_margin">
 
@@ -166,6 +162,29 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/activity_vertical_margin" />
+
+                <TextView
+                    android:id="@+id/txReceivedOnTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
+                    android:text="@string/id_received_on" />
+
+                <TextView
+                    android:id="@+id/txReceivedOnText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/cardview"
+                    android:height="40dp"
+                    android:paddingStart="15dp"
+                    android:textColor="@color/white"
+                    />
+
 
                 <View
                     android:layout_width="wrap_content"
@@ -240,6 +259,23 @@
                     android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                     android:textColor="@color/textColor" />
 
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
+                    android:text="@string/id_hash" />
+
+                <TextView
+                    android:id="@+id/txHashText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor"
+                    android:textIsSelectable="true" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -252,14 +288,5 @@
         android:text="@string/id_view_in_explorer"
         android:textAllCaps="false"
         android:layout_margin="@dimen/activity_vertical_margin"/>
-
-    <Button
-        android:id="@+id/txUnconfirmedIncreaseFee"
-        style="@style/gradientButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/id_increase_fee"
-        android:textAllCaps="false"
-        android:layout_margin="@dimen/activity_vertical_margin" />
 
 </LinearLayout>
