@@ -42,7 +42,7 @@
                 >
                 <TextView
                     android:id="@+id/txUnconfirmedText"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
@@ -53,7 +53,8 @@
                     android:id="@+id/status_increase_fee"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
                     android:text="@string/id_increase_fee"
                     android:textColor="@color/grey_light"
                     android:paddingEnd="8dp"
