@@ -17,33 +17,40 @@
         android:layout_width="fill_parent"
         android:layout_height="16dp"/>
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-        <TextView
-            android:id="@+id/word1"
-            android:layout_width="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="28sp"
-            android:padding="8dp"
-            android:text="one"/>
-        <TextView
-            android:id="@+id/word2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="28sp"
-            android:padding="8dp"
-            android:text="two"/>
-        <TextView
-            android:id="@+id/word3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="28sp"
-            android:padding="8dp"
-            android:text="three"/>
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/word1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:padding="8dp"
+                android:text="one"/>
+            <TextView
+                android:id="@+id/word2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:padding="8dp"
+                android:text="two"/>
+            <TextView
+                android:id="@+id/word3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:padding="8dp"
+                android:text="three"/>
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
     <View
         android:layout_width="fill_parent"
