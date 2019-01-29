@@ -234,6 +234,7 @@
   <string name="id_pin_has_to_be_between_4_and_15">Le PIN doit faire entre 4 et 15 chiffres</string>
   <string name="id_pins_do_not_match_please_try">Les PIN ne correspondent pas, essayez à nouveau.</string>
   <string name="id_please_disable_biometric">Please disable biometric authentication before deleting PIN</string>
+  <string name="id_please_enable_another">Please enable another authentication method to avoid losing access to your funds.</string>
   <string name="id_please_enable_camera">Merci d\'autoriser l\'utilisation de l\'appareil photo.</string>
   <string name="id_please_enable_pin">Please enable PIN authentication before adding or removing biometric authentication</string>
   <string name="id_please_enter_the_passphrase_for">Merci de saisir le mot de passe de votre hardware wallet.</string>
@@ -338,6 +339,7 @@
   <string name="id_tor_connectivity_disabled">Connexion Tor désactivée !</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor utilisera %1$s et ne fonctionnera que si votre proxy est Orbot ou si Tor est activé</string>
   <string name="id_total_assets">Total Assets</string>
+  <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Toucher pour afficher</string>
   <string name="id_touch_to_set_up">Toucher pour configurer</string>
@@ -394,7 +396,7 @@
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>
   <string name="id_you_must_save_this_mnemonic_now">Vous devez ABSOLUMENT sauvegarder ce mnémonique MAINTENANT</string>
   <string name="id_you_need_to_enable_the_proxy">Vous devez activer la configuration du proxy (Orbot Socks5) avant d\'activer Tor.</string>
-  <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled.\nPlease enable another authentication method to avoid losing access to your funds.</string>
+  <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled</string>
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>

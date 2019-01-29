@@ -234,6 +234,7 @@
   <string name="id_pin_has_to_be_between_4_and_15">PIN moet tussen de 4 en 15 cijfers lang zijn</string>
   <string name="id_pins_do_not_match_please_try">PIN is niet hetzelfde, probeer het opnieuw.</string>
   <string name="id_please_disable_biometric">Please disable biometric authentication before deleting PIN</string>
+  <string name="id_please_enable_another">Please enable another authentication method to avoid losing access to your funds.</string>
   <string name="id_please_enable_camera">Geef cameratoestemming om de camera te kunnen gebruiken.</string>
   <string name="id_please_enable_pin">Please enable PIN authentication before adding or removing biometric authentication</string>
   <string name="id_please_enter_the_passphrase_for">Voer de passphrase voor je hardware wallet in.</string>
@@ -338,6 +339,7 @@
   <string name="id_tor_connectivity_disabled">Tor-connectiviteit uitgeschakeld!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor maakt gebruik van %1$s en werkt alleen als je proxy Orbot of Tor ondersteunt</string>
   <string name="id_total_assets">Total Assets</string>
+  <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Raak aan om te tonen</string>
   <string name="id_touch_to_set_up">Raak aan om in te stellen</string>
@@ -394,7 +396,7 @@
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>
   <string name="id_you_must_save_this_mnemonic_now">Je MOET deze woordenlijst NU opslaan</string>
   <string name="id_you_need_to_enable_the_proxy">Je moet eerst de proxy-configuratie (Orbot Socks5) inschakelen om Tor te kunnen gebruiken.</string>
-  <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled.\nPlease enable another authentication method to avoid losing access to your funds.</string>
+  <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled</string>
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>

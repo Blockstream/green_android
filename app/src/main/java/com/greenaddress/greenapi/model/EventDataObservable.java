@@ -84,12 +84,13 @@ public class EventDataObservable extends Observable implements Observer {
             final int numMethods = config.getEnabledMethods().size();
 
             removeType(R.string.id_set_up_twofactor_authentication);
+            removeType(R.string.id_you_only_have_one_twofactor);
             if (!isReset && numMethods == 0) {
                 pushEvent(new EventData(R.string.id_set_up_twofactor_authentication,
                                         R.string.id_your_wallet_is_not_yet_fully));
             } else if (!isReset && numMethods == 1) {
-                pushEvent(new EventData(R.string.id_set_up_twofactor_authentication,
-                                        R.string.id_you_only_have_one_twofactor));
+                pushEvent(new EventData(R.string.id_you_only_have_one_twofactor,
+                                        R.string.id_please_enable_another));
             }
             notifyObservers();
         }
