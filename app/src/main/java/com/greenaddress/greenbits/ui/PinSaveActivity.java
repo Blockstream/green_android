@@ -135,7 +135,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         mTitleText.setText(R.string.id_verify_your_pin);
         mPinFragmentVerify = new PinFragment();
         final Bundle bundle = new Bundle();
-        bundle.putBoolean("skip_visible", getIntent().getBooleanExtra("skip_visible", false));
+        bundle.putBoolean("skip_visible", false);
         mPinFragmentVerify.setArguments(bundle);
         if (mNativeAuthCB != null)
             UI.hide(mNativeAuthCB);
