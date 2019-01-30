@@ -58,7 +58,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
 
         mSubaccountList.clear();
         for (final SubaccountData s : subaccounts) {
-            s.setName(s.getName().isEmpty() ? getString(R.string.id_main) : s.getName());
+            s.setName(s.getNameWithDefault(getString(R.string.id_main)));
             mSubaccountList.add(s);
         }
         getActivity().runOnUiThread(new Runnable() {

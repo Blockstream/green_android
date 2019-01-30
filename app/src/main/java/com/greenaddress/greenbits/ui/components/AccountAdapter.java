@@ -65,7 +65,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             final BalanceData balance = mService.getModel().getBalanceDataObservable(pointer).getBalanceData();
 
             // Setup subaccount info
-            holder.mAccountView.setTitle(subaccount.getName());
+            holder.mAccountView.setTitle(subaccount.getNameWithDefault(mResources.getString(R.string.id_main)));
             if (balance != null && mService.getModel().getSettings() != null) {
                 holder.mAccountView.setBalance(mService, balance);
             }

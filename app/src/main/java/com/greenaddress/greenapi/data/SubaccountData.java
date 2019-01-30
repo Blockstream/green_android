@@ -31,6 +31,11 @@ public class SubaccountData extends JSONData {
         return name;
     }
 
+    @JsonIgnore
+    public String getNameWithDefault(String s) {
+        return name.isEmpty() ? s : name;
+    }
+
     public void setName(final String name) {
         this.name = name;
     }

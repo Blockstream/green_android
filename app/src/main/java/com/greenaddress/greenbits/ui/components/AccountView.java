@@ -106,10 +106,7 @@ public class AccountView extends CardView {
     }
 
     public void setTitle(final String text) {
-        if (TextUtils.isEmpty(text))
-            mTitleText.setText(R.string.id_main);
-        else
-            mTitleText.setText(text);
+        mTitleText.setText(text);
     }
 
     public void setBalance(final GaService service, final BalanceData balance) {
