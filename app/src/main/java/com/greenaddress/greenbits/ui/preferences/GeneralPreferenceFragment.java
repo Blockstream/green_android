@@ -598,7 +598,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             try {
                 final String unit = unitSpinner.getSelectedItem().toString();
                 setSpendingLimits(unit, UI.getText(amountEdit));
-                UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
             } catch (final Exception e) {
                 UI.toast(getActivity(), "Error setting limits", Toast.LENGTH_LONG);
             }
@@ -636,7 +635,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                     call.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
                 mService.getModel().getTwoFactorConfigDataObservable().updateLimits(newLimits);
                 setLimitsText(newLimits);
-
+                UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
             } catch (Exception e) {
                 UI.toast(activity, R.string.id_operation_failure, Toast.LENGTH_LONG);
             }
