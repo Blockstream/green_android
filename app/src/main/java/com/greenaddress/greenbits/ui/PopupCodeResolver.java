@@ -33,7 +33,7 @@ public class PopupCodeResolver implements CodeResolver {
             .inputType(InputType.TYPE_CLASS_NUMBER)
             .icon(getIconFor(method))
             .cancelable(false)
-            .input("code", "", (dialog, input) -> {
+            .input("", "", (dialog, input) -> {
             Log.d("RSV", "PopupCodeResolver OK callback");
             future.set(input.toString());
         })
