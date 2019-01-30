@@ -65,13 +65,11 @@ public class ListTransactionsAdapter extends
 
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
-        final boolean verified = txItem.spvVerified || txItem.isSpent ||
+        final boolean spvVerified = txItem.spvVerified || txItem.isSpent ||
                                  txItem.type == TransactionItem.TYPE.OUT ||
                                  !mService.isSPVEnabled();
 
-        if (mService.isElements()) {
-            //holder.textValue.setText(mService.getAssetFormat().format(coin));
-        }
+        holder.spvUnconfirmed.setVisibility(spvVerified ? View.GONE : View.VISIBLE);
 
         final Resources res = mActivity.getResources();
 
@@ -121,10 +119,7 @@ public class ListTransactionsAdapter extends
 
         final String confirmations;
         final int confirmationsColor;
-        if (!verified) {
-            confirmations = mActivity.getString(R.string.id_unconfirmed);
-            confirmationsColor = R.color.red;
-        } else if (txItem.getConfirmations() == 0) {
+        if (txItem.getConfirmations() == 0) {
             confirmations = mActivity.getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
         } else if (!txItem.hasEnoughConfirmations()) {
@@ -192,6 +187,7 @@ public class ListTransactionsAdapter extends
         public final TextView textValue;
         public final TextView textWhen;
         public final TextView textReplaceable;
+        public final TextView spvUnconfirmed;
         public final FontAwesomeTextView unitText;
         public final TextView textWho;
         public final TextView inOutIcon;
@@ -204,6 +200,7 @@ public class ListTransactionsAdapter extends
             textValue = UI.find(v, R.id.listValueText);
             textWhen = UI.find(v, R.id.listWhenText);
             textReplaceable = UI.find(v, R.id.listReplaceableText);
+            spvUnconfirmed = UI.find(v, R.id.spvUnconfirmed);
             textWho = UI.find(v, R.id.listWhoText);
             inOutIcon = UI.find(v, R.id.listInOutIcon);
             mainLayout = UI.find(v, R.id.list_item_layout);

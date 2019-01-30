@@ -112,17 +112,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             title = getString(R.string.id_received_on);
         setTitle(title);
 
-        // Set state: unconfirmed, completed, pending
-        final boolean verified = mTxItem.spvVerified || mTxItem.isSpent ||
-                                 mTxItem.type == TransactionItem.TYPE.OUT ||
-                                 !mService.isSPVEnabled();
+
         final String confirmations;
         final int confirmationsColor;
-        if (!verified) {
-            confirmations = getString(R.string.id_unconfirmed);
-            confirmationsColor = R.color.red;
-            mStatusIcon.setVisibility(View.GONE);
-        } else if (mTxItem.getConfirmations() == 0) {
+        if (mTxItem.getConfirmations() == 0) {
             confirmations = getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
             mStatusIcon.setVisibility(View.GONE);
@@ -223,6 +216,19 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             mMemoIcon.setOnClickListener(this);
             mMemoSaveButton.setOnClickListener(this);
         }
+
+
+        final boolean spvVerified = mTxItem.spvVerified || mTxItem.isSpent ||
+                mTxItem.type == TransactionItem.TYPE.OUT ||
+                !mService.isSPVEnabled();
+
+        if (!spvVerified) {
+            mStatusIncreaseFee.setVisibility(View.VISIBLE);
+            mStatusIncreaseFee.setText(String.format("⚠️ %s", getString(R.string.id_spv_unverified)));
+            mStatusIncreaseFee.setTextColor(getResources().getColor(R.color.red));
+            mStatusIcon.setVisibility(View.GONE);
+        }
+
     }
 
     private void showFeeInfo(final long fee, final long vSize, final long feeRate) {
