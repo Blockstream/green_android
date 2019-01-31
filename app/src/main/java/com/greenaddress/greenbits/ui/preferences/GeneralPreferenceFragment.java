@@ -77,6 +77,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         if (mService.getConnectionManager().isLoginWithPin() || mService.isPinJustSaved() || !mService.hasPin()) {
             mPinPref.setChecked(mService.hasPin());
             mPinPref.setOnPreferenceClickListener(preference -> {
+                if(mService.warnIfOffline(getActivity())) {
+                    return false;
+                }
                 if (mPinPref.isChecked() == mService.hasPin())
                     return false;
                 if (mService.hasPin()) {
@@ -109,6 +112,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final Preference logout = find(PrefKeys.LOGOUT);
         logout.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName()));
         logout.setOnPreferenceClickListener(preference -> {
+            if(mService.warnIfOffline(getActivity())) {
+                return false;
+            }
             logout.setEnabled(false);
             logout();
             return false;
@@ -119,6 +125,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mUnitPref.setEntries(UI.UNITS.toArray(new String[4]));
         mUnitPref.setEntryValues(UI.UNITS.toArray(new String[4]));
         mUnitPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            if(mService.warnIfOffline(getActivity())) {
+                return false;
+            }
             final SettingsData settings = mService.getModel().getSettings();
             if (!newValue.equals(settings.getUnit())) {
                 settings.setUnit(newValue.toString());
@@ -133,6 +142,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mPriceSourcePref = find(PrefKeys.PRICING);
         mPriceSourcePref.setSingleLineTitle(false);
         mPriceSourcePref.setOnPreferenceChangeListener((preference, o) -> {
+            if(mService.warnIfOffline(getActivity())) {
+                return false;
+            }
             final String[] split = o.toString().split(" ");
             final String currency = split[0];
             final String exchange = split[1];
@@ -156,6 +168,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mTxPriorityPref.setSingleLineTitle(false);
         final String[] priorityValues = getResources().getStringArray(R.array.fee_target_values);
         mTxPriorityPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            if(mService.warnIfOffline(getActivity())) {
+                return false;
+            }
             final int index = mTxPriorityPref.findIndexOfValue(newValue.toString());
             final SettingsData settings = mService.getModel().getSettings();
             settings.setRequiredNumBlocks(Integer.parseInt(priorityValues[index]));
@@ -184,6 +199,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         // Enable nlocktime recovery emails
         mLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);
         mLocktimePref.setOnPreferenceChangeListener((preference, o) -> {
+            if(mService.warnIfOffline(getActivity())) {
+                return false;
+            }
             final boolean value = (Boolean) o;
             final SettingsData settings = mService.getModel().getSettings();
             if (settings.getNotifications() == null)
@@ -225,6 +243,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         setTimeoutValues(mTimeoutPref);
         setTimeoutSummary(timeout);
         mTimeoutPref.setOnPreferenceChangeListener((preference, newValue) -> {
+            if(mService.warnIfOffline(getActivity())) {
+                return false;
+            }
             final Integer altimeout = Integer.parseInt(newValue.toString());
             final SettingsData settings = mService.getModel().getSettings();
             settings.setAltimeout(altimeout);
@@ -320,6 +341,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private boolean onWatchOnlyLoginClicked() {
+        if(mService.warnIfOffline(getActivity())) {
+            return false;
+        }
         final GDKSession session = mService.getSession();
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_watchonly);
         final EditText inputUser = UI.find(v, R.id.input_user);
@@ -350,7 +374,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private boolean onPGPKeyClicked(final Preference pgpKey) {
-        final GDKSession session = mService.getSession();
+        if(mService.warnIfOffline(getActivity())) {
+            return false;
+        }
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_pgp_key);
         final EditText inputPGPKey = UI.find(v, R.id.input_pgp_key);
         final SettingsData settings = mService.getModel().getSettings();
@@ -374,6 +400,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private boolean onFeeRatePreferenceClicked(final Preference preference) {
+        if(mService.warnIfOffline(getActivity())) {
+            return false;
+        }
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_custom_feerate);
         final EditText rateEdit = UI.find(v, R.id.set_custom_feerate_amount);
 
@@ -544,6 +573,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private boolean prompt2FAChange(final String method, final Boolean newValue) {
+        if(mService.warnIfOffline(getActivity())) {
+            return false;
+        }
         // TODO spending limits in two TwoFactorConfigData
         final Intent intent = new Intent(getActivity(), TwoFactorActivity.class);
         intent.putExtra("method", method);
@@ -571,6 +603,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private boolean onLimitsPreferenceClicked(final Preference preference) {
+        if(mService.warnIfOffline(getActivity())) {
+            return false;
+        }
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_limits);
         final Spinner unitSpinner = UI.find(v, R.id.set_limits_currency);
         final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
@@ -607,6 +642,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private boolean onSendNLocktimeClicked(final Preference preference) {
+        if(mService.warnIfOffline(getActivity())) {
+            return false;
+        }
         mService.getExecutor().execute(() -> {
             try {
                 mService.getSession().sendNlocktimes();

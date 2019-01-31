@@ -33,14 +33,12 @@ public class ListTransactionsAdapter extends
     private final List<TransactionItem> mTxItems;
     private final Activity mActivity;
     private final GaService mService;
-    private final int mSubaccount;
 
     public ListTransactionsAdapter(final Activity activity, final GaService service,
-                                   final List<TransactionItem> txItems, final int subaccount) {
+                                   final List<TransactionItem> txItems) {
         mTxItems = txItems;
         mActivity = activity;
         mService = service;
-        mSubaccount = subaccount;
     }
 
     @Override
@@ -51,14 +49,7 @@ public class ListTransactionsAdapter extends
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        if (!mService.getConnectionManager().isLoggingInOrMore()) {
-            // When restoring the main view after the app has paused and the
-            // service has disconnected, Android can restore our fragments
-            // before it restores the view that holds them. In this case do
-            // nothing as the parent activity will detect the log out and
-            // push us back to the login page.
-            return;
-        }
+
         final TransactionItem txItem = mTxItems.get(position);
         final Coin coin = Coin.valueOf(txItem.amount);
         holder.textValue.setText(UI.formatCoinValueWithUnit(mService, coin));

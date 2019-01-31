@@ -25,8 +25,12 @@ public class ReceiveAddressObservable extends Observable implements Observer {
 
     public void refresh() {
         mExecutor.submit(() -> {
-            final String address = mSession.getReceiveAddress(mSubaccount);
-            setReceiveAddress(address);
+            try {
+                final String address = mSession.getReceiveAddress(mSubaccount);
+                setReceiveAddress(address);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 

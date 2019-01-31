@@ -2,8 +2,10 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.model.ToastObservable;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -17,8 +19,9 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         super.onResumeWithService();
         if (mService == null)
             return;
-        kickMeOutIfNotLogged();
+        //kickMeOutIfNotLogged();
         mService.getConnectionManager().addObserver(this);
+        mService.getModel().getToastObservable().addObserver(this);
     }
 
     @Override
@@ -27,12 +30,16 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         if (mService == null)
             return;
         mService.getConnectionManager().deleteObserver(this);
+        mService.getModel().getToastObservable().deleteObserver(this);
     }
 
     @Override
     public void update(final Observable observable, final Object o) {
         if (observable instanceof ConnectionManager) {
-            kickMeOutIfNotLogged();
+            //kickMeOutIfNotLogged();
+        } else if (observable instanceof ToastObservable) {
+            final ToastObservable t = (ToastObservable)observable;
+            UI.toast(this, t.getMessage(getResources()), Toast.LENGTH_LONG);
         }
     }
 

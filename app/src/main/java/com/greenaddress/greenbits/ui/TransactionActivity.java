@@ -265,18 +265,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     }
 
     @Override
-    public void onResumeWithService() {
-        if (!mService.getConnectionManager().isLoggingInOrMore()) {
-            // FIXME: Should pass flag to activity so it shows it was forced logged out
-            startActivity(new Intent(this, FirstScreenActivity.class));
-            finish();
-            return;
-        }
-
-        setMenuItemVisible(mMenu, R.id.action_share, !mService.getConnectionManager().isPostLogin());
-    }
-
-    @Override
     public void onPauseWithService() {
         mSummary = UI.dismiss(this, mSummary);
         mTwoFactor = UI.dismiss(this, mTwoFactor);

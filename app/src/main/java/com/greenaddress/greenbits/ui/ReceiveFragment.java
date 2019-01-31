@@ -114,8 +114,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     public void onUpdateTransactions(final TransactionDataObservable observable) {
         final List<TransactionData> newTxList = observable.getTransactionDataList();
         if (newTxList != null && mTxList != null) {
-            if (newTxList.size() != mTxList.size())
-                toast(R.string.id_a_new_transaction_has_just);
             mTxList = newTxList;
         }
     }
@@ -139,7 +137,8 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
             return;
         getGaActivity().runOnUiThread(() -> {
             mCurrentAddress = observable.getReceiveAddress();
-            conversionFinish();
+            if (mCurrentAddress != null && !mCurrentAddress.isEmpty())
+                conversionFinish();
         });
     }
 
@@ -175,7 +174,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         protected Bitmap doInBackground(final Object ... integers) {
             String qrCodeText;
             try {
-                if (amount == null || amount.value == 0)
+                if (amount == null || amount.value == 0 || TextUtils.isEmpty(address))
                     throw new NullPointerException();
                 final Address addr = Address.fromBase58(networkParameters, address);
                 qrCodeText = BitcoinURI.convertToBitcoinURI(addr, amount, null, null);
@@ -191,12 +190,18 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 return;
             if (isZombieNoView())
                 return;
-
-            final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-            bitmapDrawable.setFilterBitmap(false);
-            mAddressImage.setImageDrawable(bitmapDrawable);
-            mAddressImage.setOnClickListener((final View v) -> onCopyClicked());
-            mAddressText.setOnClickListener((final View v) -> onCopyClicked());
+            Log.d(TAG, "onPostExecute (" + address + ")");
+            if (TextUtils.isEmpty(address)) {
+                mAddressImage.setImageDrawable(getResources().getDrawable(android.R.color.transparent));
+                mAddressImage.setOnClickListener(null);
+                mAddressText.setOnClickListener(null);
+            } else {
+                final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+                bitmapDrawable.setFilterBitmap(false);
+                mAddressImage.setImageDrawable(bitmapDrawable);
+                mAddressImage.setOnClickListener((final View v) -> onCopyClicked());
+                mAddressText.setOnClickListener((final View v) -> onCopyClicked());
+            }
         }
     }
 
@@ -256,8 +261,12 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     public void onNewAddressClicked() {
-        final int subaccount = getGAService().getModel().getCurrentSubaccount();
-        getGAService().getModel().getReceiveAddressObservable(subaccount).refresh();
+        if(getGAService().getConnectionManager().isOffline()) {
+            UI.toast(getGaActivity(), R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+        } else {
+            final int subaccount = getGAService().getModel().getCurrentSubaccount();
+            getGAService().getModel().getReceiveAddressObservable(subaccount).refresh();
+        }
     }
 
     @Override

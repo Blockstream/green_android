@@ -60,15 +60,11 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     }
 
     private void onMnemonicVerified() {
-        if (!mService.getConnectionManager().isConnected()) {
-            mService.getConnectionManager().connect();
-            toast(R.string.id_you_are_not_connected_please);
-            return;
-        }
         startLoading();
         mService.getExecutor().execute(() -> {
             final String mnemonic = mMnemonic;
             try {
+                mService.getConnectionManager().connect();
                 mService.getSession().registerUser(this, null, mnemonic).resolve(null, null);
                 mService.getConnectionManager().loginWithMnemonic(mnemonic, "");
             } catch (final Exception ex) {

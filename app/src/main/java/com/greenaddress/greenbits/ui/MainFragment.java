@@ -64,8 +64,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), service, mTxItems,
-                service.getModel().getCurrentSubaccount());
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), service, mTxItems);
         txView.setAdapter(mTransactionsAdapter);
         // FIXME, more efficient to use swap
         // txView.swapAdapter(lta, false);

@@ -86,12 +86,6 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
     public void onSelectNetwork() {
         mSelectNetwork.setText(mService.getNetwork().getName());
         invalidateOptionsMenu();
-        mService.getExecutor().submit(() -> {
-            startLoading();
-            mService.reconnect();
-            stopLoading();
-            checkPinExist();
-        });
-
+        checkPinExist();
     }
 }

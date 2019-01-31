@@ -16,6 +16,7 @@ import java.util.Observable;
 public class ConnectionManager extends Observable {
     public static final String TAG = "STATE";
 
+
     private enum ConnState {
         OFFLINE(0), DISCONNECTING(1), DISCONNECTED(2), CONNECTING(3), CONNECTED(4), LOGGINGIN(5), LOGGEDIN(6), POSTLOGGEDIN(7);
 
@@ -80,6 +81,8 @@ public class ConnectionManager extends Observable {
 
     public boolean isPostLogin() { return mState == ConnState.POSTLOGGEDIN; }
 
+    public boolean isOffline() { return mState == ConnState.OFFLINE; }
+
     public boolean isLastLoginFailed() {
         return mLastLoginCode != 0;
     }
@@ -100,17 +103,7 @@ public class ConnectionManager extends Observable {
         setState(ConnState.OFFLINE);
     }
 
-    public void goOnline() {
-        if (mState == ConnState.OFFLINE) {
-            setState(ConnState.DISCONNECTED);
-        }
-    }
-
     public void goPostLogin() {
-        if(mState!=ConnState.LOGGEDIN) {
-            //TODO just return?
-            throw new RuntimeException("Going post login without being loggedin");
-        }
         setState(ConnState.POSTLOGGEDIN);
     }
 
@@ -156,45 +149,31 @@ public class ConnectionManager extends Observable {
         return mWatchOnlyUsername;
     }
 
-    public synchronized void connect() {
-        if(!isDisconnected()) {
-            Log.w(TAG,"Calling connect from state " + mState + " doing nothing" );
-            return;
-        }
-
+    public  void connect() throws RuntimeException {
         setState(ConnState.CONNECTING);
         final boolean isDebug = BuildConfig.DEBUG;
         Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") + (mTorEnabled ? " with TOR" : ""));
-        try {
-            if (mProxyEnabled || mTorEnabled) {
-                final String proxyString;
-                if (!mProxyEnabled || TextUtils.isEmpty(mProxyHost)) {
-                   proxyString = "";
-                } else {
-                   proxyString = String.format(Locale.US, "%s:%s", mProxyHost, mProxyPort);
-                   Log.d(TAG, "connecting with proxy " + proxyString);
-                }
-                mSession.connectWithProxy(mNetwork, proxyString, mTorEnabled, isDebug);
+        if (mProxyEnabled || mTorEnabled) {
+            final String proxyString;
+            if (!mProxyEnabled || TextUtils.isEmpty(mProxyHost)) {
+               proxyString = "";
             } else {
-                mSession.connect(mNetwork, isDebug);
+               proxyString = String.format(Locale.US, "%s:%s", mProxyHost, mProxyPort);
+               Log.d(TAG, "connecting with proxy " + proxyString);
             }
-            resetAttempts();
-            setState(ConnState.CONNECTED);
-        } catch (final Exception e) {
-            Log.i(TAG, "cannot connect " + e.getMessage());
-            --mConnectionCounter;
-            if (mConnectionCounter < 0) {
-                Log.w(TAG, "Failed to connect for " + CONNECTION_RETRY_ATTEMPTS + " times, going offline");
-                setState(ConnState.OFFLINE);
-            } else {
-                setState(ConnState.DISCONNECTED);
-            }
+            mSession.connectWithProxy(mNetwork, proxyString, mTorEnabled, isDebug);
+        } else {
+            mSession.connect(mNetwork, isDebug);
         }
+        resetAttempts();
+        setState(ConnState.CONNECTED);
     }
 
     public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver) {
-        setState(ConnState.LOGGINGIN);
+
         try {
+            connect();
+            setState(ConnState.LOGGINGIN);
             this.mHWDevice = hwDevice;
             this.mHWResolver = hwResolver;
             mSession.login(parent, hwDevice, "", "").resolve(null, hwResolver);
@@ -219,8 +198,9 @@ public class ConnectionManager extends Observable {
     public void login(final String mnenonic, final String mnemonicPassword,
                       final String pin, final PinData pinData,
                       final String username, final String password) {
-        setState(ConnState.LOGGINGIN);
         try {
+            connect();
+            setState(ConnState.LOGGINGIN);
             final Activity parent = null; // FIXME: Pass this in/split this call up
             if (!TextUtils.isEmpty(mnenonic) && mnemonicPassword != null) {
                 Log.d(TAG, "logging with mnemonic");

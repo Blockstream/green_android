@@ -239,11 +239,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             return;
         }
 
-        if (!cm.isConnected()) {
-            toast(R.string.id_unable_to_contact_the_green);
-            return;
-        }
-
         final String mnemonic = getMnemonic();
         final int errId = checkValid(mnemonic);
         if (errId != 0) {

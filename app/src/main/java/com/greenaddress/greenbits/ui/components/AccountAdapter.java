@@ -16,10 +16,11 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
 
-    private final ArrayList<SubaccountData> mSubaccountList;
+    private final List<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
     private final GaService mService;
     private final Resources mResources;
@@ -29,7 +30,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
         void onAccountSelected(int account);
     }
 
-    public AccountAdapter(final ArrayList<SubaccountData> subaccountList, final GaService service,
+    public AccountAdapter(final List<SubaccountData> subaccountList, final GaService service,
                           final OnAccountSelected cb, final Resources resources, final Activity activity) {
         mSubaccountList = subaccountList;
         mService = service;

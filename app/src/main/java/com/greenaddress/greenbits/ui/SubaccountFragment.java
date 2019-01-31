@@ -49,14 +49,12 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
 
     // Returns true if we are being restored without an activity or service
     protected boolean isZombieNoView() {
-        return getZombieStatus(getActivity() == null || getGAService() == null ||
-                               !getGAService().getConnectionManager().isPostLogin());
+        return getZombieStatus(getActivity() == null || getGAService() == null);
     }
 
     // Returns true if we are being restored without an activity, service or view
     protected boolean isZombie() {
-        return getZombieStatus(getActivity() == null || getGAService() == null ||
-                               !getGAService().getConnectionManager().isPostLogin() || mView == null);
+        return getZombieStatus(getActivity() == null || getGAService() == null || mView == null);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -31,6 +33,7 @@ import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.core.Coin;
@@ -105,23 +108,17 @@ public class GaService extends Service  {
         mSession = GDKSession.getInstance();
     }
 
-    public synchronized void connect() {
-        if (mNetwork == null) {
-            // Handle a previously registered network being deleted
-            setCurrentNetworkId("mainnet");
-        }
-        mConnectionManager.setNetwork(mNetwork.getNetwork());
-        mConnectionManager.connect();
-    }
-
-    public synchronized void reconnect() {
-        disconnect();
-        connect();
-    }
-
     public boolean hasPin() {
         final String ident = cfgPin().getString("ident", null);
         return ident != null;
+    }
+
+    public boolean warnIfOffline(final Activity activity) {
+        if(getConnectionManager().isOffline()) {
+            UI.toast(activity, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+            return true;
+        }
+        return false;
     }
 
     class GaBinder extends Binder {
@@ -280,7 +277,6 @@ public class GaService extends Service  {
             setCurrentNetworkId("mainnet");
         }
         mConnectionManager = new ConnectionManager(mSession, mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
-        mExecutor.execute(() -> mConnectionManager.connect());
 
         mDeviceId = cfg().getString(PrefKeys.DEVICE_ID, null);
         if (mDeviceId == null) {
@@ -496,7 +492,7 @@ public class GaService extends Service  {
     }
 
     private void onNetConnectivityChanged() {
-        final NetworkInfo info = getNetworkInfo();
+        /*final NetworkInfo info = getNetworkInfo();
         if (info == null) {
             // No network connection, go offline until notified that its back
             mConnectionManager.goOffline();
@@ -507,7 +503,7 @@ public class GaService extends Service  {
             mConnectionManager.goOnline();
             mConnectionManager.connect();
         } else
-            mSPV.onNetConnectivityChangedAsync(info);
+            mSPV.onNetConnectivityChangedAsync(info);*/
     }
 
     public NetworkInfo getNetworkInfo() {

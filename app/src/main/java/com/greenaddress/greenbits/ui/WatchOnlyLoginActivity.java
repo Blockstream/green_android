@@ -102,12 +102,6 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         }
 
         final ConnectionManager connectionManager = mService.getConnectionManager();
-
-        if (!connectionManager.isConnected()) {
-            toast(R.string.id_unable_to_contact_the_green);
-            return;
-        }
-
         final String username = UI.getText(mUsernameText);
         final String password = UI.getText(mPasswordText);
 

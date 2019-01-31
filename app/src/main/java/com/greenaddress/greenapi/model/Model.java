@@ -18,7 +18,9 @@ public class Model {
     private SparseArray<BalanceDataObservable> mBalanceDataObservables = new SparseArray<>();
     private ActiveAccountObservable mActiveAccountObservable = new ActiveAccountObservable();
     private SettingsObservable mSettingsObservable = new SettingsObservable();
-    private BlockchainHeightObservable blockchainHeightObservable = new BlockchainHeightObservable();
+    private BlockchainHeightObservable mBlockchainHeightObservable = new BlockchainHeightObservable();
+    private ToastObservable mToastObservable = new ToastObservable();
+
     private FeeObservable mFeeObservable;
     private AvailableCurrenciesObservable mAvailableCurrenciesObservable;
     private Boolean mTwoFAReset = false;
@@ -67,7 +69,11 @@ public class Model {
     }
 
     public BlockchainHeightObservable getBlockchainHeightObservable() {
-        return blockchainHeightObservable;
+        return mBlockchainHeightObservable;
+    }
+
+    public ToastObservable getToastObservable() {
+        return mToastObservable;
     }
 
     public FeeObservable getFeeObservable() {

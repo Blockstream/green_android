@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
@@ -162,6 +163,9 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
             final boolean isEnabled = mEnabled.contains(method);
             holder.enabled.setImageResource(isEnabled ? R.drawable.ic_done : R.drawable.ic_next);
             holder.itemView.setOnClickListener(view -> {
+                if(mService.warnIfOffline(SecurityActivity.this)) {
+                    return;
+                }
                 final Intent intent = new Intent(SecurityActivity.this, TwoFactorActivity.class);
                 intent.putExtra("method", method);
                 intent.putExtra("enable", !isEnabled);

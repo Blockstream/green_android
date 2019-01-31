@@ -349,11 +349,6 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(intent.getAction())) {
-            // A new USB device was plugged in
-            if (!mService.getConnectionManager().isConnected()) {
-                // The user previously manually logged out, connect again
-                mService.getConnectionManager().connect();
-            }
             onUsbAttach(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
         } else {
             if (mTag != null && NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {

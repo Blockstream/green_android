@@ -55,6 +55,32 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         ObjectNode objectNode = (ObjectNode) jsonObject;
         try {
             switch (objectNode.get("event").asText()) {
+            case "network": {
+                //{"event":"network","network":{"connected":false,"elapsed":1091312175736,"limit":true,"waiting":0}}
+                final JsonNode networkNode = objectNode.get("network");
+                final boolean connected = networkNode.get("connected").asBoolean();
+
+                Log.d("OBSNTF", "NETWORKEVENT connected:" + connected);
+
+                if (connected) {
+                    final boolean loginRequired = networkNode.get("login_required").asBoolean(false);
+                    if (loginRequired) {
+                        mService.getConnectionManager().disconnect();
+                    } else {
+                        if (mService.getConnectionManager().isOffline()) {
+                            mModel.getToastObservable().setMessage(R.string.id_you_are_connected);
+                            mService.getConnectionManager().goPostLogin();
+                        }
+                    }
+                } else {
+                    if (!mService.getConnectionManager().isOffline()) {
+                        mModel.getToastObservable().setMessage(R.string.id_you_are_not_connected_please);
+                        mService.getConnectionManager().goOffline();
+                    }
+                }
+
+                break;
+            }
             case "block": {
                 //{"block":{"block_hash":"0000000000003c640a577923dd385428edcfa570ee3bb46d435efca1efbb71a5","block_height":1435025},"event":"block"}
                 final JsonNode blockHeight = objectNode.get("block").get("block_height");
@@ -73,7 +99,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 //{"event":"transaction","transaction":{"satoshi":7895722,"subaccounts":[0],"txhash":"eab1e3aaa357a78f83c7a7d009fe8d2c8acbe9e1c5071398694bbeed7f812f2f","type":"incoming"}}
                 final JsonNode transaction = objectNode.get("transaction");
                 final ArrayNode arrayNode = (ArrayNode) transaction.get("subaccounts");
-
+                mModel.getToastObservable().setMessage(R.string.id_a_new_transaction_has_just);
                 for (JsonNode jsonNode : arrayNode) {
                     final int subaccount = jsonNode.asInt();
                     Log.d("OBSNTF", "subaccount involved " + subaccount);

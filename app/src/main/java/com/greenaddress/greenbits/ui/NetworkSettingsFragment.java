@@ -214,6 +214,8 @@ public class NetworkSettingsFragment extends DialogFragment {
             }
             getGAService().getConnectionManager().resetAttempts();
             getGAService().setCurrentNetworkId(networkName);
+            getGAService().getConnectionManager().setNetwork(networkName);
+
             mListener.onSelectNetwork();
             dismiss();
         });

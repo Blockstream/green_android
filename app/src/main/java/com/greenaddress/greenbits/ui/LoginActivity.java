@@ -10,7 +10,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 public abstract class LoginActivity extends GaActivity implements Observer, NetworkSettingsFragment.Listener {
-    protected String pinBeforeConnect;
 
     protected void onLoggedIn() {
         final Intent intent = new Intent(LoginActivity.this, TabbedMainActivity.class);
@@ -36,11 +35,7 @@ public abstract class LoginActivity extends GaActivity implements Observer, Netw
     private synchronized void checkState() {
         final ConnectionManager cm = mService.getConnectionManager();
         try {
-            if (cm.isDisconnectedOrLess()) {
-                cm.connect();
-            } else if (cm.isConnected() && pinBeforeConnect != null) {
-                loginWithPin(pinBeforeConnect);
-            } else if (cm.isLoggedIn()) {
+            if (cm.isLoggedIn()) {
                 mService.onPostLogin();
                 runOnUiThread(this::onLoginSuccess);
             } else if (cm.isLastLoginFailed()) {

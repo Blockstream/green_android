@@ -49,14 +49,19 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             return;
         }
 
+        if (mService.getConnectionManager().isOffline()) {
+            shortToast(R.string.id_you_are_not_connected_to_the);
+            if (mPinFragment != null)
+                mPinFragment.clear();
+            return;
+        }
+
         startLoading();
         if (mPinFragment != null)
             mPinFragment.setEnabled(false);
 
-        if (mService.getConnectionManager().isConnected())
-            loginWithPin(pin);
-        else
-            pinBeforeConnect = pin;
+        loginWithPin(pin);
+
     }
 
     @Override

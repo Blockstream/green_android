@@ -27,7 +27,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     private RecyclerView mAccountsView;
     private Model mModel;
 
-    private final ArrayList<SubaccountData> mSubaccountList = new ArrayList<>();
+    private List<SubaccountData> mSubaccountList = new ArrayList<>();
 
     @Override
     public View onCreateView(final LayoutInflater inflater,
@@ -42,6 +42,8 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
+        mSubaccountList = getGAService().getModel().getSubaccountDataObservable().getSubaccountDataList();
+
         final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this, getResources(), getActivity());
         mAccountsView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
@@ -50,32 +52,17 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     }
 
     private void onUpdateSubaccounts(final SubaccountDataObservable observable) {
-        final List<SubaccountData> subaccounts = observable.getSubaccountDataList();
-        if (subaccounts == null)
+        mSubaccountList = observable.getSubaccountDataList();
+        if (mSubaccountList == null)
             return;
 
-        UI.showIf(subaccounts.size() == 1, UI.find(getGaActivity(), R.id.clickOnTheCard));
+        UI.showIf(mSubaccountList.size() == 1, UI.find(getGaActivity(), R.id.clickOnTheCard));
 
-        mSubaccountList.clear();
-        for (final SubaccountData s : subaccounts) {
-            s.setName(s.getNameWithDefault(getString(R.string.id_main)));
-            mSubaccountList.add(s);
-        }
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mAccountsView.getAdapter().notifyDataSetChanged();
-            }
-        });
+        getActivity().runOnUiThread(() -> mAccountsView.getAdapter().notifyDataSetChanged());
     }
 
     private void onUpdateBalance(final BalanceDataObservable observable) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mAccountsView.getAdapter().notifyDataSetChanged();
-            }
-        });
+        getActivity().runOnUiThread(() -> mAccountsView.getAdapter().notifyDataSetChanged());
     }
 
     @Override
