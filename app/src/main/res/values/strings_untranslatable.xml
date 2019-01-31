@@ -5,7 +5,7 @@
     <string name="btchip" translatable="false">BTChip</string>
     <string name="pref_default_host" translatable="false">127.0.0.1</string>
     <string name="pref_default_port" translatable="false">9050</string>
-    <string name="pg_r_e_e_n" translatable="false">G R E E N</string>
+    <string name="pgreen" translatable="false">GREEN</string>
 
     <string name="zero" translatable="false">0</string>
     <string name="zeroDecimal" translatable="false">0.00</string>

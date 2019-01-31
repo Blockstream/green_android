@@ -18,34 +18,25 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-regular"
-            android:text="@string/pg_r_e_e_n"
-            android:textColor="@color/green"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/id_welcome_to"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
 
         <View
-            android:layout_width="10dp"
+            android:layout_width="6dp"
             android:layout_height="0dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:text="@string/id_is_a_noncustodial"
-            android:textColor="@color/white"
-            android:textSize="24sp"/>
+            android:fontFamily="sans-serif-regular"
+            android:text="@string/pgreen"
+            android:textColor="@color/green"
+            android:textSize="24sp" />
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:gravity="center"
-        android:text="@string/id_bitcoin_wallet"
-        android:textColor="@color/white"
-        android:textSize="24sp" />
 
     <View
         android:layout_width="fill_parent"
