@@ -37,6 +37,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private View mView;
     private TextView mRecipientText;
+    private TextView mAccountBalance;
     private CurrencyView2 mAmountView;
     private Button mNextButton;
     private Button mSendAllButton;
@@ -72,6 +73,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         // Create UI views
         mView = inflater.inflate(R.layout.fragment_send_input, container, false);
         mRecipientText = UI.find(mView, R.id.addressText);
+        mAccountBalance = UI.find(mView, R.id.accountBalanceText);
         mAmountView = UI.find(mView, R.id.sendAmountCurrency);
         mAmountView.setListener(this);
 
@@ -123,7 +125,8 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             final JsonNode readOnlyNode = mTx.get("addressees_read_only");
             if (readOnlyNode != null && readOnlyNode.asBoolean()) {
                 mAmountView.setEnabled(false);
-                mSendAllButton.setEnabled(false);
+                mSendAllButton.setVisibility(View.GONE);
+                mAccountBalance.setVisibility(View.GONE);
             }
 
             // Select the fee button that is the next highest rate from the old tx
@@ -194,8 +197,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         // Setup balance
         final GaService service = getGAService();
         final BalanceData balanceData = service.getBalanceData(service.getModel().getCurrentSubaccount());
-        final TextView accountBalance = UI.find(mView, R.id.accountBalanceText);
-        accountBalance.setText(service.getValueString(balanceData.toObjectNode(), false, true));
+        mAccountBalance.setText(service.getValueString(balanceData.toObjectNode(), false, true));
 
         mSendAllButton.setPressed(mSendAll);
         mSendAllButton.setSelected(mSendAll);
