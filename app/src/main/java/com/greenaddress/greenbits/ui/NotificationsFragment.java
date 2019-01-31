@@ -118,7 +118,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         if (d == R.string.id_new_s_transaction_of_s_in) {
             TransactionData tx = (TransactionData) event.getValue();
             final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
-                tx.getSubaccount()).getName();
+                tx.getSubaccount()).getNameWithDefault(getString(R.string.id_main));
             final String inout = tx.getType();
             final long satoshi = tx.getSatoshi();
             final String amount = mService.getValueString(mService.getSession().convertSatoshi(satoshi), false, true);
