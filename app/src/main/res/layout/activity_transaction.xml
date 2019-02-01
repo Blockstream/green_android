@@ -220,7 +220,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         style="@style/SectionTitle"
-                        android:text="@string/id_memo" />
+                        android:text="@string/id_my_notes" />
 
                     <com.greenaddress.greenbits.ui.FontAwesomeTextView
                         android:id="@+id/sendToNoteIcon"
@@ -257,7 +257,6 @@
                     android:layout_width="wrap_content"
                     android:visibility="gone"
                     android:layout_height="wrap_content"
-                    android:hint="@string/id_optional_memo"
                     android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                     android:textColor="@color/textColor" />
 
