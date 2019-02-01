@@ -44,7 +44,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private  int mBlockTargets[];
     private static final int mBlockTimes[] =
-    { R.string.id_1030_minutes, R.string.id_2_hours, R.string.id_4_hours, R.string.id_unknown_custom };
+    { R.string.id_1030_minutes, R.string.id_2_hours, R.string.id_4_hours };
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;
     private long mMinFeeRate;
@@ -53,7 +53,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private static final int mButtonIds[] =
             { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
-    private static final int mButtonText[] =
+    private static final int mFeeButtonsText[] =
             { R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom };
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
 
@@ -93,7 +93,8 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             mFeeEstimates[i] = estimates.get(mBlockTargets[i]);
             mFeeButtons[i] = mView.findViewById(mButtonIds[i]);
             final String summary = String.format("(%s)", UI.getFeeRateString(estimates.get(mBlockTargets[i])));
-            mFeeButtons[i].init(getString(mButtonText[i]), summary, i==3);
+            final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : " " + getString(mBlockTimes[i]));
+            mFeeButtons[i].init(buttonText, summary, i==3);
             mFeeButtons[i].setOnClickListener(this);
         }
 
