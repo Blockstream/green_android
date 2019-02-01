@@ -60,7 +60,8 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                     startActivity(intent);
                     return false;
                 });
-            } else if (e.getTitle() == R.string.id_set_up_twofactor_authentication) {
+            } else if (e.getTitle() == R.string.id_set_up_twofactor_authentication ||
+                       e.getTitle() == R.string.id_you_only_have_one_twofactor) {
                 preference.setOnPreferenceClickListener(preference1 -> {
                     final Intent intent = new Intent(getActivity(), SecurityActivity.class);
                     startActivity(intent);
