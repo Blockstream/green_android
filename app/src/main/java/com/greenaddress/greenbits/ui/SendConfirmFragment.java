@@ -68,6 +68,7 @@ public class SendConfirmFragment extends GAFragment {
 
         // Bin Ui views
         mView = inflater.inflate(R.layout.fragment_send_confirm, container, false);
+        final TextView noteTextTitle = UI.find(mView, R.id.sendMemoTitle);
         final TextView noteText = UI.find(mView, R.id.noteText);
         final TextView addressText = UI.find(mView, R.id.addressText);
         final TextView subaccountText = UI.find(mView, R.id.subaccountText);
@@ -77,6 +78,8 @@ public class SendConfirmFragment extends GAFragment {
         final BalanceData currentRecipient = mTxData.getAddressees().get(0);
         final boolean isSweeping = mTxData.getIsSweep();
         final Integer subaccount = mTxData.getChangeSubaccount();
+        UI.hideIf(isSweeping, noteTextTitle);
+        UI.hideIf(isSweeping, noteText);
         if (isSweeping) {
             subaccountText.setText("Paper Wallet");
         } else {
