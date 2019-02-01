@@ -125,7 +125,8 @@
             <MultiAutoCompleteTextView
                 android:id="@+id/noteText"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:maxLength="1024"/>
         </LinearLayout>
     </ScrollView>
 

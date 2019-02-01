@@ -258,7 +258,8 @@
                     android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
-                    android:textColor="@color/textColor" />
+                    android:textColor="@color/textColor"
+                    android:maxLength="1024" />
 
                 <Space
                     android:layout_width="match_parent"
