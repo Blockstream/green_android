@@ -87,6 +87,10 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     private boolean onSPVEnabledChanged(final Boolean newValue) {
         mTrustedPeer.setEnabled(newValue);
         mService.setSPVEnabledAsync(newValue);
+        if (!newValue) {
+            mSPVSyncOnMobile.setChecked(false);
+            mSPVSyncOnMobile.setEnabled(false);
+        }
         return true;
     }
 
