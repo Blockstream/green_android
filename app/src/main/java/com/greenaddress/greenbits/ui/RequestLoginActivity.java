@@ -167,11 +167,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         mHwDeviceData = new HWDeviceData("Trezor", false, false);
         mHwResolver = new HardwareCodeResolver(mHwWallet);
 
-        if (mService.getConnectionManager().isConnected()) {
-            doLogin(this);
-        } else {
-            Log.e(TAG, "Not connected yet, will be called back by the update method");
-        }
+        doLogin(this);
     }
 
     private void showPinDialog() {
@@ -284,19 +280,14 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         mHwDeviceData = new HWDeviceData("Ledger", false, true);
         mHwResolver = new HardwareCodeResolver(mHwWallet);
 
-        if (mService.getConnectionManager().isConnected()) {
-            doLogin(this);
-        } else {
-            Log.e(TAG, "Not connected yet, will be called back by the update method");
-        }
+        doLogin(this);
     }
 
     private void doLogin(final Activity parent) {
-        final ConnectionManager cm = mService.getConnectionManager();
-        cm.addObserver(this);
         mService.getExecutor().execute(() -> {
             try {
-                // FIXME: Dont register up front, only do it if login fails
+                final ConnectionManager cm = mService.getConnectionManager();
+                cm.connect();
                 mService.getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
                 cm.login(parent, mHwDeviceData, mHwResolver);
             } catch (final Exception e) {
@@ -304,17 +295,6 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
                 onLoginFailure();
             }
         });
-    }
-
-    @Override
-    public void update(Observable observable, Object o) {
-        super.update(observable, o);
-        if (observable instanceof ConnectionManager) {
-            final ConnectionManager cm = (ConnectionManager) observable;
-            if (cm.isConnected()) {
-                doLogin(this);
-            }
-        }
     }
 
     @Override
