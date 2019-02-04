@@ -384,6 +384,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                         .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                         .positiveText(android.R.string.ok)
                         .negativeText(android.R.string.cancel)
+                        .cancelable(false)
+                        .onNegative((dialog, which) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, false).apply())
                         .onPositive((dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, uri)))
                         .build().show();
             }
