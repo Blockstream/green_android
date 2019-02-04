@@ -252,7 +252,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private void onCustomFeeClicked() {
         long customValue = mFeeEstimates[mButtonIds.length - 1];
         final String hint = UI.getFeeRateString(customValue);
-        final String initValue = String.format(Locale.US, "%d", customValue/1000);
+        final String initValue = String.format(Locale.US, "%.2f", customValue/1000.0);
 
         mCustomFeeDialog = new MaterialDialog.Builder(getActivity())
                            .title(R.string.id_set_custom_fee_rate)
