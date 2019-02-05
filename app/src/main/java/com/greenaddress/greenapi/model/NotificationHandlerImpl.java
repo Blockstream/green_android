@@ -99,7 +99,9 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 //{"event":"transaction","transaction":{"satoshi":7895722,"subaccounts":[0],"txhash":"eab1e3aaa357a78f83c7a7d009fe8d2c8acbe9e1c5071398694bbeed7f812f2f","type":"incoming"}}
                 final JsonNode transaction = objectNode.get("transaction");
                 final ArrayNode arrayNode = (ArrayNode) transaction.get("subaccounts");
-                mModel.getToastObservable().setMessage(R.string.id_a_new_transaction_has_just);
+                if ("incoming".equals(transaction.get("type").asText())) {
+                    mModel.getToastObservable().setMessage(R.string.id_a_new_transaction_has_just);
+                }
                 for (JsonNode jsonNode : arrayNode) {
                     final int subaccount = jsonNode.asInt();
                     Log.d("OBSNTF", "subaccount involved " + subaccount);
