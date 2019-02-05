@@ -183,7 +183,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         return sb.toString().trim();
     }
 
-    private void setMnemonic(final String mnemonic) {
+    private void setMnemonic(String mnemonic) {
+        mnemonic = mnemonic.trim().replaceAll("(\\r|\\n)","").toLowerCase();
         final int errId = checkValid(mnemonic);
         if (errId != 0) {
             UI.toast(this, errId, Toast.LENGTH_LONG);
@@ -214,6 +215,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         try {
             Wally.bip39_mnemonic_validate(mWordList, mnemonic);
         } catch (final IllegalArgumentException e) {
+            Log.d(TAG,"mnemonic (" + mnemonic + ")");
             return R.string.id_invalid_mnemonic;
         }
         return 0;
