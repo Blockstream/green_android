@@ -47,6 +47,7 @@
   <string name="id_cant_connect_to_this_url">Не вдається приєднатися до цього URL</string>
   <string name="id_change">РЕШТА</string>
   <string name="id_choose">Обрати</string>
+  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
   <string name="id_choose_twofactor_authentication">Виберіть метод двофакторної аутентифікації</string>
   <string name="id_choose_your_network">Виберіть мережу</string>
   <string name="id_clear">ОЧИСТИТИ</string>
@@ -138,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">Green - гаманець, який дозволяє повністю контролювати кошти тільки його власнику</string>
   <string name="id_green_logo">Логотип гаманця Green</string>
   <string name="id_green_mnemonic_qr_code">Мнемонічний QR-код гаманця Green</string>
-  <string name="id_green_uses_touch_id_and_face_id">Для швидкого доступу до гаманця Green використовується Touch ID та Face ID </string>
+  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
   <string name="id_hash">Хеш</string>
   <string name="id_high">Високий</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Тримайте NFC-тег поряд із вашим приладом</string>
@@ -179,6 +180,7 @@
   <string name="id_log_out">Вийти</string>
   <string name="id_logging_in">Виконується вхід...</string>
   <string name="id_login_failed">Вхід неможливий</string>
+  <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">Подивіться на розташування чисел на пристрої</string>
   <string name="id_low">Низький</string>
   <string name="id_main">Головний</string>
@@ -197,8 +199,11 @@
   <string name="id_network">МЕРЕЖА</string>
   <string name="id_network_configuration">Конфігурація мережі</string>
   <string name="id_network_monitor">Монітор мережі</string>
+  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">Нова %s транзакція %s на акаунті %s.</string>
   <string name="id_new_transaction">Нова транзакція</string>
+  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
   <string name="id_next">Наступний</string>
   <string name="id_nfc_logo">Логотип NFC</string>
   <string name="id_nfc_tags_written">NFC-теги:</string>
@@ -234,7 +239,7 @@
   <string name="id_pin_has_to_be_between_4_and_15">PIN-код має містити від 4 до 15 символів</string>
   <string name="id_pins_do_not_match_please_try">PIN-коди не співпадають, спробуйте ще раз.</string>
   <string name="id_please_disable_biometric">Будь ласка, вимкніть біометричну аутентифікацію перед видаленням PIN-коду</string>
-  <string name="id_please_enable_another">Будь ласка, підключіть ще один метод двофакторної аутентифікації</string>
+  <string name="id_please_enable_another">Будь ласка, підключіть ще один метод двофакторної аутентифікації для запобігання втрати доступу до ваших коштів.</string>
   <string name="id_please_enable_camera">Увімкніть дозвіл для використання камери.</string>
   <string name="id_please_enable_pin">Будь ласка, увімкніть PIN-аутентифікацію перед додаванням чи видаленням біометричної аутентифікації</string>
   <string name="id_please_enter_the_passphrase_for">Введіть кодову фразу для вашого апаратного гаманця.</string>
@@ -272,6 +277,7 @@
   <string name="id_reset_spv">Скинути SPV</string>
   <string name="id_restore">Відновити</string>
   <string name="id_restore_existing_wallet">Відновити існуючий гаманець</string>
+  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Використання аутентифікації Android</string>
   <string name="id_review">Огляд</string>
   <string name="id_s_blocks_left">%s блоків залишилось</string>
@@ -316,9 +322,11 @@
   <string name="id_socks5_port">Порт Socks5</string>
   <string name="id_something_went_wrong">Щось пішло не так</string>
   <string name="id_spv_is_always_synchronized_on">SPV завжди синхронізується в немобільних мережах, таких як WiFi або Ethernet. Цей параметр також синхронізується під час використання мобільного інтернету. Може бути дорогим залежно від вашого тарифу, тому будьте обачні при увімкненні.</string>
+  <string name="id_spv_not_fully_synced">SPV-синхронізація відбулася не повністю</string>
   <string name="id_spv_notifications">Повідомлення SPV</string>
   <string name="id_spv_reset_and_restarted">SPV переустановлено та перезапущено</string>
   <string name="id_spv_synchronization">SPV-синхронізація</string>
+  <string name="id_spv_unverified">SPV не веріфіковано</string>
   <string name="id_sweep">Змести</string>
   <string name="id_sweep_from_paper_wallet">Змести з паперового гаманця</string>
   <string name="id_synchronize_spv_on_mobile">Синхронізуйте SPV на мобільному телефоні</string>
@@ -339,6 +347,7 @@
   <string name="id_tor_connectivity_disabled">З\'єднання з Tor розірвано!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor використовуватиме %1$s і працюватиме тільки в тому випадку, якщо ви використовуєте проксі Orbot або увімкнений Tor</string>
   <string name="id_total_assets">Загальна сума активів</string>
+  <string name="id_total_balance">Total Balance</string>
   <string name="id_total_with_fee">Всього з комісією</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Торкніться для відображення</string>
@@ -388,8 +397,10 @@
   <string name="id_wrong_choice_check_your">Неправильний вибір. Перевірте вашу мнемонічну фразу та здійсніть іншу спробу.</string>
   <string name="id_year">рік</string>
   <string name="id_years">років</string>
+  <string name="id_you_are_not_connected">You are not connected</string>
   <string name="id_you_are_not_connected_please">Ви не підключені, будь ласка, зачекайте</string>
   <string name="id_you_are_not_connected_to_the">Ви не підключені до мережі Інтернет. Підключіться і повторіть спробу.</string>
+  <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">Ваші кошти у вас під контролем</string>
   <string name="id_you_have_full_control_of_your">Ви повністю контролюєте свої кошти.</string>
   <string name="id_you_have_received_s">Ви отримали %s</string>

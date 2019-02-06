@@ -47,6 +47,7 @@
   <string name="id_cant_connect_to_this_url">Impossible de se connecter à cette URL</string>
   <string name="id_change">CHANGE</string>
   <string name="id_choose">Choose</string>
+  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
   <string name="id_choose_twofactor_authentication">Choose Two-Factor authentication method</string>
   <string name="id_choose_your_network">Choose Your Network</string>
   <string name="id_clear">EFFACER</string>
@@ -138,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">Green est un portefeuille sans dépôt</string>
   <string name="id_green_logo">Logo Green</string>
   <string name="id_green_mnemonic_qr_code">QR code du mnémonique Green</string>
-  <string name="id_green_uses_touch_id_and_face_id">Green uses Touch ID and Face ID to allow easy access to the wallet</string>
+  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
   <string name="id_hash">Hash</string>
   <string name="id_high">Haut</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Approchez l\'étiquette NFC de l\'appareil</string>
@@ -179,6 +180,7 @@
   <string name="id_log_out">Se déconnecter</string>
   <string name="id_logging_in">Connexion en cours...</string>
   <string name="id_login_failed">Échec de la connexion</string>
+  <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">Regardez l\'appareil pour obtenir les positions des numéros</string>
   <string name="id_low">Bas</string>
   <string name="id_main">Principal</string>
@@ -197,8 +199,11 @@
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">Configuration réseau</string>
   <string name="id_network_monitor">Contrôle du réseau</string>
+  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">New %s transaction of %s in account %s.</string>
   <string name="id_new_transaction">Nouvelle transaction</string>
+  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
   <string name="id_next">Suivant</string>
   <string name="id_nfc_logo">Logo NFC</string>
   <string name="id_nfc_tags_written">Étiquette(s) NFC écrite(s) :</string>
@@ -272,6 +277,7 @@
   <string name="id_reset_spv">Réinitialisation SPV</string>
   <string name="id_restore">Restaurer</string>
   <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
+  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Réutiliser l\'authentification Android</string>
   <string name="id_review">Vérifier</string>
   <string name="id_s_blocks_left">%s blocs restant</string>
@@ -316,9 +322,11 @@
   <string name="id_socks5_port">Port Socks5</string>
   <string name="id_something_went_wrong">Un problème est apparu</string>
   <string name="id_spv_is_always_synchronized_on">SPV se synchronise toujours sur des réseaux non mobiles, tels que WiFi ou Ethernet. Ce réglage permet de le synchroniser aussi sur les réseaux de data mobile. Selon votre forfait cela peut entraîner des frais importants, à utiliser avec précaution.</string>
+  <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">Notifications SPV</string>
   <string name="id_spv_reset_and_restarted">SPV reset and restarted</string>
   <string name="id_spv_synchronization">SPV Synchronization</string>
+  <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">Balayer</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
   <string name="id_synchronize_spv_on_mobile">Synchronisation SPV sur mobile</string>
@@ -339,6 +347,7 @@
   <string name="id_tor_connectivity_disabled">Connexion Tor désactivée !</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor utilisera %1$s et ne fonctionnera que si votre proxy est Orbot ou si Tor est activé</string>
   <string name="id_total_assets">Total Assets</string>
+  <string name="id_total_balance">Total Balance</string>
   <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Toucher pour afficher</string>
@@ -388,8 +397,10 @@
   <string name="id_wrong_choice_check_your">Wrong choice. Check your mnemonic and try again.</string>
   <string name="id_year">année</string>
   <string name="id_years">années</string>
+  <string name="id_you_are_not_connected">You are not connected</string>
   <string name="id_you_are_not_connected_please">Vous n\'êtes pas connecté, veuillez patienter</string>
   <string name="id_you_are_not_connected_to_the">Vous n\'êtes pas connecté à internet. Merci de vous connecter et d\'essayer à nouveau.</string>
+  <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">You have control on your funds</string>
   <string name="id_you_have_full_control_of_your">Vous avez le contrôle total de vos fonds.</string>
   <string name="id_you_have_received_s">Vous avez reçu %s</string>

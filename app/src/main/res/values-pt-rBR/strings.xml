@@ -47,6 +47,7 @@
   <string name="id_cant_connect_to_this_url">Can\'t connect to this URL</string>
   <string name="id_change">CHANGE</string>
   <string name="id_choose">Choose</string>
+  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
   <string name="id_choose_twofactor_authentication">Choose Two-Factor authentication method</string>
   <string name="id_choose_your_network">Choose Your Network</string>
   <string name="id_clear">CLEAR</string>
@@ -138,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">Green is a non-custodial wallet</string>
   <string name="id_green_logo">Green Logo</string>
   <string name="id_green_mnemonic_qr_code">Green Mnemonic QR Code</string>
-  <string name="id_green_uses_touch_id_and_face_id">Green uses Touch ID and Face ID to allow easy access to the wallet</string>
+  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
   <string name="id_hash">Hash</string>
   <string name="id_high">High</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Hold your NFC tag close to the device</string>
@@ -179,6 +180,7 @@
   <string name="id_log_out">Log Out</string>
   <string name="id_logging_in">Logging in…</string>
   <string name="id_login_failed">Login Failed</string>
+  <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">Look at the device for the number positions</string>
   <string name="id_low">Low</string>
   <string name="id_main">Main</string>
@@ -197,8 +199,11 @@
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">Network Configuration</string>
   <string name="id_network_monitor">Network Monitor</string>
+  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">New %s transaction of %s in account %s.</string>
   <string name="id_new_transaction">New transaction</string>
+  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
   <string name="id_next">Next</string>
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">NFC TAGs Written:</string>
@@ -272,6 +277,7 @@
   <string name="id_reset_spv">Reset SPV</string>
   <string name="id_restore">Restore</string>
   <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
+  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Reuse Android\'s authentication</string>
   <string name="id_review">Review</string>
   <string name="id_s_blocks_left">%s blocks left</string>
@@ -316,9 +322,11 @@
   <string name="id_socks5_port">Socks5 Port</string>
   <string name="id_something_went_wrong">Something went wrong</string>
   <string name="id_spv_is_always_synchronized_on">SPV is always synchronized on non mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
+  <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">SPV notifications</string>
   <string name="id_spv_reset_and_restarted">SPV reset and restarted</string>
   <string name="id_spv_synchronization">SPV Synchronization</string>
+  <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
   <string name="id_synchronize_spv_on_mobile">Synchronize SPV on mobile</string>
@@ -339,6 +347,7 @@
   <string name="id_tor_connectivity_disabled">Tor Connectivity Disabled!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor will use %1$s and only work if your proxy is Orbot or Tor enabled</string>
   <string name="id_total_assets">Total Assets</string>
+  <string name="id_total_balance">Total Balance</string>
   <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Touch to display</string>
@@ -388,8 +397,10 @@
   <string name="id_wrong_choice_check_your">Wrong choice. Check your mnemonic and try again.</string>
   <string name="id_year">year</string>
   <string name="id_years">years</string>
+  <string name="id_you_are_not_connected">You are not connected</string>
   <string name="id_you_are_not_connected_please">You are not connected, please wait</string>
   <string name="id_you_are_not_connected_to_the">You are not connected to the internet. Please connect and retry.</string>
+  <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">You have control on your funds</string>
   <string name="id_you_have_full_control_of_your">You have full control of your funds.</string>
   <string name="id_you_have_received_s">You have received %s</string>

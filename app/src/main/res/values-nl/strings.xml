@@ -47,6 +47,7 @@
   <string name="id_cant_connect_to_this_url">Kan geen verbinding maken met URL</string>
   <string name="id_change">CHANGE</string>
   <string name="id_choose">Choose</string>
+  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
   <string name="id_choose_twofactor_authentication">Choose Two-Factor authentication method</string>
   <string name="id_choose_your_network">Choose Your Network</string>
   <string name="id_clear">WISSEN</string>
@@ -138,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">In de Green-wallet beheer je je eigen bezittingen</string>
   <string name="id_green_logo">Logo Green</string>
   <string name="id_green_mnemonic_qr_code">QR-code woordenlijst Green</string>
-  <string name="id_green_uses_touch_id_and_face_id">Green uses Touch ID and Face ID to allow easy access to the wallet</string>
+  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
   <string name="id_hash">Hash</string>
   <string name="id_high">Hoog</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Houd je NFC-tag in de buurt van je apparaat</string>
@@ -179,6 +180,7 @@
   <string name="id_log_out">Afmelden</string>
   <string name="id_logging_in">Aanmelden…</string>
   <string name="id_login_failed">Aanmelden mislukt</string>
+  <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">Kijk op het apparaat voor de positie van de cijfers</string>
   <string name="id_low">Laag</string>
   <string name="id_main">Hoofd</string>
@@ -197,8 +199,11 @@
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">Netwerkconfiguratie</string>
   <string name="id_network_monitor">Netwerk-monitor</string>
+  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">New %s transaction of %s in account %s.</string>
   <string name="id_new_transaction">Nieuwe transactie</string>
+  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
   <string name="id_next">Volgende</string>
   <string name="id_nfc_logo">NFC-logo</string>
   <string name="id_nfc_tags_written">NFC-tags beschreven:</string>
@@ -272,6 +277,7 @@
   <string name="id_reset_spv">SPV resetten</string>
   <string name="id_restore">Herstellen</string>
   <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
+  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Gebruik de authenticatie van Android</string>
   <string name="id_review">Overzicht</string>
   <string name="id_s_blocks_left">%1$s blocks te gaan %2$d</string>
@@ -316,9 +322,11 @@
   <string name="id_socks5_port">Socks5 Port</string>
   <string name="id_something_went_wrong">Er is iets misgegaan</string>
   <string name="id_spv_is_always_synchronized_on">SPV wordt altijd gesynchroniseerd op niet-mobiele netwerken zoals WiFi of Ethernet. Deze instelling zorgt dat synchronisatie ook plaatsvindt op mobiele netwerken. Dit kan duur zijn, afhankelijk van je dataplan, dus wees voorzichtig.</string>
+  <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">SPV-notificaties</string>
   <string name="id_spv_reset_and_restarted">SPV reset and restarted</string>
   <string name="id_spv_synchronization">SPV Synchronization</string>
+  <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">Leegruimen</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
   <string name="id_synchronize_spv_on_mobile">Synchroniseer SPV op mobiel</string>
@@ -339,6 +347,7 @@
   <string name="id_tor_connectivity_disabled">Tor-connectiviteit uitgeschakeld!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor maakt gebruik van %1$s en werkt alleen als je proxy Orbot of Tor ondersteunt</string>
   <string name="id_total_assets">Total Assets</string>
+  <string name="id_total_balance">Total Balance</string>
   <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Raak aan om te tonen</string>
@@ -388,8 +397,10 @@
   <string name="id_wrong_choice_check_your">Wrong choice. Check your mnemonic and try again.</string>
   <string name="id_year">jaar</string>
   <string name="id_years">jaar</string>
+  <string name="id_you_are_not_connected">You are not connected</string>
   <string name="id_you_are_not_connected_please">Een moment, je bent niet verbonden</string>
   <string name="id_you_are_not_connected_to_the">Je bent niet verbonden met het internet. Maak verbinding en probeer het opnieuw.</string>
+  <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">You have control on your funds</string>
   <string name="id_you_have_full_control_of_your">Je beheert je eigen bezittingen volledig.</string>
   <string name="id_you_have_received_s">Je hebt %s ontvangen</string>

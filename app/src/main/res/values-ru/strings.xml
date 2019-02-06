@@ -47,6 +47,7 @@
   <string name="id_cant_connect_to_this_url">Не удается подключиться к этому URL</string>
   <string name="id_change">СДАЧА</string>
   <string name="id_choose">Выбрать</string>
+  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
   <string name="id_choose_twofactor_authentication">Выберите метод двухфакторной аутентификации</string>
   <string name="id_choose_your_network">Выберите сеть</string>
   <string name="id_clear">ОЧИСТИТЬ</string>
@@ -138,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">Green - кошелек, который позволяет полностью контролировать средства только его обладателю</string>
   <string name="id_green_logo">Логотип кошелька Green</string>
   <string name="id_green_mnemonic_qr_code">Мнемонический QR-код кошелька Green</string>
-  <string name="id_green_uses_touch_id_and_face_id">Для быстрого доступа к кошельку Green используется Touch ID и Face ID </string>
+  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
   <string name="id_hash">Хеш</string>
   <string name="id_high">Высокий</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Держите NFC-тег рядом с вашим устройством</string>
@@ -179,6 +180,7 @@
   <string name="id_log_out">Выйти</string>
   <string name="id_logging_in">Выполняется вход...</string>
   <string name="id_login_failed">Вход невозможен</string>
+  <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">Посмотрите расположение чисел на устройстве</string>
   <string name="id_low">Низкий</string>
   <string name="id_main">Основной</string>
@@ -197,8 +199,11 @@
   <string name="id_network">СЕТЬ</string>
   <string name="id_network_configuration">Конфигурация сети</string>
   <string name="id_network_monitor">Сетевой монитор</string>
+  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">Новая %s транзакция %s на аккаунте %s.</string>
   <string name="id_new_transaction">Новая транзакция</string>
+  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
   <string name="id_next">Следующий</string>
   <string name="id_nfc_logo">Логотип NFC</string>
   <string name="id_nfc_tags_written">NFC-теги:</string>
@@ -272,6 +277,7 @@
   <string name="id_reset_spv">Сбросить SPV</string>
   <string name="id_restore">Восстановить</string>
   <string name="id_restore_existing_wallet">Восстановить существующий кошелек</string>
+  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Использование аутентификации Android</string>
   <string name="id_review">Обзор</string>
   <string name="id_s_blocks_left">%s блоков осталось</string>
@@ -316,9 +322,11 @@
   <string name="id_socks5_port">Порт Socks5</string>
   <string name="id_something_went_wrong">Что-то пошло не так</string>
   <string name="id_spv_is_always_synchronized_on">SPV всегда синхронизируется в немобильных сетях, таких как WiFi или Ethernet. Этот параметр также синхронизируется при использовании мобильного интернета. Может быть дорогостоящим в зависимости от вашего тарифа, поэтому будьте осторожны при включении.</string>
+  <string name="id_spv_not_fully_synced">SPV-синхронизация произошла не полностью</string>
   <string name="id_spv_notifications">Уведомления SPV</string>
   <string name="id_spv_reset_and_restarted">SPV переустановлено и перезапущено</string>
   <string name="id_spv_synchronization">SPV-синхронизация</string>
+  <string name="id_spv_unverified">SPV не верифицирован</string>
   <string name="id_sweep">Смести</string>
   <string name="id_sweep_from_paper_wallet">Смести с бумажного кошелька</string>
   <string name="id_synchronize_spv_on_mobile">Синхронизируйте SPV на мобильном телефоне</string>
@@ -339,6 +347,7 @@
   <string name="id_tor_connectivity_disabled">Соединение с Tor разорвано!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor будет использовать %1$s и будет работать только в том случае, если вы используете прокси Orbot или включен Tor</string>
   <string name="id_total_assets">Общая сумма активов</string>
+  <string name="id_total_balance">Total Balance</string>
   <string name="id_total_with_fee">Всего с комиссией</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Коснитесь для отображения</string>
@@ -388,8 +397,10 @@
   <string name="id_wrong_choice_check_your">Неправильный выбор. Проверьте вашу мнемоническую фразу и повторите попытку.</string>
   <string name="id_year">год</string>
   <string name="id_years">лет</string>
+  <string name="id_you_are_not_connected">You are not connected</string>
   <string name="id_you_are_not_connected_please">Вы не подключены, подождите</string>
   <string name="id_you_are_not_connected_to_the">Вы не подключены к Интернету. Подключитесь и повторите попытку.</string>
+  <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">Ваши средства у вас под контролем.</string>
   <string name="id_you_have_full_control_of_your">Вы полностью контролируете свои средства.</string>
   <string name="id_you_have_received_s">Вы получили %s</string>

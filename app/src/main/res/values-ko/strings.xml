@@ -47,6 +47,7 @@
   <string name="id_cant_connect_to_this_url">URL 연결 불가</string>
   <string name="id_change">바꾸기</string>
   <string name="id_choose">선택</string>
+  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
   <string name="id_choose_twofactor_authentication">2FA 방식 선택</string>
   <string name="id_choose_your_network">사용자 지정 네트워크 선택</string>
   <string name="id_clear">새로고침</string>
@@ -138,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">Green은 자산을 맡겨 신뢰를 요구하는 지갑이 아닙니다</string>
   <string name="id_green_logo">Green 로고</string>
   <string name="id_green_mnemonic_qr_code">Green 니모닉(복원 코드)( QR 코드</string>
-  <string name="id_green_uses_touch_id_and_face_id">Green은 Touch ID와 Face ID를 사용하여 지갑을 손쉽게 사용할 수 있게 합니다.</string>
+  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
   <string name="id_hash">해시</string>
   <string name="id_high">높음</string>
   <string name="id_hold_your_nfc_tag_close_to_the">NFC 태그를 기기에 가까이 대세요</string>
@@ -179,6 +180,7 @@
   <string name="id_log_out">로그아웃</string>
   <string name="id_logging_in">로그인 중.</string>
   <string name="id_login_failed">로그인 실패</string>
+  <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">번호 배열은 기기에 나와 있습니다</string>
   <string name="id_low">낮음</string>
   <string name="id_main">주요</string>
@@ -197,8 +199,11 @@
   <string name="id_network">네트워크</string>
   <string name="id_network_configuration">네트워크 설정</string>
   <string name="id_network_monitor">네트워크 모니터</string>
+  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">계좌 %s에서 %s의 새로운 %s거래</string>
   <string name="id_new_transaction">새로운 거래</string>
+  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
   <string name="id_next">다음</string>
   <string name="id_nfc_logo">NFC 로고</string>
   <string name="id_nfc_tags_written">쓰여진 NFC 태그들:</string>
@@ -272,6 +277,7 @@
   <string name="id_reset_spv">SPV 새로고침</string>
   <string name="id_restore">복구</string>
   <string name="id_restore_existing_wallet">기존 지갑 복원</string>
+  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">안드로이드 인증 재사용하기</string>
   <string name="id_review">검토</string>
   <string name="id_s_blocks_left">%s 블록 남음</string>
@@ -316,9 +322,11 @@
   <string name="id_socks5_port">Socks5 포트</string>
   <string name="id_something_went_wrong">문제가 발생하였습니다.</string>
   <string name="id_spv_is_always_synchronized_on">SPV는 데이터를 사용하지 않고 항상 Wifi나 Ethernet을 사용하여 동기화됩니다. 이 설정을 키면 모바일 데이터를 사용할 때도 동기화됩니다. 이는 요금제에 따라서 매우 비쌀 수 있어 활성화 하실 때 조심히 하십시오.</string>
+  <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">SPV 알람</string>
   <string name="id_spv_reset_and_restarted">SPV가 초기화되고 재시작하였습니다.</string>
   <string name="id_spv_synchronization">SPV 동기화</string>
+  <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">쓸기</string>
   <string name="id_sweep_from_paper_wallet">종이 지갑에서 자산 쓸기</string>
   <string name="id_synchronize_spv_on_mobile">모바일 기기에서 SPV 연동하기</string>
@@ -339,6 +347,7 @@
   <string name="id_tor_connectivity_disabled">Tor 연결이 비활성화됐습니다!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor는 %1$s를(을) 사용하고 있고 프록시가 Orbot이거나 Tor이 활성화되어있어야 작동합니다.</string>
   <string name="id_total_assets">총자산</string>
+  <string name="id_total_balance">Total Balance</string>
   <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">터치하여 보기</string>
@@ -388,8 +397,10 @@
   <string name="id_wrong_choice_check_your">잘못된 선택입니다. Mnemonic을 확인하시고 다시 시도하시길 바랍니다.</string>
   <string name="id_year">연</string>
   <string name="id_years">연</string>
+  <string name="id_you_are_not_connected">You are not connected</string>
   <string name="id_you_are_not_connected_please">아직 연결 되지 않아 기다려 주십시오</string>
   <string name="id_you_are_not_connected_to_the">인터넷에 연결되어 있지 않습니다. 연결하고 다시 시도하십시오.</string>
+  <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">자산의 모든 권한을 가지고 계십니다. </string>
   <string name="id_you_have_full_control_of_your">자산의 모든 권한을 가지고 계십니다. </string>
   <string name="id_you_have_received_s">%s를 받았습니다</string>

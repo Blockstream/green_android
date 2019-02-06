@@ -47,6 +47,7 @@
   <string name="id_cant_connect_to_this_url">URLに接続できません。</string>
   <string name="id_change">CHANGE</string>
   <string name="id_choose">Choose</string>
+  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
   <string name="id_choose_twofactor_authentication">Choose Two-Factor authentication method</string>
   <string name="id_choose_your_network">Choose Your Network</string>
   <string name="id_clear">クリア</string>
@@ -138,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">Greenは利用者が直接デジタル資産を管理するウォレットです</string>
   <string name="id_green_logo">Greenロゴ</string>
   <string name="id_green_mnemonic_qr_code">Green MnemonicQRコード</string>
-  <string name="id_green_uses_touch_id_and_face_id">Green uses Touch ID and Face ID to allow easy access to the wallet</string>
+  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
   <string name="id_hash">ハッシュ</string>
   <string name="id_high">高い</string>
   <string name="id_hold_your_nfc_tag_close_to_the">デバイスにNFCタッグを近づけて下さい</string>
@@ -179,6 +180,7 @@
   <string name="id_log_out">ログアウト</string>
   <string name="id_logging_in">ログイン中です…</string>
   <string name="id_login_failed">ログイン失敗</string>
+  <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">番号ポジションはデバイスを確認して下さい</string>
   <string name="id_low">低</string>
   <string name="id_main">メイン</string>
@@ -197,8 +199,11 @@
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">ネットワーク設定</string>
   <string name="id_network_monitor">ネットワーク・モニター</string>
+  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">New %s transaction of %s in account %s.</string>
   <string name="id_new_transaction">新しいトランザクション</string>
+  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
   <string name="id_next">次</string>
   <string name="id_nfc_logo">NFCロゴ</string>
   <string name="id_nfc_tags_written">NFC TAG 入力:</string>
@@ -272,6 +277,7 @@
   <string name="id_reset_spv">SPVリセット</string>
   <string name="id_restore">修復</string>
   <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
+  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">アンドロイドの認証を再利用する</string>
   <string name="id_review">レビュー</string>
   <string name="id_s_blocks_left">残り %s ブロック</string>
@@ -316,9 +322,11 @@
   <string name="id_socks5_port">Socks5ポート</string>
   <string name="id_something_went_wrong">問題が生じました。</string>
   <string name="id_spv_is_always_synchronized_on">SPVはWiFiやEthernetを通じて常に同時性を保つようになっています。一方、モバイルデータを使用中にも同時性を保つよう設計されている為、ご利用中のデータプランによっては通信費が過剰に計算されることもある為注意して下さい。</string>
+  <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">SPV告知事項</string>
   <string name="id_spv_reset_and_restarted">SPV reset and restarted</string>
   <string name="id_spv_synchronization">SPV Synchronization</string>
+  <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">掃除する</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
   <string name="id_synchronize_spv_on_mobile">モバイルでSPVをシンクロする</string>
@@ -339,6 +347,7 @@
   <string name="id_tor_connectivity_disabled">Tor未接続</string>
   <string name="id_tor_will_use_1s_and_only_work">Torは%1$sのみ使用します。ProxyがOrbot又はTor利用可能である必要があります。</string>
   <string name="id_total_assets">Total Assets</string>
+  <string name="id_total_balance">Total Balance</string>
   <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">タッチID</string>
   <string name="id_touch_to_display">表示する</string>
@@ -388,8 +397,10 @@
   <string name="id_wrong_choice_check_your">Wrong choice. Check your mnemonic and try again.</string>
   <string name="id_year">年</string>
   <string name="id_years">年</string>
+  <string name="id_you_are_not_connected">You are not connected</string>
   <string name="id_you_are_not_connected_please">接続できません。しばらくお待ちください。</string>
   <string name="id_you_are_not_connected_to_the">インターネットに接続されていません。接続後お試しください。</string>
+  <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">You have control on your funds</string>
   <string name="id_you_have_full_control_of_your">資金は貴方によって完全に管理されます。</string>
   <string name="id_you_have_received_s">%s を受け取りました。</string>
