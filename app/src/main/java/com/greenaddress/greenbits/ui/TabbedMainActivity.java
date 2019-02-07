@@ -209,6 +209,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         mService.getModel().getEventDataObservable().addObserver(this);
         mService.getConnectionManager().addObserver(this);
 
+        showHideSnackBar(mService.getConnectionManager());
+
         final SectionsPagerAdapter adapter = getPagerAdapter();
 
         if (adapter == null && !mIsBitcoinUri) {
@@ -321,13 +323,17 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             updateBottomNavigationView();
         } else if (observable instanceof ConnectionManager) {
             final ConnectionManager obs = (ConnectionManager) observable;
-            if (obs.isOffline()) {
-                mSnackbar.show();
-            } else {
-                mSnackbar.dismiss();
-            }
+            showHideSnackBar(obs);
         } else {
             invalidateOptionsMenu();
+        }
+    }
+
+    private void showHideSnackBar(ConnectionManager obs) {
+        if (obs.isOffline()) {
+            mSnackbar.show();
+        } else {
+            mSnackbar.dismiss();
         }
     }
 
