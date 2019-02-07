@@ -79,13 +79,15 @@ public class GDKSession {
     public void reconnectNow() {
         final ReconnectHint hint = new ReconnectHint();
         hint.setHint("now");
-        GDK.reconnect_hint(mNativeSession, hint);
+        Log.d("reconnectNow",hint.toString());
+        //GDK.reconnect_hint(mNativeSession, hint);
     }
 
     public void reconnectDisable() {
         final ReconnectHint hint = new ReconnectHint();
         hint.setHint("disable");
-        GDK.reconnect_hint(mNativeSession, hint);
+        Log.d("reconnectDisable",hint.toString());
+        //GDK.reconnect_hint(mNativeSession, hint);
     }
 
     public void disconnect() {

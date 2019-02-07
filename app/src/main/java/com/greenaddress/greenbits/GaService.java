@@ -492,15 +492,13 @@ public class GaService extends Service  {
     }
 
     private void onNetConnectivityChanged() {
-        mSession.reconnectNow();
         final NetworkInfo info = getNetworkInfo();
+        Log.d(TAG, "onNetConnectivityChanged " + info);
         if (info == null) {
             // No network connection, go offline until notified that its back
-            Log.d(TAG,"reconnect disable");
             mSession.reconnectDisable();
         } else {
             mSession.reconnectNow();
-            Log.d(TAG,"reconnect now");
             mSPV.onNetConnectivityChangedAsync(info);
         }
     }

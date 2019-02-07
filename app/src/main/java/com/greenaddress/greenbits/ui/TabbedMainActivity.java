@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.transition.Slide;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,10 +22,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.libgreenaddress.GDK;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
@@ -31,6 +36,7 @@ import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
+import com.greenaddress.greenapi.model.ToastObservable;
 import com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.WatchOnlyPreferenceFragment;
@@ -60,6 +66,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     private Boolean mInternalQr = false;
     private MaterialDialog mSubaccountDialog;
     private boolean mIsBitcoinUri = false;
+    private Snackbar mSnackbar;
 
     static boolean isBitcoinScheme(final Intent intent) {
         final Uri uri = intent.getData();
@@ -80,7 +87,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             startActivityForResult(login, REQUEST_BITCOIN_URL_LOGIN);
             return;
         }
-
         launch();
         final boolean isResetActive = mService.getModel().isTwoFAReset();
         if (mIsBitcoinUri && !isResetActive) {
@@ -161,6 +167,12 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         setSupportActionBar(toolbar);
         setTitleWithNetwork(R.string.id_wallets);
 
+        mSnackbar = Snackbar.make(findViewById(R.id.placeSnackBar), R.string.id_you_are_not_connected, Snackbar.LENGTH_INDEFINITE);
+        View snackbarView = mSnackbar.getView();
+        TextView textView = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.RED);
+        mSnackbar.setAction(R.string.id_retry, v -> mService.getSession().reconnectNow());
+
         // Set up the action bar.
         final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -195,6 +207,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
         mService.getModel().getActiveAccountObservable().addObserver(this);
         mService.getModel().getEventDataObservable().addObserver(this);
+        mService.getConnectionManager().addObserver(this);
 
         final SectionsPagerAdapter adapter = getPagerAdapter();
 
@@ -306,6 +319,13 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             onUpdateActiveAccount();
         else if (observable instanceof EventDataObservable) {
             updateBottomNavigationView();
+        } else if (observable instanceof ConnectionManager) {
+            final ConnectionManager obs = (ConnectionManager) observable;
+            if (obs.isOffline()) {
+                mSnackbar.show();
+            } else {
+                mSnackbar.dismiss();
+            }
         } else {
             invalidateOptionsMenu();
         }

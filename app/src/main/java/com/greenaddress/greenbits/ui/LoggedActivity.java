@@ -39,7 +39,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             //kickMeOutIfNotLogged();
         } else if (observable instanceof ToastObservable) {
             final ToastObservable t = (ToastObservable)observable;
-            UI.toast(this, t.getMessage(getResources()), Toast.LENGTH_LONG);
+            // UI.toast(this, t.getMessage(getResources()), Toast.LENGTH_LONG);
         }
     }
 

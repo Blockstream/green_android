@@ -66,17 +66,12 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     final boolean loginRequired = networkNode.get("login_required").asBoolean(false);
                     if (loginRequired) {
                         mService.getConnectionManager().disconnect();
-                    } else {
-                        if (mService.getConnectionManager().isOffline()) {
-                            mModel.getToastObservable().setMessage(R.string.id_you_are_connected);
-                            mService.getConnectionManager().goPostLogin();
-                        }
                     }
+                    mModel.getToastObservable().setMessage(R.string.id_you_are_connected);
+                    mService.getConnectionManager().goPostLogin();
                 } else {
-                    if (!mService.getConnectionManager().isOffline()) {
-                        mModel.getToastObservable().setMessage(R.string.id_you_are_not_connected_please);
-                        mService.getConnectionManager().goOffline();
-                    }
+                    mModel.getToastObservable().setMessage(R.string.id_you_are_not_connected);
+                    mService.getConnectionManager().goOffline();
                 }
 
                 break;
