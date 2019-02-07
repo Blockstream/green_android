@@ -21,6 +21,7 @@ import com.greenaddress.greenapi.data.JSONData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PagedData;
 import com.greenaddress.greenapi.data.PinData;
+import com.greenaddress.greenapi.data.ReconnectHint;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
@@ -73,6 +74,18 @@ public class GDKSession {
         GDK.connect_with_proxy(mNativeSession, network, proxyAsString,
                                useTor ? GDK.GA_TRUE : GDK.GA_FALSE,
                                debug ? GDK.GA_TRUE : GDK.GA_FALSE);
+    }
+
+    public void reconnectNow() {
+        final ReconnectHint hint = new ReconnectHint();
+        hint.setHint("now");
+        GDK.reconnect_hint(mNativeSession, hint);
+    }
+
+    public void reconnectDisable() {
+        final ReconnectHint hint = new ReconnectHint();
+        hint.setHint("disable");
+        GDK.reconnect_hint(mNativeSession, hint);
     }
 
     public void disconnect() {
