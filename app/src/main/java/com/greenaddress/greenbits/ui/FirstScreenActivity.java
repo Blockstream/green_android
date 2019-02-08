@@ -1,17 +1,15 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 public class FirstScreenActivity extends LoginActivity implements NetworkSettingsFragment.Listener {
     private Button mSelectNetwork;
@@ -32,6 +30,11 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
         firstSignUpButton.setOnClickListener(v -> askConfirmation(
                 new Intent(this, TermsActivity.class),
                 R.string.id_there_is_already_a_pin_set_for));
+
+        // fix for SVG visualization issues on API 23
+        final Drawable show = AppCompatResources.getDrawable(this, R.drawable.ic_logo_big);
+        final ImageView logo = findViewById(R.id.firstLogo);
+        logo.setImageDrawable(show);
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> openNetworkSettings());
