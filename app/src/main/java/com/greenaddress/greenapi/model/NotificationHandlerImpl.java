@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SettingsData;
@@ -18,6 +19,7 @@ import com.greenaddress.greenbits.ui.R;
 
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
@@ -93,9 +95,13 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 //{"event":"transaction","transaction":{"satoshi":7895722,"subaccounts":[0],"txhash":"eab1e3aaa357a78f83c7a7d009fe8d2c8acbe9e1c5071398694bbeed7f812f2f","type":"incoming"}}
                 final JsonNode transaction = objectNode.get("transaction");
                 final ArrayNode arrayNode = (ArrayNode) transaction.get("subaccounts");
+                final List<Integer> subaccounts = mObjectMapper.readValue(
+                        arrayNode.toString(), new TypeReference<List<Integer>>(){});
                 if ("incoming".equals(transaction.get("type").asText())) {
                     mModel.getToastObservable().setMessage(R.string.id_a_new_transaction_has_just);
                 }
+
+                boolean eventPushed = false;
                 for (JsonNode jsonNode : arrayNode) {
                     final int subaccount = jsonNode.asInt();
                     Log.d("OBSNTF", "subaccount involved " + subaccount);
@@ -104,11 +110,24 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     mModel.getTransactionDataObservable(subaccount).refresh();
                     final TransactionData transactionData = mObjectMapper.convertValue(transaction,
                                                                                        TransactionData.class);
+
                     transactionData.setSubaccount(subaccount);
+                    transactionData.setSubaccounts(subaccounts);
                     Log.d("OBSNTF", "transactionData " + transactionData);
-                    mModel.getEventDataObservable().pushEvent(new EventData(R.string.id_new_transaction,
-                                                                            R.string.id_new_s_transaction_of_s_in,
-                                                                            transactionData));
+                    final int description;
+                    if (subaccounts.size() > 1) {
+                        description = R.string.id_new_transaction_involving;
+                    } else if ("incoming".equals(transaction.get("type").asText())) {
+                        description = R.string.id_new_incoming_transaction_in;
+                    } else {
+                        description = R.string.id_new_outgoing_transaction_from;
+                    }
+
+                    if (!eventPushed) {
+                        mModel.getEventDataObservable().pushEvent(new EventData(
+                                R.string.id_new_transaction, description, transactionData));
+                    }
+                    eventPushed = true;
                 }
                 break;
             }

@@ -22,6 +22,7 @@ public class TransactionData extends JSONData {
     private Long feeRate;
     private String memo;
     private Integer subaccount;
+    private List<Integer> subaccounts;
     private String txhash;
     private Long satoshi;
     private String type;
@@ -273,6 +274,14 @@ public class TransactionData extends JSONData {
 
     public void setSubaccount(final Integer subaccount) {
         this.subaccount = subaccount;
+    }
+
+    public List<Integer> getSubaccounts() {
+        return this.subaccounts;
+    }
+
+    public void setSubaccounts(final List<Integer> subaccounts) {
+        this.subaccounts = subaccounts;
     }
 
     public String getTxhash() {

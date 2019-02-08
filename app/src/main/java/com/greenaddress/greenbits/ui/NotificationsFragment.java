@@ -116,14 +116,26 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
     private String getDescription(final EventData event) {
         final int d = event.getDescription();
 
-        if (d == R.string.id_new_s_transaction_of_s_in) {
+        if (d == R.string.id_new_incoming_transaction_in ||
+            d == R.string.id_new_outgoing_transaction_from) {
             TransactionData tx = (TransactionData) event.getValue();
             final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
                 tx.getSubaccount()).getNameWithDefault(getString(R.string.id_main));
-            final String inout = tx.getType();
             final long satoshi = tx.getSatoshi();
             final String amount = mService.getValueString(mService.getSession().convertSatoshi(satoshi), false, true);
-            final Object[] formatArgs = {inout, amount, accountName};
+            final Object[] formatArgs = {accountName, amount};
+            return getString(d, formatArgs);
+        }
+        if (d == R.string.id_new_transaction_involving) {
+            TransactionData tx = (TransactionData) event.getValue();
+            StringBuffer subaccounts = new StringBuffer();
+            for (final Integer subaccount : tx.getSubaccounts()) {
+                final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
+                    subaccount).getNameWithDefault(getString(R.string.id_main));
+                if (subaccounts.length() != 0) { subaccounts.append(", "); }
+                subaccounts.append(accountName);
+            }
+            final Object[] formatArgs = {subaccounts.toString()};
             return getString(d, formatArgs);
         }
         if (d == R.string.notification_format_string ||
