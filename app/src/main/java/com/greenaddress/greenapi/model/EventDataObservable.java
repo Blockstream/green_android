@@ -22,14 +22,6 @@ public class EventDataObservable extends Observable implements Observer {
         return !mEventDataList.isEmpty();
     }
 
-    public boolean contains(final int title) {
-        for (final EventData e: mEventDataList) {
-            if (e.getTitle() == title)
-                return true;
-        }
-        return false;
-    }
-
     private EventDataObservable() {}
 
     public EventDataObservable(final GDKSession session) {
