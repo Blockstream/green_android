@@ -34,7 +34,6 @@ import org.bitcoinj.core.AddressFormatException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -80,14 +79,14 @@ public class GDKSession {
         final ReconnectHint hint = new ReconnectHint();
         hint.setHint("now");
         Log.d("reconnectNow",hint.toString());
-        //GDK.reconnect_hint(mNativeSession, hint);
+        GDK.reconnect_hint(mNativeSession, hint);
     }
 
     public void reconnectDisable() {
         final ReconnectHint hint = new ReconnectHint();
         hint.setHint("disable");
         Log.d("reconnectDisable",hint.toString());
-        //GDK.reconnect_hint(mNativeSession, hint);
+        GDK.reconnect_hint(mNativeSession, hint);
     }
 
     public void disconnect() {
