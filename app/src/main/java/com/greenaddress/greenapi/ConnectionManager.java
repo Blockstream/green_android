@@ -18,7 +18,7 @@ public class ConnectionManager extends Observable {
 
 
     private enum ConnState {
-        OFFLINE(0), DISCONNECTING(1), DISCONNECTED(2), CONNECTING(3), CONNECTED(4), LOGGINGIN(5), LOGGEDIN(6), POSTLOGGEDIN(7);
+        OFFLINE(0), DISCONNECTING(1), DISCONNECTED(2), CONNECTING(3), CONNECTED(4), LOGGINGIN(5), LOGGEDIN(6), POSTLOGGEDIN(7), LOGINREQUIRED(8);
 
         private final int value;
 
@@ -121,6 +121,15 @@ public class ConnectionManager extends Observable {
         }
     }
 
+    public void goLoginRequired() {
+        setState(ConnState.LOGINREQUIRED);
+    }
+
+    public boolean isLoginRequired() {
+        return mState == ConnState.LOGINREQUIRED;
+    }
+
+
     public int getLastLoginCode() {
         return mLastLoginCode;
     }
@@ -172,7 +181,6 @@ public class ConnectionManager extends Observable {
     public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver) {
 
         try {
-            connect();
             setState(ConnState.LOGGINGIN);
             this.mHWDevice = hwDevice;
             this.mHWResolver = hwResolver;

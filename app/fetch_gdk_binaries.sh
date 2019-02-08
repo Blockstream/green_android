@@ -29,7 +29,6 @@ rm -rf gdk-android-jni* ${APP_ROOT}/src/main/jniLibs ${GDK_JAVA_DIR}
 
 # Fetch, validate and decompress gdk
 curl -sL -o ${TARBALL} "${URL}"
-echo "${SHA256}  ${TARBALL}"
 echo "${SHA256}  ${TARBALL}" | shasum -a 256 --check
 tar xvf ${TARBALL}
 rm ${TARBALL}
