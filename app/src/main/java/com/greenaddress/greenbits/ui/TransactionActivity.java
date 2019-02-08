@@ -196,8 +196,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             UI.hide(receivedOnTitle);
         }
 
-        final int subaccount = mService.getModel().getCurrentSubaccount();
-        final String name = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subaccount).getNameWithDefault(getString(R.string.id_main));
+        final String name = mService.getModel().getSubaccountDataObservable().
+                getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.id_main));
         receivedOnText.setText(name);
 
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));
@@ -335,8 +335,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             hideKeyboardFrom(mMemoEditText);
         });
         // Force reload tx
-        final int subaccount = mService.getModel().getCurrentSubaccount();
-        mService.getModel().getTransactionDataObservable(subaccount).refresh();
+        mService.getModel().getTransactionDataObservable(mTxItem.subaccount).refresh();
     }
 
     private void onMemoSaveButtonClicked() {
