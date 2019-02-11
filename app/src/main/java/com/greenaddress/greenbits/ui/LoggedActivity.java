@@ -18,7 +18,10 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         super.onResumeWithService();
         if (mService == null)
             return;
-        //kickMeOutIfNotLogged();
+        if (mService.isDisconnected()) {
+            toFirstOrPinScreen();
+            return;
+        }
         mService.getConnectionManager().addObserver(this);
         mService.getModel().getToastObservable().addObserver(this);
     }
@@ -39,16 +42,6 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             if (cm.isLoginRequired()) {
                 cm.login(this, cm.getHWDeviceData(), cm.getHWResolver());
             }
-        } else if (observable instanceof ToastObservable) {
-            final ToastObservable t = (ToastObservable)observable;
-            // UI.toast(this, t.getMessage(getResources()), Toast.LENGTH_LONG);
-        }
-    }
-
-    private void kickMeOutIfNotLogged() {
-        if (!mService.getConnectionManager().isPostLogin()) {
-            Log.i("LoggedActivity","not logged any more kicking out");
-            toFirstOrPinScreen();
         }
     }
 
@@ -75,6 +68,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             toScreen(new Intent(this, PinActivity.class));
         else
             toScreen(new Intent(this, FirstScreenActivity.class));
+        finishOnUiThread();
     }
 
 }

@@ -91,7 +91,7 @@ public class ConnectionManager extends Observable {
         return mState.value <= ConnState.DISCONNECTED.value;
     }
 
-    private boolean isDisconnected() {
+    public boolean isDisconnected() {
         return mState == ConnState.DISCONNECTED;
     }
 

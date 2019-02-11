@@ -194,6 +194,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
+        if(isDisconnected()) {
+           return;
+        }
 
         // Setup balance
         final GaService service = getGAService();

@@ -74,7 +74,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (getGAService() != null) {
+        if (!isDisconnected()) {
             setupObservers();
             attachObservers();
             onUpdateActiveSubaccount(getGAService().getModel().getActiveAccountObservable());

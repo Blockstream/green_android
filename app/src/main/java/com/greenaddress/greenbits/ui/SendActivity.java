@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,11 +21,9 @@ public class SendActivity extends LoggedActivity implements SendInputFragment.On
         setTitleBackTransparent();
 
         // Get parameters from Intent
-        final boolean internalQr;
         try {
             final Intent intent = getIntent();
             final String tx = intent.getStringExtra(INTENT_STRING_TX);
-            internalQr = intent.getBooleanExtra("internal_qr", false);
 
             // Show input fragment
             Bundle bundle = new Bundle();
@@ -42,8 +41,6 @@ public class SendActivity extends LoggedActivity implements SendInputFragment.On
             e.printStackTrace();
             return;
         }
-
-
     }
 
     @Override

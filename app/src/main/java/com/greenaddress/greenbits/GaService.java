@@ -121,6 +121,10 @@ public class GaService extends Service  {
         return false;
     }
 
+    public boolean isDisconnected() {
+        return mConnectionManager.isDisconnected();
+    }
+
     class GaBinder extends Binder {
         GaService getService() { return GaService.this; }
     }

@@ -170,6 +170,11 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     @Override
     protected void onResume() {
         super.onResume();
+        final GaService service = ((GreenAddressApplication) getApplication()).mService;
+        if (service==null || service.isDisconnected()) {
+            finish();
+            return;
+        }
         mAddressEditText.addTextChangedListener(this);
         UI.find(this, R.id.nextButton).setOnClickListener(this);
         maybeOpenCamera();

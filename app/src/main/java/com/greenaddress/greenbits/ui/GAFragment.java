@@ -16,6 +16,10 @@ abstract class GAFragment extends Fragment {
         mApp = (GreenAddressApplication) getActivity().getApplication();
     }
 
+    protected boolean isDisconnected() {
+        return getGAService() != null && getGAService().isDisconnected();
+    }
+
     protected GaActivity getGaActivity() {
         return (GaActivity) getActivity();
     }

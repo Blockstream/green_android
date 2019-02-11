@@ -50,6 +50,9 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
+        if (mService.isDisconnected()) {
+            return;
+        }
         initTotalAmount();
         final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
         for (int i = 0 ; i < balanceObservables.size(); i++) {

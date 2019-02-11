@@ -100,13 +100,15 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        justClicked = false;
-        mTxItems.clear();
-        mTransactionsAdapter.notifyDataSetChanged();
-        UI.find(mView, R.id.loadingList).setVisibility(View.VISIBLE);
-        onUpdateBalance(mBalanceDataObservable);
-        onUpdateReceiveAddress(mReceiveAddressObservable);
-        onUpdateTransactions(mTransactionDataObservable);
+        if (!isDisconnected()) {
+            justClicked = false;
+            mTxItems.clear();
+            mTransactionsAdapter.notifyDataSetChanged();
+            UI.find(mView, R.id.loadingList).setVisibility(View.VISIBLE);
+            onUpdateBalance(mBalanceDataObservable);
+            onUpdateReceiveAddress(mReceiveAddressObservable);
+            onUpdateTransactions(mTransactionDataObservable);
+        }
     }
 
     @Override

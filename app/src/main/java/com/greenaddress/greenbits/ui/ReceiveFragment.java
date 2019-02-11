@@ -61,10 +61,11 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         Log.d(TAG, "onResume -> " + TAG);
         if (mCurrency != null)
             mCurrency.setIsPausing(false);
-
-        final int subaccount = getGAService().getModel().getCurrentSubaccount();
-        onUpdateReceiveAddress(getGAService().getModel().getReceiveAddressObservable(subaccount));
-        onUpdateTransactions(getGAService().getModel().getTransactionDataObservable(subaccount));
+        if (!isDisconnected()) {
+            final int subaccount = getGAService().getModel().getCurrentSubaccount();
+            onUpdateReceiveAddress(getGAService().getModel().getReceiveAddressObservable(subaccount));
+            onUpdateTransactions(getGAService().getModel().getTransactionDataObservable(subaccount));
+        }
     }
 
     @Override
