@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v14.preference.SwitchPreference;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
@@ -111,6 +112,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         // Network & Logout
         final Preference logout = find(PrefKeys.LOGOUT);
         logout.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName()));
+        logout.setSummary(UI.getColoredString(
+                getString(R.string.id_log_out), ContextCompat.getColor(getContext(), R.color.red)));
         logout.setOnPreferenceClickListener(preference -> {
             if(mService.warnIfOffline(getActivity())) {
                 return false;

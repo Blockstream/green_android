@@ -17,13 +17,8 @@
 
     <Preference
         android:key="logout"
-        android:layout="@layout/view_logout"
         android:title=""
-        android:summary="@string/id_log_out"/>
-
-    <Preference
-        android:layout="@layout/view_space"
-        />
+        android:summary=""/>
 
     <PreferenceCategory android:title="@string/id_account"
         android:icon="@drawable/ic_account"

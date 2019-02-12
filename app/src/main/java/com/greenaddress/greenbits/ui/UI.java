@@ -11,7 +11,10 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -440,6 +443,12 @@ public abstract class UI {
         DecimalFormat df = (DecimalFormat)nf;
         df.applyPattern(".##");
         return df.format(feePerByte) + " satoshi / vbyte";
+    }
+
+    public static final Spannable getColoredString(final String string, final int color) {
+        Spannable sp = new SpannableString(string);
+        sp.setSpan(new ForegroundColorSpan(color), 0, sp.length(), 0);
+        return sp;
     }
 
     private static final int SCALE = 4;
