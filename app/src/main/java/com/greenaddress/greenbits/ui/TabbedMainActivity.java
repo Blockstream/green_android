@@ -35,6 +35,7 @@ import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
+import com.greenaddress.greenapi.model.ConnectionMessageObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenapi.model.ToastObservable;
 import com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment;
@@ -171,7 +172,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         View snackbarView = mSnackbar.getView();
         TextView textView = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.RED);
-        mSnackbar.setAction(R.string.id_retry, v -> mService.getSession().reconnectNow());
+        mSnackbar.setAction(R.string.id_try_now, v -> mService.getSession().reconnectNow());
 
         // Set up the action bar.
         final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -207,9 +208,10 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
         mService.getModel().getActiveAccountObservable().addObserver(this);
         mService.getModel().getEventDataObservable().addObserver(this);
+        mService.getModel().getConnMsgObservable().addObserver(this);
         mService.getConnectionManager().addObserver(this);
 
-        showHideSnackBar(mService.getConnectionManager());
+        updateSnackBar(mService.getModel().getConnMsgObservable());
 
         final SectionsPagerAdapter adapter = getPagerAdapter();
 
@@ -321,16 +323,18 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             onUpdateActiveAccount();
         else if (observable instanceof EventDataObservable) {
             updateBottomNavigationView();
-        } else if (observable instanceof ConnectionManager) {
-            final ConnectionManager obs = (ConnectionManager) observable;
-            showHideSnackBar(obs);
+        } else if (observable instanceof ConnectionMessageObservable) {
+            final ConnectionMessageObservable obs = (ConnectionMessageObservable) observable;
+            updateSnackBar(obs);
         } else {
             invalidateOptionsMenu();
         }
     }
 
-    private void showHideSnackBar(ConnectionManager obs) {
-        if (obs.isOffline()) {
+    private void updateSnackBar(final ConnectionMessageObservable cmo) {
+        if (cmo.isOffline()) {
+            TextView text = mSnackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+            runOnUiThread(() -> text.setText(cmo.getMessage(getResources())));
             mSnackbar.show();
         } else {
             mSnackbar.dismiss();

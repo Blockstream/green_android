@@ -21,7 +21,7 @@ public class ToastObservable extends Observable {
     }
 
     public void setMessage(final int messageId, final Object[] args) {
-        Log.d("OBS", "setMessage(" +  messageId + "," + args + ")");
+        Log.d("OBS", "ToastObservable.setMessage(" +  messageId + "," + args + ")");
         this.messageId = messageId;
         this.args = args;
         setChanged();

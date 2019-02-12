@@ -20,6 +20,7 @@ public class Model {
     private SettingsObservable mSettingsObservable = new SettingsObservable();
     private BlockchainHeightObservable mBlockchainHeightObservable = new BlockchainHeightObservable();
     private ToastObservable mToastObservable = new ToastObservable();
+    private ConnectionMessageObservable mConnMsgObservable = new ConnectionMessageObservable();
 
     private FeeObservable mFeeObservable;
     private AvailableCurrenciesObservable mAvailableCurrenciesObservable;
@@ -74,6 +75,10 @@ public class Model {
 
     public ToastObservable getToastObservable() {
         return mToastObservable;
+    }
+
+    public ConnectionMessageObservable getConnMsgObservable() {
+        return mConnMsgObservable;
     }
 
     public FeeObservable getFeeObservable() {

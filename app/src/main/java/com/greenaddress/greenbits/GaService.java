@@ -149,6 +149,10 @@ public class GaService extends Service  {
         return mExecutor;
     }
 
+    public ScheduledThreadPoolExecutor getTimerExecutor() {
+        return mTimerExecutor;
+    }
+
     public Model getModel() {
         return mModel;
     }
