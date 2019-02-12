@@ -216,6 +216,7 @@
   <string name="id_no_recipients">No recipients</string>
   <string name="id_no_utxos_found">No UTXOs found</string>
   <string name="id_normal">Normal</string>
+  <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
   <string name="id_notifications">Notifications</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">One attempt remaining</string>
@@ -277,7 +278,6 @@
   <string name="id_reset_spv">Reset SPV</string>
   <string name="id_restore">Restore</string>
   <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
-  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Reuse Android\'s authentication</string>
   <string name="id_review">Review</string>
   <string name="id_s_blocks_left">%s blocks left</string>
@@ -308,6 +308,7 @@
   <string name="id_setting_updated">Setting updated</string>
   <string name="id_settings">Settings</string>
   <string name="id_setup_pin">Setup PIN</string>
+  <string name="id_setup_pin_and_s">Setup PIN and %s</string>
   <string name="id_share">Share</string>
   <string name="id_share_address">Share Address</string>
   <string name="id_show_fiat">Show fiat</string>
@@ -357,6 +358,7 @@
   <string name="id_transaction_details">Transaction details</string>
   <string name="id_transaction_id">Transaction ID</string>
   <string name="id_transaction_sent">Transaction Sent</string>
+  <string name="id_try_now">Try now</string>
   <string name="id_two_factor_authentication">TWO FACTOR AUTHENTICATION</string>
   <string name="id_twofactor">TWO-FACTOR</string>
   <string name="id_twofactor_authentication">Two-Factor authentication</string>

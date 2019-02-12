@@ -216,6 +216,7 @@
   <string name="id_no_recipients">No recipients</string>
   <string name="id_no_utxos_found">Geen UTXO\'s gevonden</string>
   <string name="id_normal">Normaal</string>
+  <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
   <string name="id_notifications">Notificaties</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Nog één poging te gaan</string>
@@ -277,7 +278,6 @@
   <string name="id_reset_spv">SPV resetten</string>
   <string name="id_restore">Herstellen</string>
   <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
-  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Gebruik de authenticatie van Android</string>
   <string name="id_review">Overzicht</string>
   <string name="id_s_blocks_left">%1$s blocks te gaan %2$d</string>
@@ -308,6 +308,7 @@
   <string name="id_setting_updated">Setting updated</string>
   <string name="id_settings">Instellingen</string>
   <string name="id_setup_pin">Setup PIN</string>
+  <string name="id_setup_pin_and_s">Setup PIN and %s</string>
   <string name="id_share">Delen</string>
   <string name="id_share_address">Adres delen</string>
   <string name="id_show_fiat">Fiat tonen</string>
@@ -357,6 +358,7 @@
   <string name="id_transaction_details">Details transactie</string>
   <string name="id_transaction_id">Transaction ID</string>
   <string name="id_transaction_sent">Transactie verzonden</string>
+  <string name="id_try_now">Try now</string>
   <string name="id_two_factor_authentication">TWO FACTOR AUTHENTICATION</string>
   <string name="id_twofactor">TWO-FACTOR</string>
   <string name="id_twofactor_authentication">Two-Factor authentication</string>

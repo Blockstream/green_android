@@ -216,7 +216,7 @@
   <string name="id_no_recipients">No recipients</string>
   <string name="id_no_utxos_found">No UTXOs found</string>
   <string name="id_normal">Normal</string>
-  <string name="id_not_connected_connecting_in_ss_">Not connected. Connecting in %ss …</string>
+  <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
   <string name="id_notifications">Notifications</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">One attempt remaining</string>

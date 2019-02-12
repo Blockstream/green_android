@@ -216,6 +216,7 @@
   <string name="id_no_recipients">Отримувачі відсутні</string>
   <string name="id_no_utxos_found">UTXO не знайдено</string>
   <string name="id_normal">Нормальний</string>
+  <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
   <string name="id_notifications">Повідомлення</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Залишилась одна спроба</string>
@@ -277,7 +278,6 @@
   <string name="id_reset_spv">Скинути SPV</string>
   <string name="id_restore">Відновити</string>
   <string name="id_restore_existing_wallet">Відновити існуючий гаманець</string>
-  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Використання аутентифікації Android</string>
   <string name="id_review">Огляд</string>
   <string name="id_s_blocks_left">%s блоків залишилось</string>
@@ -308,6 +308,7 @@
   <string name="id_setting_updated">Налаштування оновлені</string>
   <string name="id_settings">Налаштування</string>
   <string name="id_setup_pin">Встановити PIN-код</string>
+  <string name="id_setup_pin_and_s">Setup PIN and %s</string>
   <string name="id_share">Поділитися</string>
   <string name="id_share_address">Поділитися адресою</string>
   <string name="id_show_fiat">Показати фіат</string>
@@ -357,6 +358,7 @@
   <string name="id_transaction_details">Деталі транзакції</string>
   <string name="id_transaction_id">ID транзакції</string>
   <string name="id_transaction_sent">Транзакція надіслана</string>
+  <string name="id_try_now">Try now</string>
   <string name="id_two_factor_authentication">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>
   <string name="id_twofactor">ДВОФАКТОРНИЙ</string>
   <string name="id_twofactor_authentication">Двофакторна аутентифікація</string>

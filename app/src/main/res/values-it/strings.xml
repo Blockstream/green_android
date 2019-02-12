@@ -47,7 +47,7 @@
   <string name="id_cant_connect_to_this_url">Impossibile connettersi a questo URL</string>
   <string name="id_change">RESTO</string>
   <string name="id_choose">Scegli</string>
-  <string name="id_choose_method_to_authorize_the">Choose method to authorize the action</string>
+  <string name="id_choose_method_to_authorize_the">Selezione un metodo per autorizzare l\'azione</string>
   <string name="id_choose_twofactor_authentication">Scegli metodo di Autenticazione</string>
   <string name="id_choose_your_network">Scegli la rete</string>
   <string name="id_clear">CANCELLA</string>
@@ -139,7 +139,7 @@
   <string name="id_green_is_a_noncustodial_wallet">Green non è in custodia del tuo wallet</string>
   <string name="id_green_logo">Green Logo</string>
   <string name="id_green_mnemonic_qr_code">QR Code della Mnemonica Green</string>
-  <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
+  <string name="id_green_uses_biometric">Green usa l\'autenticazione biometrica per garantire un facile accesso al wallet</string>
   <string name="id_hash">Hash</string>
   <string name="id_high">Alta</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Tieni il tag NFC vicino al dispositivo</string>
@@ -180,7 +180,7 @@
   <string name="id_log_out">Esci</string>
   <string name="id_logging_in">Accesso in corso…</string>
   <string name="id_login_failed">Accesso Fallito</string>
-  <string name="id_login_options">Login options</string>
+  <string name="id_login_options">Opzioni Login</string>
   <string name="id_look_at_the_device_for_the">Guarda la disposizione dei numeri sul dispositivo</string>
   <string name="id_low">Bassa</string>
   <string name="id_main">Principale</string>
@@ -199,11 +199,11 @@
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">Configurazione Network</string>
   <string name="id_network_monitor">Network Monitor</string>
-  <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
-  <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
+  <string name="id_new_incoming_transaction_in">Nuova transazione in uscita dall\' account %s (%s).</string>
+  <string name="id_new_outgoing_transaction_from">Nuova transazione in ingresso nell\' account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">Nuova transazione %s  di %s nell\'account %s.</string>
   <string name="id_new_transaction">Nuova transazione</string>
-  <string name="id_new_transaction_involving">New transaction involving accounts %s.</string>
+  <string name="id_new_transaction_involving">Nuova transazione che coinvolge gli account %s.</string>
   <string name="id_next">Avanti</string>
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">NFC TAGs Written:</string>
@@ -216,6 +216,7 @@
   <string name="id_no_recipients">Nessun destinatario</string>
   <string name="id_no_utxos_found">Nessun UTXO trovato</string>
   <string name="id_normal">Normale</string>
+  <string name="id_not_connected_connecting_in_ds_">Non connesso. Connessione in %ds …</string>
   <string name="id_notifications">Notifiche</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Un tentativo rimasto</string>
@@ -277,7 +278,6 @@
   <string name="id_reset_spv">Riavvia SPV</string>
   <string name="id_restore">Ripristina</string>
   <string name="id_restore_existing_wallet">Ripristina un Wallet Esistente</string>
-  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">Usa l\'autenticazione Android</string>
   <string name="id_review">Controlla</string>
   <string name="id_s_blocks_left">%s blocchi rimanenti</string>
@@ -308,6 +308,7 @@
   <string name="id_setting_updated">Impostazione aggiornata</string>
   <string name="id_settings">Impostazioni</string>
   <string name="id_setup_pin">Imposta PIN</string>
+  <string name="id_setup_pin_and_s">Imposta PIN e %s</string>
   <string name="id_share">Condividi</string>
   <string name="id_share_address">Condividi Indirizzo</string>
   <string name="id_show_fiat">Mostra valuta corrente</string>
@@ -322,11 +323,11 @@
   <string name="id_socks5_port">Socks5 Port</string>
   <string name="id_something_went_wrong">Qualcosa è andato storto</string>
   <string name="id_spv_is_always_synchronized_on">SPV è sempre sincronizzato su network fissi come WiFI o Ethernet. Questa impostazione sincronizza anche su network Mobile. Può essere costoso dipendendo dal tuo piano tariffario. Attenzione ad abilitarlo.</string>
-  <string name="id_spv_not_fully_synced">SPV not fully synced</string>
+  <string name="id_spv_not_fully_synced">Sincronizzazione SPV non completa</string>
   <string name="id_spv_notifications">Notifiche SPV</string>
   <string name="id_spv_reset_and_restarted">SPV riavviato</string>
   <string name="id_spv_synchronization">Sincronizzazione SPV</string>
-  <string name="id_spv_unverified">SPV unverified</string>
+  <string name="id_spv_unverified">Non verificata da SPV</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Trasferisci Tutto da un Paper Wallet</string>
   <string name="id_synchronize_spv_on_mobile">Abilita Sincronizzazione SPV mobile</string>
@@ -347,7 +348,7 @@
   <string name="id_tor_connectivity_disabled">Connessione Tor Disabilitata!</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor userà %1$s e funzionerà solo se hai una proxy Orbot o Tor abilitata.</string>
   <string name="id_total_assets">Totale disponibile</string>
-  <string name="id_total_balance">Total Balance</string>
+  <string name="id_total_balance">Bilancio Totale</string>
   <string name="id_total_with_fee">Totale incluse commissioni</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Tocca per mostrare</string>
@@ -357,6 +358,7 @@
   <string name="id_transaction_details">Dettagli transazione</string>
   <string name="id_transaction_id">ID Transazione</string>
   <string name="id_transaction_sent">Transazione Inviata</string>
+  <string name="id_try_now">Prova ora</string>
   <string name="id_two_factor_authentication">AUTENTICAZIONE A DUE FATTORI</string>
   <string name="id_twofactor">AUTENTICAZIONE A DUE FATTORI</string>
   <string name="id_twofactor_authentication">Autenticazione a Due Fattori</string>
@@ -397,10 +399,10 @@
   <string name="id_wrong_choice_check_your">Scelta errata. Controlla la tua mnemonica e riprova.</string>
   <string name="id_year">anno</string>
   <string name="id_years">anni</string>
-  <string name="id_you_are_not_connected">You are not connected</string>
+  <string name="id_you_are_not_connected">Non sei connesso</string>
   <string name="id_you_are_not_connected_please">Non sei connesso, attendi</string>
   <string name="id_you_are_not_connected_to_the">Non sei connesso a internet. Connettiti e ritenta.</string>
-  <string name="id_you_are_now_connected">You are now connected</string>
+  <string name="id_you_are_now_connected">Ora sei connesso</string>
   <string name="id_you_have_control_on_your_funds">Hai tu il controllo dei tuoi fondi.</string>
   <string name="id_you_have_full_control_of_your">Hai pieno controllo dei tuoi fondi.</string>
   <string name="id_you_have_received_s">Hai ricevuto %s</string>

@@ -216,6 +216,7 @@
   <string name="id_no_recipients">No recipients</string>
   <string name="id_no_utxos_found">未找到UTXO</string>
   <string name="id_normal">正常</string>
+  <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
   <string name="id_notifications">通知</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">还可再试一次</string>
@@ -277,7 +278,6 @@
   <string name="id_reset_spv">重置SPV</string>
   <string name="id_restore">恢复</string>
   <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
-  <string name="id_retry">Retry</string>
   <string name="id_reuse_androids_authentication">再次使用安卓的验证</string>
   <string name="id_review">审查</string>
   <string name="id_s_blocks_left">剩余%s个区块</string>
@@ -308,6 +308,7 @@
   <string name="id_setting_updated">Setting updated</string>
   <string name="id_settings">设置</string>
   <string name="id_setup_pin">Setup PIN</string>
+  <string name="id_setup_pin_and_s">Setup PIN and %s</string>
   <string name="id_share">分享</string>
   <string name="id_share_address">分享地址</string>
   <string name="id_show_fiat">显示法币</string>
@@ -357,6 +358,7 @@
   <string name="id_transaction_details">交易细节</string>
   <string name="id_transaction_id">Transaction ID</string>
   <string name="id_transaction_sent">交易已发送</string>
+  <string name="id_try_now">Try now</string>
   <string name="id_two_factor_authentication">TWO FACTOR AUTHENTICATION</string>
   <string name="id_twofactor">TWO-FACTOR</string>
   <string name="id_twofactor_authentication">Two-Factor authentication</string>
