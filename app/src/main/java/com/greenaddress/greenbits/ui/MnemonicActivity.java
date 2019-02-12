@@ -37,8 +37,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
 
-import de.schildbach.wallet.ui.ScanActivity;
-
 import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 
 public class MnemonicActivity extends LoginActivity implements View.OnClickListener,
@@ -303,7 +301,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED)
             requestPermissions(perms, CAMERA_PERMISSION);
         else {
-            final Intent scanner = new Intent(MnemonicActivity.this, ScanActivity.class);
+            final Intent scanner = new Intent(MnemonicActivity.this, ScanForResultActivity.class);
             startActivityForResult(scanner, QRSCANNER);
         }
     }
@@ -342,8 +340,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             onLoginSuccess();
             break;
         case QRSCANNER:
-            if (data != null && data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT) != null) {
-                setMnemonic(data.getStringExtra(ScanActivity.INTENT_EXTRA_RESULT));
+            if (data != null && data.getStringExtra(ScanForResultActivity.INTENT_EXTRA_RESULT) != null) {
+                setMnemonic(data.getStringExtra(ScanForResultActivity.INTENT_EXTRA_RESULT));
                 enableLogin();
             }
             break;
@@ -400,7 +398,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] granted) {
         if (requestCode == CAMERA_PERMISSION &&
             isPermissionGranted(granted, R.string.id_please_enable_camera))
-            startActivityForResult(new Intent(this, ScanActivity.class), QRSCANNER);
+            startActivityForResult(new Intent(this, ScanForResultActivity.class), QRSCANNER);
     }
 
     @Override

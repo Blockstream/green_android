@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <SurfaceView
+    <TextureView
         android:id="@+id/scan_activity_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:keepScreenOn="true" />
 
-    <de.schildbach.wallet.ui.ScannerView
+    <de.schildbach.wallet.ui.scan.ScannerView
         android:id="@+id/scan_activity_mask"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

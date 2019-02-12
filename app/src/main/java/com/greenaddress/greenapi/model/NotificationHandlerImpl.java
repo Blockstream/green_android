@@ -89,13 +89,11 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                         mTryingAt = System.currentTimeMillis() + waitingMs;
                         mScheduledFuture = mService.getTimerExecutor().scheduleAtFixedRate(() -> {
                             final int remainingSec = (int) ((mTryingAt - System.currentTimeMillis()) / 1000);
-                            if (remainingSec > 0)
+                            if (remainingSec >= 0)
                                 mModel.getConnMsgObservable().setMessage(R.string.id_not_connected_connecting_in_ss_, new Object[]{String.valueOf(remainingSec)});
                             else
                                 cancelTimer();
                         }, 0, 100, TimeUnit.MILLISECONDS);
-                    } else {
-                        mModel.getConnMsgObservable().setMessage(R.string.id_you_are_not_connected);
                     }
                     mService.getConnectionManager().goOffline();
                 }

@@ -123,9 +123,8 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="de.schildbach.wallet.ui.ScanActivity"
-            android:label="@string/id_qr_scanner"
-            android:screenOrientation="landscape" />
+            android:name=".ScanForResultActivity"
+            android:label="@string/id_qr_scanner" />
         <activity
             android:name=".monitor.NetworkMonitorActivity"
             android:label="@string/id_network_monitor" />
