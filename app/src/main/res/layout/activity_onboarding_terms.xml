@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center_horizontal"
@@ -50,52 +50,68 @@
         android:text="@string/id_you_have_full_control_of_your"
         android:textColor="@color/whiteSecondary" />
 
-    <ImageView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:src="@drawable/onboarding_illustration"
-        android:padding="32dp"/>
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <CheckBox
-            android:id="@+id/termsCheckbox"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:text="@string/id_i_agree_to_the"
-            android:textColor="@color/whiteSecondary"/>
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/termsText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="sans-serif"
-            android:gravity="center_vertical"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:autoLink="web"
-            android:clickable="true"
-            android:linksClickable="true"
-            android:textColor="@color/whiteSecondary"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="center"
+                android:src="@drawable/onboarding_illustration"
+                android:padding="32dp"/>
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
 
-    <Button
-        android:id="@+id/continueButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@drawable/material_button"
-        android:drawableEnd="@drawable/ic_next"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="@string/id_continue"
-        android:textAllCaps="false" />
+                <CheckBox
+                    android:id="@+id/termsCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/id_i_agree_to_the"
+                    android:textColor="@color/whiteSecondary"/>
+
+                <TextView
+                    android:id="@+id/termsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_vertical"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:autoLink="web"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:linksClickable="true"
+                    android:textColor="@color/whiteSecondary"/>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/continueButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/material_button"
+                android:drawableEnd="@drawable/ic_next"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/id_continue"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
