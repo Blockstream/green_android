@@ -107,7 +107,7 @@
   <string name="id_enter_a_pgp_public_key_to_have">Enter a PGP public key to have emails encrypted for better privacy.</string>
   <string name="id_enter_a_valid_onion_or_ip">Geben Sie eine gültige .onion oder IP Adresse ein (.onion bevorzugt)</string>
   <string name="id_enter_a_valid_username">Geben Sie einen gültigen Benutzernamen ein</string>
-  <string name="id_enter_an_address_or_private_key">Enter an address or private key</string>
+  <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">Geben Sie eine neue Email Adresse ein</string>
   <string name="id_enter_phone_number">Geben Sie eine Telefonnummer ein</string>
   <string name="id_enter_pin">Geben Sie den PIN ein</string>
@@ -116,6 +116,7 @@
   <string name="id_enter_your_email_address">Geben Sie Ihre Email Adresse ein</string>
   <string name="id_enter_your_wallet_mnemonic">Geben Sie Ihren Wallet Merksatz ein</string>
   <string name="id_error">Fehler</string>
+  <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Fehler: NFC Tag ist nicht beschreibbar</string>
   <string name="id_error_nfc_tag_too_small">Fehler: NFC Tag zu klein</string>
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
@@ -207,8 +208,6 @@
   <string name="id_next">Weiter</string>
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">Geschriebene NFC Tags:</string>
-  <string name="id_nlocktime_transaction_emails">nLocktime transaction emails</string>
-  <string name="id_nlocktime_transaction_request">nLocktime Transaktionsanfrage verschickt</string>
   <string name="id_no_amount_specified">Kein Betrag angeführt</string>
   <string name="id_no_attempts_remaining">Keine Versuche verbleibend</string>
   <string name="id_no_peers_connected">Keine Peers verbunden</string>
@@ -262,6 +261,8 @@
   <string name="id_received_on">Empfangen am</string>
   <string name="id_recipient">Empfänger</string>
   <string name="id_recovery_and_notifications">Rücksicherung und Mitteilungen</string>
+  <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
+  <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
   <string name="id_recovery_words">Wiederherstellungs Wörter</string>
   <string name="id_redeposited">Wiedereingezahlt</string>
   <string name="id_reference_exchange_rate">Refernzwährungskurs</string>
@@ -271,7 +272,7 @@
   <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Anfrage gescheitert</string>
-  <string name="id_request_nlocktime_transactions">nLocktime Transaktionen anfragen</string>
+  <string name="id_request_recovery_transactions">Request recovery transactions</string>
   <string name="id_request_sent">Anfrage verschickt</string>
   <string name="id_request_twofactor_reset">Zwei-Faktor Rücksetzung anfragen</string>
   <string name="id_requested_fee_rate_too_low">Angefragte Gebührenrate zu niedrig</string>

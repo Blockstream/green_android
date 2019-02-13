@@ -107,7 +107,7 @@
   <string name="id_enter_a_pgp_public_key_to_have">Enter a PGP public key to have emails encrypted for better privacy.</string>
   <string name="id_enter_a_valid_onion_or_ip">Enter a valid .onion or IP address (.onion preferred)</string>
   <string name="id_enter_a_valid_username">Enter a valid username</string>
-  <string name="id_enter_an_address_or_private_key">Enter an address or private key</string>
+  <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">Enter new email</string>
   <string name="id_enter_phone_number">Enter phone number</string>
   <string name="id_enter_pin">Enter PIN</string>
@@ -116,6 +116,7 @@
   <string name="id_enter_your_email_address">Enter your email address</string>
   <string name="id_enter_your_wallet_mnemonic">Enter your wallet mnemonic</string>
   <string name="id_error">Error</string>
+  <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Error: NFC tag not writable</string>
   <string name="id_error_nfc_tag_too_small">Error: NFC tag too small</string>
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
@@ -207,8 +208,6 @@
   <string name="id_next">Next</string>
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">NFC TAGs Written:</string>
-  <string name="id_nlocktime_transaction_emails">nLocktime transaction emails</string>
-  <string name="id_nlocktime_transaction_request">nLocktime transaction request sent</string>
   <string name="id_no_amount_specified">No amount specified</string>
   <string name="id_no_attempts_remaining">No attempts remaining</string>
   <string name="id_no_peers_connected">No Peers Connected</string>
@@ -262,6 +261,8 @@
   <string name="id_received_on">Received on</string>
   <string name="id_recipient">Recipient</string>
   <string name="id_recovery_and_notifications">Recovery and Notifications</string>
+  <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
+  <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
   <string name="id_recovery_words">Recovery words</string>
   <string name="id_redeposited">Redeposited</string>
   <string name="id_reference_exchange_rate">Reference exchange rate</string>
@@ -271,7 +272,7 @@
   <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Request Failed</string>
-  <string name="id_request_nlocktime_transactions">Request nLocktime transactions</string>
+  <string name="id_request_recovery_transactions">Request recovery transactions</string>
   <string name="id_request_sent">Request Sent</string>
   <string name="id_request_twofactor_reset">Request Two-Factor reset</string>
   <string name="id_requested_fee_rate_too_low">Requested fee rate too low</string>

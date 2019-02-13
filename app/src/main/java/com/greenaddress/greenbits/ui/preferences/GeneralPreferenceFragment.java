@@ -655,7 +655,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 // Ignore, user can send again if email fails to arrive
             }
         });
-        UI.toast(getActivity(), R.string.id_nlocktime_transaction_request, Toast.LENGTH_SHORT);
+        UI.toast(getActivity(), R.string.id_recovery_transaction_request, Toast.LENGTH_SHORT);
         return false;
     }
 

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="id_1030_minutes">~ 10-30 Minuti</string>
-  <string name="id_1d_2s_ago">%1$d%2$s fa</string>
+  <string name="id_1d_2s_ago">%1$d %2$s fa</string>
   <string name="id_1d_minutes">%1$d minuti</string>
   <string name="id_1s_blocks_left_2d">%1$s blocchi rimanenti %2$d</string>
   <string name="id_1s_twofactor_set_up">%1$s setup</string>
@@ -107,7 +107,7 @@
   <string name="id_enter_a_pgp_public_key_to_have">Inserisci una chiave pubblica PGP per avere email crittate e maggiore privacy.</string>
   <string name="id_enter_a_valid_onion_or_ip">Inserisci un indirizzo IP valido. (.onion  preferibilmente)</string>
   <string name="id_enter_a_valid_username">Inserisci un username valido</string>
-  <string name="id_enter_an_address_or_private_key">Inserisci un indirizzo o una chiave privata</string>
+  <string name="id_enter_an_address_or_sweep_paper">Inserisci indirizzo o fai sweep di un paper wallet</string>
   <string name="id_enter_new_email">Inserisci la nuova email</string>
   <string name="id_enter_phone_number">Inserisci numero telefonico</string>
   <string name="id_enter_pin">Inserisci PIN</string>
@@ -116,6 +116,7 @@
   <string name="id_enter_your_email_address">Inserisci il tuo indirizzo email</string>
   <string name="id_enter_your_wallet_mnemonic">Inserisci la mnemonica del tuo wallet</string>
   <string name="id_error">Errore</string>
+  <string name="id_error_logging_in_with_hardware">Errore durante il login con Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Errore: NFC tag not writable</string>
   <string name="id_error_nfc_tag_too_small">Errore: NFC tag too small</string>
   <string name="id_estimated_blocks_until">Blocchi stimati per la conferma: %d</string>
@@ -207,8 +208,6 @@
   <string name="id_next">Avanti</string>
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">NFC TAGs Written:</string>
-  <string name="id_nlocktime_transaction_emails">Emails per transazioni nlocktime</string>
-  <string name="id_nlocktime_transaction_request">Richiesta transazione nLockTime inviata</string>
   <string name="id_no_amount_specified">Nessun importo specificato</string>
   <string name="id_no_attempts_remaining">Nessun tentativo rimasto</string>
   <string name="id_no_peers_connected">Nessun Peer Connesso</string>
@@ -262,6 +261,8 @@
   <string name="id_received_on">Ricevuta su</string>
   <string name="id_recipient">Destinatario</string>
   <string name="id_recovery_and_notifications">Recupero e Notifiche</string>
+  <string name="id_recovery_transaction_emails">Email con transazione di recupero</string>
+  <string name="id_recovery_transaction_request">Richiesta transazione di recupero inviata</string>
   <string name="id_recovery_words">Parole per il ripristino</string>
   <string name="id_redeposited">Rideposito</string>
   <string name="id_reference_exchange_rate">Tasso di cambio di riferimento</string>
@@ -271,7 +272,7 @@
   <string name="id_replaceable">rimpiazzabile</string>
   <string name="id_request_amount">RICHIEDI IMPORTO</string>
   <string name="id_request_failed">Richiesta fallita</string>
-  <string name="id_request_nlocktime_transactions">Richiedi transazioni nLockTime</string>
+  <string name="id_request_recovery_transactions">Richiedi transazioni di recupero</string>
   <string name="id_request_sent">Richiesta Inviata</string>
   <string name="id_request_twofactor_reset">Richiedi reset del Secondo Fattore</string>
   <string name="id_requested_fee_rate_too_low">Tasso di commissione richiesto troppo basso</string>

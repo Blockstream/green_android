@@ -107,7 +107,7 @@
   <string name="id_enter_a_pgp_public_key_to_have">Enter a PGP public key to have emails encrypted for better privacy.</string>
   <string name="id_enter_a_valid_onion_or_ip">Saisissez une adresse IP ou .onion valide (de préférence .onion)</string>
   <string name="id_enter_a_valid_username">Saisissez un nom d\'utilisateur valide</string>
-  <string name="id_enter_an_address_or_private_key">Enter an address or private key</string>
+  <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">Saisissez une nouvelle adresse email</string>
   <string name="id_enter_phone_number">Saisissez votre numéro de téléphone</string>
   <string name="id_enter_pin">Saisissez votre PIN</string>
@@ -116,6 +116,7 @@
   <string name="id_enter_your_email_address">Saisissez votre adresse email</string>
   <string name="id_enter_your_wallet_mnemonic">Saisissez le mnémonique de votre portefeuille</string>
   <string name="id_error">Erreur</string>
+  <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Erreur : étiquette NFC non inscriptible</string>
   <string name="id_error_nfc_tag_too_small">Erreur : étiquette NFC trop petite</string>
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
@@ -207,8 +208,6 @@
   <string name="id_next">Suivant</string>
   <string name="id_nfc_logo">Logo NFC</string>
   <string name="id_nfc_tags_written">Étiquette(s) NFC écrite(s) :</string>
-  <string name="id_nlocktime_transaction_emails">nLocktime transaction emails</string>
-  <string name="id_nlocktime_transaction_request">Demande de transaction nLocktime envoyée</string>
   <string name="id_no_amount_specified">Pas de montant spécifié</string>
   <string name="id_no_attempts_remaining">Aucun essai restant</string>
   <string name="id_no_peers_connected">Pas de pairs connectés</string>
@@ -262,6 +261,8 @@
   <string name="id_received_on">Reçu sur</string>
   <string name="id_recipient">Destinataire</string>
   <string name="id_recovery_and_notifications">Récupération et notifications</string>
+  <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
+  <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
   <string name="id_recovery_words">Mots de récupération</string>
   <string name="id_redeposited">Redéposé</string>
   <string name="id_reference_exchange_rate">Taux de change de référence</string>
@@ -271,7 +272,7 @@
   <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Échec de la demande</string>
-  <string name="id_request_nlocktime_transactions">Demander des transactions nLocktime</string>
+  <string name="id_request_recovery_transactions">Request recovery transactions</string>
   <string name="id_request_sent">Demande envoyé</string>
   <string name="id_request_twofactor_reset">Demander la réinitialisation du double facteur</string>
   <string name="id_requested_fee_rate_too_low">Les frais demandés sont trop bas</string>

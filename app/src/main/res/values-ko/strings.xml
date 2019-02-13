@@ -107,7 +107,7 @@
   <string name="id_enter_a_pgp_public_key_to_have">더 나은 보안을 위하여 PGP public 키를 입력한뒤 암호화된 이메일을 받아보세요.</string>
   <string name="id_enter_a_valid_onion_or_ip">유효한 .onion 또는 IP 주소 입력 (.onion 추천)</string>
   <string name="id_enter_a_valid_username">유효한 사용자 명 입력</string>
-  <string name="id_enter_an_address_or_private_key">주소 또는 private 키를 입력하십시오.</string>
+  <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">새로운 이메일 입력</string>
   <string name="id_enter_phone_number">전화번호 입력</string>
   <string name="id_enter_pin">비밀번호 입력</string>
@@ -116,6 +116,7 @@
   <string name="id_enter_your_email_address">이메일 주소를 입력하세요</string>
   <string name="id_enter_your_wallet_mnemonic">지갑 니모닉(복원 코드)을 입력하세요</string>
   <string name="id_error">오류</string>
+  <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">오류: NFC 태그에 쓰기 불가능</string>
   <string name="id_error_nfc_tag_too_small">오류: NFC 태그 너무 작음</string>
   <string name="id_estimated_blocks_until">컴펌되기까지 예상 블록:%d</string>
@@ -207,8 +208,6 @@
   <string name="id_next">다음</string>
   <string name="id_nfc_logo">NFC 로고</string>
   <string name="id_nfc_tags_written">쓰여진 NFC 태그들:</string>
-  <string name="id_nlocktime_transaction_emails">nLocktime 거래 이메일들</string>
-  <string name="id_nlocktime_transaction_request">nLocktime 거래 요청 보내짐</string>
   <string name="id_no_amount_specified">금액을 지정하지 않았습니다</string>
   <string name="id_no_attempts_remaining">시도 남지 않음</string>
   <string name="id_no_peers_connected">연결된 노드 없음</string>
@@ -262,6 +261,8 @@
   <string name="id_received_on">받은 시간</string>
   <string name="id_recipient">수령인</string>
   <string name="id_recovery_and_notifications">복구와 알람</string>
+  <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
+  <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
   <string name="id_recovery_words">복구 단어들</string>
   <string name="id_redeposited">재예치됨</string>
   <string name="id_reference_exchange_rate">기준 환율</string>
@@ -271,7 +272,7 @@
   <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">금액 요청하기</string>
   <string name="id_request_failed">요청 실패</string>
-  <string name="id_request_nlocktime_transactions">nLocktime 거래들 요청하기</string>
+  <string name="id_request_recovery_transactions">Request recovery transactions</string>
   <string name="id_request_sent">요청 보냄</string>
   <string name="id_request_twofactor_reset">2FA 새로고침 요청하기</string>
   <string name="id_requested_fee_rate_too_low">요청한 수수료는 너무 낮습니다</string>

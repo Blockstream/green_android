@@ -302,7 +302,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
     protected void onLoginFailure() {
         stopLoading();
         runOnUiThread(() -> {
-            toast("Error logging in with Hardware Wallet");
+            toast(R.string.id_error_logging_in_with_hardware);
             showInstructions(R.string.id_please_reconnect_your_hardware);
         });
     }

@@ -107,7 +107,7 @@
   <string name="id_enter_a_pgp_public_key_to_have">Enter a PGP public key to have emails encrypted for better privacy.</string>
   <string name="id_enter_a_valid_onion_or_ip">Voer een geldig .onion- of IP-adres in (liever .onion)</string>
   <string name="id_enter_a_valid_username">Voer een geldige gebruikersnaam in</string>
-  <string name="id_enter_an_address_or_private_key">Enter an address or private key</string>
+  <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">Voer nieuw e-mailadres in</string>
   <string name="id_enter_phone_number">Voer telefoonnummer in</string>
   <string name="id_enter_pin">Voer PIN in</string>
@@ -116,6 +116,7 @@
   <string name="id_enter_your_email_address">Voer je e-mailadres in</string>
   <string name="id_enter_your_wallet_mnemonic">Voer de woordenlijst van je wallet in</string>
   <string name="id_error">Fout</string>
+  <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Fout: NFC-tag niet schrijfbaar</string>
   <string name="id_error_nfc_tag_too_small">Fout: NFC-tag te klein</string>
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
@@ -207,8 +208,6 @@
   <string name="id_next">Volgende</string>
   <string name="id_nfc_logo">NFC-logo</string>
   <string name="id_nfc_tags_written">NFC-tags beschreven:</string>
-  <string name="id_nlocktime_transaction_emails">nLocktime transaction emails</string>
-  <string name="id_nlocktime_transaction_request">nLocktime-transactieverzoek verstuurd</string>
   <string name="id_no_amount_specified">Geen bedrag opgegeven</string>
   <string name="id_no_attempts_remaining">Geen pogingen meer</string>
   <string name="id_no_peers_connected">Geen peers verbonden</string>
@@ -262,6 +261,8 @@
   <string name="id_received_on">Ontvangen op</string>
   <string name="id_recipient">Ontvanger</string>
   <string name="id_recovery_and_notifications">Herstel en notificaties</string>
+  <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
+  <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
   <string name="id_recovery_words">Herstelwoorden</string>
   <string name="id_redeposited">Opnieuw gestort</string>
   <string name="id_reference_exchange_rate">Standaard wisselkoers</string>
@@ -271,7 +272,7 @@
   <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Verzoek mislukt</string>
-  <string name="id_request_nlocktime_transactions">Verzoek nLockTime-transacties</string>
+  <string name="id_request_recovery_transactions">Request recovery transactions</string>
   <string name="id_request_sent">Verzoek verzonden</string>
   <string name="id_request_twofactor_reset">Verzoek resetten tweetrapsauthenticatie</string>
   <string name="id_requested_fee_rate_too_low">Verzochte tarief te laag</string>
