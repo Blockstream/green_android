@@ -31,11 +31,6 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
                 new Intent(this, TermsActivity.class),
                 R.string.id_there_is_already_a_pin_set_for));
 
-        // fix for SVG visualization issues on API 23
-        final Drawable show = AppCompatResources.getDrawable(this, R.drawable.ic_logo_big);
-        final ImageView logo = findViewById(R.id.firstLogo);
-        logo.setImageDrawable(show);
-
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> openNetworkSettings());
     }
