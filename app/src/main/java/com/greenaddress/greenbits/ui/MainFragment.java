@@ -42,6 +42,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private boolean justClicked = false;
     private ListTransactionsAdapter mTransactionsAdapter;
+    private LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -61,13 +62,13 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.setHasFixedSize(true);
         txView.addItemDecoration(new DividerItem(getActivity()));
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        txView.setLayoutManager(layoutManager);
+        txView.setLayoutManager(mLayoutManager);
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
         mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), service, mTxItems);
         txView.setAdapter(mTransactionsAdapter);
+        txView.addOnScrollListener(recyclerViewOnScrollListener);
         // FIXME, more efficient to use swap
         // txView.swapAdapter(lta, false);
         mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
@@ -295,14 +296,53 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
     @Override
     public void onUpdateTransactions(final TransactionDataObservable observable) {
-        Log.d(TAG, "Updating transactions");
+        isLoading=false;
         List<TransactionData> txList = observable.getTransactionDataList();
-        if (isZombie() || txList == null)
+        if (isZombie() || txList == null || !observable.isExecutedOnce())
             return;
-
+        Log.d(TAG, "Updating transactions");
+        isLastPage=observable.isLastPage();
         getGaActivity().runOnUiThread(() -> reloadTransactions(txList, false));
     }
 
     @Override
     public void onUpdateActiveSubaccount(final ActiveAccountObservable observable) {}
+
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+
+    private void loadMoreItems() {
+        Log.d(TAG, "loadMoreItems");
+        isLoading=true;
+        final GaService service = getGAService();
+        final int subaccount = service.getModel().getCurrentSubaccount();
+        service.getModel().getTransactionDataObservable(subaccount).refresh(false);
+    }
+
+    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int visibleItemCount = mLayoutManager.getChildCount();
+            int totalItemCount = mLayoutManager.getItemCount();
+            int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+
+            /*Log.d(TAG, "visible: " + visibleItemCount +
+                    " total:  " +totalItemCount +
+                    " first: " +firstVisibleItemPosition +
+                    " isLoading: " + isLoading +
+                    " isLastPage: " + isLastPage);*/
+            if (!isLoading && !isLastPage) {
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0) {
+                    loadMoreItems();
+                }
+            }
+        }
+    };
 }

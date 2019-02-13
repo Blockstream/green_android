@@ -4,19 +4,24 @@ import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.gdk.GDKSession;
+import com.greenaddress.greenapi.data.PagedData;
 import com.greenaddress.greenapi.data.TransactionData;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 public class TransactionDataObservable extends Observable implements Observer {
-    private List<TransactionData> mTransactionDataList;
+    private List<TransactionData> mTransactionDataList = new ArrayList<>();
     private GDKSession mSession;
     private ListeningExecutorService mExecutor;
     private Integer mSubaccount;
     private boolean mUTXOOnly;
+    private Integer mNextPage;
+    private Integer mPageLoaded = 0;
+    private boolean mExecutedOnce = false;
 
     private TransactionDataObservable() {}
 
@@ -26,23 +31,36 @@ public class TransactionDataObservable extends Observable implements Observer {
         mSession = session;
         mSubaccount = subaccount;
         mUTXOOnly = UTXOOnly;
-        // this is not initializied by default but by visiting the account detail page
+        // this is not initialized by default but by visiting the account detail page
     }
 
     public void refresh() {
-        mExecutor.submit(() -> {
-            refreshSync();
-        });
+        refresh(true);
     }
 
-    public void refreshSync() {
+    public void refresh(final boolean reset) {
+        if (reset) {
+            mNextPage = null;
+            mPageLoaded = 0;
+            mTransactionDataList.clear();
+        }
+        mExecutor.submit(this::refreshSync);
+    }
+
+    public synchronized void refreshSync() {
         try {
             List<TransactionData> transactions;
             if (mUTXOOnly) {
                 transactions = mSession.getUTXO(mSubaccount, 0);
             } else {
-                transactions = mSession.getTransactions(mSubaccount, 0);
+                PagedData<TransactionData> transactionsPaged = mSession.getTransactionsPaged(mSubaccount, mNextPage == null ? 0 : mNextPage);
+                Log.d("OBS","page " + transactionsPaged.getPageId() +
+                        "nextpage " + transactionsPaged.getNextPageId() );
+                transactions = transactionsPaged.getList();
+                mNextPage = transactionsPaged.getNextPageId();
+                mPageLoaded ++;
             }
+            mExecutedOnce = true;
             setTransactionDataList(transactions);
         } catch (IOException e) {
             Log.e("OBS", e.getMessage());
@@ -57,11 +75,9 @@ public class TransactionDataObservable extends Observable implements Observer {
     public Integer getSubaccount() {
         return mSubaccount;
     }
-
     public void setTransactionDataList(final List<TransactionData> transactionData) {
-        Log.d("OBS",
-              "set" + (mUTXOOnly ? "UTXO" : "Transaction") + "DataList(" +  mSubaccount + ", " + transactionData + ")");
-        this.mTransactionDataList = transactionData;
+        Log.d("OBS", "pageLoaded:" + mPageLoaded + " mNextPage: " + mNextPage + " set" + (mUTXOOnly ? "UTXO" : "Transaction") + "DataList(" +  mSubaccount + ", " + transactionData + ")");
+        this.mTransactionDataList.addAll(transactionData);
         fire();
     }
 
@@ -69,9 +85,11 @@ public class TransactionDataObservable extends Observable implements Observer {
     public void update(final Observable observable, final Object o) {
         if (observable instanceof ActiveAccountObservable) {
             if ( ((ActiveAccountObservable) observable).getActiveAccount().equals(mSubaccount))
-                refresh();
+                if (!isExecutedOnce())
+                    refresh();
+
         } else if (observable instanceof BlockchainHeightObservable) {
-            if (mTransactionDataList != null) {
+            if (isExecutedOnce()) {
                 refresh();
             }
         }
@@ -80,5 +98,13 @@ public class TransactionDataObservable extends Observable implements Observer {
     public void fire() {
         setChanged();
         notifyObservers();
+    }
+
+    public boolean isLastPage() {
+        return mNextPage != null && mNextPage == 0;
+    }
+
+    public boolean isExecutedOnce() {
+        return mExecutedOnce;
     }
 }
