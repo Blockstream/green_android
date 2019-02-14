@@ -432,6 +432,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         }
 
         public void onViewPageSelected(final int index) {
+            mService.rescheduleDisconnect();
             Log.d(TAG, "SectionsPagerAdapter -> onViewPageSelected " + index +
                   " current is " + mSelectedPage + " initial " + mInitialPage);
 

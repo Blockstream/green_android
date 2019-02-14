@@ -53,7 +53,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +75,7 @@ public class GaService extends Service  {
 
     private int mRefCount; // Number of non-paused activities using us
     private ScheduledThreadPoolExecutor mTimerExecutor = new ScheduledThreadPoolExecutor(1);
-    private ScheduledFuture<?> mDisconnectTimer;
+    private Long mDisconnectTimer;
 
     // This could be a local variable in theory but since there is a warning in the documentation
     // about possibly being garbage collected has been made a member of the class
@@ -292,6 +291,8 @@ public class GaService extends Service  {
             mDeviceId = UUID.randomUUID().toString();
             cfgEdit().putString(PrefKeys.DEVICE_ID, mDeviceId).apply();
         }
+
+        mTimerExecutor.scheduleWithFixedDelay(this::checkDisconnect, 5,5, TimeUnit.SECONDS);
 
         migratePreferences();
     }
@@ -525,21 +526,18 @@ public class GaService extends Service  {
 
     public void incRef() {
         ++mRefCount;
-        cancelDisconnect();
+        rescheduleDisconnect();
     }
 
     public void decRef() {
         if (BuildConfig.DEBUG && mRefCount <= 0)
             throw new RuntimeException("Incorrect reference count");
         if (--mRefCount == 0)
-            scheduleDisconnect();
+            checkDisconnect();
     }
 
-    private void cancelDisconnect() {
-        if (mDisconnectTimer != null && !mDisconnectTimer.isCancelled()) {
-            Log.d(TAG, "cancelDisconnect");
-            mDisconnectTimer.cancel(false);
-        }
+    public void rescheduleDisconnect() {
+        mDisconnectTimer = System.currentTimeMillis() + getAutoLogoutTimeout() * 60 * 1000;
     }
 
     public int getAutoLogoutTimeout() {
@@ -557,18 +555,12 @@ public class GaService extends Service  {
         return mModel.getSettings().getAltimeout();
     }
 
-    private void scheduleDisconnect() {
+    private void checkDisconnect() {
         if (getConnectionManager().isDisconnectedOrLess())
             return;
-        final int delayMins = getAutoLogoutTimeout();
-        cancelDisconnect();
-        Log.d(TAG, "scheduleDisconnect in " + Integer.toString(delayMins) + " mins");
-        mDisconnectTimer = mTimerExecutor.schedule(new Runnable() {
-            public void run() {
-                Log.d(TAG, "scheduled disconnect");
-                disconnect();
-            }
-        }, delayMins, TimeUnit.MINUTES);
+        if (mDisconnectTimer != null && System.currentTimeMillis() > mDisconnectTimer) {
+            mExecutor.submit(this::disconnect);
+        }
     }
 
     public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
