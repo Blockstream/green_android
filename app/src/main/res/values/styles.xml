@@ -54,12 +54,6 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="myButton" parent="AppTheme.Button">
-        <item name="android:background">@drawable/material_button</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
-
     <style name="gradientButton" parent="AppTheme.Button">
         <item name="android:background">@drawable/material_button</item>
         <item name="android:textColor">@color/white</item>
@@ -81,6 +75,22 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">@color/grey_light</item>
         <item name="android:drawableEnd">@drawable/ic_arrow_down</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="nextButton" parent="AppTheme.Button">
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:background">@drawable/material_button</item>
+        <item name="android:drawableEnd">@drawable/ic_next</item>
+        <!-- Negative padding matching the width of ic_next -->
+        <item name="android:drawablePadding">-48dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+    </style>
+
+    <style name="trezorPinButton" parent="gradientButton">
+        <item name="android:height">80dp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="MenuTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Menu">

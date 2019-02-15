@@ -33,15 +33,11 @@
 
         <Button
             android:id="@+id/nextButton"
+            style="@style/nextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="@drawable/material_button"
-            android:drawableEnd="@drawable/ic_next"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:text="@string/id_next"
-            android:textAllCaps="false" />
+            android:text="@string/id_next" />
+
     </FrameLayout>
 
 </LinearLayout>

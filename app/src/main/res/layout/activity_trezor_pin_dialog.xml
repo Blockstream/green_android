@@ -48,65 +48,47 @@
 
                 <Button
                     android:id="@+id/trezorPinButton1"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton2"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton3"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton4"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton5"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton6"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton7"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton8"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
                 <Button
                     android:id="@+id/trezorPinButton9"
-                    android:height="80dp"
-                    style="@style/gradientButton"
-                    android:textSize="20sp"
+                    style="@style/trezorPinButton"
                     android:text="@string/questionMark" />
 
             </GridLayout>
@@ -147,8 +129,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_vertical_margin"
-        android:text="@string/id_next"
-        android:textAllCaps="false"
-        />
+        android:text="@string/id_next" />
 
 </LinearLayout>

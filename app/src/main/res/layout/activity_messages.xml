@@ -44,23 +44,23 @@
 
                 <Button
                     android:id="@+id/system_message_skip"
-                    style="@style/myButton"
+                    style="@style/gradientButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/id_later"
+                    android:textAllCaps="true"
                     android:textColor="@color/accent"
                     android:background="@color/hide" />
 
                 <Button
                     android:id="@+id/system_message_continue"
-                    style="@style/myButton"
+                    style="@style/gradientButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/id_accept"
-                    android:textAllCaps="true"
-                     />
+                    android:textAllCaps="true" />
 
             </LinearLayout>
         </LinearLayout>

@@ -233,11 +233,12 @@
 
                     <Button
                         android:id="@+id/saveMemo"
-                        style="@style/myButton"
+                        style="@style/gradientButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/id_save"
                         android:textColor="@color/white"
+                        android:textAllCaps="true"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -284,10 +285,10 @@
 
     <Button
         android:id="@+id/txExplorer"
+        style="@style/gradientButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/id_view_in_explorer"
-        android:textAllCaps="false"
         android:layout_margin="@dimen/activity_vertical_margin"/>
 
 </LinearLayout>

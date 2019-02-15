@@ -38,15 +38,10 @@
 
     <Button
         android:id="@+id/continueButton"
+        style="@style/borderButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/material_button_border"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="@string/id_go_to_wallet"
-        android:textAllCaps="false"/>
+        android:text="@string/id_go_to_wallet" />
 
     <View
         android:layout_width="match_parent"
@@ -54,12 +49,9 @@
 
     <Button
         android:id="@+id/securityButton"
+        style="@style/gradientButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/material_button"
-        android:text="@string/id_improve_security"
-        android:textAllCaps="false"/>
+        android:text="@string/id_improve_security" />
 
 </LinearLayout>
