@@ -133,11 +133,12 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, 0);
 
+        final GaService service = ((GreenAddressApplication) getApplication()).mService;
         mAddressEditText = UI.find(this, R.id.addressEdit);
+        mAddressEditText.setHint(service.isWatchOnly() ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
+
         UI.find(this, R.id.nextButton).setEnabled(false);
 
-        final View addressLayout = UI.find(this, R.id.addressLayout);
-        final View buttonLayout = UI.find(this, R.id.buttonLayout);
         UI.attachHideKeyboardListener(this, findViewById(R.id.activity_send_scan));
     }
 
@@ -407,31 +408,36 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
 
         final Intent result = new Intent(this, SendActivity.class);
         result.putExtra("internal_qr", true);
-
-        // See if the address is a private key, and if so, sweep it
-        final Long feeRate = service.getFeeEstimates().get(0);
         final Integer subaccount = service.getModel().getCurrentSubaccount();
-        final String receiveAddress = service.getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
-        final BalanceData balanceData = new BalanceData();
-        balanceData.setAddress(receiveAddress);
-        final List<BalanceData> balanceDataList = new ArrayList<>();
-        balanceDataList.add(balanceData);
-        SweepData sweepData = new SweepData();
-        sweepData.setPrivateKey(scanned);
-        sweepData.setFeeRate(feeRate);
-        sweepData.setAddressees(balanceDataList);
-        sweepData.setSubaccount(subaccount);
-        final ObjectNode transactionRaw = service.getSession().createTransactionRaw(sweepData);
-        final String error = transactionRaw.get("error").asText();
-        if (error.isEmpty()) {
-            result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
-        } else if ("id_invalid_private_key".equals(error) && !service.isWatchOnly()) {
-            // Not a private key, try as a send
-            final String text;
-            if (!(scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:"))) {
-                text = String.format("bitcoin:%s", scanned);
+
+        if (service.isWatchOnly()) {
+            // See if the address is a private key, and if so, sweep it
+            final Long feeRate = service.getFeeEstimates().get(0);
+            final String receiveAddress = service.getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
+            final BalanceData balanceData = new BalanceData();
+            balanceData.setAddress(receiveAddress);
+            final List<BalanceData> balanceDataList = new ArrayList<>();
+            balanceDataList.add(balanceData);
+            SweepData sweepData = new SweepData();
+            sweepData.setPrivateKey(scanned);
+            sweepData.setFeeRate(feeRate);
+            sweepData.setAddressees(balanceDataList);
+            sweepData.setSubaccount(subaccount);
+            final ObjectNode transactionRaw = service.getSession().createTransactionRaw(sweepData);
+            final String error = transactionRaw.get("error").asText();
+            if (error.isEmpty()) {
+                result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
             } else {
+                UI.toast(this, error, Toast.LENGTH_LONG);
+                cameraHandler.post(fetchAndDecodeRunnable);
+                return;
+            }
+        } else {
+            final String text;
+            if (scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:")) {
                 text = scanned;
+            } else {
+                text = String.format("bitcoin:%s", scanned);
             }
             try {
                 final ObjectNode transactionFromUri = service.getSession().createTransactionFromUri(text, subaccount);
@@ -446,12 +452,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 cameraHandler.post(fetchAndDecodeRunnable);
                 return;
             }
-        } else {
-            UI.toast(this, error, Toast.LENGTH_LONG);
-            finish();
-            return;
         }
-
         // Open send activity
         startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
     }
