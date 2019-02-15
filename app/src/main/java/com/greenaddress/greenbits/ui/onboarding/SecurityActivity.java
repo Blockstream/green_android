@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -161,8 +162,9 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
             holder.nameText.setText(mChoices.get(position));
             holder.imageView.setImageResource(mImages.get(position));
             final boolean isEnabled = mEnabled.contains(method);
-            holder.enabled.setImageResource(isEnabled ? R.drawable.ic_done : R.drawable.ic_next);
-            holder.itemView.setOnClickListener(view -> {
+            holder.enabled.setChecked(isEnabled);
+            holder.enabled.setOnClickListener((v1) -> {
+                mService.rescheduleDisconnect();
                 if(mService.warnIfOffline(SecurityActivity.this)) {
                     return;
                 }
@@ -186,13 +188,13 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
         public class ViewHolder extends RecyclerView.ViewHolder {
             public TextView nameText;
             public ImageView imageView;
-            public ImageView enabled;
+            public Switch enabled;
 
             ViewHolder(final View itemView) {
                 super(itemView);
                 nameText = UI.find(itemView, R.id.nameText);
                 imageView = UI.find(itemView, R.id.imageView);
-                enabled = UI.find(itemView, R.id.imageEnabled);
+                enabled = UI.find(itemView, R.id.switchEnabled);
             }
         }
     }

@@ -19,7 +19,8 @@ public class PopupMethodResolver implements MethodResolver {
     @Override
     public SettableFuture<String> method(List<String> methods) {
         final SettableFuture<String> future = SettableFuture.create();
-
+        if (activity instanceof GaActivity)
+            ((GaActivity)activity).mService.rescheduleDisconnect();
         if (methods.size() == 1) {
             future.set(methods.get(0));
         } else {

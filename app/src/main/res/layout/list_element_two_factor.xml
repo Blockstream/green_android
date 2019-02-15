@@ -29,12 +29,11 @@
         android:textColor="@color/secondaryTextColor"
         android:textSize="18sp"/>
 
-    <ImageView
-        android:id="@+id/imageEnabled"
+    <Switch
+        android:id="@+id/switchEnabled"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
-        android:gravity="center_vertical"
-        android:src="@drawable/ic_next"/>
+        android:gravity="center_vertical" />
 
 </LinearLayout>
