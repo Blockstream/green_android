@@ -29,7 +29,7 @@
                 android:id="@+id/addressEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/id_enter_an_address_or_sweep_paper"
+                android:hint="@string/id_enter_an_address"
                 android:imeOptions="flagNoPersonalizedLearning"
                 android:importantForAccessibility="no"
                 android:inputType="textCapWords"
