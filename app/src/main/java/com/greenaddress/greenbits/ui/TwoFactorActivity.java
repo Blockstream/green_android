@@ -75,7 +75,7 @@ public class TwoFactorActivity extends LoggedActivity {
         mMethod = mMethodName.toLowerCase(Locale.US);
         mEnable = getIntent().getBooleanExtra("enable", true);
         twoFactorConfigData = mService.getModel().getTwoFactorConfigDataObservable().getTwoFactorConfigData();
-        setTitle(getTypeString(getTitle().toString(), mLocalizedMap.get(mMethod)));
+        setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor, mLocalizedMap.get(mMethod)));
 
         switch (mMethod) {
         case "reset":
