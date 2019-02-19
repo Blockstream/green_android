@@ -121,6 +121,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
             getGAService().cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
         }
         getGaActivity().finish();
+        getGaActivity().overridePendingTransition(0,0);
     }
 
 }

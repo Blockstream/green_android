@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 
+import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
+
 public class MainFragment extends SubaccountFragment implements View.OnClickListener, OnGdkListener {
     private static final String TAG = MainFragment.class.getSimpleName();
     private AccountView mAccountView;
@@ -256,6 +258,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             getActivity().startActivity(intent);
         } else if (view.getId() == R.id.selectSubaccount) {
             final Intent intent = new Intent(getActivity(), SubaccountSelectActivity.class);
+            intent.setFlags(FLAG_ACTIVITY_NO_ANIMATION);
             getActivity().startActivity(intent);
         }
     }
