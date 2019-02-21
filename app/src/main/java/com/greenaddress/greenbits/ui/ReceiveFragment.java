@@ -35,6 +35,7 @@ import org.bitcoinj.uri.BitcoinURI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Observer;
 
 import nordpol.android.OnDiscoveredTagListener;
@@ -162,27 +163,17 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
         final Coin amount;
         final String address;
-        final NetworkParameters networkParameters;
         final int qrCodeBackground = 0; // Transparent background
 
         BitmapWorkerTask() {
             amount = mCurrentAmount;
             address = mCurrentAddress;
-            networkParameters = getGAService().getNetworkParameters();
         }
 
         @Override
         protected Bitmap doInBackground(final Object ... integers) {
-            String qrCodeText;
-            try {
-                if (amount == null || amount.value == 0 || TextUtils.isEmpty(address))
-                    throw new NullPointerException();
-                final Address addr = Address.fromBase58(networkParameters, address);
-                qrCodeText = BitcoinURI.convertToBitcoinURI(addr, amount, null, null);
-            } catch (final Exception e) {
-                qrCodeText = address;
-            }
-            return new QrBitmap(qrCodeText, qrCodeBackground).getQRCode();
+            Log.d(TAG, " doInBackground(" + address + ")");
+            return new QrBitmap(getAddressUri(address,amount), qrCodeBackground).getQRCode();
         }
 
         @Override
@@ -231,13 +222,16 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     private String getAddressUri() {
-        final String addr;
-        final NetworkParameters params = getGAService().getNetworkParameters();
-        if (getGAService().isElements())
-            addr = ConfidentialAddress.fromBase58(params, mCurrentAddress).toString();
-        else
-            addr = Address.fromBase58(params, mCurrentAddress).toString();
-        return BitcoinURI.convertToBitcoinURI(params, addr, mCurrentAmount, null, null);
+        return getAddressUri(mCurrentAddress, mCurrentAmount);
+    }
+    private String getAddressUri(final String address, final Coin amount) {
+        String qrCodeText;
+        if (amount == null || amount.value == 0 || TextUtils.isEmpty(address)) {
+            qrCodeText = address;
+        } else {
+            qrCodeText = String.format(Locale.US,"bitcoin:%s?amount=%s",address,amount.toPlainString());
+        }
+        return qrCodeText;
     }
 
     @Override
