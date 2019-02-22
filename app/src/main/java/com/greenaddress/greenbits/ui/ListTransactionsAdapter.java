@@ -181,7 +181,6 @@ public class ListTransactionsAdapter extends
         public final TextView spvUnconfirmed;
         public final FontAwesomeTextView unitText;
         public final TextView textWho;
-        public final TextView inOutIcon;
         public final LinearLayout mainLayout;
 
         public ViewHolder(final View v) {
@@ -193,7 +192,6 @@ public class ListTransactionsAdapter extends
             textReplaceable = UI.find(v, R.id.listReplaceableText);
             spvUnconfirmed = UI.find(v, R.id.spvUnconfirmed);
             textWho = UI.find(v, R.id.listWhoText);
-            inOutIcon = UI.find(v, R.id.listInOutIcon);
             mainLayout = UI.find(v, R.id.list_item_layout);
             // TODO: For multiasset, enable unitText
             //if (GaService.IS_ELEMENTS)

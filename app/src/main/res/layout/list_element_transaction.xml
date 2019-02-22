@@ -6,17 +6,6 @@
               android:padding="16dp"
               android:orientation="vertical">
 
-    <com.greenaddress.greenbits.ui.FontAwesomeTextView
-        android:id="@+id/listInOutIcon"
-        android:layout_width="64dp"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:padding="14dp"
-        android:text="@string/fa_arrow_down"
-        android:textColor="@color/secondaryTextColor"
-        android:textSize="34sp"
-        android:visibility="gone"/>
-
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -68,13 +57,6 @@
             android:gravity="end"
             android:textColor="@color/textColor">
 
-            <com.greenaddress.greenbits.ui.FontAwesomeTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-light"/>
-
             <TextView
                 android:id="@+id/listValueText"
                 android:layout_width="wrap_content"
@@ -91,17 +73,22 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/listWhoText"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:padding="2dp"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif-medium"/>
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/listWhoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:singleLine="true"
+                android:maxWidth="200dp"
+                android:padding="2dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/listNumberConfirmation"
