@@ -93,8 +93,11 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             editor.apply();
         } else if (code == GDK.GA_RECONNECT) {
             message = getString(R.string.id_you_are_not_connected_to_the);
-        } else {
+        } else if (lastLoginException != null) {
             message = UI.i18n(getResources(), lastLoginException.getMessage());
+        } else {
+            // Should not happen
+            message = getString(R.string.id_error);
         }
 
         PinActivity.this.runOnUiThread(new Runnable() {

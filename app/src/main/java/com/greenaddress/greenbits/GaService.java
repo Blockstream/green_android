@@ -358,6 +358,11 @@ public class GaService extends Service  {
             mModel.getActiveAccountObservable().setActiveAccount(activeAccount);
         else
             mModel.getActiveAccountObservable().setActiveAccount(0);
+
+        // FIXME the following prevents an issue when notification are not transmitted even if login was successful
+        if (mModel.getBlockchainHeightObservable().getHeight() == null)
+            return;
+
         mConnectionManager.goPostLogin();
 
         if (!isWatchOnly()) {
