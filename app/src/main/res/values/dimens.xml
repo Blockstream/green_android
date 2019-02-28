@@ -24,6 +24,6 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
-    <dimen name="scan_laser_width">4dp</dimen>
+    <dimen name="scan_laser_width">1dp</dimen>
     <dimen name="scan_dot_size">8dp</dimen>
 </resources>
