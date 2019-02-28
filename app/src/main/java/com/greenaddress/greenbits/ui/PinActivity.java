@@ -64,6 +64,14 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     }
 
+    private int getCode(final Exception e) {
+        try {
+            final String stringCode = e.getMessage().split(" ")[1];
+            return Integer.parseInt(stringCode);
+        } catch (final Exception ignored) {}
+        return 1;
+    }
+
     @Override
     protected void onLoginFailure() {
         super.onLoginFailure();
@@ -71,8 +79,9 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         final SharedPreferences prefs = mService.cfgPin();
         final int counter = prefs.getInt("counter", 0) + 1;
         final SharedPreferences.Editor editor = prefs.edit();
-        final boolean notAuthorized = mService.getConnectionManager().getLastLoginCode() == GDK.GA_NOT_AUTHORIZED;
-        if (notAuthorized) {
+        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
+        final int code = getCode(lastLoginException);
+        if (code == GDK.GA_NOT_AUTHORIZED) {
             if (counter < 3) {
                 mService.getConnectionManager().clearPreviousLoginError();
                 editor.putInt("counter", counter);
@@ -82,8 +91,10 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 editor.clear();
             }
             editor.apply();
+        } else if (code == GDK.GA_RECONNECT) {
+            message = getString(R.string.id_you_are_not_connected_to_the);
         } else {
-            message = getString(R.string.id_error);
+            message = UI.i18n(getResources(), lastLoginException.getMessage());
         }
 
         PinActivity.this.runOnUiThread(new Runnable() {

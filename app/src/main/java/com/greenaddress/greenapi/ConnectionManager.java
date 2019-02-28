@@ -36,7 +36,7 @@ public class ConnectionManager extends Observable {
     private boolean mProxyEnabled;
     private boolean mTorEnabled;
     private boolean mLoginWithPin;
-    private int mLastLoginCode = 0;
+    private Exception mLastLoginException = null;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
     private static int CONNECTION_RETRY_ATTEMPTS = 3;
@@ -84,7 +84,7 @@ public class ConnectionManager extends Observable {
     public boolean isOffline() { return mState == ConnState.OFFLINE; }
 
     public boolean isLastLoginFailed() {
-        return mLastLoginCode != 0;
+        return mLastLoginException != null;
     }
 
     public boolean isDisconnectedOrLess() {
@@ -117,7 +117,7 @@ public class ConnectionManager extends Observable {
     public void clearPreviousLoginError() {
         if (isLastLoginFailed()) {
             Log.d(TAG, "clearing previous login error");
-            mLastLoginCode = 0;
+            mLastLoginException = null;
         }
     }
 
@@ -130,8 +130,8 @@ public class ConnectionManager extends Observable {
     }
 
 
-    public int getLastLoginCode() {
-        return mLastLoginCode;
+    public Exception getLastLoginException() {
+        return mLastLoginException;
     }
 
     public boolean isWatchOnly() {
@@ -185,11 +185,11 @@ public class ConnectionManager extends Observable {
             this.mHWDevice = hwDevice;
             this.mHWResolver = hwResolver;
             mSession.login(parent, hwDevice, "", "").resolve(null, hwResolver);
-            mLastLoginCode = 0;
+            mLastLoginException = null;
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
             Log.e(TAG, "Error while logging in " + e.getMessage() );
-            mLastLoginCode = getCode(e);
+            mLastLoginException = e;
             setState(ConnState.CONNECTED);
         }
     }
@@ -228,22 +228,15 @@ public class ConnectionManager extends Observable {
             } else {
                 throw new Exception("wrong parameters");
             }
-            mLastLoginCode = 0;
+            mLastLoginException = null;
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
             Log.e(TAG, "Error while logging " + e.getMessage() );
-            mLastLoginCode = getCode(e);
+            mLastLoginException = e;
             setState(ConnState.CONNECTED);
         }
     }
 
-    private int getCode(final Exception e) {
-        try {
-            final String stringCode = e.getMessage().split(" ")[1];
-            return Integer.parseInt(stringCode);
-        } catch (final Exception ignored) {}
-        return 1;
-    }
 
     public void disconnect() {
         setState(ConnState.DISCONNECTING);
