@@ -117,7 +117,10 @@ public class GDKSession {
     }
 
     public PagedData<TransactionData> getTransactionsPaged(final int subAccount, final int pageId) throws IOException {
-        final ObjectNode txListObject = (ObjectNode) GDK.get_transactions(mNativeSession, subAccount, pageId);
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("subaccount", subAccount);
+        details.put("page_id", pageId);
+        final ObjectNode txListObject = (ObjectNode) GDK.get_transactions(mNativeSession, details);
         final PagedData<TransactionData> transactionDataPagedData =
                 mObjectMapper.readValue(mObjectMapper.treeAsTokens(txListObject),
                         new TypeReference<PagedData<TransactionData>>() {});
@@ -126,7 +129,10 @@ public class GDKSession {
     }
 
     public JsonNode getTransactionRaw(final int subAccount, final String txhash) {
-        final ObjectNode txListObject = (ObjectNode) GDK.get_transactions(mNativeSession, subAccount, 0);
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("subaccount", subAccount);
+        details.put("page_id", 0);
+        final ObjectNode txListObject = (ObjectNode) GDK.get_transactions(mNativeSession, details);
         final ArrayNode array = (ArrayNode) txListObject.get("list");
         for (JsonNode node : array ) {
             if (node.get("txhash").asText().equals(txhash))
@@ -159,7 +165,10 @@ public class GDKSession {
     }
 
     public BalanceData getBalance(final Integer subAccount, final long confirmations) throws IOException {
-        final ObjectNode balanceData = (ObjectNode) GDK.get_balance(mNativeSession, subAccount.longValue(), confirmations);
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("subaccount", subAccount);
+        details.put("num_confs", confirmations);
+        final ObjectNode balanceData = (ObjectNode) GDK.get_balance(mNativeSession, details);
         BalanceData balanceData1 = mObjectMapper.treeToValue(balanceData, BalanceData.class);
         debugEqual(balanceData, balanceData1);
         return balanceData1;
@@ -244,7 +253,10 @@ public class GDKSession {
     }
 
     public List<TransactionData> getUTXO(final long subAccount, final long confirmations) throws IOException {
-        final ArrayNode unspentOutputs = (ArrayNode) GDK.get_unspent_outputs(mNativeSession, subAccount, confirmations);
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("subaccount", subAccount);
+        details.put("num_confs", confirmations);
+        final ArrayNode unspentOutputs = (ArrayNode) GDK.get_unspent_outputs(mNativeSession, details);
         return mObjectMapper.readValue(mObjectMapper.treeAsTokens(unspentOutputs), new TypeReference<List<TransactionData>>() {});
     }
 
