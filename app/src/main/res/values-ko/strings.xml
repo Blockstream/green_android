@@ -78,6 +78,7 @@
   <string name="id_days_remaining_s">%s일 남음</string>
   <string name="id_default_custom_fee_rate">사용자 지정 수수료 기본값</string>
   <string name="id_default_transaction_priority">기본 거래 우선 순위</string>
+  <string name="id_delete_s_twofactor">Delete %s Two-Factor</string>
   <string name="id_deleting_your_pin_will_remove">비밀번호를 지우시면 니모닉(복원 코드)이 없으면 영원히 지갑을 사용하실 수 없게 됩니다. 진행하시려면 "확인"을 누르십시오.</string>
   <string name="id_denomination">단위</string>
   <string name="id_deposit">입금</string>
@@ -105,8 +106,10 @@
   <string name="id_encryption_passphrase">암호화 비밀번호</string>
   <string name="id_enter">입력</string>
   <string name="id_enter_a_pgp_public_key_to_have">더 나은 보안을 위하여 PGP public 키를 입력한뒤 암호화된 이메일을 받아보세요.</string>
+  <string name="id_enter_a_private_key_to_sweep">Enter a private key to sweep into this wallet</string>
   <string name="id_enter_a_valid_onion_or_ip">유효한 .onion 또는 IP 주소 입력 (.onion 추천)</string>
   <string name="id_enter_a_valid_username">유효한 사용자 명 입력</string>
+  <string name="id_enter_an_address">Enter an address</string>
   <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">새로운 이메일 입력</string>
   <string name="id_enter_phone_number">전화번호 입력</string>

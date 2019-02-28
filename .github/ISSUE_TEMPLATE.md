@@ -2,17 +2,17 @@
 
 <!-- brief description of the bug -->
 
-#### Version
+### Version
 
-<!-- commid id or version number -->
+<!-- commit id or version number -->
 
 ### Steps to reproduce
 
-<!--if you can reliably reproduce the bug, list here the steps  -->
+<!-- if you can reliably reproduce the bug, list here the steps  -->
 
 ### Expected behaviour
 
-<!--description of the expected behavior -->
+<!-- description of the expected behavior -->
 
 ### Actual behaviour
 
@@ -20,14 +20,12 @@
 
 ### Screenshots
 
-<!--Screenshots if gui related, drag and drop to add to the issue -->
+<!-- screenshots if gui related, drag and drop to add to the issue -->
 
-#### Device or machine
+### Device or machine
 
 <!-- device/machine used, operating system -->
 
+### Additional info
 
-
-#### Additional info
-
-<!-- Additional information useful for debugging (e.g. logs) -->
+<!-- additional information useful for debugging (e.g. logs) -->

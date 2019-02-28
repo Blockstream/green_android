@@ -78,6 +78,7 @@
   <string name="id_days_remaining_s">Days remaining: %s</string>
   <string name="id_default_custom_fee_rate">Tarifa personalizada predeterminada</string>
   <string name="id_default_transaction_priority">Prioridad de transacciones predeterminada</string>
+  <string name="id_delete_s_twofactor">Delete %s Two-Factor</string>
   <string name="id_deleting_your_pin_will_remove">Deleting your PIN will remove wallet access permanently unless you have your mnemonic available. Press "OK" to continue.</string>
   <string name="id_denomination">Denominación</string>
   <string name="id_deposit">Depósito</string>
@@ -105,8 +106,10 @@
   <string name="id_encryption_passphrase">Encryption passphrase</string>
   <string name="id_enter">Ingresar</string>
   <string name="id_enter_a_pgp_public_key_to_have">Enter a PGP public key to have emails encrypted for better privacy.</string>
+  <string name="id_enter_a_private_key_to_sweep">Enter a private key to sweep into this wallet</string>
   <string name="id_enter_a_valid_onion_or_ip">Ingresar una dirección de IP o una .onion válida (preferentemente, .onion)</string>
   <string name="id_enter_a_valid_username">Ingresar un nombre de usuario válido</string>
+  <string name="id_enter_an_address">Enter an address</string>
   <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">Ingresar correo electrónico nuevo</string>
   <string name="id_enter_phone_number">Ingresar número de teléfono</string>

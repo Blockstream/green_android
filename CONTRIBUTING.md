@@ -15,7 +15,7 @@ If you want to contribute to the project, please refer to the following guidelin
 
 #### Pull Requests
 
-* Pull request that involve GUI changes must contain screenshots in the description 
+* Pull request that involve GUI changes must contain screenshots in the description
 
 * Before opening a pull request make sure the changes pass the CI
 

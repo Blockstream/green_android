@@ -78,6 +78,7 @@
   <string name="id_days_remaining_s">Залишилося днів: %s</string>
   <string name="id_default_custom_fee_rate">Стандартна комісія</string>
   <string name="id_default_transaction_priority">Стандартний пріоритет транзакцій</string>
+  <string name="id_delete_s_twofactor">Delete %s Two-Factor</string>
   <string name="id_deleting_your_pin_will_remove">Видалення PIN-коду заблокує ваш гаманець, доки ви не скористуєтесь мнемонічною фразою для відновлення доступу. Натисніть "OK" для продовження.</string>
   <string name="id_denomination">Деномінація</string>
   <string name="id_deposit">Депозит</string>
@@ -105,8 +106,10 @@
   <string name="id_encryption_passphrase">Кодова фраза шифрування</string>
   <string name="id_enter">Увійти</string>
   <string name="id_enter_a_pgp_public_key_to_have">Уведіть  PGP-ключ для отримання зашифрованих повідомлень на вашу поштову скриньку.</string>
+  <string name="id_enter_a_private_key_to_sweep">Enter a private key to sweep into this wallet</string>
   <string name="id_enter_a_valid_onion_or_ip">Введіть дійсну .onion або IP-адресу (бажано .onion)</string>
   <string name="id_enter_a_valid_username">Введіть дійсне ім\'я користувача </string>
+  <string name="id_enter_an_address">Enter an address</string>
   <string name="id_enter_an_address_or_sweep_paper">Enter an address or sweep paper wallet</string>
   <string name="id_enter_new_email">Введіть новий email</string>
   <string name="id_enter_phone_number">Введіть номер телефону</string>
