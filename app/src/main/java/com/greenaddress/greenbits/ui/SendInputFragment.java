@@ -7,7 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -129,6 +132,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                 mAmountView.setEnabled(false);
                 mSendAllButton.setVisibility(View.GONE);
                 mAccountBalance.setVisibility(View.GONE);
+            } else {
+                mAmountView.requestFocus();
+                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             }
 
             // Select the fee button that is the next highest rate from the old tx
