@@ -241,8 +241,8 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
                                      (major == 0x2001 && minor == 0 && patch < 4);
             } else if (mVendorId == VENDOR_LEDGER) {
                 isFirmwareOutdated = major < 0x3001 ||
-                                     (major == 0x3001 && minor < 2) ||
-                                     (major == 0x3001 && minor == 2 && patch < 5);
+                                     (major == 0x3001 && minor < 3) ||
+                                     (major == 0x3001 && minor == 3 && patch < 7);
             }
 
             if (!isFirmwareOutdated) {
