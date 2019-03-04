@@ -1,12 +1,14 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -38,6 +40,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private OnCallbackListener mCallbackListener;
     private MaterialDialog mCustomFeeDialog;
     private ObjectNode mTx;
+    private Boolean isKeyboardOpen;
 
     private View mView;
     private TextView mRecipientText;
@@ -173,6 +176,20 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
         UI.attachHideKeyboardListener(getActivity(), mView);
 
+        mView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            mView.getWindowVisibleDisplayFrame(r);
+            int screenHeight = mView.getRootView().getHeight();
+
+            // r.bottom is the position above soft keypad or device button.
+            // if keypad is shown, the r.bottom is smaller than that before.
+            int keypadHeight = screenHeight - r.bottom;
+
+            Log.d(TAG, "keypadHeight = " + keypadHeight);
+
+            isKeyboardOpen = (keypadHeight > screenHeight * 0.15); // 0.15 ratio is perhaps enough to determine keypad height.
+        });
+
         return mView;
     }
 
@@ -235,8 +252,17 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     @Override
     public void onClick(final View view) {
         if (view == mNextButton) {
-            if (mCallbackListener != null)
-                mCallbackListener.onFinish(mTx);
+            if (isKeyboardOpen) {
+                InputMethodManager inputManager = (InputMethodManager)
+                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                final View currentFocus = getActivity().getCurrentFocus();
+                inputManager.hideSoftInputFromWindow(currentFocus == null ? null : currentFocus.getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+            } else {
+                if (mCallbackListener != null)
+                    mCallbackListener.onFinish(mTx);
+            }
         } else if (view == mSendAllButton) {
             mSendAll = !mSendAll;
             updateTransaction(null);
