@@ -80,15 +80,6 @@ public abstract class LoginActivity extends GaActivity implements Observer, Netw
         }
     }
 
-    protected boolean checkPinExist() {
-        if (mService.hasPin()) {
-            startActivity(new Intent(this, PinActivity.class));
-            finish();
-            return true;
-        }
-        return false;
-    }
-
     protected void openNetworkSettings() {
         final NetworkSettingsFragment dialogFragment = new NetworkSettingsFragment();
         dialogFragment.setListener(this);

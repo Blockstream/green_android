@@ -1,18 +1,17 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.content.res.AppCompatResources;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
 
 public class FirstScreenActivity extends LoginActivity implements NetworkSettingsFragment.Listener {
     private Button mSelectNetwork;
+    private LinearLayout mWalletDetected;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_screen; }
@@ -33,6 +32,9 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> openNetworkSettings());
+
+        mWalletDetected = UI.find( this, R.id.walletDetected);
+        mWalletDetected.setOnClickListener(v -> startActivity(new Intent(this, PinActivity.class)));
     }
 
     private void askConfirmation(final Intent intent, final int message) {
@@ -61,29 +63,19 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
         case R.id.watchonly_preference:
             startActivity(new Intent(this, WatchOnlyLoginActivity.class));
             return true;
-        case R.id.enter_pin:
-            startActivity(new Intent(this, PinActivity.class));
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-        menu.findItem(R.id.enter_pin).setEnabled( mService.hasPin());
-        return true;
-    }
-
-    @Override
     public void onResumeWithService() {
-        mSelectNetwork.setText(mService.getNetwork().getName());
+        onSelectNetwork();
         mService.setPinJustSaved(false);
     }
 
     @Override
     public void onSelectNetwork() {
         mSelectNetwork.setText(mService.getNetwork().getName());
-        invalidateOptionsMenu();
-        checkPinExist();
+        UI.showIf(mService.hasPin(), mWalletDetected);
     }
 }

@@ -19,7 +19,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         if (mService == null)
             return;
         if (mService.isDisconnected()) {
-            toFirstOrPinScreen();
+            toFirst();
             return;
         }
         mService.getConnectionManager().addObserver(this);
@@ -42,7 +42,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             if (cm.isLoginRequired()) {
                 cm.login(this, cm.getHWDeviceData(), cm.getHWResolver());
             } else if (cm.isDisconnected()) {
-                toFirstOrPinScreen();
+                toFirst();
             }
         } else if (observable instanceof ToastObservable) {
             final ToastObservable tObs = (ToastObservable) observable;
@@ -64,15 +64,12 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         mService.getConnectionManager().deleteObserver(this);
         mService.getExecutor().execute(() -> {
             mService.disconnect();
-            toFirstOrPinScreen();
+            toFirst();
         });
     }
 
-    private void toFirstOrPinScreen() {
-        if (mService.hasPin())
-            toScreen(new Intent(this, PinActivity.class));
-        else
-            toScreen(new Intent(this, FirstScreenActivity.class));
+    private void toFirst() {
+        toScreen(new Intent(this, FirstScreenActivity.class));
         finishOnUiThread();
     }
 
