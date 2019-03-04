@@ -3,12 +3,16 @@ package com.greenaddress.greenbits.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -99,18 +103,6 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         } else {
             getPreferenceScreen().removePreference(mEmptyNotifications);
         }
-
-        addSpacingAtEnd();
-    }
-
-    private void addSpacingAtEnd() {
-        // add space in the end with empty preferences to avoid truncation by the navigation buttons
-        final Preference p = new Preference(mContextThemeWrapper);
-        p.setEnabled(false);
-        final Preference p2 = new Preference(mContextThemeWrapper);
-        p2.setEnabled(false);
-        getPreferenceScreen().addPreference(p);
-        getPreferenceScreen().addPreference(p2);
     }
 
     private String getDescription(final EventData event) {
@@ -169,5 +161,18 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         if (observable != null)
             observable.addObserver(this);
         setup(observable);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final RecyclerView listView = getListView();
+        listView.addItemDecoration(new DividerItem(getContext()));
+        float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
+        final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
+        listView.addItemDecoration(bottomOffsetDecoration);
+        setDivider(null);
+        listView.setFocusable(false);
     }
 }
