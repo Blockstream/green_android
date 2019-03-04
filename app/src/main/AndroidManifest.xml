@@ -177,6 +177,7 @@
             android:name=".onboarding.SecurityActivity"/>
         <activity android:name=".SendActivity"
             android:label="@string/id_send"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity android:name=".MessagesActivity" />
         <activity android:name=".TrezorPinActivity" />
