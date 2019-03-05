@@ -69,8 +69,7 @@
                     android:src="@drawable/ic_stack_wallets"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:paddingStart="@dimen/card_padding"
-                    android:paddingEnd="@dimen/card_padding"
+                    android:padding="@dimen/button_margin"
                     android:background="@color/hide"
                     />
 
