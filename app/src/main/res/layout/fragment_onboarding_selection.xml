@@ -31,21 +31,21 @@
                 android:id="@+id/word1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:padding="8dp"
                 android:text="one"/>
             <TextView
                 android:id="@+id/word2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:padding="8dp"
                 android:text="two"/>
             <TextView
                 android:id="@+id/word3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:padding="8dp"
                 android:text="three"/>
         </LinearLayout>
