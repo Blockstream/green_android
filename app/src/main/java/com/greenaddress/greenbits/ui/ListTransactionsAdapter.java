@@ -99,10 +99,7 @@ public class ListTransactionsAdapter extends
                 message = txItem.counterparty;
         } else {
             if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
-                message = String.format("%s %s", mActivity.getString(R.string.id_redeposited),
-                                        txItem.memo);
-            else if (humanCpty)
-                message = String.format("%s %s", txItem.counterparty, txItem.memo);
+                message = String.format("%s %s", mActivity.getString(R.string.id_redeposited), txItem.memo);
             else
                 message = txItem.memo;
         }
