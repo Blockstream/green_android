@@ -7,8 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
+import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,13 +51,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     private Menu mMenu;
     private TextView mEstimatedBlocks;
-    private View mMemoTitle;
-    private TextView mMemoIcon;
+    private TextView mMemoTitle;
+    private TextView mMemoSave;
     private TextView mMemoText;
-    private TextView mMemoEditText;
     private TextView mUnconfirmedText;
     private TextView mStatusIncreaseFee;
-    private Button mMemoSaveButton;
     private Button mExplorerButton;
     private Dialog mSummary;
     private Dialog mTwoFactor;
@@ -75,10 +75,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         setTitleBackTransparent();
 
         mMemoTitle = UI.find(this, R.id.txMemoTitle);
-        mMemoIcon = UI.find(this, R.id.sendToNoteIcon);
+        mMemoSave = UI.find(this, R.id.txMemoSave);
         mMemoText = UI.find(this, R.id.txMemoText);
-        mMemoEditText = UI.find(this, R.id.sendToNoteText);
-        mMemoSaveButton = UI.find(this, R.id.saveMemo);
         mEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
         mExplorerButton = UI.find(this, R.id.txExplorer);
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
@@ -207,17 +205,29 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         // Memo
         if (!TextUtils.isEmpty(mTxItem.memo)) {
             mMemoText.setText(mTxItem.memo);
-        } else {
-            UI.hideIf(isWatchOnly, mMemoTitle);
         }
-        UI.hideIf(isWatchOnly, mMemoIcon);
 
         if (!isWatchOnly) {
-            mMemoIcon.setOnClickListener(this);
-            mMemoSaveButton.setOnClickListener(this);
+            mMemoSave.setOnClickListener(this);
+            mMemoText.addTextChangedListener(new TextWatcher() {
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        mMemoSave.setVisibility(View.VISIBLE);
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+                public void afterTextChanged(Editable s) { }
+            });
+        } else {
+            mMemoText.setTextIsSelectable(true);
+            mMemoText.setKeyListener(null);
         }
 
+        // The following are needed to effectively loose focus and cursor from mMemoText
+        mMemoTitle.setFocusable(true);
+        mMemoTitle.setFocusableInTouchMode(true);
 
+        // SPV
         final boolean spvVerified = mTxItem.spvVerified || mTxItem.isSpent ||
                 mTxItem.type == TransactionItem.TYPE.OUT ||
                 !mService.isSPVEnabled();
@@ -273,8 +283,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     public void onDestroy() {
         super.onDestroy();
-        UI.unmapClick(mMemoIcon);
-        UI.unmapClick(mMemoSaveButton);
+        UI.unmapClick(mMemoText);
+        UI.unmapClick(mMemoSave);
         UI.unmapClick(mStatusLayout);
     }
 
@@ -287,25 +297,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     @Override
     public void onClick(final View v) {
-        if (v == mMemoIcon)
-            onMemoIconClicked();
-        else if (v == mMemoSaveButton)
-            onMemoSaveButtonClicked();
+        if (v == mMemoSave)
+            onMemoSaveClicked();
         else if (v == mStatusLayout)
             onBumpFeeButtonClicked();
-    }
-
-    private void onMemoIconClicked() {
-        final boolean editInProgress = mMemoEditText.getVisibility() == View.VISIBLE;
-        mMemoEditText.setText(UI.getText(mMemoText));
-        UI.hideIf(editInProgress, mMemoEditText);
-        UI.hideIf(editInProgress, mMemoSaveButton);
-        UI.showIf(editInProgress, mMemoText);
-        if(!editInProgress) {
-            mMemoEditText.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(mMemoEditText, InputMethodManager.SHOW_IMPLICIT);
-        }
     }
 
     @Override
@@ -328,30 +323,28 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     private void onFinishedSavingMemo() {
         runOnUiThread(() -> {
-            mMemoText.setText(UI.getText(mMemoEditText));
-            UI.hide(mMemoEditText);
-            UI.hide(mMemoSaveButton);
-            UI.hideIf(UI.getText(mMemoText).isEmpty(), mMemoText);
-            hideKeyboardFrom(mMemoEditText);
+            mMemoSave.setVisibility(View.GONE);
+            hideKeyboardFrom(mMemoText);
+            mMemoTitle.requestFocus();
         });
         // Force reload tx
         mService.getModel().getTransactionDataObservable(mTxItem.subaccount).refresh();
     }
 
-    private void onMemoSaveButtonClicked() {
-        final String newMemo = UI.getText(mMemoEditText);
-        if (newMemo.equals(UI.getText(mMemoText))) {
+    private void onMemoSaveClicked() {
+        final String newMemo = UI.getText(mMemoText);
+        if (newMemo.equals(mTxItem.memo)) {
             onFinishedSavingMemo();
             return;
         }
 
         CB.after(mService.changeMemo(mTxItem.txHash.toString(), newMemo),
-                 new CB.Toast<Boolean>(this) {
-            @Override
-            public void onSuccess(final Boolean result) {
-                onFinishedSavingMemo();
-            }
-        });
+                new CB.Toast<Boolean>(this) {
+                    @Override
+                    public void onSuccess(final Boolean result) {
+                        onFinishedSavingMemo();
+                    }
+                });
     }
 
     private void openInBrowser(final Button button, final String identifier, final String url,

@@ -120,13 +120,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/SectionTitle"
-                android:text="@string/id_my_notes"/>
+                android:text="@string/id_my_notes" />
 
-            <MultiAutoCompleteTextView
+            <EditText
                 android:id="@+id/noteText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="1024"/>
+                android:maxLength="1024"
+                android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+                android:textColor="@color/textColor"
+                android:background="@drawable/textbox"
+                android:paddingTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="30dp" />
+
         </LinearLayout>
     </ScrollView>
 
