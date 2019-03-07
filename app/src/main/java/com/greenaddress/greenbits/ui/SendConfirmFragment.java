@@ -89,6 +89,7 @@ public class SendConfirmFragment extends GAFragment {
             subaccountText.setText(subaccountData.getNameWithDefault(getString(R.string.id_main)));
         }
         addressText.setText(currentRecipient.getAddress());
+        noteText.setText(mTxData.getMemo());
 
         // Set currency & amount
         final long amount = mTxData.getSatoshi();
