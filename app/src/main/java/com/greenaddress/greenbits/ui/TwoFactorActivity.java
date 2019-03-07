@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
     private Button mContinueButton;
     private TextView mPromptText;
+    private EditText mPrefix;
 
     private TwoFactorConfigData twoFactorConfigData;
 
@@ -42,6 +44,7 @@ public class TwoFactorActivity extends LoggedActivity {
         setContentView(layoutId);
         mContinueButton = UI.find(this, R.id.continueButton);
         mPromptText = UI.find(this, R.id.prompt);
+        mPrefix = UI.find(this, R.id.prefix);
 
         switch (mMethod) {
         case "reset":
@@ -140,6 +143,7 @@ public class TwoFactorActivity extends LoggedActivity {
         final TextView detailsText = setupDetailsView(
             InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, "jane@example.com");
         final String type = getString(R.string.id_email_address);
+        mPrefix.setVisibility(View.GONE);
 
         mPromptText.setText(getTypeString(UI.getText(mPromptText), type));
         mContinueButton.setOnClickListener(new View.OnClickListener() {
@@ -155,14 +159,14 @@ public class TwoFactorActivity extends LoggedActivity {
     }
 
     private void showProvidePhone() {
-        final TextView detailsText = setupDetailsView(InputType.TYPE_CLASS_PHONE, "+123456789");
+        final TextView detailsText = setupDetailsView(InputType.TYPE_CLASS_PHONE, "123456789");
 
         final String type = getString(R.string.id_phone_number);
         mPromptText.setText(getTypeString(UI.getText(mPromptText), type));
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final String details = UI.getText(detailsText).trim();
+                final String details = UI.getText(mPrefix).trim() + UI.getText(detailsText).trim();
                 if (details.isEmpty())
                     return;
                 if (!isValidPhoneNumber(details)) {
@@ -177,14 +181,14 @@ public class TwoFactorActivity extends LoggedActivity {
 
 
     private void showProvideSms() {
-        final TextView detailsText = setupDetailsView(InputType.TYPE_CLASS_PHONE, "+123456789");
+        final TextView detailsText = setupDetailsView(InputType.TYPE_CLASS_PHONE, "123456789");
 
         final String type = getString(R.string.id_phone_number);
         mPromptText.setText(getTypeString(UI.getText(mPromptText), type));
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final String details = UI.getText(detailsText).trim();
+                final String details = UI.getText(mPrefix).trim() + UI.getText(detailsText).trim();
                 if (details.isEmpty())
                     return;
                 if (!isValidPhoneNumber(details)) {

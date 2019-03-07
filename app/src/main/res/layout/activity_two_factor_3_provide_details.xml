@@ -32,13 +32,28 @@
                 android:layout_marginTop="15sp"
                 android:layout_marginBottom="10sp"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:id="@+id/prefix"
+                    android:ems="10"
+                    android:singleLine="true"
+                    android:hint="+1"/>
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:hint="123456789"
+                    android:inputType="textEmailAddress"
+                    android:ems="10"
+                    android:layout_weight="1"
+                    android:id="@+id/details" />
+            </LinearLayout>
 
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:ems="10"
-                android:id="@+id/details" />
 
             <LinearLayout
                 android:layout_width="match_parent"
