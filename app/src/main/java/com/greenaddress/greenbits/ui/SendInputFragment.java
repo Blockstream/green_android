@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -43,8 +44,6 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private Button mSendAllButton;
 
     private  int mBlockTargets[];
-    private static final int mBlockTimes[] =
-    { R.string.id_1030_minutes, R.string.id_2_hours, R.string.id_4_hours };
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;
     private long mMinFeeRate;
@@ -93,7 +92,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             mFeeEstimates[i] = estimates.get(mBlockTargets[i]);
             mFeeButtons[i] = mView.findViewById(mButtonIds[i]);
             final String summary = String.format("(%s)", UI.getFeeRateString(estimates.get(mBlockTargets[i])));
-            final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : " " + getString(mBlockTimes[i]));
+            // TODO: blocksPerHour should be set to 60 for liquid
+            final String expectedConfirmationTime = getExpectedConfirmationTime(getContext(), 6, mBlockTargets[i]);
+            final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : expectedConfirmationTime);
             mFeeButtons[i].init(buttonText, summary, i==3);
             mFeeButtons[i].setOnClickListener(this);
         }
@@ -379,5 +380,13 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     public interface OnCallbackListener {
         void onFinish(final JsonNode transactionData);
+    }
+
+    private String getExpectedConfirmationTime(Context context, final int blocksPerHour, final int blocks) {
+        final int n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour);
+        final String s = context.getString((blocks % blocksPerHour) == 0?
+                (blocks == blocksPerHour ? R.string.id_hour : R.string.id_hours) :
+                R.string.id_minutes);
+        return String.format(Locale.getDefault(), " ~ %d %s", n, s);
     }
 }
