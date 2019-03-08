@@ -230,14 +230,13 @@ public class SPV {
             final TransactionDataObservable utxoDataObservable =
                 model.getUTXODataObservable(subaccountData.getPointer());
             List<TransactionData> transactionDataList = utxoDataObservable.getTransactionDataList();
-            if (transactionDataList == null) {
+            if (!utxoDataObservable.isExecutedOnce()) {
                 utxoDataObservable.refreshSync();
                 transactionDataList = utxoDataObservable.getTransactionDataList();
             }
             utxos.addAll(transactionDataList);
         }
 
-        Log.d(TAG, "total utxos: " + utxos.size());
         final Set<TransactionOutPoint> newUtxos = new HashSet<>();
         boolean recalculateBloom = false;
 
@@ -247,7 +246,6 @@ public class SPV {
             final Integer subaccount = utxo.getSubaccount();
             final Integer pointer = utxo.getPointer();
             final Sha256Hash txHash = utxo.getTxhashAsSha256Hash();
-
 
             if (isVerified(txHash)) {
                 addToUtxo(txHash, prevIndex, subaccount, pointer);
