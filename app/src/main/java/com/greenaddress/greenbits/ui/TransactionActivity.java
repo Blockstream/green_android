@@ -60,7 +60,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private ImageView mStatusIcon;
-    private LinearLayout mStatusLayout;
 
     private TransactionItem mTxItem;
 
@@ -82,7 +81,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
         mStatusIncreaseFee = UI.find(this, R.id.status_increase_fee);
         mStatusIcon = UI.find(this, R.id.status_icon);
-        mStatusLayout =  UI.find(this, R.id.status_layout);
 
         final TextView doubleSpentByText = UI.find(this, R.id.txDoubleSpentByText);
         final TextView doubleSpentByTitle = UI.find(this, R.id.txDoubleSpentByTitle);
@@ -123,7 +121,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             mStatusIcon.setVisibility(View.GONE);
         } else {
             confirmations = getString(R.string.id_completed);
-            confirmationsColor = R.color.grey_light;
+            confirmationsColor = R.color.green;
             mStatusIcon.setVisibility(View.VISIBLE);
         }
         mUnconfirmedText.setText(confirmations);
@@ -269,9 +267,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final boolean allowRbf = block > 1 || mService.getNetwork().alwaysAllowRBF();
 
         UI.show(mStatusIncreaseFee);
-        mStatusLayout.setOnClickListener(this);
-        mStatusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigate_next_black_24dp));
-        mStatusIcon.setVisibility(View.VISIBLE);
+        mStatusIncreaseFee.setOnClickListener(this);
+        mStatusIcon.setVisibility(View.GONE);
     }
 
     @Override
@@ -285,7 +282,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         super.onDestroy();
         UI.unmapClick(mMemoText);
         UI.unmapClick(mMemoSave);
-        UI.unmapClick(mStatusLayout);
+        UI.unmapClick(mStatusIncreaseFee);
     }
 
     @Override
@@ -299,7 +296,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     public void onClick(final View v) {
         if (v == mMemoSave)
             onMemoSaveClicked();
-        else if (v == mStatusLayout)
+        else if (v == mStatusIncreaseFee)
             onBumpFeeButtonClicked();
     }
 

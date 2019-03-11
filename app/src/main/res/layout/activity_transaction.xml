@@ -31,44 +31,51 @@
                 android:layout_width="wrap_content"
                 android:layout_height="20dp" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/status_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/buttonJungleGreen"
                 android:layout_marginStart="@dimen/activity_vertical_margin"
                 android:layout_marginEnd="@dimen/activity_vertical_margin"
-                android:padding="@dimen/activity_vertical_margin"
                 >
                 <TextView
                     android:id="@+id/txUnconfirmedText"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textSize="18sp"
-                    android:text="aaa"
-                    />
-                <TextView
-                    android:id="@+id/status_increase_fee"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|end"
-                    android:text="@string/id_increase_fee"
-                    android:textColor="@color/grey_light"
-                    android:paddingEnd="8dp"
+                    android:layout_centerVertical="true"
                     />
                 <ImageView
                     android:id="@+id/status_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/activity_vertical_margin"
+                    android:layout_toRightOf="@id/txUnconfirmedText"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/ic_done"/>
+                <TextView
+                    android:id="@+id/status_increase_fee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:maxWidth="120dp"
+                    android:inputType="textMultiLine"
+                    android:layout_centerVertical="true"
+                    android:singleLine="false"
+                    android:maxLines="2"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/id_increase_fee"
+                    android:textColor="@color/secondaryTextColor"
+                    android:background="@drawable/material_button_increase_fee"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="4dp"
+                    />
 
-            </LinearLayout>
 
-
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
