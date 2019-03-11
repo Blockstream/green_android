@@ -47,9 +47,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:windowSoftInputMode="adjustResize|stateHidden"
             android:name=".MnemonicActivity"
-            android:label="@string/id_restore" />
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:screenOrientation="portrait"
+            android:label="@string/id_restore"
+            />
 
         <activity-alias
             android:name=".NFC"
@@ -69,14 +71,15 @@
             android:name=".TabbedMainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
-
         </activity>
 
         <service
             android:name="com.greenaddress.greenbits.GaService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            />
 
         <activity
             android:name=".PinActivity"
@@ -115,17 +118,25 @@
         <activity
             android:name=".PinSaveActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateVisible" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible"
+            />
         <activity
             android:name=".FirstScreenActivity"
-            android:label="@string/app_name" />
+            android:screenOrientation="portrait"
+            android:label="@string/app_name"
+            />
         <activity
             android:name=".SubaccountSelectActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name=".ScanForResultActivity"
-            android:label="@string/id_qr_scanner" />
+            android:screenOrientation="portrait"
+            android:label="@string/id_qr_scanner"
+            />
         <activity
             android:name=".monitor.NetworkMonitorActivity"
             android:label="@string/id_network_monitor" />
@@ -153,35 +164,77 @@
         </activity>
         <activity
             android:name=".TransactionActivity"
-            android:label="@string/id_transaction_details" />
+            android:screenOrientation="portrait"
+            android:label="@string/id_transaction_details"
+            />
         <activity
             android:name=".TwoFactorActivity"
-            android:label="@string/id_1s_twofactor_set_up" />
+            android:screenOrientation="portrait"
+            android:label="@string/id_1s_twofactor_set_up"
+            />
         <activity
             android:name=".preferences.SettingsActivity"
-            android:label="@string/id_settings" />
-        <activity android:name=".FailHardActivity" />
-        <activity android:name=".WatchOnlyLoginActivity" />
-        <activity android:name=".ReceiveActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/id_settings"
+            />
+        <activity
+            android:name=".FailHardActivity"
+            />
+        <activity
+            android:name=".WatchOnlyLoginActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".ReceiveActivity"
+            android:screenOrientation="portrait"
             android:label="@string/id_receive"
             android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity android:name=".ScanActivity"
+            android:screenOrientation="portrait"
             android:label="@string/id_send_to" />
-        <activity android:name=".onboarding.TermsActivity" />
-        <activity android:name=".onboarding.WordsActivity" />
-        <activity android:name=".onboarding.SelectionActivity" />
-        <activity android:name=".onboarding.SuccessActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".onboarding.InfoActivity" />
         <activity
-            android:name=".onboarding.SecurityActivity"/>
-        <activity android:name=".SendActivity"
+            android:name=".onboarding.TermsActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".onboarding.WordsActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".onboarding.SelectionActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".onboarding.SuccessActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity
+            android:name=".onboarding.InfoActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".onboarding.SecurityActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".SendActivity"
             android:label="@string/id_send"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
-        <activity android:name=".MessagesActivity" />
-        <activity android:name=".TrezorPinActivity" />
-        <activity android:name=".TrezorPassphraseActivity"></activity>
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            />
+        <activity
+            android:name=".MessagesActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".TrezorPinActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".TrezorPassphraseActivity"
+            android:screenOrientation="portrait"
+            />
 
     </application>
 
