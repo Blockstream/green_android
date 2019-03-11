@@ -2,16 +2,18 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TextView.BufferType;
 
 import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
 
 public class FirstScreenActivity extends LoginActivity implements NetworkSettingsFragment.Listener {
     private Button mSelectNetwork;
-    private LinearLayout mWalletDetected;
+    private TextView mWalletDetected;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_screen; }
@@ -34,6 +36,13 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
         mSelectNetwork.setOnClickListener(v -> openNetworkSettings());
 
         mWalletDetected = UI.find( this, R.id.walletDetected);
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(UI.getColoredString(getString(R.string.id_a_wallet_is_detected_on_this),
+                getResources().getColor(R.color.grey_light)));
+        builder.append(" ");
+        builder.append(UI.getColoredString(getString(R.string.id_log_in),
+                getResources().getColor(R.color.green)));
+        mWalletDetected.setText(builder, BufferType.SPANNABLE);
         mWalletDetected.setOnClickListener(v -> startActivity(new Intent(this, PinActivity.class)));
     }
 
