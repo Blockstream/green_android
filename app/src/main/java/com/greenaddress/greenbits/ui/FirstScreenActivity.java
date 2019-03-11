@@ -24,11 +24,11 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
         final Button firstLogInButton = findViewById(R.id.firstLogInButton);
         firstLogInButton.setOnClickListener(v -> askConfirmation(
                 new Intent(this, MnemonicActivity.class),
-                R.string.id_there_is_already_a_pin_set_for));
+                R.string.id_green_only_supports_one_pin_for));
         final Button firstSignUpButton = findViewById(R.id.firstSignUpButton);
         firstSignUpButton.setOnClickListener(v -> askConfirmation(
                 new Intent(this, TermsActivity.class),
-                R.string.id_there_is_already_a_pin_set_for));
+                R.string.id_green_only_supports_one_pin_for));
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> openNetworkSettings());
@@ -40,7 +40,7 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
     private void askConfirmation(final Intent intent, final int message) {
         if(mService.hasPin()) {
             UI.popup(this, R.string.id_warning)
-                    .content(getString(message, mService.getNetwork().getNetwork()))
+                    .content(getString(message))
                     .onPositive((dialog, which) -> startActivity(intent)).build().show();
         } else {
             startActivity(intent);

@@ -86,7 +86,7 @@ public class SendConfirmFragment extends GAFragment {
             final int subAccount = subaccount;
             final SubaccountData subaccountData =
                 service.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
-            subaccountText.setText(subaccountData.getNameWithDefault(getString(R.string.id_main)));
+            subaccountText.setText(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
         }
         addressText.setText(currentRecipient.getAddress());
         noteText.setText(mTxData.getMemo());

@@ -66,7 +66,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             final BalanceData balance = mService.getModel().getBalanceDataObservable(pointer).getBalanceData();
 
             // Setup subaccount info
-            holder.mAccountView.setTitle(subaccount.getNameWithDefault(mResources.getString(R.string.id_main)));
+            holder.mAccountView.setTitle(subaccount.getNameWithDefault(mResources.getString(R.string.id_main_account)));
             if (balance != null && mService.getModel().getSettings() != null) {
                 holder.mAccountView.setBalance(mService, balance);
             }
@@ -79,7 +79,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             holder.mAccountView.showAdd(true);
             holder.mAccountView.setOnClickListener( view -> {
                 new MaterialDialog.Builder(mActivity)
-                        .content(mResources.getString(R.string.id_adding_new_accounts))
+                        .content(mResources.getString(R.string.id_new_accounts_functionality))
                         .backgroundColor(mResources.getColor(R.color.buttonJungleGreen))
                         .build().show();
             });

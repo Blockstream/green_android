@@ -1,99 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="24dp"
-    android:paddingTop="42dp"
-    android:paddingRight="24dp"
-    android:paddingBottom="42dp">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/id_log_in_to_receive_funds_and"
-        android:textSize="32sp"
-        android:fontFamily="sans-serif-regular"
-        android:textColor="@color/white"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1" />
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
-
-        <EditText
-            android:id="@+id/input_user"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints=""
-            android:hint="@string/id_username"
-            android:inputType="textNoSuggestions|textVisiblePassword" />
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:passwordToggleEnabled="true">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/input_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/id_password"
-            android:imeOptions="flagNoPersonalizedLearning"
-            android:importantForAccessibility="no"
-            android:inputType="textPassword" />
-    </android.support.design.widget.TextInputLayout>
+    android:fillViewport="true" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingTop="42dp"
+        android:paddingRight="24dp"
+        android:paddingBottom="42dp">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/id_remember_username"
-            android:textColor="@color/textColor"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/id_log_in_via_watchonly_to_receive"
+                android:textSize="32sp"
+                android:fontFamily="sans-serif-regular"
+                android:textColor="@color/white"/>
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/remember_watch_only"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/textColor" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/input_user"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints=""
+                    android:hint="@string/id_username"
+                    android:inputType="textNoSuggestions|textVisiblePassword" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:passwordToggleEnabled="true">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/id_password"
+                    android:imeOptions="flagNoPersonalizedLearning"
+                    android:importantForAccessibility="no"
+                    android:inputType="textPassword" />
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/id_remember_username"
+                    android:textColor="@color/textColor"/>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/remember_watch_only"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/textColor" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <com.greenaddress.greenbits.ui.CircularButton
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="4dp"
+                android:padding="12dp"
+                app:cardBackgroundColor="@color/colorAccent"
+                app:text="@string/id_log_in"
+                app:textColor="@color/white" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/id_watchonly_mode_can_be_activated"/>
+
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
-
-    <com.greenaddress.greenbits.ui.CircularButton
-        android:id="@+id/btn_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="4dp"
-        android:padding="12dp"
-        app:cardBackgroundColor="@color/colorAccent"
-        app:text="@string/id_log_in"
-        app:textColor="@color/white" />
-
-</LinearLayout>
+</ScrollView>

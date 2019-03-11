@@ -58,8 +58,8 @@
 
     <Preference
         android:key="twoFacLimits"
-        android:title="@string/id_twofactor_threshold"
-        android:summary="@string/id_set_twofactor_threshold" />
+        android:title="@string/id_spending_limit"
+        android:summary="@string/id_set_up_spending_limit" />
 
     <SwitchPreference
         android:key="twoFacNLocktimeEmails"
@@ -67,7 +67,8 @@
 
     <Preference
         android:key="send_nlocktime"
-        android:title="@string/id_request_recovery_transactions" />
+        android:title="@string/id_recovery_transactions"
+        android:summary="@string/id_request_recovery_transactions" />
 
     <Preference
         android:key="reset_twofactor"
@@ -92,11 +93,13 @@
 
     <Preference
         android:key="pgp_key"
-        android:title="@string/id_pgp_key" />
+        android:title="@string/id_pgp_key"
+        android:summary="@string/id_set_up_pgp_key_for" />
 
     <Preference
         android:key="spv_synchronization"
-        android:title="@string/id_spv_synchronization" />
+        android:title="@string/id_spv_synchronization"
+        android:summary="@string/id_enable_spv_and_modify_spv"/>
 
     <Preference
         android:key="network_monitor"

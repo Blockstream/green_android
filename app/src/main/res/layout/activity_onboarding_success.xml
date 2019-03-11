@@ -52,6 +52,6 @@
         style="@style/gradientButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/id_improve_security" />
+        android:text="@string/id_additional_security" />
 
 </LinearLayout>

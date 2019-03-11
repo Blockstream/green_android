@@ -67,7 +67,7 @@ public class SelectionFragment extends Fragment {
         }
 
         final TextView titleText = UI.find(view, R.id.titleText);
-        titleText.setText(getString(R.string.id_select_word_number_d, offset + 1));
+        titleText.setText(getString(R.string.id_word_d_of_d, offset + 1, 24));
 
         // Choose the random words to verify
         final ArrayList<String> dictionary = new ArrayList<>();

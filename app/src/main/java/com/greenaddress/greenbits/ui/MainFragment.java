@@ -275,7 +275,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             final GaService service = getGAService();
             final int subaccount = service.getModel().getCurrentSubaccount();
             final SubaccountData subaccountData = service.getSubaccountData(subaccount);
-            mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main)));
+            mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
             mAccountView.setIcon(getResources().getDrawable(getGAService().getNetwork().getIcon()));
             mAccountView.setBalance(service, balanceData);
             if (service.isElements()) {

@@ -101,7 +101,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             });
         } else {
             mPinPref.setEnabled(false);
-            mPinPref.setSummary(getString(R.string.id_there_is_already_a_pin_set_for, mService.getNetwork().getNetwork()));
+            mPinPref.setSummary(getString(R.string.id_green_only_supports_one_pin_per));
         }
 
         // Watch-Only Login
@@ -316,7 +316,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 final String username2 = mService.getSession().getWatchOnlyUsername();
                 getActivity().runOnUiThread(() -> {
                     if (username2.isEmpty())
-                        mWatchOnlyLogin.setSummary(R.string.id_touch_to_set_up);
+                        mWatchOnlyLogin.setSummary(R.string.id_set_up_watchonly_credentials);
                     else
                         mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username2));
                 });
@@ -592,7 +592,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             try {
                 final boolean isFiat = limitsData.get("is_fiat").asBoolean();
                 if (!isFiat && limitsData.get("satoshi").asLong(0) == 0) {
-                    mLimitsPref.setSummary(R.string.id_set_twofactor_threshold);
+                    mLimitsPref.setSummary(R.string.id_set_up_spending_limit);
                 } else {
                     final String limit = mService.getValueString(limitsData, isFiat, true);
                     mLimitsPref.setSummary(limit);
@@ -628,7 +628,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         amountEdit.selectAll();
 
         final MaterialDialog dialog;
-        dialog = UI.popup(getActivity(), R.string.id_set_twofactor_threshold)
+        dialog = UI.popup(getActivity(), R.string.id_set_up_spending_limit)
                  .cancelable(false)
                  .customView(v, true)
                  .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))

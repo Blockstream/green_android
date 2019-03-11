@@ -9,6 +9,7 @@
   <string name="id_4_hours">~ 4 Hours</string>
   <string name="id_5_seconds_minimum">最低5秒</string>
   <string name="id_a_new_transaction_has_just">貴方のウォレットに新しいトランザクションが届きました。</string>
+  <string name="id_a_wallet_is_detected_on_this">A wallet is detected on this device:</string>
   <string name="id_about">ABOUT</string>
   <string name="id_accept">承諾</string>
   <string name="id_account">ACCOUNT</string>
@@ -19,13 +20,13 @@
   <string name="id_add_custom_network_by_url">URLでカスタム・ネットワークを登録する</string>
   <string name="id_add_new_account">Add New Account</string>
   <string name="id_add_wallet">ウォレットを登録する</string>
-  <string name="id_adding_new_accounts">Adding New Accounts functionality coming soon.</string>
+  <string name="id_additional_security">Additional Security</string>
   <string name="id_address">アドレス</string>
   <string name="id_address_1s">アドレス:%1$s</string>
   <string name="id_address_copied_to_clipboard">Address copied to clipboard</string>
   <string name="id_advanced">ADVANCED</string>
   <string name="id_all">All</string>
-  <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in watch-only mode.</string>
   <string name="id_always">Always</string>
   <string name="id_amount">額</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
@@ -52,6 +53,7 @@
   <string name="id_choose_your_network">Choose Your Network</string>
   <string name="id_clear">クリア</string>
   <string name="id_completed">完了</string>
+  <string name="id_confirm_code">Confirm Code</string>
   <string name="id_confirmation">検証</string>
   <string name="id_confirmation_in_12_blocks_2">12ブロックで検証、平均2時間</string>
   <string name="id_confirmation_in_24_blocks_4">Confirmation in 24 blocks, 4 hours on average</string>
@@ -64,7 +66,7 @@
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
   <string name="id_create">生成</string>
   <string name="id_create_a_pin_to_access_your">Create a PIN to access your wallet</string>
-  <string name="id_create_wallet">ウォレット生成</string>
+  <string name="id_create_new_wallet">Create New Wallet</string>
   <string name="id_currency">貨幣</string>
   <string name="id_custom">カスタム</string>
   <string name="id_custom_network_added_enable_it">カスタム・ネットワーク登録完了、ネットワーク環境で利用する</string>
@@ -89,7 +91,7 @@
   <string name="id_disputed">Disputed</string>
   <string name="id_done">完了</string>
   <string name="id_dont_ask_me_again">Don\'t ask me again</string>
-  <string name="id_dont_store_your_mnemonic_in">Don\'t store your mnemonic in email, on your mobile device, on your desktop, or in any online service.</string>
+  <string name="id_dont_store_your_mnemonic_on">Don\'t store your mnemonic on your phone, computer, or any online services.</string>
   <string name="id_dont_take_screenshots_of_your">貴方のmnemonicをスクリーンショット撮らないで下さい。</string>
   <string name="id_double_spend">二重支払い</string>
   <string name="id_double_spend_by">二重支払い</string>
@@ -100,6 +102,7 @@
   <string name="id_enable_custom_networks_debug">カスタムネットワークのデバッグオプションをオンにする</string>
   <string name="id_enable_face_id">顔ID機能をONにする</string>
   <string name="id_enable_spv">SPV機能をONにする</string>
+  <string name="id_enable_spv_and_modify_spv">Enable SPV and modify SPV settings</string>
   <string name="id_enable_touch_id">タッチID機能をONにする</string>
   <string name="id_enabled">Enabled</string>
   <string name="id_enabled_1s">使用中: %1$s</string>
@@ -117,6 +120,7 @@
   <string name="id_enter_the_matching_words">マッチングキーワードを入力</string>
   <string name="id_enter_the_pin_for_your_hardware">ハードウェア・ウォレットのPIN入力</string>
   <string name="id_enter_your_email_address">Eメールアドレス入力</string>
+  <string name="id_enter_your_s_wallet_mnemonic">Enter your %s wallet mnemonic</string>
   <string name="id_enter_your_wallet_mnemonic">ウォレットのmnemonic入力</string>
   <string name="id_error">エラー発生</string>
   <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
@@ -143,7 +147,10 @@
   <string name="id_green_is_a_noncustodial_wallet">Greenは利用者が直接デジタル資産を管理するウォレットです</string>
   <string name="id_green_logo">Greenロゴ</string>
   <string name="id_green_mnemonic_qr_code">Green MnemonicQRコード</string>
+  <string name="id_green_only_supports_one_pin_for">Green only supports one PIN for each network. New wallets will require a mnemonic every time you log in.</string>
+  <string name="id_green_only_supports_one_pin_per">Green only supports one PIN per device. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
   <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
+  <string name="id_green_uses_multisig_with_one">Green uses multisig with one signature generated by your device, and one by Blockstream’s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
   <string name="id_hash">ハッシュ</string>
   <string name="id_high">高い</string>
   <string name="id_hold_your_nfc_tag_close_to_the">デバイスにNFCタッグを近づけて下さい</string>
@@ -153,7 +160,6 @@
   <string name="id_i_confirm_i_have_read_and">上のメッセージを理解しました</string>
   <string name="id_i_forgot_my_password">パスワードを忘れました</string>
   <string name="id_i_secured_the_mnemonic_and_i">Mnemonicを安全に保管し利用規約も確認しました</string>
-  <string name="id_improve_security">セキュリティを高める</string>
   <string name="id_incoming">受信中</string>
   <string name="id_inconsistent_data_provided_for">gauthを利用するのに矛盾するデータがあります</string>
   <string name="id_increase_fee">手数料を高める</string>
@@ -177,17 +183,18 @@
   <string name="id_last_ping_1d_ms">最終Ping: %1$d ms</string>
   <string name="id_later">後</string>
   <string name="id_ledger_dashboard_detected">Ledgerダッシュボードを検知しました。正しいアプリを使ってアクセスして下さい。</string>
+  <string name="id_lets_get_you_set_up">Let\'s get you set up.</string>
   <string name="id_loading_transactions">トランザクションを読み込んでいます…</string>
   <string name="id_log_in">ログイン</string>
-  <string name="id_log_in_to_receive_funds_and">Log in to receive funds and check your balance.</string>
   <string name="id_log_in_using_mnemonic">Mnemonicを使ってログインする。</string>
-  <string name="id_log_out">ログアウト</string>
+  <string name="id_log_in_via_watchonly_to_receive">Log in via Watch-only to receive funds and check balance.</string>
+  <string name="id_log_out">Log out</string>
   <string name="id_logging_in">ログイン中です…</string>
   <string name="id_login_failed">ログイン失敗</string>
   <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">番号ポジションはデバイスを確認して下さい</string>
   <string name="id_low">低</string>
-  <string name="id_main">メイン</string>
+  <string name="id_main_account">Main Account</string>
   <string name="id_malleated">malleated</string>
   <string name="id_medium">中</string>
   <string name="id_memo">メモ</string>
@@ -203,6 +210,7 @@
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">ネットワーク設定</string>
   <string name="id_network_monitor">ネットワーク・モニター</string>
+  <string name="id_new_accounts_functionality">New accounts functionality coming soon!</string>
   <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
   <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">New %s transaction of %s in account %s.</string>
@@ -223,7 +231,7 @@
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">残り一回</string>
   <string name="id_one_network_must_be_selected">ネットワークを選択して下さい。ビットコインをデフォルトで選択します。</string>
-  <string name="id_only_connect_to_trusted_nodes">SPVは信頼するノードのみ接続する</string>
+  <string name="id_only_connect_to_trusted_nodes">Only connect to trusted node(s) for SPV</string>
   <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">失敗</string>
   <string name="id_optional">任意</string>
@@ -235,7 +243,7 @@
   <string name="id_password">パスワード</string>
   <string name="id_password_protected">Password protected</string>
   <string name="id_paste">Paste</string>
-  <string name="id_pgp_key">PGP Key</string>
+  <string name="id_pgp_key">PGP key</string>
   <string name="id_phone_call">電話</string>
   <string name="id_phone_number">電話番号</string>
   <string name="id_pin">PIN</string>
@@ -266,6 +274,7 @@
   <string name="id_recovery_and_notifications">リカバリーと告知</string>
   <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
   <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
+  <string name="id_recovery_transactions">Recovery transactions</string>
   <string name="id_recovery_words">リカバリー単語</string>
   <string name="id_redeposited">再お預け</string>
   <string name="id_reference_exchange_rate">取引レート参照先</string>
@@ -280,8 +289,9 @@
   <string name="id_request_twofactor_reset">2段階認証のリセットを要請する</string>
   <string name="id_requested_fee_rate_too_low">要請された手数料が低過ぎます。</string>
   <string name="id_reset_spv">SPVリセット</string>
+  <string name="id_resetting_your_twofactor_takes">Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.</string>
   <string name="id_restore">修復</string>
-  <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
+  <string name="id_restore_green_wallet">Restore Green Wallet</string>
   <string name="id_reuse_androids_authentication">アンドロイドの認証を再利用する</string>
   <string name="id_review">レビュー</string>
   <string name="id_s_blocks_left">残り %s ブロック</string>
@@ -306,9 +316,11 @@
   <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">新しいPINの設定</string>
   <string name="id_set_custom_fee_rate">カスタム手数料の設定</string>
-  <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
+  <string name="id_set_up_pgp_key_for">Set up PGP key for communications</string>
+  <string name="id_set_up_spending_limit">Set up spending limit</string>
   <string name="id_set_up_twofactor_authentication">Set up Two-Factor authentication</string>
-  <string name="id_set_watchonly">監視機能設定</string>
+  <string name="id_set_up_watchonly">Set up watch-only</string>
+  <string name="id_set_up_watchonly_credentials">Set up watch-only credentials for this wallet</string>
   <string name="id_setting_updated">Setting updated</string>
   <string name="id_settings">設定</string>
   <string name="id_setup_pin">Setup PIN</string>
@@ -326,11 +338,12 @@
   <string name="id_socks5_hostname">Socks5ホストネーム</string>
   <string name="id_socks5_port">Socks5ポート</string>
   <string name="id_something_went_wrong">問題が生じました。</string>
-  <string name="id_spv_is_always_synchronized_on">SPVはWiFiやEthernetを通じて常に同時性を保つようになっています。一方、モバイルデータを使用中にも同時性を保つよう設計されている為、ご利用中のデータプランによっては通信費が過剰に計算されることもある為注意して下さい。</string>
+  <string name="id_spending_limit">Spending limit</string>
+  <string name="id_spv_is_always_synchronized_on">SPV is always synchronized on non-mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
   <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">SPV告知事項</string>
   <string name="id_spv_reset_and_restarted">SPV reset and restarted</string>
-  <string name="id_spv_synchronization">SPV Synchronization</string>
+  <string name="id_spv_synchronization">SPV synchronization</string>
   <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">掃除する</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
@@ -338,7 +351,7 @@
   <string name="id_system_message">システムメッセージ</string>
   <string name="id_tap_on_the_card_to_view">Tap on the card to view transactions.</string>
   <string name="id_tap_to_restart_the_simplified">SPVをリスタートする</string>
-  <string name="id_terms_of_service">利用規約</string>
+  <string name="id_terms_of_service">Terms of service</string>
   <string name="id_terms_of_use">利用条件</string>
   <string name="id_thank_you_for_downloading_green">Thank you for downloading Green! Please leave us a review when you get a chance</string>
   <string name="id_the_camera_has_a_problem_you">カメラに問題が発生しました。デバイスの再起動をお願いします。</string>
@@ -356,7 +369,6 @@
   <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">タッチID</string>
   <string name="id_touch_to_display">表示する</string>
-  <string name="id_touch_to_set_up">設定する</string>
   <string name="id_touchface_id_not_available">タッチ/顔IDは利用できません</string>
   <string name="id_transaction_already_confirmed">Transaction already confirmed</string>
   <string name="id_transaction_details">トランザクション詳細</string>
@@ -368,7 +380,6 @@
   <string name="id_twofactor_authentication">Two-Factor authentication</string>
   <string name="id_twofactor_reset_in_progress">2段階認証を再設定しています、ウォレットは現在ロックされています。</string>
   <string name="id_twofactor_settings">2段階認証設定</string>
-  <string name="id_twofactor_threshold">Two-Factor threshold</string>
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Greenサービスに接続できません。ネットワーク状態を確認してからもう一度お試しください。</string>
   <string name="id_unconfirmed">Unconfirmed</string>
@@ -392,14 +403,16 @@
   <string name="id_warning_there_is_already_a">WARNING: There is already a request to reset Two-Factor authentication for your wallet. If you now request with a new email address, your wallet will become disputed and likely permanently unavailable to you.</string>
   <string name="id_warning_wallet_locked_by">注意: ウォレットが2段階認証の紛争中です。サポートにお問い合わせして下さい。</string>
   <string name="id_warning_wallet_locked_for">注意: ウォレットが2段階認証の再設定の為、%d 日後ロックされます。より詳しい情報はカスタマーサポートにお問い合わせ下さい。</string>
-  <string name="id_watchonly">Watch-Only</string>
-  <string name="id_watchonly_disabled">Watch-Only disabled</string>
-  <string name="id_watchonly_login">監視-Onlyログイン</string>
+  <string name="id_watchonly">Watch-only</string>
+  <string name="id_watchonly_disabled">Watch-only disabled</string>
+  <string name="id_watchonly_login">Watch-only login</string>
+  <string name="id_watchonly_mode_can_be_activated">Watch-only mode can be activated from settings after logging in with your PIN, mnemonic, or hardware wallet.</string>
   <string name="id_we_use_the_camera_to_scan_qr">We use the camera to scan QR codes</string>
   <string name="id_welcome">ようこそ</string>
   <string name="id_welcome_to">Welcome to</string>
+  <string name="id_word_d_of_d">Word %d of %d</string>
   <string name="id_write_down_the_words">単語を書き下ろして下さい。</string>
-  <string name="id_write_down_your_mnemonic_words">Mnemonic単語を別の紙かコールド保存デバイスに書き下ろして下さい。</string>
+  <string name="id_write_down_your_mnemonic_on">Write down your mnemonic on paper and store it somewhere safe.</string>
   <string name="id_wrong_choice_check_your">Wrong choice. Check your mnemonic and try again.</string>
   <string name="id_year">年</string>
   <string name="id_years">年</string>
@@ -408,7 +421,6 @@
   <string name="id_you_are_not_connected_to_the">インターネットに接続されていません。接続後お試しください。</string>
   <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">You have control on your funds</string>
-  <string name="id_you_have_full_control_of_your">資金は貴方によって完全に管理されます。</string>
   <string name="id_you_have_received_s">%s を受け取りました。</string>
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>
   <string name="id_you_must_save_this_mnemonic_now">このMnemonicを直ちに保存して下さい</string>
@@ -419,8 +431,8 @@
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>
   <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">%sに送金した%s が検証されました。</string>
-  <string name="id_your_sent_and_received">Your sent and received transactions will be shown here.</string>
-  <string name="id_your_transaction_threshold_is_s">Your transaction threshold is %s.</string>
+  <string name="id_your_spending_limit_is_s">Your spending limit is %s.</string>
+  <string name="id_your_transactions_will_be_shown">Your transactions will be shown here.</string>
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
-  <string name="id_your_watchonly_username_will_be">Your Watch-Only username will be stored un-encrypted on this device. If your device is compromised then your transactions may be able to be watched by a third party. Press "OK" to continue.</string>
+  <string name="id_your_watchonly_username_will_be">Your watch-only username will be stored un-encrypted on this device. If your device is compromised then your transactions may be able to be watched by a third party. Press "OK" to continue.</string>
 </resources>

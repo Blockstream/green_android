@@ -58,7 +58,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/id_create_wallet" />
+                android:text="@string/id_create_new_wallet" />
 
             <View
                 android:layout_width="fill_parent"
@@ -70,7 +70,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/id_restore_existing_wallet" />
+                android:text="@string/id_restore_green_wallet" />
 
             <View
                 android:layout_width="fill_parent"
@@ -85,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:textColor="@color/grey_light"
-                    android:text="@string/id_a_wallet_is_detected"/>
+                    android:text="@string/id_a_wallet_is_detected_on_this"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

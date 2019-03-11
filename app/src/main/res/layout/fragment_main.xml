@@ -57,7 +57,7 @@
                 android:paddingTop="60dp"
                 android:gravity="center"
                 android:visibility="gone"
-                android:text="@string/id_your_sent_and_received"/>
+                android:text="@string/id_your_transactions_will_be_shown"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/mainTransactionList"

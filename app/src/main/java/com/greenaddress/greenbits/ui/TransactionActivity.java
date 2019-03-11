@@ -195,7 +195,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }
 
         final String name = mService.getModel().getSubaccountDataObservable().
-                getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.id_main));
+                getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.id_main_account));
         receivedOnText.setText(name);
 
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));

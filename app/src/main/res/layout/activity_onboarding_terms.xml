@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
-        android:text="@string/id_you_have_full_control_of_your"
+        android:text="@string/id_lets_get_you_set_up"
         android:textColor="@color/whiteSecondary" />
 
     <ScrollView

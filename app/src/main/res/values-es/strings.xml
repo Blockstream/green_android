@@ -9,6 +9,7 @@
   <string name="id_4_hours">~ 4 Hours</string>
   <string name="id_5_seconds_minimum">5 segundos como mínimo</string>
   <string name="id_a_new_transaction_has_just">Una nueva transacción acaba de llegar a tu monedero.</string>
+  <string name="id_a_wallet_is_detected_on_this">A wallet is detected on this device:</string>
   <string name="id_about">ABOUT</string>
   <string name="id_accept">ACEPTAR</string>
   <string name="id_account">ACCOUNT</string>
@@ -19,13 +20,13 @@
   <string name="id_add_custom_network_by_url">Agregar red personalizada mediante URL</string>
   <string name="id_add_new_account">Add New Account</string>
   <string name="id_add_wallet">Agregar monedero</string>
-  <string name="id_adding_new_accounts">Adding New Accounts functionality coming soon.</string>
+  <string name="id_additional_security">Additional Security</string>
   <string name="id_address">Dirección</string>
   <string name="id_address_1s">Dirección: %1$s</string>
   <string name="id_address_copied_to_clipboard">Address copied to clipboard</string>
   <string name="id_advanced">ADVANCED</string>
   <string name="id_all">All</string>
-  <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in Watch-only mode.</string>
+  <string name="id_allows_you_to_quickly_check">Allows you to quickly check your balance, receive funds or sweep a paper wallet. You can\'t send funds in watch-only mode.</string>
   <string name="id_always">Always</string>
   <string name="id_amount">Cantidad</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
@@ -52,6 +53,7 @@
   <string name="id_choose_your_network">Choose Your Network</string>
   <string name="id_clear">BORRAR</string>
   <string name="id_completed">Completado</string>
+  <string name="id_confirm_code">Confirm Code</string>
   <string name="id_confirmation">Confirmación</string>
   <string name="id_confirmation_in_12_blocks_2">Confirmación de 12 bloques, un promedio de 2 horas</string>
   <string name="id_confirmation_in_24_blocks_4">Confirmation in 24 blocks, 4 hours on average</string>
@@ -64,7 +66,7 @@
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
   <string name="id_create">Crear</string>
   <string name="id_create_a_pin_to_access_your">Create a PIN to access your wallet</string>
-  <string name="id_create_wallet">Crear monedero</string>
+  <string name="id_create_new_wallet">Create New Wallet</string>
   <string name="id_currency">Moneda</string>
   <string name="id_custom">Personalizar</string>
   <string name="id_custom_network_added_enable_it">Red personalizada agregada. Habilítala en configuración de red</string>
@@ -89,7 +91,7 @@
   <string name="id_disputed">Disputed</string>
   <string name="id_done">Listo</string>
   <string name="id_dont_ask_me_again">Don\'t ask me again</string>
-  <string name="id_dont_store_your_mnemonic_in">Don\'t store your mnemonic in email, on your mobile device, on your desktop, or in any online service.</string>
+  <string name="id_dont_store_your_mnemonic_on">Don\'t store your mnemonic on your phone, computer, or any online services.</string>
   <string name="id_dont_take_screenshots_of_your">¡No saques capturas de pantalla de tu frase mnemónica!</string>
   <string name="id_double_spend">doble gasto</string>
   <string name="id_double_spend_by">Doble gasto por</string>
@@ -100,6 +102,7 @@
   <string name="id_enable_custom_networks_debug">Habilitar opciones de depuración de redes personalizadas</string>
   <string name="id_enable_face_id">Habilitar Face ID</string>
   <string name="id_enable_spv">Habilitar SPV</string>
+  <string name="id_enable_spv_and_modify_spv">Enable SPV and modify SPV settings</string>
   <string name="id_enable_touch_id">Habilitar Touch ID</string>
   <string name="id_enabled">Enabled</string>
   <string name="id_enabled_1s">Habilitado: %1$s</string>
@@ -117,6 +120,7 @@
   <string name="id_enter_the_matching_words">Ingresar las palabras coincidentes</string>
   <string name="id_enter_the_pin_for_your_hardware">Ingresar el PIN para tu monedero hardware</string>
   <string name="id_enter_your_email_address">Ingresa tu dirección de correo electrónico</string>
+  <string name="id_enter_your_s_wallet_mnemonic">Enter your %s wallet mnemonic</string>
   <string name="id_enter_your_wallet_mnemonic">Ingresa la frase mnemónica de tu monedero</string>
   <string name="id_error">Error</string>
   <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
@@ -143,7 +147,10 @@
   <string name="id_green_is_a_noncustodial_wallet">Green es un monedero sin custodia</string>
   <string name="id_green_logo">Logo de Green</string>
   <string name="id_green_mnemonic_qr_code">Código QR de tu frase mnemónica de Green</string>
+  <string name="id_green_only_supports_one_pin_for">Green only supports one PIN for each network. New wallets will require a mnemonic every time you log in.</string>
+  <string name="id_green_only_supports_one_pin_per">Green only supports one PIN per device. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
   <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
+  <string name="id_green_uses_multisig_with_one">Green uses multisig with one signature generated by your device, and one by Blockstream’s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
   <string name="id_hash">Hash</string>
   <string name="id_high">Alto</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Acerque su etiqueta NFC al dispositivo</string>
@@ -153,7 +160,6 @@
   <string name="id_i_confirm_i_have_read_and">Confirmo que leí y entendí el mensaje anterior </string>
   <string name="id_i_forgot_my_password">Olvidé mi contraseña</string>
   <string name="id_i_secured_the_mnemonic_and_i">Protegí la mnemónica y leí las condiciones de servicio</string>
-  <string name="id_improve_security">Mejorar la seguridad</string>
   <string name="id_incoming">Entrante</string>
   <string name="id_inconsistent_data_provided_for">Datos inconsistentes proporcionados para habilitar gauth</string>
   <string name="id_increase_fee">Aumentar comisión</string>
@@ -177,17 +183,18 @@
   <string name="id_last_ping_1d_ms">Último pin: %1$d ms</string>
   <string name="id_later">LUEGO</string>
   <string name="id_ledger_dashboard_detected">Ledged Dashboard detectado. Abre la app correcta para acceder.</string>
+  <string name="id_lets_get_you_set_up">Let\'s get you set up.</string>
   <string name="id_loading_transactions">Cargando transacciones...</string>
   <string name="id_log_in">Iniciar sesión</string>
-  <string name="id_log_in_to_receive_funds_and">Log in to receive funds and check your balance.</string>
   <string name="id_log_in_using_mnemonic">Iniciar sesión con frase mnemónica</string>
-  <string name="id_log_out">Cerrar sesión</string>
+  <string name="id_log_in_via_watchonly_to_receive">Log in via Watch-only to receive funds and check balance.</string>
+  <string name="id_log_out">Log out</string>
   <string name="id_logging_in">Iniciando sesión...</string>
   <string name="id_login_failed">Error al iniciar sesión</string>
   <string name="id_login_options">Login options</string>
   <string name="id_look_at_the_device_for_the">Mira el dispositivo para ver las posiciones de los números</string>
   <string name="id_low">Bajo</string>
-  <string name="id_main">Principal</string>
+  <string name="id_main_account">Main Account</string>
   <string name="id_malleated">maleable</string>
   <string name="id_medium">Medio</string>
   <string name="id_memo">Memo</string>
@@ -203,6 +210,7 @@
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">Configuración de red</string>
   <string name="id_network_monitor">Monitor de red</string>
+  <string name="id_new_accounts_functionality">New accounts functionality coming soon!</string>
   <string name="id_new_incoming_transaction_in">New incoming transaction in account %s (%s).</string>
   <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">New %s transaction of %s in account %s.</string>
@@ -223,7 +231,7 @@
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Un intento restante</string>
   <string name="id_one_network_must_be_selected">Debe seleccionarse una red. Se selecciona Bitcoin por defecto.</string>
-  <string name="id_only_connect_to_trusted_nodes">Conectarse únicamente con un nodo o nodos de confianza para SPV</string>
+  <string name="id_only_connect_to_trusted_nodes">Only connect to trusted node(s) for SPV</string>
   <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Error de operación</string>
   <string name="id_optional">Opcional</string>
@@ -235,7 +243,7 @@
   <string name="id_password">Contraseña</string>
   <string name="id_password_protected">Password protected</string>
   <string name="id_paste">Paste</string>
-  <string name="id_pgp_key">PGP Key</string>
+  <string name="id_pgp_key">PGP key</string>
   <string name="id_phone_call">Llamada telefónica</string>
   <string name="id_phone_number">número de teléfono</string>
   <string name="id_pin">PIN</string>
@@ -266,6 +274,7 @@
   <string name="id_recovery_and_notifications">Recuperación y notificaciones</string>
   <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
   <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
+  <string name="id_recovery_transactions">Recovery transactions</string>
   <string name="id_recovery_words">Palabras de recuperación</string>
   <string name="id_redeposited">Redepositado</string>
   <string name="id_reference_exchange_rate">Tipo de cambio de referencia</string>
@@ -280,8 +289,9 @@
   <string name="id_request_twofactor_reset">Solicitar restablecimiento de los dos factores</string>
   <string name="id_requested_fee_rate_too_low">La tarifa solicitada es demasiado baja</string>
   <string name="id_reset_spv">Reiniciar SPV</string>
+  <string name="id_resetting_your_twofactor_takes">Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.</string>
   <string name="id_restore">Restablecer</string>
-  <string name="id_restore_existing_wallet">Restore Existing Wallet</string>
+  <string name="id_restore_green_wallet">Restore Green Wallet</string>
   <string name="id_reuse_androids_authentication">Reutilizar autenticación de Android</string>
   <string name="id_review">Reseña</string>
   <string name="id_s_blocks_left">%s bloques restantes</string>
@@ -306,9 +316,11 @@
   <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Establecer un nuevo PIN</string>
   <string name="id_set_custom_fee_rate">Establecer tarifa personalizada</string>
-  <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
+  <string name="id_set_up_pgp_key_for">Set up PGP key for communications</string>
+  <string name="id_set_up_spending_limit">Set up spending limit</string>
   <string name="id_set_up_twofactor_authentication">Set up Two-Factor authentication</string>
-  <string name="id_set_watchonly">Establecer modo de solo lectura</string>
+  <string name="id_set_up_watchonly">Set up watch-only</string>
+  <string name="id_set_up_watchonly_credentials">Set up watch-only credentials for this wallet</string>
   <string name="id_setting_updated">Setting updated</string>
   <string name="id_settings">Configuración</string>
   <string name="id_setup_pin">Setup PIN</string>
@@ -326,11 +338,12 @@
   <string name="id_socks5_hostname">Nombre de host de Soks5</string>
   <string name="id_socks5_port">Puerta Socks5</string>
   <string name="id_something_went_wrong">Se produjo un error</string>
-  <string name="id_spv_is_always_synchronized_on">SPV siempre se sincroniza con redes no móviles, como WiFi o Ethernet. Con esta configuración, también se sincroniza cuando se usan datos móviles. Eso puede resultar caro según el plan de datos que tengas, así que ten cuidado al habilitarla.</string>
+  <string name="id_spending_limit">Spending limit</string>
+  <string name="id_spv_is_always_synchronized_on">SPV is always synchronized on non-mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
   <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">Notificaciones de SPV</string>
   <string name="id_spv_reset_and_restarted">SPV reset and restarted</string>
-  <string name="id_spv_synchronization">SPV Synchronization</string>
+  <string name="id_spv_synchronization">SPV synchronization</string>
   <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">Barrer</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
@@ -338,7 +351,7 @@
   <string name="id_system_message">Mensaje de sistema</string>
   <string name="id_tap_on_the_card_to_view">Tap on the card to view transactions.</string>
   <string name="id_tap_to_restart_the_simplified">Toca para reiniciar la verificación simple de pago</string>
-  <string name="id_terms_of_service">Condiciones de servicio</string>
+  <string name="id_terms_of_service">Terms of service</string>
   <string name="id_terms_of_use">Condiciones de uso</string>
   <string name="id_thank_you_for_downloading_green">Thank you for downloading Green! Please leave us a review when you get a chance</string>
   <string name="id_the_camera_has_a_problem_you">La cámara tiene algún problema. Es probable que tengas que reiniciar tu dispositivo.</string>
@@ -356,7 +369,6 @@
   <string name="id_total_with_fee">Total with Fee</string>
   <string name="id_touch_id">Touch ID</string>
   <string name="id_touch_to_display">Tocar para mostrar</string>
-  <string name="id_touch_to_set_up">Tocar para configurar</string>
   <string name="id_touchface_id_not_available">Touch/Face ID no disponible</string>
   <string name="id_transaction_already_confirmed">Transaction already confirmed</string>
   <string name="id_transaction_details">Detalles de la transacción</string>
@@ -368,7 +380,6 @@
   <string name="id_twofactor_authentication">Two-Factor authentication</string>
   <string name="id_twofactor_reset_in_progress">Restablecimiento de la autenticación de dos factores en curso. Su monedero se encuentra bloqueado.</string>
   <string name="id_twofactor_settings">Configuración de dos factores</string>
-  <string name="id_twofactor_threshold">Two-Factor threshold</string>
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">No se puede conectar con el servicio de Green. Verifica tu conexión de red y espera a ser reconectado.</string>
   <string name="id_unconfirmed">Unconfirmed</string>
@@ -392,14 +403,16 @@
   <string name="id_warning_there_is_already_a">WARNING: There is already a request to reset Two-Factor authentication for your wallet. If you now request with a new email address, your wallet will become disputed and likely permanently unavailable to you.</string>
   <string name="id_warning_wallet_locked_by">ADVERTENCIA: monedero bloqueado por disputa de dos factores. Contacta a soporte técnico para obtener más información.</string>
   <string name="id_warning_wallet_locked_for">ADVERTENCIA: monedero bloqueado por restablecimiento de dos factores en %d días. Contacta a soporte técnico para obtener más información.</string>
-  <string name="id_watchonly">Watch-Only</string>
-  <string name="id_watchonly_disabled">Watch-Only disabled</string>
-  <string name="id_watchonly_login">Inicio de sesión de solo lectura</string>
+  <string name="id_watchonly">Watch-only</string>
+  <string name="id_watchonly_disabled">Watch-only disabled</string>
+  <string name="id_watchonly_login">Watch-only login</string>
+  <string name="id_watchonly_mode_can_be_activated">Watch-only mode can be activated from settings after logging in with your PIN, mnemonic, or hardware wallet.</string>
   <string name="id_we_use_the_camera_to_scan_qr">We use the camera to scan QR codes</string>
   <string name="id_welcome">Bienvenido</string>
   <string name="id_welcome_to">Welcome to</string>
+  <string name="id_word_d_of_d">Word %d of %d</string>
   <string name="id_write_down_the_words">Anota las palabras</string>
-  <string name="id_write_down_your_mnemonic_words">Anota tu frase mnemónica en un papel o en un dispositivo de almacenamiento en frío.</string>
+  <string name="id_write_down_your_mnemonic_on">Write down your mnemonic on paper and store it somewhere safe.</string>
   <string name="id_wrong_choice_check_your">Wrong choice. Check your mnemonic and try again.</string>
   <string name="id_year">año</string>
   <string name="id_years">años</string>
@@ -408,7 +421,6 @@
   <string name="id_you_are_not_connected_to_the">No estás conectado a Internet. Conéctate y reintenta.</string>
   <string name="id_you_are_now_connected">You are now connected</string>
   <string name="id_you_have_control_on_your_funds">You have control on your funds</string>
-  <string name="id_you_have_full_control_of_your">Tienes control total sobre tus fondos.</string>
   <string name="id_you_have_received_s">Recibiste %s</string>
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>
   <string name="id_you_must_save_this_mnemonic_now">DEBES guardar la mnemónica AHORA.</string>
@@ -419,8 +431,8 @@
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>
   <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Tu %s enviado a %s fue confirmado</string>
-  <string name="id_your_sent_and_received">Your sent and received transactions will be shown here.</string>
-  <string name="id_your_transaction_threshold_is_s">Your transaction threshold is %s.</string>
+  <string name="id_your_spending_limit_is_s">Your spending limit is %s.</string>
+  <string name="id_your_transactions_will_be_shown">Your transactions will be shown here.</string>
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
-  <string name="id_your_watchonly_username_will_be">Your Watch-Only username will be stored un-encrypted on this device. If your device is compromised then your transactions may be able to be watched by a third party. Press "OK" to continue.</string>
+  <string name="id_your_watchonly_username_will_be">Your watch-only username will be stored un-encrypted on this device. If your device is compromised then your transactions may be able to be watched by a third party. Press "OK" to continue.</string>
 </resources>

@@ -112,7 +112,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             d == R.string.id_new_outgoing_transaction_from) {
             TransactionData tx = (TransactionData) event.getValue();
             final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
-                tx.getSubaccount()).getNameWithDefault(getString(R.string.id_main));
+                tx.getSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
             final long satoshi = tx.getSatoshi();
             final String amount = mService.getValueString(mService.getSession().convertSatoshi(satoshi), false, true);
             final Object[] formatArgs = {accountName, amount};
@@ -123,7 +123,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             StringBuffer subaccounts = new StringBuffer();
             for (final Integer subaccount : tx.getSubaccounts()) {
                 final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
-                    subaccount).getNameWithDefault(getString(R.string.id_main));
+                    subaccount).getNameWithDefault(getString(R.string.id_main_account));
                 if (subaccounts.length() != 0) { subaccounts.append(", "); }
                 subaccounts.append(accountName);
             }
