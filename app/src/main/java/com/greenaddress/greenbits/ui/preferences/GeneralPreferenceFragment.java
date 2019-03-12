@@ -255,6 +255,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             setTimeoutSummary(null);
             mService.getExecutor().execute(() -> updateSettings(settings));
             mService.cfgEdit().putString(PrefKeys.ALTIMEOUT, newValue.toString()); // need to save this, for scheduleDisconnect
+            mService.rescheduleDisconnect();
             return true;
         });
 
