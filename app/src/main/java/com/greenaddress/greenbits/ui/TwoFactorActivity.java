@@ -123,7 +123,7 @@ public class TwoFactorActivity extends LoggedActivity {
     private void showResetEmail(final boolean isDispute) {
         final TextView detailsText = setupDetailsView(
             InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, "jane@example.com");
-
+        mPrefix.setVisibility(View.GONE);
         final String type = getString(R.string.id_email_address);
 
         mPromptText.setText(getTypeString(UI.getText(mPromptText), type));
