@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -138,7 +139,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         bundle.putBoolean("skip_visible", false);
         mPinFragmentVerify.setArguments(bundle);
         if (mNativeAuthCB != null)
-            UI.hide(mNativeAuthCB);
+            mNativeAuthCB.setVisibility(View.INVISIBLE);
         getSupportFragmentManager().beginTransaction()
         .replace(R.id.fragment_container, mPinFragmentVerify).commit();
     }
