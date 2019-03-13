@@ -8,12 +8,12 @@ import android.widget.TextView;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 
-public class AsciiInputFilter implements InputFilter {
-    private CharsetEncoder asciiEncoder = Charset.forName("US-ASCII").newEncoder();
+public class CharInputFilter implements InputFilter {
+    private CharsetEncoder asciiEncoder = Charset.forName("ISO-8859-1").newEncoder();
 
     public static void setIfNecessary(TextView noteText) {
         if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            noteText.setFilters(new InputFilter[]{new AsciiInputFilter()});
+            noteText.setFilters(new InputFilter[]{new CharInputFilter()});
         }
     }
 

@@ -1,12 +1,9 @@
 package com.greenaddress.greenbits.ui;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -15,17 +12,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -33,7 +24,7 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.ui.components.AsciiInputFilter;
+import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.net.URI;
@@ -202,7 +193,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientTitle);
 
         // Memo
-        AsciiInputFilter.setIfNecessary(mMemoText);
+        CharInputFilter.setIfNecessary(mMemoText);
         if (!TextUtils.isEmpty(mTxItem.memo)) {
             mMemoText.setText(mTxItem.memo);
         }

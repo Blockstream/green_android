@@ -77,7 +77,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
         } else {
             holder.mAccountView.setIcon2(mResources.getDrawable(mService.getNetwork().getIcon()));
             holder.mAccountView.showAdd(true);
-            // TODO when implementing account creation, filter account names with AsciiInputFilter
+            // TODO when implementing account creation, filter account names with CharInputFilter
             holder.mAccountView.setOnClickListener( view -> {
                 new MaterialDialog.Builder(mActivity)
                         .content(mResources.getString(R.string.id_new_accounts_functionality))

@@ -22,7 +22,7 @@ import com.greenaddress.greenapi.data.CreateTransactionData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.components.AsciiInputFilter;
+import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.components.SwipeButton;
 
 import java.io.IOException;
@@ -91,7 +91,7 @@ public class SendConfirmFragment extends GAFragment {
         }
         addressText.setText(currentRecipient.getAddress());
         noteText.setText(mTxData.getMemo());
-        AsciiInputFilter.setIfNecessary(noteText);
+        CharInputFilter.setIfNecessary(noteText);
 
         // Set currency & amount
         final long amount = mTxData.getSatoshi();
