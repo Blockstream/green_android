@@ -33,6 +33,7 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenbits.ui.components.AsciiInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.net.URI;
@@ -201,6 +202,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientTitle);
 
         // Memo
+        AsciiInputFilter.setIfNecessary(mMemoText);
         if (!TextUtils.isEmpty(mTxItem.memo)) {
             mMemoText.setText(mTxItem.memo);
         }
