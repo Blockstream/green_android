@@ -20,16 +20,18 @@
   <string name="id_add_custom_network_by_url">Aggiungi un network custom con un URL</string>
   <string name="id_add_new_account">Aggiungi Nuovo Account</string>
   <string name="id_add_wallet">Aggiungi Wallet</string>
-  <string name="id_additional_security">Sicurezza aggiuntiva</string>
+  <string name="id_additional_security">Sicurezza Aggiuntiva</string>
   <string name="id_address">Indirizzo</string>
   <string name="id_address_1s">Indirizzo: %1$s</string>
   <string name="id_address_copied_to_clipboard">Indirizzo copiato in clipboard</string>
   <string name="id_advanced">AVANZATE</string>
+  <string name="id_advanced_network_settings">Impostazioni di network avanzate</string>
   <string name="id_all">Tutto</string>
   <string name="id_allows_you_to_quickly_check">Permette di controllare il tuo bilancio, ricevere fondi o sweep di un paper wallet. Non puoi inviare fondi in modalità watch-only.</string>
   <string name="id_always">Sempre</string>
   <string name="id_amount">Importo</string>
   <string name="id_are_you_sure_you_want_to_view">Sei sicuro di voler vedere la transazione usando %s?</string>
+  <string name="id_attempts_remaining_d">Tentativi rimasti: %d</string>
   <string name="id_auto_logout_timeout">Timeout per auto logout</string>
   <string name="id_autolock_after">Autolock Dopo</string>
   <string name="id_be_aware_other_apps_can_read_or">Attenzione, altre applicazioni potrebbero leggere o modificare ciò che hai copiato</string>
@@ -55,9 +57,9 @@
   <string name="id_completed">Completo</string>
   <string name="id_confirm_code">Conferma codice</string>
   <string name="id_confirmation">Conferme</string>
-  <string name="id_confirmation_in_12_blocks_2">Conferma in 12 blocchi, mediamente 2 ore</string>
+  <string name="id_confirmation_in_12_blocks_2">Conferma in 12 blocchi, 2 ore in media</string>
   <string name="id_confirmation_in_24_blocks_4">Conferma in 24 blocchi, 4 ore in media</string>
-  <string name="id_confirmation_in_3_blocks_30">Conferma in 3 blocchi, mediamente 30 minuti</string>
+  <string name="id_confirmation_in_3_blocks_30">Conferma in 3 blocchi, 30 minuti in media</string>
   <string name="id_congratulations">Congratulazioni!</string>
   <string name="id_connect_through_a_proxy">Connettiti tramite proxy</string>
   <string name="id_connect_with_tor">Connettiti con Tor</string>
@@ -73,7 +75,6 @@
   <string name="id_custom_network_not_found">Network custom non trovato</string>
   <string name="id_custom_network_with_this_name">Il network custom è già presente.</string>
   <string name="id_d6_confirmations">%d/6 conferme</string>
-  <string name="id_d_attempts_remaining">%d tentativi rimasti</string>
   <string name="id_date">Data</string>
   <string name="id_day">giorno</string>
   <string name="id_days">giorni</string>
@@ -183,7 +184,7 @@
   <string name="id_last_ping_1d_ms">Ultimo ping: %1$d ms</string>
   <string name="id_later">PIÙ TARDI</string>
   <string name="id_ledger_dashboard_detected">Dashboard Ledger rilevata, avvia l\'app corretta per accedere.</string>
-  <string name="id_lets_get_you_set_up">Let\'s get you set up.</string>
+  <string name="id_lets_get_you_set_up">Impostiamo il tuo wallet.</string>
   <string name="id_loading_transactions">Caricamento transazioni...</string>
   <string name="id_log_in">Accedi</string>
   <string name="id_log_in_using_mnemonic">Accedi usando la mnemonica</string>
@@ -329,7 +330,7 @@
   <string name="id_share_address">Condividi Indirizzo</string>
   <string name="id_show_fiat">Mostra valuta corrente</string>
   <string name="id_signup_in_progress">Registrazione in corso</string>
-  <string name="id_simple_payment_verification">La Simple Payment Verification verifica le tue transazioni e il tuo bilancio utilizzando la rete Bitcoin, al di fuori dei server di Green. L\' abilitazione comporta maggiore utilizzo di banda e potenza di calcolo</string>
+  <string name="id_simplified_payment_verification">La Simplified Payment Verification verifica le tue transazioni e il tuo bilancio utilizzando la rete Bitcoin, al di fuori dei server di Green. L\'abilitazione comporta maggiore utilizzo di banda e potenza di calcolo</string>
   <string name="id_skip">SALTA</string>
   <string name="id_skip_not_recommended">Salta (non raccomandato)</string>
   <string name="id_slide_to_send">Scorri per Inviare</string>

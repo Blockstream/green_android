@@ -2,7 +2,7 @@
     <CheckBoxPreference
         android:key="spvEnabled"
         android:title="@string/id_enable_spv"
-        android:summary="@string/id_simple_payment_verification" />
+        android:summary="@string/id_simplified_payment_verification" />
     <CheckBoxPreference
         android:key="spvSyncMobile"
         android:title="@string/id_synchronize_spv_on_mobile"

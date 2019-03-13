@@ -87,8 +87,7 @@
 
     <plurals name="attempts_remaining" translatable="false">
         <item quantity="zero">@string/id_no_attempts_remaining</item>
-        <item quantity="one">@string/id_one_attempt_remaining</item>
-        <item quantity="other">@string/id_d_attempts_remaining</item>
+        <item quantity="other">@string/id_attempts_remaining_d</item>
     </plurals>
 
 </resources>
