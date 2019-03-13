@@ -22,7 +22,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     protected void onCreateWithService(Bundle savedInstanceState) {
         SubaccountSelectFragment fragment = new SubaccountSelectFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, fragment).commit();
+        .add(R.id.fragment_container, fragment).commit();
         mTotalAmountBtc = findViewById(R.id.total_amount_btc);
         mTotalAmountFiat = findViewById(R.id.total_amount_fiat);
     }
@@ -30,7 +30,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     private void initTotalAmount() {
         final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
         long totalSatoshi = 0L;
-        for (int i = 0 ; i < balanceObservables.size(); i++) {
+        for (int i = 0; i < balanceObservables.size(); i++) {
             final BalanceData balanceData = balanceObservables.valueAt(i).getBalanceData();
             totalSatoshi += balanceData.getSatoshi();
         }
@@ -55,7 +55,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
         }
         initTotalAmount();
         final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
-        for (int i = 0 ; i < balanceObservables.size(); i++) {
+        for (int i = 0; i < balanceObservables.size(); i++) {
             balanceObservables.valueAt(i).addObserver(this);
         }
     }
@@ -64,7 +64,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     protected void onPauseWithService() {
         super.onPauseWithService();
         final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
-        for (int i = 0 ; i < balanceObservables.size(); i++) {
+        for (int i = 0; i < balanceObservables.size(); i++) {
             balanceObservables.valueAt(i).deleteObserver(this);
         }
     }

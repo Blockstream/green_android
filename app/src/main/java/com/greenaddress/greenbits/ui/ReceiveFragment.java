@@ -256,7 +256,7 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
     }
 
     public void onNewAddressClicked() {
-        if(getGAService().getConnectionManager().isOffline()) {
+        if (getGAService().getConnectionManager().isOffline()) {
             UI.toast(getGaActivity(), R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
         } else {
             final int subaccount = getGAService().getModel().getCurrentSubaccount();

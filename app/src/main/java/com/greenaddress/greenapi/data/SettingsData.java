@@ -81,7 +81,7 @@ public class SettingsData extends JSONData {
 
     @JsonIgnore
     public int getFeeBuckets(int[] mBlockTargets) {
-        for (int i = 0;i<mBlockTargets.length;i++) {
+        for (int i = 0; i < mBlockTargets.length; i++) {
             if (mBlockTargets[i] == getRequiredNumBlocks())
                 return i;
         }

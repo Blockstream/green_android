@@ -84,7 +84,8 @@ public class SelectionFragment extends Fragment {
 
         // Setup words recyclerview
         final SelectionActivity activity = (SelectionActivity) getActivity();
-        final SelectionViewAdapter selectionViewAdapter = new SelectionViewAdapter(getContext(), randoms, correctIfDebug, activity);
+        final SelectionViewAdapter selectionViewAdapter = new SelectionViewAdapter(
+            getContext(), randoms, correctIfDebug, activity);
         final RecyclerView wordsRecyclerView = UI.find(view, R.id.selectionRecyclerView);
         wordsRecyclerView.setHasFixedSize(true);
         wordsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

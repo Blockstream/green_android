@@ -57,8 +57,8 @@ public class ListTransactionsAdapter extends
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
         final boolean spvVerified = txItem.spvVerified || txItem.isSpent ||
-                                 txItem.type == TransactionItem.TYPE.OUT ||
-                                 !mService.isSPVEnabled();
+                                    txItem.type == TransactionItem.TYPE.OUT ||
+                                    !mService.isSPVEnabled();
 
         holder.spvUnconfirmed.setVisibility(spvVerified ? View.GONE : View.VISIBLE);
 

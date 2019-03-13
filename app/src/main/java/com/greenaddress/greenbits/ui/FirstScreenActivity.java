@@ -25,12 +25,12 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
 
         final Button firstLogInButton = findViewById(R.id.firstLogInButton);
         firstLogInButton.setOnClickListener(v -> askConfirmation(
-                new Intent(this, MnemonicActivity.class),
-                R.string.id_green_only_supports_one_pin_for));
+                                                new Intent(this, MnemonicActivity.class),
+                                                R.string.id_green_only_supports_one_pin_for));
         final Button firstSignUpButton = findViewById(R.id.firstSignUpButton);
         firstSignUpButton.setOnClickListener(v -> askConfirmation(
-                new Intent(this, TermsActivity.class),
-                R.string.id_green_only_supports_one_pin_for));
+                                                 new Intent(this, TermsActivity.class),
+                                                 R.string.id_green_only_supports_one_pin_for));
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> openNetworkSettings());
@@ -38,19 +38,19 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
         mWalletDetected = UI.find( this, R.id.walletDetected);
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(UI.getColoredString(getString(R.string.id_a_wallet_is_detected_on_this),
-                getResources().getColor(R.color.grey_light)));
+                                           getResources().getColor(R.color.grey_light)));
         builder.append(" ");
         builder.append(UI.getColoredString(getString(R.string.id_log_in),
-                getResources().getColor(R.color.green)));
+                                           getResources().getColor(R.color.green)));
         mWalletDetected.setText(builder, BufferType.SPANNABLE);
         mWalletDetected.setOnClickListener(v -> startActivity(new Intent(this, PinActivity.class)));
     }
 
     private void askConfirmation(final Intent intent, final int message) {
-        if(mService.hasPin()) {
+        if (mService.hasPin()) {
             UI.popup(this, R.string.id_warning)
-                    .content(getString(message))
-                    .onPositive((dialog, which) -> startActivity(intent)).build().show();
+            .content(getString(message))
+            .onPositive((dialog, which) -> startActivity(intent)).build().show();
         } else {
             startActivity(intent);
         }

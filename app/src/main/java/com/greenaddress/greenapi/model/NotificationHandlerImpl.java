@@ -55,7 +55,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     }
 
     private void cancelTimer() {
-        if(mScheduledFuture!=null && !mScheduledFuture.isCancelled())
+        if (mScheduledFuture != null && !mScheduledFuture.isCancelled())
             mScheduledFuture.cancel(false);
     }
 
@@ -88,12 +88,13 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     if (waitingMs > 3000) {
                         mTryingAt = System.currentTimeMillis() + waitingMs;
                         mScheduledFuture = mService.getTimerExecutor().scheduleAtFixedRate(() -> {
-                            final int remainingSec = (int) ((mTryingAt - System.currentTimeMillis()) / 1000);
-                            if (remainingSec >= 0)
-                                mModel.getConnMsgObservable().setMessage(R.string.id_not_connected_connecting_in_ds_, new Object[]{remainingSec});
-                            else
-                                cancelTimer();
-                        }, 0, 100, TimeUnit.MILLISECONDS);
+                                final int remainingSec = (int) ((mTryingAt - System.currentTimeMillis()) / 1000);
+                                if (remainingSec >= 0)
+                                    mModel.getConnMsgObservable().setMessage(R.string.id_not_connected_connecting_in_ds_,
+                                                                             new Object[] {remainingSec});
+                                else
+                                    cancelTimer();
+                            }, 0, 100, TimeUnit.MILLISECONDS);
                     }
                     mService.getConnectionManager().goOffline();
                 }
@@ -119,7 +120,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 final JsonNode transaction = objectNode.get("transaction");
                 final ArrayNode arrayNode = (ArrayNode) transaction.get("subaccounts");
                 final List<Integer> subaccounts = mObjectMapper.readValue(
-                        arrayNode.toString(), new TypeReference<List<Integer>>(){});
+                    arrayNode.toString(), new TypeReference<List<Integer>>(){});
                 if ("incoming".equals(transaction.get("type").asText())) {
                     mModel.getToastObservable().setMessage(R.string.id_a_new_transaction_has_just);
                 }
@@ -148,7 +149,8 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
                     if (!eventPushed) {
                         mModel.getEventDataObservable().pushEvent(new EventData(
-                                R.string.id_new_transaction, description, transactionData));
+                                                                      R.string.id_new_transaction, description,
+                                                                      transactionData));
                     }
                     eventPushed = true;
                 }

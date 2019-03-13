@@ -13,7 +13,7 @@ public class CharInputFilter implements InputFilter {
 
     public static void setIfNecessary(TextView noteText) {
         if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            noteText.setFilters(new InputFilter[]{new CharInputFilter()});
+            noteText.setFilters(new InputFilter[] {new CharInputFilter()});
         }
     }
 

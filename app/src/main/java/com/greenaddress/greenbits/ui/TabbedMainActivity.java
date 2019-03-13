@@ -168,7 +168,9 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         setSupportActionBar(toolbar);
         setTitleWithNetwork(R.string.id_wallets);
 
-        mSnackbar = Snackbar.make(findViewById(R.id.placeSnackBar), R.string.id_you_are_not_connected, Snackbar.LENGTH_INDEFINITE);
+        mSnackbar = Snackbar.make(findViewById(
+                                      R.id.placeSnackBar), R.string.id_you_are_not_connected,
+                                  Snackbar.LENGTH_INDEFINITE);
         View snackbarView = mSnackbar.getView();
         TextView textView = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.RED);
@@ -229,10 +231,10 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     private void updateBottomNavigationView() {
         final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
         runOnUiThread(() ->
-            item.setIcon(mService.getModel().getEventDataObservable().hasEvents() ?
-                    R.drawable.bottom_navigation_notifications_2 :
-                    R.drawable.bottom_navigation_notifications)
-        );
+                      item.setIcon(mService.getModel().getEventDataObservable().hasEvents() ?
+                                   R.drawable.bottom_navigation_notifications_2 :
+                                   R.drawable.bottom_navigation_notifications)
+                      );
     }
 
     @Override

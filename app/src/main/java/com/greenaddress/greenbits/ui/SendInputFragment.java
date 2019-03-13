@@ -49,7 +49,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private Button mNextButton;
     private Button mSendAllButton;
 
-    private  int mBlockTargets[];
+    private int mBlockTargets[];
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;
     private long mMinFeeRate;
@@ -57,9 +57,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private Long mVsize;
 
     private static final int mButtonIds[] =
-            { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
+    { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
     private static final int mFeeButtonsText[] =
-            { R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom };
+    { R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom };
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
 
     @Override
@@ -101,7 +101,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             // TODO: blocksPerHour should be set to 60 for liquid
             final String expectedConfirmationTime = getExpectedConfirmationTime(getContext(), 6, mBlockTargets[i]);
             final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : expectedConfirmationTime);
-            mFeeButtons[i].init(buttonText, summary, i==3);
+            mFeeButtons[i].init(buttonText, summary, i == 3);
             mFeeButtons[i].setOnClickListener(this);
         }
 
@@ -196,10 +196,10 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private int[] getBlockTargets() {
         final String[] stringArray = getResources().getStringArray(R.array.fee_target_values);
         int[] blockTargets = {
-                Integer.parseInt(stringArray[0]),
-                Integer.parseInt(stringArray[1]),
-                Integer.parseInt(stringArray[2]),
-                0
+            Integer.parseInt(stringArray[0]),
+            Integer.parseInt(stringArray[1]),
+            Integer.parseInt(stringArray[2]),
+            0
         };
         return blockTargets;
     }
@@ -218,8 +218,8 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-        if(isDisconnected()) {
-           return;
+        if (isDisconnected()) {
+            return;
         }
 
         // Setup balance
@@ -254,11 +254,11 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         if (view == mNextButton) {
             if (isKeyboardOpen) {
                 InputMethodManager inputManager = (InputMethodManager)
-                        getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                  getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
                 final View currentFocus = getActivity().getCurrentFocus();
                 inputManager.hideSoftInputFromWindow(currentFocus == null ? null : currentFocus.getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
+                                                     InputMethodManager.HIDE_NOT_ALWAYS);
             } else {
                 if (mCallbackListener != null)
                     mCallbackListener.onFinish(mTx);
@@ -297,35 +297,36 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                            .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                            .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
                            .input(hint,
-                                 initValue,
+                                  initValue,
                                   false,
-                                   (dialog, input) -> {
-                                       try {
-                                           final String rateText = input.toString().trim();
-                                           if (rateText.isEmpty())
-                                               throw new Exception();
-                                           final double feePerByte = Double.valueOf(rateText);
-                                           final long feePerKB = (long) (feePerByte * 1000);
-                                           if (feePerKB < mMinFeeRate) {
-                                               UI.toast(getGaActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
-                                                       String.format(Locale.US, "%.2f", mMinFeeRate/1000.0)), Toast.LENGTH_LONG);
-                                               throw new Exception();
-                                           }
-                                           final Long oldFeeRate = getOldFeeRate(mTx);
-                                           if (oldFeeRate != null && feePerKB < oldFeeRate) {
-                                               UI.toast(getGaActivity(), R.string.id_requested_fee_rate_too_low, Toast.LENGTH_LONG);
-                                               return;
-                                           }
+                                  (dialog, input) -> {
+            try {
+                final String rateText = input.toString().trim();
+                if (rateText.isEmpty())
+                    throw new Exception();
+                final double feePerByte = Double.valueOf(rateText);
+                final long feePerKB = (long) (feePerByte * 1000);
+                if (feePerKB < mMinFeeRate) {
+                    UI.toast(getGaActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
+                                                        String.format(Locale.US, "%.2f", mMinFeeRate/1000.0)),
+                             Toast.LENGTH_LONG);
+                    throw new Exception();
+                }
+                final Long oldFeeRate = getOldFeeRate(mTx);
+                if (oldFeeRate != null && feePerKB < oldFeeRate) {
+                    UI.toast(getGaActivity(), R.string.id_requested_fee_rate_too_low, Toast.LENGTH_LONG);
+                    return;
+                }
 
-                                           mFeeEstimates[mButtonIds.length - 1] = feePerKB;
-                                           updateFeeSummaries();
-                                           // FIXME: Probably want to do this in the background
-                                           updateTransaction(mFeeButtons[mSelectedFee]);
-                                       } catch (final Exception e) {
-                                           e.printStackTrace();
-                                           onClick(mFeeButtons[1]);         // FIXME: Get from user config
-                                       }
-                                   }).show();
+                mFeeEstimates[mButtonIds.length - 1] = feePerKB;
+                updateFeeSummaries();
+                // FIXME: Probably want to do this in the background
+                updateTransaction(mFeeButtons[mSelectedFee]);
+            } catch (final Exception e) {
+                e.printStackTrace();
+                onClick(mFeeButtons[1]);                                    // FIXME: Get from user config
+            }
+        }).show();
     }
 
 
@@ -389,11 +390,11 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             long currentEstimate = mFeeEstimates[i];
             final String feeRateString = UI.getFeeRateString(currentEstimate);
             mFeeButtons[i].setSummary(mVsize == null ?
-                    String.format("(%s)", feeRateString) :
-                    String.format("%s (%s)", getGAService().getValueString(
-                            (currentEstimate * mVsize)/1000L,
-                            mAmountView.isFiat(), true),
-                            feeRateString));
+                                      String.format("(%s)", feeRateString) :
+                                      String.format("%s (%s)", getGAService().getValueString(
+                                                        (currentEstimate * mVsize)/1000L,
+                                                        mAmountView.isFiat(), true),
+                                                    feeRateString));
         }
     }
 
@@ -416,9 +417,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private String getExpectedConfirmationTime(Context context, final int blocksPerHour, final int blocks) {
         final int n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour);
-        final String s = context.getString((blocks % blocksPerHour) == 0?
-                (blocks == blocksPerHour ? R.string.id_hour : R.string.id_hours) :
-                R.string.id_minutes);
+        final String s = context.getString((blocks % blocksPerHour) == 0 ?
+                                           (blocks == blocksPerHour ? R.string.id_hour : R.string.id_hours) :
+                                           R.string.id_minutes);
         return String.format(Locale.getDefault(), " ~ %d %s", n, s);
     }
 }

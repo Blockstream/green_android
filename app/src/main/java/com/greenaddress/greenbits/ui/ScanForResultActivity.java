@@ -212,11 +212,11 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        case android.R.id.home:
+            onBackPressed();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -248,8 +248,9 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
                 final boolean cameraFlip = cameraManager.getFacing() == Camera.CameraInfo.CAMERA_FACING_FRONT;
                 final int cameraRotation = cameraManager.getOrientation();
 
-                runOnUiThread(() -> scannerView.setFraming(framingRect, framingRectInPreview, displayRotation(), cameraRotation,
-                                       cameraFlip));
+                runOnUiThread(() -> scannerView.setFraming(framingRect, framingRectInPreview, displayRotation(),
+                                                           cameraRotation,
+                                                           cameraFlip));
 
                 final String focusMode = camera.getParameters().getFocusMode();
                 final boolean nonContinuousAutoFocus = Camera.Parameters.FOCUS_MODE_AUTO.equals(focusMode)
@@ -355,7 +356,8 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
             final BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
             try {
-                hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, (ResultPointCallback) dot -> runOnUiThread(() -> scannerView.addDot(dot)));
+                hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK,
+                          (ResultPointCallback) dot -> runOnUiThread(() -> scannerView.addDot(dot)));
                 final Result scanResult = reader.decode(bitmap, hints);
 
                 Log.d(TAG,"scanResult " + scanResult);

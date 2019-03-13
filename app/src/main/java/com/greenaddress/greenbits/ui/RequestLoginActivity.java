@@ -141,8 +141,8 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         }
 
         final boolean isFirmwareOutdated = version.get(0) < 1 ||
-                                 (version.get(0) == 1 && version.get(1) < 6) ||
-                                 (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0);
+                                           (version.get(0) == 1 && version.get(1) < 6) ||
+                                           (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0);
 
         if (!isFirmwareOutdated) {
             onTrezorConnected(t);

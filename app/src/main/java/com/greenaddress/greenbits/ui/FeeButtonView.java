@@ -30,15 +30,15 @@ public class FeeButtonView extends RelativeLayout {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         mTitle.setTextColor(enabled ?
-                getResources().getColor(R.color.white) :
-                getResources().getColor(R.color.grey_light)
-                );
+                            getResources().getColor(R.color.white) :
+                            getResources().getColor(R.color.grey_light)
+                            );
 
     }
 
     private void setup(final Context context) {
         final LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_fee_button, this, true);
 
         final View view = getRootView();
@@ -62,16 +62,16 @@ public class FeeButtonView extends RelativeLayout {
 
     private Drawable getDrawable() {
         return mNext ?
-                getResources().getDrawable(R.drawable.ic_navigate_next_black_24dp) :
-                getResources().getDrawable(android.R.color.transparent);
+               getResources().getDrawable(R.drawable.ic_navigate_next_black_24dp) :
+               getResources().getDrawable(android.R.color.transparent);
     }
 
     public void setSelected(final boolean selected) {
         mImage.setImageDrawable(selected ?
-                getResources().getDrawable(R.drawable.ic_done) :
-                getDrawable());
+                                getResources().getDrawable(R.drawable.ic_done) :
+                                getDrawable());
         mLayout.setBackground(selected ?
-                getResources().getDrawable(R.drawable.fee_button_selected) :
-                getResources().getDrawable(R.drawable.fee_button_unselected));
+                              getResources().getDrawable(R.drawable.fee_button_selected) :
+                              getResources().getDrawable(R.drawable.fee_button_unselected));
     }
 }

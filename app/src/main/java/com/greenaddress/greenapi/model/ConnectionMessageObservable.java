@@ -35,7 +35,7 @@ public class ConnectionMessageObservable extends Observable {
     }
 
     public void setMessage(final int messageId, final Object[] args) {
-        if(args == null || !(messageId==this.messageId && Objects.deepEquals(args,this.args))) {
+        if (args == null || !(messageId == this.messageId && Objects.deepEquals(args,this.args))) {
             Log.d("OBS", "ConnectionMessageObservable.setMessage(" + messageId + "," + args + ")");
             this.messageId = messageId;
             this.args = args;

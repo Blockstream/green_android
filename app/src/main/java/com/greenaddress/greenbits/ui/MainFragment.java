@@ -339,7 +339,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                     " isLastPage: " + isLastPage);*/
             if (!isLoading && !isLastPage) {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                        && firstVisibleItemPosition >= 0) {
+                    && firstVisibleItemPosition >= 0) {
                     loadMoreItems();
                 }
             }

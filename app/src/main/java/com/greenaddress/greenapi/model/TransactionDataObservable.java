@@ -53,12 +53,14 @@ public class TransactionDataObservable extends Observable implements Observer {
             if (mUTXOOnly) {
                 transactions = mSession.getUTXO(mSubaccount, 0);
             } else {
-                PagedData<TransactionData> transactionsPaged = mSession.getTransactionsPaged(mSubaccount, mNextPage == null ? 0 : mNextPage);
+                final int pageId = mNextPage == null ? 0 : mNextPage;
+                PagedData<TransactionData> transactionsPaged = mSession.getTransactionsPaged(mSubaccount,
+                                                                                             pageId);
                 Log.d("OBS","page " + transactionsPaged.getPageId() +
-                        "nextpage " + transactionsPaged.getNextPageId() );
+                      "nextpage " + transactionsPaged.getNextPageId() );
                 transactions = transactionsPaged.getList();
                 mNextPage = transactionsPaged.getNextPageId();
-                mPageLoaded ++;
+                mPageLoaded++;
             }
             mExecutedOnce = true;
             setTransactionDataList(transactions);
@@ -76,7 +78,9 @@ public class TransactionDataObservable extends Observable implements Observer {
         return mSubaccount;
     }
     public void setTransactionDataList(final List<TransactionData> transactionData) {
-        Log.d("OBS", "pageLoaded:" + mPageLoaded + " mNextPage: " + mNextPage + " set" + (mUTXOOnly ? "UTXO" : "Transaction") + "DataList(" +  mSubaccount + ", " + transactionData + ")");
+        Log.d("OBS",
+              "pageLoaded:" + mPageLoaded + " mNextPage: " + mNextPage + " set" + (mUTXOOnly ? "UTXO" : "Transaction") + "DataList(" +  mSubaccount + ", " + transactionData +
+              ")");
         this.mTransactionDataList.addAll(transactionData);
         fire();
     }

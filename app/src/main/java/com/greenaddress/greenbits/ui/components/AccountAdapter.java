@@ -48,7 +48,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
 
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
-        Log.d(this.getClass().getName(),"Update position " + String.valueOf(position) + " of " + mSubaccountList.size());
+        Log.d(this.getClass().getName(),
+              "Update position " + String.valueOf(position) + " of " + mSubaccountList.size());
         holder.mAccountView.hideActions();
         if (position < mSubaccountList.size()) {
             // Set click listener
@@ -80,9 +81,9 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             // TODO when implementing account creation, filter account names with CharInputFilter
             holder.mAccountView.setOnClickListener( view -> {
                 new MaterialDialog.Builder(mActivity)
-                        .content(mResources.getString(R.string.id_new_accounts_functionality))
-                        .backgroundColor(mResources.getColor(R.color.buttonJungleGreen))
-                        .build().show();
+                .content(mResources.getString(R.string.id_new_accounts_functionality))
+                .backgroundColor(mResources.getColor(R.color.buttonJungleGreen))
+                .build().show();
             });
         }
     }

@@ -135,7 +135,8 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
 
         final GaService service = ((GreenAddressApplication) getApplication()).mService;
         mAddressEditText = UI.find(this, R.id.addressEdit);
-        mAddressEditText.setHint(service.isWatchOnly() ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
+        mAddressEditText.setHint(
+            service.isWatchOnly() ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
 
         UI.find(this, R.id.nextButton).setEnabled(false);
 
@@ -172,7 +173,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     protected void onResume() {
         super.onResume();
         final GaService service = ((GreenAddressApplication) getApplication()).mService;
-        if (service==null || service.isDisconnected()) {
+        if (service == null || service.isDisconnected()) {
             finish();
             return;
         }
@@ -413,7 +414,8 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         if (service.isWatchOnly()) {
             // See if the address is a private key, and if so, sweep it
             final Long feeRate = service.getFeeEstimates().get(0);
-            final String receiveAddress = service.getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
+            final String receiveAddress =
+                service.getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
             final BalanceData balanceData = new BalanceData();
             balanceData.setAddress(receiveAddress);
             final List<BalanceData> balanceDataList = new ArrayList<>();

@@ -122,8 +122,9 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             TransactionData tx = (TransactionData) event.getValue();
             StringBuffer subaccounts = new StringBuffer();
             for (final Integer subaccount : tx.getSubaccounts()) {
-                final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
-                    subaccount).getNameWithDefault(getString(R.string.id_main_account));
+                final String accountName =
+                    mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
+                        subaccount).getNameWithDefault(getString(R.string.id_main_account));
                 if (subaccounts.length() != 0) { subaccounts.append(", "); }
                 subaccounts.append(accountName);
             }

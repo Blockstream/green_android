@@ -92,9 +92,9 @@ public class AccountView extends CardView {
 
     public void listMode(boolean mode) {
         mSelectButton.setImageDrawable(mode
-                ? getResources().getDrawable(R.drawable.ic_stack_wallets)
-                : getResources().getDrawable(R.drawable.ic_arrow_forward_24dp)
-                );
+                                       ? getResources().getDrawable(R.drawable.ic_stack_wallets)
+                                       : getResources().getDrawable(R.drawable.ic_arrow_forward_24dp)
+                                       );
     }
 
     public void setIcon(final Drawable resource) {

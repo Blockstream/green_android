@@ -44,7 +44,8 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
 
         mSubaccountList = getGAService().getModel().getSubaccountDataObservable().getSubaccountDataList();
 
-        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this, getResources(), getActivity());
+        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this,
+                                                                  getResources(), getActivity());
         mAccountsView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
 
@@ -117,7 +118,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     @Override
     public void onAccountSelected(final int subaccount) {
         getGAService().getModel().getActiveAccountObservable().setActiveAccount(subaccount);
-        if(getGAService().getConnectionManager().isLoginWithPin()) {
+        if (getGAService().getConnectionManager().isLoginWithPin()) {
             getGAService().cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
         }
         getGaActivity().finish();

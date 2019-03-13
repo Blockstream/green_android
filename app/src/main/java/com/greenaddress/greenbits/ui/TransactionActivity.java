@@ -185,7 +185,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }
 
         final String name = mService.getModel().getSubaccountDataObservable().
-                getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.id_main_account));
+                            getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.
+                                                                                                          id_main_account));
         receivedOnText.setText(name);
 
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));
@@ -203,7 +204,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             mMemoText.addTextChangedListener(new TextWatcher() {
 
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        mMemoSave.setVisibility(View.VISIBLE);
+                    mMemoSave.setVisibility(View.VISIBLE);
                 }
 
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -220,8 +221,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // SPV
         final boolean spvVerified = mTxItem.spvVerified || mTxItem.isSpent ||
-                mTxItem.type == TransactionItem.TYPE.OUT ||
-                !mService.isSPVEnabled();
+                                    mTxItem.type == TransactionItem.TYPE.OUT ||
+                                    !mService.isSPVEnabled();
 
         if (!spvVerified) {
             mStatusIncreaseFee.setVisibility(View.VISIBLE);
@@ -329,12 +330,12 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }
 
         CB.after(mService.changeMemo(mTxItem.txHash.toString(), newMemo),
-                new CB.Toast<Boolean>(this) {
-                    @Override
-                    public void onSuccess(final Boolean result) {
-                        onFinishedSavingMemo();
-                    }
-                });
+                 new CB.Toast<Boolean>(this) {
+            @Override
+            public void onSuccess(final Boolean result) {
+                onFinishedSavingMemo();
+            }
+        });
     }
 
     private void openInBrowser(final Button button, final String identifier, final String url,
@@ -360,16 +361,19 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                 startActivity(new Intent(Intent.ACTION_VIEW, uri));
             } else {
                 new MaterialDialog.Builder(this)
-                        .checkBoxPromptRes(R.string.id_dont_ask_me_again, false,
-                                (buttonView, isChecked) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, isChecked).apply())
-                        .content(getString(R.string.id_are_you_sure_you_want_to_view, stripped))
-                        .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
-                        .positiveText(android.R.string.ok)
-                        .negativeText(android.R.string.cancel)
-                        .cancelable(false)
-                        .onNegative((dialog, which) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, false).apply())
-                        .onPositive((dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, uri)))
-                        .build().show();
+                .checkBoxPromptRes(R.string.id_dont_ask_me_again, false,
+                                   (buttonView,
+                                    isChecked) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
+                                                                                isChecked).apply())
+                .content(getString(R.string.id_are_you_sure_you_want_to_view, stripped))
+                .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
+                .positiveText(android.R.string.ok)
+                .negativeText(android.R.string.cancel)
+                .cancelable(false)
+                .onNegative((dialog, which) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
+                                                                             false).apply())
+                .onPositive((dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, uri)))
+                .build().show();
             }
         });
     }

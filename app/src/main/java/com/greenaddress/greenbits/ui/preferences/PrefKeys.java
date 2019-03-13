@@ -35,7 +35,7 @@ public class PrefKeys {
     public static final String SEND_NLOCKTIME = "send_nlocktime";
     public static final String RESET_TWOFACTOR = "reset_twofactor";
     public static final String ACTIVE_SUBACCOUNT = "active_subaccount";
-    public static final String TERMS_OF_USE = "terms_of_use" ;
+    public static final String TERMS_OF_USE = "terms_of_use";
     public static final String PRIVACY_POLICY = "privacy_policy";
     public static final String CANCEL_TWOFACTOR_RESET = "cancel_twofactor_reset";
     public static final String DISPUTE_TWOFACTOR_RESET = "dispute_twofactor_reset";
