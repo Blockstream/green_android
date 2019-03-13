@@ -210,6 +210,17 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
     }
 
     @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         switch (keyCode) {
         case KeyEvent.KEYCODE_FOCUS:
