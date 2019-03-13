@@ -4,7 +4,7 @@ matrix:
   include:
     - services:
         - docker
-      script: docker run -v $PWD:/gb greenaddress/android@sha256:62e0e91850b79efa524733c4f7856f0631441bd2b9e59b59329f2da94a007dcc /bin/sh -c "cd /gb && ./app/fetch_gdk_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:259e21fd9127b8b4d462e114c777cd60449e27121d708357dd34e3c8bdd9f8e7 /bin/sh -c "cd /gb && tools/uncrustify && git diff && git diff --quiet && ./app/fetch_gdk_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
     - os: osx
       osx_image: xcode8.3
       env:
@@ -14,13 +14,14 @@ matrix:
         - mkdir -p $HOME/opt
         - cd $HOME/opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} &> /dev/null
         - brew update &> /dev/null
-        - brew install swig gnu-sed pkg-config &> /dev/null
+        - brew install swig gnu-sed pkg-config uncrustify &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "tools" "platform-tools" &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "build-tools;28.0.3" &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "platforms;android-28" &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository" &> /dev/null
       script:
         - export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
+        - cd $HOME/build/blockstream/green_android && ./tools/uncrustify && git diff && git diff --quiet
         - cd $HOME/build/blockstream/green_android/app && ./fetch_gdk_binaries.sh
         - cd $HOME/build/blockstream/green_android && ./gradlew lintProductionRelease
         - cd $HOME/build/blockstream/green_android && ./gradlew assembleProductionDebug

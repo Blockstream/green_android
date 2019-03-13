@@ -1,5 +1,5 @@
 build_tag_release:
-  image: greenaddress/android@sha256:62e0e91850b79efa524733c4f7856f0631441bd2b9e59b59329f2da94a007dcc
+  image: greenaddress/android@sha256:259e21fd9127b8b4d462e114c777cd60449e27121d708357dd34e3c8bdd9f8e7
   artifacts:
     name: "green-release-$CI_COMMIT_REF_NAME"
     expire_in: 1 hour
@@ -11,6 +11,9 @@ build_tag_release:
     - ga
   script:
     - cd $CI_PROJECT_DIR
+    - ./tools/uncrustify
+    - git diff
+    - git diff --quiet
     - ./app/fetch_gdk_binaries.sh
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
@@ -20,6 +23,9 @@ build_tag_osx_release:
     - osx
   script:
     - cd $CI_PROJECT_DIR
+    - ./tools/uncrustify
+    - git diff
+    - git diff --quiet
     - ./app/fetch_gdk_binaries.sh
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease

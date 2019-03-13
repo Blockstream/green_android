@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.greenaddress.greenbits.ui.R;
 
-public class PeerListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class PeerListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {

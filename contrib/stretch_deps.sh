@@ -4,7 +4,7 @@ set -e
 export SDK_FILENAME=sdk-tools-linux-4333796.zip
 
 apt-get -qq update && apt-get -yqq --no-install-recommends upgrade
-apt-get -yqq --no-install-recommends install openjdk-8-jdk ca-certificates-java unzip curl gzip perl
+apt-get -yqq --no-install-recommends install openjdk-8-jdk ca-certificates-java unzip curl gzip perl uncrustify git
 update-java-alternatives -s java-1.8.0-openjdk-amd64
 
 cd /opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} && rm ${SDK_FILENAME}

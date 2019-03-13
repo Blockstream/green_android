@@ -7,4 +7,11 @@ else
 fi
 uncrustify --replace --no-backup -c tools/uncrustify.cfg $files
 # Work around an uncrustify bug that splits member references
-sed -i -e 's/ : : /::/g' -e 's/- >/->/g' $files
+
+
+if [ "`uname`" = "Darwin" ]
+then
+    gsed -i -e 's/ : : /::/g' -e 's/- >/->/g' $files
+else
+    sed -i -e 's/ : : /::/g' -e 's/- >/->/g' $files
+fi
