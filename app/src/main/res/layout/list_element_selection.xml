@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:textSize="24sp"
+        android:fontFamily="sans-serif"
         android:textAllCaps="false"
         android:background="@drawable/material_button_selection"
         android:paddingStart="16dp"
