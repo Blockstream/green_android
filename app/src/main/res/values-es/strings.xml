@@ -25,13 +25,13 @@
   <string name="id_address_1s">Dirección: %1$s</string>
   <string name="id_address_copied_to_clipboard">Direcciones copiadas al portapapeles</string>
   <string name="id_advanced">AVANZADO</string>
-  <string name="id_advanced_network_settings">Advanced network settings</string>
+  <string name="id_advanced_network_settings">Opciones avanzadas de red\n</string>
   <string name="id_all">Todos</string>
   <string name="id_allows_you_to_quickly_check">Te permite revisar rápidamente el saldo, recibir fondos o barrer fondos a monederos de papel. Con el modo de solo lectura, no podrás enviar fondos.</string>
   <string name="id_always">Siempre</string>
   <string name="id_amount">Cantidad</string>
   <string name="id_are_you_sure_you_want_to_view">¿Está seguro de que quiere visualizar la transacción con %s?</string>
-  <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
+  <string name="id_attempts_remaining_d">Intentos restantes: %d</string>
   <string name="id_auto_logout_timeout">Tiempo de espera para cierre de sesión automático</string>
   <string name="id_autolock_after">Bloquear automáticamente después de</string>
   <string name="id_be_aware_other_apps_can_read_or">Ten en cuenta que otras apps pueden leer o cambiar el portapapeles</string>
@@ -330,7 +330,7 @@
   <string name="id_share_address">Compartir direcciones</string>
   <string name="id_show_fiat">Mostrar fiat</string>
   <string name="id_signup_in_progress">Suscripción en curso</string>
-  <string name="id_simplified_payment_verification">Simplified Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
+  <string name="id_simplified_payment_verification">La verificación simple de pago (SPV) verifica tus transacciones y saldo a través de la red de Bitcoin, fuera de los servidores de Green. La habilitación agrega ancho de banda y requisitos adicionales de procesamiento.</string>
   <string name="id_skip">OMITIR</string>
   <string name="id_skip_not_recommended">Omitir (no recomendado)</string>
   <string name="id_slide_to_send">Deslizar para enviar</string>

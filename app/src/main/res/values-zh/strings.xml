@@ -25,13 +25,13 @@
   <string name="id_address_1s">地址：%1$s</string>
   <string name="id_address_copied_to_clipboard">地址已复制至剪贴板</string>
   <string name="id_advanced">高级</string>
-  <string name="id_advanced_network_settings">Advanced network settings</string>
+  <string name="id_advanced_network_settings">高级网络设置</string>
   <string name="id_all">全部</string>
   <string name="id_allows_you_to_quickly_check">允许用户快速查看余额、接受资金或从纸钱包中提现。在watch-only模式下无法发送资金。</string>
   <string name="id_always">永远</string>
   <string name="id_amount">金额</string>
   <string name="id_are_you_sure_you_want_to_view">你确定要使用%s查看交易吗?</string>
-  <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
+  <string name="id_attempts_remaining_d">剩余尝试机会：%d</string>
   <string name="id_auto_logout_timeout">自动登出超时</string>
   <string name="id_autolock_after">自动锁定之后</string>
   <string name="id_be_aware_other_apps_can_read_or">请注意，其他应用能够读取或改变剪贴板</string>
@@ -330,7 +330,7 @@
   <string name="id_share_address">分享地址</string>
   <string name="id_show_fiat">显示法币</string>
   <string name="id_signup_in_progress">正在登录</string>
-  <string name="id_simplified_payment_verification">Simplified Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
+  <string name="id_simplified_payment_verification">简单付款验证（SPV）在Green服务器之外使用比特币网络来验证用户交易与余额。开启将增加带宽与处理要求。</string>
   <string name="id_skip">跳过</string>
   <string name="id_skip_not_recommended">跳过（不推荐）</string>
   <string name="id_slide_to_send">滑动来发送</string>

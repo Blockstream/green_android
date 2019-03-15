@@ -10,7 +10,7 @@
   <string name="id_5_seconds_minimum">5 секунд минимум</string>
   <string name="id_a_new_transaction_has_just">Новая транзакция только что поступила на ваш кошелек.</string>
   <string name="id_a_wallet_is_detected_on_this">На этом устройстве обнаружен кошелек:</string>
-  <string name="id_about">О</string>
+  <string name="id_about">О GREEN</string>
   <string name="id_accept">ПРИНЯТЬ</string>
   <string name="id_account">АККАУНТ</string>
   <string name="id_action_canceled">Действие отменено</string>
@@ -24,14 +24,14 @@
   <string name="id_address">Адрес</string>
   <string name="id_address_1s">Адрес: %1$s</string>
   <string name="id_address_copied_to_clipboard">Адрес скопирован в буфер обмена</string>
-  <string name="id_advanced">ПРОДВИНУТЫЙ</string>
-  <string name="id_advanced_network_settings">Advanced network settings</string>
+  <string name="id_advanced">РАСШИРЕННЫЙ</string>
+  <string name="id_advanced_network_settings">Расширенные настройки сети</string>
   <string name="id_all">Все</string>
   <string name="id_allows_you_to_quickly_check">Позволяет быстро проверить ваш баланс, получить средства или смести бумажный кошелек. Вы не можете отправлять средства в режиме холодного кошелька.</string>
   <string name="id_always">Всегда</string>
   <string name="id_amount">Сумма</string>
   <string name="id_are_you_sure_you_want_to_view">Вы уверены, что хотите просмотреть транзакцию, используя %s?</string>
-  <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
+  <string name="id_attempts_remaining_d">Осталось попыток: %d</string>
   <string name="id_auto_logout_timeout">Автоматический выход</string>
   <string name="id_autolock_after">Автоматическая блокировка</string>
   <string name="id_be_aware_other_apps_can_read_or">Помните, что другие приложения могут читать или изменять буфер обмена</string>
@@ -62,7 +62,7 @@
   <string name="id_confirmation_in_3_blocks_30">Подтверждение в 3 блоках, в среднем 30 минут</string>
   <string name="id_congratulations">Поздравляем!</string>
   <string name="id_connect_through_a_proxy">Установить соединение через прокси-сервер</string>
-  <string name="id_connect_with_tor">Установить соединение с  Tor</string>
+  <string name="id_connect_with_tor">Установить соединение с Tor</string>
   <string name="id_connecting_to_tor_onion_nodes">Подключение к Tor (.onion) узлам обеспечивает максимальную конфиденциальность и безопасность. Нажмите "OK" для продолжения.</string>
   <string name="id_continue">Продолжить</string>
   <string name="id_copy_to_clipboard">Скопировать в буфер обмена</string>
@@ -81,7 +81,7 @@
   <string name="id_days_remaining_s">Осталось дней: %s</string>
   <string name="id_default_custom_fee_rate">Комиссия по умолчанию</string>
   <string name="id_default_transaction_priority">Приоритет транзакции по умолчанию</string>
-  <string name="id_delete_s_twofactor">Удалить %s двухфакторный</string>
+  <string name="id_delete_s_twofactor">Удалить %s фактор</string>
   <string name="id_deleting_your_pin_will_remove">Удаление PIN-кода заблокирует ваш кошелек, доступ к которому может быть восстановлен только в случае использования мнемонической фразы. Нажмите "OK" для продолжения.</string>
   <string name="id_denomination">Деноминация</string>
   <string name="id_deposit">Депозит</string>
@@ -92,7 +92,7 @@
   <string name="id_disputed">Оспоримо</string>
   <string name="id_done">Сделано</string>
   <string name="id_dont_ask_me_again">Больше не спрашивать</string>
-  <string name="id_dont_store_your_mnemonic_on">Не храните свою мнемоническую фразу на телефоне, компьютере или любом другом электронном носителе.</string>
+  <string name="id_dont_store_your_mnemonic_on">Не храните свою мнемоническую фразу на телефоне, компьютере или онлайн-сервисе</string>
   <string name="id_dont_take_screenshots_of_your">Не делайте скриншот вашей мнемонической фразы!</string>
   <string name="id_double_spend">двойная трата </string>
   <string name="id_double_spend_by">Атака двойной траты</string>
@@ -184,7 +184,7 @@
   <string name="id_last_ping_1d_ms">Последний сигнал: %1$d мс</string>
   <string name="id_later">ПОЗЖЕ</string>
   <string name="id_ledger_dashboard_detected">Обнаружена панель Ledger, пожалуйста, откройте правильное приложение для доступа.</string>
-  <string name="id_lets_get_you_set_up">Давайте вас настроим.</string>
+  <string name="id_lets_get_you_set_up">Давайте произведем настройку.</string>
   <string name="id_loading_transactions">Идет загрузка транзакций...</string>
   <string name="id_log_in">Войти</string>
   <string name="id_log_in_using_mnemonic">Войти с использованием мнемонической фразы</string>
@@ -192,7 +192,7 @@
   <string name="id_log_out">Выйти</string>
   <string name="id_logging_in">Выполняется вход...</string>
   <string name="id_login_failed">Вход невозможен</string>
-  <string name="id_login_options">Опции входа</string>
+  <string name="id_login_options">Варианты входа</string>
   <string name="id_look_at_the_device_for_the">Посмотрите расположение чисел на устройстве</string>
   <string name="id_low">Низкий</string>
   <string name="id_main_account">Основной аккаунт</string>
@@ -257,7 +257,7 @@
   <string name="id_please_enter_the_passphrase_for">Введите кодовую фразу для вашего аппаратного кошелька.</string>
   <string name="id_please_follow_the_instructions">Следуйте инструкциям к вашему аппаратному кошельку</string>
   <string name="id_please_provide_your_1s">Введите ваш %1$s.</string>
-  <string name="id_please_provide_your_1s_code">Введите ваш %1$s код.</string>
+  <string name="id_please_provide_your_1s_code">Введите %1$s-код.</string>
   <string name="id_please_provide_your_passphrase">Введите вашу кодовую фразу:</string>
   <string name="id_please_reconnect_your_hardware">Повторно подключите аппаратный кошелек, прежде чем повторять попытку.</string>
   <string name="id_please_secure_your_mnemonic_and">Сохраните вашу мнемоническую фразу и подтвердите согласие с условиями предоставления услуги</string>
@@ -274,7 +274,7 @@
   <string name="id_recipient">Получатель</string>
   <string name="id_recovery_and_notifications">Восстановление и уведомления</string>
   <string name="id_recovery_transaction_emails">Электронные письма транзакций восстановления</string>
-  <string name="id_recovery_transaction_request">Запрос о восстановлении транзакции отправлен</string>
+  <string name="id_recovery_transaction_request">Запрос о восстановительной транзакции отправлен</string>
   <string name="id_recovery_transactions">Восстановительные транзакции</string>
   <string name="id_recovery_words">Слова восстановления</string>
   <string name="id_redeposited">Внесенный повторно</string>
@@ -330,7 +330,7 @@
   <string name="id_share_address">Поделиться адресом</string>
   <string name="id_show_fiat">Показать фиат</string>
   <string name="id_signup_in_progress">Регистрация продолжается</string>
-  <string name="id_simplified_payment_verification">Simplified Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
+  <string name="id_simplified_payment_verification">Упрощенная верификация платежей SPV проверяет ваши транзакции и баланс, используя сеть Биткоин, за пределами Green-серверов. Включение повышает системные требования к пропускной способности и обработке.</string>
   <string name="id_skip">ПРОПУСТИТЬ</string>
   <string name="id_skip_not_recommended">Пропустить (не рекоменлуется)</string>
   <string name="id_slide_to_send">Смахните, чтобы отправить</string>
@@ -377,7 +377,7 @@
   <string name="id_transaction_sent">Транзакция отправлена</string>
   <string name="id_try_now">Попробовать сейчас</string>
   <string name="id_two_factor_authentication">ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ</string>
-  <string name="id_twofactor">ДВУХФАКТОРНЫЙ</string>
+  <string name="id_twofactor">ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ</string>
   <string name="id_twofactor_authentication">Двухфакторная аутентификация</string>
   <string name="id_twofactor_reset_in_progress">Выполняется двухфакторный сброс, ваш кошелек заблокирован.</string>
   <string name="id_twofactor_settings">Двухфакторные настройки</string>
@@ -417,7 +417,7 @@
   <string name="id_wrong_choice_check_your">Неправильный выбор. Проверьте вашу мнемоническую фразу и повторите попытку.</string>
   <string name="id_year">год</string>
   <string name="id_years">лет</string>
-  <string name="id_you_are_not_connected">Соединения нет</string>
+  <string name="id_you_are_not_connected">Соединение отсутствует</string>
   <string name="id_you_are_not_connected_please">Вы не подключены, подождите</string>
   <string name="id_you_are_not_connected_to_the">Вы не подключены к Интернету. Подключитесь и повторите попытку.</string>
   <string name="id_you_are_now_connected">Соединение есть</string>

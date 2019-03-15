@@ -25,13 +25,13 @@
   <string name="id_address_1s">주소:%1$s</string>
   <string name="id_address_copied_to_clipboard">클립보드로 주소 복사됨</string>
   <string name="id_advanced">고급</string>
-  <string name="id_advanced_network_settings">Advanced network settings</string>
+  <string name="id_advanced_network_settings">네트워크 상세설정</string>
   <string name="id_all">전부</string>
   <string name="id_allows_you_to_quickly_check">잔액을 확인, 또는 돈을 받거나 종이 지갑을 sweep 할 수 있습니다. 감시모드에서는 송금은 할 수 없습니다.</string>
   <string name="id_always">항상</string>
   <string name="id_amount">양</string>
   <string name="id_are_you_sure_you_want_to_view">정말로 %s를 사용하여 거래를 확인하시겠습니까?</string>
-  <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
+  <string name="id_attempts_remaining_d">남은 시도: %d</string>
   <string name="id_auto_logout_timeout">자동 로그아웃 시간</string>
   <string name="id_autolock_after">자동 잠금 시간</string>
   <string name="id_be_aware_other_apps_can_read_or">클립보드로 복사하면 다른 앱들이 읽거나 바꿀 수 있음으로 주의하세요</string>
@@ -330,7 +330,7 @@
   <string name="id_share_address">주소 내보내기</string>
   <string name="id_show_fiat">명목화폐 보기</string>
   <string name="id_signup_in_progress">회원가입 진행 중</string>
-  <string name="id_simplified_payment_verification">Simplified Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
+  <string name="id_simplified_payment_verification">Simplified Payment Verification 은 Green 서버 대신 비트코인 네트워크를 활용하여 거래 및 잔액을 검증합니다. SPV 모드를 활성화 하면 더 많은 대역폭 및 프로세싱 파워가 요구됩니다.</string>
   <string name="id_skip">넘기기</string>
   <string name="id_skip_not_recommended">넘기기 (권장하지 않음)</string>
   <string name="id_slide_to_send">밀어서 보내기</string>

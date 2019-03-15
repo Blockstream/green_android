@@ -25,13 +25,13 @@
   <string name="id_address_1s">アドレス:%1$s</string>
   <string name="id_address_copied_to_clipboard">クリップボードにアドレスがコピーされました</string>
   <string name="id_advanced">アドバンスド</string>
-  <string name="id_advanced_network_settings">Advanced network settings</string>
+  <string name="id_advanced_network_settings">ネットワーク詳細設定</string>
   <string name="id_all">全て</string>
   <string name="id_allows_you_to_quickly_check">残高の確認、資金の受け取り、また、ペーパーウォレットの読み取りができます。読み取りモードでは資金の送金はできません。</string>
   <string name="id_always">いつも</string>
   <string name="id_amount">額</string>
   <string name="id_are_you_sure_you_want_to_view">%sを利用してトランザクションを確認しますか？</string>
-  <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
+  <string name="id_attempts_remaining_d">残り: %d 回</string>
   <string name="id_auto_logout_timeout">自動ログアウト時間</string>
   <string name="id_autolock_after">オートロック制限</string>
   <string name="id_be_aware_other_apps_can_read_or">他のアプリがクリップボードを読み取り、変更可能ですので注意してください。</string>
@@ -330,7 +330,7 @@
   <string name="id_share_address">シェア・アドレス</string>
   <string name="id_show_fiat">法廷通貨表示</string>
   <string name="id_signup_in_progress">登録中です</string>
-  <string name="id_simplified_payment_verification">Simplified Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
+  <string name="id_simplified_payment_verification">Simplified Payment VerificationはGreenのサーバーではなくビットコインネットワークから貴方のトランザクションと残高を検証します。有効にする場合、帯域幅とプロセッシングの必要条件が高くなります。</string>
   <string name="id_skip">スキップ</string>
   <string name="id_skip_not_recommended">スキップ(推薦しません)</string>
   <string name="id_slide_to_send">スライドして送金する</string>
@@ -434,6 +434,6 @@
   <string name="id_your_s_sent_to_s_has_been">%sに送金した%s が検証されました。</string>
   <string name="id_your_spending_limit_is_s">使用可能限度は%sです。</string>
   <string name="id_your_transactions_will_be_shown">トランザクションはこちらから確認できます。</string>
-  <string name="id_your_wallet_is_not_yet_fully">ウォレットが完全に安全ではありません。\n2段階認証を設定してください。</string>
+  <string name="id_your_wallet_is_not_yet_fully">ウォレットが安全ではありません。\n2段階認証を設定してください。</string>
   <string name="id_your_watchonly_username_will_be">監視-Onlyユーザーネームはこのデバイスに暗号化されずに保存されます。デバイスが危殆化される場合、貴方のトランザクションは第三者によって監視される可能性が生じます。続けるには"OK" を押してください。</string>
 </resources>

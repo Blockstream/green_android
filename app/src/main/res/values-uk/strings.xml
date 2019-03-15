@@ -10,7 +10,7 @@
   <string name="id_5_seconds_minimum">5 секунд мінімум</string>
   <string name="id_a_new_transaction_has_just">Нова транзакція щойно надійшла на ваш гаманець.</string>
   <string name="id_a_wallet_is_detected_on_this">На пристрої знайдено гаманець:</string>
-  <string name="id_about">ПРО</string>
+  <string name="id_about">ПРО GREEN</string>
   <string name="id_accept">ПРИЙНЯТИ</string>
   <string name="id_account">АКАУНТ</string>
   <string name="id_action_canceled">Дія скасована</string>
@@ -24,14 +24,14 @@
   <string name="id_address">Адреса</string>
   <string name="id_address_1s">Адреса: %1$s</string>
   <string name="id_address_copied_to_clipboard">Адресу скопійовано в буфер обміну</string>
-  <string name="id_advanced">ПРОСУНУТИЙ</string>
-  <string name="id_advanced_network_settings">Advanced network settings</string>
+  <string name="id_advanced">РОЗШИРЕНИЙ</string>
+  <string name="id_advanced_network_settings">Розширені налаштування мережі</string>
   <string name="id_all">Усі</string>
   <string name="id_allows_you_to_quickly_check">Дозволяє швидко перевірити ваш баланс, отримати кошти або змести паперовий гаманець. Ви не маєте можливості надсилати кошти в режимі холодного гаманця.</string>
   <string name="id_always">Завжди</string>
   <string name="id_amount">Сума</string>
   <string name="id_are_you_sure_you_want_to_view">Ви впевнені, що бажаєте переглянути транзакцію за допомогою %s?</string>
-  <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
+  <string name="id_attempts_remaining_d">Залишилося спроб: %d</string>
   <string name="id_auto_logout_timeout">Автоматичний вихід</string>
   <string name="id_autolock_after">Автоматичне блокування</string>
   <string name="id_be_aware_other_apps_can_read_or">Пам\'ятайте, що інші додатки мають можливість читати або змінювати буфер обміну</string>
@@ -81,7 +81,7 @@
   <string name="id_days_remaining_s">Залишилося днів: %s</string>
   <string name="id_default_custom_fee_rate">Стандартна комісія</string>
   <string name="id_default_transaction_priority">Стандартний пріоритет транзакцій</string>
-  <string name="id_delete_s_twofactor">Видалити %s двофакторний</string>
+  <string name="id_delete_s_twofactor">Видалити %s фактор</string>
   <string name="id_deleting_your_pin_will_remove">Видалення PIN-коду заблокує ваш гаманець, доки ви не скористуєтесь мнемонічною фразою для відновлення доступу. Натисніть "OK" для продовження.</string>
   <string name="id_denomination">Деномінація</string>
   <string name="id_deposit">Депозит</string>
@@ -92,7 +92,7 @@
   <string name="id_disputed">Оскаржено</string>
   <string name="id_done">Здійснено</string>
   <string name="id_dont_ask_me_again">Більше не запитувати</string>
-  <string name="id_dont_store_your_mnemonic_on">Не зберігайте вашу мнемонічну фразу на телефоні, комп\'ютері чи будь-якому іншому електронному носії.</string>
+  <string name="id_dont_store_your_mnemonic_on">Не зберігайте вашу мнемонічну фразу на телефоні, комп\'ютері чи онлайн-сервiсi.</string>
   <string name="id_dont_take_screenshots_of_your">Не робіть скріншот вашої мнемонічної фрази!</string>
   <string name="id_double_spend">подвійна витрата</string>
   <string name="id_double_spend_by">Атака подвійної витрати</string>
@@ -157,7 +157,7 @@
   <string name="id_hold_your_nfc_tag_close_to_the">Тримайте NFC-тег поряд із вашим приладом</string>
   <string name="id_hour">година</string>
   <string name="id_hours">години</string>
-  <string name="id_i_agree_to_the">Я погоджуюсь</string>
+  <string name="id_i_agree_to_the">Я погоджуюсь з</string>
   <string name="id_i_confirm_i_have_read_and">Я підтверджую, що ознайомлений/ознайомлена з цим повідомленням і мені зрозумілий його зміст</string>
   <string name="id_i_forgot_my_password">Я не пам\'ятаю свій пароль</string>
   <string name="id_i_secured_the_mnemonic_and_i">Я надійно зберіг/зберегла мнемонічну фразу и ознайомився/ознайомилась з умовами надання послуг</string>
@@ -184,7 +184,7 @@
   <string name="id_last_ping_1d_ms">Останній сигнал: %1$d мс</string>
   <string name="id_later">ПІЗНІШЕ</string>
   <string name="id_ledger_dashboard_detected">Знайдена панель Ledger, будь ласка, відкрийте правильний додаток для доступу.</string>
-  <string name="id_lets_get_you_set_up">Давайте вас налаштуємо.</string>
+  <string name="id_lets_get_you_set_up">Давайте здійснимо налаштування.</string>
   <string name="id_loading_transactions">Завантаження транзакцій... </string>
   <string name="id_log_in">Увійти</string>
   <string name="id_log_in_using_mnemonic">Увійти з використанням мнемонічної фрази</string>
@@ -192,7 +192,7 @@
   <string name="id_log_out">Вийти </string>
   <string name="id_logging_in">Виконується вхід...</string>
   <string name="id_login_failed">Вхід неможливий</string>
-  <string name="id_login_options">Опції входа</string>
+  <string name="id_login_options">Варианты входа</string>
   <string name="id_look_at_the_device_for_the">Подивіться на розташування чисел на пристрої</string>
   <string name="id_low">Низький</string>
   <string name="id_main_account">Основний акаунт</string>
@@ -274,7 +274,7 @@
   <string name="id_recipient">Отримувач</string>
   <string name="id_recovery_and_notifications">Відновлення і повідомлення</string>
   <string name="id_recovery_transaction_emails">Електронні листи транзакцій відновлення</string>
-  <string name="id_recovery_transaction_request">Запит про відновлення транзакції надіслано </string>
+  <string name="id_recovery_transaction_request">Запит про транзакцію відновлення надіслано</string>
   <string name="id_recovery_transactions">Транзакції відновлення</string>
   <string name="id_recovery_words">Слова відновлення</string>
   <string name="id_redeposited">Внесений повторно</string>
@@ -330,7 +330,7 @@
   <string name="id_share_address">Поділитися адресою</string>
   <string name="id_show_fiat">Показати фіат</string>
   <string name="id_signup_in_progress">Реєстрація продовжується</string>
-  <string name="id_simplified_payment_verification">Simplified Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
+  <string name="id_simplified_payment_verification">Спрощена верифікація платежів SPV перевіряє ваші транзакції і баланс за допомогою мережі Біткоїн поза межами Green-серверів. Увімкнення підвищує системні вимоги до пропускної спроможності і обробки.</string>
   <string name="id_skip">ПРОПУСТИТИ</string>
   <string name="id_skip_not_recommended">Пропустити (не рекомендовано)</string>
   <string name="id_slide_to_send">Змахнути, щоб відправити</string>
@@ -377,7 +377,7 @@
   <string name="id_transaction_sent">Транзакція надіслана</string>
   <string name="id_try_now">Спробувати зараз</string>
   <string name="id_two_factor_authentication">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>
-  <string name="id_twofactor">ДВОФАКТОРНИЙ</string>
+  <string name="id_twofactor">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>
   <string name="id_twofactor_authentication">Двофакторна аутентифікація</string>
   <string name="id_twofactor_reset_in_progress">Виконується двофакторне скидання, ваш гаманець заблоковано.</string>
   <string name="id_twofactor_settings">Двофакторне налаштування</string>
@@ -417,7 +417,7 @@
   <string name="id_wrong_choice_check_your">Неправильний вибір. Перевірте вашу мнемонічну фразу та здійсніть іншу спробу.</string>
   <string name="id_year">рік</string>
   <string name="id_years">років</string>
-  <string name="id_you_are_not_connected">З\'єднання не має</string>
+  <string name="id_you_are_not_connected">З\'єднання відсутнє</string>
   <string name="id_you_are_not_connected_please">Ви не підключені, будь ласка, зачекайте</string>
   <string name="id_you_are_not_connected_to_the">Ви не підключені до мережі Інтернет. Підключіться і повторіть спробу.</string>
   <string name="id_you_are_now_connected">З\'єднання є</string>
@@ -435,5 +435,5 @@
   <string name="id_your_spending_limit_is_s">Ваш ліміт витрат складає %s.</string>
   <string name="id_your_transactions_will_be_shown">Ваші транзакції будуть показані тут.</string>
   <string name="id_your_wallet_is_not_yet_fully">Ваш гаманець не захищений.\nБудь ласка, увімкніть двофакторну аутентифікацію.</string>
-  <string name="id_your_watchonly_username_will_be">Ім’я користувача вашого холодного гаманця буде зберігатися у незашифрованому видляді на цьому пристрої. Якщо ваш пристрій буде скомпрометовано, ваші транзакції можуть переглядатись третіми особами. Натисніть "OK", щоб продовжити.</string>
+  <string name="id_your_watchonly_username_will_be">Ім’я користувача вашого холодного гаманця буде зберігатися у незашифрованому вигляді на цьому пристрої. Якщо ваш пристрій буде скомпрометовано, ваші транзакції можуть переглядатись третіми особами. Натисніть "OK", щоб продовжити.</string>
 </resources>
