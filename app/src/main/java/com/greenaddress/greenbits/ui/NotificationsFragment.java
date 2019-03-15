@@ -73,7 +73,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                 });
             } else if (e.getTitle() == R.string.id_new_transaction) {
                 preference.setOnPreferenceClickListener(preference1 -> {
-                    Log.i("TAG", "" + e.getValue());
+                    Log.d("TAG", "" + e.getValue());
                     try {
                         final TransactionData txData = (TransactionData) e.getValue();
                         final JsonNode transactionRaw =

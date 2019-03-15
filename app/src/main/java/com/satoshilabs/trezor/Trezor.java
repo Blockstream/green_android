@@ -89,7 +89,7 @@ public class Trezor {
                     writeEndpoint = ep;
                     continue;
                 }
-                Log.e(TAG, String.format("ep %d", ep.getAddress()));
+                Log.d(TAG, String.format("ep %d", ep.getAddress()));
             }
 
             if (isEndpointBad(readEndpoint, "read") || isEndpointBad(writeEndpoint, "write"))

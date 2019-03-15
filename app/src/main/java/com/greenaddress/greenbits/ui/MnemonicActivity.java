@@ -96,7 +96,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        Log.i(TAG, getIntent().getType() + ' ' + getIntent());
+        Log.d(TAG, getIntent().getType() + ' ' + getIntent());
         setTitleBackTransparent();
         setTitleWithNetwork(R.string.id_restore);
 
@@ -213,7 +213,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         try {
             Wally.bip39_mnemonic_validate(mWordList, mnemonic);
         } catch (final IllegalArgumentException e) {
-            Log.d(TAG,"mnemonic (" + mnemonic + ")");
+            Log.d(TAG,"invalid mnemonic (" + mnemonic + ")");
             return R.string.id_invalid_mnemonic;
         }
         return 0;
