@@ -66,13 +66,14 @@ public class GDKSession {
     }
 
     public void connect(final String network, final boolean isDebug) {
-        GDK.connect(mNativeSession, network, isDebug ? GDK.GA_TRUE : GDK.GA_FALSE);
+        // GDK.GA_DEBUG is available but must be manually changed if more logging from gdk is necessary
+        GDK.connect(mNativeSession, network, isDebug ? GDK.GA_INFO : GDK.GA_NONE);
     }
 
     public void connectWithProxy(final String network, String proxyAsString, boolean useTor, boolean debug) {
         GDK.connect_with_proxy(mNativeSession, network, proxyAsString,
                                useTor ? GDK.GA_TRUE : GDK.GA_FALSE,
-                               debug ? GDK.GA_TRUE : GDK.GA_FALSE);
+                               debug ? GDK.GA_INFO : GDK.GA_NONE);
     }
 
     public void reconnectNow() {
