@@ -12,6 +12,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -83,7 +84,7 @@ public class ListTransactionsAdapter extends
             }
         }
 
-        UI.showIf(txItem.replaceable, holder.textReplaceable);
+        UI.showIf(txItem.replaceable, holder.imageReplaceable);
 
         final boolean humanCpty = txItem.type == TransactionItem.TYPE.OUT &&
                                   txItem.counterparty != null && !txItem.counterparty.isEmpty() /*&&
@@ -174,7 +175,7 @@ public class ListTransactionsAdapter extends
         public final TextView listNumberConfirmation;
         public final TextView textValue;
         public final TextView textWhen;
-        public final TextView textReplaceable;
+        public final ImageView imageReplaceable;
         public final TextView spvUnconfirmed;
         public final FontAwesomeTextView unitText;
         public final TextView textWho;
@@ -186,7 +187,7 @@ public class ListTransactionsAdapter extends
 
             textValue = UI.find(v, R.id.listValueText);
             textWhen = UI.find(v, R.id.listWhenText);
-            textReplaceable = UI.find(v, R.id.listReplaceableText);
+            imageReplaceable = UI.find(v, R.id.listReplaceableIcon);
             spvUnconfirmed = UI.find(v, R.id.spvUnconfirmed);
             textWho = UI.find(v, R.id.listWhoText);
             mainLayout = UI.find(v, R.id.list_item_layout);

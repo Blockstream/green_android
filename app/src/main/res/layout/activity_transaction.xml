@@ -72,6 +72,8 @@
                     android:paddingEnd="8dp"
                     android:paddingBottom="4dp"
                     android:paddingTop="4dp"
+                    android:drawablePadding="4dp"
+                    android:drawableEnd="@drawable/ic_bump_fee"
                     />
 
 

@@ -20,20 +20,17 @@
             android:textColor="@color/grey_light"
             android:textSize="14sp"/>
 
-        <TextView
-            android:id="@+id/listReplaceableText"
+        <ImageView
+            android:id="@+id/listReplaceableIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:textSize="8sp"
-            android:text="@string/id_replaceable"
-            android:textColor="@color/grey_light"
-            android:textAllCaps="true"
-            android:background="@drawable/view_border_grey"/>
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:src="@drawable/ic_bump_fee"
+            />
 
         <TextView
             android:id="@+id/spvUnconfirmed"
