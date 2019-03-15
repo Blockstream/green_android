@@ -86,3 +86,7 @@
 }
 -keepnames class com.fasterxml.jackson.** { *; }
 -dontwarn com.fasterxml.jackson.databind.**
+
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+}
