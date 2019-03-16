@@ -59,7 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:maxWidth="120dp"
+                    android:maxWidth="130dp"
                     android:inputType="textMultiLine"
                     android:layout_centerVertical="true"
                     android:singleLine="false"
