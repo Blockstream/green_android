@@ -1,4 +1,4 @@
-# Green - A native GreenAddress wallet for Android
+# Blockstream Green - A native bitcoin wallet for Android and a [iOS](https://github.com/Blockstream/green_ios)
 
 Build status: [![Build Status](https://travis-ci.org/Blockstream/green_android.png?branch=master)](https://travis-ci.org/Blockstream/green_android)
 
@@ -11,7 +11,7 @@ Build status: [![Build Status](https://travis-ci.org/Blockstream/green_android.p
 
 You need to have the following Android developer tools installed:
 
-- "Android SDK Platform-tools" version 28.0.1 recommended
+- "Android SDK Platform-tools" version 28.0.2 recommended
 - "Android SDK Tools" version 26.1.1
 - "Android SDK Build-tools" version 28.0.3
 - "Android Support Library" version 28.0.0
@@ -112,5 +112,3 @@ If you don't need to build the Docker image, you can instead run:
 ### Acknowledgements
 
 Thanks to [Bitcoin Wallet for Android](https://github.com/schildbach/bitcoin-wallet) for their QR scanning activity source code!
-
-Thanks to [Riccardo Casatta](https://github.com/RCasatta) for code and big UX contributions!
