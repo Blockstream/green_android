@@ -1,0 +1,30 @@
+PODS:
+  - NVActivityIndicatorView (4.6.1):
+    - NVActivityIndicatorView/Presenter (= 4.6.1)
+  - NVActivityIndicatorView/Presenter (4.6.1)
+  - PromiseKit (6.2.3):
+    - PromiseKit/CorePromise (= 6.2.3)
+    - PromiseKit/Foundation (= 6.2.3)
+    - PromiseKit/UIKit (= 6.2.3)
+  - PromiseKit/CorePromise (6.2.3)
+  - PromiseKit/Foundation (6.2.3):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (6.2.3):
+    - PromiseKit/CorePromise
+
+DEPENDENCIES:
+  - NVActivityIndicatorView (= 4.6.1)
+  - PromiseKit (= 6.2.3)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - NVActivityIndicatorView
+    - PromiseKit
+
+SPEC CHECKSUMS:
+  NVActivityIndicatorView: 4ca19fccc84595a78957336a086d00a49be6ce61
+  PromiseKit: 62f37bb4900a9b0b7550d017e41497171d93face
+
+PODFILE CHECKSUM: a305e4332726a4cee0be3abcf208df8795d88362
+
+COCOAPODS: 1.5.3

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="InstructionView" customModule="gaios" customModuleProvider="target">
+            <connections>
+                <outlet property="bottomLabel" destination="AGo-Xf-rOj" id="Xf8-vg-ffT"/>
+                <outlet property="middleLabel" destination="POo-14-Ips" id="7t4-ba-C2S"/>
+                <outlet property="nextButton" destination="u73-6q-IVd" id="gL5-7W-gO7"/>
+                <outlet property="topLabel" destination="qVu-S7-6UJ" id="lyW-1W-dIQ"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="8PH-LL-7Xd">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Write down your seed words on paper or cold storage device." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qVu-S7-6UJ">
+                    <rect key="frame" x="54" y="40" width="305" height="41"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_noonline" translatesAutoresizingMaskIntoConstraints="NO" id="ogB-7k-Hdt">
+                    <rect key="frame" x="16" y="111" width="28" height="28"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="28" id="8Ri-yw-DGm"/>
+                        <constraint firstAttribute="width" constant="28" id="bmu-iZ-xLX"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't store your seed in email,  locally on your computer, or any cloud services." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="POo-14-Ips">
+                    <rect key="frame" x="54" y="111" width="305" height="61"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_noscrshot" translatesAutoresizingMaskIntoConstraints="NO" id="xEl-yS-Mbz">
+                    <rect key="frame" x="16" y="202" width="28" height="28"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="28" id="3dY-cg-nCZ"/>
+                        <constraint firstAttribute="height" constant="28" id="qoc-Xn-cTr"/>
+                    </constraints>
+                </imageView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="boq-7K-w3b">
+                    <rect key="frame" x="0.0" y="622" width="375" height="45"/>
+                    <color key="backgroundColor" name="customTitaniumMedium"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="45" id="OaR-dX-vxG"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jpV-vc-bSe">
+                    <rect key="frame" x="0.0" y="593" width="375" height="74"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u73-6q-IVd">
+                            <rect key="frame" x="16" y="16" width="343" height="42"/>
+                            <color key="backgroundColor" name="customMatrixGreen"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="42" id="OAx-TW-nom"/>
+                            </constraints>
+                            <state key="normal" title="Next">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
+                                    <real key="value" value="2"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="size" keyPath="shadowOffset">
+                                    <size key="value" width="2" height="2"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
+                                    <real key="value" value="0.80000000000000004"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" name="customLowerBar"/>
+                    <constraints>
+                        <constraint firstItem="u73-6q-IVd" firstAttribute="top" secondItem="jpV-vc-bSe" secondAttribute="top" constant="16" id="2Bf-2o-4E4"/>
+                        <constraint firstItem="u73-6q-IVd" firstAttribute="leading" secondItem="jpV-vc-bSe" secondAttribute="leading" constant="16" id="4YR-Pk-q5J"/>
+                        <constraint firstAttribute="bottom" secondItem="u73-6q-IVd" secondAttribute="bottom" constant="16" id="IwG-uJ-ldq"/>
+                        <constraint firstAttribute="trailing" secondItem="u73-6q-IVd" secondAttribute="trailing" constant="16" id="mmy-hm-mAT"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don’t take screenshots of your seed!" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AGo-Xf-rOj">
+                    <rect key="frame" x="54" y="202" width="305" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_write" translatesAutoresizingMaskIntoConstraints="NO" id="v5q-dE-R15">
+                    <rect key="frame" x="16" y="40" width="28" height="28"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="28" id="M89-73-vhR"/>
+                        <constraint firstAttribute="height" constant="28" id="sYQ-CZ-068"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" name="customTitaniumDark"/>
+            <constraints>
+                <constraint firstItem="qVu-S7-6UJ" firstAttribute="top" secondItem="mun-dq-K2x" secondAttribute="top" constant="20" id="1hw-pV-Hg3"/>
+                <constraint firstItem="mun-dq-K2x" firstAttribute="trailing" secondItem="boq-7K-w3b" secondAttribute="trailing" id="Dmh-JC-hm2"/>
+                <constraint firstItem="mun-dq-K2x" firstAttribute="trailing" secondItem="qVu-S7-6UJ" secondAttribute="trailing" constant="16" id="E54-t8-ztj"/>
+                <constraint firstItem="POo-14-Ips" firstAttribute="top" secondItem="qVu-S7-6UJ" secondAttribute="bottom" constant="30" id="MBo-Wc-Dfc"/>
+                <constraint firstItem="ogB-7k-Hdt" firstAttribute="top" secondItem="POo-14-Ips" secondAttribute="top" id="N3V-ez-9Rg"/>
+                <constraint firstItem="boq-7K-w3b" firstAttribute="leading" secondItem="mun-dq-K2x" secondAttribute="leading" id="N8C-dI-5iF"/>
+                <constraint firstItem="AGo-Xf-rOj" firstAttribute="leading" secondItem="xEl-yS-Mbz" secondAttribute="trailing" constant="10" id="V5p-Wh-Ix9"/>
+                <constraint firstItem="qVu-S7-6UJ" firstAttribute="leading" secondItem="v5q-dE-R15" secondAttribute="trailing" constant="10" id="X7w-Ue-pvb"/>
+                <constraint firstItem="POo-14-Ips" firstAttribute="leading" secondItem="ogB-7k-Hdt" secondAttribute="trailing" constant="10" id="XwI-nK-Pze"/>
+                <constraint firstItem="v5q-dE-R15" firstAttribute="top" secondItem="qVu-S7-6UJ" secondAttribute="top" id="Yhu-5c-6HE"/>
+                <constraint firstItem="AGo-Xf-rOj" firstAttribute="top" secondItem="POo-14-Ips" secondAttribute="bottom" constant="30" id="bQo-fn-YiN"/>
+                <constraint firstItem="xEl-yS-Mbz" firstAttribute="leading" secondItem="mun-dq-K2x" secondAttribute="leading" constant="16" id="ghZ-xV-QSt"/>
+                <constraint firstItem="jpV-vc-bSe" firstAttribute="leading" secondItem="mun-dq-K2x" secondAttribute="leading" id="gnl-e1-bD4"/>
+                <constraint firstAttribute="bottom" secondItem="boq-7K-w3b" secondAttribute="bottom" id="i2d-Ib-lJw"/>
+                <constraint firstItem="ogB-7k-Hdt" firstAttribute="leading" secondItem="mun-dq-K2x" secondAttribute="leading" constant="16" id="lHQ-SV-1dq"/>
+                <constraint firstItem="mun-dq-K2x" firstAttribute="trailing" secondItem="POo-14-Ips" secondAttribute="trailing" constant="16" id="q0O-c2-mJJ"/>
+                <constraint firstItem="mun-dq-K2x" firstAttribute="bottom" secondItem="jpV-vc-bSe" secondAttribute="bottom" id="tOK-Et-WD1"/>
+                <constraint firstItem="mun-dq-K2x" firstAttribute="trailing" secondItem="AGo-Xf-rOj" secondAttribute="trailing" constant="16" id="vIv-MR-DSE"/>
+                <constraint firstItem="v5q-dE-R15" firstAttribute="leading" secondItem="mun-dq-K2x" secondAttribute="leading" constant="16" id="wHy-9X-SkD"/>
+                <constraint firstItem="mun-dq-K2x" firstAttribute="trailing" secondItem="jpV-vc-bSe" secondAttribute="trailing" id="xIi-qr-18p"/>
+                <constraint firstItem="xEl-yS-Mbz" firstAttribute="top" secondItem="AGo-Xf-rOj" secondAttribute="top" id="xyg-ny-fvy"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="mun-dq-K2x"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="onboarding_noonline" width="50" height="50"/>
+        <image name="onboarding_noscrshot" width="50" height="50"/>
+        <image name="onboarding_write" width="50" height="50"/>
+        <namedColor name="customLowerBar">
+            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumMedium">
+            <color red="0.21568627450980393" green="0.24705882352941178" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

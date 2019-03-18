@@ -1,0 +1,2 @@
+NSFaceIDUsageDescription = "Green utiliza la autenticación biométrica para simplificar el acceso al monedero";
+NSCameraUsageDescription = "Utilizamos la cámara para escanear los códigos QR";

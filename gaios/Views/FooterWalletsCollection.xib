@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="ckw-bz-Gat" customClass="FooterWalletsCollection" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add New Account" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qTY-T0-5GJ">
+                    <rect key="frame" x="18" y="122" width="339" height="40"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0HY-8b-dvD">
+                    <rect key="frame" x="18" y="18" width="40" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="25" id="pVe-k0-jya"/>
+                        <constraint firstAttribute="height" constant="25" id="wim-3f-2jx"/>
+                    </constraints>
+                </imageView>
+                <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B8l-Bn-iKy">
+                    <rect key="frame" x="154.5" y="45" width="66" height="66"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="66" id="89d-Es-cXg"/>
+                        <constraint firstAttribute="height" constant="66" id="giv-ta-hOx"/>
+                    </constraints>
+                    <state key="normal" image="add_wallet"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="33"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                            <color key="value" red="0.16862745098039217" green="0.20000000000000001" blue="0.23137254901960785" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                            <real key="value" value="2"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </button>
+            </subviews>
+            <color key="backgroundColor" name="customTitaniumDark"/>
+            <constraints>
+                <constraint firstItem="B8l-Bn-iKy" firstAttribute="top" secondItem="DYx-IG-bQj" secondAttribute="top" constant="45" id="95z-RN-RDy"/>
+                <constraint firstItem="0HY-8b-dvD" firstAttribute="leading" secondItem="ckw-bz-Gat" secondAttribute="leading" constant="38" id="IJS-Qv-pLw"/>
+                <constraint firstItem="B8l-Bn-iKy" firstAttribute="centerX" secondItem="DYx-IG-bQj" secondAttribute="centerX" id="PBx-6A-9bB"/>
+                <constraint firstItem="DYx-IG-bQj" firstAttribute="trailing" secondItem="qTY-T0-5GJ" secondAttribute="trailing" constant="18" id="SHm-dH-0lb"/>
+                <constraint firstItem="DYx-IG-bQj" firstAttribute="bottom" secondItem="qTY-T0-5GJ" secondAttribute="bottom" constant="18" id="UNW-QE-AcK"/>
+                <constraint firstItem="0HY-8b-dvD" firstAttribute="top" secondItem="ckw-bz-Gat" secondAttribute="top" constant="30" id="btn-4D-Sty"/>
+                <constraint firstItem="qTY-T0-5GJ" firstAttribute="leading" secondItem="DYx-IG-bQj" secondAttribute="leading" constant="18" id="h0F-Kd-i8V"/>
+                <constraint firstItem="qTY-T0-5GJ" firstAttribute="top" secondItem="B8l-Bn-iKy" secondAttribute="bottom" constant="12" id="qWE-cE-Z3W"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="DYx-IG-bQj"/>
+            <connections>
+                <outlet property="addButton" destination="B8l-Bn-iKy" id="nR9-Ke-cxF"/>
+                <outlet property="message" destination="qTY-T0-5GJ" id="e13-53-NWm"/>
+                <outlet property="networkImage" destination="0HY-8b-dvD" id="yBZ-l7-v9w"/>
+            </connections>
+            <point key="canvasLocation" x="85.599999999999994" y="-77.361319340329842"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="add_wallet" width="50" height="50"/>
+        <namedColor name="customTitaniumDark">
+            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

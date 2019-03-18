@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="HeaderWalletsCollection" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="403" height="95"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5rk-wF-FDb">
+                    <rect key="frame" x="18" y="45.5" width="44" height="21.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <color key="textColor" name="customMatrixGreen"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PSE-FT-7DY">
+                    <rect key="frame" x="100" y="45.5" width="44" height="21.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <color key="textColor" name="customTitaniumLight"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mGJ-qi-Mue">
+                    <rect key="frame" x="18" y="16" width="369" height="21.5"/>
+                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" ≈ " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u4v-wX-c20">
+                    <rect key="frame" x="70" y="42.5" width="22" height="25.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                    <color key="textColor" name="customTitaniumLight"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <constraints>
+                <constraint firstItem="mGJ-qi-Mue" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="22" id="Emg-Y5-AEZ"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="PSE-FT-7DY" secondAttribute="trailing" constant="18" id="Kg7-z1-klw"/>
+                <constraint firstItem="PSE-FT-7DY" firstAttribute="leading" secondItem="u4v-wX-c20" secondAttribute="trailing" constant="8" id="VHi-Xh-ZrZ"/>
+                <constraint firstItem="u4v-wX-c20" firstAttribute="firstBaseline" secondItem="5rk-wF-FDb" secondAttribute="firstBaseline" id="aw0-mE-C4T"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="5rk-wF-FDb" secondAttribute="bottom" constant="18" id="f3U-vY-32a"/>
+                <constraint firstItem="mGJ-qi-Mue" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="16" id="g92-ey-yWo"/>
+                <constraint firstItem="5rk-wF-FDb" firstAttribute="top" secondItem="mGJ-qi-Mue" secondAttribute="bottom" constant="8" id="ihL-ub-a4g"/>
+                <constraint firstItem="PSE-FT-7DY" firstAttribute="firstBaseline" secondItem="u4v-wX-c20" secondAttribute="firstBaseline" id="jQy-kr-rg5"/>
+                <constraint firstItem="5rk-wF-FDb" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="22" id="x09-M3-QEQ"/>
+                <constraint firstItem="u4v-wX-c20" firstAttribute="leading" secondItem="5rk-wF-FDb" secondAttribute="trailing" constant="8" id="yMX-Xe-keQ"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="mGJ-qi-Mue" secondAttribute="trailing" constant="16" id="z0e-ZD-e61"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="btcLabel" destination="5rk-wF-FDb" id="7T0-e6-teA"/>
+                <outlet property="fiatLabel" destination="PSE-FT-7DY" id="Leq-1u-xZg"/>
+                <outlet property="title" destination="mGJ-qi-Mue" id="9RV-HC-7uY"/>
+            </connections>
+            <point key="canvasLocation" x="-7.2000000000000002" y="-1723.9880059970017"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumLight">
+            <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

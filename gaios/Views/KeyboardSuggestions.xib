@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="KeyboardSuggestions" customModule="gaios" customModuleProvider="target">
+            <connections>
+                <outlet property="leftButton" destination="GxZ-Xw-bae" id="MmV-0X-j5d"/>
+                <outlet property="rightButton" destination="htH-eE-cLi" id="mY8-iq-8EE"/>
+                <outlet property="suggestion0" destination="UqI-Aw-vkE" id="Ifq-qE-0pd"/>
+                <outlet property="suggestion1" destination="PLS-sn-7ga" id="d4L-g3-Vx7"/>
+                <outlet property="suggestion2" destination="kSv-zT-JiI" id="4bq-OP-x9m"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="PLS-sn-7ga">
+                    <rect key="frame" x="166.5" y="323.5" width="42" height="20"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="kSv-zT-JiI">
+                    <rect key="frame" x="270" y="323.5" width="42" height="20"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="htH-eE-cLi">
+                    <rect key="frame" x="335" y="313.5" width="40" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="fRt-aZ-pB6"/>
+                        <constraint firstAttribute="width" constant="40" id="gfu-Os-ig2"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                    <state key="normal" title="&gt;">
+                        <color key="titleColor" name="customTitaniumDark"/>
+                    </state>
+                    <connections>
+                        <action selector="rightButton:" destination="-1" eventType="touchUpInside" id="dT5-k6-gyY"/>
+                    </connections>
+                </button>
+                <label opaque="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="UqI-Aw-vkE">
+                    <rect key="frame" x="59" y="323.5" width="42" height="20"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GxZ-Xw-bae">
+                    <rect key="frame" x="0.0" y="313.5" width="40" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="RcB-xl-eMQ"/>
+                        <constraint firstAttribute="height" constant="40" id="XR0-FP-4kw"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                    <state key="normal" title="&lt;">
+                        <color key="titleColor" name="customTitaniumDark"/>
+                    </state>
+                    <connections>
+                        <action selector="leftButton:" destination="-1" eventType="touchUpInside" id="BPo-HF-ZNl"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="htH-eE-cLi" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="2ns-hI-imj"/>
+                <constraint firstAttribute="trailing" secondItem="htH-eE-cLi" secondAttribute="trailing" id="7Xa-eW-QGB"/>
+                <constraint firstItem="GxZ-Xw-bae" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="8BQ-cj-jrR"/>
+                <constraint firstItem="PLS-sn-7ga" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="FYN-Tr-pyT"/>
+                <constraint firstItem="kSv-zT-JiI" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="K4z-7P-k9q"/>
+                <constraint firstItem="UqI-Aw-vkE" firstAttribute="leading" secondItem="GxZ-Xw-bae" secondAttribute="trailing" constant="19" id="MoT-4I-6CH"/>
+                <constraint firstItem="PLS-sn-7ga" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="NTQ-FK-J98"/>
+                <constraint firstItem="UqI-Aw-vkE" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="U2D-TT-Dyq"/>
+                <constraint firstItem="htH-eE-cLi" firstAttribute="leading" secondItem="kSv-zT-JiI" secondAttribute="trailing" constant="23" id="iuN-Jc-yq5"/>
+                <constraint firstItem="GxZ-Xw-bae" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="my5-Uf-GUb"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <point key="canvasLocation" x="130.40000000000001" y="103.89805097451276"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="customTitaniumDark">
+            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

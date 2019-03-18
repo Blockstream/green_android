@@ -1,0 +1,30 @@
+cache:
+  paths:
+    - gdk/
+
+build_tag_release:
+  artifacts:
+    name: "green-ios-release-$CI_COMMIT_REF_NAME"
+    expire_in: 1 hour
+    when: on_success
+    paths:
+      - build/Green.ipa
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --iphone static
+
+#package_release:
+#  tags:
+#    - garelease
+#  stage: deploy
+#  artifacts:
+#    expire_in: 14 days
+#    paths:
+#      - app/Green.ipa
+#    when: on_success
+#  script:
+#    - cd $CI_PROJECT_DIR
+#  dependencies:
+#    - build_tag_release

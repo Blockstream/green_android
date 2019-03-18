@@ -1,0 +1,2 @@
+NSFaceIDUsageDescription = "Green ondersteunt biometrische authenticatie voor een makkelijk te gebruiken wallet";
+NSCameraUsageDescription = "We gebruiken de camera om QR-codes te scannen";

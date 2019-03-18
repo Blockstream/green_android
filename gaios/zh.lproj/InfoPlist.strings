@@ -1,0 +1,2 @@
+NSFaceIDUsageDescription = "Green使用生物识别验证来使得用户能够更轻松地打开钱包";
+NSCameraUsageDescription = "请使用摄像头扫描二维码";
