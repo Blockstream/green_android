@@ -55,6 +55,15 @@
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_done"/>
                 <TextView
+                    android:id="@+id/status_spv_unverified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_spv_unverified"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/red"
+                    />
+                <TextView
                     android:id="@+id/status_increase_fee"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

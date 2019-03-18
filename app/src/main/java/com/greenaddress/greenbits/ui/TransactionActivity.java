@@ -48,6 +48,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private TextView mMemoText;
     private TextView mUnconfirmedText;
     private TextView mStatusIncreaseFee;
+    private TextView mStatusSPVUnverified;
     private Button mExplorerButton;
     private Dialog mSummary;
     private Dialog mTwoFactor;
@@ -72,6 +73,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mExplorerButton = UI.find(this, R.id.txExplorer);
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
         mStatusIncreaseFee = UI.find(this, R.id.status_increase_fee);
+        mStatusSPVUnverified = UI.find(this, R.id.status_spv_unverified);
         mStatusIcon = UI.find(this, R.id.status_icon);
 
         final TextView doubleSpentByText = UI.find(this, R.id.txDoubleSpentByText);
@@ -225,10 +227,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                                     !mService.isSPVEnabled();
 
         if (!spvVerified) {
-            mStatusIncreaseFee.setVisibility(View.VISIBLE);
-            mStatusIncreaseFee.setText(String.format("⚠️ %s", getString(R.string.id_spv_unverified)));
-            mStatusIncreaseFee.setTextColor(getResources().getColor(R.color.red));
-            mStatusIcon.setVisibility(View.GONE);
+            mStatusSPVUnverified.setVisibility(View.VISIBLE);
+            mStatusSPVUnverified.setText(String.format("⚠️ %s", getString(R.string.id_spv_unverified)));
+        } else {
+            mStatusSPVUnverified.setVisibility(View.GONE);
         }
 
     }
