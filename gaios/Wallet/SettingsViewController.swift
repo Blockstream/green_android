@@ -3,7 +3,7 @@ import UIKit
 import NVActivityIndicatorView
 import PromiseKit
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SettingsViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
 
@@ -53,7 +53,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func reloadData() {
-        let bgq = DispatchQueue.global(qos : .background)
+        let bgq = DispatchQueue.global(qos: .background)
         let isWatchOnly = getGAService().isWatchOnly
         Guarantee().compactMap(on: bgq) {
             if !isWatchOnly {
@@ -81,10 +81,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         return [.network, .account, .twoFactor, .security, .about]
     }
 
-    func getSettings() -> [SettingsItem] {
-        guard let settings = getGAService().getSettings() else { return [] }
-
-        // Network settings
+    func getNetworks() -> [SettingsItem] {
         let setupPin = SettingsItem(
             title: String(format: NSLocalizedString(AuthenticationTypeHandler.supportsBiometricAuthentication() ? "id_setup_pin_and_s" : "id_setup_pin", comment: ""), NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "")),
             subtitle: "",
@@ -92,7 +89,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             type: .SetupPin)
         let watchOnly = SettingsItem(
             title: NSLocalizedString("id_watchonly_login", comment: ""),
-            subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_set_up_watchonly_credentials" : "id_enabled_1s" , comment: ""), username ?? ""),
+            subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_set_up_watchonly_credentials" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
         let logout = SettingsItem(
@@ -100,8 +97,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             subtitle: NSLocalizedString("id_log_out", comment: ""),
             section: .network,
             type: .Logout)
+        if !isWatchOnly && !isResetActive {
+            return [setupPin, watchOnly, logout]
+        }
+        return [logout]
+    }
 
-        // Account settings
+    func getAccount() -> [SettingsItem] {
+        guard let settings = getGAService().getSettings() else { return [] }
         let bitcoinDenomination = SettingsItem(
             title: NSLocalizedString("id_bitcoin_denomination", comment: ""),
             subtitle: settings.denomination.toString(),
@@ -126,13 +129,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             section: .account,
             type: .DefaultCustomFeeRate)
 
-        // Two Factor settings
+        if !isWatchOnly && !isResetActive {
+            return [bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate]
+        }
+        return []
+    }
+
+    func getTwoFactor() -> [SettingsItem] {
+        guard let settings = getGAService().getSettings() else { return [] }
         let setupTwoFactor = SettingsItem(
             title: NSLocalizedString("id_twofactor_authentication", comment: ""),
             subtitle: NSLocalizedString("id_set_up_twofactor_authentication", comment: ""),
             section: .twoFactor,
             type: .SetupTwoFactor)
-
         var thresholdValue = ""
         var locktimeRecoveryEnable = false
         if let twoFactorConfig = self.twoFactorConfig {
@@ -177,7 +186,28 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             section: .twoFactor,
             type: .CancelTwoFactor)
 
-        // Security settings
+        var menu = [SettingsItem]()
+        if !isWatchOnly && !isResetActive {
+            menu.append(contentsOf: [setupTwoFactor])
+            if twoFactorConfig?.anyEnabled ?? false {
+                menu.append(contentsOf: [thresholdTwoFactor])
+                if twoFactorConfig?.enableMethods.contains("email") ?? false {
+                    menu.append(contentsOf: [locktimeRecovery, locktimeRequest])
+                }
+                menu.append(contentsOf: [resetTwoFactor])
+            }
+        }
+        if !isWatchOnly && isResetActive {
+            if !isDisputeActive {
+                menu.append(disputeTwoFactor)
+            }
+            menu.append(cancelTwoFactor)
+        }
+        return menu
+    }
+
+    func getSecurity() -> [SettingsItem] {
+        guard let settings = getGAService().getSettings() else { return [] }
         let mnemonic = SettingsItem(
             title: NSLocalizedString("id_mnemonic", comment: ""),
             subtitle: NSLocalizedString("id_touch_to_display", comment: ""),
@@ -189,7 +219,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             section: .security,
             type: .Autolock)
 
-        // About settings
+        if !isWatchOnly && !isResetActive {
+            return [mnemonic, autolock]
+        }
+        return []
+    }
+
+    func getAbout() -> [SettingsItem] {
         let versionSubtitle = String(format: NSLocalizedString("id_version_1s", comment: ""), Bundle.main.infoDictionary!["CFBundleShortVersionString"]! as! CVarArg)
         let version = SettingsItem(
             title: NSLocalizedString("id_version", comment: ""),
@@ -206,32 +242,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             subtitle: "",
             section: .about,
             type: .PrivacyPolicy)
+        return [version, termOfUse, privacyPolicy]
+    }
 
+    func getSettings() -> [SettingsItem] {
         var menu = [SettingsItem]()
-        if !isWatchOnly && !isResetActive {
-            menu.append(contentsOf: [setupPin, watchOnly])
-        }
-        menu.append(logout)
-        if !isWatchOnly && !isResetActive {
-            menu.append(contentsOf: [bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate, setupTwoFactor])
-            if twoFactorConfig?.anyEnabled ?? false {
-                menu.append(contentsOf: [thresholdTwoFactor])
-                if twoFactorConfig?.enableMethods.contains("email") ?? false {
-                    menu.append(contentsOf: [locktimeRecovery, locktimeRequest])
-                }
-                menu.append(contentsOf: [resetTwoFactor])
-            }
-        }
-        if !isWatchOnly && isResetActive {
-            if !isDisputeActive {
-                menu.append(disputeTwoFactor)
-            }
-            menu.append(cancelTwoFactor)
-        }
-        if !isWatchOnly && !isResetActive {
-            menu.append(contentsOf: [mnemonic, autolock])
-        }
-        menu.append(contentsOf: [version, termOfUse, privacyPolicy])
+        menu.append(contentsOf: getNetworks())
+        menu.append(contentsOf: getAccount())
+        menu.append(contentsOf: getTwoFactor())
+        menu.append(contentsOf: getSecurity())
+        menu.append(contentsOf: getAbout())
         return menu
     }
 
@@ -267,7 +287,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     func logout() {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map() {
+        Guarantee().map {
             self.startAnimating()
         }.map(on: bgq) {
             try getSession().disconnect()
@@ -282,7 +302,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
 
     func getHeaderImage(from sectionIndex: Int) -> UIImage {
-        let section : SettingsSections = sections[sectionIndex]
+        let section: SettingsSections = sections[sectionIndex]
         switch section {
         case .about:
             return UIImage(named: "about")!
@@ -299,179 +319,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let section = sections[section]
-        let itemsInSection = data[section] as! [SettingsItem]
-        return itemsInSection.count
-    }
-
-    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        view.backgroundColor = UIColor.customTitaniumDark()
-        view.tintColor = UIColor.customMatrixGreen()
-        guard let header = view as? UITableViewCell else { return }
-        header.textLabel?.textColor = UIColor.customMatrixGreen()
-        header.textLabel?.font = UIFont.systemFont(ofSize: 16.00, weight: .light)
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = UITableViewCell()
-        header.textLabel?.text = toString(sections[section])
-        header.imageView?.image = getHeaderImage(from: section)
-        return header
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 43
-    }
-
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell =
-            tableView.dequeueReusableCell(withIdentifier: "SettingsCell",
-                                          for: indexPath as IndexPath)
-        let section = sections[indexPath.section]
-        let itemsInSection = data[section] as! [SettingsItem]
-        let item: SettingsItem = itemsInSection[indexPath.row]
-        cell.textLabel!.text = item.title
-        cell.detailTextLabel?.text = item.subtitle
-        cell.detailTextLabel?.numberOfLines = 2
-        cell.detailTextLabel?.textColor = item.type == .Logout ? UIColor.errorRed() : UIColor.lightGray
-        cell.selectionStyle = .none
-        cell.accessoryType = item.type == .Version ? .none : .disclosureIndicator
-        cell.setNeedsLayout()
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = sections[indexPath.section]
-        let itemsInSection = data[section] as! [SettingsItem]
-        let item: SettingsItem = itemsInSection[indexPath.row]
-        guard let settings = getGAService().getSettings() else { return }
-
-        switch item.type {
-        case .BitcoinDenomination:
-            let list = [DenominationType.BTC.toString(), DenominationType.MilliBTC.toString(),  DenominationType.MicroBTC.toString(), DenominationType.Bits.toString()]
-            let selected = settings.denomination.toString()
-            let popup = PopupList(self, title: item.title, list: list, selected: selected)
-            resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                settings.denomination = DenominationType.fromString(value as! String)
-                return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
-            }, completing: { self.reloadData() })
-            break
-        case .SetupPin:
-            self.performSegue(withIdentifier: "screenLock", sender: nil)
-            break
-        case .Logout:
-            self.logout()
-            break
-        case .WatchOnly:
-            let alert = UIAlertController(title: NSLocalizedString("id_set_up_watchonly", comment: ""), message: NSLocalizedString("id_allows_you_to_quickly_check", comment: ""), preferredStyle: .alert)
-            alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_username", comment: "") }
-            alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_password", comment: "") }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
-                let username = alert.textFields![0].text!
-                let password = alert.textFields![1].text!
-                self.setWatchOnly(username: username, password: password)
-            })
-            self.present(alert, animated: true, completion: nil)
-            break
-        case .ReferenceExchangeRate:
-            self.performSegue(withIdentifier: "currency", sender: nil)
-            break
-        case .DefaultTransactionPriority:
-            let list = [toString(TransactionPriority.High, detail: false),
-                        toString(TransactionPriority.Medium, detail: false),
-                        toString(TransactionPriority.Low, detail: false)]
-            let selected = toString(settings.transactionPriority, detail: false)
-            let popup = PopupList(self, title: item.title, list: list, selected: selected)
-            resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                guard let string = value as? String else { throw GaError.GenericError }
-                if string == self.toString(.Low, detail: false) { settings.transactionPriority = .Low}
-                else if string == self.toString(.Medium, detail: false) { settings.transactionPriority = .Medium}
-                else if string == self.toString(.High, detail: false) { settings.transactionPriority = .High}
-                return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
-            }, completing: { self.reloadData() })
-            break
-        case .DefaultCustomFeeRate:
-            let hint = String(format: "%.02f", Float(settings.customFeeRate ?? 1000) / 1000)
-            let popup = PopupEditable(self, title: item.title, hint: hint, text: hint, keyboardType: .numberPad)
-            resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                let amount = (value as! String).replacingOccurrences(of: ",", with: ".")
-                guard let feeRate = Double(amount) else { throw GaError.GenericError }
-                settings.customFeeRate = UInt64(feeRate * 1000)
-                return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
-            }, completing: { self.reloadData() })
-            break
-        case .SetupTwoFactor:
-            self.performSegue(withIdentifier: "setupTwoFactor", sender: nil)
-            break
-        case .ThresholdTwoFactor:
-            self.performSegue(withIdentifier: "twoFactorLimit", sender: nil)
-            break
-        case .ResetTwoFactor:
-            let hint = "jane@example.com"
-            let popup = PopupEditable(self, title: item.title, hint: hint, text: nil, keyboardType: .emailAddress)
-            resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                guard let email = value as? String else { throw GaError.GenericError }
-                return try getGAService().getSession().resetTwoFactor(email: email, isDispute: false)
-            }, completing: { self.logout() })
-            break
-        case .DisputeTwoFactor:
-            let hint = "jane@example.com"
-            let popup = PopupEditable(self, title: item.title, hint: hint, text: nil, keyboardType: .emailAddress)
-            resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                guard let email = value as? String else { throw GaError.GenericError }
-                return try getGAService().getSession().resetTwoFactor(email: email, isDispute: true)
-            }, completing: { self.logout() })
-            break
-        case .CancelTwoFactor:
-            setCancelTwoFactor()
-            break
-        case .LockTimeRecovery:
-            var enabled = false
-            if let notifications = settings.notifications {
-                enabled = notifications.emailOutgoing == true
-            }
-            let alert = UIAlertController(title: NSLocalizedString("id_recovery_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_enable", comment: ""), style: enabled ? .destructive : .default) { _ in
-                self.setRecoveryEmail(true)
-            })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_disable", comment: ""), style: !enabled ? .destructive : .default) { _ in
-                self.setRecoveryEmail(false)
-            })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-            self.present(alert, animated: true, completion: nil)
-            break
-        case .LockTimeRequest:
-            setLockTimeRequest()
-        case .Mnemonic:
-            self.performSegue(withIdentifier: "recovery", sender: nil)
-            break
-        case .Autolock:
-            let list = [AutoLockType.minute.toString(), AutoLockType.twoMinutes.toString(), AutoLockType.fiveMinutes.toString(), AutoLockType.tenMinutes.toString()]
-            let selected = settings.autolock.toString()
-            let popup = PopupList(self, title: item.title, list: list, selected: selected)
-            resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-                settings.autolock = AutoLockType.fromString(value as! String)
-                return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
-            }, completing: { self.reloadData() })
-            break
-        case .TermsOfUse:
-            UIApplication.shared.open(URL(string: "https://greenaddress.it/tos.html")!)
-            break
-        case .PrivacyPolicy:
-            UIApplication.shared.open(URL(string: "https://greenaddress.it/privacy.html")!)
-            break
-        case .Version:
-            break
-        }
-    }
-
-    func resolvePopup(popup: PopupPromise, setting: @escaping (_ value: Any) throws -> TwoFactorCall, completing: @escaping () -> ()) {
+    func resolvePopup(popup: PopupPromise, setting: @escaping (_ value: Any) throws -> TwoFactorCall, completing: @escaping () -> Void) {
         let bgq = DispatchQueue.global(qos: .background)
         popup.show().get {_ in
             self.startAnimating()
@@ -572,7 +420,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
+            try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {
@@ -584,9 +432,186 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
 
+    func showLockTimeRecovery() {
+        guard let settings = getGAService().getSettings() else { return }
+        var enabled = false
+        if let notifications = settings.notifications {
+            enabled = notifications.emailOutgoing == true
+        }
+        let alert = UIAlertController(title: NSLocalizedString("id_recovery_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_enable", comment: ""), style: enabled ? .destructive : .default) { _ in
+            self.setRecoveryEmail(true)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_disable", comment: ""), style: !enabled ? .destructive : .default) { _ in
+            self.setRecoveryEmail(false)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func showDefaultTransactionPriority() {
+        guard let settings = getGAService().getSettings() else { return }
+        let list = [toString(TransactionPriority.High, detail: false),
+                    toString(TransactionPriority.Medium, detail: false),
+                    toString(TransactionPriority.Low, detail: false)]
+        let selected = toString(settings.transactionPriority, detail: false)
+        let popup = PopupList(self, title: NSLocalizedString("id_default_transaction_priority", comment: ""), list: list, selected: selected)
+        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
+            guard let string = value as? String else { throw GaError.GenericError }
+            if string == self.toString(.Low, detail: false) { settings.transactionPriority = .Low} else if string == self.toString(.Medium, detail: false) { settings.transactionPriority = .Medium} else if string == self.toString(.High, detail: false) { settings.transactionPriority = .High}
+            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+        }, completing: { self.reloadData() })
+    }
+
+    func showBitcoinDenomination() {
+        guard let settings = getGAService().getSettings() else { return }
+        let list = [DenominationType.BTC.toString(), DenominationType.MilliBTC.toString(), DenominationType.MicroBTC.toString(), DenominationType.Bits.toString()]
+        let selected = settings.denomination.toString()
+        let popup = PopupList(self, title: NSLocalizedString("id_bitcoin_denomination", comment: ""), list: list, selected: selected)
+        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
+            settings.denomination = DenominationType.fromString(value as! String)
+            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+        }, completing: { self.reloadData() })
+    }
+
+    func showDefaultCustomRate() {
+        guard let settings = getGAService().getSettings() else { return }
+        let hint = String(format: "%.02f", Float(settings.customFeeRate ?? 1000) / 1000)
+        let popup = PopupEditable(self, title: NSLocalizedString("id_default_custom_fee_rate", comment: ""), hint: hint, text: hint, keyboardType: .numberPad)
+        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
+            let amount = (value as! String).replacingOccurrences(of: ",", with: ".")
+            guard let feeRate = Double(amount) else { throw GaError.GenericError }
+            settings.customFeeRate = UInt64(feeRate * 1000)
+            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+        }, completing: { self.reloadData() })
+    }
+
+    func showWatchOnly() {
+        let alert = UIAlertController(title: NSLocalizedString("id_set_up_watchonly", comment: ""), message: NSLocalizedString("id_allows_you_to_quickly_check", comment: ""), preferredStyle: .alert)
+        alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_username", comment: "") }
+        alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_password", comment: "") }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
+            let username = alert.textFields![0].text!
+            let password = alert.textFields![1].text!
+            self.setWatchOnly(username: username, password: password)
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func showAutolock() {
+        guard let settings = getGAService().getSettings() else { return }
+        let list = [AutoLockType.minute.toString(), AutoLockType.twoMinutes.toString(), AutoLockType.fiveMinutes.toString(), AutoLockType.tenMinutes.toString()]
+        let selected = settings.autolock.toString()
+        let popup = PopupList(self, title: NSLocalizedString("id_auto_logout_timeout", comment: ""), list: list, selected: selected)
+        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
+            settings.autolock = AutoLockType.fromString(value as! String)
+            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+        }, completing: { self.reloadData() })
+    }
+
+    func showResetTwoFactor() {
+        let hint = "jane@example.com"
+        let popup = PopupEditable(self, title: NSLocalizedString("id_request_twofactor_reset", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
+        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
+            guard let email = value as? String else { throw GaError.GenericError }
+            return try getGAService().getSession().resetTwoFactor(email: email, isDispute: false)
+        }, completing: { self.logout() })
+    }
+
+    func showDisputeTwoFactor() {
+        let hint = "jane@example.com"
+        let popup = PopupEditable(self, title: NSLocalizedString("id_dispute_twofactor_reset", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
+        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
+            guard let email = value as? String else { throw GaError.GenericError }
+            return try getGAService().getSession().resetTwoFactor(email: email, isDispute: true)
+        }, completing: { self.logout() })
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let controller = segue.destination as? EnableTwoFactorViewController {
             controller.isHiddenWalletButton = true
         }
+    }
+}
+
+extension SettingsViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.backgroundColor = UIColor.customTitaniumDark()
+        view.tintColor = UIColor.customMatrixGreen()
+        guard let header = view as? UITableViewCell else { return }
+        header.textLabel?.textColor = UIColor.customMatrixGreen()
+        header.textLabel?.font = UIFont.systemFont(ofSize: 16.00, weight: .light)
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = UITableViewCell()
+        header.textLabel?.text = toString(sections[section])
+        header.imageView?.image = getHeaderImage(from: section)
+        return header
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 43
+    }
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sections.count
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = sections[indexPath.section]
+        let itemsInSection = data[section] as! [SettingsItem]
+        let item: SettingsItem = itemsInSection[indexPath.row]
+        switch item.type {
+        case .BitcoinDenomination: showBitcoinDenomination()
+        case .SetupPin: performSegue(withIdentifier: "screenLock", sender: nil)
+        case .Logout: logout()
+        case .WatchOnly: showWatchOnly()
+        case .ReferenceExchangeRate: performSegue(withIdentifier: "currency", sender: nil)
+        case .DefaultTransactionPriority: showDefaultTransactionPriority()
+        case .DefaultCustomFeeRate: showDefaultCustomRate()
+        case .SetupTwoFactor: performSegue(withIdentifier: "setupTwoFactor", sender: nil)
+        case .ThresholdTwoFactor: performSegue(withIdentifier: "twoFactorLimit", sender: nil)
+        case .ResetTwoFactor: showResetTwoFactor()
+        case .DisputeTwoFactor: showDisputeTwoFactor()
+        case .CancelTwoFactor: setCancelTwoFactor()
+        case .LockTimeRecovery: showLockTimeRecovery()
+        case .LockTimeRequest: setLockTimeRequest()
+        case .Mnemonic: performSegue(withIdentifier: "recovery", sender: nil)
+        case .Autolock: showAutolock()
+        case .TermsOfUse:
+            UIApplication.shared.open(URL(string: "https://greenaddress.it/tos.html")!)
+        case .PrivacyPolicy:
+            UIApplication.shared.open(URL(string: "https://greenaddress.it/privacy.html")!)
+        case .Version:
+            break
+        }
+    }
+}
+extension SettingsViewController: UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let section = sections[section]
+        let itemsInSection = data[section] as! [SettingsItem]
+        return itemsInSection.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell =
+            tableView.dequeueReusableCell(withIdentifier: "SettingsCell",
+                                          for: indexPath as IndexPath)
+        let section = sections[indexPath.section]
+        let itemsInSection = data[section] as! [SettingsItem]
+        let item: SettingsItem = itemsInSection[indexPath.row]
+        cell.textLabel!.text = item.title
+        cell.detailTextLabel?.text = item.subtitle
+        cell.detailTextLabel?.numberOfLines = 2
+        cell.detailTextLabel?.textColor = item.type == .Logout ? UIColor.errorRed() : UIColor.lightGray
+        cell.selectionStyle = .none
+        cell.accessoryType = item.type == .Version ? .none : .disclosureIndicator
+        cell.setNeedsLayout()
+        return cell
     }
 }

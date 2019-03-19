@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class ShowMnemonicsViewController : UIViewController {
+class ShowMnemonicsViewController: UIViewController {
     var viewArray: Array<UIView> = []
 
     override func viewDidLoad() {

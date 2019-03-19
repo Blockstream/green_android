@@ -1,10 +1,9 @@
-
 import Foundation
 import UIKit
 import PromiseKit
 import NVActivityIndicatorView
 
-enum TwoFactorCallError : Error {
+enum TwoFactorCallError: Error {
     case failure(localizedDescription: String)
     case cancel(localizedDescription: String)
 }
@@ -13,7 +12,7 @@ extension TwoFactorCall {
 
     func resolve(_ sender: UIViewController) -> Promise<[String: Any]> {
         func step() -> Promise<[String: Any]> {
-            return Guarantee().map{
+            return Guarantee().map {
                 try self.getStatus()!
             }.then { json in
                 try self.resolving(sender: sender, json: json).map { _ in json }
@@ -79,20 +78,17 @@ class PopupCodeResolver {
     func code(_ method: String) -> Promise<String> {
         return Promise { result in
             let methodDesc: String
-            if method == TwoFactorType.email.rawValue { methodDesc = "id_email" }
-            else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" }
-            else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" }
-            else { methodDesc = "id_google_authenticator" }
+            if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_google_authenticator" }
             let title = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
             let alert = UIAlertController(title: title, message: "", preferredStyle: .alert)
             alert.addTextField { (textField) in
                 textField.placeholder = ""
                 textField.keyboardType = .numberPad
             }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
                 result.reject(TwoFactorCallError.cancel(localizedDescription: NSLocalizedString("id_action_canceled", comment: "")))
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
                 let textField = alert.textFields![0]
                 result.fulfill(textField.text!)
             })
@@ -115,15 +111,12 @@ class PopupMethodResolver {
             let alert = UIAlertController(title: NSLocalizedString("id_choose_twofactor_authentication", comment: ""), message: NSLocalizedString("id_choose_method_to_authorize_the", comment: ""), preferredStyle: .alert)
             methods.forEach { (method: String) in
                 let methodDesc: String
-                if method == TwoFactorType.email.rawValue { methodDesc = "id_email" }
-                else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" }
-                else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" }
-                else { methodDesc = "id_google_authenticator" }
-                alert.addAction(UIAlertAction(title: NSLocalizedString(methodDesc, comment: ""), style: .default) { (action: UIAlertAction) in
+                if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_google_authenticator" }
+                alert.addAction(UIAlertAction(title: NSLocalizedString(methodDesc, comment: ""), style: .default) { (_: UIAlertAction) in
                     result.fulfill(method)
                 })
             }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
                 result.reject(TwoFactorCallError.cancel(localizedDescription: NSLocalizedString("id_action_canceled", comment: "")))
             })
             DispatchQueue.main.async {

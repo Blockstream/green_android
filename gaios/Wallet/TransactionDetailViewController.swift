@@ -53,19 +53,19 @@ class TransactionDetailViewController: KeyboardViewController {
         guard let config = configNetwork as? [String: Any] else { return }
         guard let baseUrl = config["tx_explorer_url"] as? String else { return }
         guard let url: URL = URL(string: baseUrl + self.transaction.hash) else { return }
-        let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!;
+        let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!
         if viewInExplorerPreference {
             UIApplication.shared.open(url, options: [:])
             return
         }
         let message = String(format: NSLocalizedString("id_are_you_sure_you_want_to_view", comment: ""), host)
         let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_only_this_time", comment: ""), style: .default) { (action: UIAlertAction) in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_only_this_time", comment: ""), style: .default) { (_: UIAlertAction) in
             UIApplication.shared.open(url, options: [:])
         })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_always", comment: ""), style: .default) { (action: UIAlertAction) in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_always", comment: ""), style: .default) { (_: UIAlertAction) in
             self.viewInExplorerPreference = true
             UIApplication.shared.open(url, options: [:])
         })

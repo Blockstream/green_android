@@ -1,11 +1,11 @@
 import Foundation
 import UIKit
 
-protocol SuggestionsDelegate : class {
+protocol SuggestionsDelegate: class {
     func suggestionWasTapped(suggestion: String)
 }
 
-class KeyboardSuggestions : UIView {
+class KeyboardSuggestions: UIView {
 
     @IBOutlet weak var suggestion0: UILabel!
     @IBOutlet weak var suggestion1: UILabel!
@@ -63,7 +63,7 @@ class KeyboardSuggestions : UIView {
     }
 
     @IBAction func leftButton(_ sender: Any) {
-        offset = offset - 1
+        offset -= 1
         if offset < 0 {
             offset = 0
         }
@@ -71,7 +71,7 @@ class KeyboardSuggestions : UIView {
     }
 
     @IBAction func rightButton(_ sender: Any) {
-        offset = offset + 1
+        offset += 1
         if offset >= suggestions.count {
             offset = suggestions.count - 1
         }

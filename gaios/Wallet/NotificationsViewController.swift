@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import PromiseKit
 
-
 class NotificationsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
@@ -64,7 +63,7 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         cell.detailTextLabel!.numberOfLines = 4
         cell.selectionStyle = .none
         cell.setNeedsLayout()
-        return cell;
+        return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

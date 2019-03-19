@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class KeyboardViewController : UIViewController {
+class KeyboardViewController: UIViewController {
     var keyboardDismissGesture: UIGestureRecognizer?
 
     override func viewWillAppear(_ animated: Bool) {

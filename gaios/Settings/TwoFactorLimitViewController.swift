@@ -63,7 +63,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         guard let amountText = content.limitTextField.text else { return }
         guard let amount = Double(amountText.replacingOccurrences(of: ",", with: ".")) else { return }
         guard let settings = getGAService().getSettings() else { return }
-        let details: [String:Any]
+        let details: [String: Any]
         if isFiat {
             details = ["is_fiat": isFiat, "fiat": String(amount)]
         } else {

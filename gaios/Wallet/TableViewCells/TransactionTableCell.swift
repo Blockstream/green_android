@@ -24,7 +24,7 @@ class TransactionTableCell: UITableViewCell {
         selectionStyle = .none
         date.text = transaction.date()
         replaceable.text = "  " + NSLocalizedString("id_replaceable", comment: "").uppercased() + "  "
-        separatorInset = UIEdgeInsetsMake(0, 18, 0, 18)
+        separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 18)
     }
 
     func checkBlockHeight(transaction: Transaction, blockHeight: UInt32) {

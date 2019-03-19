@@ -31,9 +31,9 @@ struct Connection: Codable {
 
 class GreenAddressService {
 
-    private var session: Session? = nil
-    private var settings: Settings? = nil
-    private var twoFactorReset: TwoFactorReset? = nil
+    private var session: Session?
+    private var settings: Settings?
+    private var twoFactorReset: TwoFactorReset?
     private var events = [Event]()
     static var restoreFromMnemonics = false
     var blockHeight: UInt32 = 0
@@ -71,7 +71,7 @@ class GreenAddressService {
         return blockHeight
     }
 
-    func newNotification(notification: [String : Any]?) {
+    func newNotification(notification: [String: Any]?) {
         guard let dict = notification else {
             return
         }
@@ -89,9 +89,9 @@ class GreenAddressService {
                     let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
                     events.append(Event(value: data))
                     if txEvent.type == "incoming" {
-                        updateAddresses(txEvent.subAccounts.map{ UInt32($0)})
+                        updateAddresses(txEvent.subAccounts.map { UInt32($0)})
                         DispatchQueue.main.async {
-                            Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT_DURATION)
+                            Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT)
                         }
                     }
                 } catch { break }
@@ -119,7 +119,7 @@ class GreenAddressService {
                     let json = try JSONSerialization.data(withJSONObject: data, options: [])
                     let connection = try JSONDecoder().decode(Connection.self, from: json)
                     if connection.loginRequired == true {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
                     } else {
                         post(event: EventType.Network, data: data)
                     }

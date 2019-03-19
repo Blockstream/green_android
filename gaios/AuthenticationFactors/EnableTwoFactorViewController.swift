@@ -3,7 +3,7 @@ import UIKit
 import NVActivityIndicatorView
 import PromiseKit
 
-class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UITableViewDataSource {
+class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var walletButton: UIButton!
@@ -27,8 +27,7 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
         self.tableview.rowHeight = 70
     }
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int
-    {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
 
@@ -46,9 +45,7 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
         return cell
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section:
-        Int) -> Int
-    {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.factors.count
     }
 
@@ -116,7 +113,7 @@ class EnableTwoFactorViewController : UIViewController, UITableViewDelegate, UIT
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
+            try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String: Any])
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

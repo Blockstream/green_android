@@ -12,9 +12,9 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
     let WL = getBIP39WordList()
 
-    var suggestions: KeyboardSuggestions? = nil
+    var suggestions: KeyboardSuggestions?
     var mnemonic = [String](repeating: String(), count: 27)
-    var qrCodeReader: QRCodeReaderView? = nil
+    var qrCodeReader: QRCodeReaderView?
     var isScannerVisible = false
     var isPasswordProtected = false {
         willSet {
@@ -22,7 +22,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }
     }
 
-    var currIndexPath: IndexPath? = nil
+    var currIndexPath: IndexPath?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,7 +57,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
         let userInfo = notification.userInfo
         let keyboardFrame = userInfo?[UIKeyboardFrameEndUserInfoKey] as! CGRect
-        let contentInset = UIEdgeInsetsMake(0.0, 0.0, keyboardFrame.height, 0.0)
+        let contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height, right: 0.0)
         mnemonicWords.contentInset = contentInset
         mnemonicWords.scrollIndicatorInsets = contentInset
         suggestions!.frame = CGRect(x: 0, y: view.frame.height - keyboardFrame.height - 40, width: view.frame.width, height: 40)
@@ -96,10 +96,10 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
                     textField.keyboardType = .asciiCapable
                     textField.isSecureTextEntry = true
                 }
-                alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+                alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
                     seal.reject(GaError.GenericError)
                 })
-                alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (action: UIAlertAction) in
+                alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
                     self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
                     let textField = alert.textFields![0]
                     seal.fulfill((self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!))
@@ -126,7 +126,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
     fileprivate func login() {
         enum LoginError: Error {
-            case InvalidMnemonic
+            case invalidMnemonic
         }
 
         let bgq = DispatchQueue.global(qos: .background)
@@ -141,13 +141,13 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
             try appDelegate.connect()
         }.then {
             self.getMnemonicString()
-        }.get { (mnemonic: String, password: String) in
+        }.get { (mnemonic: String, _: String) in
             guard try validateMnemonic(mnemonic: mnemonic) else {
-                throw LoginError.InvalidMnemonic
+                throw LoginError.invalidMnemonic
             }
         }.compactMap(on: bgq) {
             let resolver = try getSession().login(mnemonic: $0.0, password: $0.1)
-            let _ = try DummyResolve(call: resolver)
+            _ = try DummyResolve(call: resolver)
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -166,7 +166,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
             } else {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
-            Toast.show(message, timeout: Toast.SHORT_DURATION)
+            Toast.show(message, timeout: Toast.SHORT)
         }
     }
 
@@ -191,7 +191,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
             startScan()
         } else {
             stopScan()
-        } 
+        }
     }
 
     @IBAction func switchChanged(_ sender: Any) {
@@ -235,7 +235,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
     }
 }
 
-extension EnterMnemonicsViewController : QRCodeReaderDelegate {
+extension EnterMnemonicsViewController: QRCodeReaderDelegate {
 
     private func onPaste(_ result: String) {
         let words = result.split(separator: " ")
@@ -256,7 +256,7 @@ extension EnterMnemonicsViewController : QRCodeReaderDelegate {
     }
 }
 
-extension EnterMnemonicsViewController : UICollectionViewDelegate {
+extension EnterMnemonicsViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "wordCell",
@@ -268,7 +268,7 @@ extension EnterMnemonicsViewController : UICollectionViewDelegate {
     }
 }
 
-extension EnterMnemonicsViewController : UICollectionViewDataSource {
+extension EnterMnemonicsViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 3
@@ -279,14 +279,14 @@ extension EnterMnemonicsViewController : UICollectionViewDataSource {
     }
 }
 
-extension EnterMnemonicsViewController : UICollectionViewDelegateFlowLayout {
+extension EnterMnemonicsViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width / 3, height: 40)
     }
 }
 
-extension EnterMnemonicsViewController : MnemonicWordCellDelegate {
+extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
 
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicWordCell) {
         let text = textField.text?.isEmpty ?? true ? String() : textField.text!

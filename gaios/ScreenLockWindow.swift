@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 
 // Behind everything, especially the root window.
-let UIWindowLevel_Background: UIWindow.Level = UIWindowLevel(-1)
+let UIWindowLevelBackground: UIWindow.Level = UIWindowLevel(-1)
 // In front everything, especially the root window and status bar.
-let UIWindowLevel_ScreenBlocking: UIWindow.Level = UIWindowLevelStatusBar + UIWindowLevel(1)
+let UIWindowLevelScreenBlocking: UIWindow.Level = UIWindowLevelStatusBar + UIWindowLevel(1)
 
 class ScreenLockWindow: UIWindow {
     public static let shared = ScreenLockWindow()
@@ -12,7 +12,7 @@ class ScreenLockWindow: UIWindow {
     override func setup() {
         isHidden = false
         isOpaque = true
-        windowLevel = UIWindowLevel_Background
+        windowLevel = UIWindowLevelBackground
         backgroundColor = UIColor.black
 
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -22,7 +22,7 @@ class ScreenLockWindow: UIWindow {
 
     func show() {
         // Show Screen Lock window
-        windowLevel = UIWindowLevel_ScreenBlocking
+        windowLevel = UIWindowLevelScreenBlocking
         makeKeyAndVisible()
     }
 
@@ -31,6 +31,6 @@ class ScreenLockWindow: UIWindow {
         // Never hide the blocking window (that can lead to bad frames).
         // Instead, manipulate its window level to move it in front of
         // or behind the root window.
-        windowLevel = UIWindowLevel_Background
+        windowLevel = UIWindowLevelBackground
     }
 }

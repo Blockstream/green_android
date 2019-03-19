@@ -5,10 +5,9 @@ import PromiseKit
 
 class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDelegate, UITextViewDelegate {
 
-
     @IBOutlet var content: SendBTCConfirmationView!
     var uiErrorLabel: UIErrorLabel!
-    var wallet: WalletItem? = nil
+    var wallet: WalletItem?
     var transaction: Transaction!
     var isFiat = false
     var gradientLayer = CAGradientLayer()
@@ -111,8 +110,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             signTransaction(transaction: self.transaction)
         }.then(on: bgq) { call in
             call.resolve(self)
-        }.map(on: bgq) { result_dict in
-            let result = result_dict["result"] as! [String: Any]
+        }.map(on: bgq) { resultDict in
+            let result = resultDict["result"] as! [String: Any]
             if self.transaction.isSweep {
                 _ = try getSession().broadcastTransaction(tx_hex: result["transaction"] as! String)
                 return nil
@@ -120,7 +119,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
                 return try getSession().sendTransaction(details: result)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
-            call?.resolve(self) ?? Promise<[String: Any]>() { seal in seal.fulfill([:]) }
+            call?.resolve(self) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
@@ -150,11 +149,11 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         // Modified slightly for use in Green from the public release at "Managing the Keyboard" from Text Programming Guide for iOS
         super.keyboardWillShow(notification: notification)
         if let kbSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            let contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
-            content.scrollView.contentInset = contentInsets;
-            content.scrollView.scrollIndicatorInsets = contentInsets;
-            var aRect = self.view.frame;
-            aRect.size.height -= kbSize.height;
+            let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: kbSize.height, right: 0.0)
+            content.scrollView.contentInset = contentInsets
+            content.scrollView.scrollIndicatorInsets = contentInsets
+            var aRect = self.view.frame
+            aRect.size.height -= kbSize.height
             if (!aRect.contains(content.textView.frame.origin) ) {
                 content.scrollView.scrollRectToVisible(aRect, animated: true)
             }
@@ -163,9 +162,9 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
 
     override func keyboardWillHide(notification: NSNotification) {
         super.keyboardWillHide(notification: notification)
-        let contentInsets = UIEdgeInsets.zero;
-        content.scrollView.contentInset = contentInsets;
-        content.scrollView.scrollIndicatorInsets = contentInsets;
+        let contentInsets = UIEdgeInsets.zero
+        content.scrollView.contentInset = contentInsets
+        content.scrollView.scrollIndicatorInsets = contentInsets
     }
 
     /// pop back to specific viewcontroller

@@ -5,13 +5,13 @@ protocol MnemonicWordCellDelegate {
     func collectionView(pastedIn text: String, from cell: MnemonicWordCell)
 }
 
-class MnemonicWordCell : UICollectionViewCell {
+class MnemonicWordCell: UICollectionViewCell {
 
     @IBOutlet weak var wordLabel: UILabel!
     @IBOutlet weak var wordText: UITextField!
     @IBOutlet weak var wordSeparator: UIView!
 
-    var delegate: MnemonicWordCellDelegate? = nil
+    var delegate: MnemonicWordCellDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,7 +24,7 @@ class MnemonicWordCell : UICollectionViewCell {
     }
 }
 
-extension MnemonicWordCell : UITextFieldDelegate {
+extension MnemonicWordCell: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if !string.isEmpty {

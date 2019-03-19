@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 
 class Toast {
-    static let SHORT_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds(2000)
-    static let LONG_DURATION: DispatchTimeInterval = DispatchTimeInterval.milliseconds(3500)
+    static let SHORT: DispatchTimeInterval = DispatchTimeInterval.milliseconds(2000)
+    static let LONG: DispatchTimeInterval = DispatchTimeInterval.milliseconds(3500)
     static let padding = CGFloat(20)
 
     class Label: UILabel {
@@ -13,12 +13,12 @@ class Toast {
     }
 
     static func show(_ message: String) {
-        Toast.show(message, timeout: Toast.SHORT_DURATION)
+        Toast.show(message, timeout: Toast.SHORT)
     }
 
     static func show(_ message: String, timeout: DispatchTimeInterval) {
         let window = UIApplication.shared.keyWindow!
-        let v = UIView(frame: window.bounds)
+        let view = UIView(frame: window.bounds)
 
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -34,24 +34,24 @@ class Toast {
         label.layer.masksToBounds = true
 
         // Add label to view
-        v.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        v.addSubview(label)
-        window.addSubview(v)
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        view.addSubview(label)
+        window.addSubview(view)
 
         // Set constraints
-        let estimateRect = label.attributedText?.boundingRect(with: v.frame.size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
+        let estimateRect = label.attributedText?.boundingRect(with: view.frame.size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
         let estimateHeight = estimateRect!.height + padding * 2
         let maxWidth = CGFloat(240)
-        let estimateWidth = min(maxWidth, v.frame.width - padding * 2 * 2)
+        let estimateWidth = min(maxWidth, view.frame.width - padding * 2 * 2)
 
         NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: estimateHeight).isActive = true
         NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: estimateWidth).isActive = true
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: v, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0).isActive = true
 
         // Set autohidden after timeout
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + timeout) {
-            v.removeFromSuperview()
+            view.removeFromSuperview()
         }
     }
 }

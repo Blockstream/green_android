@@ -7,7 +7,7 @@ class CreateWalletViewController: UIViewController {
     private var mnemonic: [Substring] = {
         return try! generateMnemonic().split(separator: " ")
     }()
-    private var pageCounter = 0;
+    private var pageCounter = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()

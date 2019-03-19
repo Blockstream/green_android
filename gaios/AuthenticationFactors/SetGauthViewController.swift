@@ -24,8 +24,8 @@ class SetGauthViewController: UIViewController {
         content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         content.subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_in_google", comment: "")
         content.warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
-        content.secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
-        content.copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard)))
+        content.secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
+        content.copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
         content.secretLabel.isUserInteractionEnabled = true
         content.copyImage.isUserInteractionEnabled = true
         content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
@@ -34,7 +34,7 @@ class SetGauthViewController: UIViewController {
 
     @objc func copyToClipboard(_ sender: UIButton) {
         UIPasteboard.general.string = content.secretLabel.text
-        Toast.show(NSLocalizedString("id_copy_to_clipboard", comment: ""), timeout: Toast.SHORT_DURATION)
+        Toast.show(NSLocalizedString("id_copy_to_clipboard", comment: ""), timeout: Toast.SHORT)
     }
 
     @objc func click(_ sender: UIButton) {
@@ -45,7 +45,7 @@ class SetGauthViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
+            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String: Any])
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

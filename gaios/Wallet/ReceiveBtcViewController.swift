@@ -6,7 +6,7 @@ import PromiseKit
 class ReceiveBtcViewController: KeyboardViewController {
 
     @IBOutlet var content: ReceiveBtcView!
-    var wallet: WalletItem? = nil
+    var wallet: WalletItem?
     var selectedType = TransactionType.BTC
     var gestureTap: UITapGestureRecognizer?
 
@@ -14,7 +14,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_receive", comment: "")
         tabBarController?.tabBar.isHidden = true
-        gestureTap = UITapGestureRecognizer(target: self, action:  #selector(self.copyToClipboard))
+        gestureTap = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
         content.amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         content.walletQRCode.isUserInteractionEnabled = true
@@ -80,16 +80,16 @@ class ReceiveBtcViewController: KeyboardViewController {
         Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
-            let uri = self.getSatoshi() == 0 ? address : bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+            let uri = self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
             UIPasteboard.general.string = uri
-            Toast.show(NSLocalizedString("id_address_copied_to_clipboard", comment: ""), timeout: Toast.SHORT_DURATION)
-        }.catch{ _ in }
+            Toast.show(NSLocalizedString("id_address_copied_to_clipboard", comment: ""), timeout: Toast.SHORT)
+        }.catch { _ in }
     }
 
     @objc func fiatSwitchButtonClick(_ sender: Any) {
         let satoshi = getSatoshi()
         guard let settings = getGAService().getSettings() else { return }
-        let res = try? getSession().convertAmount(input: ["satoshi" : satoshi])
+        let res = try? getSession().convertAmount(input: ["satoshi": satoshi])
         guard let _ = res, let data = res! else { return }
         if (selectedType == TransactionType.BTC) {
             selectedType = TransactionType.FIAT
@@ -141,15 +141,15 @@ class ReceiveBtcViewController: KeyboardViewController {
             }
             let uri: String
             if (self.getSatoshi() == 0) {
-                uri = bip21Helper.btcURIforAddress(address: address)
+                uri = Bip21Helper.btcURIforAddress(address: address)
                 self.content.walletAddressLabel.text = address
             } else {
-                uri = bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+                uri = Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
                 self.content.walletAddressLabel.text = uri
             }
             self.content.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.content.walletQRCode.frame)
-        }.catch{ _ in
-            Toast.show(NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), timeout: Toast.SHORT_DURATION)
+        }.catch { _ in
+            Toast.show(NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), timeout: Toast.SHORT)
         }
     }
 
@@ -171,11 +171,11 @@ class ReceiveBtcViewController: KeyboardViewController {
             if address.isEmpty {
                 throw GaError.GenericError
             }
-            let uri = self.getSatoshi() == 0 ? address : bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
-            let activityViewController = UIActivityViewController(activityItems: [uri] , applicationActivities: nil)
+            let uri = self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+            let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = self.view
             self.present(activityViewController, animated: true, completion: nil)
-        }.catch{ _ in }
+        }.catch { _ in }
     }
 
     func getSatoshi() -> UInt64 {

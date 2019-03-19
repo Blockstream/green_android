@@ -44,7 +44,7 @@ class SetPhoneViewController: KeyboardViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String : Any])
+            try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String: Any])
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

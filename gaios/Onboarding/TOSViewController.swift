@@ -50,7 +50,7 @@ class TOSView: UIView {
         let tosString = NSMutableAttributedString(string: whiteString + " " + linkString)
         tosString.addAttribute(.link, value: "https://greenaddress.it/tos", range: NSRange(location: whiteString.count + 1, length: linkString.count))
         tosString.setColor(color: UIColor.white, forText: whiteString)
-        let linkAttributes: [String : Any] = [
+        let linkAttributes: [String: Any] = [
             NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
             NSAttributedStringKey.underlineColor.rawValue: UIColor.customMatrixGreen(),
             NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue

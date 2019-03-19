@@ -3,8 +3,8 @@ import UIKit
 
 class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIScrollViewDelegate {
     @IBOutlet var content: NetworkSelectionSettingsView!
-    var currentNetworkSelection: String? = nil
-    var onSave: (() -> Void)? = nil
+    var currentNetworkSelection: String?
+    var onSave: (() -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,7 +103,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
 
         let userInfo = notification.userInfo
         let keyboardFrame = userInfo?[UIKeyboardFrameEndUserInfoKey] as! CGRect
-        let contentInset = UIEdgeInsetsMake(0.0, 0.0, keyboardFrame.height + content.socks5Port.frame.height, 0.0)
+        let contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height + content.socks5Port.frame.height, right: 0.0)
         content.scrollView.contentInset = contentInset
         content.scrollView.scrollIndicatorInsets = contentInset
     }

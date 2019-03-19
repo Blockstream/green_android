@@ -1,4 +1,3 @@
-
 import Foundation
 import UIKit
 import NVActivityIndicatorView
@@ -81,7 +80,7 @@ class WatchOnlySignIn: KeyboardViewController {
             } else {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
-            Toast.show(message, timeout: Toast.SHORT_DURATION)
+            Toast.show(message, timeout: Toast.SHORT)
         }
     }
 }

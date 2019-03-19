@@ -74,7 +74,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
                 footerId, for: indexPath) as! FooterWalletsCollection
             footer.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
-            let tapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(self.addWallet))
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addWallet))
             footer.addGestureRecognizer(tapGestureRecognizer)
             footer.isUserInteractionEnabled = true
             return footer

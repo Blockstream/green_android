@@ -2,16 +2,15 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol SubaccountDelegate
-{
+protocol SubaccountDelegate {
     func onChange(_ pointer: UInt32)
 }
 
 class TransactionsController: UITableViewController, SubaccountDelegate {
 
-    var pointerWallet : UInt32 = 0
-    var presentingWallet: WalletItem? = nil
-    var items: Transactions? = nil
+    var pointerWallet: UInt32 = 0
+    var presentingWallet: WalletItem?
+    var items: Transactions?
 
     lazy var noTransactionsLabel: UILabel = {
         let noTransactionsLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 100, y: self.tableView.tableHeaderView!.frame.height, width: 200, height: self.view.frame.size.height - self.tableView.tableHeaderView!.frame.height))
@@ -124,12 +123,12 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
     }
 
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let c = cell as? TransactionTableCell, let items = self.items, indexPath.row < items.list.count else {
+        guard let cell = cell as? TransactionTableCell, let items = self.items, indexPath.row < items.list.count else {
             return
         }
         let item = items.list[indexPath.row]
-        c.checkBlockHeight(transaction: item, blockHeight: getGAService().getBlockheight())
-        c.checkTransactionType(transaction: item)
+        cell.checkBlockHeight(transaction: item, blockHeight: getGAService().getBlockheight())
+        cell.checkTransactionType(transaction: item)
     }
 
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -139,8 +138,8 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         }
         let item = items.list[indexPath.row]
         cell.setup(with: item)
-        
-        return cell;
+
+        return cell
     }
 
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -183,13 +182,13 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
 
     func getWalletCardView() -> WalletFullCardView? {
         let view: WalletFullCardView = ((Bundle.main.loadNibNamed("WalletFullCardView", owner: self, options: nil)![0] as? WalletFullCardView)!)
-        view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.receiveToWallet)))
-        view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.sendfromWallet)))
-        view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action:  #selector(self.wallets)))
+        view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.receiveToWallet)))
+        view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sendfromWallet)))
+        view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.wallets)))
         return view
     }
 
-    func loadWallet(){
+    func loadWallet() {
         guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
         guard let settings = getGAService().getSettings() else { return }
         getSubaccount(self.pointerWallet).done { wallet in
@@ -206,7 +205,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
                 view.sendImage.image = UIImage(named: "qr_sweep")
                 view.sendLabel.text = NSLocalizedString("id_sweep", comment: "")
             }
-        }.catch{ _ in }
+        }.catch { _ in }
     }
 
     @objc func wallets(_ sender: UIButton) {

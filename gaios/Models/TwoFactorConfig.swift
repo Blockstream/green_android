@@ -42,9 +42,9 @@ struct TwoFactorConfigLimits: Codable {
 
     func get<T>(_ key: CodingKeys) -> T? {
         var value: T?
-        for (i) in Mirror(reflecting: self).children {
-            if i.label == key.rawValue {
-                value = i.value as? T
+        for (index) in Mirror(reflecting: self).children {
+            if index.label == key.rawValue {
+                value = index.value as? T
             }
         }
         return value
@@ -52,10 +52,10 @@ struct TwoFactorConfigLimits: Codable {
 }
 
 enum TwoFactorType: String {
-    case email = "email"
-    case phone = "phone"
-    case sms = "sms"
-    case gauth = "gauth"
+    case email
+    case phone
+    case sms
+    case gauth
 }
 
 struct TwoFactorConfig: Codable {

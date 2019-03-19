@@ -1,4 +1,3 @@
-
 import Foundation
 import PromiseKit
 
@@ -14,11 +13,11 @@ struct Transactions {
     }
 }
 
-enum TransactionError : Error {
+enum TransactionError: Error {
     case invalid(localizedDescription: String)
 }
 
-struct Addressee : Codable {
+struct Addressee: Codable {
     let address: String
     let satoshi: UInt64
 
@@ -41,17 +40,17 @@ struct Transaction {
 
     var addressees: [Addressee] {
         get {
-            let o: [[String: Any]] = get("addressees") ?? []
-            return o.map { value in
+            let out: [[String: Any]] = get("addressees") ?? []
+            return out.map { value in
                 return Addressee(address: value["address"] as! String, satoshi: (value["satoshi"] as? UInt64) ?? 0)
             }
         }
         set {
             let addressees = newValue.map { addr -> [String: Any] in
-                var o = [String: Any]()
-                o["address"] = addr.address
-                o["satoshi"] = addr.satoshi
-                return o
+                var out = [String: Any]()
+                out["address"] = addr.address
+                out["satoshi"] = addr.satoshi
+                return out
             }
             details["addressees"] = addressees
         }
@@ -127,11 +126,11 @@ struct Transaction {
     }
 
     func address() -> String? {
-        let o: [String] = get("addressees") ?? []
-        guard !o.isEmpty else {
+        let out: [String] = get("addressees") ?? []
+        guard !out.isEmpty else {
             return nil
         }
-        return o[0]
+        return out[0]
     }
 
     func date() -> String {
@@ -144,7 +143,7 @@ struct Transaction {
 
 }
 
-class WalletItem : Codable {
+class WalletItem: Codable {
 
     enum CodingKeys: String, CodingKey {
         case bits
@@ -205,7 +204,7 @@ class WalletItem : Codable {
     }
 }
 
-class Wallets : Codable {
+class Wallets: Codable {
     let array: [WalletItem]
 }
 
@@ -247,9 +246,9 @@ func convertAmount(details: [String: Any]) -> [String: Any]? {
     return conversion
 }
 
-func getFeeEstimates() -> [UInt64] {
-    let estimates = try! getSession().getFeeEstimates()
-    return estimates!["fees"] as! [UInt64]
+func getFeeEstimates() -> [UInt64]? {
+    guard let estimates = try? getSession().getFeeEstimates() else { return nil }
+    return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
 }
 
 func getUserNetworkSettings() -> [String: Any]? {

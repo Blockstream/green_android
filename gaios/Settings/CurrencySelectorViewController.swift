@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-class CurrencySelectorViewController : KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     var currencyList = [CurrencyItem]()
@@ -22,7 +22,7 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
         textField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_search", comment: ""),
                                                    attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        
+
         tableView.rowHeight = 50
         tableView.layer.shadowColor = UIColor.white.cgColor
         tableView.layer.shadowRadius = 4
@@ -70,8 +70,8 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
         cell.source.text = currency.exchange
         cell.fiat.text = currency.currency
         cell.selectionStyle = .none
-        cell.separatorInset = UIEdgeInsetsMake(0, 16, 0, 16)
-        return cell;
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -90,7 +90,7 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
         Guarantee().compactMap {
             settings.pricing = pricing
         }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String : Any])
+            try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
         }.then(on: bgq) { call in
             call.resolve(self)
         }.done { _ in
@@ -104,9 +104,9 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap(on: bgq) {
             try getSession().getAvailableCurrencies()
-        }.done { (data: [String:Any]?) in
+        }.done { (data: [String: Any]?) in
             guard let json = data else { return }
-            let perExchange = json["per_exchange"] as! [String:Any]
+            let perExchange = json["per_exchange"] as! [String: Any]
             self.currencyList.removeAll()
             for (exchange, array) in perExchange {
                 for currency in array as! NSArray {
@@ -121,7 +121,7 @@ class CurrencySelectorViewController : KeyboardViewController, UITableViewDelega
     }
 }
 
-class CurrencyItem: Codable{
+class CurrencyItem: Codable {
     var exchange: String
     var currency: String
 
@@ -130,5 +130,3 @@ class CurrencyItem: Codable{
         self.exchange = exchange
     }
 }
-
-

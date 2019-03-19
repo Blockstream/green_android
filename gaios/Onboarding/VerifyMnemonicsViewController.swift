@@ -7,12 +7,12 @@ class VerifyMnemonicsViewController: UIViewController {
 
     @IBOutlet var content: VerifyMnemonicsView!
     var mnemonic: [Substring]!
-    var selectionWordNumbers: [Int] = [Int](repeating: 0, count:4)
-    var expectedWordNumbers: [Int] = [Int](repeating: 0, count:4)
+    var selectionWordNumbers: [Int] = [Int](repeating: 0, count: 4)
+    var expectedWordNumbers: [Int] = [Int](repeating: 0, count: 4)
     var questionCounter: Int = 0
     var questionPosition: Int = 0
     let numberOfSteps: Int = 4
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         expectedWordNumbers = generateRandomWordNumbers()
@@ -24,7 +24,7 @@ class VerifyMnemonicsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         for button in content.buttonsArray {
-            button.addTarget(self, action:#selector(self.click), for: .touchUpInside)
+            button.addTarget(self, action: #selector(self.click), for: .touchUpInside)
         }
     }
 
@@ -60,7 +60,7 @@ class VerifyMnemonicsViewController: UIViewController {
                 title = getTitle()
             }
         } else {
-            Toast.show(NSLocalizedString("id_wrong_choice_check_your", comment: ""), timeout: Toast.LONG_DURATION);
+            Toast.show(NSLocalizedString("id_wrong_choice_check_your", comment: ""), timeout: Toast.LONG)
             navigationController?.popViewController(animated: true)
         }
     }
@@ -79,7 +79,7 @@ class VerifyMnemonicsViewController: UIViewController {
             try getSession().registerUser(mnemonic: mnemonics)
         }.then(on: bgq) { call in
             call.resolve(self)
-        }.compactMap(on: bgq) { call in
+        }.compactMap(on: bgq) { _ in
             try getSession().login(mnemonic: mnemonics)
         }.then(on: bgq) { call in
             call.resolve(self)
@@ -99,7 +99,7 @@ class VerifyMnemonicsViewController: UIViewController {
             } else {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
-            Toast.show(message, timeout: Toast.SHORT_DURATION)
+            Toast.show(message, timeout: Toast.SHORT)
         }
     }
 
@@ -116,7 +116,7 @@ class VerifyMnemonicsViewController: UIViewController {
     }
 
     func generateRandomWordNumbers() -> [Int] {
-        var words: [Int] = [Int](repeating: 0, count:4)
+        var words: [Int] = [Int](repeating: 0, count: 4)
         repeat {
             words = words.map { (_) -> Int in getIndexFromUniformUInt32(count: 23) }
         } while Set(words).count != 4

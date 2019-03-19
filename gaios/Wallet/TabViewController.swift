@@ -30,7 +30,7 @@ class TabViewController: UITabBarController {
         Guarantee().map {
             getAppDelegate().lock()
         }.map(on: bgq) {
-            try! getSession().disconnect()
+            try getSession().disconnect()
         }.ensure {
             getGAService().reset()
         }.catch { _ in
@@ -69,7 +69,7 @@ class SnackBarNetwork: SnackBar {
         label.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), seconds)
         label.backgroundColor = UIColor.customTitaniumMedium()
         button.setTitle(NSLocalizedString("id_try_now", comment: "").uppercased(), for: .normal)
-        button.addTarget(self, action:#selector(self.click), for: .touchUpInside)
+        button.addTarget(self, action: #selector(self.click), for: .touchUpInside)
         button.isHidden = false
         if timer.isValid { timer.invalidate() }
         timer = Timer.scheduledTimer(timeInterval: 1.0,
@@ -107,13 +107,10 @@ class SnackBarNetwork: SnackBar {
 
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(){
+        Guarantee().map {
             self.removeFromSuperview()
-        }.map(on: bgq){
+        }.map(on: bgq) {
             try getSession().reconnectHint(hint: ["hint": "now"])
         }.catch { _ in }
     }
 }
-
-
-

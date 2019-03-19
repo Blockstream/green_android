@@ -6,8 +6,8 @@ import NVActivityIndicatorView
 
 class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
 
-    var wallet:WalletItem? = nil
-    var transaction: Transaction? = nil
+    var wallet: WalletItem?
+    var transaction: Transaction?
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var qrCodeReaderBackgroundView: QRCodeReaderView!
@@ -104,7 +104,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         return Guarantee().map(on: bgq) {_ in
             try getSession().getReceiveAddress(subaccount: self.wallet!.pointer)
         }.then(on: bgq) { address -> Promise<Transaction> in
-            let details: [String: Any] = ["private_key": userInput, "fee_rate":  feeRate, "subaccount": self.wallet!.pointer, "addressees" : [["address": address, "satoshi": 0]]]
+            let details: [String: Any] = ["private_key": userInput, "fee_rate": feeRate, "subaccount": self.wallet!.pointer, "addressees": [["address": address, "satoshi": 0]]]
             return gaios.createTransaction(details: details)
         }
     }
@@ -130,7 +130,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
                 self.transaction!.feeRate = feeRate
                 return gaios.createTransaction(transaction: self.transaction!)
             } else {
-                let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate":  feeRate, "subaccount": subaccount]
+                let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]
                 return gaios.createTransaction(details: details)
             }
         }.then { tx in
@@ -144,14 +144,14 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):
-                Toast.show(localizedDescription, timeout: Toast.SHORT_DURATION)
+                Toast.show(localizedDescription, timeout: Toast.SHORT)
                 break
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                Toast.show(NSLocalizedString("id_you_are_not_connected", comment: ""), timeout: Toast.SHORT_DURATION)
+                Toast.show(NSLocalizedString("id_you_are_not_connected", comment: ""), timeout: Toast.SHORT)
 
                 break
             default:
-                Toast.show(error.localizedDescription, timeout: Toast.SHORT_DURATION)
+                Toast.show(error.localizedDescription, timeout: Toast.SHORT)
             }
             self.qrCodeReaderBackgroundView.startScan()
         }.finally {
@@ -161,7 +161,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
     }
 }
 
-extension SendBtcViewController : QRCodeReaderDelegate {
+extension SendBtcViewController: QRCodeReaderDelegate {
 
     func onQRCodeReadSuccess(result: String) {
         qrCodeReaderBackgroundView.stopScan()

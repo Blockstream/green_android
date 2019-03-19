@@ -10,7 +10,7 @@ class FeeButton: UIButton {
     @IBOutlet weak var view: UIView!
 
     let nibName = "FeeButton"
-    var contentView : UIView?
+    var contentView: UIView?
 
     fileprivate var _isSelect: Bool = false
     var isSelect: Bool {

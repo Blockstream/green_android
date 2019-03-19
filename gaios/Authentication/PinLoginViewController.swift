@@ -14,7 +14,7 @@ class PinLoginViewController: UIViewController {
     var isLogin: Bool { get { return !(setPinMode || restoreMode || editPinMode) } }
 
     private var confirmPin: Bool = false
-    private let MAX_ATTEMPTS = 3
+    private let MAXATTEMPTS = 3
 
     var pinAttemptsPreference: Int {
         get {
@@ -50,7 +50,7 @@ class PinLoginViewController: UIViewController {
 
         // setup keypad button style
         let background = getBackgroundImage(UIColor.customMatrixGreenDark().cgColor)
-        content.keyButton?.enumerated().forEach{ (i, button) in
+        content.keyButton?.enumerated().forEach { (_, button) in
             button.setBackgroundImage(background, for: UIControlState.highlighted)
         }
 
@@ -140,7 +140,7 @@ class PinLoginViewController: UIViewController {
                     case .NotAuthorizedError:
                         if let _ = withPIN {
                             self.pinAttemptsPreference += 1
-                            if self.pinAttemptsPreference == self.MAX_ATTEMPTS {
+                            if self.pinAttemptsPreference == self.MAXATTEMPTS {
                                 self.stopAnimating()
                                 removeKeychainData()
                                 self.pinAttemptsPreference = 0
@@ -157,7 +157,7 @@ class PinLoginViewController: UIViewController {
             }
             self.updateAttemptsLabel()
             self.resetEverything()
-            Toast.show(message, timeout: Toast.SHORT_DURATION)
+            Toast.show(message, timeout: Toast.SHORT)
         }
     }
 
@@ -190,12 +190,12 @@ class PinLoginViewController: UIViewController {
             } else {
                 message = NSLocalizedString("id_operation_failure", comment: "")
             }
-            Toast.show(message, timeout: Toast.SHORT_DURATION)
+            Toast.show(message, timeout: Toast.SHORT)
         }
     }
 
     func updateAttemptsLabel() {
-        content.attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAX_ATTEMPTS - pinAttemptsPreference)
+        content.attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinAttemptsPreference)
         content.attempts.isHidden = pinAttemptsPreference == 0
     }
 
@@ -203,7 +203,6 @@ class PinLoginViewController: UIViewController {
         content.attempts.text = NSLocalizedString("id_pins_do_not_match_please_try", comment: "")
         content.attempts.isHidden = false
     }
-
 
     @objc func keyClick(sender: UIButton) {
         pinCode += (sender.titleLabel?.text)!
@@ -256,8 +255,8 @@ class PinLoginViewController: UIViewController {
     }
 
     func updateView() {
-        content.pinLabel?.enumerated().forEach {(i, label) in
-            if i < pinCode.count {
+        content.pinLabel?.enumerated().forEach {(index, label) in
+            if index < pinCode.count {
                 label.text = "*"
                 label.isHidden = false
             } else {

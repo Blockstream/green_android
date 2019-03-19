@@ -5,12 +5,12 @@ protocol QRCodeReaderDelegate {
     func onQRCodeReadSuccess(result: String)
 }
 
-class QRCodeReaderView : UIView {
+class QRCodeReaderView: UIView {
 
     private let sessionQueue = DispatchQueue(label: "capture session queue", qos: .userInteractive)
 
     var captureSession = AVCaptureSession()
-    var captureMetadataOutput: AVCaptureMetadataOutput? = nil
+    var captureMetadataOutput: AVCaptureMetadataOutput?
 
     lazy var previewLayer: AVCaptureVideoPreviewLayer? = {
         let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
@@ -55,7 +55,7 @@ class QRCodeReaderView : UIView {
 
     var authorizationStatus: AVAuthorizationStatus!
 
-    var delegate: QRCodeReaderDelegate? = nil
+    var delegate: QRCodeReaderDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -235,7 +235,7 @@ class QRCodeReaderView : UIView {
     }
 }
 
-extension QRCodeReaderView : AVCaptureMetadataOutputObjectsDelegate {
+extension QRCodeReaderView: AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
 
         if let metadataObject = metadataObjects.first {

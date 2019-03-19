@@ -29,11 +29,11 @@ struct Event: EventProtocol, Equatable {
         return NSDictionary(dictionary: lhs.value).isEqual(to: rhs.value)
     }
 
-    func decode<T>(_ type: T.Type) -> T? where T : Decodable {
+    func decode<T>(_ type: T.Type) -> T? where T: Decodable {
         return try? JSONDecoder().decode(T.self, from: JSONSerialization.data(withJSONObject: value, options: []))
     }
 
-    func kindOf<T>(_ type: T.Type) -> Bool where T : Decodable {
+    func kindOf<T>(_ type: T.Type) -> Bool where T: Decodable {
         return decode(T.self) != nil
     }
 

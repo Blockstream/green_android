@@ -79,7 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITextField.appearance().keyboardAppearance = .dark
         UITextField.appearance().tintColor = UIColor.customMatrixGreen()
         //To hide the bottom line of the navigation bar.
-        UINavigationBar.appearance().setBackgroundImage(UIImage(),for: .any, barMetrics: .default)
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
         UINavigationBar.appearance().shadowImage = UIImage()
         //Hide the top line of the tab bar
         UITabBar.appearance().shadowImage = UIImage()
@@ -130,4 +130,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 }
-

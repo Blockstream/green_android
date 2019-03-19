@@ -8,23 +8,24 @@ class SendBtcDetailsViewController: UIViewController {
     let blockTime = ["~ 30 " + NSLocalizedString("id_minutes", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_4_hours", comment: ""), ""]
     var feeLabel: UILabel = UILabel()
     var uiErrorLabel: UIErrorLabel!
-    var wallet: WalletItem? = nil
+    var wallet: WalletItem?
     var isFiat = false
     var transaction: Transaction!
-    var amountData: [String: Any]? = nil
+    var amountData: [String: Any]?
 
     var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
-        let estimates = getFeeEstimates()
-        for (i, v) in [3, 12, 24, 0].enumerated() {
-            feeEstimates[i] = estimates[v]
+        let estimates = getFeeEstimates() ?? []
+        for (index, value) in [3, 12, 24, 0].enumerated() {
+            feeEstimates[index] = estimates[value]
         }
         feeEstimates[3] = nil
         return feeEstimates
     }()
 
     var minFeeRate: UInt64 = {
-        return getFeeEstimates()[0]
+        guard let estimates = getFeeEstimates() else { return 1000 }
+        return estimates[0]
     }()
 
     var selectedFee: Int = {
@@ -64,14 +65,14 @@ class SendBtcDetailsViewController: UIViewController {
         if let oldFeeRate = getOldFeeRate() {
             feeEstimates[content.feeRateButtons.count - 1] = oldFeeRate + minFeeRate
             var found = false
-            for i in 0..<content.feeRateButtons.count - 1 {
-                guard let feeEstimate = feeEstimates[i] else { break }
+            for index in 0..<content.feeRateButtons.count - 1 {
+                guard let feeEstimate = feeEstimates[index] else { break }
                 if oldFeeRate < feeEstimate {
                     found = true
-                    selectedFee = i
+                    selectedFee = index
                     break
                 }
-                content.feeRateButtons[i]?.isEnabled = false
+                content.feeRateButtons[index]?.isEnabled = false
             }
             if !found {
                 selectedFee = content.feeRateButtons.count - 1
@@ -126,7 +127,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateAmountData(_ satoshi: UInt64) {
-        let newAmountData = convertAmount(details: ["satoshi" : satoshi])
+        let newAmountData = convertAmount(details: ["satoshi": satoshi])
         if newAmountData?["satoshi"] as? UInt64 != amountData?["satoshi"] as? UInt64 {
             amountData = newAmountData
             updateAmountTextField(true)
@@ -157,14 +158,14 @@ class SendBtcDetailsViewController: UIViewController {
 
     func updateMaxAmountLabel() {
         guard let wallet = self.wallet else { return }
-        wallet.getBalance().get { balance in
+        wallet.getBalance().get { _ in
             self.content.maxAmountLabel.text = String.toBtc(satoshi: wallet.satoshi)
         }.done { _ in }.catch { _ in }
     }
 
     @objc func click(_ sender: UIButton?) {
         if sender == content.sendAllFundsButton {
-            content.sendAllFundsButton.isSelected = !content.sendAllFundsButton.isSelected;
+            content.sendAllFundsButton.isSelected = !content.sendAllFundsButton.isSelected
             updateTransaction()
             updateAmountTextField(true)
         } else if sender == content.reviewButton {
@@ -192,7 +193,7 @@ class SendBtcDetailsViewController: UIViewController {
         guard let settings = getGAService().getSettings() else { return }
         let amount = !amountText.isEmpty ? amountText : "0"
         let conversionKey = !isFiat ? settings.denomination.rawValue : "fiat"
-        amountData = convertAmount(details: [conversionKey : amount])
+        amountData = convertAmount(details: [conversionKey: amount])
         updateTransaction()
     }
 
@@ -243,16 +244,16 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func updateFeeButtons() {
-        for i in 0..<feeEstimates.count {
-            guard let feeButton = content.feeRateButtons[i] else { break }
+        for index in 0..<feeEstimates.count {
+            guard let feeButton = content.feeRateButtons[index] else { break }
             if feeButton.gestureRecognizers == nil && feeButton.isEnabled {
                 let tap = UITapGestureRecognizer(target: self, action: #selector(clickFeeButton))
                 feeButton.addGestureRecognizer(tap)
                 feeButton.isUserInteractionEnabled = true
             }
             feeButton.isSelect = false
-            feeButton.timeLabel.text = String(format: "%@", blockTime[i])
-            guard let fee = feeEstimates[i] else {
+            feeButton.timeLabel.text = String(format: "%@", blockTime[index])
+            guard let fee = feeEstimates[index] else {
                 feeButton.feerateLabel.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")
                 break
             }
@@ -301,7 +302,7 @@ class SendBtcDetailsViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
 
-    @objc func clickFeeButton(_ sender: UITapGestureRecognizer){
+    @objc func clickFeeButton(_ sender: UITapGestureRecognizer) {
         guard let view = sender.view else { return }
         switch view {
         case content.fastFeeButton:

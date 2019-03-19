@@ -5,7 +5,7 @@ protocol PopupPromise {
     func show() -> Promise<String>
 }
 
-class PopupList : PopupPromise {
+class PopupList: PopupPromise {
     let viewController: UIViewController
     let title: String
     let list: [Any]
@@ -24,11 +24,11 @@ class PopupList : PopupPromise {
             list.forEach { (item: Any) in
                 let strItem = String(describing: item)
                 let strSelected = selected != nil ? String(describing: selected!) : ""
-                alert.addAction(UIAlertAction(title: strItem, style: strItem == strSelected ? .destructive : .default) { (action: UIAlertAction) in
+                alert.addAction(UIAlertAction(title: strItem, style: strItem == strSelected ? .destructive : .default) { (_: UIAlertAction) in
                     result.fulfill(strItem)
                 })
             }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
                 result.reject(GaError.GenericError)
             })
             DispatchQueue.main.async {
@@ -38,7 +38,7 @@ class PopupList : PopupPromise {
     }
 }
 
-class PopupEditable : PopupPromise {
+class PopupEditable: PopupPromise {
     let viewController: UIViewController
     let title: String
     let hint: String?
@@ -61,10 +61,10 @@ class PopupEditable : PopupPromise {
                 textField.text = self.text ?? ""
                 textField.keyboardType = self.keyboardType ?? .asciiCapable
             }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
                 result.reject(GaError.GenericError)
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { (action: UIAlertAction) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { (_: UIAlertAction) in
                 let textField = alert.textFields![0]
                 result.fulfill(textField.text!)
             })
@@ -74,4 +74,3 @@ class PopupEditable : PopupPromise {
         }
     }
 }
-
