@@ -19,6 +19,7 @@ If you want to contribute to the project, please refer to the following guidelin
 
 * Before opening a pull request make sure the changes pass the CI
 
+* Enforce Swift style and conventions with [SwiftLint](https://github.com/realm/SwiftLint)
 
 #### Mandatory environment settings for contributions
 

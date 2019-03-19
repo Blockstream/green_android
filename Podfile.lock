@@ -11,20 +11,24 @@ PODS:
     - PromiseKit/CorePromise
   - PromiseKit/UIKit (6.8.3):
     - PromiseKit/CorePromise
+  - SwiftLint (0.31.0)
 
 DEPENDENCIES:
   - NVActivityIndicatorView (= 4.6.1)
   - PromiseKit (= 6.8.3)
+  - SwiftLint (= 0.31.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - NVActivityIndicatorView
     - PromiseKit
+    - SwiftLint
 
 SPEC CHECKSUMS:
   NVActivityIndicatorView: 4ca19fccc84595a78957336a086d00a49be6ce61
   PromiseKit: 94c6e781838c5bf4717677d0d882b0e7250c80fc
+  SwiftLint: 7a0227733d786395817373b2d0ca799fd0093ff3
 
-PODFILE CHECKSUM: 8dfcedb5f664d509b2c9a05376c6cc4b731e2f7b
+PODFILE CHECKSUM: 393b397e5cd01794a06d215a603ae16d5d1f684d
 
 COCOAPODS: 1.6.1

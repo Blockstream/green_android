@@ -1,0 +1,19 @@
+excluded:
+   - gaiosTests
+   - gaiosUITests
+   - gdk
+   - tools
+   - Pods
+   - gaios/GreenApplication.swift
+   - gaios/Wallet/Views/SlidingButton.swift
+   - gaios/Helpers/AuthenticationTypeHandler.swift
+
+type_body_length:
+   - 300 # warning
+line_length: 500
+force_cast: warning
+force_try:
+   severity: warning
+identifier_name:
+   severity: warning
+   validates_start_with_lowercase: false

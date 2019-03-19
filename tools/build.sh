@@ -33,6 +33,9 @@ if [ ! -d Pods ]; then
     pod install
 fi
 
+# Call linter
+Pods/SwiftLint/swiftlint
+
 SDK=$(xcodebuild -showsdks | grep $DEVICE | tr -s ' ' | tr -d '\-' | cut -f 3-)
 xcodebuild CODE_SIGN_STYLE="Manual" PROVISIONING_PROFILE="b38d1a3f-9e58-491f-8e19-f9a9db0bbd45" DEVELOPMENT_TEAM="D9W37S9468" CODE_SIGN_IDENTITY="iPhone Distribution" -$SDK -workspace gaios.xcworkspace -scheme gaios clean archive -configuration release -archivePath ./build/Green.xcarchive
 xcodebuild -exportArchive -archivePath ./build/Green.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build/Green.ipa

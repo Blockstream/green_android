@@ -8,6 +8,7 @@ target 'gaios' do
   # Pods for Green
   pod 'PromiseKit', '6.8.3'
   pod 'NVActivityIndicatorView', '4.6.1'
+  pod 'SwiftLint', '0.31.0'
   target 'gaiosTests' do
     inherit! :search_paths
     # Pods for testing
