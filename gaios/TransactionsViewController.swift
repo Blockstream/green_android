@@ -195,7 +195,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         getSubaccount(self.pointerWallet).done { wallet in
             self.presentingWallet = wallet
             let view = self.tableView.tableHeaderView as! WalletFullCardView
-            view.balance.text = String.toBtc(satoshi: wallet.satoshi).split(separator: " ").map(String.init).first
+            view.balance.text = String.toBtc(satoshi: wallet.satoshi, showDenomination: false)
             view.unit.text = settings.denomination.toString()
             view.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.satoshi)
             view.walletName.text = wallet.localizedName()

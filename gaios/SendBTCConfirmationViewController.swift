@@ -58,10 +58,10 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         let satoshi = transaction.addressees.first!.satoshi
         content.toLabel.text = address
         if isFiat {
-            content.amountText.text = String.toFiat(satoshi: satoshi).split(separator: " ").map(String.init).first
+            content.amountText.text = String.toFiat(satoshi: satoshi, showCurrency: false)
             content.feeLabel.text = String.toFiat(satoshi: satoshi + transaction.fee)
         } else {
-            content.amountText.text = String.toBtc(satoshi: satoshi).split(separator: " ").map(String.init).first
+            content.amountText.text = String.toBtc(satoshi: satoshi, showDenomination: false)
             content.feeLabel.text = String.toBtc(satoshi: satoshi + transaction.fee)
         }
     }

@@ -18,20 +18,20 @@ extension String {
         return String(partial)
     }
 
-    static func toBtc(satoshi: UInt64) -> String {
+    static func toBtc(satoshi: UInt64, showDenomination: Bool = true) -> String {
         guard let settings = getGAService().getSettings() else { return "" }
         let res = try? getSession().convertAmount(input: ["satoshi" : satoshi])
         guard let _ = res, let data = res! else { return "" }
         guard let value = data[settings.denomination.rawValue] as? String else { return "" }
-        return String(format: "%@ %@", value, settings.denomination.toString())
+        return String(format: showDenomination ? "%@ %@" : "%@", value, settings.denomination.toString())
     }
 
-    static func toFiat(satoshi: UInt64) -> String {
+    static func toFiat(satoshi: UInt64, showCurrency: Bool = true) -> String {
         guard let settings = getGAService().getSettings() else { return "" }
         let res = try? getSession().convertAmount(input: ["satoshi" : satoshi])
         guard let _ = res, let data = res! else { return "" }
         guard let value = data["fiat"] as? String else { return "" }
-        return String(format: "%@ %@", value, settings.getCurrency())
+        return String(format: showCurrency ? "%@ %@" : "%@", value, settings.getCurrency())
     }
 
     static func toSatoshi(fiat: String) -> UInt64 {

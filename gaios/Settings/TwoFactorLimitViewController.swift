@@ -54,8 +54,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     @objc func currencySwitchClick(_ sender: UIButton) {
         let satoshi = getSatoshi()
-        let amount = isFiat ? String.toBtc(satoshi: satoshi) : String.toFiat(satoshi: satoshi)
-        content.limitTextField.text = amount.split(separator: " ").map(String.init).first
+        content.limitTextField.text = isFiat ? String.toBtc(satoshi: satoshi, showDenomination: false) : String.toFiat(satoshi: satoshi, showCurrency: false)
         isFiat = !isFiat
         refresh()
     }

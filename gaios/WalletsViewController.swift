@@ -50,7 +50,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
                                                       for: indexPath) as! WalletCardView
         let wallet = wallets[indexPath.row]
         guard let settings = getGAService().getSettings() else { return cell }
-        cell.balance.text = String.toBtc(satoshi: wallet.satoshi).split(separator: " ").map(String.init).first
+        cell.balance.text = String.toBtc(satoshi: wallet.satoshi, showDenomination: false)
         cell.unit.text = settings.denomination.toString()
         cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.satoshi)
         cell.walletName.text = wallet.localizedName()
