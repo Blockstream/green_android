@@ -1,8 +1,0 @@
-
-description = 'jawampa-netty'
-dependencies {
-  compile project(':jawampa:jawampa-core')
-    compile group: 'io.netty', name: 'netty-codec-http', version:'4.1.4.Final'
-    compile group: 'io.netty', name: 'netty-handler-proxy', version:'4.1.4.Final'
-    compile group: 'io.netty', name: 'netty-handler', version:'4.1.4.Final'
-}

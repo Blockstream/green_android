@@ -1,5 +1,0 @@
-
-description = 'jawampa-examples'
-dependencies {
-  compile project(':jawampa-netty')
-}
