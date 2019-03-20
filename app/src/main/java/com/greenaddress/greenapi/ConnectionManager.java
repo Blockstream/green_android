@@ -233,7 +233,7 @@ public class ConnectionManager extends Observable {
         } catch (final Exception e) {
             Log.e(TAG, "Error while logging " + e.getMessage() );
             mLastLoginException = e;
-            setState(ConnState.CONNECTED);
+            setState(ConnState.DISCONNECTED);
         }
     }
 

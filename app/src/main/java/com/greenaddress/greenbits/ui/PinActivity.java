@@ -9,6 +9,7 @@ import android.security.keystore.KeyProperties;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
@@ -99,6 +100,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             // Should not happen
             message = getString(R.string.id_error);
         }
+        mService.getConnectionManager().clearPreviousLoginError();
 
         PinActivity.this.runOnUiThread(new Runnable() {
             public void run() {

@@ -7,7 +7,6 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.PagedData;
 import com.greenaddress.greenapi.data.TransactionData;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -64,7 +63,7 @@ public class TransactionDataObservable extends Observable implements Observer {
             }
             mExecutedOnce = true;
             setTransactionDataList(transactions);
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e("OBS", e.getMessage());
             e.printStackTrace();
         }

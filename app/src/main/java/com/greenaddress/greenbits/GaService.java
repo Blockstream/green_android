@@ -124,6 +124,11 @@ public class GaService extends Service  {
         return mConnectionManager.isDisconnected();
     }
 
+    public void resetSession() {
+        mSession.disconnect();
+        mSession = GDKSession.getInstance();
+    }
+
     class GaBinder extends Binder {
         GaService getService() { return GaService.this; }
     }
@@ -360,8 +365,9 @@ public class GaService extends Service  {
             mModel.getActiveAccountObservable().setActiveAccount(0);
 
         // FIXME the following prevents an issue when notification are not transmitted even if login was successful
-        if (mModel.getBlockchainHeightObservable().getHeight() == null)
+        if (mModel.getBlockchainHeightObservable().getHeight() == null) {
             return;
+        }
 
         mConnectionManager.goPostLogin();
 

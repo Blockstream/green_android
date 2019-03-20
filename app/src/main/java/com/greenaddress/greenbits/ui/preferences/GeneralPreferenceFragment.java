@@ -115,9 +115,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         logout.setSummary(UI.getColoredString(
                               getString(R.string.id_log_out), ContextCompat.getColor(getContext(), R.color.red)));
         logout.setOnPreferenceClickListener(preference -> {
-            if (mService.warnIfOffline(getActivity())) {
-                return false;
-            }
             logout.setEnabled(false);
             logout();
             return false;

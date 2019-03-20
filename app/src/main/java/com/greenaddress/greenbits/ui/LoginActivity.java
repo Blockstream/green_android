@@ -62,7 +62,10 @@ public abstract class LoginActivity extends GaActivity implements Observer, Netw
 
     protected void loginWithPin(String pin) {
         final PinData pinData = PinData.fromPreferenceValues(mService.cfgPin());
-        mService.getExecutor().execute(() -> mService.getConnectionManager().loginWithPin(pin, pinData));
+        mService.getExecutor().execute(() -> {
+            mService.resetSession();
+            mService.getConnectionManager().loginWithPin(pin, pinData);
+        });
     }
 
     @Override
