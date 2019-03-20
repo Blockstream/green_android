@@ -72,7 +72,9 @@ class ScreenLockViewController: UIViewController {
             }
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
-            completionHandler()
+            DispatchQueue.main.async {
+                completionHandler()
+            }
         })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
@@ -101,6 +103,11 @@ class ScreenLockViewController: UIViewController {
                 firstly {
                     startAnimating()
                     return Guarantee()
+                }.map(on: bgq) {
+                    let network = getNetwork()
+                    if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + network) == nil {
+                        _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
+                    }
                 }.compactMap(on: bgq) {
                     let password = String.random(length: 14)
                     let deviceid = String.random(length: 14)

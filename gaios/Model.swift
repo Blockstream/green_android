@@ -283,7 +283,6 @@ func onFirstInitialization(network: String) {
     let initKey = network + "FirstInitialization"
     if !UserDefaults.standard.bool(forKey: initKey) {
         removeKeychainData()
-        let _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
         UserDefaults.standard.set(true, forKey: initKey)
     }
 }
