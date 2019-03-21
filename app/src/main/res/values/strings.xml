@@ -229,6 +229,7 @@
   <string name="id_normal">Normal</string>
   <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
   <string name="id_notifications">Notifications</string>
+  <string name="id_now">Now</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">One attempt remaining</string>
   <string name="id_one_network_must_be_selected">One network must be selected. Selecting Bitcoin by default</string>
@@ -317,8 +318,8 @@
   <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Set a new PIN</string>
   <string name="id_set_custom_fee_rate">Set custom fee rate</string>
+  <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
   <string name="id_set_up_pgp_key_for">Set up PGP key for communications</string>
-  <string name="id_set_up_spending_limit">Set up spending limit</string>
   <string name="id_set_up_twofactor_authentication">Set up Two-Factor authentication</string>
   <string name="id_set_up_watchonly">Set up watch-only</string>
   <string name="id_set_up_watchonly_credentials">Set up watch-only credentials for this wallet</string>
@@ -339,7 +340,6 @@
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
   <string name="id_something_went_wrong">Something went wrong</string>
-  <string name="id_spending_limit">Spending limit</string>
   <string name="id_spv_is_always_synchronized_on">SPV is always synchronized on non-mobile networks like WiFi or Ethernet. This setting also synchronizes when using mobile data. This can be expensive depending on your data plan so take care when enabling.</string>
   <string name="id_spv_not_fully_synced">SPV not fully synced</string>
   <string name="id_spv_notifications">SPV notifications</string>
@@ -381,6 +381,7 @@
   <string name="id_twofactor_authentication">Two-Factor authentication</string>
   <string name="id_twofactor_reset_in_progress">Two-Factor reset in progress, your wallet is currently locked.</string>
   <string name="id_twofactor_settings">Two-Factor Settings</string>
+  <string name="id_twofactor_threshold">Two-Factor threshold</string>
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Unable to contact the Green service. Please check your network connection and wait to be reconnected.</string>
   <string name="id_unconfirmed">Unconfirmed</string>
@@ -433,8 +434,8 @@
   <string name="id_your_notifications_will_be">Your notifications will be shown here.</string>
   <string name="id_your_pin_or_your_mnemonic_will">Your PIN or your mnemonic will be required to access the wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Your %s sent to %s has been confirmed</string>
-  <string name="id_your_spending_limit_is_s">Your spending limit is %s.</string>
   <string name="id_your_transactions_will_be_shown">Your transactions will be shown here.</string>
+  <string name="id_your_twofactor_threshold_is_s">Your Two-Factor threshold is %s.</string>
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
   <string name="id_your_watchonly_username_will_be">Your watch-only username will be stored un-encrypted on this device. If your device is compromised then your transactions may be able to be watched by a third party. Press "OK" to continue.</string>
 </resources>

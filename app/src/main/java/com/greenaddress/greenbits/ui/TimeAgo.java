@@ -29,6 +29,6 @@ class TimeAgo {
                                      res.getStringArray(R.array.timesStrings)[i]);
             }
         }
-        return "NOW";
+        return ctx.getString(R.string.id_now);
     }
 }

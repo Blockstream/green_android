@@ -58,8 +58,8 @@
 
     <Preference
         android:key="twoFacLimits"
-        android:title="@string/id_spending_limit"
-        android:summary="@string/id_set_up_spending_limit" />
+        android:title="@string/id_twofactor_threshold"
+        android:summary="@string/id_set_twofactor_threshold" />
 
     <SwitchPreference
         android:key="twoFacNLocktimeEmails"

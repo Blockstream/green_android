@@ -229,6 +229,7 @@
   <string name="id_normal">Normal</string>
   <string name="id_not_connected_connecting_in_ds_">Non connecté. Connexion dans %d s...</string>
   <string name="id_notifications">Notifications</string>
+  <string name="id_now">Now</string>
   <string name="id_ok">OK</string>
   <string name="id_one_attempt_remaining">Un essai restant</string>
   <string name="id_one_network_must_be_selected">Un réseau doit être sélectionné. Sélection de Bitcoin par défaut.</string>
@@ -317,8 +318,8 @@
   <string name="id_sent_to">Envoyer à</string>
   <string name="id_set_a_new_pin">Définir un nouveau PIN</string>
   <string name="id_set_custom_fee_rate">Fixer le taux des frais</string>
+  <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
   <string name="id_set_up_pgp_key_for">Configurer la clé PGP pour les communications</string>
-  <string name="id_set_up_spending_limit">Définir une limite de dépenses</string>
   <string name="id_set_up_twofactor_authentication">Activer un deuxième facteur d\'authentification</string>
   <string name="id_set_up_watchonly">Mettre en place le mode watch-only</string>
   <string name="id_set_up_watchonly_credentials">Installer le certificat watch-only pour ce portefeuille</string>
@@ -339,7 +340,6 @@
   <string name="id_socks5_hostname">Nom d\'hôte Socks5</string>
   <string name="id_socks5_port">Port Socks5</string>
   <string name="id_something_went_wrong">Un problème est apparu</string>
-  <string name="id_spending_limit">Limite de dépenses</string>
   <string name="id_spv_is_always_synchronized_on">SPV se synchronise toujours sur des réseaux non mobiles, tels que WiFi ou Ethernet. Ce réglage permet de le synchroniser aussi sur les réseaux de data mobile. Selon votre forfait cela peut entraîner des frais importants, à utiliser avec précaution.</string>
   <string name="id_spv_not_fully_synced">Synchronisation SPV incomplète</string>
   <string name="id_spv_notifications">Notifications SPV</string>
@@ -381,6 +381,7 @@
   <string name="id_twofactor_authentication">Deuxième facteur d\'authentification</string>
   <string name="id_twofactor_reset_in_progress">Réinitialisation du deuxième facteur en cours, votre portefeuille est actuellement verrouillé. </string>
   <string name="id_twofactor_settings">Paramètres du deuxième facteur</string>
+  <string name="id_twofactor_threshold">Two-Factor threshold</string>
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Le service Green est injoignable. Vérifiez votre connexion réseau et attendez pour être reconnecté.</string>
   <string name="id_unconfirmed">Non confirmée</string>
@@ -396,6 +397,7 @@
   <string name="id_version_1s_2s">Version %1$s %2$s</string>
   <string name="id_view_in_explorer">Voir dans l\'explorateur</string>
   <string name="id_waiting_for_transaction">En attente de la transaction...</string>
+  <string name="id_wallet_creation_failed">Wallet creation failed</string>
   <string name="id_wallets">Portefeuilles</string>
   <string name="id_warning">Attention !</string>
   <string name="id_warning_nononion_address">Attention : détection d\'adresses autres que .onion !</string>
@@ -432,8 +434,8 @@
   <string name="id_your_notifications_will_be">Vous verrez les notifications ici</string>
   <string name="id_your_pin_or_your_mnemonic_will">Vos codes PIN et mnémonique seront demandés pour accéder au portefeuille.</string>
   <string name="id_your_s_sent_to_s_has_been">Votre envoi de %s à %s a été confirmé</string>
-  <string name="id_your_spending_limit_is_s">Votre limite de dépenses est %s.</string>
   <string name="id_your_transactions_will_be_shown">Vos transactions seront affichées ici.</string>
+  <string name="id_your_twofactor_threshold_is_s">Your Two-Factor threshold is %s.</string>
   <string name="id_your_wallet_is_not_yet_fully">Votre portefeuille n\'est pas complètement sécurisé.\nVeuillez activer un deuxième facteur d\'authentification.</string>
   <string name="id_your_watchonly_username_will_be">Votre nom d\'utilisateur watch-only sera enregistré en clair sur cet appareil. Si votre appareil était compromis, un tiers pourrait être en mesure de voir vos transactions. Appuyez sur "OK" pour continuer.</string>
 </resources>

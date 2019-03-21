@@ -229,6 +229,7 @@
   <string name="id_normal">Нормальний</string>
   <string name="id_not_connected_connecting_in_ds_">З’єднання відсутнє. З’єднання відбудеться через %d сек...</string>
   <string name="id_notifications">Повідомлення</string>
+  <string name="id_now">Now</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Залишилась одна спроба</string>
   <string name="id_one_network_must_be_selected">Виберіть одну з мереж. За початковими налаштуваннями встановлено Біткоїн</string>
@@ -317,8 +318,8 @@
   <string name="id_sent_to">Відправити на</string>
   <string name="id_set_a_new_pin">Встановити новий PIN-код</string>
   <string name="id_set_custom_fee_rate">Встановити розмір комісії</string>
+  <string name="id_set_twofactor_threshold">Встановити двофакторний поріг</string>
   <string name="id_set_up_pgp_key_for">Встановити PGP-ключ для зв\'язку</string>
-  <string name="id_set_up_spending_limit">Встановити ліміт витрат</string>
   <string name="id_set_up_twofactor_authentication">Встановити двофакторну аутентифікацію</string>
   <string name="id_set_up_watchonly">Налаштувати холодний гаманець</string>
   <string name="id_set_up_watchonly_credentials">Встановити параметри холодного гаманця</string>
@@ -339,7 +340,6 @@
   <string name="id_socks5_hostname">Ім\'я вузла Socks5</string>
   <string name="id_socks5_port">Порт Socks5</string>
   <string name="id_something_went_wrong">Щось пішло не так</string>
-  <string name="id_spending_limit">Ліміт витрат</string>
   <string name="id_spv_is_always_synchronized_on">SPV завжди синхронізується в таких мережах, як WiFi або Ethernet. Цей параметр також синхронізується при використанні мобільних даних. Це може бути дорого в залежності від вашого тарифного плану, тому будьте уважні при включенні.</string>
   <string name="id_spv_not_fully_synced">SPV-синхронізація відбулася не повністю</string>
   <string name="id_spv_notifications">Повідомлення SPV</string>
@@ -381,6 +381,7 @@
   <string name="id_twofactor_authentication">Двофакторна аутентифікація</string>
   <string name="id_twofactor_reset_in_progress">Виконується двофакторне скидання, ваш гаманець заблоковано.</string>
   <string name="id_twofactor_settings">Двофакторне налаштування</string>
+  <string name="id_twofactor_threshold">Двофакторний поріг</string>
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Не вдалося зв\'язатися зі службою підтримки Green. Перевірте підключення до мережі і дочекайтеся повторного підключення.</string>
   <string name="id_unconfirmed">Не підтверджена</string>
@@ -396,6 +397,7 @@
   <string name="id_version_1s_2s">Версія %1$s %2$s</string>
   <string name="id_view_in_explorer">Переглянути Оглядач</string>
   <string name="id_waiting_for_transaction">Очікування транзакції...</string>
+  <string name="id_wallet_creation_failed">Wallet creation failed</string>
   <string name="id_wallets">Гаманці</string>
   <string name="id_warning">Увага!</string>
   <string name="id_warning_nononion_address">Увага! Адреса не містить .onion!</string>
@@ -432,8 +434,8 @@
   <string name="id_your_notifications_will_be">Ваші повідомлення будуть відображені тут.</string>
   <string name="id_your_pin_or_your_mnemonic_will">Для доступу до гаманця потрібен PIN-код або мнемонічна фраза.</string>
   <string name="id_your_s_sent_to_s_has_been">Ваша %s надіслана на %s підтверджена</string>
-  <string name="id_your_spending_limit_is_s">Ваш ліміт витрат складає %s.</string>
   <string name="id_your_transactions_will_be_shown">Ваші транзакції будуть показані тут.</string>
+  <string name="id_your_twofactor_threshold_is_s">Your Two-Factor threshold is %s.</string>
   <string name="id_your_wallet_is_not_yet_fully">Ваш гаманець не захищений.\nБудь ласка, увімкніть двофакторну аутентифікацію.</string>
   <string name="id_your_watchonly_username_will_be">Ім’я користувача вашого холодного гаманця буде зберігатися у незашифрованому вигляді на цьому пристрої. Якщо ваш пристрій буде скомпрометовано, ваші транзакції можуть переглядатись третіми особами. Натисніть "OK", щоб продовжити.</string>
 </resources>

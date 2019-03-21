@@ -589,7 +589,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             try {
                 final boolean isFiat = limitsData.get("is_fiat").asBoolean();
                 if (!isFiat && limitsData.get("satoshi").asLong(0) == 0) {
-                    mLimitsPref.setSummary(R.string.id_set_up_spending_limit);
+                    mLimitsPref.setSummary(R.string.id_set_twofactor_threshold);
                 } else {
                     final String limit = mService.getValueString(limitsData, isFiat, true);
                     mLimitsPref.setSummary(limit);
@@ -625,7 +625,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         amountEdit.selectAll();
 
         final MaterialDialog dialog;
-        dialog = UI.popup(getActivity(), R.string.id_set_up_spending_limit)
+        dialog = UI.popup(getActivity(), R.string.id_set_twofactor_threshold)
                  .cancelable(false)
                  .customView(v, true)
                  .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
