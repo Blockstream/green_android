@@ -86,14 +86,6 @@ android {
             minSdkVersion 21
         }
     }
-
-    sourceSets {
-        production_21 {
-            java { srcDir 'src/production/java' }
-            assets { srcDir 'src/production/assets' }
-        }
-     }
-
     dexOptions {
         maxProcessCount 2
         javaMaxHeapSize "2048M"
