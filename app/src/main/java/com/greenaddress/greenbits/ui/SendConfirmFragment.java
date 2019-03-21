@@ -31,7 +31,6 @@ import java.util.ArrayList;
 public class SendConfirmFragment extends GAFragment {
     private static final String TAG = SendConfirmFragment.class.getSimpleName();
 
-    private CreateTransactionData mTxData;
     private HWDeviceData mHwData;
     private View mView;
 
@@ -56,6 +55,7 @@ public class SendConfirmFragment extends GAFragment {
 
         final ObjectMapper mObjectMapper = new ObjectMapper();
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        final CreateTransactionData mTxData;
         try {
             mTxData = mObjectMapper.readValue(tx_json, CreateTransactionData.class);
             if (hww_json != null)
