@@ -13,8 +13,6 @@ android {
         exclude 'lib/x86_64/darwin/libscrypt.dylib'
         exclude 'org/bitcoinj/crypto/mnemonic/wordlist/english.txt'
         exclude 'org/bitcoinj/crypto/cacerts'
-        exclude 'org.bitcoin.production.checkpoints.txt'
-        exclude 'org.bitcoin.test.checkpoints.txt'
         exclude 'org/codehaus/jackson/impl/VERSION.txt'
         exclude 'org/codehaus/jackson/map/VERSION.txt'
         exclude 'org/fusesource/leveldbjni/version.txt'
