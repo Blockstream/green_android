@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
@@ -107,7 +108,10 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
         onLoginBegin();
 
-        mService.getExecutor().execute(() -> connectionManager.loginWatchOnly(username, password));
+        mService.getExecutor().execute(() -> {
+            mService.resetSession();
+            connectionManager.loginWatchOnly(username, password);
+        });
 
     }
 
@@ -129,8 +133,15 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
     @Override
     protected void onLoginFailure() {
+        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
+        mService.getConnectionManager().clearPreviousLoginError();
+        final int code = getCode(lastLoginException);
         onLoginStop();
-        mPasswordText.setError(getString(R.string.id_user_not_found_or_invalid));
+        if (code == GDK.GA_RECONNECT) {
+            mPasswordText.setError(getString(R.string.id_you_are_not_connected_to_the));
+        } else {
+            mPasswordText.setError(getString(R.string.id_user_not_found_or_invalid));
+        }
     }
 
     @Override
