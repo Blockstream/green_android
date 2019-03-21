@@ -42,6 +42,7 @@
                     android:id="@+id/prefix"
                     android:ems="10"
                     android:singleLine="true"
+                    android:inputType="phone"
                     android:hint="+1"/>
                 <EditText
                     android:layout_width="0dp"
