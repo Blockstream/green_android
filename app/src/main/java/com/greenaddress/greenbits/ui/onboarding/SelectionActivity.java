@@ -161,6 +161,9 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
 
     @Override
     public void onClick(final View view) {
+        if (isLoading()) {
+            return;
+        }
         final int selected = mSectionsPagerAdapter.getSelected();
         final String wordExpected = mSectionsPagerAdapter.getFragment(selected)
                                     .getArguments().getString("word");
