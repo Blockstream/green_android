@@ -5,7 +5,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -17,13 +16,10 @@ import java.util.Observer;
 
 public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClickListener, Observer {
 
-    private final static String CFG = "WATCH_ONLY_CREDENTIALS";
-
     private EditText mUsernameText;
     private EditText mPasswordText;
     private CircularButton mLoginButton;
     private SwitchCompat mRememberSwitch;
-
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -41,7 +37,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         mLoginButton.setOnClickListener(this);
 
         final TextView.OnEditorActionListener listener;
-        listener = UI.getListenerRunOnEnter(new Runnable() { public void run() { onLoginButtonClicked(); } });
+        listener = UI.getListenerRunOnEnter(this::onLoginButtonClicked);
         mPasswordText.setOnEditorActionListener(listener);
 
         final String username = mService.cfg().getString(PrefKeys.WATCH_ONLY_USERNAME, "");
@@ -51,22 +47,19 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         if (haveUser && mPasswordText.requestFocus())
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
-        mRememberSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
-                if (!isChecked) {
-                    mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, "").apply();
-                    return;
-                }
-
-                UI.popup(WatchOnlyLoginActivity.this, R.string.id_warning_the_username_will_be)
-                .content(R.string.id_your_watchonly_username_will_be)
-                .canceledOnTouchOutside(false)
-                .onNegative((dlg, which) -> mRememberSwitch.setChecked(false))
-                .onPositive((dlg,
-                             which) -> mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, UI.getText(
-                                                                        mUsernameText)).apply()).build().show();
+        mRememberSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (!isChecked) {
+                mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, "").apply();
+                return;
             }
+
+            UI.popup(WatchOnlyLoginActivity.this, R.string.id_warning_the_username_will_be)
+            .content(R.string.id_your_watchonly_username_will_be)
+            .canceledOnTouchOutside(false)
+            .onNegative((dlg, which) -> mRememberSwitch.setChecked(false))
+            .onPositive((dlg,
+                         which) -> mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, UI.getText(
+                                                                    mUsernameText)).apply()).build().show();
         });
     }
 

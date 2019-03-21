@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,7 +13,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
@@ -23,7 +20,6 @@ import com.btchip.BTChipDongle.BTChipFirmware;
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
-import com.btchip.comm.android.BTChipTransportAndroidNFC;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.ConnectionManager;
@@ -37,14 +33,9 @@ import java.util.List;
 import java.util.Observer;
 import java.util.concurrent.Callable;
 
-import nordpol.android.AndroidCard;
-import nordpol.android.OnDiscoveredTagListener;
-import nordpol.android.TagDispatcher;
-
-public class RequestLoginActivity extends LoginActivity implements Observer, OnDiscoveredTagListener {
+public class RequestLoginActivity extends LoginActivity implements Observer {
 
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
-    private static final byte DUMMY_COMMAND[] = { (byte)0xE0, (byte)0xC4, (byte)0x00, (byte)0x00, (byte)0x00 };
 
     private static final int VENDOR_BTCHIP    = 0x2581;
     private static final int VENDOR_LEDGER    = 0x2c97;
@@ -61,10 +52,6 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
     private Boolean mInLedgerDashboard;
 
     private HWWallet mHwWallet;
-    private TagDispatcher mTagDispatcher;
-    private Tag mTag;
-    private SettableFuture<BTChipTransport> mTransportFuture;
-    private MaterialDialog mNfcWaitDialog;
     private HWDeviceData mHwDeviceData;
     private CodeResolver mHwResolver;
     private TextView mActiveNetwork;
@@ -118,16 +105,15 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
                 // Prompt for PIN to unlock device before setting it up
                 showPinDialog();
             }
-            return;
         }
     }
 
-    private boolean onTrezor() {
+    private void onTrezor() {
         final Trezor t;
         t = Trezor.getDevice(this);
 
         if (t == null)
-            return false;
+            return;
 
         final List<Integer> version = t.getFirmwareVersion();
         final int vendorId = t.getVendorId();
@@ -135,7 +121,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
 
         if (version.get(0) == 2) {
             showInstructions(R.string.id_the_hardware_wallet_you_are);
-            return false;
+            return;
         }
 
         final boolean isFirmwareOutdated = version.get(0) < 1 ||
@@ -144,12 +130,11 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
 
         if (!isFirmwareOutdated) {
             onTrezorConnected(t);
-            return true;
+            return;
         }
 
         showFirmwareOutdated(R.string.id_outdated_hardware_wallet,
-                             new Runnable() { public void run() { onTrezorConnected(t); } });
-        return true;
+                             () -> onTrezorConnected(t));
     }
 
     private void onTrezorConnected(final Trezor t) {
@@ -171,22 +156,13 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
         mPinDialog = UI.popup(this, R.string.id_pin)
                      .customView(v, true)
                      .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
-                     .onPositive(new MaterialDialog.SingleButtonCallback() {
-            @Override
-            public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                mPin = UI.getText(v, R.id.btchipPINValue);
-                mService.getExecutor().submit(new Callable<Void>() {
-                    @Override
-                    public Void call() { onLedger(false); return null; }
-                });
-            }
+                     .onPositive((dialog, which) -> {
+            mPin = UI.getText(v, R.id.btchipPINValue);
+            mService.getExecutor().submit((Callable<Void>)() -> { onLedger(false); return null; });
         })
-                     .onNegative(new MaterialDialog.SingleButtonCallback() {
-            @Override
-            public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                toast(R.string.id_no_pin_provided_exiting);
-                finish();
-            }
+                     .onNegative((dialog, which) -> {
+            toast(R.string.id_no_pin_provided_exiting);
+            finish();
         }).build();
 
         UI.mapEnterToPositive(mPinDialog, R.id.btchipPINValue);
@@ -209,18 +185,6 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
                 showInstructions(R.string.id_please_reconnect_your_hardware);
                 return;
             }
-        } else if ((transport = getTransport(mTag)) == null) {
-            showInstructions(R.string.id_please_follow_the_instructions);
-
-            // Prompt the user to tap
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    mNfcWaitDialog = new MaterialDialog.Builder(RequestLoginActivity.this)
-                                     .title(R.string.btchip).content(R.string.id_please_tap_card).build();
-                    mNfcWaitDialog.show();
-                }
-            });
-            return;
         }
 
         transport.setDebug(BuildConfig.DEBUG);
@@ -249,7 +213,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
             }
 
             showFirmwareOutdated(R.string.id_outdated_hardware_wallet,
-                                 new Runnable() { public void run() { onLedgerConnected(dongle, pin); } });
+                                 () -> onLedgerConnected(dongle, pin));
         } catch (final BTChipException e) {
             if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
                 e.printStackTrace();
@@ -315,18 +279,11 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
     public void onResumeWithService() {
         super.onResumeWithService();
         mActiveNetwork.setText(getString(R.string.id_s_network, mService.getNetwork().getName()));
-        mTagDispatcher = TagDispatcher.get(this, this);
-        mTagDispatcher.enableExclusiveNfc();
 
         final Intent intent = getIntent();
-        mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(intent.getAction())) {
             onUsbAttach(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
-        } else {
-            if (mTag != null && NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
-                onUsbAttach(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
-            }
         }
 
         if (mUsb != null || mInLedgerDashboard) {
@@ -342,61 +299,10 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
             startActivityForResult(new Intent(this, MnemonicActivity.class), 0);
     }
 
-    @Override
-    public void onPauseWithService() {
-        super.onPauseWithService();
-        mTagDispatcher.disableExclusiveNfc();
-    }
-
-    private BTChipTransport getTransport(final Tag t) {
-        BTChipTransport transport = null;
-        if (t != null) {
-            AndroidCard card = null;
-            Log.d(TAG, "Start checking NFC transport");
-            try {
-                card = AndroidCard.get(t);
-                transport = new BTChipTransportAndroidNFC(card);
-                transport.setDebug(BuildConfig.DEBUG);
-                transport.exchange(DUMMY_COMMAND).get();
-                Log.d(TAG, "NFC transport checked");
-            } catch (final Exception e) {
-                Log.d(TAG, "Tag was lost", e);
-                if (card != null) {
-                    try {
-                        transport.close();
-                    } catch (final Exception e1) {}
-                    transport = null;
-                }
-            }
-        }
-        return transport;
-    }
-
-    @Override
-    public void tagDiscovered(final Tag t) {
-        Log.d(TAG, "tagDiscovered " + t);
-        mTag = t;
-        if (mTransportFuture == null)
-            return;
-
-        final BTChipTransport transport = getTransport(t);
-        if (transport == null)
-            return;
-
-        if (mTransportFuture.set(transport)) {
-            if (mNfcWaitDialog == null)
-                return;
-
-            runOnUiThread(new Runnable() { public void run() { mNfcWaitDialog.hide(); } });
-        }
-    }
-
     private void showInstructions(final int resId) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                mInstructionsText.setText(resId);
-                UI.show(mInstructionsText);
-            }
+        runOnUiThread(() -> {
+            mInstructionsText.setText(resId);
+            UI.show(mInstructionsText);
         });
     }
 
@@ -409,23 +315,13 @@ public class RequestLoginActivity extends LoginActivity implements Observer, OnD
             return;
         }
 
-        final Runnable closeCB = new Runnable() {
-            public void run() { finishOnUiThread(); }
-        };
-        runOnUiThread(new Runnable() {
-            public void run() {
-                final MaterialDialog d;
-                d = UI.popup(RequestLoginActivity.this, R.string.id_warning, R.string.id_continue, R.string.id_cancel)
-                    .content(resId)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dialog, final DialogAction which) {
-                        onContinue.run();
-                    }
-                }).build();
-                UI.setDialogCloseHandler(d, closeCB);
-                d.show();
-            }
+        runOnUiThread(() -> {
+            final MaterialDialog d;
+            d = UI.popup(RequestLoginActivity.this, R.string.id_warning, R.string.id_continue, R.string.id_cancel)
+                .content(resId)
+                .onPositive((dialog, which) -> onContinue.run()).build();
+            UI.setDialogCloseHandler(d, this::finishOnUiThread);
+            d.show();
         });
     }
 }

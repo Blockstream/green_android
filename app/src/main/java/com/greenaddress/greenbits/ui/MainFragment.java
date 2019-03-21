@@ -27,7 +27,6 @@ import org.bitcoinj.core.Sha256Hash;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observer;
@@ -54,7 +53,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             return null;
 
         final GaService service = getGAService();
-        popupWaitDialog(R.string.id_loading_transactions);
 
         mView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -73,13 +71,10 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         // txView.swapAdapter(lta, false);
         mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.accent));
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Log.d(TAG, "onRefresh -> " + TAG);
-                final int subaccount = service.getModel().getCurrentSubaccount();
-                service.getModel().getTransactionDataObservable(subaccount).refresh();
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            Log.d(TAG, "onRefresh -> " + TAG);
+            final int subaccount = service.getModel().getCurrentSubaccount();
+            service.getModel().getTransactionDataObservable(subaccount).refresh();
         });
 
         // Setup account card view
@@ -133,8 +128,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     // Called when a new verified transaction is seen
     @Override
     public void onVerifiedTx(final Observer observer) {
-        if (mTxItems == null)
-            return;
 
         final GaService service = getGAService();
         final boolean isSPVEnabled = service.isSPVEnabled();
@@ -166,11 +159,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         setIsDirty(false);
 
         txView = UI.find(mView, R.id.mainTransactionList);
-
-        if (mTxItems == null || mTxItems.isEmpty() || showWaitDialog) {
-            // Show a wait dialog only when initially loading transactions
-            popupWaitDialog(R.string.id_loading_transactions);
-        }
 
         if (replacedTxs == null)
             replacedTxs = new HashMap<>();
@@ -211,9 +199,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                 }
             }
 
-            final Iterator<TransactionItem> iterator = mTxItems.iterator();
-            while (iterator.hasNext()) {
-                final TransactionItem txItem = iterator.next();
+            for (final TransactionItem txItem : mTxItems) {
                 if (replacedTxs.containsKey(txItem.txHash))
                     txItem.replacedHashes.addAll(replacedTxs.get(txItem.txHash));
             }
@@ -225,11 +211,9 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                 // A new tx has arrived; scroll to the top to show it
                 txView.smoothScrollToPosition(0);
             }
-            hideWaitDialog();
 
         } catch (final Exception e) {
             e.printStackTrace();
-            hideWaitDialog();
             if (mSwipeRefreshLayout != null)
                 mSwipeRefreshLayout.setRefreshing(false);
         }
@@ -286,13 +270,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     }
 
     @Override
-    public void onUpdateReceiveAddress(final ReceiveAddressObservable observable) {
-        Log.d(TAG, "Updating receive address");
-        final String currentAddress = observable.getReceiveAddress();
-        if (isZombie() || currentAddress == null)
-            return;
-
-    }
+    public void onUpdateReceiveAddress(final ReceiveAddressObservable observable) {}
 
     @Override
     public void onUpdateTransactions(final TransactionDataObservable observable) {
@@ -321,12 +299,12 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
     private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
             super.onScrollStateChanged(recyclerView, newState);
         }
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
             super.onScrolled(recyclerView, dx, dy);
             int visibleItemCount = mLayoutManager.getChildCount();
             int totalItemCount = mLayoutManager.getItemCount();

@@ -92,20 +92,18 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         }
         mService.getConnectionManager().clearPreviousLoginError();
 
-        PinActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
-                PinActivity.this.toast(message);
+        PinActivity.this.runOnUiThread(() -> {
+            PinActivity.this.toast(message);
 
-                if (counter >= 3) {
-                    startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
-                    finish();
-                    return;
-                }
-                stopLoading();
-                if (mPinFragment != null) {
-                    mPinFragment.clear();
-                    mPinFragment.setEnabled(true);
-                }
+            if (counter >= 3) {
+                startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
+                finish();
+                return;
+            }
+            stopLoading();
+            if (mPinFragment != null) {
+                mPinFragment.clear();
+                mPinFragment.setEnabled(true);
             }
         });
 

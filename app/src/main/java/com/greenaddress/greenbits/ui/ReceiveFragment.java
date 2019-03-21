@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -34,15 +33,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Observer;
 
-import nordpol.android.OnDiscoveredTagListener;
-import nordpol.android.TagDispatcher;
 
-
-public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredTagListener,
+public class ReceiveFragment extends SubaccountFragment implements
     CurrencyView.OnConversionFinishListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
-    private TagDispatcher mTagDispatcher;
     private TextView mAddressText;
     private ImageView mAddressImage;
     private CurrencyView mCurrency;
@@ -71,8 +66,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
         if (mCurrency != null)
             mCurrency.setIsPausing(true);
         Log.d(TAG, "onPause -> " + TAG);
-        if (mTagDispatcher != null)
-            mTagDispatcher.disableExclusiveNfc();
     }
 
     @Override
@@ -82,11 +75,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
 
         if (isZombieNoView())
             return null;
-
-        final GaActivity gaActivity = getGaActivity();
-
-        mTagDispatcher = TagDispatcher.get(gaActivity, this);
-        mTagDispatcher.enableExclusiveNfc();
 
         mView = inflater.inflate(R.layout.fragment_receive, container, false);
 
@@ -191,11 +179,6 @@ public class ReceiveFragment extends SubaccountFragment implements OnDiscoveredT
                 mAddressText.setOnClickListener((final View v) -> onCopyClicked());
             }
         }
-    }
-
-    @Override
-    public void tagDiscovered(final Tag t) {
-        Log.d(TAG, "Tag discovered " + t);
     }
 
     @Override

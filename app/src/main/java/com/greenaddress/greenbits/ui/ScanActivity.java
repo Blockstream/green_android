@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -16,12 +15,10 @@ import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
-import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -66,12 +63,9 @@ import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_U
 
 public class ScanActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
     TextWatcher {
-    private static final String TAG = ScanActivity.class.getSimpleName();
 
-    public static final String INTENT_EXTRA_RESULT = "com.greenaddress.greenbits.QrText";
     public static final String INTENT_STRING_TX = "intent_string_tx";
 
-    private static final long VIBRATE_DURATION = 50L;
     private static final long AUTO_FOCUS_INTERVAL_MS = 2500L;
 
     private final CameraManager cameraManager = new CameraManager();
@@ -84,19 +78,11 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     private volatile boolean surfaceCreated = false;
     private Animator sceneTransition = null;
 
-    private Vibrator vibrator;
     private HandlerThread cameraThread;
     private volatile Handler cameraHandler;
-    private String mAction;
 
     private static final int DIALOG_CAMERA_PROBLEM = 0;
 
-    private static boolean DISABLE_CONTINUOUS_AUTOFOCUS = Build.MODEL.equals("GT-I9100") // Galaxy S2
-                                                          || Build.MODEL.equals("SGH-T989") // Galaxy S2
-                                                          || Build.MODEL.equals("SGH-T989D") // Galaxy S2 X
-                                                          || Build.MODEL.equals("SAMSUNG-SGH-I727") // Galaxy S2 Skyrocket
-                                                          || Build.MODEL.equals("GT-I9300") // Galaxy S3
-                                                          || Build.MODEL.equals("GT-N7000"); // Galaxy Note
 
     private static final Logger log = LoggerFactory.getLogger(ScanActivity.class);
 
@@ -105,14 +91,10 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         super.onCreate(savedInstanceState);
         UI.preventScreenshots(this);
 
-        mAction = getIntent().getAction();
-
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
-
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         // Stick to the orientation the activity was started with. We cannot declare this in the
         // AndroidManifest.xml, because it's not allowed in combination with the windowIsTranslucent=true
@@ -239,9 +221,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     public void onSurfaceTextureUpdated(final SurfaceTexture surface) {}
 
     @Override
-    public void onAttachedToWindow() {
-        //setShowWhenLocked(true);
-    }
+    public void onAttachedToWindow() {}
 
     @Override
     public void onBackPressed() {
@@ -259,27 +239,12 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
             return true;
         case KeyEvent.KEYCODE_VOLUME_DOWN:
         case KeyEvent.KEYCODE_VOLUME_UP:
-            cameraHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    cameraManager.setTorch(keyCode == KeyEvent.KEYCODE_VOLUME_UP);
-                }
-            });
+            cameraHandler.post(() -> cameraManager.setTorch(keyCode == KeyEvent.KEYCODE_VOLUME_UP));
             return true;
         }
 
         return super.onKeyDown(keyCode, event);
     }
-
-    private void postFinish() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 50);
-    }
-
 
     private final Runnable openRunnable = new Runnable() {
         @Override
@@ -293,13 +258,10 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 final boolean cameraFlip = cameraManager.getFacing() == Camera.CameraInfo.CAMERA_FACING_FRONT;
                 final int cameraRotation = cameraManager.getOrientation();
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        scannerView.setFraming(framingRect, framingRectInPreview, displayRotation(), cameraRotation,
-                                               cameraFlip);
-                    }
-                });
+                runOnUiThread(() ->
+                              scannerView.setFraming(framingRect, framingRectInPreview, displayRotation(),
+                                                     cameraRotation,
+                                                     cameraFlip));
 
                 final String focusMode = camera.getParameters().getFocusMode();
                 final boolean nonContinuousAutoFocus = Camera.Parameters.FOCUS_MODE_AUTO.equals(focusMode)
@@ -312,12 +274,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 cameraHandler.post(fetchAndDecodeRunnable);
             } catch (final Exception x) {
                 log.info("problem opening camera", x);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showDialog(DIALOG_CAMERA_PROBLEM);
-                    }
-                });
+                runOnUiThread(() -> showDialog(DIALOG_CAMERA_PROBLEM));
             }
         }
 
@@ -358,7 +315,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     private final class AutoFocusRunnable implements Runnable {
         private final Camera camera;
 
-        public AutoFocusRunnable(final Camera camera) {
+        AutoFocusRunnable(final Camera camera) {
             this.camera = camera;
         }
 
@@ -479,14 +436,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         @Override
         public void run()
         {
-            cameraManager.requestPreviewFrame(new Camera.PreviewCallback()
-            {
-                @Override
-                public void onPreviewFrame(final byte[] data, final Camera camera)
-                {
-                    decode(data);
-                }
-            });
+            cameraManager.requestPreviewFrame((data, camera) -> decode(data));
         }
 
         private void decode(final byte[] data)
@@ -495,21 +445,8 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
             final BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
             try {
-                hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, new ResultPointCallback()
-                {
-                    @Override
-                    public void foundPossibleResultPoint(final ResultPoint dot)
-                    {
-                        runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                scannerView.addDot(dot);
-                            }
-                        });
-                    }
-                });
+                hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK,
+                          (ResultPointCallback) dot -> runOnUiThread(() -> scannerView.addDot(dot)));
                 final Result scanResult = reader.decode(bitmap, hints);
 
                 final int thumbnailWidth = source.getThumbnailWidth();
@@ -521,14 +458,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 thumbnailImage.setPixels(
                     source.renderThumbnail(), 0, thumbnailWidth, 0, 0, thumbnailWidth, thumbnailHeight);
 
-                runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        handleResult(scanResult, thumbnailImage, thumbnailScaleFactor);
-                    }
-                });
+                runOnUiThread(() -> handleResult(scanResult, thumbnailImage, thumbnailScaleFactor));
             } catch (final ReaderException x) {
                 // retry
                 cameraHandler.post(fetchAndDecodeRunnable);

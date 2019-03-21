@@ -51,7 +51,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -64,11 +63,9 @@ public class GaService extends Service  {
     private ConnectionManager mConnectionManager;
     private GDKSession mSession;
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
-    private BroadcastReceiver mNetConnectivityReceiver;
 
     private String mSignUpMnemonic;
     private Bitmap mSignUpQRCode;
-    private String mDeviceId;
     private boolean pinJustSaved = false;
 
     private final SPV mSPV = new SPV(this);
@@ -139,14 +136,14 @@ public class GaService extends Service  {
 
     public void onBound(final GreenAddressApplication app) {
         // Update our state when network connectivity changes.
-        mNetConnectivityReceiver = new BroadcastReceiver() {
+        final BroadcastReceiver netConnectivityReceiver = new BroadcastReceiver() {
             public void onReceive(final Context context, final Intent intent) {
                 onNetConnectivityChanged();
             }
         };
-        app.registerReceiver(mNetConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        app.registerReceiver(netConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         // Fire a fake connectivity change to kick start the state machine
-        mNetConnectivityReceiver.onReceive(null, null);
+        netConnectivityReceiver.onReceive(null, null);
     }
 
     public ListeningExecutorService getExecutor() {
@@ -260,11 +257,6 @@ public class GaService extends Service  {
 
     public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
     public int getSPVHeight() { return mSPV.getSPVHeight(); }
-    public int getSPVBlocksRemaining() { return mSPV.getSPVBlocksRemaining(); }
-    public Coin getSPVVerifiedBalance(final int subAccount) {
-        final Coin balance = mSPV.getVerifiedBalance(subAccount);
-        return balance == null ? Coin.ZERO : balance;
-    }
 
     public boolean isSPVVerified(final Sha256Hash txHash) { return mSPV.isVerified(txHash); }
 
@@ -290,11 +282,11 @@ public class GaService extends Service  {
         }
         mConnectionManager = new ConnectionManager(mSession, mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
 
-        mDeviceId = cfg().getString(PrefKeys.DEVICE_ID, null);
-        if (mDeviceId == null) {
+        String deviceId = cfg().getString(PrefKeys.DEVICE_ID, null);
+        if (deviceId == null) {
             // Generate a unique device id
-            mDeviceId = UUID.randomUUID().toString();
-            cfgEdit().putString(PrefKeys.DEVICE_ID, mDeviceId).apply();
+            deviceId = UUID.randomUUID().toString();
+            cfgEdit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
         }
 
         mTimerExecutor.scheduleWithFixedDelay(this::checkDisconnect, 5,5, TimeUnit.SECONDS);
@@ -379,7 +371,7 @@ public class GaService extends Service  {
     private void initSettings() {
         final Observer observer = new Observer() {
             @Override
-            public void update(Observable observable, Object o) {
+            public void update(final Observable observable, final Object o) {
                 if (observable instanceof SettingsObservable) {
                     Log.d(TAG,"initSettings");
                     final SettingsData settings = ((SettingsObservable) observable).getSettings();
@@ -414,18 +406,15 @@ public class GaService extends Service  {
     }
 
     public ListenableFuture<Void> setPin(final String mnemonic, final String pin) {
-        return mExecutor.submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                final PinData pinData = mSession.setPin(mnemonic, pin, "default");
-                cfgPin().edit().putString("ident", pinData.getPinIdentifier())
-                        .putString("encrypted", pinData.getEncryptedGB())
-                        .putInt("counter", 0)
-                        .putBoolean("is_six_digit", pin.length() == 6)
-                        .apply();
-                setPinJustSaved(true);
-                return null;
-            }
+        return mExecutor.submit(() -> {
+            final PinData pinData = mSession.setPin(mnemonic, pin, "default");
+            cfgPin().edit().putString("ident", pinData.getPinIdentifier())
+                    .putString("encrypted", pinData.getEncryptedGB())
+                    .putInt("counter", 0)
+                    .putBoolean("is_six_digit", pin.length() == 6)
+                    .apply();
+            setPinJustSaved(true);
+            return null;
         });
     }
 
@@ -466,13 +455,6 @@ public class GaService extends Service  {
 
     public BalanceData getBalanceData(final int subAccount) {
         return getModel().getBalanceDataObservable(subAccount).getBalanceData();
-    }
-
-    public Coin getCoinBalance(final int subAccount) {
-        BalanceData balanceData = getBalanceData(subAccount);
-        if (balanceData != null)
-            return balanceData.getSatoshiAsCoin();
-        return null;
     }
 
     public Fiat coinToFiat(final Coin btcValue) {

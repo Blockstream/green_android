@@ -51,16 +51,13 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     BottomNavigationView.OnNavigationItemSelectedListener  {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
-    private static final int REQUEST_ENABLE_2FA = 0;
 
     public static final int
-        REQUEST_SEND_QR_SCAN = 0,
         REQUEST_BITCOIN_URL_LOGIN = 1,
         REQUEST_TX_DETAILS = 2,
         REQUEST_BITCOIN_URL_SEND = 3;
     private ViewPager mViewPager;
     private BottomNavigationView mNavigation;
-    private Boolean mInternalQr = false;
     private MaterialDialog mSubaccountDialog;
     private boolean mIsBitcoinUri = false;
     private Snackbar mSnackbar;
@@ -89,9 +86,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         if (mIsBitcoinUri && !isResetActive) {
             // If logged in, open send activity
             onBitcoinUri();
-            return;
         }
-
     }
 
     private void onBitcoinUri() {
@@ -136,8 +131,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             public void onInput(@NonNull final MaterialDialog dialog, final CharSequence input) {
                 createSubaccount(input.toString(), "2of2");
             }
-        })
-                            .show();
+        }).show();
     }
 
     private void createSubaccount(final String name, final String type) {
@@ -167,8 +161,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         mSnackbar = Snackbar.make(findViewById(
                                       R.id.placeSnackBar), R.string.id_you_are_not_connected,
                                   Snackbar.LENGTH_INDEFINITE);
-        View snackbarView = mSnackbar.getView();
-        TextView textView = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        final View snackbarView = mSnackbar.getView();
+        final TextView textView = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.RED);
         mSnackbar.setAction(R.string.id_try_now, v -> mService.getSession().reconnectNow());
 
@@ -252,8 +246,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        final TabbedMainActivity caller = TabbedMainActivity.this;
-
         switch (requestCode) {
         case REQUEST_BITCOIN_URL_SEND:
             mIsBitcoinUri = false;
@@ -331,7 +323,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
     private void updateSnackBar(final ConnectionMessageObservable cmo) {
         if (cmo.isOffline()) {
-            TextView text = mSnackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+            final TextView text = mSnackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
             runOnUiThread(() -> text.setText(cmo.getMessage(getResources())));
             mSnackbar.show();
         } else {
@@ -355,11 +347,11 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
      */
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
         private final Fragment[] mFragments = new Fragment[3];
-        public int mSelectedPage = -1;
+        int mSelectedPage = -1;
         private int mInitialSelectedPage = -1;
         private boolean mInitialPage = true;
 
-        public SectionsPagerAdapter(final FragmentManager fm) {
+        SectionsPagerAdapter(final FragmentManager fm) {
             super(fm);
         }
 
@@ -429,7 +421,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             return null;
         }
 
-        public void onViewPageSelected(final int index) {
+        void onViewPageSelected(final int index) {
             mService.rescheduleDisconnect();
             Log.d(TAG, "SectionsPagerAdapter -> onViewPageSelected " + index +
                   " current is " + mSelectedPage + " initial " + mInitialPage);

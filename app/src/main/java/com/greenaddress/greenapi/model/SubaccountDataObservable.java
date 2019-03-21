@@ -15,18 +15,16 @@ public class SubaccountDataObservable extends Observable {
     private List<SubaccountData> mSubaccountData;
     private GDKSession mSession;
     private ListeningExecutorService mExecutor;
-    private SparseArray<TransactionDataObservable> mTransactionDataObservables = new SparseArray<>();
-    private SparseArray<TransactionDataObservable> mUTXODataObservables = new SparseArray<>();
-    private SparseArray<ReceiveAddressObservable> mReceiveAddressObservables = new SparseArray<>();
-    private SparseArray<BalanceDataObservable> mBalanceDataObservables = new SparseArray<>();
+    private SparseArray<TransactionDataObservable> mTransactionDataObservables;
+    private SparseArray<TransactionDataObservable> mUTXODataObservables;
+    private SparseArray<ReceiveAddressObservable> mReceiveAddressObservables;
+    private SparseArray<BalanceDataObservable> mBalanceDataObservables;
     private ActiveAccountObservable mActiveAccountObservable;
     private BlockchainHeightObservable mBlockchainHeightObservable;
 
-    private SubaccountDataObservable() {}
-
-    public SubaccountDataObservable(final GDKSession session,
-                                    final ListeningExecutorService executor,
-                                    final Model model) {
+    SubaccountDataObservable(final GDKSession session,
+                             final ListeningExecutorService executor,
+                             final Model model) {
         mSession = session;
         mExecutor = executor;
         mTransactionDataObservables = model.getTransactionDataObservables();
@@ -95,14 +93,14 @@ public class SubaccountDataObservable extends Observable {
         return null;
     }
 
-    public void setSubaccountData(final List<SubaccountData> subaccountData) {
+    private void setSubaccountData(final List<SubaccountData> subaccountData) {
         Log.d("OBS", "setSubaccountData(" + subaccountData +")");
         this.mSubaccountData = subaccountData;
         setChanged();
         notifyObservers();
     }
 
-    public void add(SubaccountData newSubAccount) {
+    public void add(final SubaccountData newSubAccount) {
         mSubaccountData.add(newSubAccount);
         final Integer newPointer = newSubAccount.getPointer();
         initObservables(newPointer);

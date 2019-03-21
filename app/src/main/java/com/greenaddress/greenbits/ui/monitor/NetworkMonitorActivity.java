@@ -48,12 +48,10 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
         mPeerList.setEmptyView(UI.find(this, R.id.empty_list_view));
 
         mRefreshHandler = new Handler();
-        mRefreshCallback = new Runnable() {
-            public void run() {
-                // Redraw the list view and update again in 2 seconds
-                mPeerListAdapter.notifyDataSetChanged();
-                mRefreshHandler.postDelayed(mRefreshCallback, 2000);
-            }
+        mRefreshCallback = () -> {
+            // Redraw the list view and update again in 2 seconds
+            mPeerListAdapter.notifyDataSetChanged();
+            mRefreshHandler.postDelayed(mRefreshCallback, 2000);
         };
     }
 
@@ -115,25 +113,21 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
 
     @Override
     public synchronized void onPeerConnected(final Peer peer, final int peerCount) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                mPeers.add(new PrettyPeer(peer));
-                mPeerListAdapter.notifyDataSetChanged();
-                mBloomInfoText.setText(peer.getBloomFilter().toString());
-            }
+        runOnUiThread(() -> {
+            mPeers.add(new PrettyPeer(peer));
+            mPeerListAdapter.notifyDataSetChanged();
+            mBloomInfoText.setText(peer.getBloomFilter().toString());
         });
     }
 
     @Override
     public synchronized void onPeerDisconnected(final Peer peer, final int peerCount) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                for (final Iterator<PrettyPeer> it = mPeers.iterator(); it.hasNext(); ) {
-                    if (peer == it.next().mPeer)
-                        it.remove();
-                }
-                mPeerListAdapter.notifyDataSetChanged();
+        runOnUiThread(() -> {
+            for (final Iterator<PrettyPeer> it = mPeers.iterator(); it.hasNext(); ) {
+                if (peer == it.next().mPeer)
+                    it.remove();
             }
+            mPeerListAdapter.notifyDataSetChanged();
         });
     }
 
@@ -144,11 +138,9 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
             final String peerGroupIntent = intent.getExtras().getString("peergroup");
             if (peerGroupIntent == null || !peerGroupIntent.equals("stopSPVSync"))
                 return;
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    mPeers.clear();
-                    mPeerListAdapter.notifyDataSetChanged();
-                }
+            runOnUiThread(() -> {
+                mPeers.clear();
+                mPeerListAdapter.notifyDataSetChanged();
             });
         }
     };
@@ -156,7 +148,7 @@ public final class NetworkMonitorActivity extends GaActivity implements PeerConn
     private class PrettyPeer {
         final Peer mPeer;
 
-        public PrettyPeer(final Peer peer) {
+        PrettyPeer(final Peer peer) {
             mPeer = peer;
         }
 

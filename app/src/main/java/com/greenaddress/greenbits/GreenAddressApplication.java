@@ -28,7 +28,6 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
 
-    private ServiceConnection mConnection;
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
 
@@ -91,12 +90,12 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
 
         Log.d(TAG, "onCreate: binding service");
-        mConnection = new ServiceConnection() {
+        final ServiceConnection connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(final ComponentName className,
                                            final IBinder service) {
                 Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
-                mService = ((GaService.GaBinder)service).getService();
+                mService = ((GaService.GaBinder) service).getService();
                 mService.onBound(GreenAddressApplication.this);
                 onServiceAttached.set(null);
             }
@@ -109,7 +108,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         };
 
         final Intent intent = new Intent(this, GaService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     private static AtomicBoolean isRunningTest;

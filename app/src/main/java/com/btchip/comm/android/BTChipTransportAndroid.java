@@ -40,8 +40,6 @@ import com.btchip.comm.BTChipTransportFactoryCallback;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import nordpol.android.AndroidCard;
-
 public class BTChipTransportAndroid implements BTChipTransportFactory {
 	
 	private UsbManager usbManager;
@@ -140,36 +138,8 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 			catch(Exception e) {				
 			}
 		}
-		if (detectedTag != null) {
-			try {
-				Log.d(LOG_TAG, "Connect to NFC tag");
-				AndroidCard card = AndroidCard.get(detectedTag);
-				card.connect();
-				if (aid != null) {
-					byte[] apdu = new byte[aid.length + 5];
-					apdu[0] = (byte)0x00;
-					apdu[1] = (byte)0xA4;
-					apdu[2] = (byte)0x04;
-					apdu[3] = (byte)0x00;
-					apdu[4] = (byte)aid.length;
-					System.arraycopy(aid, 0, apdu, 5, aid.length);
-					byte[] response = card.transceive(apdu);
-					if ((response[response.length - 2] != (byte)0x90) || (response[response.length - 1] != (byte)0x00)) {
-						throw new RuntimeException("Select failed");
-					}					
-				}
-				transport = new BTChipTransportAndroidNFC(card);
-				callback.onConnected(true);
-				return true;
-			}
-			catch(Exception e) {
-				Log.d(LOG_TAG, "NFC tag select failed", e);
-				detectedTag = null;
-				callback.onConnected(false);
-				return false;
-			}
-		}
-		IntentFilter filter = new IntentFilter();
+
+		final IntentFilter filter = new IntentFilter();
 		filter.addAction(ACTION_USB_PERMISSION);
 		context.registerReceiver(mUsbReceiver, filter);
 
@@ -239,20 +209,8 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
         	return new BTChipTransportAndroidHID(connection, dongleInterface, in, out, TIMEOUT, ledger);
         }
 	}
-	public void setDetectedTag(Tag tag) {
-		Log.d(LOG_TAG, "Setting detected tag " + tag);
-		this.detectedTag = tag;
-	}
 	
-	public void clearDetectedTag() {
-		detectedTag = null;
-	}
-	
-	public void setAID(byte[] aid) {
-		this.aid = aid;
-	}
-	
-	public static final String LOG_STRING = "BTChip";
+	static final String LOG_STRING = "BTChip";
 
 	public static boolean isLedgerWithScreen(final UsbDevice d) {
 		final int pId = d.getProductId();

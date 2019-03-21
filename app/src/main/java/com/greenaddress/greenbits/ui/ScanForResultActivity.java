@@ -280,7 +280,7 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
     private final class AutoFocusRunnable implements Runnable {
         private final Camera camera;
 
-        public AutoFocusRunnable(final Camera camera) {
+        AutoFocusRunnable(final Camera camera) {
             this.camera = camera;
         }
 

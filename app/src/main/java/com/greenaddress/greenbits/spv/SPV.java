@@ -75,12 +75,10 @@ public class SPV {
 
     private final Map<TransactionOutPoint, Coin> mCountedUtxoValues = new HashMap<>();
 
-    private final static String VERIFIED = "verified_utxo_";
-    private final static String SPENDABLE = "verified_utxo_spendable_value_";
 
     static class AccountInfo extends Pair<Integer, Integer> {
-        public AccountInfo(final Integer subAccount, final Integer pointer) { super(subAccount, pointer); }
-        public Integer getSubAccount() { return first; }
+        AccountInfo(final Integer subAccount, final Integer pointer) { super(subAccount, pointer); }
+        Integer getSubAccount() { return first; }
         public Integer getPointer() { return second; }
     }
 
@@ -91,7 +89,6 @@ public class SPV {
     private final Map<Sha256Hash, List<Integer>> mUnspentOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, AccountInfo> mUnspentDetails = new HashMap<>();
     private final GaService mService;
-    private int mBlocksRemaining = Integer.MAX_VALUE;
     private BlockStore mBlockStore;
     private BlockChain mBlockChain;
     private PeerGroup mPeerGroup;
@@ -121,7 +118,7 @@ public class SPV {
     }
 
     public void setEnabledAsync(final boolean enabled) {
-        mExecutor.execute(new Runnable() { public void run() { setEnabled(enabled); } });
+        mExecutor.execute(() -> setEnabled(enabled));
     }
 
     private void setEnabled(final boolean enabled) {
@@ -141,7 +138,7 @@ public class SPV {
     }
 
     public void setSyncOnMobileEnabledAsync(final boolean enabled) {
-        mExecutor.execute(new Runnable() { public void run() { setSyncOnMobileEnabled(enabled); } });
+        mExecutor.execute(() -> setSyncOnMobileEnabled(enabled));
     }
 
     private void setSyncOnMobileEnabled(final boolean enabled) {
@@ -171,7 +168,7 @@ public class SPV {
     }
 
     public void setTrustedPeersAsync(final String peers) {
-        mExecutor.execute(new Runnable() { public void run() { setTrustedPeers(peers); } });
+        mExecutor.execute(() -> setTrustedPeers(peers));
     }
 
     private void setTrustedPeers(final String peers) {
@@ -193,7 +190,7 @@ public class SPV {
     }
 
     public void startAsync() {
-        mExecutor.execute(new Runnable() { public void run() { start(); } });
+        mExecutor.execute(() -> start());
     }
 
     private void start() {
@@ -216,17 +213,15 @@ public class SPV {
         return new TransactionOutPoint(params, index, txHash);
     }
 
-    public void updateUnspentOutputs() {
+    void updateUnspentOutputs() {
         final boolean currentlyEnabled = isEnabled();
         Log.d(TAG, "updateUnspentOutputs: " + Var("currentlyEnabled", currentlyEnabled));
-
-        final boolean filterAsset = true; // TODO: Elements doesn't support SPV_SYNCRONIZATION yet
 
         final List<TransactionData> utxos = new ArrayList<>();
         final Model model = mService.getModel();
         final List<SubaccountData> subaccountDataList = model.getSubaccountDataObservable().getSubaccountDataList();
 
-        for (SubaccountData subaccountData : subaccountDataList) {
+        for (final SubaccountData subaccountData : subaccountDataList) {
             final TransactionDataObservable utxoDataObservable =
                 model.getUTXODataObservable(subaccountData.getPointer());
             List<TransactionData> transactionDataList = utxoDataObservable.getTransactionDataList();
@@ -279,7 +274,7 @@ public class SPV {
             mPeerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
     }
 
-    public void addUtxoToValues(final Sha256Hash txHash, final boolean updateVerified) {
+    private void addUtxoToValues(final Sha256Hash txHash, final boolean updateVerified) {
         final String txHashHex = txHash.toString();
 
         if (updateVerified)
@@ -288,7 +283,7 @@ public class SPV {
         final Model model = mService.getModel();
         final List<SubaccountData> subaccountDataList = model.getSubaccountDataObservable().getSubaccountDataList();
 
-        for (SubaccountData subaccountData : subaccountDataList) {
+        for (final SubaccountData subaccountData : subaccountDataList) {
             final Integer pointer = subaccountData.getPointer();
             final TransactionDataObservable transactionDataObservable = model.getTransactionDataObservable(pointer);
             if (transactionDataObservable.getTransactionDataList() == null)
@@ -303,12 +298,12 @@ public class SPV {
         }
     }
 
-    public int getBloomFilterElementCount() {
+    int getBloomFilterElementCount() {
         final int count = mUnspentOutpoints.size();
         return count == 0 ? 1 : count;
     }
 
-    public BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
+    BloomFilter getBloomFilter(final int size, final double falsePositiveRate, final long nTweak) {
         final Set<Sha256Hash> keys = mUnspentOutpoints.keySet();
         Log.d(TAG, "getBloomFilter returning " + keys.size() + " items");
         final BloomFilter filter = new BloomFilter(size, falsePositiveRate, nTweak);
@@ -323,13 +318,6 @@ public class SPV {
             filter.insert(new byte[] {(byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef});
         }
         return filter;
-    }
-
-    public void onNewBlock(final int blockHeight) {
-        Log.d(TAG, "onNewBlock: " + Var("blockHeight", blockHeight) +
-              Var("isEnabled", isEnabled()));
-        if (isEnabled())
-            addToBloomFilter(blockHeight, null, -1, -1, -1);
     }
 
     private void addToBloomFilter(final Integer blockHeight, final Sha256Hash txHash, final int prevIndex,
@@ -376,12 +364,6 @@ public class SPV {
             mUnspentOutpoints.put(txHash, Lists.newArrayList(prevIndex));
         else
             mUnspentOutpoints.get(txHash).add(prevIndex);
-    }
-
-    public int getSPVBlocksRemaining() {
-        if (isEnabled())
-            return mBlocksRemaining;
-        return 0;
     }
 
     public int getSPVHeight() {
@@ -439,7 +421,6 @@ public class SPV {
                                                   R.string.id_s_blocks_left,
                                                   blocksLeft));
                             }
-                            mBlocksRemaining = blocksLeft;
                             super.onChainDownloadStarted(peer, blocksLeft);
                         }
 
@@ -447,7 +428,6 @@ public class SPV {
                         public void onBlocksDownloaded(final Peer peer, final Block block,
                                                        final FilteredBlock filteredBlock, final int blocksLeft) {
                             //Log.d(TAG, "onBlocksDownloaded: " + Var("blocksLeft", blocksLeft));
-                            mBlocksRemaining = blocksLeft;
                             super.onBlocksDownloaded(peer, block, filteredBlock, blocksLeft);
                         }
 
@@ -645,10 +625,6 @@ public class SPV {
         }
     };
 
-    public void stopSyncAsync() {
-        mExecutor.execute(new Runnable() { public void run() { stopSync(); } });
-    }
-
     private void stopSync() {
         synchronized (mStateLock) {
             Log.d(TAG, "stopSync: " + Var("isEnabled", isEnabled()));
@@ -701,7 +677,7 @@ public class SPV {
     // Handle changes to network connectivity.
     // Note that this only handles mobile/non-mobile transitions
     public void onNetConnectivityChangedAsync(final NetworkInfo info) {
-        mExecutor.execute(new Runnable() { public void run() { onNetConnectivityChanged(info); } });
+        mExecutor.execute(() -> onNetConnectivityChanged(info));
     }
 
     private void onNetConnectivityChanged(final NetworkInfo info) {
@@ -730,11 +706,7 @@ public class SPV {
     }
 
     public void resetAsync() {
-        mExecutor.execute(new Runnable() {
-            public void run() {
-                reset(true /* deleteAllData */, true /* deleteUnspent */);
-            }
-        });
+        mExecutor.execute(() -> reset(true /* deleteAllData */, true /* deleteUnspent */));
     }
 
     private void reset(final boolean deleteAllData, final boolean deleteUnspent) {

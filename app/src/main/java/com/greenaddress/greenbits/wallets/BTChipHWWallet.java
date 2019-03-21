@@ -229,7 +229,7 @@ public class BTChipHWWallet extends HWWallet {
         return os.toByteArray();
     }
 
-    private byte[] inputBytes(final InputOutputData in, boolean isSegwit) {
+    private byte[] inputBytes(final InputOutputData in, final boolean isSegwit) {
         final ByteArrayOutputStream os = new ByteArrayOutputStream(32 + (isSegwit ? 12 : 4));
         final byte[] txid = in.getTxid();
         os.write(txid, 0, txid.length);

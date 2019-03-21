@@ -38,10 +38,6 @@ public class FontAwesomeTextView extends android.support.v7.widget.AppCompatText
         setAwesomeTypeface();
     }
 
-    public void setDefaultTypeface() {
-        setTypeface(mDefaultTypeface);
-    }
-
     public void setAwesomeTypeface() {
         setTypeface(mAwesomeTypeface);
     }

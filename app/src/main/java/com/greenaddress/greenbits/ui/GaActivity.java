@@ -66,19 +66,17 @@ public abstract class GaActivity extends AppCompatActivity {
         Futures.addCallback(getGAApp().onServiceAttached, new CB.Op<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                GaActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        final GaActivity self = GaActivity.this;
-                        Log.d(TAG, "onCreateWithService -> " + self.getClass().getSimpleName());
-                        self.mService = getGAApp().mService;
-                        self.onCreateWithService(savedInstanceState);
-                        if (self.mResumed) {
-                            // We resumed before the service became available, and so
-                            // did not call onResumeWithService() then - call it now.
-                            Log.d(TAG, "(delayed)onResumeWithService -> " + self.getClass().getSimpleName());
-                            self.mService.incRef();
-                            onResumeWithService();
-                        }
+                GaActivity.this.runOnUiThread(() -> {
+                    final GaActivity self = GaActivity.this;
+                    Log.d(TAG, "onCreateWithService -> " + self.getClass().getSimpleName());
+                    self.mService = getGAApp().mService;
+                    self.onCreateWithService(savedInstanceState);
+                    if (self.mResumed) {
+                        // We resumed before the service became available, and so
+                        // did not call onResumeWithService() then - call it now.
+                        Log.d(TAG, "(delayed)onResumeWithService -> " + self.getClass().getSimpleName());
+                        self.mService.incRef();
+                        onResumeWithService();
                     }
                 });
             }
@@ -126,22 +124,16 @@ public abstract class GaActivity extends AppCompatActivity {
     // Utility methods
 
     void finishOnUiThread() {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                GaActivity.this.finish();
-            }
-        });
+        runOnUiThread(GaActivity.this::finish);
     }
 
     protected void setMenuItemVisible(final Menu m, final int id, final boolean visible) {
         if (m == null)
             return;
-        runOnUiThread(new Runnable() {
-            public void run() {
-                final MenuItem item = m.findItem(id);
-                if (item != null)
-                    item.setVisible(visible);
-            }
+        runOnUiThread(() -> {
+            final MenuItem item = m.findItem(id);
+            if (item != null)
+                item.setVisible(visible);
         });
     }
 
@@ -150,7 +142,7 @@ public abstract class GaActivity extends AppCompatActivity {
             try {
                 Wally.hex_to_bytes(hexSeed.substring(0, 128));
                 return true;
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
         }
         return false;
     }
