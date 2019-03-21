@@ -147,8 +147,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }
         }
         let thresholdTwoFactor = SettingsItem(
-            title: NSLocalizedString("id_spending_limit", comment: ""),
-            subtitle: String(format: NSLocalizedString(thresholdValue == "" ? "id_set_up_spending_limit" : "id_your_spending_limit_is_s", comment: ""), thresholdValue),
+            title: NSLocalizedString("id_twofactor_threshold", comment: ""),
+            subtitle: String(format: NSLocalizedString(thresholdValue == "" ? "id_set_twofactor_threshold" : "id_your_twofactor_threshold_is_s", comment: ""), thresholdValue),
             section: .twoFactor,
             type: .ThresholdTwoFactor)
         let locktimeRecovery = SettingsItem(

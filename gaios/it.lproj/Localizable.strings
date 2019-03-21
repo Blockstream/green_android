@@ -227,6 +227,7 @@
 "id_normal" = "Normale";
 "id_not_connected_connecting_in_ds_" = "Non connesso. Connessione in %ds …";
 "id_notifications" = "Notifiche";
+"id_now" = "Now";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Un tentativo rimasto";
 "id_one_network_must_be_selected" = "Un network dev'essere selezionato. Bitcoin selezionato di default";
@@ -315,8 +316,8 @@
 "id_sent_to" = "Inviato a";
 "id_set_a_new_pin" = "Imposta un nuovo PIN";
 "id_set_custom_fee_rate" = "Imposta commissione personalizzata";
+"id_set_twofactor_threshold" = "Imposta limite per autenticazione a due fattori";
 "id_set_up_pgp_key_for" = "Fornisci una chiave PGP per le comunicazioni";
-"id_set_up_spending_limit" = "Imposta limite di spesa";
 "id_set_up_twofactor_authentication" = "Imposta Autenticazione a Due Fattori";
 "id_set_up_watchonly" = "Imposta watch-only";
 "id_set_up_watchonly_credentials" = "Imposta le credenziali watch-only per questo wallet";
@@ -337,7 +338,6 @@
 "id_socks5_hostname" = "Socks5 Hostname";
 "id_socks5_port" = "Socks5 Port";
 "id_something_went_wrong" = "Qualcosa è andato storto";
-"id_spending_limit" = "Limiti di spesa";
 "id_spv_is_always_synchronized_on" = "La sincronizzazione SPV è attiva su rete WiFi o Ethernet. Questa opzione abilita la sincronizzazione tramite dati mobili. Prestare attenzione al traffico dati.";
 "id_spv_not_fully_synced" = "Sincronizzazione SPV non completa";
 "id_spv_notifications" = "Notifiche SPV";
@@ -379,6 +379,7 @@
 "id_twofactor_authentication" = "Autenticazione a Due Fattori";
 "id_twofactor_reset_in_progress" = "Reset Secondo Fattore di Autenticazione in corso, il tuo wallet è attualmente bloccato.";
 "id_twofactor_settings" = "Impostazioni Secondo Fattore";
+"id_twofactor_threshold" = "Limite per il Secondo Fattore";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Impossibile contattare il servizio Green. Controlla la tua connessione internet e attendi di riconnetterti";
 "id_unconfirmed" = "Non Confermata";
@@ -394,6 +395,7 @@
 "id_version_1s_2s" = "Versione %1$@%2$@";
 "id_view_in_explorer" = "Vedi nell'Explorer";
 "id_waiting_for_transaction" = "In attesa della transazione…";
+"id_wallet_creation_failed" = "Wallet creation failed";
 "id_wallets" = "Wallets";
 "id_warning" = "Attenzione!";
 "id_warning_nononion_address" = "Attenzione: Rilevato indirizzo non-.onion!";
@@ -430,7 +432,7 @@
 "id_your_notifications_will_be" = "Vedrai qui le tue notifiche.";
 "id_your_pin_or_your_mnemonic_will" = "Sarà necessario inserire il PIN o la mnemonica per accedere al wallet";
 "id_your_s_sent_to_s_has_been" = "I tuoi %@ inviati a %@ sono stati confermati";
-"id_your_spending_limit_is_s" = "Il tuo limite di spesa è %@.";
 "id_your_transactions_will_be_shown" = "Le tue transazioni saranno elencate qui.";
+"id_your_twofactor_threshold_is_s" = "Il tuo limite per il Secondo Fattore è %@.";
 "id_your_wallet_is_not_yet_fully" = "Il tuo wallet non è ancora in totale sicurezza.\nAbilita l'Autenticazione a Due Fattori.";
 "id_your_watchonly_username_will_be" = "Il tuo username per la modalità watch-only verrà salvato sul dispositivo. Se il dispositivo è compromesso le tue transazioni potranno essere osservate da una terza parte. Premi \"OK\" per continuare.";

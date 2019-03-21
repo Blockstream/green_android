@@ -227,6 +227,7 @@
 "id_normal" = "Normaal";
 "id_not_connected_connecting_in_ds_" = "Niet verbonden. Verbinden in %ds …";
 "id_notifications" = "Notificaties";
+"id_now" = "Now";
 "id_ok" = "OK";
 "id_one_attempt_remaining" = "Nog één poging te gaan";
 "id_one_network_must_be_selected" = "Er moet één netwerk worden geselecteerd. Standaard is dit bitcoin.";
@@ -315,8 +316,8 @@
 "id_sent_to" = "Verzonden naar";
 "id_set_a_new_pin" = "Kies een nieuwe PIN";
 "id_set_custom_fee_rate" = "Aangepast transactietarief instellen";
+"id_set_twofactor_threshold" = "Set Two-Factor threshold";
 "id_set_up_pgp_key_for" = "PGP-sleutel voor communicatie instellen";
-"id_set_up_spending_limit" = "Spendeerlimiet instellen";
 "id_set_up_twofactor_authentication" = "Tweetrapsauthenticatie instellen";
 "id_set_up_watchonly" = "Watch-only instellen";
 "id_set_up_watchonly_credentials" = "Watch-only instellen voor deze wallet";
@@ -337,7 +338,6 @@
 "id_socks5_hostname" = "Socks5 Hostname";
 "id_socks5_port" = "Socks5 Port";
 "id_something_went_wrong" = "Er is iets misgegaan";
-"id_spending_limit" = "Spendeerlimiet";
 "id_spv_is_always_synchronized_on" = "SPV wordt altijd gesynchroniseerd op niet-mobiele netwerken zoals WiFi of Ethernet. Deze instelling zorgt dat synchronisatie ook plaatsvindt op mobiele netwerken. Dit kan duur zijn, afhankelijk van je dataplan, dus wees voorzichtig.";
 "id_spv_not_fully_synced" = "SPV niet volledig gesynchroniseerd";
 "id_spv_notifications" = "SPV-notificaties";
@@ -379,6 +379,7 @@
 "id_twofactor_authentication" = "Tweetrapsauthenticatie";
 "id_twofactor_reset_in_progress" = "Resetten tweetrapsauthenticatie in behandeling. Je wallet is momenteel vergrendeld.";
 "id_twofactor_settings" = "Instellingen tweetrapsauthenticatie";
+"id_twofactor_threshold" = "Two-Factor threshold";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Contact opnemen met Green-dienst mislukt. Controleer je internetverbinding en wacht tot je opnieuw bent verbonden.";
 "id_unconfirmed" = "Onbevestigd";
@@ -394,6 +395,7 @@
 "id_version_1s_2s" = "Versie %1$@ %2$@";
 "id_view_in_explorer" = "In Explorer bekijken";
 "id_waiting_for_transaction" = "Wachten op transactie…";
+"id_wallet_creation_failed" = "Wallet creation failed";
 "id_wallets" = "Wallets";
 "id_warning" = "Waarschuwing!";
 "id_warning_nononion_address" = "Waarschuwing: geen -.onion-adres gedetecteerd!";
@@ -430,7 +432,7 @@
 "id_your_notifications_will_be" = "Je notificaties verschijnen hier.";
 "id_your_pin_or_your_mnemonic_will" = "Je PIN of woordenlijst zijn nodig om toegang te krijgen tot de wallet.";
 "id_your_s_sent_to_s_has_been" = "Je %@ (verstuurd naar %@) is bevestigd";
-"id_your_spending_limit_is_s" = "Je spendeerlimiet is %@.";
 "id_your_transactions_will_be_shown" = "Je transacties verschijnen hier.";
+"id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
 "id_your_wallet_is_not_yet_fully" = "Je wallet is nog niet volledig beveiligd.\nSchakel tweetrapsauthenticatie in.";
 "id_your_watchonly_username_will_be" = "Je gebruikersnaam voor watch-only zal onversleuteld worden opgeslagen op dit apparaat. Als je apparaat wordt gecompromitteerd, kunnen derden misschien je transacties bekijken. Druk op \"OK\" om door te gaan.";

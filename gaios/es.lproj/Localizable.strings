@@ -227,6 +227,7 @@
 "id_normal" = "Normal";
 "id_not_connected_connecting_in_ds_" = "Sin conexión. Conectando en %ds …";
 "id_notifications" = "Notificaciones";
+"id_now" = "Now";
 "id_ok" = "OK";
 "id_one_attempt_remaining" = "Un intento restante";
 "id_one_network_must_be_selected" = "Debe seleccionarse una red. Se selecciona Bitcoin por defecto.";
@@ -315,8 +316,8 @@
 "id_sent_to" = "Enviado a";
 "id_set_a_new_pin" = "Establecer un nuevo PIN";
 "id_set_custom_fee_rate" = "Establecer tarifa personalizada";
+"id_set_twofactor_threshold" = "Set Two-Factor threshold";
 "id_set_up_pgp_key_for" = "Configurar la clave PGP para las comunicaciones";
-"id_set_up_spending_limit" = "Configurar el límite de gasto";
 "id_set_up_twofactor_authentication" = "Configurar la autenticación de dos factores";
 "id_set_up_watchonly" = "Configurar el modo de solo lectura";
 "id_set_up_watchonly_credentials" = "Configurar las credenciales para el modo de solo lectura para este monedero";
@@ -337,7 +338,6 @@
 "id_socks5_hostname" = "Nombre de host de Soks5";
 "id_socks5_port" = "Puerta Socks5";
 "id_something_went_wrong" = "Se produjo un error";
-"id_spending_limit" = "Límite de gasto";
 "id_spv_is_always_synchronized_on" = "SPV siempre se sincroniza con redes no móviles, como WiFi y Ethernet. Con esta configuración, también se sincroniza cuando se usan datos móviles. Eso puede resultar caro según el plan de datos que tengas, así que ten cuidado al habilitarla.";
 "id_spv_not_fully_synced" = "No se ha sincronizado correctamente la SPV";
 "id_spv_notifications" = "Notificaciones de SPV";
@@ -379,6 +379,7 @@
 "id_twofactor_authentication" = "Autenticación de dos factores";
 "id_twofactor_reset_in_progress" = "Restablecimiento de la autenticación de dos factores en curso. Su monedero se encuentra bloqueado.";
 "id_twofactor_settings" = "Configuración de dos factores";
+"id_twofactor_threshold" = "Two-Factor threshold";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "No se puede conectar con el servicio de Green. Verifica tu conexión de red y espera a ser reconectado.";
 "id_unconfirmed" = "No confirmado";
@@ -394,6 +395,7 @@
 "id_version_1s_2s" = "Versión %1$@ %2$@";
 "id_view_in_explorer" = "Ver en el explorador";
 "id_waiting_for_transaction" = "Esperando transacción...";
+"id_wallet_creation_failed" = "Wallet creation failed";
 "id_wallets" = "Monederos";
 "id_warning" = "¡Advertencia!";
 "id_warning_nononion_address" = "Advertencia: no se detectó dirección .onion";
@@ -430,7 +432,7 @@
 "id_your_notifications_will_be" = "Tus notificaciones aparecerán aquí.";
 "id_your_pin_or_your_mnemonic_will" = "Necesitarás tu PIN o frase mnemónica para acceder a tu monedero.";
 "id_your_s_sent_to_s_has_been" = "Tu %@ enviado a %@ fue confirmado";
-"id_your_spending_limit_is_s" = "Tu límite de gasto es de %@.";
 "id_your_transactions_will_be_shown" = "Tus transacciones aparecerán aquí.";
+"id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
 "id_your_wallet_is_not_yet_fully" = "Tu monedero aún no está completamente protegido.\nHabilita la autenticación de dos factores.";
 "id_your_watchonly_username_will_be" = "Tu nombre de usuario para el modo de solo lectura se almacenará sin encriptar en este dispositivo. Si tu dispositivo está en riesgo, es posible que un tercero pueda visualizar tus transacciones. Presiona \"OK\" para continuar.";

@@ -227,6 +227,7 @@
 "id_normal" = "Нормальный";
 "id_not_connected_connecting_in_ds_" = "Нет соединения. Соединение произойдет через%d сек...";
 "id_notifications" = "Уведомления";
+"id_now" = "Now";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Осталась одна попытка";
 "id_one_network_must_be_selected" = "Необходимо выбрать одну из сетей. Биткоин установлен по умолчанию";
@@ -315,8 +316,8 @@
 "id_sent_to" = "Отправить на";
 "id_set_a_new_pin" = "Установить новый PIN-код ";
 "id_set_custom_fee_rate" = "Установить размер комиссии";
+"id_set_twofactor_threshold" = "Установить двухфакторный порог";
 "id_set_up_pgp_key_for" = "Установить PGP-ключ для связи";
-"id_set_up_spending_limit" = "Установить лимит расходов";
 "id_set_up_twofactor_authentication" = "Установить двухфакторную аутентификацию";
 "id_set_up_watchonly" = "Настроить холодный кошелек";
 "id_set_up_watchonly_credentials" = "Установить параметры холодного кошелька";
@@ -337,7 +338,6 @@
 "id_socks5_hostname" = "Имя узла Socks5";
 "id_socks5_port" = "Порт Socks5";
 "id_something_went_wrong" = "Что-то пошло не так";
-"id_spending_limit" = "Лимит расходов";
 "id_spv_is_always_synchronized_on" = "SPV всегда синхронизируется в  таких сетях, как WiFi или Ethernet. Этот параметр также синхронизируется при использовании мобильных данных. Это может быть дорого в зависимости от вашего тарифного плана, поэтому будьте внимательны при включении.";
 "id_spv_not_fully_synced" = "SPV-синхронизация произошла не полностью";
 "id_spv_notifications" = "Уведомления SPV";
@@ -379,6 +379,7 @@
 "id_twofactor_authentication" = "Двухфакторная аутентификация";
 "id_twofactor_reset_in_progress" = "Выполняется двухфакторный сброс, ваш кошелек заблокирован.";
 "id_twofactor_settings" = "Двухфакторные настройки";
+"id_twofactor_threshold" = "Двухфакторный порог";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Не удалось связаться со службой поддержки Green. Проверьте подключение к сети и подождите, чтобы его повторно подключили.";
 "id_unconfirmed" = "Неподтвержденная";
@@ -394,6 +395,7 @@
 "id_version_1s_2s" = "Версия %1$@ %2$@";
 "id_view_in_explorer" = "Просмотреть в обозревателе";
 "id_waiting_for_transaction" = "Ожидание транзакции ...";
+"id_wallet_creation_failed" = "Wallet creation failed";
 "id_wallets" = "Кошельки";
 "id_warning" = "Внимание!";
 "id_warning_nononion_address" = "Внимание! Адрес не содержит .onion!";
@@ -430,7 +432,7 @@
 "id_your_notifications_will_be" = "Здесь будут показаны ваши уведомления.";
 "id_your_pin_or_your_mnemonic_will" = "Для доступа к кошельку потребуется PIN-код или мнемоническая фраза.";
 "id_your_s_sent_to_s_has_been" = "Ваша %@ отправленная на %@ подтверждена";
-"id_your_spending_limit_is_s" = "Ваш лимит расходов составляет %@.";
 "id_your_transactions_will_be_shown" = "Ваши транзакции будут показаны здесь.";
+"id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
 "id_your_wallet_is_not_yet_fully" = "Ваш кошелек не защищен.\nПожалуйста, включите двухфакторную аутентификацию.";
 "id_your_watchonly_username_will_be" = "Имя пользователя вашего холодного кошелька будет храниться в незашифрованном виде на этом устройстве. Если ваше устройство будет взломано, третьи стороны смогут наблюдать за вашими транзакциями. Нажмите «ОК», чтобы продолжить.";

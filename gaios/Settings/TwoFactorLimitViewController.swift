@@ -11,8 +11,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_spending_limit", comment: "")
-        content.nextButton.setTitle(NSLocalizedString("id_set_up_spending_limit", comment: ""), for: .normal)
+        title = NSLocalizedString("id_twofactor_threshold", comment: "")
+        content.nextButton.setTitle(NSLocalizedString("id_set_twofactor_threshold", comment: ""), for: .normal)
         content.nextButton.addTarget(self, action: #selector(nextClick), for: .touchUpInside)
         content.fiatButton.addTarget(self, action: #selector(currencySwitchClick), for: .touchUpInside)
         content.nextButton.setGradient(true)
@@ -28,7 +28,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         let amount = isFiat ? limits.fiat : limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!
         let subtitle = isFiat ? String(format: "%@ %@", amount, settings.getCurrency()) : String(format: "%@ %@", amount, settings.denomination.toString())
         content.limitTextField.text = amount
-        content.descriptionLabel.text = String(format: NSLocalizedString("id_your_spending_limit_is_s", comment: ""), subtitle)
+        content.descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), subtitle)
         refresh()
     }
 

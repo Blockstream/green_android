@@ -227,6 +227,7 @@
 "id_normal" = "正常";
 "id_not_connected_connecting_in_ds_" = "未连接。将在%d秒后重新连接...";
 "id_notifications" = "通知";
+"id_now" = "Now";
 "id_ok" = "确认";
 "id_one_attempt_remaining" = "还可再试一次";
 "id_one_network_must_be_selected" = "必须选择一个网络。默认选择比特币";
@@ -315,8 +316,8 @@
 "id_sent_to" = "发送至";
 "id_set_a_new_pin" = "设置一个新的PIN";
 "id_set_custom_fee_rate" = "设置自定义费率";
+"id_set_twofactor_threshold" = "Set Two-Factor threshold";
 "id_set_up_pgp_key_for" = "设置PGP密钥以进行沟通";
-"id_set_up_spending_limit" = "设置花费限制";
 "id_set_up_twofactor_authentication" = "设置双重验证";
 "id_set_up_watchonly" = "设置watch-only";
 "id_set_up_watchonly_credentials" = "为此钱包设置watch-only证书";
@@ -337,7 +338,6 @@
 "id_socks5_hostname" = "Socks5主机名";
 "id_socks5_port" = "Socks5端口";
 "id_something_went_wrong" = "发生错误";
-"id_spending_limit" = "花费限制";
 "id_spv_is_always_synchronized_on" = "SPV永远在非移动网络，如WiFi或以太网上同步。此设置在使用移动数据网络时也进行同步，可能会产生较高额的流量费用，请谨慎开启。";
 "id_spv_not_fully_synced" = "SPV未完全同步";
 "id_spv_notifications" = "SPV通知";
@@ -379,6 +379,7 @@
 "id_twofactor_authentication" = "双重验证";
 "id_twofactor_reset_in_progress" = "双重验证重置正在进行中，你的钱包目前已被锁定。";
 "id_twofactor_settings" = "双重验证设置";
+"id_twofactor_threshold" = "Two-Factor threshold";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "无法联系Green服务。请检查网络连接，并耐心等待重新连接。";
 "id_unconfirmed" = "未确认";
@@ -394,6 +395,7 @@
 "id_version_1s_2s" = "版本%1$@ %2$@";
 "id_view_in_explorer" = "在探索者中查看";
 "id_waiting_for_transaction" = "等待交易...";
+"id_wallet_creation_failed" = "Wallet creation failed";
 "id_wallets" = "钱包";
 "id_warning" = "警告！";
 "id_warning_nononion_address" = "警告：检测到非.onion地址！";
@@ -430,7 +432,7 @@
 "id_your_notifications_will_be" = "你的通知消息将在此显示。";
 "id_your_pin_or_your_mnemonic_will" = "访问钱包将需要你的PIN或助记符。";
 "id_your_s_sent_to_s_has_been" = "你的%@发送至%@已被确认";
-"id_your_spending_limit_is_s" = "你的花费限制是%@.";
 "id_your_transactions_will_be_shown" = "你的交易将在此显示。";
+"id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
 "id_your_wallet_is_not_yet_fully" = "你的钱包尚未完全安全。\n请开启双重验证。";
 "id_your_watchonly_username_will_be" = "Watch-only用户名将以非加密的形式储存在本设备上。如果此设备丢失，则第三方可能会查阅到你的交易历史。点击“确认”以继续。";

@@ -227,6 +227,7 @@
 "id_normal" = "正常";
 "id_not_connected_connecting_in_ds_" = "接続が切れました。接続中…%d秒";
 "id_notifications" = "告知事項";
+"id_now" = "Now";
 "id_ok" = "承諾";
 "id_one_attempt_remaining" = "残り一回";
 "id_one_network_must_be_selected" = "ネットワークを選択して下さい。ビットコインをデフォルトで選択します。";
@@ -315,8 +316,8 @@
 "id_sent_to" = "送り先";
 "id_set_a_new_pin" = "新しいPINの設定";
 "id_set_custom_fee_rate" = "カスタム手数料の設定";
+"id_set_twofactor_threshold" = "Set Two-Factor threshold";
 "id_set_up_pgp_key_for" = "コミュニケーションの為にPGPキーを設定する";
-"id_set_up_spending_limit" = "使用可能限度を設定する";
 "id_set_up_twofactor_authentication" = "2段階認証を設定する";
 "id_set_up_watchonly" = "監視-Onlyの設定";
 "id_set_up_watchonly_credentials" = "このウォレットの監視-Only証明書を設定する";
@@ -337,7 +338,6 @@
 "id_socks5_hostname" = "Socks5ホストネーム";
 "id_socks5_port" = "Socks5ポート";
 "id_something_went_wrong" = "問題が生じました。";
-"id_spending_limit" = "使用可能限度";
 "id_spv_is_always_synchronized_on" = "SPVはWiFiやEthernetを通じて常に同時性を保つようになっています。一方、モバイルデータを使用中にも同時性を保つよう設計されている為、ご利用中のデータプランによっては通信費が過剰に計算されることもある為注意して下さい。";
 "id_spv_not_fully_synced" = "SPVが完全にシンクロされていません";
 "id_spv_notifications" = "SPV告知事項";
@@ -379,6 +379,7 @@
 "id_twofactor_authentication" = "2段階認証";
 "id_twofactor_reset_in_progress" = "2段階認証を再設定しています、ウォレットは現在ロックされています。";
 "id_twofactor_settings" = "2段階認証設定";
+"id_twofactor_threshold" = "Two-Factor threshold";
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Greenサービスに接続できません。ネットワーク状態を確認してからもう一度お試しください。";
 "id_unconfirmed" = "未検証";
@@ -394,6 +395,7 @@
 "id_version_1s_2s" = "バージョン %1$@ %2$@";
 "id_view_in_explorer" = "エクスプローラで見る";
 "id_waiting_for_transaction" = "トランザクション待機中…";
+"id_wallet_creation_failed" = "Wallet creation failed";
 "id_wallets" = "ウォレット";
 "id_warning" = "注意!";
 "id_warning_nononion_address" = "注意: .onionではないアドレスが検知されました。";
@@ -430,7 +432,7 @@
 "id_your_notifications_will_be" = "告示情報はこちらから確認できます。";
 "id_your_pin_or_your_mnemonic_will" = "ウォレットにアクセスするにはPINもしくはmnemonicが必要です。";
 "id_your_s_sent_to_s_has_been" = "%@に送金した%@ が検証されました。";
-"id_your_spending_limit_is_s" = "使用可能限度は%@です。";
 "id_your_transactions_will_be_shown" = "トランザクションはこちらから確認できます。";
+"id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
 "id_your_wallet_is_not_yet_fully" = "ウォレットが安全ではありません。\n2段階認証を設定してください。";
 "id_your_watchonly_username_will_be" = "監視-Onlyユーザーネームはこのデバイスに暗号化されずに保存されます。デバイスが危殆化される場合、貴方のトランザクションは第三者によって監視される可能性が生じます。続けるには\"OK\" を押してください。";
