@@ -86,10 +86,6 @@ android {
             minSdkVersion 21
         }
     }
-    dexOptions {
-        maxProcessCount 2
-        javaMaxHeapSize "2048M"
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
