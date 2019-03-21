@@ -47,17 +47,12 @@
 -dontwarn org.postgresql.**
 -dontwarn org.jboss.**
 -dontwarn org.eclipse.**
--dontwarn io.netty.**
 -dontwarn org.apache.**
 -dontwarn org.w3c.**
 -dontwarn com.ibm.**
 -dontwarn com.sun.**
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
-
--keepattributes Signature,InnerClasses
--keepclasseswithmembers class io.netty.** {*;}
--keepnames class io.netty.** {*;}
 
 -keepnames class ** {*;}
 -keepattributes SourceFile,LineNumberTable
