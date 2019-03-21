@@ -9,8 +9,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
