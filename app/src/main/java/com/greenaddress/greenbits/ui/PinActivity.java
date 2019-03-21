@@ -9,7 +9,6 @@ import android.security.keystore.KeyProperties;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 

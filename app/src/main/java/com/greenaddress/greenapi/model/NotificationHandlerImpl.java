@@ -1,15 +1,14 @@
 package com.greenaddress.greenapi.model;
 
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.blockstream.libgreenaddress.GDK;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SettingsData;
@@ -17,7 +16,6 @@ import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;

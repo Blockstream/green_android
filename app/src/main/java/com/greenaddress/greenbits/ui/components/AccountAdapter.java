@@ -13,9 +13,7 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.UI;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {

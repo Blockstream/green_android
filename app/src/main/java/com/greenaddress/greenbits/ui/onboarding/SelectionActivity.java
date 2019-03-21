@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.blockstream.libwally.Wally;
 import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
