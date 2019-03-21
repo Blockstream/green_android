@@ -396,6 +396,7 @@
   <string name="id_version_1s_2s">Version %1$s %2$s</string>
   <string name="id_view_in_explorer">View in Explorer</string>
   <string name="id_waiting_for_transaction">Waiting for transaction…</string>
+  <string name="id_wallet_creation_failed">Wallet creation failed</string>
   <string name="id_wallets">Wallets</string>
   <string name="id_warning">Warning!</string>
   <string name="id_warning_nononion_address">Warning: Non-.onion address detected!</string>

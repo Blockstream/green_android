@@ -83,6 +83,14 @@ public abstract class LoginActivity extends GaActivity implements Observer, Netw
         }
     }
 
+    protected int getCode(final Exception e) {
+        try {
+            final String stringCode = e.getMessage().split(" ")[1];
+            return Integer.parseInt(stringCode);
+        } catch (final Exception ignored) {}
+        return 1;
+    }
+
     protected void openNetworkSettings() {
         final NetworkSettingsFragment dialogFragment = new NetworkSettingsFragment();
         dialogFragment.setListener(this);

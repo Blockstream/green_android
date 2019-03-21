@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -421,7 +422,14 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     @Override
     protected void onLoginFailure() {
         super.onLoginFailure();
-        UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
+        final int code = getCode(lastLoginException);
+        if (code == GDK.GA_RECONNECT) {
+            UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+        } else {
+            UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+        }
+
         enableLogin();
     }
 

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.ui.LoginActivity;
@@ -67,7 +68,11 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 mService.getSession().registerUser(this, null, mnemonic).resolve(null, null);
                 mService.getConnectionManager().loginWithMnemonic(mnemonic, "");
             } catch (final Exception ex) {
-                UI.toast(SelectionActivity.this, ex.getMessage(), Toast.LENGTH_LONG);
+                if (getCode(ex) == GDK.GA_RECONNECT) {
+                    UI.toast(SelectionActivity.this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+                } else {
+                    UI.toast(SelectionActivity.this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
+                }
             }
         });
     }
@@ -102,7 +107,13 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     protected void onLoginFailure() {
         super.onLoginFailure();
         stopLoading();
-        toast("Failed to SignUp");
+        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
+        final int code = getCode(lastLoginException);
+        if (code == GDK.GA_RECONNECT) {
+            UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+        } else {
+            UI.toast(this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
+        }
     }
 
     @Override

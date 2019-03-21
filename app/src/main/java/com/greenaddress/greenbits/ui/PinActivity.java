@@ -64,14 +64,6 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     }
 
-    private int getCode(final Exception e) {
-        try {
-            final String stringCode = e.getMessage().split(" ")[1];
-            return Integer.parseInt(stringCode);
-        } catch (final Exception ignored) {}
-        return 1;
-    }
-
     @Override
     protected void onLoginFailure() {
         super.onLoginFailure();
