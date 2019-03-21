@@ -60,7 +60,7 @@ public class SendConfirmFragment extends GAFragment {
             mTxData = mObjectMapper.readValue(tx_json, CreateTransactionData.class);
             if (hww_json != null)
                 mHwData = mObjectMapper.readValue(hww_json, HWDeviceData.class);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             UI.toast(activity, "error", Toast.LENGTH_LONG);
             activity.finishOnUiThread();
@@ -113,63 +113,57 @@ public class SendConfirmFragment extends GAFragment {
             view.setText(mTxData.getChangeAddress().getAddress());
         }
 
-        swipeButton.setOnActiveListener(new SwipeButton.OnActiveListener() {
-            @Override
-            public void onActive() {
-                getGaActivity().startLoading();
-                swipeButton.setEnabled(false);
-                final String memo = noteText.getText().toString();
-                service.getExecutor().execute(() ->
-                {
-                    try {
-                        ObjectNode tx = (ObjectNode) (new ObjectMapper()).readTree(tx_json);
-                        tx.set("memo", new TextNode(memo));
-                        // sign transaction
-                        final ConnectionManager cm = service.getConnectionManager();
-                        final GDKTwoFactorCall signCall = session.signTransactionRaw(getActivity(), tx);
-                        tx = signCall.resolve(null, cm.getHWResolver());
+        swipeButton.setOnActiveListener(() -> {
+            getGaActivity().startLoading();
+            swipeButton.setEnabled(false);
+            final String memo = noteText.getText().toString();
+            service.getExecutor().execute(() ->
+            {
+                try {
+                    ObjectNode tx = (ObjectNode) (new ObjectMapper()).readTree(tx_json);
+                    tx.set("memo", new TextNode(memo));
+                    // sign transaction
+                    final ConnectionManager cm = service.getConnectionManager();
+                    final GDKTwoFactorCall signCall = session.signTransactionRaw(getActivity(), tx);
+                    tx = signCall.resolve(null, cm.getHWResolver());
 
-                        // send transaction
-                        final boolean isSweep = tx.get("is_sweep").asBoolean();
-                        if (isSweep) {
-                            session.broadcastTransactionRaw(tx.get("transaction").asText());
-                        } else {
-                            final GDKTwoFactorCall sendCall = session.sendTransactionRaw(getActivity(), tx);
-                            sendCall.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
-                            service.getModel().getTwoFactorConfigDataObservable().refresh();
-                        }
-                        if (tx.has("previous_transaction")) {
-                            //emptying list to avoid showing replaced txs
-                            service.getModel().getTransactionDataObservable(subaccount)
-                            .setTransactionDataList(new ArrayList<>());
-                            final String hash = tx.get("previous_transaction").get("txhash").asText();
-                            service.getModel().getEventDataObservable().removeTx(hash);
-                        }
-                        UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
+                    // send transaction
+                    final boolean isSweep = tx.get("is_sweep").asBoolean();
+                    if (isSweep) {
+                        session.broadcastTransactionRaw(tx.get("transaction").asText());
+                    } else {
+                        final GDKTwoFactorCall sendCall = session.sendTransactionRaw(getActivity(), tx);
+                        sendCall.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
+                        service.getModel().getTwoFactorConfigDataObservable().refresh();
+                    }
+                    if (tx.has("previous_transaction")) {
+                        //emptying list to avoid showing replaced txs
+                        service.getModel().getTransactionDataObservable(subaccount)
+                        .setTransactionDataList(new ArrayList<>());
+                        final String hash = tx.get("previous_transaction").get("txhash").asText();
+                        service.getModel().getEventDataObservable().removeTx(hash);
+                    }
+                    UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
 
+                    activity.setResult(Activity.RESULT_OK);
+                    activity.finishOnUiThread();
+                } catch (final Exception e) {
+                    final Resources res = getResources();
+                    final String msg = UI.i18n(res, e.getMessage());
+                    e.printStackTrace();
+                    UI.toast(getGaActivity(), msg, Toast.LENGTH_LONG);
+                    if (msg.equals(res.getString(R.string.id_transaction_already_confirmed))) {
                         activity.setResult(Activity.RESULT_OK);
                         activity.finishOnUiThread();
-                    } catch (final Exception e) {
-                        final Resources res = getResources();
-                        final String msg = UI.i18n(res, e.getMessage());
-                        e.printStackTrace();
-                        UI.toast(getGaActivity(), msg, Toast.LENGTH_LONG);
-                        if (msg.equals(res.getString(R.string.id_transaction_already_confirmed))) {
-                            activity.setResult(Activity.RESULT_OK);
-                            activity.finishOnUiThread();
-                            return;
-                        }
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeButton.setEnabled(true);
-                                swipeButton.moveButtonBack();
-                                getGaActivity().stopLoading();
-                            }
-                        });
+                        return;
                     }
-                });
-            }
+                    activity.runOnUiThread(() -> {
+                        swipeButton.setEnabled(true);
+                        swipeButton.moveButtonBack();
+                        getGaActivity().stopLoading();
+                    });
+                }
+            });
         });
 
         return mView;

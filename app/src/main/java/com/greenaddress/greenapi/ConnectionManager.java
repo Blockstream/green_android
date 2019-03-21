@@ -39,8 +39,6 @@ public class ConnectionManager extends Observable {
     private Exception mLastLoginException = null;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
-    private static int CONNECTION_RETRY_ATTEMPTS = 3;
-    private int mConnectionCounter = CONNECTION_RETRY_ATTEMPTS;
 
     public ConnectionManager(final GDKSession session, final String network,
                              final String proxyHost, final String proxyPort,
@@ -52,10 +50,6 @@ public class ConnectionManager extends Observable {
         this.mProxyEnabled = proxyEnabled;
         this.mTorEnabled = torEnabled;
         this.mState = ConnState.DISCONNECTED;
-    }
-
-    public void resetAttempts() {
-        mConnectionCounter = CONNECTION_RETRY_ATTEMPTS;
     }
 
     public void setTorEnabled(boolean mTorEnabled) {
@@ -174,7 +168,6 @@ public class ConnectionManager extends Observable {
         } else {
             mSession.connect(mNetwork, isDebug);
         }
-        resetAttempts();
         setState(ConnState.CONNECTED);
     }
 

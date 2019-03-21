@@ -9,11 +9,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.greenapi.data.HWDeviceRequiredData;
 import com.greenaddress.greenapi.data.TwoFactorStatusData;
 import com.greenaddress.greenbits.ui.GaActivity;
-
-import java.util.List;
 
 public class GDKTwoFactorCall {
     private Activity mParent;
@@ -21,7 +18,7 @@ public class GDKTwoFactorCall {
     private TwoFactorStatusData mStatus;
     private static ObjectMapper mObjectMapper = new ObjectMapper();
 
-    public GDKTwoFactorCall(final Activity parent, Object twoFactorCall) {
+    GDKTwoFactorCall(final Activity parent, final Object twoFactorCall) {
         mParent = parent;
         mTwoFactorCall = twoFactorCall;
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -85,24 +82,24 @@ public class GDKTwoFactorCall {
         }
     }
 
-    public void twofactorRequestCode(final String method) {
+    private void twofactorRequestCode(final String method) {
         GDK.auth_handler_request_code(mTwoFactorCall, method);
     }
 
-    public void twofactorResolveCode(final String value) {
+    private void twofactorResolveCode(final String value) {
         GDK.auth_handler_resolve_code(mTwoFactorCall, value);
     }
 
-    public void twofactorCall() {
+    private void twofactorCall() {
         GDK.auth_handler_call(mTwoFactorCall);
     }
 
-    public void destroyTwofactorCall() {
+    private void destroyTwofactorCall() {
         GDK.destroy_auth_handler(mTwoFactorCall);
     }
 
 
-    public TwoFactorStatusData twofactorGetStatus() throws JsonProcessingException {
+    private TwoFactorStatusData twofactorGetStatus() throws JsonProcessingException {
         final ObjectNode jsonNode = (ObjectNode) GDK.auth_handler_get_status(mTwoFactorCall);
         final TwoFactorStatusData mStatus = mObjectMapper.treeToValue(jsonNode, TwoFactorStatusData.class);
         GDKSession.debugEqual(jsonNode, mStatus);
@@ -113,48 +110,4 @@ public class GDKTwoFactorCall {
     public String toString() {
         return "GDKTwoFactorCall{" + "mStatus=" + mStatus + '}';
     }
-
-
-    public static final CodeResolver CODE_555555_RESOLVER = new CodeResolver() {
-        @Override
-        public SettableFuture<String> hardwareRequest(final GaActivity parent, final HWDeviceRequiredData requiredData) {
-            return null;
-        }
-
-        @Override
-        public SettableFuture<String> code(String method) {
-            final SettableFuture<String> future = SettableFuture.create();
-            String value = "555555";
-            future.set(value);
-            return future;
-        }
-    };
-
-    public static final MethodResolver NULL_RESOLVER = new MethodResolver() {
-        @Override
-        public SettableFuture<String> method(List<String> methods) {
-            return null;
-        }
-    };
-
-    public static final MethodResolver EMAIL_RESOLVER = new MethodResolver() {
-        @Override
-        public SettableFuture<String> method(List<String> methods) {
-            final SettableFuture<String> future = SettableFuture.create();
-            if (methods.contains("email"))
-                future.set("email");
-            else
-                future.set(methods.get(0));
-            return future;
-        }
-    };
-
-    public static final MethodResolver GAUTH_RESOLVER = new MethodResolver() {
-        @Override
-        public SettableFuture<String> method(List<String> methods) {
-            final SettableFuture<String> future = SettableFuture.create();
-            future.set("gauth");
-            return future;
-        }
-    };
 }

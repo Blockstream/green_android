@@ -21,7 +21,7 @@ public abstract class HWWallet {
                                                  final List<InputOutputData> inputs,
                                                  final List<InputOutputData> outputs,
                                                  final Map<String,String> transactions,
-                                                 final List<String> adressTypes);
+                                                 final List<String> addressTypes);
 
     public abstract int getIconResourceId();
 }

@@ -6,27 +6,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JSONConverterImpl implements GDK.JSONConverter {
 
-    private static ObjectMapper mObjectMapper = new ObjectMapper();
+    private static final ObjectMapper mObjectMapper = new ObjectMapper();
 
     @Override
-    public Object toJSONObject(String jsonString) {
+    public Object toJSONObject(final String jsonString) {
 
-        if (jsonString == null || jsonString.equals("null")) {
-            return null;
-        }
-        try {
-            return mObjectMapper.readTree(jsonString);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        if (jsonString != null && !jsonString.equals("null"))
+            try {
+                return mObjectMapper.readTree(jsonString);
+            }
+            catch (final Exception e) {
+                e.printStackTrace();
+            }
         return null;
     }
 
     @Override
-    public String toJSONString(Object jsonObject) {
+    public String toJSONString(final Object jsonObject) {
         return jsonObject.toString();
     }
-
-
 
 }

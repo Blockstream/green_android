@@ -25,7 +25,7 @@ public class SendActivity extends LoggedActivity implements SendInputFragment.On
             final String tx = intent.getStringExtra(INTENT_STRING_TX);
 
             // Show input fragment
-            Bundle bundle = new Bundle();
+            final Bundle bundle = new Bundle();
             bundle.putString(INTENT_STRING_TX, tx);
 
             final Fragment fragment = new SendInputFragment();
@@ -65,7 +65,7 @@ public class SendActivity extends LoggedActivity implements SendInputFragment.On
     @Override
     public void onFinish(final JsonNode transactionData) {
         // Open next fragment
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putString("transaction", transactionData.toString());
         if (mService.getConnectionManager().isHW())
             bundle.putString("hww", mService.getConnectionManager().getHWDeviceData().toString());

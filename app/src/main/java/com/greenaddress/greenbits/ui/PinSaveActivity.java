@@ -63,11 +63,9 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
 
             @Override
             public void onFailure(final Throwable t) {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        stopLoading();
-                        mPinFragment.setEnabled(true);
-                    }
+                runOnUiThread(() -> {
+                    stopLoading();
+                    mPinFragment.setEnabled(true);
                 });
             }
         }, mService.getExecutor());

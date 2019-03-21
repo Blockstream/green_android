@@ -31,8 +31,6 @@ public class TwoFactorActivity extends LoggedActivity {
 
     private String mMethodName; // Current 2FA Method Name
     private String mMethod; // Current 2FA Method
-    private boolean mEnable;
-    private Map<String, String> mLocalizedMap; // 2FA method to localized description
 
     private Button mContinueButton;
     private TextView mPromptText;
@@ -73,10 +71,11 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        mLocalizedMap = UI.getTwoFactorLookup(getResources());
+        // 2FA method to localized description
+        final Map<String, String> mLocalizedMap = UI.getTwoFactorLookup(getResources());
         mMethodName = getIntent().getStringExtra("method");
         mMethod = mMethodName.toLowerCase(Locale.US);
-        mEnable = getIntent().getBooleanExtra("enable", true);
+        final boolean mEnable = getIntent().getBooleanExtra("enable", true);
         twoFactorConfigData = mService.getModel().getTwoFactorConfigDataObservable().getTwoFactorConfigData();
         setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor,
                            mLocalizedMap.get(mMethod)));
@@ -255,12 +254,9 @@ public class TwoFactorActivity extends LoggedActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    detailsText.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            detailsText.requestFocus();
-                            imm.showSoftInput(detailsText, 0);
-                        }
+                    detailsText.postDelayed(() -> {
+                        detailsText.requestFocus();
+                        imm.showSoftInput(detailsText, 0);
                     }, 100);
                 }
             }
@@ -303,9 +299,9 @@ public class TwoFactorActivity extends LoggedActivity {
         });
     }
 
-    private void setEnableDisableResult(boolean enabled)
+    private void setEnableDisableResult(final boolean enabled)
     {
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         intent.putExtra("method",mMethodName);
         intent.putExtra("enable",enabled);
         setResult(Activity.RESULT_OK, intent);
@@ -356,7 +352,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 final GDKTwoFactorCall twoFactorCall = mService.getSession().twoFactorReset(this, email, isDispute);
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
                 UI.toast(this, R.string.id_request_twofactor_reset, Toast.LENGTH_LONG);
-                Intent intent = getIntent();
+                final Intent intent = getIntent();
                 intent.putExtra("method","reset");
                 intent.putExtra("enable", true);
                 setResult(Activity.RESULT_OK, intent);
@@ -397,7 +393,7 @@ public class TwoFactorActivity extends LoggedActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;

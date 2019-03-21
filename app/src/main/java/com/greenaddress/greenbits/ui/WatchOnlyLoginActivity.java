@@ -64,18 +64,10 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
                 UI.popup(WatchOnlyLoginActivity.this, R.string.id_warning_the_username_will_be)
                 .content(R.string.id_your_watchonly_username_will_be)
                 .canceledOnTouchOutside(false)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                        mRememberSwitch.setChecked(false);
-                    }
-                })
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(final MaterialDialog dlg, final DialogAction which) {
-                        mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, UI.getText(mUsernameText)).apply();
-                    }
-                }).build().show();
+                .onNegative((dlg, which) -> mRememberSwitch.setChecked(false))
+                .onPositive((dlg,
+                             which) -> mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, UI.getText(
+                                                                        mUsernameText)).apply()).build().show();
             }
         });
     }

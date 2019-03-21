@@ -325,7 +325,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         try {
             final GDKTwoFactorCall gdkTwoFactorCall = mService.getSession().changeSettings(
                 getActivity(), settings.toObjectNode());
-            gdkTwoFactorCall.resolve(GDKTwoFactorCall.EMAIL_RESOLVER, GDKTwoFactorCall.CODE_555555_RESOLVER); // should use null
+            gdkTwoFactorCall.resolve(null, null);
             mService.getModel().getSettingsObservable().setSettings(settings);
             UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
         } catch (final Exception e) {
@@ -552,7 +552,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     @Override
-    public void update(Observable observable, Object o) {
+    public void update(final Observable observable, final Object o) {
         getActivity().runOnUiThread(() -> {
             if (observable instanceof AvailableCurrenciesObservable) {
                 setPricingEntries((AvailableCurrenciesObservable) observable);

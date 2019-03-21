@@ -41,11 +41,11 @@ import java.util.Map;
 public class GDKSession {
 
     // Fine to have a static objectMapper according to docs if using always same configuration
-    private static ObjectMapper mObjectMapper = new ObjectMapper();
+    private final static ObjectMapper mObjectMapper = new ObjectMapper();
     private static GDKSession instance;
 
-    private Object mNativeSession;
-    private NotificationHandlerImpl mNotification;
+    private final Object mNativeSession;
+    private final NotificationHandlerImpl mNotification;
 
     static {
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -160,7 +160,7 @@ public class GDKSession {
 
     public TwoFactorConfigData getTwoFactorConfig() throws IOException  {
         final ObjectNode twofactorConfig = (ObjectNode) GDK.get_twofactor_config(mNativeSession);
-        TwoFactorConfigData twoFactorConfigData = mObjectMapper.treeToValue(twofactorConfig, TwoFactorConfigData.class);
+        final TwoFactorConfigData twoFactorConfigData = mObjectMapper.treeToValue(twofactorConfig, TwoFactorConfigData.class);
         debugEqual(twofactorConfig, twoFactorConfigData);
         return twoFactorConfigData;
     }
@@ -170,14 +170,14 @@ public class GDKSession {
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
         final ObjectNode balanceData = (ObjectNode) GDK.get_balance(mNativeSession, details);
-        BalanceData balanceData1 = mObjectMapper.treeToValue(balanceData, BalanceData.class);
+        final BalanceData balanceData1 = mObjectMapper.treeToValue(balanceData, BalanceData.class);
         debugEqual(balanceData, balanceData1);
         return balanceData1;
     }
 
     public BalanceData convertBalance(final BalanceData balanceData) throws IOException {
         final ObjectNode convertedBalanceData = (ObjectNode) GDK.convert_amount(mNativeSession, balanceData);
-        BalanceData balanceData1 = mObjectMapper.treeToValue(convertedBalanceData, BalanceData.class);
+        final BalanceData balanceData1 = mObjectMapper.treeToValue(convertedBalanceData, BalanceData.class);
         debugEqual(convertedBalanceData, balanceData1);
         return balanceData1;
     }
@@ -193,8 +193,7 @@ public class GDKSession {
     }
 
     public ObjectNode createTransactionRaw(final JSONData createTransactionData) {
-        final ObjectNode data = (ObjectNode) GDK.create_transaction(mNativeSession, createTransactionData);
-        return data;
+        return (ObjectNode) GDK.create_transaction(mNativeSession, createTransactionData);
     }
 
     public ObjectNode createTransactionRaw(final ObjectNode tx) {
@@ -217,25 +216,8 @@ public class GDKSession {
         return transaction;
     }
 
-    public CreateTransactionData createTransaction(final JSONData createTransactionData) throws IOException {
-        final ObjectNode data = (ObjectNode) GDK.create_transaction(mNativeSession, createTransactionData);
-        CreateTransactionData createTransactionData1 = mObjectMapper.treeToValue(data, CreateTransactionData.class);
-        debugEqual(data, createTransactionData1);
-        return createTransactionData1;
-    }
-
     public GDKTwoFactorCall signTransactionRaw(final Activity parent, final ObjectNode createTransactionData) {
         return new GDKTwoFactorCall(parent, GDK.sign_transaction(mNativeSession, createTransactionData));
-    }
-
-    public GDKTwoFactorCall signTransaction(final Activity parent, final JSONData createTransactionData) {
-        return new GDKTwoFactorCall(parent, GDK.sign_transaction(mNativeSession, createTransactionData));
-    }
-
-    public GDKTwoFactorCall sendTransaction(final Activity parent, final JSONData txDetails) {
-        final Object twoFactorCall = GDK.send_transaction(mNativeSession, txDetails);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
-        return gdkTwoFactorCall;
     }
 
     public GDKTwoFactorCall sendTransactionRaw(final Activity parent, final ObjectNode txDetails) {
@@ -273,7 +255,7 @@ public class GDKSession {
         final boolean isProduction = !BuildConfig.DEBUG;
 
         for (final JsonNode node : nodes) {
-            String networkName = node.asText();
+            final String networkName = node.asText();
             try {
                 final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
                 if (!(isProduction && data.getDevelopment())) {
@@ -310,7 +292,7 @@ public class GDKSession {
 
     public PinData setPin(final String mnemonic, final String pin, final String device) throws IOException {
         final ObjectNode pinData = (ObjectNode) GDK.set_pin(mNativeSession, mnemonic, pin, device);
-        PinData value = mObjectMapper.treeToValue(pinData, PinData.class);
+        final PinData value = mObjectMapper.treeToValue(pinData, PinData.class);
         debugEqual(pinData, value);
         return value;
     }
@@ -341,16 +323,9 @@ public class GDKSession {
         return (ObjectNode) GDK.get_settings(mNativeSession);
     }
 
-    public CreateTransactionData getTransactionDetails(final String txHash) throws JsonProcessingException {
-        ObjectNode transactionDetails = (ObjectNode) GDK.get_transaction_details(mNativeSession, txHash);
-        CreateTransactionData createTransactionData = mObjectMapper.treeToValue(transactionDetails, CreateTransactionData.class);
-        debugEqual(transactionDetails,createTransactionData);
-        return createTransactionData;
-    }
-
-    protected static void debugEqual(ObjectNode jsonNode, JSONData data) {
+    protected static void debugEqual(final ObjectNode jsonNode, final JSONData data) {
         if(!jsonNode.toString().equals(data.toString())) {
-            Class<? extends JSONData> aClass = data.getClass();
+            final Class<? extends JSONData> aClass = data.getClass();
             Log.d("DBGEQ", "jsonData type " + aClass);
             Log.d("DBGEQ", "jsonNode " + jsonNode);
             Log.d("DBGEQ", "jsonData " + data);
@@ -387,7 +362,7 @@ public class GDKSession {
         mNotification.setModel(service);
     }
 
-    public GDKTwoFactorCall changeSettings(final Activity parent, ObjectNode setting) {
+    public GDKTwoFactorCall changeSettings(final Activity parent, final ObjectNode setting) {
         return new GDKTwoFactorCall(parent, GDK.change_settings(mNativeSession, setting));
     }
 }

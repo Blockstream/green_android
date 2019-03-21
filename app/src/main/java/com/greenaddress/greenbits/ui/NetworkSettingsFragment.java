@@ -48,8 +48,8 @@ public class NetworkSettingsFragment extends DialogFragment {
 
         @Override
         public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            LinearLayout ll = new LinearLayout(getContext());
-            RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(
+            final LinearLayout ll = new LinearLayout(getContext());
+            final RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(
                 RecyclerView.LayoutParams.MATCH_PARENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT);
             ll.setPadding(8, 8, 8, 8);
@@ -139,7 +139,7 @@ public class NetworkSettingsFragment extends DialogFragment {
     NetworksViewAdapter mNetworksViewAdapter;
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -168,7 +168,8 @@ public class NetworkSettingsFragment extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_networksettings, container, false);
 
         mProxySection = UI.find(v, R.id.proxySection);
@@ -212,7 +213,6 @@ public class NetworkSettingsFragment extends DialogFragment {
                 .apply();
                 getGAService().getConnectionManager().setProxyHostAndPort(socksHost, socksPort);
             }
-            getGAService().getConnectionManager().resetAttempts();
             getGAService().setCurrentNetworkId(networkName);
             getGAService().getConnectionManager().setNetwork(networkName);
 
@@ -236,7 +236,7 @@ public class NetworkSettingsFragment extends DialogFragment {
         mProxySection.setVisibility(isProxyEnabled ? View.VISIBLE : View.GONE);
     }
 
-    private void onProxyChange(CompoundButton compoundButton, boolean b) {
+    private void onProxyChange(final CompoundButton compoundButton, final boolean b) {
         Log.d("NETDLG", "onProxyChange " + mNetworksViewAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.PROXY_ENABLED, b).apply();
         getGAService().getConnectionManager().setProxyEnabled(b);
@@ -250,7 +250,7 @@ public class NetworkSettingsFragment extends DialogFragment {
         mSwitchTor.setEnabled(!TextUtils.isEmpty(selectedNetwork.getWampOnionUrl()));
     }
 
-    private void onTorChange(CompoundButton compoundButton, boolean b) {
+    private void onTorChange(final CompoundButton compoundButton, final boolean b) {
         Log.d("NETDLG", "onTorChange " + mNetworksViewAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
         getGAService().getConnectionManager().setTorEnabled(b);

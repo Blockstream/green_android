@@ -47,11 +47,9 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private Button mNextButton;
     private Button mSendAllButton;
 
-    private int mBlockTargets[];
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;
     private long mMinFeeRate;
-    private Double mPrefDefaultFeeRate;
     private Long mVsize;
 
     private static final int mButtonIds[] =
@@ -65,7 +63,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                              final Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView -> " + TAG);
-        mBlockTargets = getBlockTargets();
+        final int[] mBlockTargets = getBlockTargets();
         // Get arguments from bundle
         final Bundle b = this.getArguments();
         if (b == null)
@@ -161,8 +159,8 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             if (isBump) {
                 mFeeEstimates[3] = getOldFeeRate(mTx) + mMinFeeRate;
             } else if (defaultFeerate != null) {
-                mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
-                mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate*1000.0).longValue();
+                final Double mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
+                mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate *1000.0).longValue();
                 updateFeeSummaries();
             }
 
@@ -193,7 +191,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private int[] getBlockTargets() {
         final String[] stringArray = getResources().getStringArray(R.array.fee_target_values);
-        int[] blockTargets = {
+        final int[] blockTargets = {
             Integer.parseInt(stringArray[0]),
             Integer.parseInt(stringArray[1]),
             Integer.parseInt(stringArray[2]),

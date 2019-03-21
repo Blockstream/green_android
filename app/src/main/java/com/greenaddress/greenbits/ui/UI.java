@@ -44,7 +44,6 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +57,7 @@ import java.util.Set;
 public abstract class UI {
     private static final String TAG = UI.class.getSimpleName();
 
-    public static final int INVALID_RESOURCE_ID = 0;
+    static final int INVALID_RESOURCE_ID = 0;
     public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
     public enum FEE_TARGET {
         HIGH(3),
@@ -70,14 +69,10 @@ public abstract class UI {
         FEE_TARGET(int block) { mBlock = block; }
         public int getBlock() { return mBlock; }
     }
-    public static final FEE_TARGET[] FEE_TARGET_VALUES = FEE_TARGET.values();
 
-    private static final String MICRO_BTC = "\u00B5BTC";
     private static final MonetaryFormat BTC = new MonetaryFormat().shift(0).minDecimals(8).noCode();
     private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(5).noCode();
     private static final MonetaryFormat UBTC = new MonetaryFormat().shift(6).minDecimals(2).noCode();
-    private static final DecimalFormat mDecimalFmt = new DecimalFormat("#,###.########", DecimalFormatSymbols.getInstance(
-                                                                           Locale.US));
 
     // Class to unify cancel and dismiss handling */
     private static class DialogCloseHandler implements DialogInterface.OnCancelListener,
@@ -85,7 +80,7 @@ public abstract class UI {
         private final Runnable mCallback;
         private final boolean mCancelOnly;
 
-        public DialogCloseHandler(final Runnable callback, final boolean cancelOnly) {
+        DialogCloseHandler(final Runnable callback, final boolean cancelOnly) {
             mCallback = callback;
             mCancelOnly = cancelOnly;
         }
@@ -95,28 +90,26 @@ public abstract class UI {
         public void onDismiss(final DialogInterface d) { if (!mCancelOnly) mCallback.run(); }
     }
 
-    public static void setDialogCloseHandler(final Dialog d, final Runnable callback, final boolean cancelOnly) {
+    private static void setDialogCloseHandler(final Dialog d, final Runnable callback, final boolean cancelOnly) {
         final DialogCloseHandler handler = new DialogCloseHandler(callback, cancelOnly);
         d.setOnCancelListener(handler);
         d.setOnDismissListener(handler);
     }
 
-    public static void setDialogCloseHandler(final Dialog d, final Runnable callback) {
+    static void setDialogCloseHandler(final Dialog d, final Runnable callback) {
         setDialogCloseHandler(d, callback, false);
     }
 
     public static MaterialDialog dismiss(final Activity a, final Dialog d) {
         if (d != null)
-            if (a == null)
-                d.dismiss();
-            else
+            if (a != null)
                 a.runOnUiThread(new Runnable() { public void run() { d.dismiss(); } });
+            else
+                d.dismiss();
         return null;
+
     }
 
-    public static View inflateDialog(final Fragment f, final int id) {
-        return inflateDialog(f.getActivity(), id);
-    }
 
     public static View inflateDialog(final Activity a, final int id) {
         return a.getLayoutInflater().inflate(id, null, false);
@@ -127,21 +120,18 @@ public abstract class UI {
                e.getKeyCode() == KeyEvent.KEYCODE_ENTER;
     }
 
-    public static TextView.OnEditorActionListener getListenerRunOnEnter(final Runnable r) {
-        return new EditText.OnEditorActionListener() {
-                   @Override
-                   public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-                       if (actionId == EditorInfo.IME_ACTION_DONE ||
-                           actionId == EditorInfo.IME_ACTION_SEARCH ||
-                           actionId == EditorInfo.IME_ACTION_SEND ||
-                           isEnterKeyDown(event)) {
-                           if (event == null || !event.isShiftPressed()) {
-                               r.run(); // The user is done typing.
-                               return true; // Consume.
-                           }
+    static TextView.OnEditorActionListener getListenerRunOnEnter(final Runnable r) {
+        return (v, actionId, event) -> {
+                   if (actionId == EditorInfo.IME_ACTION_DONE ||
+                       actionId == EditorInfo.IME_ACTION_SEARCH ||
+                       actionId == EditorInfo.IME_ACTION_SEND ||
+                       isEnterKeyDown(event)) {
+                       if (event == null || !event.isShiftPressed()) {
+                           r.run(); // The user is done typing.
+                           return true; // Consume.
                        }
-                       return false; // Pass on to other listeners.
                    }
+                   return false; // Pass on to other listeners.
         };
     }
 
@@ -178,7 +168,7 @@ public abstract class UI {
         return popup(a, title, android.R.string.ok, android.R.string.cancel);
     }
 
-    public static MaterialDialog hideDialog(final MaterialDialog dialog) {
+    static MaterialDialog hideDialog(final MaterialDialog dialog) {
         if (dialog != null) {
             try {
                 dialog.cancel();
@@ -187,7 +177,7 @@ public abstract class UI {
         return null;
     }
 
-    public static Map<String, String> getTwoFactorLookup(final Resources res) {
+    static Map<String, String> getTwoFactorLookup(final Resources res) {
         final List<String> localized = Arrays.asList(res.getStringArray(R.array.twoFactorChoices));
         final List<String> methods = Arrays.asList(res.getStringArray(R.array.twoFactorMethods));
         final Map<String, String> map = new HashMap<>();
@@ -196,7 +186,7 @@ public abstract class UI {
         return map;
     }
 
-    public static MaterialDialog popupWait(final Activity a, final int title) {
+    static MaterialDialog popupWait(final Activity a, final int title) {
         final int id = INVALID_RESOURCE_ID;
         final MaterialDialog dialog = popup(a, title, id).progress(true, 0).build();
         dialog.show();
@@ -204,19 +194,17 @@ public abstract class UI {
     }
 
     public static void toast(final Activity activity, final String msg, final Button reenable, final int len) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                if (reenable != null)
-                    reenable.setEnabled(true);
-                Log.d(TAG, "Toast: " + msg);
-                final Resources res = activity.getResources();
-                final String translated = i18n(res, msg);
-                Toast t = Toast.makeText(activity, translated, len);
-                View v = t.getView();
-                v.setBackgroundColor(0xaf000000);
-                ((TextView) v.findViewById(android.R.id.message)).setTextColor(res.getColor(R.color.accentLight));
-                t.show();
-            }
+        activity.runOnUiThread(() -> {
+            if (reenable != null)
+                reenable.setEnabled(true);
+            Log.d(TAG, "Toast: " + msg);
+            final Resources res = activity.getResources();
+            final String translated = i18n(res, msg);
+            final Toast t = Toast.makeText(activity, translated, len);
+            final View v = t.getView();
+            v.setBackgroundColor(0xaf000000);
+            ((TextView) v.findViewById(android.R.id.message)).setTextColor(res.getColor(R.color.accentLight));
+            t.show();
         });
     }
 
@@ -252,7 +240,7 @@ public abstract class UI {
         public void afterTextChanged(final Editable s) { }
     }
 
-    public static < T extends View > T mapClick(final View parent, final int id, final View.OnClickListener fn) {
+    static < T extends View > T mapClick(final View parent, final int id, final View.OnClickListener fn) {
         final T v = find(parent, id);
         if (v != null)
             v.setOnClickListener(fn);
@@ -266,27 +254,16 @@ public abstract class UI {
         return v;
     }
 
-    public static < T extends View > T mapClick(final Activity activity, final int id, final Intent activityIntent) {
-        return mapClick(activity, id, new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                activity.startActivity(activityIntent);
-            }
-        });
-    }
-
     public static void unmapClick(final View v) {
         if (v != null)
             v.setOnClickListener(null);
     }
 
-    public static void mapEnterToPositive(final Dialog dialog, final int editId) {
+    static void mapEnterToPositive(final Dialog dialog, final int editId) {
         final TextView edit = UI.find(dialog, editId);
-        edit.setOnEditorActionListener(getListenerRunOnEnter(new Runnable() {
-            public void run() {
-                final MaterialDialog md = (MaterialDialog) dialog;
-                md.onClick(md.getActionButton(DialogAction.POSITIVE));
-            }
+        edit.setOnEditorActionListener(getListenerRunOnEnter(() -> {
+            final MaterialDialog md = (MaterialDialog) dialog;
+            md.onClick(md.getActionButton(DialogAction.POSITIVE));
         }));
     }
 
@@ -304,7 +281,7 @@ public abstract class UI {
     }
 
     // Keyboard hiding taken from https://stackoverflow.com/a/11656129
-    public static void attachHideKeyboardListener(final Activity activity, final View view) {
+    static void attachHideKeyboardListener(final Activity activity, final View view) {
         if (idsToNotReplace.contains(view.getId()))
             return;
         // Set up touch listener for non-text box views to hide keyboard.
@@ -316,13 +293,13 @@ public abstract class UI {
         //If a layout container, iterate over children and seed recursion.
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                View innerView = ((ViewGroup) view).getChildAt(i);
+                final View innerView = ((ViewGroup) view).getChildAt(i);
                 attachHideKeyboardListener(activity, innerView);
             }
         }
     }
 
-    private static void hideSoftKeyboard(Activity activity) {
+    private static void hideSoftKeyboard(final Activity activity) {
         if (activity == null)
             return;
         final InputMethodManager inputMethodManager =
@@ -335,25 +312,25 @@ public abstract class UI {
     }
 
     // Show/Hide controls
-    public static void showIf(final boolean condition, final View v, final int hiddenViewState) {
+    static void showIf(final boolean condition, final View v, final int hiddenViewState) {
         if (v != null)
             v.setVisibility(condition ? View.VISIBLE : hiddenViewState);
     }
 
-    public static void showIf(final boolean condition, final View v) {
+    static void showIf(final boolean condition, final View v) {
         showIf(condition, v, View.GONE);
     }
 
     public static void show(final View v) { showIf(true, v); }
 
-    public static void hideIf(final boolean condition, final View v) {
+    static void hideIf(final boolean condition, final View v) {
         showIf(!condition, v);
     }
 
     public static void hide(final View v) { showIf(false, v); }
 
     // Enable/Disable controls
-    public static void enableIf(final boolean condition, final View v) {
+    static void enableIf(final boolean condition, final View v) {
         v.setEnabled(condition);
     }
 
@@ -425,15 +402,15 @@ public abstract class UI {
         return UBTC;
     }
 
-    public static String formatCoinValue(final GaService service, final Coin value) {
+    static String formatCoinValue(final GaService service, final Coin value) {
         return getUnitFormat(service).format(value).toString();
     }
 
-    public static String formatCoinValueWithUnit(final GaService service, final Coin value) {
+    static String formatCoinValueWithUnit(final GaService service, final Coin value) {
         return getUnitFormat(service).format(value).toString() + " " + service.getBitcoinUnit();
     }
 
-    public static Coin parseCoinValue(final GaService service, final String value) {
+    static Coin parseCoinValue(final GaService service, final String value) {
         return getUnitFormat(service).parse(value);
     }
 
@@ -445,8 +422,8 @@ public abstract class UI {
         return df.format(feePerByte) + " satoshi / vbyte";
     }
 
-    public static final Spannable getColoredString(final String string, final int color) {
-        Spannable sp = new SpannableString(string);
+    public static Spannable getColoredString(final String string, final int color) {
+        final Spannable sp = new SpannableString(string);
         sp.setSpan(new ForegroundColorSpan(color), 0, sp.length(), 0);
         return sp;
     }
