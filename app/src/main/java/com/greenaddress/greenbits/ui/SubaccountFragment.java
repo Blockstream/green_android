@@ -28,7 +28,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     private boolean mBlockWaitDialog;
     private boolean mIsDirty;
     protected View mView;
-    private final Runnable mDialogCB = () -> mWaitDialog = null;;
+    private final Runnable mDialogCB = () -> mWaitDialog = null;
 
     protected Observer mVerifiedTxObserver;
     protected Observer mNewTxObserver;

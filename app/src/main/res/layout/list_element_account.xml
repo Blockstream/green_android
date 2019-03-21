@@ -32,7 +32,6 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/mainBalance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -124,7 +123,6 @@
             android:baselineAligned="false">
 
             <LinearLayout
-                android:id="@+id/actionSendLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -159,7 +157,6 @@
                 android:layout_margin="5dp"/>
 
             <LinearLayout
-                android:id="@+id/actionReceiveLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/buttonJungleGreen"

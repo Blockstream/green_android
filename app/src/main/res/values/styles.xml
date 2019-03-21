@@ -109,12 +109,6 @@
     </style>
     <color name="_preference_fallback_accent_color">@color/grey_light</color>
 
-    <style name="AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="android:textColor">@color/accent</item>
-        <item name="android:headerDividersEnabled">true</item>
-        <item name="android:background">@color/windowBackground</item>
-    </style>
-
 
     <style name="SectionTitle">
         <item name="android:textAllCaps">true</item>

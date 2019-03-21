@@ -21,6 +21,7 @@ import org.bitcoinj.core.VarInt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,7 +91,7 @@ public class BTChipHWWallet extends HWWallet {
 
     public String signMessage(final GaActivity parent, final List<Integer> path, final String message) {
         try {
-            mDongle.signMessagePrepare(path, message.getBytes("UTF-8"));
+            mDongle.signMessagePrepare(path, message.getBytes(StandardCharsets.UTF_8));
             return Wally.hex_from_bytes(mDongle.signMessageSign(new byte[] {0}).getSignature());
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage());
