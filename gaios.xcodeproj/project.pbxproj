@@ -33,8 +33,7 @@
 		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D20CB218161B10089C379 /* WatchOnlySignIn.swift */; };
-		098192832176D05500D8434F /* GreenApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* GreenApplication.swift */; };
-		098192852176D12F00D8434F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192842176D12F00D8434F /* main.swift */; };
+		098192832176D05500D8434F /* EventWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* EventWindow.swift */; };
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
 		0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85920DD859200F6AAAB /* SendBtcViewController.swift */; };
@@ -155,8 +154,7 @@
 		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		097D20CB218161B10089C379 /* WatchOnlySignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlySignIn.swift; sourceTree = "<group>"; };
-		098192822176D05500D8434F /* GreenApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenApplication.swift; sourceTree = "<group>"; };
-		098192842176D12F00D8434F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		098192822176D05500D8434F /* EventWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventWindow.swift; sourceTree = "<group>"; };
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
 		0992F85920DD859200F6AAAB /* SendBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcViewController.swift; sourceTree = "<group>"; };
@@ -399,8 +397,7 @@
 				092C7BC620D2381700F90DF2 /* Views */,
 				092E1EAE20CF98AF00362253 /* helpers */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
-				098192842176D12F00D8434F /* main.swift */,
-				098192822176D05500D8434F /* GreenApplication.swift */,
+				098192822176D05500D8434F /* EventWindow.swift */,
 				8128612622242E86005598D3 /* WatchOnlySignInView.xib */,
 				097D20CB218161B10089C379 /* WatchOnlySignIn.swift */,
 				818C740C2224395B00B0F794 /* PinLoginView.xib */,
@@ -770,7 +767,6 @@
 				811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
-				098192852176D12F00D8434F /* main.swift in Sources */,
 				811ED52921BF59C30033A4A1 /* TwoFactorConfig.swift in Sources */,
 				09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
@@ -823,7 +819,7 @@
 				FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
-				098192832176D05500D8434F /* GreenApplication.swift in Sources */,
+				098192832176D05500D8434F /* EventWindow.swift in Sources */,
 				81E9B80621C946CE004D87B6 /* WalletFullCardView.swift in Sources */,
 				097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */,
 			);

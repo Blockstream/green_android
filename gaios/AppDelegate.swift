@@ -26,9 +26,10 @@ func getGdkNetwork(_ network: String) throws -> [String: Any]? {
     return result![network] as? [String: Any]
 }
 
+@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
+    var window: EventWindow?
     static let service = GreenAddressService()
 
     static func getService() -> GreenAddressService {
@@ -86,9 +87,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        setupAppearance()
         // Override point for customization after application launch.
+        setupAppearance()
 
+        // Load custom window to handle touches event
+        window = EventWindow.init(frame: UIScreen.main.bounds)
+        window?.startObserving()
+
+        // Initialize network settings
         onFirstInitialization(network: getNetwork())
         AppDelegate.getService().reset()
 
@@ -120,6 +126,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         ScreenLocker.shared.stopObserving()
+        window?.stopObserving()
     }
+
 }
 
