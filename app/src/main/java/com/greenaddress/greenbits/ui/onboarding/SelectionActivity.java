@@ -64,6 +64,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         mService.getExecutor().execute(() -> {
             final String mnemonic = mMnemonic;
             try {
+                mService.resetSession();
                 mService.getConnectionManager().connect();
                 mService.getSession().registerUser(this, null, mnemonic).resolve(null, null);
                 mService.getConnectionManager().loginWithMnemonic(mnemonic, "");
@@ -73,6 +74,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 } else {
                     UI.toast(SelectionActivity.this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
                 }
+                stopLoading();
             }
         });
     }
@@ -108,6 +110,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         super.onLoginFailure();
         stopLoading();
         final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
+        mService.getConnectionManager().clearPreviousLoginError();
         final int code = getCode(lastLoginException);
         if (code == GDK.GA_RECONNECT) {
             UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);

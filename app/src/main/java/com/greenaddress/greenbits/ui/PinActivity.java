@@ -75,7 +75,6 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         final int code = getCode(lastLoginException);
         if (code == GDK.GA_NOT_AUTHORIZED) {
             if (counter < 3) {
-                mService.getConnectionManager().clearPreviousLoginError();
                 editor.putInt("counter", counter);
                 message = getString(R.string.id_invalid_pin_you_have_1d, 3 - counter);
             } else {

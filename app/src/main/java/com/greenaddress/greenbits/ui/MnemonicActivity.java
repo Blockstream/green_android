@@ -246,14 +246,22 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             return;
         }
 
+
         if (isHexSeed(mnemonic)) {
-            mService.getExecutor().execute(() -> cm.loginWithMnemonic(mnemonic, ""));
+            mService.getExecutor().execute(() -> {
+                mService.resetSession();
+                cm.loginWithMnemonic(mnemonic, "");
+            });
         } else if (!mEncryptedSwitch.isChecked()) {
-            mService.getExecutor().execute(() -> cm.loginWithMnemonic(mnemonic, ""));
+            mService.getExecutor().execute(() -> {
+                mService.resetSession();
+                cm.loginWithMnemonic(mnemonic, "");
+            });
         } else {
             CB.after(askForPassphrase(), new CB.Toast<String>(this, mOkButton) {
                 @Override
                 public void onSuccess(final String mnemonicPassword) {
+                    mService.resetSession();
                     cm.loginWithMnemonic(mnemonic, mnemonicPassword);
                 }
             });
@@ -424,6 +432,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         super.onLoginFailure();
         final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
         final int code = getCode(lastLoginException);
+        mService.getConnectionManager().clearPreviousLoginError();
         if (code == GDK.GA_RECONNECT) {
             UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
         } else {
