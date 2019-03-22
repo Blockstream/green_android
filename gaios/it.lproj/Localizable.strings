@@ -227,7 +227,7 @@
 "id_normal" = "Normale";
 "id_not_connected_connecting_in_ds_" = "Non connesso. Connessione in %ds …";
 "id_notifications" = "Notifiche";
-"id_now" = "Now";
+"id_now" = "Ora";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Un tentativo rimasto";
 "id_one_network_must_be_selected" = "Un network dev'essere selezionato. Bitcoin selezionato di default";
@@ -395,7 +395,7 @@
 "id_version_1s_2s" = "Versione %1$@%2$@";
 "id_view_in_explorer" = "Vedi nell'Explorer";
 "id_waiting_for_transaction" = "In attesa della transazione…";
-"id_wallet_creation_failed" = "Wallet creation failed";
+"id_wallet_creation_failed" = "Creazione wallet fallita";
 "id_wallets" = "Wallets";
 "id_warning" = "Attenzione!";
 "id_warning_nononion_address" = "Attenzione: Rilevato indirizzo non-.onion!";

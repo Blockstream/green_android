@@ -227,7 +227,7 @@
 "id_normal" = "Нормальный";
 "id_not_connected_connecting_in_ds_" = "Нет соединения. Соединение произойдет через%d сек...";
 "id_notifications" = "Уведомления";
-"id_now" = "Now";
+"id_now" = "Сейчас";
 "id_ok" = "Ok";
 "id_one_attempt_remaining" = "Осталась одна попытка";
 "id_one_network_must_be_selected" = "Необходимо выбрать одну из сетей. Биткоин установлен по умолчанию";
@@ -395,7 +395,7 @@
 "id_version_1s_2s" = "Версия %1$@ %2$@";
 "id_view_in_explorer" = "Просмотреть в обозревателе";
 "id_waiting_for_transaction" = "Ожидание транзакции ...";
-"id_wallet_creation_failed" = "Wallet creation failed";
+"id_wallet_creation_failed" = "Не удалось создать кошелек";
 "id_wallets" = "Кошельки";
 "id_warning" = "Внимание!";
 "id_warning_nononion_address" = "Внимание! Адрес не содержит .onion!";
@@ -433,6 +433,6 @@
 "id_your_pin_or_your_mnemonic_will" = "Для доступа к кошельку потребуется PIN-код или мнемоническая фраза.";
 "id_your_s_sent_to_s_has_been" = "Ваша %@ отправленная на %@ подтверждена";
 "id_your_transactions_will_be_shown" = "Ваши транзакции будут показаны здесь.";
-"id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
+"id_your_twofactor_threshold_is_s" = "Ваш двухфакторный лимит расходов составляет %@.";
 "id_your_wallet_is_not_yet_fully" = "Ваш кошелек не защищен.\nПожалуйста, включите двухфакторную аутентификацию.";
 "id_your_watchonly_username_will_be" = "Имя пользователя вашего холодного кошелька будет храниться в незашифрованном виде на этом устройстве. Если ваше устройство будет взломано, третьи стороны смогут наблюдать за вашими транзакциями. Нажмите «ОК», чтобы продолжить.";
