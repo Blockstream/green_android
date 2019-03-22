@@ -229,7 +229,7 @@
   <string name="id_normal">Normale</string>
   <string name="id_not_connected_connecting_in_ds_">Non connesso. Connessione in %ds …</string>
   <string name="id_notifications">Notifiche</string>
-  <string name="id_now">Now</string>
+  <string name="id_now">Ora</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">Un tentativo rimasto</string>
   <string name="id_one_network_must_be_selected">Un network dev\'essere selezionato. Bitcoin selezionato di default</string>
@@ -397,7 +397,7 @@
   <string name="id_version_1s_2s">Versione %1$s%2$s</string>
   <string name="id_view_in_explorer">Vedi nell\'Explorer</string>
   <string name="id_waiting_for_transaction">In attesa della transazione…</string>
-  <string name="id_wallet_creation_failed">Wallet creation failed</string>
+  <string name="id_wallet_creation_failed">Creazione wallet fallita</string>
   <string name="id_wallets">Wallets</string>
   <string name="id_warning">Attenzione!</string>
   <string name="id_warning_nononion_address">Attenzione: Rilevato indirizzo non-.onion!</string>
