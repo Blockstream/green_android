@@ -734,7 +734,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 			);
@@ -745,7 +745,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1044,14 +1044,8 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";
@@ -1077,14 +1071,8 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphone/src/libgreenaddress.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk/build-clang-ios-iphonesim/src/libgreenaddress.a";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk/src";

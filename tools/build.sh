@@ -30,7 +30,7 @@ rm -rf build-*
 cd ..
 
 if [ ! -d Pods ]; then
-    pod install --repo-update
+    pod install
 fi
 
 SDK=$(xcodebuild -showsdks | grep $DEVICE | tr -s ' ' | tr -d '\-' | cut -f 3-)
