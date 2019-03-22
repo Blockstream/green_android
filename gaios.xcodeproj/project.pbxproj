@@ -79,7 +79,7 @@
 		8128611F22221326005598D3 /* TwoFactorLimitView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128611E22221326005598D3 /* TwoFactorLimitView.xib */; };
 		8128612122221347005598D3 /* ScreenLockView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128612022221347005598D3 /* ScreenLockView.xib */; };
 		8128612722242E86005598D3 /* WatchOnlySignInView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128612622242E86005598D3 /* WatchOnlySignInView.xib */; };
-		81310C452189D10F00563B91 /* GDKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* GDKHelper.swift */; };
+		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
@@ -212,7 +212,7 @@
 		8128611E22221326005598D3 /* TwoFactorLimitView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TwoFactorLimitView.xib; sourceTree = "<group>"; };
 		8128612022221347005598D3 /* ScreenLockView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScreenLockView.xib; sourceTree = "<group>"; };
 		8128612622242E86005598D3 /* WatchOnlySignInView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WatchOnlySignInView.xib; sourceTree = "<group>"; };
-		81310C442189D10F00563B91 /* GDKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GDKHelper.swift; sourceTree = "<group>"; };
+		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
 		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
@@ -295,49 +295,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		092C7BC620D2381700F90DF2 /* Views */ = {
+		092E1EAE20CF98AF00362253 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
 				6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */,
-				092D47F820EA2907005720F3 /* TransactionTableCell.swift */,
-				092D47F620EA28ED005720F3 /* TransactionTableCell.xib */,
-				093544D7212E86DF00134235 /* CurrencyCell.swift */,
-				0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */,
-				81E9B80121C92EF7004D87B6 /* WalletCardView.xib */,
-				81E9B7FF21C92DB1004D87B6 /* WalletCardView.swift */,
-				81E9B80321C94525004D87B6 /* WalletFullCardView.xib */,
-				81E9B80521C946CE004D87B6 /* WalletFullCardView.swift */,
-				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
-				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
-				671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */,
-				811B963721F5FC8300DE02CB /* HeaderWalletsCollection.swift */,
-				811B963921F5FC9500DE02CB /* HeaderWalletsCollection.xib */,
-				811B963D21F72B5200DE02CB /* FooterWalletsCollection.swift */,
-				811B963B21F72A5B00DE02CB /* FooterWalletsCollection.xib */,
-				81640CDF21FB2B4200E7F79C /* FeeButton.xib */,
-				81640CDD21FB2B1100E7F79C /* FeeButton.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		092E1EAE20CF98AF00362253 /* helpers */ = {
-			isa = PBXGroup;
-			children = (
 				811006E02199C5BF00D14414 /* UIErrorLabel.swift */,
-				81310C442189D10F00563B91 /* GDKHelper.swift */,
 				09309F19212F8D8700DE093B /* SearchTextField.swift */,
 				0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */,
 				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
 				811ED52621BE8FCA0033A4A1 /* PopupPromise.swift */,
-				81D94CF021B93905003B03F9 /* Settings.swift */,
-				811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */,
 				811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */,
-				81205D6821C3B7EB005180CF /* Events.swift */,
 				81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */,
 			);
-			path = helpers;
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		0EB695B7782BE521E459216A /* Pods */ = {
@@ -391,39 +363,22 @@
 			children = (
 				81073D7A21E8B27700E08F86 /* Localizable.strings */,
 				8187B47E21E9026900235A35 /* InfoPlist.strings */,
+				81A3B53E2244AE8C0091B6BC /* Authentication */,
+				81A3B53F2244AE9A0091B6BC /* Wallet */,
 				811EE25B219EBB4500684AD8 /* Onboarding */,
 				811EE25A219EBB1500684AD8 /* Settings */,
+				81A3B5412244B11F0091B6BC /* AuthenticationFactors */,
 				FF29CA7022374D670035F95A /* Extensions */,
-				092C7BC620D2381700F90DF2 /* Views */,
-				092E1EAE20CF98AF00362253 /* helpers */,
+				092E1EAE20CF98AF00362253 /* Helpers */,
+				81A3B5402244AFAC0091B6BC /* Models */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
 				098192822176D05500D8434F /* EventWindow.swift */,
-				8128612622242E86005598D3 /* WatchOnlySignInView.xib */,
-				097D20CB218161B10089C379 /* WatchOnlySignIn.swift */,
-				818C740C2224395B00B0F794 /* PinLoginView.xib */,
-				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
-				09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */,
-				817A630422245B090054FC60 /* ReceiveBtcView.xib */,
-				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
-				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
-				817A6306222461280054FC60 /* SendBtcDetailsView.xib */,
-				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
-				817A6308222461510054FC60 /* SendBTCConfirmationView.xib */,
-				0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */,
-				676FCF2D1F9D0CF800354E93 /* Info.plist */,
-				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
-				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
-				81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */,
-				811EE25C219EC17800684AD8 /* TransactionsViewController.swift */,
-				81073D7621E6024600E08F86 /* TabViewController.swift */,
-				81A8EBC72224524A00F5C577 /* SystemMessageView.xib */,
-				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
-				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
-				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
-				676FCF251F9D0CF800354E93 /* Main.storyboard */,
-				675DBA6421B4B13B000C5D70 /* Model.swift */,
 				817417362236E85500A28E36 /* ScreenLockWindow.swift */,
 				8189BEFF2236F2270091B466 /* ScreenLocker.swift */,
+				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
+				676FCF251F9D0CF800354E93 /* Main.storyboard */,
+				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
+				676FCF2D1F9D0CF800354E93 /* Info.plist */,
 			);
 			path = gaios;
 			sourceTree = "<group>";
@@ -449,12 +404,6 @@
 		811EE25A219EBB1500684AD8 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				81286114222212B5005598D3 /* SetEmailView.xib */,
-				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
-				81286116222212C7005598D3 /* SetPhoneView.xib */,
-				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
-				81286118222212DB005598D3 /* SetGauthView.xib */,
-				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
 				8128611A222212F8005598D3 /* NetworkSelectionSettingsView.xib */,
 				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
@@ -463,6 +412,7 @@
 				8128612022221347005598D3 /* ScreenLockView.xib */,
 				09546B3621686053009BABFE /* ScreenLockViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
+				093544D7212E86DF00134235 /* CurrencyCell.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -470,10 +420,6 @@
 		811EE25B219EBB4500684AD8 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
-				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
-				81EFB1EA2220B688001CE5AE /* InitialView.xib */,
-				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
 				81EFB1E0222070E0001CE5AE /* TOSView.xib */,
 				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
 				81EFB1E2222075D3001CE5AE /* InstructionView.xib */,
@@ -486,9 +432,111 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		81A3B53E2244AE8C0091B6BC /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				81EFB1EA2220B688001CE5AE /* InitialView.xib */,
+				676FCF511F9D0E7100354E93 /* InitialViewController.swift */,
+				8128612622242E86005598D3 /* WatchOnlySignInView.xib */,
+				097D20CB218161B10089C379 /* WatchOnlySignIn.swift */,
+				818C740C2224395B00B0F794 /* PinLoginView.xib */,
+				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
+				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
+				671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */,
+				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
+				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
+		81A3B53F2244AE9A0091B6BC /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				81A3B5442244B2790091B6BC /* Views */,
+				81A3B5432244B23F0091B6BC /* TableViewCells */,
+				81A3B5422244B2280091B6BC /* CollectionViewCells */,
+				09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */,
+				817A630422245B090054FC60 /* ReceiveBtcView.xib */,
+				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
+				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
+				817A6306222461280054FC60 /* SendBtcDetailsView.xib */,
+				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
+				817A6308222461510054FC60 /* SendBTCConfirmationView.xib */,
+				0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */,
+				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
+				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
+				81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */,
+				811EE25C219EC17800684AD8 /* TransactionsViewController.swift */,
+				81073D7621E6024600E08F86 /* TabViewController.swift */,
+				81A8EBC72224524A00F5C577 /* SystemMessageView.xib */,
+				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
+			);
+			path = Wallet;
+			sourceTree = "<group>";
+		};
+		81A3B5402244AFAC0091B6BC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				675DBA6421B4B13B000C5D70 /* Model.swift */,
+				81205D6821C3B7EB005180CF /* Events.swift */,
+				811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */,
+				81D94CF021B93905003B03F9 /* Settings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		81A3B5412244B11F0091B6BC /* AuthenticationFactors */ = {
+			isa = PBXGroup;
+			children = (
+				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
+				81286114222212B5005598D3 /* SetEmailView.xib */,
+				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
+				81286116222212C7005598D3 /* SetPhoneView.xib */,
+				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
+				81286118222212DB005598D3 /* SetGauthView.xib */,
+				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
+			);
+			path = AuthenticationFactors;
+			sourceTree = "<group>";
+		};
+		81A3B5422244B2280091B6BC /* CollectionViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				81E9B80121C92EF7004D87B6 /* WalletCardView.xib */,
+				81E9B7FF21C92DB1004D87B6 /* WalletCardView.swift */,
+				811B963721F5FC8300DE02CB /* HeaderWalletsCollection.swift */,
+				811B963921F5FC9500DE02CB /* HeaderWalletsCollection.xib */,
+				811B963D21F72B5200DE02CB /* FooterWalletsCollection.swift */,
+				811B963B21F72A5B00DE02CB /* FooterWalletsCollection.xib */,
+			);
+			path = CollectionViewCells;
+			sourceTree = "<group>";
+		};
+		81A3B5432244B23F0091B6BC /* TableViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				092D47F820EA2907005720F3 /* TransactionTableCell.swift */,
+				092D47F620EA28ED005720F3 /* TransactionTableCell.xib */,
+			);
+			path = TableViewCells;
+			sourceTree = "<group>";
+		};
+		81A3B5442244B2790091B6BC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */,
+				81640CDF21FB2B4200E7F79C /* FeeButton.xib */,
+				81640CDD21FB2B1100E7F79C /* FeeButton.swift */,
+				81E9B80321C94525004D87B6 /* WalletFullCardView.xib */,
+				81E9B80521C946CE004D87B6 /* WalletFullCardView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		FF29CA7022374D670035F95A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				81310C442189D10F00563B91 /* TwoFactorCall.swift */,
 				09DA612520E73A2300C3EA03 /* String.swift */,
 				092D05B221277E2E00B9B7CD /* Date.swift */,
 				0926C14721178FEE0008F94A /* UITextField.swift */,
@@ -814,7 +862,7 @@
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				81E9B80021C92DB1004D87B6 /* WalletCardView.swift in Sources */,
-				81310C452189D10F00563B91 /* GDKHelper.swift in Sources */,
+				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date.swift in Sources */,
 				FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
