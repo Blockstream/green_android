@@ -26,7 +26,7 @@ cd gdk
 git fetch origin -t
 git checkout release_0.0.9
 rm -rf build-*
-./tools/build.sh --$TARGET static
+./tools/build.sh --$TARGET static --lto=true
 cd ..
 
 if [ ! -d Pods ]; then
