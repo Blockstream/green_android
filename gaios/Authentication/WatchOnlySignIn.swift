@@ -19,13 +19,13 @@ class WatchOnlySignIn: KeyboardViewController {
 
         content.titlelabel.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
         content.rememberTitle.text = NSLocalizedString("id_remember_username", comment: "")
+        content.rememberSwitch.addTarget(self, action: #selector(rememberSwitch), for: .valueChanged)
         content.loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         content.loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.loginButton.setGradient(true)
-        content.usernameTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_username", comment: ""),
-                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        content.passwordTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_password", comment: ""),
-                                                                     attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        let attributes = [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()]
+        content.usernameTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_username", comment: ""), attributes: attributes)
+        content.passwordTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_password", comment: ""), attributes: attributes)
         let height = content.usernameTextField.frame.height
         content.usernameTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: height))
         content.passwordTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: height))
@@ -33,10 +33,11 @@ class WatchOnlySignIn: KeyboardViewController {
         content.passwordTextField.leftViewMode = .always
         if let _ = username {
             content.usernameTextField.text = username!
+            content.rememberSwitch.isOn = true
         }
     }
 
-    @IBAction func rememberSwitch(_ sender: UISwitch) {
+    @objc func rememberSwitch(_ sender: UISwitch) {
         if sender.isOn {
             let alert = UIAlertController(title: NSLocalizedString("id_warning_the_username_will_be", comment: ""), message: NSLocalizedString("id_your_watchonly_username_will_be", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
@@ -47,6 +48,8 @@ class WatchOnlySignIn: KeyboardViewController {
             DispatchQueue.main.async {
                 self.present(alert, animated: true, completion: nil)
             }
+        } else {
+            self.username = nil
         }
     }
 
@@ -64,7 +67,9 @@ class WatchOnlySignIn: KeyboardViewController {
         }.compactMap {
             let username = self.content.usernameTextField.text
             let password = self.content.passwordTextField.text
-            self.username = username
+            if self.content!.rememberSwitch.isOn {
+                self.username = username
+            }
             return (username!, password!)
         }.compactMap(on: bgq) { (username, password) in
             try getSession().loginWatchOnly(username: username!, password: password!)

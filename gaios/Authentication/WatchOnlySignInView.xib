@@ -15,7 +15,7 @@
             <connections>
                 <outlet property="loginButton" destination="RvG-Tq-cpr" id="F8F-0D-Lr4"/>
                 <outlet property="passwordTextField" destination="9iL-AW-1kj" id="rBr-he-XFS"/>
-                <outlet property="rememberSwitch" destination="30Z-74-cOo" id="Nmc-vC-iT1"/>
+                <outlet property="rememberSwitch" destination="30Z-74-cOo" id="KdZ-ou-mll"/>
                 <outlet property="rememberTitle" destination="s0O-wL-gvg" id="D1g-Y4-2zf"/>
                 <outlet property="titlelabel" destination="hh8-69-COU" id="4O2-h2-Tro"/>
                 <outlet property="usernameTextField" destination="WW7-Js-dEW" id="Rzd-bP-w21"/>
