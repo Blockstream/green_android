@@ -2,19 +2,19 @@ PODS:
   - NVActivityIndicatorView (4.6.1):
     - NVActivityIndicatorView/Presenter (= 4.6.1)
   - NVActivityIndicatorView/Presenter (4.6.1)
-  - PromiseKit (6.2.3):
-    - PromiseKit/CorePromise (= 6.2.3)
-    - PromiseKit/Foundation (= 6.2.3)
-    - PromiseKit/UIKit (= 6.2.3)
-  - PromiseKit/CorePromise (6.2.3)
-  - PromiseKit/Foundation (6.2.3):
+  - PromiseKit (6.8.3):
+    - PromiseKit/CorePromise (= 6.8.3)
+    - PromiseKit/Foundation (= 6.8.3)
+    - PromiseKit/UIKit (= 6.8.3)
+  - PromiseKit/CorePromise (6.8.3)
+  - PromiseKit/Foundation (6.8.3):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.2.3):
+  - PromiseKit/UIKit (6.8.3):
     - PromiseKit/CorePromise
 
 DEPENDENCIES:
   - NVActivityIndicatorView (= 4.6.1)
-  - PromiseKit (= 6.2.3)
+  - PromiseKit (= 6.8.3)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -23,8 +23,8 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   NVActivityIndicatorView: 4ca19fccc84595a78957336a086d00a49be6ce61
-  PromiseKit: 62f37bb4900a9b0b7550d017e41497171d93face
+  PromiseKit: 94c6e781838c5bf4717677d0d882b0e7250c80fc
 
-PODFILE CHECKSUM: 291d4ba80f06c4143309cd4fc54274a2a80f43b0
+PODFILE CHECKSUM: 8dfcedb5f664d509b2c9a05376c6cc4b731e2f7b
 
 COCOAPODS: 1.6.1

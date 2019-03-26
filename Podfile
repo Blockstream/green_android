@@ -6,7 +6,7 @@ target 'gaios' do
   use_frameworks!
 
   # Pods for Green
-  pod 'PromiseKit', '6.2.3'
+  pod 'PromiseKit', '6.8.3'
   pod 'NVActivityIndicatorView', '4.6.1'
   target 'gaiosTests' do
     inherit! :search_paths
