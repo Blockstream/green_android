@@ -551,7 +551,7 @@ public class GaService extends Service  {
     }
 
     private void checkDisconnect() {
-        if (getConnectionManager().isDisconnectedOrLess())
+        if (getConnectionManager().isDisconnected())
             return;
         if (mDisconnectTimer != null && System.currentTimeMillis() > mDisconnectTimer) {
             mExecutor.submit(this::disconnect);
