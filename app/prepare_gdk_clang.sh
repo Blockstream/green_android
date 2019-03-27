@@ -33,7 +33,7 @@ mkdir -p ../src/main/java/com/blockstream/libwally ../src/main/java/com/blockstr
 for arch in $all_archs; do
     mkdir -p ../src/main/jniLibs/$arch $PWD/gdk-android-jni$arch
     #./tools/build.sh --buildtype=debug --lto=false --install $PWD/gdk-android-jni$arch --ndk $arch
-    ./tools/build.sh --install $PWD/gdk-android-jni$arch --ndk $arch
+    ./tools/build.sh --install $PWD/gdk-android-jni$arch --ndk $arch --lto=true
     cp gdk-android-jni$arch/lib/$arch/* ../src/main/jniLibs/$arch
     cp gdk-android-jni$arch/java/com/blockstream/libgreenaddress/GDK.java ../src/main/java/com/blockstream/libgreenaddress/GDK.java
     cp gdk-android-jni$arch/java/com/blockstream/libwally/Wally.java ../src/main/java/com/blockstream/libwally/Wally.java
