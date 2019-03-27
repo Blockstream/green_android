@@ -16,7 +16,6 @@ public class PrefKeys {
     public static final String VERSION = "version";
     public static final String LOGOUT = "logout";
     public static final String TWO_FACTOR = "two_factor_authentication";
-    public static final String NETWORK_CATEGORY = "network_category";
     public static final String PROXY_ENABLED = "proxy_enabled";
     public static final String PROXY_HOST = "proxy_host";
     public static final String PROXY_PORT = "proxy_port";
