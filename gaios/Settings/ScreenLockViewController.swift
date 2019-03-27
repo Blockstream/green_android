@@ -111,8 +111,8 @@ class ScreenLockViewController: UIViewController {
                 }.compactMap(on: bgq) {
                     let password = String.random(length: 14)
                     let deviceid = String.random(length: 14)
-                    let mnemonics = try getSession().getMnemmonicPassphrase(password: "")
-                    return (try getSession().setPin(mnemonic: mnemonics, pin: password, device: deviceid), password) as? ([String: Any], String)
+                    let mnemonics = try getSession().getMnemonicPassphrase(password: "")
+                    return (try getSession().setPin(mnemonic: mnemonics, pin: password, device: deviceid), password) as? ([String : Any], String)
                 }.done { (data: [String: Any], password: String) -> Void in
                     try AuthenticationTypeHandler.addBiometryType(data: data, extraData: password, forNetwork: getNetwork())
                 }.catch { _ in

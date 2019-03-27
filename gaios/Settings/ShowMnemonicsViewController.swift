@@ -15,7 +15,7 @@ class ShowMnemonicsViewController: UIViewController {
         let viewWidth = (screenSize.width - 40) / 4
         let viewHeight = viewWidth / 1.61
 
-        let res = try? getSession().getMnemmonicPassphrase(password: "")
+        let res = try? getSession().getMnemonicPassphrase(password: "")
         guard let mnemonic = res?.split(separator: " ") else { return }
         for index in 0..<mnemonic.count {
             let myView = UIView(frame: CGRect(x: 0, y: 0, width: viewWidth, height: viewHeight))

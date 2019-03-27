@@ -143,7 +143,7 @@ struct Transaction {
 
 }
 
-class WalletItem: Codable {
+struct Balance: Codable {
 
     enum CodingKeys: String, CodingKey {
         case bits
@@ -152,12 +152,7 @@ class WalletItem: Codable {
         case fiatCurrency = "fiat_currency"
         case fiatRate = "fiat_rate"
         case mbtc
-        case name
-        case pointer
-        case receiveAddress
-        case receivingId = "receiving_id"
         case satoshi
-        case type
         case ubtc
     }
 
@@ -167,13 +162,27 @@ class WalletItem: Codable {
     let fiatCurrency: String
     let fiatRate: String
     let mbtc: String
+    var satoshi: UInt64
+    let ubtc: String
+}
+
+class WalletItem : Codable {
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case pointer
+        case receiveAddress
+        case receivingId = "receiving_id"
+        case type
+        case balance
+    }
+
     private let name: String
     let pointer: UInt32
     var receiveAddress: String?
     let receivingId: String
-    var satoshi: UInt64
     let type: String
-    let ubtc: String
+    var balance: Balance
 
     func localizedName() -> String {
         return pointer == 0 ? NSLocalizedString("id_main_account", comment: "") : name
@@ -191,15 +200,14 @@ class WalletItem: Codable {
         return receiveAddress ?? String()
     }
 
-    func getBalance() -> Promise<UInt64> {
+    func getBalance() -> Promise<Balance> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
             try getSession().getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
-        }.compactMap(on: bgq) { balance in
-            return balance["satoshi"] as? UInt64
-        }.compactMap { satoshi in
-            self.satoshi = satoshi
-            return satoshi
+        }.compactMap(on: bgq) { data in
+            let jsonData = try JSONSerialization.data(withJSONObject: data)
+            self.balance = try JSONDecoder().decode(Balance.self, from: jsonData)
+            return self.balance
         }
     }
 }

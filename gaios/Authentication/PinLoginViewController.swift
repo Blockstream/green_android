@@ -168,7 +168,7 @@ class PinLoginViewController: UIViewController {
             startAnimating(message: "")
             return Guarantee()
         }.compactMap(on: bgq) {
-            let mnemonics = try getSession().getMnemmonicPassphrase(password: "")
+            let mnemonics = try getSession().getMnemonicPassphrase(password: "")
             return try getSession().setPin(mnemonic: mnemonics, pin: self.pinCode, device: String.random(length: 14))
         }.map(on: bgq) { (data: [String: Any]) -> Void in
             let network = getNetwork()

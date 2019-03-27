@@ -50,9 +50,9 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
                                                       for: indexPath) as! WalletCardView
         let wallet = wallets[indexPath.row]
         guard let settings = getGAService().getSettings() else { return cell }
-        cell.balance.text = String.toBtc(satoshi: wallet.satoshi, showDenomination: false)
+        cell.balance.text = String.toBtc(satoshi: wallet.balance.satoshi, showDenomination: false)
         cell.unit.text = settings.denomination.toString()
-        cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.satoshi)
+        cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.balance.satoshi)
         cell.walletName.text = wallet.localizedName()
         cell.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
         return cell
@@ -63,7 +63,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         case UICollectionElementKindSectionHeader:
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
                 headerId, for: indexPath) as! HeaderWalletsCollection
-            let satoshi = wallets.map { $0.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
+            let satoshi = wallets.map { $0.balance.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
             header.title.text = NSLocalizedString("id_total_balance", comment: "")

@@ -168,10 +168,10 @@ class TransactionsController: UITableViewController {
         guard let settings = getGAService().getSettings() else { return }
         getSubaccount(self.pointerWallet).done { wallet in
             self.presentingWallet = wallet
-            guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
-            view.balance.text = String.toBtc(satoshi: wallet.satoshi, showDenomination: false)
+            let view = self.tableView.tableHeaderView as! WalletFullCardView
+            view.balance.text = String.toBtc(satoshi: wallet.balance.satoshi, showDenomination: false)
             view.unit.text = settings.denomination.toString()
-            view.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.satoshi)
+            view.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.balance.satoshi)
             view.walletName.text = wallet.localizedName()
             view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             if twoFactorReset.isResetActive {
