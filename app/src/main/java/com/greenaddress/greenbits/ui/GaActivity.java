@@ -238,7 +238,11 @@ public abstract class GaActivity extends AppCompatActivity {
     private String hwRequest(final int requestType) {
         try {
             mHwFunctions.put(requestType, SettableFuture.create());
-            startActivityForResult(new Intent(this, TrezorPinActivity.class), requestType);
+            startActivityForResult(new Intent(this,
+                                              requestType == HARDWARE_PIN_REQUEST ?
+                                              TrezorPinActivity.class :
+                                              TrezorPassphraseActivity.class),
+                                   requestType);
             return mHwFunctions.get(requestType).get();
         } catch (final Exception e) {
             e.printStackTrace();
@@ -276,9 +280,9 @@ public abstract class GaActivity extends AppCompatActivity {
 
         if (requestCode == HARDWARE_PIN_REQUEST || requestCode == HARDWARE_PASSPHRASE_REQUEST) {
             Log.d(TAG,"onActivityResult " + requestCode);
-            mHwFunctions.get(HARDWARE_PIN_REQUEST).set(resultCode ==
-                                                       RESULT_OK ? data.getStringExtra(String.valueOf(
-                                                                                           requestCode)) : null);
+            mHwFunctions.get(requestCode).set(resultCode ==
+                                              RESULT_OK ? data.getStringExtra(String.valueOf(
+                                                                                  requestCode)) : null);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

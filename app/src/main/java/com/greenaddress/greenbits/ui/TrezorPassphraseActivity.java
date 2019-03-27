@@ -19,7 +19,7 @@ public class TrezorPassphraseActivity extends GaActivity {
         final Button ok = UI.find(this, R.id.trezorPassphraseOk);
         ok.setOnClickListener(view -> {
             Intent intent = getIntent();
-            intent.putExtra( String.valueOf(GaActivity.HARDWARE_PASSPHRASE_REQUEST),value.toString());
+            intent.putExtra( String.valueOf(GaActivity.HARDWARE_PASSPHRASE_REQUEST), value.getText().toString());
             setResult(Activity.RESULT_OK, intent);
             finishOnUiThread();
         });
