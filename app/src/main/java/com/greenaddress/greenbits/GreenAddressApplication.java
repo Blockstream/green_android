@@ -57,14 +57,6 @@ public class GreenAddressApplication extends MultiDexApplication {
         if(isRunningTest())
             return;
 
-        try {
-            PRNGFixes.apply();
-        } catch (final SecurityException e) {
-            e.printStackTrace();
-            failHard("Security exception", e.getMessage());
-            return;
-        }
-
         if (!Wally.isEnabled()) {
             failHard("Unsupported platform", "A suitable libwallycore.so was not found");
             return;

@@ -33,7 +33,6 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     private static final int PINSAVE = 1337;
 
     private String mMnemonic;
-    private String mWordSelected;
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     @Override
@@ -95,7 +94,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     }
 
     @Override
-    public void update(Observable observable, Object o) {
+    public void update(final Observable observable, final Object o) {
         if (observable instanceof ConnectionManager) {
             //do not auto redirect if I am in post login, so I can finish setting two-factors
             final ConnectionManager cm = (ConnectionManager) observable;
@@ -169,23 +168,20 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                                     .getArguments().getString("word");
 
         // Press string selection button
-        mWordSelected = ((Button) view).getText().toString();
+        final String wordSelected = ((Button) view).getText().toString();
 
-        final boolean youWin = wordExpected.equals(mWordSelected);
+        final boolean youWin = wordExpected.equals(wordSelected);
         if (youWin) {
             // if right, continue or finish (if completed)
             if (selected == mSectionsPagerAdapter.getCount() - 1)
                 onMnemonicVerified();
             else
                 mSectionsPagerAdapter.selectFragment(this, selected + 1);
-            mWordSelected = null;
         } else {
             // if fails, go to the previous page
             UI.toast(this, R.string.id_wrong_choice_check_your, Toast.LENGTH_LONG);
             finish();
         }
-
-
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -195,7 +191,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         private List<Integer> indexes;
         private List<String> words;
 
-        public SectionsPagerAdapter(final FragmentManager fm) {
+        SectionsPagerAdapter(final FragmentManager fm) {
             super(fm);
 
             words = Arrays.asList(mMnemonic.split(" "));
@@ -224,15 +220,15 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
             return FRAGMENTS_NUMBER;
         }
 
-        public int getSelected() {
+        int getSelected() {
             return selected;
         }
 
-        public SelectionFragment getFragment(final int index) {
+        SelectionFragment getFragment(final int index) {
             return fragments[index];
         }
 
-        public void selectFragment(final AppCompatActivity activity, final int index) {
+        void selectFragment(final AppCompatActivity activity, final int index) {
             selected = index;
             activity.getSupportFragmentManager()
             .beginTransaction()

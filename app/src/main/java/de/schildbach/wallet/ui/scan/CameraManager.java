@@ -172,19 +172,10 @@ public final class CameraManager {
         }
     }
 
-    private static final Comparator<Camera.Size> numPixelComparator = new Comparator<Camera.Size>() {
-        @Override
-        public int compare(final Camera.Size size1, final Camera.Size size2) {
-            final int pixels1 = size1.height * size1.width;
-            final int pixels2 = size2.height * size2.width;
-
-            if (pixels1 < pixels2)
-                return 1;
-            else if (pixels1 > pixels2)
-                return -1;
-            else
-                return 0;
-        }
+    private static final Comparator<Camera.Size> numPixelComparator = (size1, size2) -> {
+        final int pixels1 = size1.height * size1.width;
+        final int pixels2 = size2.height * size2.width;
+        return Integer.compare(pixels2, pixels1);
     };
 
     private static Camera.Size findBestPreviewSizeValue(final Camera.Parameters parameters, int width, int height) {
@@ -274,11 +265,10 @@ public final class CameraManager {
     private static boolean getTorchEnabled(final Camera camera) {
         final Camera.Parameters parameters = camera.getParameters();
         if (parameters != null) {
-            final String flashMode = camera.getParameters().getFlashMode();
-            return flashMode != null && (Camera.Parameters.FLASH_MODE_ON.equals(flashMode)
-                    || Camera.Parameters.FLASH_MODE_TORCH.equals(flashMode));
+            final String flashMode = parameters.getFlashMode();
+            return Camera.Parameters.FLASH_MODE_ON.equals(flashMode)
+                    || Camera.Parameters.FLASH_MODE_TORCH.equals(flashMode);
         }
-
         return false;
     }
 

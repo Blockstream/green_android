@@ -91,11 +91,11 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
         return mSubaccountList.size() + (mService.isWatchOnly() ? 0 : 1);
     }
 
-    public static class Item extends RecyclerView.ViewHolder {
+    static class Item extends RecyclerView.ViewHolder {
 
         final AccountView mAccountView;
 
-        public Item(final View v) {
+        Item(final View v) {
             super(v);
             mAccountView = new AccountView(v.getContext());
             mAccountView.setView(v);

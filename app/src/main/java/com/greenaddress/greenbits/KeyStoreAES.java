@@ -39,7 +39,7 @@ public class KeyStoreAES {
     private static final int SECONDS_AUTH_VALID = 5;
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
-    public static String getKeyName(final GaService service, final boolean temporary) {
+    private static String getKeyName(final GaService service, final boolean temporary) {
         return KEYSTORE_KEY + "_" + service.getNetwork().getNetwork() + (temporary ? "temp" : "");
     }
     public static String getKeyName(final GaService service) {

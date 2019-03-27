@@ -41,7 +41,7 @@ import android.view.View;
  * @author Andreas Schildbach
  */
 public class ScannerView extends View {
-    private static final long LASER_ANIMATION_DELAY_MS = 100l;
+    private static final long LASER_ANIMATION_DELAY_MS = 100L;
     private static final int DOT_OPACITY = 0xa0;
     private static final int DOT_TTL_MS = 500;
 
@@ -52,7 +52,7 @@ public class ScannerView extends View {
     private final int maskColor, maskResultColor;
     private final int laserColor;
     private final int dotColor, dotResultColor;
-    private final Map<float[], Long> dots = new HashMap<float[], Long>(16);
+    private final Map<float[], Long> dots = new HashMap<>(16);
     private Rect frame;
     private final Matrix matrix = new Matrix();
 
