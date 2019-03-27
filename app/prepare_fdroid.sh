@@ -6,4 +6,4 @@ if [ -z "$ANDROID_NDK" ]; then
 fi
 
 echo ${ANDROID_NDK:?}
-exec ./prepare_gdk_clang.sh
+exec ./prepare_gdk_clang.sh $1
