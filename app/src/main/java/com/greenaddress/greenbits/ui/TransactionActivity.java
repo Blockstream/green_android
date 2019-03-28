@@ -256,7 +256,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         UI.show(mEstimatedBlocks);
         mEstimatedBlocks.setText(getString(R.string.id_estimated_blocks_until, block));
 
-        if (mService.isWatchOnly() || mService.isElements() || !mTxItem.replaceable)
+        if (mService.isWatchOnly() || mService.isElements() || !mTxItem.replaceable ||
+            mService.getModel().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
 
         // Allow RBF if it might decrease the number of blocks until confirmation
