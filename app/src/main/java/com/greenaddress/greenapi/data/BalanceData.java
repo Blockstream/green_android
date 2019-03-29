@@ -29,7 +29,6 @@ public class BalanceData extends JSONData {
     private String mbtc;
     private String ubtc;
     private Long satoshi;
-    private Integer subaccount;
 
     @JsonIgnore
     public Coin getSatoshiAsCoin() {
@@ -70,14 +69,6 @@ public class BalanceData extends JSONData {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public Integer getSubaccount() {
-        return subaccount;
-    }
-
-    public void setSubaccount(Integer subaccount) {
-        this.subaccount = subaccount;
     }
 
     public String getBits() {
