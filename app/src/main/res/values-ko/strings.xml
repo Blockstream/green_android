@@ -56,6 +56,7 @@
   <string name="id_clear">새로고침</string>
   <string name="id_completed">완료</string>
   <string name="id_confirm_code">코드 컨펌</string>
+  <string name="id_confirm_passphrase">Confirm passphrase</string>
   <string name="id_confirmation">컨펌</string>
   <string name="id_confirmation_in_12_blocks_2">12블록 후 컨펌. 평균적으로 2시간 소모</string>
   <string name="id_confirmation_in_24_blocks_4">24블록 또는 이후 컨펌. 평균적으로 4시간 소모</string>
@@ -127,6 +128,7 @@
   <string name="id_error_logging_in_with_hardware">하드웨어 지갑으로 로그인 시 오류 발생</string>
   <string name="id_error_nfc_tag_not_writable">오류: NFC 태그에 쓰기 불가능</string>
   <string name="id_error_nfc_tag_too_small">오류: NFC 태그 너무 작음</string>
+  <string name="id_error_passphrases_do_not_match">Error: passphrases do not match</string>
   <string name="id_estimated_blocks_until">컨펌되기까지 예상 블록:%d</string>
   <string name="id_example_89014283334011612858333">예: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>

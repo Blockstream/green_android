@@ -56,6 +56,7 @@
   <string name="id_clear">CANCELLA</string>
   <string name="id_completed">Completo</string>
   <string name="id_confirm_code">Conferma codice</string>
+  <string name="id_confirm_passphrase">Conferma passphrase</string>
   <string name="id_confirmation">Conferme</string>
   <string name="id_confirmation_in_12_blocks_2">Conferma in 12 blocchi, 2 ore in media</string>
   <string name="id_confirmation_in_24_blocks_4">Conferma in 24 blocchi, 4 ore in media</string>
@@ -127,6 +128,7 @@
   <string name="id_error_logging_in_with_hardware">Errore durante il login con Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Errore: NFC tag not writable</string>
   <string name="id_error_nfc_tag_too_small">Errore: NFC tag too small</string>
+  <string name="id_error_passphrases_do_not_match">Errore: le passphrases non coincidono</string>
   <string name="id_estimated_blocks_until">Blocchi stimati per la conferma: %d</string>
   <string name="id_example_89014283334011612858333">Es.: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>

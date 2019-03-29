@@ -56,6 +56,7 @@
   <string name="id_clear">EFFACER</string>
   <string name="id_completed">Complété</string>
   <string name="id_confirm_code">Confirmez le code</string>
+  <string name="id_confirm_passphrase">Confirm passphrase</string>
   <string name="id_confirmation">Confirmation</string>
   <string name="id_confirmation_in_12_blocks_2">Confirmation en 12 blocs, 2 heures en moyenne</string>
   <string name="id_confirmation_in_24_blocks_4">Confirmation dans 24 blocs, 4 heures en moyenne</string>
@@ -127,6 +128,7 @@
   <string name="id_error_logging_in_with_hardware">Erreur d\'identification avec le hardware wallet</string>
   <string name="id_error_nfc_tag_not_writable">Erreur : étiquette NFC non inscriptible</string>
   <string name="id_error_nfc_tag_too_small">Erreur : étiquette NFC trop petite</string>
+  <string name="id_error_passphrases_do_not_match">Error: passphrases do not match</string>
   <string name="id_estimated_blocks_until">Nombre de blocs estimés avant confirmation: %d</string>
   <string name="id_example_89014283334011612858333">Exemple : 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
@@ -229,7 +231,7 @@
   <string name="id_normal">Normal</string>
   <string name="id_not_connected_connecting_in_ds_">Non connecté. Connexion dans %d s...</string>
   <string name="id_notifications">Notifications</string>
-  <string name="id_now">Now</string>
+  <string name="id_now">Maintenant</string>
   <string name="id_ok">OK</string>
   <string name="id_one_attempt_remaining">Un essai restant</string>
   <string name="id_one_network_must_be_selected">Un réseau doit être sélectionné. Sélection de Bitcoin par défaut.</string>
@@ -397,7 +399,7 @@
   <string name="id_version_1s_2s">Version %1$s %2$s</string>
   <string name="id_view_in_explorer">Voir dans l\'explorateur</string>
   <string name="id_waiting_for_transaction">En attente de la transaction...</string>
-  <string name="id_wallet_creation_failed">Wallet creation failed</string>
+  <string name="id_wallet_creation_failed">La création du portefeuille a échoué</string>
   <string name="id_wallets">Portefeuilles</string>
   <string name="id_warning">Attention !</string>
   <string name="id_warning_nononion_address">Attention : détection d\'adresses autres que .onion !</string>

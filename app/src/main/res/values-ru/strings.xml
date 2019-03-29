@@ -56,6 +56,7 @@
   <string name="id_clear">ОЧИСТИТЬ</string>
   <string name="id_completed">Завершено</string>
   <string name="id_confirm_code">Подтвердите код</string>
+  <string name="id_confirm_passphrase">Confirm passphrase</string>
   <string name="id_confirmation">Подтверждение</string>
   <string name="id_confirmation_in_12_blocks_2">Подтверждение в 12 блоках, в среднем 2 часа</string>
   <string name="id_confirmation_in_24_blocks_4">Подтверждение в 24 блоках, в среднем 4 часа</string>
@@ -127,6 +128,7 @@
   <string name="id_error_logging_in_with_hardware">Ошибка при входе в аппаратный кошелек</string>
   <string name="id_error_nfc_tag_not_writable">Ошибка: невозможно создать NFC-тег</string>
   <string name="id_error_nfc_tag_too_small">Ошибка: NFC-тег слишком мал</string>
+  <string name="id_error_passphrases_do_not_match">Error: passphrases do not match</string>
   <string name="id_estimated_blocks_until">Приблизительно блоков до подтверждения: %d</string>
   <string name="id_example_89014283334011612858333">Пример: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
