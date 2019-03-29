@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PgpView" customModule="gaios" customModuleProvider="target">
+            <connections>
+                <outlet property="button" destination="Cye-8y-xeN" id="RWn-xM-OFm"/>
+                <outlet property="subtitle" destination="uHo-Y3-WeW" id="uTX-O1-e6a"/>
+                <outlet property="textarea" destination="SEy-HJ-rQz" id="iKG-5p-MXY"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="QRf-3w-tei">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cye-8y-xeN">
+                    <rect key="frame" x="0.0" y="526" width="320" height="42"/>
+                    <color key="backgroundColor" name="customMatrixGreen"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="42" id="oOb-0q-iHR"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <state key="normal" title="save">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                </button>
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SEy-HJ-rQz">
+                    <rect key="frame" x="20" y="68.5" width="280" height="449.5"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                </textView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="subtitle" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uHo-Y3-WeW">
+                    <rect key="frame" x="20" y="28" width="280" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" name="customTitaniumDark"/>
+            <constraints>
+                <constraint firstItem="Cye-8y-xeN" firstAttribute="leading" secondItem="GOu-yE-2hU" secondAttribute="leading" id="8BZ-YY-wea"/>
+                <constraint firstItem="GOu-yE-2hU" firstAttribute="trailing" secondItem="SEy-HJ-rQz" secondAttribute="trailing" constant="20" id="Ut4-pv-npK"/>
+                <constraint firstItem="uHo-Y3-WeW" firstAttribute="top" secondItem="GOu-yE-2hU" secondAttribute="top" constant="8" id="XuA-gZ-eXC"/>
+                <constraint firstItem="uHo-Y3-WeW" firstAttribute="leading" secondItem="GOu-yE-2hU" secondAttribute="leading" constant="20" id="d9p-a3-h12"/>
+                <constraint firstItem="GOu-yE-2hU" firstAttribute="bottom" secondItem="Cye-8y-xeN" secondAttribute="bottom" id="eiS-SJ-VCh"/>
+                <constraint firstItem="GOu-yE-2hU" firstAttribute="trailing" secondItem="uHo-Y3-WeW" secondAttribute="trailing" constant="20" id="hr5-eR-Ygb"/>
+                <constraint firstItem="Cye-8y-xeN" firstAttribute="top" secondItem="SEy-HJ-rQz" secondAttribute="bottom" constant="8" id="lGM-aI-AfX"/>
+                <constraint firstItem="SEy-HJ-rQz" firstAttribute="top" secondItem="uHo-Y3-WeW" secondAttribute="bottom" constant="20" id="mJg-g3-aSp"/>
+                <constraint firstItem="GOu-yE-2hU" firstAttribute="trailing" secondItem="Cye-8y-xeN" secondAttribute="trailing" id="uOe-wi-TZb"/>
+                <constraint firstItem="SEy-HJ-rQz" firstAttribute="leading" secondItem="GOu-yE-2hU" secondAttribute="leading" constant="20" id="zoq-qN-hVF"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="GOu-yE-2hU"/>
+            <point key="canvasLocation" x="108.69565217391305" y="53.571428571428569"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="customMatrixGreen">
+            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

@@ -78,7 +78,7 @@ class SettingsViewController: UIViewController {
         } else if isResetActive {
             return [.network, .twoFactor, .about]
         }
-        return [.network, .account, .twoFactor, .security, .about]
+        return [.network, .account, .twoFactor, .security, .advanced, .about]
     }
 
     func getNetworks() -> [SettingsItem] {
@@ -218,11 +218,16 @@ class SettingsViewController: UIViewController {
             subtitle: settings.autolock.toString(),
             section: .security,
             type: .Autolock)
+        return !isWatchOnly && !isResetActive ? [mnemonic, autolock] : []
+    }
 
-        if !isWatchOnly && !isResetActive {
-            return [mnemonic, autolock]
-        }
-        return []
+    func getAdvanced() -> [SettingsItem] {
+        let pgp = SettingsItem(
+            title: NSLocalizedString("id_pgp_key", comment: ""),
+            subtitle: NSLocalizedString("id_set_up_pgp_key_for", comment: ""),
+            section: .advanced,
+            type: .Pgp)
+        return !isWatchOnly && !isResetActive ? [pgp] : []
     }
 
     func getAbout() -> [SettingsItem] {
@@ -251,6 +256,7 @@ class SettingsViewController: UIViewController {
         menu.append(contentsOf: getAccount())
         menu.append(contentsOf: getTwoFactor())
         menu.append(contentsOf: getSecurity())
+        menu.append(contentsOf: getAdvanced())
         menu.append(contentsOf: getAbout())
         return menu
     }
@@ -581,6 +587,7 @@ extension SettingsViewController: UITableViewDelegate {
         case .LockTimeRequest: setLockTimeRequest()
         case .Mnemonic: performSegue(withIdentifier: "recovery", sender: nil)
         case .Autolock: showAutolock()
+        case .Pgp: performSegue(withIdentifier: "pgp", sender: nil)
         case .TermsOfUse:
             UIApplication.shared.open(URL(string: "https://greenaddress.it/tos.html")!)
         case .PrivacyPolicy:

@@ -86,6 +86,8 @@
 		817A630522245B090054FC60 /* ReceiveBtcView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A630422245B090054FC60 /* ReceiveBtcView.xib */; };
 		817A6307222461280054FC60 /* SendBtcDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A6306222461280054FC60 /* SendBtcDetailsView.xib */; };
 		817A6309222461510054FC60 /* SendBTCConfirmationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A6308222461510054FC60 /* SendBTCConfirmationView.xib */; };
+		81837788224E6C8D00DC0FB1 /* PgpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81837787224E6C8D00DC0FB1 /* PgpView.xib */; };
+		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
 		818C740D2224395B00B0F794 /* PinLoginView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 818C740C2224395B00B0F794 /* PinLoginView.xib */; };
@@ -219,6 +221,8 @@
 		817A630422245B090054FC60 /* ReceiveBtcView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveBtcView.xib; sourceTree = "<group>"; };
 		817A6306222461280054FC60 /* SendBtcDetailsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendBtcDetailsView.xib; sourceTree = "<group>"; };
 		817A6308222461510054FC60 /* SendBTCConfirmationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendBTCConfirmationView.xib; sourceTree = "<group>"; };
+		81837787224E6C8D00DC0FB1 /* PgpView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PgpView.xib; sourceTree = "<group>"; };
+		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8189BEFF2236F2270091B466 /* ScreenLocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLocker.swift; sourceTree = "<group>"; };
@@ -413,6 +417,8 @@
 				09546B3621686053009BABFE /* ScreenLockViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
+				81837787224E6C8D00DC0FB1 /* PgpView.xib */,
+				81837789224E6D4700DC0FB1 /* PgpViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -682,6 +688,7 @@
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				8128611B222212F8005598D3 /* NetworkSelectionSettingsView.xib in Resources */,
 				817A6309222461510054FC60 /* SendBTCConfirmationView.xib in Resources */,
+				81837788224E6C8D00DC0FB1 /* PgpView.xib in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				81EFB1E522207CE7001CE5AE /* CreateWalletView.xib in Resources */,
 				811B963C21F72A5B00DE02CB /* FooterWalletsCollection.xib in Resources */,
@@ -845,6 +852,7 @@
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				09546B3721686053009BABFE /* ScreenLockViewController.swift in Sources */,
 				FF29CA7222374E8B0035F95A /* URL.swift in Sources */,
+				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,

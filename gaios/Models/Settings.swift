@@ -29,6 +29,7 @@ enum SettingsType: String, Codable {
     case CancelTwoFactor
     case Mnemonic
     case Autolock
+    case Pgp
     case Version
     case TermsOfUse
     case PrivacyPolicy

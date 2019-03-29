@@ -92,6 +92,7 @@
                         <segue destination="80V-46-g4d" kind="push" identifier="screenLock" id="xcl-Dg-JhF"/>
                         <segue destination="jB7-Eo-Pwf" kind="push" identifier="twoFactorLimit" id="3Us-TD-UHA"/>
                         <segue destination="hHc-Dv-gzZ" kind="push" identifier="setupTwoFactor" id="EcC-We-I1f"/>
+                        <segue destination="gJH-oe-tiu" kind="push" identifier="pgp" id="jO3-Sh-DmK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -548,6 +549,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nGd-aF-8Ei" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-422" y="-1071"/>
+        </scene>
+        <!--Pgp View Controller-->
+        <scene sceneID="hgQ-Xk-ixS">
+            <objects>
+                <viewController hidesBottomBarWhenPushed="YES" id="gJH-oe-tiu" customClass="PgpViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6lm-Es-qha" customClass="PgpView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="aGY-cM-QaQ"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="sAz-T4-MUJ"/>
+                    <connections>
+                        <outlet property="content" destination="6lm-Es-qha" id="ONa-Lo-xs9"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0q9-e8-sHy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10918" y="-2344"/>
         </scene>
         <!--Google Authenticator code-->
         <scene sceneID="GTt-jg-L7t">
@@ -1668,7 +1688,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ON0-2j-3cM"/>
+        <segue reference="EcC-We-I1f"/>
         <segue reference="nPw-9e-cll"/>
         <segue reference="XPe-Xy-Qrf"/>
         <segue reference="8GO-7h-4o5"/>
