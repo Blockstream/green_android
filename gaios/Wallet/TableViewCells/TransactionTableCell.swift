@@ -24,6 +24,15 @@ class TransactionTableCell: UITableViewCell {
         selectionStyle = .none
         date.text = transaction.date()
         replaceable.text = "  " + NSLocalizedString("id_replaceable", comment: "").uppercased() + "  "
+        if !transaction.memo.isEmpty {
+            address.text = transaction.memo
+        } else if transaction.type == "redeposit" {
+            address.text = NSLocalizedString("id_redeposited", comment: String())
+        } else if transaction.type == "incoming" {
+            address.text = NSLocalizedString("id_received", comment: String())
+        } else {
+            address.text = transaction.address()
+        }
         separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 18)
     }
 
@@ -31,7 +40,7 @@ class TransactionTableCell: UITableViewCell {
         if transaction.blockHeight == 0 {
             status.text = NSLocalizedString("id_unconfirmed", comment: "")
             status.textColor = UIColor.errorRed()
-        } else if (blockHeight < transaction.blockHeight + 5) {
+        } else if blockHeight < transaction.blockHeight + 5 {
             let confirmCount = blockHeight - transaction.blockHeight + 1
             status.textColor = UIColor.customTitaniumLight()
             status.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
@@ -42,14 +51,9 @@ class TransactionTableCell: UITableViewCell {
     }
 
     func checkTransactionType(transaction: Transaction) {
-        if transaction.type == "redeposit" {
-            address.text = NSLocalizedString("id_redeposited", comment: String())
-            amount.textColor = UIColor.white
-        } else if transaction.type == "incoming" {
-            address.text = NSLocalizedString("id_received", comment: String())
+        if transaction.type == "incoming" {
             amount.textColor = UIColor.customMatrixGreen()
         } else {
-            address.text = transaction.address()
             amount.textColor = UIColor.white
         }
     }

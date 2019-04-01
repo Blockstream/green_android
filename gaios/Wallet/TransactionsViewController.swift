@@ -6,11 +6,12 @@ protocol SubaccountDelegate {
     func onChange(_ pointer: UInt32)
 }
 
-class TransactionsController: UITableViewController, SubaccountDelegate {
+class TransactionsController: UITableViewController {
 
     var pointerWallet: UInt32 = 0
     var presentingWallet: WalletItem?
-    var items: Transactions?
+    var txs: [Transactions] = []
+    var fetchTxs: Promise<Void>?
 
     lazy var noTransactionsLabel: UILabel = {
         let noTransactionsLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 100, y: self.tableView.tableHeaderView!.frame.height, width: 200, height: self.view.frame.size.height - self.tableView.tableHeaderView!.frame.height))
@@ -28,6 +29,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         let nib = UINib(nibName: "TransactionTableCell", bundle: nil)
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.prefetchDataSource = self
         tableView.tableFooterView = UIView()
         tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
         tableView.allowsSelection = true
@@ -46,13 +48,8 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
 
-        if presentingWallet?.pointer != pointerWallet {
-            // clear tx list only after a subaccount change in order to provide cache in offline mode
-            items = Transactions(list: [], nextPageId: 0, pageId: 0)
-            tableView.reloadData()
-        }
         loadWallet()
-        loadTransactions()
+        load()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -86,98 +83,76 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         if notification.name.rawValue == EventType.Block.rawValue {
             subaccounts.append(pointerWallet)
         } else {
-            if let saccounts =  dict["subaccounts"] as! [UInt32]? {
+            if let saccounts =  dict["subaccounts"] as? [UInt32] {
                 subaccounts.append(contentsOf: saccounts)
             }
         }
         if subaccounts.filter({ $0 == pointerWallet }).count > 0 {
            self.loadWallet()
-           self.loadTransactions()
+           self.load()
         }
     }
 
-    func checkItems() {
-        if items == nil || items!.list.count == 0 {
-            displayNoTransactionsLabel()
-        } else {
-            hideTransactionsLabel()
-        }
-    }
-
-    func displayNoTransactionsLabel() {
+    func reload() {
         if view.subviews.contains(noTransactionsLabel) {
-            hideTransactionsLabel()
+            noTransactionsLabel.removeFromSuperview()
         }
-        view.addSubview(noTransactionsLabel)
+        let count = txs.map { $0.list.count }.reduce(0, +)
+        if count == 0 {
+            view.addSubview(noTransactionsLabel)
+        }
+        tableView.reloadData()
     }
 
-    func hideTransactionsLabel() {
-        noTransactionsLabel.removeFromSuperview()
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return txs.count
     }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let items = self.items else {
-            return 0
-        }
-        return items.list.count
+        return txs[section].list.count
     }
 
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let cell = cell as? TransactionTableCell, let items = self.items, indexPath.row < items.list.count else {
-            return
-        }
-        let item = items.list[indexPath.row]
-        cell.checkBlockHeight(transaction: item, blockHeight: getGAService().getBlockheight())
-        cell.checkTransactionType(transaction: item)
+        guard let cell = cell as? TransactionTableCell else { return }
+        let transactions = txs[indexPath.section]
+        let tx = transactions.list[indexPath.row]
+        cell.checkBlockHeight(transaction: tx, blockHeight: getGAService().getBlockheight())
+        cell.checkTransactionType(transaction: tx)
     }
 
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath) as! TransactionTableCell
-        guard let items = self.items, indexPath.row < items.list.count else {
-            return cell
-        }
-        let item = items.list[indexPath.row]
-        cell.setup(with: item)
-
+        let transactions = txs[indexPath.section]
+        let tx = transactions.list[indexPath.row]
+        cell.setup(with: tx)
         return cell
     }
 
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let items = self.items, indexPath.row < items.list.count else {
-            return
-        }
-        let item = items.list[indexPath.row]
-        showTransaction(tx: item)
+        let transactions = txs[indexPath.section]
+        let tx = transactions.list[indexPath.row]
+        showTransaction(tx: tx)
     }
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 0
     }
 
-    @objc func handleRefresh(_ sender: UIRefreshControl) {
-        self.loadTransactions()
+    @objc func handleRefresh(_ sender: UIRefreshControl?) {
+        self.load()
     }
 
-    func loadTransactions() {
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {_ in
-            try getSession().getTransactions(details: ["subaccount": self.pointerWallet, "page_id": 0])
-        }.compactMap(on: bgq) { data -> Transactions in
-            let txList = (data["list"] as! [[String: Any]]).map { tx -> Transaction in
-                return Transaction(tx)
-            }
-            let txs = Transactions(list: txList, nextPageId: data["next_page_id"] as! UInt32, pageId: data["page_id"] as! UInt32)
-            return txs
-        }.done { txs -> Void in
-            self.items = txs
-            self.checkItems()
-            self.tableView.reloadData()
+    func load(_ pageId: Int = 0) {
+        getTransactions(self.pointerWallet, pageId: pageId)
+        .done { txs in
+            self.txs.removeAll()
+            self.txs.append(txs)
+            self.reload()
         }.ensure {
             if self.tableView.refreshControl!.isRefreshing {
                 self.tableView.refreshControl!.endRefreshing()
             }
-        }.catch { _ in
-        }
+        }.catch { _ in }
     }
 
     func getWalletCardView() -> WalletFullCardView? {
@@ -193,7 +168,7 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         guard let settings = getGAService().getSettings() else { return }
         getSubaccount(self.pointerWallet).done { wallet in
             self.presentingWallet = wallet
-            let view = self.tableView.tableHeaderView as! WalletFullCardView
+            guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
             view.balance.text = String.toBtc(satoshi: wallet.satoshi, showDenomination: false)
             view.unit.text = settings.denomination.toString()
             view.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.satoshi)
@@ -237,6 +212,23 @@ class TransactionsController: UITableViewController, SubaccountDelegate {
         }
     }
 
+}
+
+extension TransactionsController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        let fetch = indexPaths.contains { $0.row >= self.txs[$0.section].list.count - 1 }
+        let pageId = Int(self.txs.last?.nextPageId ?? 0)
+        if !fetch { return }
+        if pageId == 0 { return }
+        if fetchTxs != nil && fetchTxs!.isPending { return }
+        fetchTxs = getTransactions(self.pointerWallet, pageId: pageId).map { txs in
+            self.txs.append(txs)
+            self.reload()
+        }
+    }
+}
+
+extension TransactionsController: SubaccountDelegate {
     func onChange(_ pointer: UInt32) {
         self.pointerWallet = pointer
     }

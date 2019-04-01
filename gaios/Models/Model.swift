@@ -208,6 +208,20 @@ class Wallets: Codable {
     let array: [WalletItem]
 }
 
+func getTransactions(_ pointer: UInt32, pageId: Int = 0) -> Promise<Transactions> {
+    let bgq = DispatchQueue.global(qos: .background)
+    return Guarantee().compactMap(on: bgq) {_ in
+        try getSession().getTransactions(details: ["subaccount": pointer, "page_id": pageId])
+    }.compactMap(on: bgq) { data in
+        let list = (data["list"] as! [[String: Any]]).map { tx -> Transaction in
+            return Transaction(tx)
+        }
+        let nextPageId = data["next_page_id"] as! UInt32
+        let pageId = data["page_id"] as! UInt32
+        return Transactions(list: list, nextPageId: nextPageId, pageId: pageId)
+    }
+}
+
 func getTransactionDetails(txhash: String) -> Promise<[String: Any]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
