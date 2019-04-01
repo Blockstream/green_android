@@ -7,7 +7,7 @@ class SystemMessageViewController: UIViewController {
     @IBOutlet var content: SystemMessageView!
     var systemMessage: Event!
     private var text: String {
-        get { return systemMessage.value["text"] as! String }
+        get { return systemMessage.value["text"] as? String ?? "" }
     }
 
     override func viewDidLoad() {
@@ -18,12 +18,7 @@ class SystemMessageViewController: UIViewController {
         content.laterButton.setTitle(NSLocalizedString("id_later", comment: ""), for: .normal)
         content.confirmButton.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
         content.confirmButton.isEnabled = false
-        updateButtons()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        content.confirmButton.updateGradientLayerFrame()
+        content.reload()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -55,20 +50,6 @@ class SystemMessageViewController: UIViewController {
             }
         }
     }
-
-    @IBAction func acceptCheckClick(_ sender: Any) {
-        content.confirmButton.isEnabled = !content.confirmButton.isEnabled
-        updateButtons()
-    }
-
-    func updateButtons() {
-        let accept = content.confirmButton.isEnabled
-        content.acceptCheck.backgroundColor = accept ? UIColor.customMatrixGreen() : UIColor.clear
-        content.acceptCheck.layer.borderColor =  UIColor.customTitaniumLight().cgColor
-        content.acceptCheck.setImage(accept ? UIImage(named: "check") : nil, for: UIControlState.normal)
-        content.acceptCheck.tintColor = UIColor.white
-        content.confirmButton.setGradient(accept)
-    }
 }
 
 @IBDesignable
@@ -92,5 +73,19 @@ class SystemMessageView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         confirmButton.updateGradientLayerFrame()
+    }
+
+    @IBAction func acceptCheckClick(_ sender: Any) {
+        confirmButton.isEnabled = !confirmButton.isEnabled
+        reload()
+    }
+
+    func reload() {
+        let accept = confirmButton.isEnabled
+        acceptCheck.backgroundColor = accept ? UIColor.customMatrixGreen() : UIColor.clear
+        acceptCheck.layer.borderColor =  UIColor.customTitaniumLight().cgColor
+        acceptCheck.setImage(accept ? UIImage(named: "check") : nil, for: UIControlState.normal)
+        acceptCheck.tintColor = UIColor.white
+        confirmButton.setGradient(accept)
     }
 }
