@@ -18,9 +18,9 @@
     <!-- VID 0x2581 PID 0x4b7c - Ledger Proton HID -->
     <usb-device vendor-id="9601" product-id="19324"/>
 
-    <!-- VID 0x2c97 PID 0x0000 - Ledger Nano S -->
-    <usb-device vendor-id="11415" product-id="0000"/>
     <!-- VID 0x2c97 PID 0x0001 - Ledger Blue -->
+    <usb-device vendor-id="11415" product-id="0000"/>
+    <!-- VID 0x2c97 PID 0x0000 - Ledger Nano S -->
     <usb-device vendor-id="11415" product-id="0001"/>
 
 
