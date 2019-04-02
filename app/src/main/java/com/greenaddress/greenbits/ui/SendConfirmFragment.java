@@ -107,7 +107,7 @@ public class SendConfirmFragment extends GAFragment {
                                       service.getValueString(feeNode,false,true),
                                       service.getValueString(feeNode,true,true)));
 
-        if (mHwData != null && mHwData.getDevice().isSupportsArbitraryScripts() && mTxData.getChangeAddress() != null) {
+        if (mHwData != null && mTxData.getChangeAddress() != null && mTxData.getChangeAmount() > 0) {
             UI.show(UI.find(mView, R.id.changeLayout));
             final TextView view = UI.find(mView, R.id.changeAddressText);
             view.setText(mTxData.getChangeAddress().getAddress());
