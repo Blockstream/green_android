@@ -54,6 +54,7 @@
 "id_clear" = "WISSEN";
 "id_completed" = "Voltooid";
 "id_confirm_code" = "Bevestig code";
+"id_confirm_passphrase" = "Confirm passphrase";
 "id_confirmation" = "Bevestiging";
 "id_confirmation_in_12_blocks_2" = "Bevestiging in 12 blocks, gemiddeld 2 uur";
 "id_confirmation_in_24_blocks_4" = "Bevestiging in 24 blocks, gemiddeld 4 uur";
@@ -125,6 +126,7 @@
 "id_error_logging_in_with_hardware" = "Aanmeldingsfout voor hardware wallet";
 "id_error_nfc_tag_not_writable" = "Fout: NFC-tag niet schrijfbaar";
 "id_error_nfc_tag_too_small" = "Fout: NFC-tag te klein";
+"id_error_passphrases_do_not_match" = "Error: passphrases do not match";
 "id_estimated_blocks_until" = "Geschatte blocks tot bevestiging: %d";
 "id_example_89014283334011612858333" = "Voorbeeld: 8.90.14.2:8333,40.116.12.85:8333";
 "id_face_id" = "Face ID";

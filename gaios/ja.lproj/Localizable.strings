@@ -54,6 +54,7 @@
 "id_clear" = "クリア";
 "id_completed" = "完了";
 "id_confirm_code" = "コードを確認";
+"id_confirm_passphrase" = "Confirm passphrase";
 "id_confirmation" = "検証";
 "id_confirmation_in_12_blocks_2" = "12ブロックで検証、平均2時間";
 "id_confirmation_in_24_blocks_4" = "24ブロックで検証、平均4時間";
@@ -125,6 +126,7 @@
 "id_error_logging_in_with_hardware" = "ハードウェアウォレットでログイン中エラー発生";
 "id_error_nfc_tag_not_writable" = "エラー: NFCタッグが読み取れません";
 "id_error_nfc_tag_too_small" = "エラー: NFCタッグが小さ過ぎます";
+"id_error_passphrases_do_not_match" = "Error: passphrases do not match";
 "id_estimated_blocks_until" = "検証にかかる予想ブロック数: %d";
 "id_example_89014283334011612858333" = "例: 8.90.14.2:8333,40.116.12.85:8333";
 "id_face_id" = "顔ID";

@@ -54,6 +54,7 @@
 "id_clear" = "EFFACER";
 "id_completed" = "Complété";
 "id_confirm_code" = "Confirmez le code";
+"id_confirm_passphrase" = "Confirmez le mot de passe";
 "id_confirmation" = "Confirmation";
 "id_confirmation_in_12_blocks_2" = "Confirmation en 12 blocs, 2 heures en moyenne";
 "id_confirmation_in_24_blocks_4" = "Confirmation dans 24 blocs, 4 heures en moyenne";
@@ -125,6 +126,7 @@
 "id_error_logging_in_with_hardware" = "Erreur d'identification avec le hardware wallet";
 "id_error_nfc_tag_not_writable" = "Erreur : étiquette NFC non inscriptible";
 "id_error_nfc_tag_too_small" = "Erreur : étiquette NFC trop petite";
+"id_error_passphrases_do_not_match" = "Erreur : les mots de passe ne correspondent pas";
 "id_estimated_blocks_until" = "Nombre de blocs estimés avant confirmation: %d";
 "id_example_89014283334011612858333" = "Exemple : 8.90.14.2:8333,40.116.12.85:8333";
 "id_face_id" = "Face ID";
@@ -227,7 +229,7 @@
 "id_normal" = "Normal";
 "id_not_connected_connecting_in_ds_" = "Non connecté. Connexion dans %d s...";
 "id_notifications" = "Notifications";
-"id_now" = "Now";
+"id_now" = "Maintenant";
 "id_ok" = "OK";
 "id_one_attempt_remaining" = "Un essai restant";
 "id_one_network_must_be_selected" = "Un réseau doit être sélectionné. Sélection de Bitcoin par défaut.";
@@ -395,7 +397,7 @@
 "id_version_1s_2s" = "Version %1$@ %2$@";
 "id_view_in_explorer" = "Voir dans l'explorateur";
 "id_waiting_for_transaction" = "En attente de la transaction...";
-"id_wallet_creation_failed" = "Wallet creation failed";
+"id_wallet_creation_failed" = "La création du portefeuille a échoué";
 "id_wallets" = "Portefeuilles";
 "id_warning" = "Attention !";
 "id_warning_nononion_address" = "Attention : détection d'adresses autres que .onion !";

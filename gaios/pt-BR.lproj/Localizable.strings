@@ -54,6 +54,7 @@
 "id_clear" = "LIMPAR";
 "id_completed" = "Completo";
 "id_confirm_code" = "Confirme o código";
+"id_confirm_passphrase" = "Confirm passphrase";
 "id_confirmation" = "Confirmação";
 "id_confirmation_in_12_blocks_2" = "Confirmação em 12 blocos, 2 horas em média";
 "id_confirmation_in_24_blocks_4" = "Confirmação em 24 blocos, 4 horas em média";
@@ -125,6 +126,7 @@
 "id_error_logging_in_with_hardware" = "Erro durante o login com sua carteira de hardware";
 "id_error_nfc_tag_not_writable" = "Erro: Tag NFC não gravável";
 "id_error_nfc_tag_too_small" = "Erro: Tag NFC pequena demais";
+"id_error_passphrases_do_not_match" = "Error: passphrases do not match";
 "id_estimated_blocks_until" = "Blocos estimados até a confirmação: %d";
 "id_example_89014283334011612858333" = "Exemplo: 8.90.14.2:8333,40.116.12.85:8333";
 "id_face_id" = "Face ID";

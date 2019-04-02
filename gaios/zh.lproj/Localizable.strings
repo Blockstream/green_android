@@ -54,6 +54,7 @@
 "id_clear" = "清除";
 "id_completed" = "完成";
 "id_confirm_code" = "确认码";
+"id_confirm_passphrase" = "Confirm passphrase";
 "id_confirmation" = "确认";
 "id_confirmation_in_12_blocks_2" = "12个区块后将进行确认，平均耗时2小时";
 "id_confirmation_in_24_blocks_4" = "24个区块内确认，平均用时4小时";
@@ -125,6 +126,7 @@
 "id_error_logging_in_with_hardware" = "使用硬件钱包登录时出错";
 "id_error_nfc_tag_not_writable" = "错误：NFC标签无法写入";
 "id_error_nfc_tag_too_small" = "错误：NFC标签太小";
+"id_error_passphrases_do_not_match" = "Error: passphrases do not match";
 "id_estimated_blocks_until" = "距离完成确认预计所剩区块：%d";
 "id_example_89014283334011612858333" = "例子：8.90.14.2:8333,40.116.12.85:8333";
 "id_face_id" = "Face ID";

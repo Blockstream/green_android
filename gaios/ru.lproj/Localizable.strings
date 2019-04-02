@@ -54,6 +54,7 @@
 "id_clear" = "ОЧИСТИТЬ";
 "id_completed" = "Завершено";
 "id_confirm_code" = "Подтвердите код";
+"id_confirm_passphrase" = "Подтвердите кодовую фразу";
 "id_confirmation" = "Подтверждение";
 "id_confirmation_in_12_blocks_2" = "Подтверждение в 12 блоках, в среднем 2 часа";
 "id_confirmation_in_24_blocks_4" = "Подтверждение в 24 блоках, в среднем 4 часа";
@@ -125,6 +126,7 @@
 "id_error_logging_in_with_hardware" = "Ошибка при входе в аппаратный кошелек";
 "id_error_nfc_tag_not_writable" = "Ошибка: невозможно создать NFC-тег";
 "id_error_nfc_tag_too_small" = "Ошибка: NFC-тег слишком мал";
+"id_error_passphrases_do_not_match" = "Ошибка: кодовая фраза не совпадает";
 "id_estimated_blocks_until" = "Приблизительно блоков до подтверждения: %d";
 "id_example_89014283334011612858333" = "Пример: 8.90.14.2:8333,40.116.12.85:8333";
 "id_face_id" = "Face ID";
