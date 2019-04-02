@@ -141,7 +141,7 @@
             android:label="@string/id_network_monitor" />
         <activity
             android:name=".RequestLoginActivity"
-            android:label="Login"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
