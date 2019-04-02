@@ -119,14 +119,10 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         final int vendorId = t.getVendorId();
         Log.d(TAG,"Trezor Version: " + version + " vendorid:" + vendorId + " productid:" + t.getProductId());
 
-        if (version.get(0) == 2) {
-            showInstructions(R.string.id_the_hardware_wallet_you_are);
-            return;
-        }
-
         final boolean isFirmwareOutdated = version.get(0) < 1 ||
                                            (version.get(0) == 1 && version.get(1) < 6) ||
-                                           (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0);
+                                           (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0) ||
+                                           (version.get(0) == 2 && version.get(1) < 1);
 
         if (!isFirmwareOutdated) {
             onTrezorConnected(t);
