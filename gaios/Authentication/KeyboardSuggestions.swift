@@ -29,8 +29,8 @@ class KeyboardSuggestions: UIView {
     }
 
     private func initialize() {
-        let view = Bundle.main.loadNibNamed("KeyboardSuggestions", owner: self, options: nil)!.first as! UIView
-        view.frame = self.bounds
+        let view = Bundle.main.loadNibNamed("KeyboardSuggestions", owner: self, options: nil)!.first as? UIView
+        view!.frame = self.bounds
 
         [suggestion0, suggestion1, suggestion2].forEach {
             let tap = UITapGestureRecognizer(target: self, action: #selector(suggestionTapped))
@@ -39,12 +39,12 @@ class KeyboardSuggestions: UIView {
 
         updateSuggestions()
 
-        addSubview(view)
+        addSubview(view!)
     }
 
     @objc func suggestionTapped(sender: UITapGestureRecognizer) {
-        let label = sender.view as! UILabel
-        suggestionDelegate?.suggestionWasTapped(suggestion: label.text!)
+        let label = sender.view as? UILabel
+        suggestionDelegate?.suggestionWasTapped(suggestion: label?.text ?? "")
     }
 
     func setSuggestions(suggestions: [String]) {

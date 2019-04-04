@@ -51,23 +51,19 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedFactor: FactorItem = self.factors[indexPath.row]
-        if (selectedFactor.enabled) {
+        if selectedFactor.enabled {
             disable(selectedFactor.type)
             return
         }
         switch selectedFactor.type {
         case .email:
             self.performSegue(withIdentifier: "email", sender: nil)
-            break
         case .sms:
             self.performSegue(withIdentifier: "phone", sender: "sms")
-            break
         case .phone:
             self.performSegue(withIdentifier: "phone", sender: "call")
-            break
         case .gauth:
             self.performSegue(withIdentifier: "gauth", sender: nil)
-            break
         }
     }
 
@@ -94,7 +90,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SetPhoneViewController {
-            if (sender as! String == "sms") {
+            if sender as? String == "sms" {
                 nextController.sms = true
             } else {
                 nextController.phoneCall = true
@@ -103,17 +99,20 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
     }
 
     @IBAction func walletButtonClick(_ sender: UIButton) {
-        getAppDelegate().instantiateViewControllerAsRoot(identifier: "TabViewController")
+        getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "TabViewController")
     }
 
     func disable(_ type: TwoFactorType) {
         let bgq = DispatchQueue.global(qos: .background)
-        let config = TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String: Any])
+        }.compactMap {
+            TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
+        }.compactMap(on: bgq) { config in
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
+        }.compactMap(on: bgq) { details in
+            try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

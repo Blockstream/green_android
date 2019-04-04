@@ -31,7 +31,7 @@ class WatchOnlySignIn: KeyboardViewController {
         content.passwordTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: height))
         content.usernameTextField.leftViewMode = .always
         content.passwordTextField.leftViewMode = .always
-        if let _ = username {
+        if username != nil {
             content.usernameTextField.text = username!
             content.rememberSwitch.isOn = true
         }
@@ -55,7 +55,7 @@ class WatchOnlySignIn: KeyboardViewController {
 
     @objc func click(_ sender: Any) {
         let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()
+        let appDelegate = getAppDelegate()!
 
         firstly {
             self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
@@ -77,7 +77,7 @@ class WatchOnlySignIn: KeyboardViewController {
             self.stopAnimating()
         }.done {
             getGAService().isWatchOnly = true
-            getAppDelegate().instantiateViewControllerAsRoot(identifier: "TabViewController")
+            appDelegate.instantiateViewControllerAsRoot(identifier: "TabViewController")
         }.catch { error in
             let message: String
             if let err = error as? GaError, err != GaError.GenericError {

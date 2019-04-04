@@ -50,8 +50,8 @@ class VerifyMnemonicsViewController: UIViewController {
                 selectedWord = button.titleLabel?.text
             }
         }
-        if let _ = selectedWord, selectedWord == String(mnemonic[questionPosition]) {
-            if(isComplete()) {
+        if selectedWord != nil, selectedWord == String(mnemonic[questionPosition]) {
+            if isComplete() {
                 registerAndLogin(mnemonics: mnemonic.joined(separator: " "))
             } else {
                 questionCounter += 1
@@ -67,7 +67,7 @@ class VerifyMnemonicsViewController: UIViewController {
 
     func registerAndLogin(mnemonics: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()
+        let appDelegate = getAppDelegate()!
         firstly {
             self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
@@ -88,7 +88,7 @@ class VerifyMnemonicsViewController: UIViewController {
         }.done { _ in
             if isPinEnabled(network: getNetwork()) {
                 GreenAddressService.restoreFromMnemonics = true
-                getAppDelegate().instantiateViewControllerAsRoot(identifier: "TabViewController")
+                appDelegate.instantiateViewControllerAsRoot(identifier: "TabViewController")
             } else {
                 self.performSegue(withIdentifier: "next", sender: self)
             }

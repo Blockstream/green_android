@@ -73,7 +73,7 @@ class AuthenticationTypeHandler {
                                                      kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
                                                      [SecAccessControlCreateFlags.biometryAny,
                                                       SecAccessControlCreateFlags.privateKeyUsage],
-                                                     &error);
+                                                     &error)
         guard error == nil else {
             describeSecurityError(error!)
             return nil
@@ -162,7 +162,7 @@ class AuthenticationTypeHandler {
             return nil
         }
 
-        let canEncrypt = SecKeyIsAlgorithmSupported(publicKey! , SecKeyOperationType.encrypt, ECCEncryptionType)
+        let canEncrypt = SecKeyIsAlgorithmSupported(publicKey!, SecKeyOperationType.encrypt, ECCEncryptionType)
         guard canEncrypt else {
             NSLog("Operation failed: Encryption algorithm not supported.")
 #if DEBUG
@@ -211,16 +211,16 @@ class AuthenticationTypeHandler {
 
     fileprivate static func get_(method: String, forNetwork: String) -> [String: Any]? {
         let q = queryForData(method: method, forNetwork: forNetwork)
-        var result: CFTypeRef? = nil
+        var result: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &result))
-        guard status == errSecSuccess, result != nil else {
+        guard status == errSecSuccess, result != nil, let resultData = result as? Data else {
             return nil
         }
-        let data = try? JSONSerialization.jsonObject(with: result as! Data, options: [])
+        let data = try? JSONSerialization.jsonObject(with: resultData, options: [])
         guard data != nil else {
             return nil
         }
-        return (data! as! [String: Any])
+        return (data! as? [String: Any])
     }
 
     fileprivate static func get(method: String, toDecrypt: Bool, forNetwork: String) throws -> [String: Any]? {
@@ -230,7 +230,8 @@ class AuthenticationTypeHandler {
         var extended = data
         if toDecrypt {
             precondition(method == AuthKeyBiometric)
-            guard let decoded = Data(base64Encoded: data["encrypted_biometric"] as! String),
+            let encryptedBiometric = data["encrypted_biometric"] as? String
+            guard let decoded = Data(base64Encoded: encryptedBiometric!),
                 let plaintext = try decrypt(base64Encoded: decoded, forNetwork: forNetwork) else {
                     return nil
             }

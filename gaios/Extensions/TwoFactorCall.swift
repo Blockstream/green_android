@@ -34,12 +34,12 @@ extension TwoFactorCall {
         case "done":
             return Guarantee().asVoid()
         case "error":
-            let error: String = json["error"] as! String
+            let error = json["error"] as? String ?? ""
             throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
         case "call":
             return try self.call()
         case "request_code":
-            let methods: [String] = json["methods"] as! [String]
+            let methods = json["methods"] as? [String] ?? []
             if methods.count > 1 {
                 let popup = PopupMethodResolver(sender)
                 return Promise()
@@ -53,7 +53,7 @@ extension TwoFactorCall {
                 return try self.requestCode(method: methods[0])
             }
         case "resolve_code":
-            let method: String = json["method"] as! String
+            let method = json["method"] as? String ?? ""
             let popup = PopupCodeResolver(sender)
             return Promise()
                 .map { sender.stopAnimating() }

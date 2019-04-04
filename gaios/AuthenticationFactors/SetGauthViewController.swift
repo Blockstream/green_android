@@ -39,13 +39,16 @@ class SetGauthViewController: UIViewController {
 
     @objc func click(_ sender: UIButton) {
         guard let gauth = gauthData else { return }
-        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String: Any])
+        }.compactMap {
+            TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
+        }.compactMap(on: bgq) { config in
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
+        }.compactMap(on: bgq) { details in
+            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

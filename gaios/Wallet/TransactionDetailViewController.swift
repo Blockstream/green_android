@@ -37,8 +37,7 @@ class TransactionDetailViewController: KeyboardViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "tableview" {
-            let tableViewController = segue.destination  as! TransactionTableViewController
+        if let tableViewController = segue.destination as? TransactionTableViewController {
             tableViewController.transaction = transaction
             tableViewController.wallet = wallet
         } else if let nextController = segue.destination as? SendBtcDetailsViewController {
@@ -202,8 +201,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         if !transaction.canRBF || getGAService().isWatchOnly || getGAService().getTwoFactorReset()!.isResetActive { return }
         let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate, "subaccount": wallet.pointer]
         gaios.createTransaction(details: details).done { tx in
-            guard let _ = self.parent else { return }
-            self.parent!.performSegue(withIdentifier: "rbf", sender: tx)
+            self.parent?.performSegue(withIdentifier: "rbf", sender: tx)
         }.catch { _ in
         }
     }

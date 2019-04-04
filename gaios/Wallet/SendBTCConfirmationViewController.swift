@@ -111,12 +111,13 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.then(on: bgq) { call in
             call.resolve(self)
         }.map(on: bgq) { resultDict in
-            let result = resultDict["result"] as! [String: Any]
+            let result = resultDict["result"] as? [String: Any]
             if self.transaction.isSweep {
-                _ = try getSession().broadcastTransaction(tx_hex: result["transaction"] as! String)
+                let tx = result!["transaction"] as? String
+                _ = try getSession().broadcastTransaction(tx_hex: tx!)
                 return nil
             } else {
-                return try getSession().sendTransaction(details: result)
+                return try getSession().sendTransaction(details: result!)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
             call?.resolve(self) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
@@ -154,7 +155,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             content.scrollView.scrollIndicatorInsets = contentInsets
             var aRect = self.view.frame
             aRect.size.height -= kbSize.height
-            if (!aRect.contains(content.textView.frame.origin) ) {
+            if !aRect.contains(content.textView.frame.origin) {
                 content.scrollView.scrollRectToVisible(aRect, animated: true)
             }
         }

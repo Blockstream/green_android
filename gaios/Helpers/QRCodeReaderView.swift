@@ -1,7 +1,7 @@
 import AVFoundation
 import UIKit
 
-protocol QRCodeReaderDelegate {
+protocol QRCodeReaderDelegate: class {
     func onQRCodeReadSuccess(result: String)
 }
 
@@ -55,7 +55,7 @@ class QRCodeReaderView: UIView {
 
     var authorizationStatus: AVAuthorizationStatus!
 
-    var delegate: QRCodeReaderDelegate?
+    weak var delegate: QRCodeReaderDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)

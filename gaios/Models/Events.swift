@@ -64,7 +64,7 @@ struct Event: EventProtocol, Equatable {
         } else if kindOf(TwoFactorReset.self) {
             return ""
         } else if kindOf(Settings.self) {
-            guard let _ = twoFactorConfig else { return "" }
+            if twoFactorConfig == nil { return "" }
             if !twoFactorConfig!.anyEnabled {
                 return NSLocalizedString("id_your_wallet_is_not_yet_fully", comment: "")
             } else if twoFactorConfig!.enableMethods.count == 1 {

@@ -37,10 +37,10 @@ enum SettingsType: String, Codable {
 
 // Type of priority of a fee for transaction
 public enum TransactionPriority: String {
-    case Low = "Low"
-    case Medium = "Medium"
-    case High = "High"
-    case Custom = "Custom"
+    case Low
+    case Medium
+    case High
+    case Custom
 
     init(_ numBlock: Int) {
         switch numBlock {

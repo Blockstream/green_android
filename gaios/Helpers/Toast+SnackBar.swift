@@ -108,7 +108,7 @@ class SnackBar: UIStackView {
 
     override func updateConstraints() {
         super.updateConstraints()
-        guard let _ = self.superview else { return }
+        guard self.superview != nil else { return }
         let estimateRect = label.attributedText?.boundingRect(with: frame.size, options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil)
         let estimateHeight = estimateRect!.height + SnackBar.padding * 2
         label.heightAnchor.constraint(equalToConstant: estimateHeight).isActive = true

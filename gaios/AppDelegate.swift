@@ -1,8 +1,8 @@
 import UIKit
 import PromiseKit
 
-func getAppDelegate() -> AppDelegate {
-    return UIApplication.shared.delegate as! AppDelegate
+func getAppDelegate() -> AppDelegate? {
+    return UIApplication.shared.delegate as? AppDelegate
 }
 
 func getGAService() -> GreenAddressService {
@@ -20,7 +20,7 @@ func getNetwork() -> String {
 
 func getGdkNetwork(_ network: String) throws -> [String: Any]? {
     var result = try! getNetworks()
-    if (!(result?.keys.contains(network))!) {
+    if !(result?.keys.contains(network))! {
         throw GaError.GenericError
     }
     return result![network] as? [String: Any]

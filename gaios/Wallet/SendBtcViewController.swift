@@ -145,11 +145,8 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
             switch error {
             case TransactionError.invalid(let localizedDescription):
                 Toast.show(localizedDescription, timeout: Toast.SHORT)
-                break
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
                 Toast.show(NSLocalizedString("id_you_are_not_connected", comment: ""), timeout: Toast.SHORT)
-
-                break
             default:
                 Toast.show(error.localizedDescription, timeout: Toast.SHORT)
             }

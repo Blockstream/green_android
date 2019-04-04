@@ -37,7 +37,7 @@ class PinLoginViewController: UIViewController {
         navigationItem.setHidesBackButton(true, animated: false)
 
         // show title
-        if (setPinMode == true) {
+        if setPinMode == true {
             content.title.text = NSLocalizedString("id_create_a_pin_to_access_your", comment: "")
         } else {
             content.title.text = NSLocalizedString("id_enter_pin", comment: "")
@@ -87,7 +87,7 @@ class PinLoginViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        guard let _ = content else { return }
+        guard content != nil else { return }
         content.cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.skipButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
@@ -98,7 +98,7 @@ class PinLoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: String, network: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()
+        let appDelegate = getAppDelegate()!
         let isBiometricLogin = usingAuth == AuthenticationTypeHandler.AuthKeyBiometric
 
         firstly {
@@ -122,7 +122,9 @@ class PinLoginViewController: UIViewController {
             assert(withPIN != nil || isBiometricLogin)
 
             let jsonData = try JSONSerialization.data(withJSONObject: $0)
-            try getSession().loginWithPin(pin: withPIN ?? $0["plaintext_biometric"] as! String, pin_data: String(data: jsonData, encoding: .utf8)!)
+            let pin = withPIN ?? $0["plaintext_biometric"] as? String
+            let pinData = String(data: jsonData, encoding: .utf8)
+            try getSession().loginWithPin(pin: pin!, pin_data: pinData!)
         }.ensure {
             self.stopAnimating()
         }.done {
@@ -137,22 +139,21 @@ class PinLoginViewController: UIViewController {
                 }
             } else if let error = error as? GaError {
                 switch error {
-                    case .NotAuthorizedError:
-                        if let _ = withPIN {
-                            self.pinAttemptsPreference += 1
-                            if self.pinAttemptsPreference == self.MAXATTEMPTS {
-                                self.stopAnimating()
-                                removeKeychainData()
-                                self.pinAttemptsPreference = 0
-                                appDelegate.instantiateViewControllerAsRoot(identifier: "InitialViewController")
-                                return
-                            }
+                case .NotAuthorizedError:
+                    if withPIN != nil {
+                        self.pinAttemptsPreference += 1
+                        if self.pinAttemptsPreference == self.MAXATTEMPTS {
+                            self.stopAnimating()
+                            removeKeychainData()
+                            self.pinAttemptsPreference = 0
+                            appDelegate.instantiateViewControllerAsRoot(identifier: "InitialViewController")
+                            return
                         }
-                        break
-                    case .GenericError:
-                        break
-                    default:
-                        message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+                    }
+                case .GenericError:
+                    break
+                default:
+                    message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
                 }
             }
             self.updateAttemptsLabel()
@@ -179,7 +180,7 @@ class PinLoginViewController: UIViewController {
             if self.editPinMode {
                 self.navigationController?.popViewController(animated: true)
             } else if self.restoreMode {
-                getAppDelegate().instantiateViewControllerAsRoot(identifier: "TabViewController")
+                getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "TabViewController")
             } else {
                 self.performSegue(withIdentifier: "next", sender: self)
             }
@@ -207,14 +208,14 @@ class PinLoginViewController: UIViewController {
     @objc func keyClick(sender: UIButton) {
         pinCode += (sender.titleLabel?.text)!
         updateView()
-        if (pinCode.count < 6) {
+        if pinCode.count < 6 {
             return
         }
 
-        if (setPinMode == true) {
-            if (confirmPin == true) {
+        if setPinMode == true {
+            if confirmPin == true {
                 //set pin
-                if(pinCode != pinConfirm) {
+                if pinCode != pinConfirm {
                     content.title.text = NSLocalizedString("id_set_a_new_pin", comment: "")
                     resetEverything()
                     updatePinMismatch()
@@ -240,7 +241,7 @@ class PinLoginViewController: UIViewController {
 
     func getBackgroundImage(_ color: CGColor) -> UIImage? {
         UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
-        guard let _ = UIGraphicsGetCurrentContext() else { return nil }
+        guard UIGraphicsGetCurrentContext() != nil else { return nil }
         UIGraphicsGetCurrentContext()!.setFillColor(color)
         UIGraphicsGetCurrentContext()!.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
         let image = UIGraphicsGetImageFromCurrentImageContext()
@@ -266,15 +267,15 @@ class PinLoginViewController: UIViewController {
     }
 
     @objc func click(sender: Any?) {
-        if let _ = sender as? UIBarButtonItem {
+        if sender is UIBarButtonItem {
             if setPinMode || editPinMode {
                 self.navigationController?.popViewController(animated: true)
             } else {
-                getAppDelegate().instantiateViewControllerAsRoot(identifier: "InitialViewController")
+                getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "InitialViewController")
             }
         } else if let button = sender as? UIButton {
             if button == content.deleteButton {
-                if(pinCode.count > 0) {
+                if pinCode.count > 0 {
                     pinCode.removeLast()
                     updateView()
                 }
@@ -282,7 +283,7 @@ class PinLoginViewController: UIViewController {
                 resetEverything()
             } else if button == content.skipButton {
                 if restoreMode {
-                    getAppDelegate().instantiateViewControllerAsRoot(identifier: "TabViewController")
+                    getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "TabViewController")
                 } else if editPinMode {
                     self.navigationController?.popViewController(animated: true)
                 } else if setPinMode {
@@ -299,8 +300,8 @@ class PinLoginView: UIView {
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
-    @IBOutlet var keyButton: Array<UIButton>?
-    @IBOutlet var pinLabel: Array<UILabel>?
+    @IBOutlet var keyButton: [UIButton]?
+    @IBOutlet var pinLabel: [UILabel]?
     @IBOutlet weak var title: UILabel!
 
     override init(frame: CGRect) {

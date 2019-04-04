@@ -1,6 +1,6 @@
 import UIKit
 
-protocol MnemonicWordCellDelegate {
+protocol MnemonicWordCellDelegate: class {
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicWordCell)
     func collectionView(pastedIn text: String, from cell: MnemonicWordCell)
 }
@@ -11,7 +11,7 @@ class MnemonicWordCell: UICollectionViewCell {
     @IBOutlet weak var wordText: UITextField!
     @IBOutlet weak var wordSeparator: UIView!
 
-    var delegate: MnemonicWordCellDelegate?
+    weak var delegate: MnemonicWordCellDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -19,8 +19,8 @@ class MnemonicWordCell: UICollectionViewCell {
         wordText.delegate = self
     }
 
-    @IBAction func editingChanged(_ sender: Any) {
-        delegate?.collectionView(valueChangedIn: sender as! UITextField, from: self)
+    @IBAction func editingChanged(_ sender: UITextField) {
+        delegate?.collectionView(valueChangedIn: sender, from: self)
     }
 }
 

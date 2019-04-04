@@ -48,7 +48,10 @@ class ScreenLocker {
 
     func stopObserving() {
         hideLockWindow()
-        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
     }
 
     func clear() {
@@ -76,7 +79,7 @@ class ScreenLocker {
         let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval!
         let settings = getGAService().getSettings()
         let altimeout = settings != nil ? settings!.altimeout * 60 : 5 * 60
-        if (Int(countdown) >= altimeout) {
+        if Int(countdown) >= altimeout {
             // after timeout
             self.isScreenLockLocked = true
         }
@@ -104,7 +107,7 @@ class ScreenLocker {
 
     func showLockWindow() {
         // Hide Root Window
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         appDelegate.window!.isHidden = true
         ScreenLockWindow.shared.show()
     }
@@ -112,7 +115,7 @@ class ScreenLocker {
     func hideLockWindow() {
         ScreenLockWindow.shared.hide()
         // Show Root Window
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         appDelegate.window!.isHidden = false
         // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
         // In the normal case, that means the ViewController will call `becomeFirstResponder`

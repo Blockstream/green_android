@@ -5,7 +5,7 @@ import PromiseKit
 class WalletsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var wallets = [WalletItem]()
-    var subaccountDelegate: SubaccountDelegate?
+    weak var subaccountDelegate: SubaccountDelegate?
     private let cellId = "cell"
     private let headerId = "header"
     private let footerId = "footer"
@@ -46,8 +46,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId,
-                                                      for: indexPath) as! WalletCardView
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
         let wallet = wallets[indexPath.row]
         guard let settings = getGAService().getSettings() else { return cell }
         cell.balance.text = String.toBtc(satoshi: wallet.balance.satoshi, showDenomination: false)
@@ -61,8 +60,8 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
         case UICollectionElementKindSectionHeader:
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
-                headerId, for: indexPath) as! HeaderWalletsCollection
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
+                headerId, for: indexPath) as? HeaderWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
             let satoshi = wallets.map { $0.balance.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
@@ -71,8 +70,8 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             header.fiatLabel.text = String.toFiat(satoshi: satoshi)
             return header
         case UICollectionElementKindSectionFooter:
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
-                footerId, for: indexPath) as! FooterWalletsCollection
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
+                footerId, for: indexPath) as? FooterWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
             footer.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addWallet))
             footer.addGestureRecognizer(tapGestureRecognizer)

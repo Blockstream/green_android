@@ -65,7 +65,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CurrencyCell", for: indexPath) as! CurrencyCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CurrencyCell", for: indexPath) as? CurrencyCell else { fatalError("Fail to dequeue reusable cell") }
         let currency = searchCurrencyList[indexPath.row]
         cell.source.text = currency.exchange
         cell.fiat.text = currency.currency
@@ -90,7 +90,9 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         Guarantee().compactMap {
             settings.pricing = pricing
         }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+        }.compactMap(on: bgq) { details in
+            try getGAService().getSession().changeSettings(details: details)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.done { _ in
@@ -106,11 +108,11 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
             try getSession().getAvailableCurrencies()
         }.done { (data: [String: Any]?) in
             guard let json = data else { return }
-            let perExchange = json["per_exchange"] as! [String: Any]
+            guard let perExchange = json["per_exchange"] as? [String: [String]] else { throw GaError.GenericError }
             self.currencyList.removeAll()
             for (exchange, array) in perExchange {
-                for currency in array as! NSArray {
-                    self.currencyList.append(CurrencyItem(exchange: exchange, currency: currency as! String))
+                for currency in array {
+                    self.currencyList.append(CurrencyItem(exchange: exchange, currency: currency))
                 }
             }
             self.searchCurrencyList = self.currencyList

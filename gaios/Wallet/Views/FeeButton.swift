@@ -38,8 +38,8 @@ class FeeButton: UIButton {
     func loadViewFromNib() -> UIView! {
         let bundle = Bundle(for: type(of: self))
         let nib = UINib(nibName: nibName, bundle: bundle)
-        let view = nib.instantiate(withOwner: self, options: nil).first as! UIView
-        return view
+        let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
+        return view!
     }
 
     func reload() {

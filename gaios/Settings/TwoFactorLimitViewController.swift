@@ -33,9 +33,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     override func keyboardWillShow(notification: NSNotification) {
-        let userInfo = notification.userInfo! as NSDictionary
-        let keyboardFrame = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
-        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.cgRectValue.height).isActive = true
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 
     func refresh() {
@@ -101,7 +100,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
     func getSatoshi() -> UInt64 {
         guard let text = content.limitTextField.text else { return 0 }
         let amount = text.replacingOccurrences(of: ",", with: ".")
-        guard let _ = Double(amount) else { return 0 }
+        if Double(amount) == nil { return 0 }
         return isFiat ? String.toSatoshi(fiat: amount) : String.toSatoshi(amount: amount)
     }
 }

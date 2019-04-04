@@ -2,7 +2,13 @@ import Foundation
 import UIKit
 
 class ShowMnemonicsViewController: UIViewController {
-    var viewArray: Array<UIView> = []
+    var viewArray: [UIView] = []
+    var viewWidth: CGFloat {
+        get { return (UIScreen.main.bounds.width - 40) / 4 }
+    }
+    var viewHeight: CGFloat {
+        get { return viewWidth / 1.61 }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -11,10 +17,6 @@ class ShowMnemonicsViewController: UIViewController {
     }
 
     func createViews() {
-        let screenSize: CGRect = UIScreen.main.bounds
-        let viewWidth = (screenSize.width - 40) / 4
-        let viewHeight = viewWidth / 1.61
-
         let res = try? getSession().getMnemonicPassphrase(password: "")
         guard let mnemonic = res?.split(separator: " ") else { return }
         for index in 0..<mnemonic.count {
@@ -51,13 +53,13 @@ class ShowMnemonicsViewController: UIViewController {
             //left constraint
             NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.width, multiplier: 1, constant: viewWidth).isActive = true
             NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.height, multiplier: 1, constant: viewHeight).isActive = true
-            if(index == 0 || index % 4 == 0) {
+            if index == 0 || index % 4 == 0 {
                 NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: 20).isActive = true
             } else {
                 NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.leading, relatedBy: NSLayoutRelation.equal, toItem: viewArray[index - 1], attribute: NSLayoutAttribute.trailing, multiplier: 1, constant: -1).isActive = true
             }
             //top constraint
-            if (index < 4) {
+            if index < 4 {
                 NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.top, multiplier: 1, constant: 90).isActive = true
             } else {
                 NSLayoutConstraint(item: myView, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: viewArray[index - 4], attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: -1).isActive = true

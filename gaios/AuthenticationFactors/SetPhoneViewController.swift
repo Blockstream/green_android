@@ -26,9 +26,8 @@ class SetPhoneViewController: KeyboardViewController {
     }
 
     override func keyboardWillShow(notification: NSNotification) {
-        let userInfo = notification.userInfo! as NSDictionary
-        let keyboardFrame = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
-        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.cgRectValue.height).isActive = true
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 
     @objc func click(_ sender: UIButton) {
@@ -39,12 +38,15 @@ class SetPhoneViewController: KeyboardViewController {
             Toast.show(NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
         }
-        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as! [String: Any])
+        }.compactMap {
+            TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
+        }.compactMap(on: bgq) { config in
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
+        }.compactMap(on: bgq) { details in
+            try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

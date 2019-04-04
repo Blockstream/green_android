@@ -28,7 +28,7 @@ class TabViewController: UITabBarController {
     @objc func lockApplication(_ notification: NSNotification) {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {
-            getAppDelegate().lock()
+            getAppDelegate()!.lock()
         }.map(on: bgq) {
             try getSession().disconnect()
         }.ensure {

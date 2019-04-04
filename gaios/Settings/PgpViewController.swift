@@ -27,9 +27,9 @@ class PgpViewController: KeyboardViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments)
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try session.changeSettings(details: details as! [String: Any])
+            try session.changeSettings(details: details)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

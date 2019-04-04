@@ -1,6 +1,6 @@
 import UIKit
 
-class EventWindow : UIWindow {
+class EventWindow: UIWindow {
 
     private var timer: Timer?
     private var duration: TimeInterval {
@@ -37,7 +37,7 @@ class EventWindow : UIWindow {
 
     @objc private func timeout(_ timer: Timer) {
         NSLog("Idle timer expired: locking application...")
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo:nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
     }
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {

@@ -42,7 +42,9 @@ struct Transaction {
         get {
             let out: [[String: Any]] = get("addressees") ?? []
             return out.map { value in
-                return Addressee(address: value["address"] as! String, satoshi: (value["satoshi"] as? UInt64) ?? 0)
+                let address = value["address"] as? String
+                let satoshi = value["satoshi"] as? UInt64
+                return Addressee(address: address!, satoshi: satoshi!)
             }
         }
         set {
@@ -166,7 +168,7 @@ struct Balance: Codable {
     let ubtc: String
 }
 
-class WalletItem : Codable {
+class WalletItem: Codable {
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -221,11 +223,12 @@ func getTransactions(_ pointer: UInt32, pageId: Int = 0) -> Promise<Transactions
     return Guarantee().compactMap(on: bgq) {_ in
         try getSession().getTransactions(details: ["subaccount": pointer, "page_id": pageId])
     }.compactMap(on: bgq) { data in
-        let list = (data["list"] as! [[String: Any]]).map { tx -> Transaction in
+        guard let dict = data["list"] as? [[String: Any]] else { throw GaError.GenericError }
+        let list = dict.map { tx -> Transaction in
             return Transaction(tx)
         }
-        let nextPageId = data["next_page_id"] as! UInt32
-        let pageId = data["page_id"] as! UInt32
+        let nextPageId = data["next_page_id"] as? UInt32 ?? 0
+        let pageId = data["page_id"] as? UInt32 ?? 0
         return Transactions(list: list, nextPageId: nextPageId, pageId: pageId)
     }
 }

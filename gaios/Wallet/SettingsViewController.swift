@@ -9,7 +9,7 @@ class SettingsViewController: UIViewController {
 
     var items = [SettingsItem]()
     var sections = [SettingsSections]()
-    var data: Dictionary<SettingsSections, Any> = Dictionary()
+    var data: [SettingsSections: Any] = [:]
     var username: String?
     var twoFactorConfig: TwoFactorConfig?
     var isResetActive: Bool {
@@ -231,7 +231,7 @@ class SettingsViewController: UIViewController {
     }
 
     func getAbout() -> [SettingsItem] {
-        let versionSubtitle = String(format: NSLocalizedString("id_version_1s", comment: ""), Bundle.main.infoDictionary!["CFBundleShortVersionString"]! as! CVarArg)
+        let versionSubtitle = String(format: NSLocalizedString("id_version_1s", comment: ""), Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? "")
         let version = SettingsItem(
             title: NSLocalizedString("id_version", comment: ""),
             subtitle: versionSubtitle,
@@ -301,7 +301,7 @@ class SettingsViewController: UIViewController {
             self.stopAnimating()
         }.done {
             getGAService().reset()
-            getAppDelegate().instantiateViewControllerAsRoot(identifier: "InitialViewController")
+            getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "InitialViewController")
         }.catch { _ in
             print("disconnection error never happens")
         }
@@ -344,8 +344,8 @@ class SettingsViewController: UIViewController {
 
     func showAlert(_ error: Error) {
         let text: String
-        if error is TwoFactorCallError {
-            switch error as! TwoFactorCallError {
+        if let error = error as? TwoFactorCallError {
+            switch error {
             case .failure(let localizedDescription), .cancel(let localizedDescription):
                 text = localizedDescription
             }
@@ -426,7 +426,9 @@ class SettingsViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+        }.compactMap(on: bgq) { details in
+            try getGAService().getSession().changeSettings(details: details)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {
@@ -465,7 +467,8 @@ class SettingsViewController: UIViewController {
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
             guard let string = value as? String else { throw GaError.GenericError }
             if string == self.toString(.Low, detail: false) { settings.transactionPriority = .Low} else if string == self.toString(.Medium, detail: false) { settings.transactionPriority = .Medium} else if string == self.toString(.High, detail: false) { settings.transactionPriority = .High}
-            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+            return try getGAService().getSession().changeSettings(details: details!)
         }, completing: { self.reloadData() })
     }
 
@@ -475,8 +478,10 @@ class SettingsViewController: UIViewController {
         let selected = settings.denomination.toString()
         let popup = PopupList(self, title: NSLocalizedString("id_bitcoin_denomination", comment: ""), list: list, selected: selected)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            settings.denomination = DenominationType.fromString(value as! String)
-            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+            guard let value = value as? String else { throw GaError.GenericError }
+            settings.denomination = DenominationType.fromString(value)
+            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+            return try getGAService().getSession().changeSettings(details: details!)
         }, completing: { self.reloadData() })
     }
 
@@ -485,10 +490,12 @@ class SettingsViewController: UIViewController {
         let hint = String(format: "%.02f", Float(settings.customFeeRate ?? 1000) / 1000)
         let popup = PopupEditable(self, title: NSLocalizedString("id_default_custom_fee_rate", comment: ""), hint: hint, text: hint, keyboardType: .numberPad)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            let amount = (value as! String).replacingOccurrences(of: ",", with: ".")
+            guard let value = value as? String else { throw GaError.GenericError }
+            let amount = value.replacingOccurrences(of: ",", with: ".")
             guard let feeRate = Double(amount) else { throw GaError.GenericError }
             settings.customFeeRate = UInt64(feeRate * 1000)
-            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+            return try getGAService().getSession().changeSettings(details: details!)
         }, completing: { self.reloadData() })
     }
 
@@ -511,8 +518,10 @@ class SettingsViewController: UIViewController {
         let selected = settings.autolock.toString()
         let popup = PopupList(self, title: NSLocalizedString("id_auto_logout_timeout", comment: ""), list: list, selected: selected)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            settings.autolock = AutoLockType.fromString(value as! String)
-            return try getGAService().getSession().changeSettings(details: try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as! [String: Any])
+            guard let value = value as? String else { throw GaError.GenericError }
+            settings.autolock = AutoLockType.fromString(value)
+            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+            return try getGAService().getSession().changeSettings(details: details!)
         }, completing: { self.reloadData() })
     }
 
@@ -568,8 +577,8 @@ extension SettingsViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = sections[indexPath.section]
-        let itemsInSection = data[section] as! [SettingsItem]
-        let item: SettingsItem = itemsInSection[indexPath.row]
+        let itemsInSection = data[section] as? [SettingsItem]
+        let item = itemsInSection![indexPath.row]
         switch item.type {
         case .BitcoinDenomination: showBitcoinDenomination()
         case .SetupPin: performSegue(withIdentifier: "screenLock", sender: nil)
@@ -601,17 +610,16 @@ extension SettingsViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let section = sections[section]
-        let itemsInSection = data[section] as! [SettingsItem]
-        return itemsInSection.count
+        let itemsInSection = data[section] as? [SettingsItem]
+        return itemsInSection?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell =
-            tableView.dequeueReusableCell(withIdentifier: "SettingsCell",
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell",
                                           for: indexPath as IndexPath)
         let section = sections[indexPath.section]
-        let itemsInSection = data[section] as! [SettingsItem]
-        let item: SettingsItem = itemsInSection[indexPath.row]
+        let itemsInSection = data[section] as? [SettingsItem]
+        let item = itemsInSection![indexPath.row]
         cell.textLabel!.text = item.title
         cell.detailTextLabel?.text = item.subtitle
         cell.detailTextLabel?.numberOfLines = 2

@@ -100,9 +100,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
 
     @objc override func keyboardWillShow(notification: NSNotification) {
         super.keyboardWillShow(notification: notification)
-
-        let userInfo = notification.userInfo
-        let keyboardFrame = userInfo?[UIKeyboardFrameEndUserInfoKey] as! CGRect
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         let contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height + content.socks5Port.frame.height, right: 0.0)
         content.scrollView.contentInset = contentInset
         content.scrollView.scrollIndicatorInsets = contentInset
@@ -121,7 +119,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
     }
 
     @objc func click(_ sender: Any?) {
-        if let _ = sender as? UIButton {
+        if sender is UIButton {
             UserDefaults.standard.set(["network": currentNetworkSelection!, "proxy": content.proxySwitch.isOn, "tor": content.torSwitch.isOn, "socks5_hostname": content.socks5Hostname.text ?? "", "socks5_port": content.socks5Port.text ?? ""], forKey: "network_settings")
             onSave!()
             dismiss(animated: true, completion: nil)
@@ -144,7 +142,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         if defaults == nil {
             handleSelection(content.bitcoin, "Mainnet")
         } else {
-            let networkName = defaults!["network"] as! String
+            let networkName = defaults!["network"] as? String ?? "Mainnet"
             switch networkName {
             case "Mainnet":
                 handleSelection(content.bitcoin, networkName)

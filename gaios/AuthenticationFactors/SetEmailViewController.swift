@@ -19,22 +19,22 @@ class SetEmailViewController: KeyboardViewController {
     }
 
     override func keyboardWillShow(notification: NSNotification) {
-        let userInfo = notification.userInfo! as NSDictionary
-        let keyboardFrame = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
-        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.cgRectValue.height).isActive = true
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
         guard let text = content.textField.text else { return }
-        let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: text)
         firstly {
             startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
+        }.compactMap {
+            TwoFactorConfigItem(enabled: true, confirmed: true, data: text)
+        }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
-        }.compactMap(on: bgq) { data in
-            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: data)
+        }.compactMap(on: bgq) { details in
+            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.email.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {

@@ -38,7 +38,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
-        guard let _ = gestureTap else { return }
+        guard gestureTap != nil else { return }
         content.walletQRCode.removeGestureRecognizer(gestureTap!)
         content.walletAddressLabel.removeGestureRecognizer(gestureTap!)
         content.amountTextfield.removeTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
@@ -90,10 +90,10 @@ class ReceiveBtcViewController: KeyboardViewController {
         let satoshi = getSatoshi()
         guard let settings = getGAService().getSettings() else { return }
         let res = try? getSession().convertAmount(input: ["satoshi": satoshi])
-        guard let _ = res, let data = res! else { return }
-        if (selectedType == TransactionType.BTC) {
+        guard res != nil, let data = res! else { return }
+        if selectedType == TransactionType.BTC {
             selectedType = TransactionType.FIAT
-            content.amountTextfield.text = String(format: "%@", data["fiat"] as! String)
+            content.amountTextfield.text = String(format: "%@", data["fiat"] as? String ?? "")
         } else {
             selectedType = TransactionType.BTC
             guard let amount = data[settings.denomination.rawValue] as? String else { return }
@@ -105,7 +105,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func setButton() {
         guard let settings = getGAService().getSettings() else { return }
-        if (selectedType == TransactionType.BTC) {
+        if selectedType == TransactionType.BTC {
             content.fiatSwitchButton.setTitle(settings.denomination.toString(), for: UIControlState.normal)
             content.fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
             content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControlState.normal)
@@ -118,7 +118,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func updateEstimate() {
         let satoshi = getSatoshi()
-        if (selectedType == TransactionType.BTC) {
+        if selectedType == TransactionType.BTC {
             content.estimateLabel.text = "≈ " + String.toFiat(satoshi: satoshi)
         } else {
             content.estimateLabel.text = "≈ " + String.toBtc(satoshi: satoshi)
@@ -140,7 +140,7 @@ class ReceiveBtcViewController: KeyboardViewController {
                 throw GaError.GenericError
             }
             let uri: String
-            if (self.getSatoshi() == 0) {
+            if self.getSatoshi() == 0 {
                 uri = Bip21Helper.btcURIforAddress(address: address)
                 self.content.walletAddressLabel.text = address
             } else {
@@ -180,10 +180,10 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func getSatoshi() -> UInt64 {
         guard let amount = content.amountTextfield.text else { return 0 }
-        if (amount.isEmpty || Double(amount) == nil) {
+        if amount.isEmpty || Double(amount) == nil {
             return 0
         }
-        if (selectedType == TransactionType.BTC) {
+        if selectedType == TransactionType.BTC {
             return String.toSatoshi(amount: amount)
         } else {
             return String.toSatoshi(fiat: amount)

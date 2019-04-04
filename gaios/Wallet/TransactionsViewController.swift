@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol SubaccountDelegate {
+protocol SubaccountDelegate: class {
     func onChange(_ pointer: UInt32)
 }
 
@@ -34,7 +34,7 @@ class TransactionsController: UITableViewController {
         tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
         tableView.allowsSelection = true
         tableView.isUserInteractionEnabled = true
-        tableView.tableHeaderView = getWalletCardView()!
+        tableView.tableHeaderView = getWalletCardView()
         tableView.bounces = true
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
@@ -121,7 +121,7 @@ class TransactionsController: UITableViewController {
     }
 
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath) as! TransactionTableCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath) as? TransactionTableCell else { fatalError("Fail to dequeue reusable cell") }
         let transactions = txs[indexPath.section]
         let tx = transactions.list[indexPath.row]
         cell.setup(with: tx)
@@ -168,7 +168,7 @@ class TransactionsController: UITableViewController {
         guard let settings = getGAService().getSettings() else { return }
         getSubaccount(self.pointerWallet).done { wallet in
             self.presentingWallet = wallet
-            let view = self.tableView.tableHeaderView as! WalletFullCardView
+            guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
             view.balance.text = String.toBtc(satoshi: wallet.balance.satoshi, showDenomination: false)
             view.unit.text = settings.denomination.toString()
             view.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.balance.satoshi)

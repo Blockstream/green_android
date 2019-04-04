@@ -75,57 +75,57 @@ class GreenAddressService {
         guard let dict = notification else {
             return
         }
-        guard let notificationEvent: String = dict["event"] as? String else { return }
-        guard let event: EventType = EventType.init(rawValue: notificationEvent) else { return }
-        let data = dict[event.rawValue] as! [String: Any]
+        guard let notificationEvent = dict["event"] as? String else { return }
+        guard let event = EventType(rawValue: notificationEvent) else { return }
+        guard let data = dict[event.rawValue] as? [String: Any] else { return }
         switch event {
-            case .Block:
-                guard let height = data["block_height"] as? UInt32 else { break }
-                blockHeight = height
-                post(event: .Block, data: data)
-            case .Transaction:
-                do {
-                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
-                    let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
+        case .Block:
+            guard let height = data["block_height"] as? UInt32 else { break }
+            blockHeight = height
+            post(event: .Block, data: data)
+        case .Transaction:
+            do {
+                let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
+                events.append(Event(value: data))
+                if txEvent.type == "incoming" {
+                    updateAddresses(txEvent.subAccounts.map { UInt32($0)})
+                    DispatchQueue.main.async {
+                        Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT)
+                    }
+                }
+            } catch { break }
+            post(event: .Transaction, data: data)
+        case .TwoFactorReset:
+            do {
+                let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                self.twoFactorReset = try JSONDecoder().decode(TwoFactorReset.self, from: json)
+                events.removeAll(where: { $0.kindOf(TwoFactorReset.self)})
+                if self.twoFactorReset!.isResetActive {
                     events.append(Event(value: data))
-                    if txEvent.type == "incoming" {
-                        updateAddresses(txEvent.subAccounts.map { UInt32($0)})
-                        DispatchQueue.main.async {
-                            Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT)
-                        }
-                    }
-                } catch { break }
-                post(event: .Transaction, data: data)
-            case .TwoFactorReset:
-                do {
-                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
-                    self.twoFactorReset = try JSONDecoder().decode(TwoFactorReset.self, from: json)
-                    events.removeAll(where: { $0.kindOf(TwoFactorReset.self)})
-                    if self.twoFactorReset!.isResetActive {
-                        events.append(Event(value: data))
-                    }
-                } catch { break }
-                post(event: .TwoFactorReset, data: data)
-            case .Settings:
-                reloadSystemMessage()
-                do {
-                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
-                    self.settings = try JSONDecoder().decode(Settings.self, from: json)
-                    reloadTwoFactor()
-                    post(event: .Settings, data: data)
-                } catch { break }
-            case .Network:
-                do {
-                    let json = try JSONSerialization.data(withJSONObject: data, options: [])
-                    let connection = try JSONDecoder().decode(Connection.self, from: json)
-                    if connection.loginRequired == true {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
-                    } else {
-                        post(event: EventType.Network, data: data)
-                    }
-                } catch { break }
-            default:
-                break
+                }
+            } catch { break }
+            post(event: .TwoFactorReset, data: data)
+        case .Settings:
+            reloadSystemMessage()
+            do {
+                let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                self.settings = try JSONDecoder().decode(Settings.self, from: json)
+                reloadTwoFactor()
+                post(event: .Settings, data: data)
+            } catch { break }
+        case .Network:
+            do {
+                let json = try JSONSerialization.data(withJSONObject: data, options: [])
+                let connection = try JSONDecoder().decode(Connection.self, from: json)
+                if connection.loginRequired == true {
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
+                } else {
+                    post(event: EventType.Network, data: data)
+                }
+            } catch { break }
+        default:
+            break
         }
     }
 

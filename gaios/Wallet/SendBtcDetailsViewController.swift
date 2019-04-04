@@ -222,10 +222,8 @@ class SendBtcDetailsViewController: UIViewController {
             switch error {
             case TransactionError.invalid(let localizedDescription):
                 self.uiErrorLabel.text = localizedDescription
-                break
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
                 self.uiErrorLabel.text = NSLocalizedString("id_you_are_not_connected", comment: "")
-                break
             default:
                 self.uiErrorLabel.text = error.localizedDescription
             }
@@ -307,16 +305,12 @@ class SendBtcDetailsViewController: UIViewController {
         switch view {
         case content.fastFeeButton:
             self.selectedFee = 0
-            break
         case content.mediumFeeButton:
             self.selectedFee = 1
-            break
         case content.slowFeeButton:
             self.selectedFee = 2
-            break
         case content.customFeeButton:
             showFeeCustomPopup()
-            break
         default:
             return
         }

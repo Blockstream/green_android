@@ -67,7 +67,7 @@ class InitialViewController: UIViewController {
     }
 
     func networkButtonClicked() {
-        let networkSelector = self.storyboard?.instantiateViewController(withIdentifier: "networkSelection") as! NetworkSelectionSettings
+        guard let networkSelector = self.storyboard?.instantiateViewController(withIdentifier: "networkSelection") as? NetworkSelectionSettings else { fatalError("Invalid network selector") }
         networkSelector.onSave = {
             let network = getNetwork()
             onFirstInitialization(network: network)

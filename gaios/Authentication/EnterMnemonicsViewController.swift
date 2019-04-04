@@ -54,9 +54,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
     @objc override func keyboardWillShow(notification: NSNotification) {
         super.keyboardWillShow(notification: notification)
-
-        let userInfo = notification.userInfo
-        let keyboardFrame = userInfo?[UIKeyboardFrameEndUserInfoKey] as! CGRect
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         let contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height, right: 0.0)
         mnemonicWords.contentInset = contentInset
         mnemonicWords.scrollIndicatorInsets = contentInset
@@ -124,13 +122,14 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         self.suggestions!.isHidden = words.isEmpty
     }
 
+    enum LoginError: Error {
+        case invalidMnemonic
+    }
+
     fileprivate func login() {
-        enum LoginError: Error {
-            case invalidMnemonic
-        }
 
         let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()
+        let appDelegate = getAppDelegate()!
 
         firstly {
             self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
@@ -153,13 +152,13 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }.done { _ in
             if isPinEnabled(network: getNetwork()) {
                 GreenAddressService.restoreFromMnemonics = true
-                getAppDelegate().instantiateViewControllerAsRoot(identifier: "TabViewController")
+                appDelegate.instantiateViewControllerAsRoot(identifier: "TabViewController")
             } else {
                 self.performSegue(withIdentifier: "next", sender: self)
             }
         }.catch { error in
             let message: String
-            if let _ = error as? LoginError {
+            if error is LoginError {
                 message = NSLocalizedString("id_invalid_mnemonic", comment: "")
             } else if let err = error as? GaError, err != GaError.GenericError {
                 message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
@@ -194,8 +193,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }
     }
 
-    @IBAction func switchChanged(_ sender: Any) {
-        isPasswordProtected = (sender as! UISwitch).isOn
+    @IBAction func switchChanged(_ sender: UISwitch) {
+        isPasswordProtected = sender.isOn
         mnemonicWords.reloadData()
     }
 
@@ -259,8 +258,7 @@ extension EnterMnemonicsViewController: QRCodeReaderDelegate {
 extension EnterMnemonicsViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "wordCell",
-                                                      for: indexPath) as! MnemonicWordCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "wordCell", for: indexPath) as? MnemonicWordCell else { fatalError("Fail to dequeue reusable cell") }
         cell.wordLabel.text = String(indexPath.row + indexPath.section * 3 + 1)
         cell.wordText.text = mnemonic[indexPath.row + indexPath.section * 3]
         cell.delegate = self
@@ -308,12 +306,8 @@ extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
         } else {
             suggestions!.isHidden = true
         }
-        for word in mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24) {
-            if word.isEmpty {
-                return
-            }
-        }
-        updateDoneButton(true)
+        let foundEmpty = mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).contains(where: { $0.isEmpty })
+        updateDoneButton(!foundEmpty)
     }
 
     func collectionView(pastedIn text: String, from cell: MnemonicWordCell) {

@@ -15,9 +15,9 @@ struct TwoFactorReset: Codable {
 
 struct TwoFactorConfigItem: Codable {
     enum CodingKeys: String, CodingKey {
-        case enabled = "enabled"
-        case confirmed = "confirmed"
-        case data = "data"
+        case enabled
+        case confirmed
+        case data
     }
     let enabled: Bool
     let confirmed: Bool
@@ -41,13 +41,8 @@ struct TwoFactorConfigLimits: Codable {
     let ubtc: String
 
     func get<T>(_ key: CodingKeys) -> T? {
-        var value: T?
-        for (index) in Mirror(reflecting: self).children {
-            if index.label == key.rawValue {
-                value = index.value as? T
-            }
-        }
-        return value
+        let value = Mirror(reflecting: self).children.filter { $0.label == key.rawValue }.map { return $0.value as? T }
+        return value.first ?? nil
     }
 }
 
