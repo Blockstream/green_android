@@ -196,6 +196,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
     @IBAction func switchChanged(_ sender: UISwitch) {
         isPasswordProtected = sender.isOn
         mnemonicWords.reloadData()
+        let foundEmpty = mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).contains(where: { $0.isEmpty })
+        updateDoneButton(!foundEmpty)
     }
 
     func startScan() {
