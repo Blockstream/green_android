@@ -300,9 +300,22 @@ public class TrezorHWWallet extends HWWallet {
             final String pin = parent.pinMatrixRequest(this);
             return handleCommon(parent, mTrezor.io(TrezorMessage.PinMatrixAck.newBuilder().setPin(pin)));
 
+        case "PassphraseStateRequest":
+            return handleCommon(parent, mTrezor.io(TrezorMessage.PassphraseStateAck.newBuilder()));
+
         case "PassphraseRequest":
-            final String passphrase = parent.passphraseRequest(this);
-            return handleCommon(parent, mTrezor.io(TrezorMessage.PassphraseAck.newBuilder().setPassphrase(passphrase)));
+            TrezorMessage.PassphraseRequest passphraseRequest = (TrezorMessage.PassphraseRequest)m;
+            TrezorMessage.PassphraseAck.Builder ackBuilder = TrezorMessage.PassphraseAck.newBuilder();
+
+            // on the Trezor One hasOnDevice is false (you can't possibly enter the password there)
+            // on the Trezor T hasOnDevice is true, so we check what it is explicitly asking with getOnDevice
+            if (!passphraseRequest.hasOnDevice() || !passphraseRequest.getOnDevice()) {
+                // Passphrase set to "HOST", ask the user here on the app
+                final String passphrase = parent.passphraseRequest(this);
+                ackBuilder.setPassphrase(passphrase);
+            }
+
+            return handleCommon(parent, mTrezor.io(ackBuilder));
 
         case "Failure":
             final String message = ((TrezorMessage.Failure)m).getMessage();

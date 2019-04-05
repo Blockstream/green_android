@@ -23,6 +23,7 @@ import com.satoshilabs.trezor.protobuf.TrezorMessage.Initialize;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.MessageSignature;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.MessageType;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.PassphraseRequest;
+import com.satoshilabs.trezor.protobuf.TrezorMessage.PassphraseStateRequest;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.PinMatrixRequest;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.PublicKey;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.Success;
@@ -193,6 +194,7 @@ public class Trezor {
                 case MessageType.MessageType_EntropyRequest_VALUE: return EntropyRequest.parseFrom(data);
                 case MessageType.MessageType_MessageSignature_VALUE: return MessageSignature.parseFrom(data);
                 case MessageType.MessageType_PassphraseRequest_VALUE: return PassphraseRequest.parseFrom(data);
+                case MessageType.MessageType_PassphraseStateRequest_VALUE: return PassphraseStateRequest.parseFrom(data);
                 case MessageType.MessageType_TxSize_VALUE: return TxSize.parseFrom(data);
                 case MessageType.MessageType_WordRequest_VALUE: return WordRequest.parseFrom(data);
             }
