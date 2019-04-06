@@ -27,6 +27,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -123,9 +124,17 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set amount
         boolean negative = mTxItem.amount < 0;
-        final ObjectNode amount = mService.getSession().convertSatoshi(negative ? -mTxItem.amount : mTxItem.amount);
-        final String btc = mService.getValueString(amount, false, true);
-        final String fiat = mService.getValueString(amount, true, true);
+        String btc;
+        String fiat;
+        try {
+            final ObjectNode amount = mService.getSession().convertSatoshi(negative ? -mTxItem.amount : mTxItem.amount);
+            btc = mService.getValueString(amount, false, true);
+            fiat = mService.getValueString(amount, true, true);
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            btc = "";
+            fiat = "";
+        }
         final String neg = negative ? "-" : "";
         final TextView amountText = UI.find(this, R.id.txAmountText);
         amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
@@ -238,7 +247,13 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private void showFeeInfo(final long fee, final long vSize, final long feeRate) {
 
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
-        final String btcFee = mService.getValueString(mService.getSession().convertSatoshi(fee), false, true);
+        String btcFee;
+        try {
+            btcFee = mService.getValueString(mService.getSession().convertSatoshi(fee), false, true);
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            btcFee = "";
+        }
         feeText.setText(String.format("%s, %s vbytes, %s", btcFee,
                                       String.valueOf(vSize), UI.getFeeRateString(feeRate)));
     }

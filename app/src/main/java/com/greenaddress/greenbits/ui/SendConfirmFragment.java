@@ -96,16 +96,26 @@ public class SendConfirmFragment extends GAFragment {
         // Set currency & amount
         final long amount = mTxData.getSatoshi();
         final long fee = mTxData.getFee();
-        final ObjectNode amountNode = session.convertSatoshi(amount);
-        final ObjectNode feeNode = session.convertSatoshi(fee);
         final TextView sendAmount = UI.find(mView, R.id.sendAmount);
-        sendAmount.setText(String.format("%s / %s",
-                                         service.getValueString(amountNode,false,true),
-                                         service.getValueString(amountNode,true,true)));
         final TextView sendFee = UI.find(mView, R.id.sendFee);
-        sendFee.setText(String.format("%s / %s",
-                                      service.getValueString(feeNode,false,true),
-                                      service.getValueString(feeNode,true,true)));
+        try {
+            final ObjectNode amountNode = session.convertSatoshi(amount);
+            sendAmount.setText(String.format("%s / %s",
+                                             service.getValueString(amountNode, false, true),
+                                             service.getValueString(amountNode, true, true)));
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            sendAmount.setText("");
+        }
+        try {
+            final ObjectNode feeNode = session.convertSatoshi(fee);
+            sendFee.setText(String.format("%s / %s",
+                                          service.getValueString(feeNode, false, true),
+                                          service.getValueString(feeNode, true, true)));
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            sendFee.setText("");
+        }
 
         if (mHwData != null && mTxData.getChangeAddress() != null && mTxData.getChangeAmount() > 0) {
             UI.show(UI.find(mView, R.id.changeLayout));

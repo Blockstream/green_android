@@ -196,7 +196,12 @@ public class GaService extends Service  {
     }
 
     public String getValueString(final long amount, final boolean asFiat, boolean withUnit) {
-        return getValueString(mSession.convertSatoshi(amount), asFiat, withUnit);
+        try {
+            return getValueString(mSession.convertSatoshi(amount), asFiat, withUnit);
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            return "";
+        }
     }
     public String getValueString(final ObjectNode amount, final boolean asFiat, boolean withUnit) {
         if (asFiat)

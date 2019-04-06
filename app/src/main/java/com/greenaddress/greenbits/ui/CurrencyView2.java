@@ -5,6 +5,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.IOException;
 import java.util.Locale;
 
 
@@ -149,11 +151,15 @@ public class CurrencyView2 extends RelativeLayout implements View.OnClickListene
             final ObjectMapper mapper = new ObjectMapper();
             final ObjectNode amount = mapper.createObjectNode();
             amount.put(key, value.isEmpty() ? "0" : value);
-            final ObjectNode newData = mProvider.convertAmount(amount);
-            if (mData == null || (newData != null && newData.get("satoshi").asLong() != getSatoshi())) {
-                mData = newData;
-                if (mData != null)
-                    updateFields(false);
+            try {
+                final ObjectNode newData = mProvider.convertAmount(amount);
+                if (mData == null || (newData != null && newData.get("satoshi").asLong() != getSatoshi())) {
+                    mData = newData;
+                    if (mData != null)
+                        updateFields(false);
+                }
+            } catch (final RuntimeException | IOException e) {
+                Log.e("", "Conversion error: " + e.getLocalizedMessage());
             }
         }
     }
@@ -165,7 +171,7 @@ public class CurrencyView2 extends RelativeLayout implements View.OnClickListene
     }
 
     interface BalanceConversionProvider {
-        ObjectNode convertAmount(final ObjectNode amount);
+        ObjectNode convertAmount(final ObjectNode amount) throws IOException, RuntimeException;
         void amountEntered();
     }
 

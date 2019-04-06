@@ -175,18 +175,18 @@ public class GDKSession {
         return balanceData1;
     }
 
-    public BalanceData convertBalance(final BalanceData balanceData) throws IOException {
+    public BalanceData convertBalance(final BalanceData balanceData) throws IOException, RuntimeException {
         final ObjectNode convertedBalanceData = (ObjectNode) GDK.convert_amount(mNativeSession, balanceData);
         final BalanceData balanceData1 = mObjectMapper.treeToValue(convertedBalanceData, BalanceData.class);
         debugEqual(convertedBalanceData, balanceData1);
         return balanceData1;
     }
 
-    public ObjectNode convert(final ObjectNode amount) {
+    public ObjectNode convert(final ObjectNode amount) throws IOException, RuntimeException {
         return (ObjectNode) GDK.convert_amount(mNativeSession, amount);
     }
 
-    public ObjectNode convertSatoshi(final long satoshi) {
+    public ObjectNode convertSatoshi(final long satoshi) throws IOException, RuntimeException {
         final ObjectNode amount = mObjectMapper.createObjectNode();
         amount.set("satoshi", new LongNode(satoshi));
         return convert(amount);

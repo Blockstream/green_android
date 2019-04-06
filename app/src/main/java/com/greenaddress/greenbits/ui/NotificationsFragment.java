@@ -23,6 +23,7 @@ import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.preferences.GAPreferenceFragment;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -114,7 +115,13 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
                 tx.getSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
             final long satoshi = tx.getSatoshi();
-            final String amount = mService.getValueString(mService.getSession().convertSatoshi(satoshi), false, true);
+            String amount;
+            try {
+                amount = mService.getValueString(mService.getSession().convertSatoshi(satoshi), false, true);
+            } catch (final RuntimeException | IOException e) {
+                Log.e("", "Conversion error: " + e.getLocalizedMessage());
+                amount = "";
+            }
             final Object[] formatArgs = {accountName, amount};
             return getString(d, formatArgs);
         }

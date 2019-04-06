@@ -25,6 +25,7 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -123,7 +124,11 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             final JsonNode node = mTx.get("satoshi");
             if (node != null && node.asLong() != 0L) {
                 final long newSatoshi = node.asLong();
-                mAmountView.setAmounts(service.getSession().convertSatoshi(newSatoshi));
+                try {
+                    mAmountView.setAmounts(service.getSession().convertSatoshi(newSatoshi));
+                } catch (final RuntimeException | IOException e) {
+                    Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+                }
             }
 
             final JsonNode readOnlyNode = mTx.get("addressees_read_only");
@@ -369,7 +374,11 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             final String error = mTx.get("error").asText();
             if (error.isEmpty()) {
                 // The tx is valid so show the updated amount
-                mAmountView.setAmounts(session.convertSatoshi(addressee.get("satoshi").asLong()));
+                try {
+                    mAmountView.setAmounts(session.convertSatoshi(addressee.get("satoshi").asLong()));
+                } catch (final RuntimeException | IOException e) {
+                    Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+                }
                 if (mTx.get("transaction_vsize") != null)
                     mVsize = mTx.get("transaction_vsize").asLong();
                 updateFeeSummaries();
@@ -394,7 +403,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         }
     }
 
-    public ObjectNode convertAmount(final ObjectNode amount) {
+    public ObjectNode convertAmount(final ObjectNode amount) throws IOException, RuntimeException {
         return getGAService().getSession().convert(amount);
     }
 
