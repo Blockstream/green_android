@@ -197,6 +197,9 @@ public class Trezor {
                 case MessageType.MessageType_PassphraseStateRequest_VALUE: return PassphraseStateRequest.parseFrom(data);
                 case MessageType.MessageType_TxSize_VALUE: return TxSize.parseFrom(data);
                 case MessageType.MessageType_WordRequest_VALUE: return WordRequest.parseFrom(data);
+
+                default:
+                    throw new InvalidProtocolBufferException(String.format("Unknown message type %s", type));
             }
         } catch (final InvalidProtocolBufferException e) {
             Log.e(TAG, e.toString());
