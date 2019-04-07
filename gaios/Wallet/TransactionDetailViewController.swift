@@ -178,6 +178,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         } else {
             increasefeeLabel.isHidden = true
         }
+        memoTextView.isEditable = !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive
         self.tableView.reloadData()
     }
 
