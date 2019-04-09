@@ -263,6 +263,7 @@
 "id_please_reconnect_your_hardware" = "Vuelve a conectar tu hardware wallet antes de reintentar.";
 "id_please_secure_your_mnemonic_and" = "Protege tu Frase de Recuperación y confirma que aceptas los términos de servicio";
 "id_please_select_the_checkbox" = "Selecciona la casilla";
+"id_please_set_and_enable_socks5" = "Please set and enable SOCKS5 proxy and port to use Tor";
 "id_please_tap_card" = "Toca con tu tarjeta";
 "id_privacy_policy" = "Política de privacidad";
 "id_problem_with_key_1s" = "Problema con clave %1$@";
@@ -339,6 +340,7 @@
 "id_sms" = "SMS";
 "id_socks5_hostname" = "Nombre de host de Soks5";
 "id_socks5_port" = "Puerta Socks5";
+"id_socks5_proxy_and_port_must_be" = "SOCKS5 proxy and port must be set";
 "id_something_went_wrong" = "Se produjo un error";
 "id_spv_is_always_synchronized_on" = "SPV siempre se sincroniza con redes no móviles, como WiFi y Ethernet. Con esta configuración, también se sincroniza cuando se usan datos móviles. Eso puede resultar caro según el plan de datos que tengas, así que ten cuidado al habilitarla.";
 "id_spv_not_fully_synced" = "No se ha sincronizado correctamente la SPV";

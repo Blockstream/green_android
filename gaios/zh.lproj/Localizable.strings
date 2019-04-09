@@ -263,6 +263,7 @@
 "id_please_reconnect_your_hardware" = "请重新连接硬件钱包，然后再试一次。";
 "id_please_secure_your_mnemonic_and" = "请保存好助记符，然后确认同意服务协议";
 "id_please_select_the_checkbox" = "请进行勾选";
+"id_please_set_and_enable_socks5" = "Please set and enable SOCKS5 proxy and port to use Tor";
 "id_please_tap_card" = "请点击卡片";
 "id_privacy_policy" = "隐私政策";
 "id_problem_with_key_1s" = "密钥%1$@出现了问题";
@@ -339,6 +340,7 @@
 "id_sms" = "短信";
 "id_socks5_hostname" = "Socks5主机名";
 "id_socks5_port" = "Socks5端口";
+"id_socks5_proxy_and_port_must_be" = "SOCKS5 proxy and port must be set";
 "id_something_went_wrong" = "发生错误";
 "id_spv_is_always_synchronized_on" = "SPV永远在非移动网络，如WiFi或以太网上同步。此设置在使用移动数据网络时也进行同步，可能会产生较高额的流量费用，请谨慎开启。";
 "id_spv_not_fully_synced" = "SPV未完全同步";
