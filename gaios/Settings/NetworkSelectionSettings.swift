@@ -28,7 +28,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         content.socks5Port.attributedPlaceholder = NSAttributedString(string: "Socks5 Port",
                                                                  attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
         content.titleLabel.text = NSLocalizedString("id_choose_your_network", comment: "")
-        content.proxyLabel.text = NSLocalizedString("id_advanced_network_settings", comment: "")
+        content.proxyLabel.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         content.proxySettingsLabel.text = NSLocalizedString("id_proxy_settings", comment: "")
         content.socks5Hostname.text = NSLocalizedString("id_socks5_hostname", comment: "")
         content.socks5Port.text = NSLocalizedString("id_socks5_port", comment: "")
@@ -125,9 +125,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
             dismiss(animated: true, completion: nil)
         } else if let switcher = sender as? UISwitch {
             content.proxySettings.isHidden = !switcher.isOn
-            content.torLabel.isHidden = !switcher.isOn
-            content.torSwitch.isHidden = !switcher.isOn
-        }
+       }
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -162,8 +160,6 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         content.socks5Hostname.text = defaults?["socks5_hostname"] as? String ?? ""
         content.socks5Port.text = defaults?["socks5_port"] as? String ?? ""
         content.torSwitch.isOn = defaults?["tor"] as? Bool ?? false
-        content.torLabel.isHidden = !content.proxySwitch.isOn
-        content.torSwitch.isHidden = !content.proxySwitch.isOn
         content.saveButton.setGradient(true)
     }
 }
