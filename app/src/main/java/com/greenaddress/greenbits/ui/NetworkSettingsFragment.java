@@ -198,6 +198,16 @@ public class NetworkSettingsFragment extends DialogFragment {
             final String socksHost = UI.getText(mSocks5Host);
             final String socksPort = UI.getText(mSocks5Port);
 
+            // Prevent settings that won't allow connection
+            if (mSwitchProxy.isChecked() && (socksHost.isEmpty() || socksPort.isEmpty())) {
+                UI.toast(getActivity(), R.string.id_socks5_proxy_and_port_must_be, Toast.LENGTH_LONG);
+                return;
+            }
+            if (mSwitchTor.isChecked() && (socksHost.isEmpty() || !mSwitchProxy.isChecked())) {
+                UI.toast(getActivity(), R.string.id_please_set_and_enable_socks5, Toast.LENGTH_LONG);
+                return;
+            }
+
             if (socksHost.startsWith("{")) {
                 try {
                     final NetworkData newNetwork = (new ObjectMapper()).readValue(socksHost, NetworkData.class);
