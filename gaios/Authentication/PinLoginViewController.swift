@@ -62,6 +62,7 @@ class PinLoginViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        ScreenLocker.shared.stopObserving()
         content.cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.skipButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
@@ -87,7 +88,7 @@ class PinLoginViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        guard content != nil else { return }
+        ScreenLocker.shared.startObserving()
         content.cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.skipButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
@@ -99,28 +100,18 @@ class PinLoginViewController: UIViewController {
     fileprivate func loginWithPin(usingAuth: String, network: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
-        let isBiometricLogin = usingAuth == AuthenticationTypeHandler.AuthKeyBiometric
 
         firstly {
-            startAnimating(message: !isBiometricLogin ? NSLocalizedString("id_logging_in", comment: "") : "")
             return Guarantee()
-        }.compactMap(on: bgq) {
-            appDelegate.disconnect()
-        }.compactMap(on: bgq) {
-            try appDelegate.connect()
-        }.get { _ in
-            if isBiometricLogin {
-                self.stopAnimating()
-            }
         }.compactMap(on: bgq) {
             try AuthenticationTypeHandler.getAuth(method: usingAuth, forNetwork: network)
         }.get { _ in
-            if isBiometricLogin {
-                self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
-            }
+            self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+        }.get(on: bgq) { _ in
+            appDelegate.disconnect()
+        }.get(on: bgq) { _ in
+            try appDelegate.connect()
         }.map(on: bgq) {
-            assert(withPIN != nil || isBiometricLogin)
-
             let jsonData = try JSONSerialization.data(withJSONObject: $0)
             let pin = withPIN ?? $0["plaintext_biometric"] as? String
             let pinData = String(data: jsonData, encoding: .utf8)
