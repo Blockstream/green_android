@@ -33,7 +33,6 @@ class TransactionTableCell: UITableViewCell {
         } else {
             address.text = transaction.address()
         }
-        separatorInset = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 18)
     }
 
     func checkBlockHeight(transaction: Transaction, blockHeight: UInt32) {

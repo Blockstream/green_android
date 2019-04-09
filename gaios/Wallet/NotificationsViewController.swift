@@ -15,7 +15,6 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
-        tableView.separatorColor = UIColor.customTitaniumLight()
     }
 
     override func viewWillAppear(_ animated: Bool) {
