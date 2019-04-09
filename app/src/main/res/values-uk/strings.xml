@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Повторно підключіть апаратний гаманець перед тим, як здійснити іншу спробу.</string>
   <string name="id_please_secure_your_mnemonic_and">Збережіть мнемонічну фразу і підтвердіть вашу згоду з умовами надання послуги </string>
   <string name="id_please_select_the_checkbox">Встановіть прапорець</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Будь ласка, натисніть картку</string>
   <string name="id_privacy_policy">Політика конфіденційності</string>
   <string name="id_problem_with_key_1s">Проблема з ключем %1$s</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">СМС</string>
   <string name="id_socks5_hostname">Ім\'я хоста Socks5</string>
   <string name="id_socks5_port">Порт Socks5</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">Щось пішло не так</string>
   <string name="id_spv_is_always_synchronized_on">SPV завжди синхронізується в таких мережах, як WiFi або Ethernet. Але й також при використанні мобільних даних. Тож це може бути дорого і залежить від вашого тарифного плану, тому будьте уважні при активації.</string>
   <string name="id_spv_not_fully_synced">SPV синхронізувалась не повністю</string>

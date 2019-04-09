@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Por favor, reconecte sua carteira de hardware antes de tentar novamente.</string>
   <string name="id_please_secure_your_mnemonic_and">Por favor, proteja seu mnemônico e confirme que concorda com os Termos de Serviço</string>
   <string name="id_please_select_the_checkbox">Por favor, marque a caixa de marcação</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Por favor, encoste o cartão</string>
   <string name="id_privacy_policy">Política de Privacidade</string>
   <string name="id_problem_with_key_1s">Problema com a chave %1$s</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Nome do host Socks5</string>
   <string name="id_socks5_port">Porta do Socks5</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">Algo deu errado</string>
   <string name="id_spv_is_always_synchronized_on">SPV sempre sincroniza em redes não-móveis como WiFi e Ethernet. Esta configuração ativa a sincronização usando dados móveis. Isso pode ser caro dependendo do seu plano de dados, portanto, cuidado ao habilitá-la.</string>
   <string name="id_spv_not_fully_synced">SPV não completamente sincronizada</string>

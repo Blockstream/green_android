@@ -56,7 +56,7 @@
   <string name="id_clear">새로고침</string>
   <string name="id_completed">완료</string>
   <string name="id_confirm_code">코드 컨펌</string>
-  <string name="id_confirm_passphrase">Confirm passphrase</string>
+  <string name="id_confirm_passphrase">비밀번호 확인</string>
   <string name="id_confirmation">컨펌</string>
   <string name="id_confirmation_in_12_blocks_2">12블록 후 컨펌. 평균적으로 2시간 소모</string>
   <string name="id_confirmation_in_24_blocks_4">24블록 또는 이후 컨펌. 평균적으로 4시간 소모</string>
@@ -128,7 +128,7 @@
   <string name="id_error_logging_in_with_hardware">하드웨어 지갑으로 로그인 시 오류 발생</string>
   <string name="id_error_nfc_tag_not_writable">오류: NFC 태그에 쓰기 불가능</string>
   <string name="id_error_nfc_tag_too_small">오류: NFC 태그 너무 작음</string>
-  <string name="id_error_passphrases_do_not_match">Error: passphrases do not match</string>
+  <string name="id_error_passphrases_do_not_match">오류: 비밀번호가 일치하지 않습니다</string>
   <string name="id_estimated_blocks_until">컨펌되기까지 예상 블록:%d</string>
   <string name="id_example_89014283334011612858333">예: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
@@ -231,7 +231,7 @@
   <string name="id_normal">보통</string>
   <string name="id_not_connected_connecting_in_ds_">접속되지 않았습니다. 접속 시도 중 %d 초...</string>
   <string name="id_notifications">알람</string>
-  <string name="id_now">Now</string>
+  <string name="id_now">지금</string>
   <string name="id_ok">Ok</string>
   <string name="id_one_attempt_remaining">시도 한번 남음</string>
   <string name="id_one_network_must_be_selected">하나의 네트워크만 선택해야 합니다. 기존값대로 비트코인을 선택합니다.</string>
@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">다시 시도하기 전에 하드웨어 지갑을 다시 연결하세요.</string>
   <string name="id_please_secure_your_mnemonic_and">니모닉(복원 코드)을 안전하게 보관하시고 이용약관에 동의해주세요</string>
   <string name="id_please_select_the_checkbox">확인란을 선택해주세요</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">카드를 터치해 주세요</string>
   <string name="id_privacy_policy">개인정보처리방침</string>
   <string name="id_problem_with_key_1s">키 %1$s에 문제있음</string>
@@ -320,7 +321,7 @@
   <string name="id_sent_to">수령인</string>
   <string name="id_set_a_new_pin">새로운 비밀번호 설정</string>
   <string name="id_set_custom_fee_rate">사용자 지정 수수료 설정</string>
-  <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
+  <string name="id_set_twofactor_threshold">2FA 한도 정하기</string>
   <string name="id_set_up_pgp_key_for">커뮤니케이션을 위해 PGP 키 설정하기</string>
   <string name="id_set_up_twofactor_authentication">2FA 설정하기</string>
   <string name="id_set_up_watchonly">조회전용 모드 설정</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">문자</string>
   <string name="id_socks5_hostname">Socks5 호스트 명</string>
   <string name="id_socks5_port">Socks5 포트</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">문제가 발생하였습니다.</string>
   <string name="id_spv_is_always_synchronized_on">SPV는 데이터를 사용하지 않고 항상 Wifi나 Ethernet을 사용하여 동기화됩니다. 이 설정을 키면 모바일 데이터를 사용할 때도 동기화됩니다. 이는 요금제에 따라 매우 비쌀 수 있어 활성화 하실 때 유의해 주세요.</string>
   <string name="id_spv_not_fully_synced">SPV가 완전히 동기화되지 않음</string>
@@ -399,7 +401,7 @@
   <string name="id_version_1s_2s">버전 %1$s%2$s</string>
   <string name="id_view_in_explorer">탐색기에서 보기</string>
   <string name="id_waiting_for_transaction">거래 기다리는중...</string>
-  <string name="id_wallet_creation_failed">Wallet creation failed</string>
+  <string name="id_wallet_creation_failed">지갑 생성 실패</string>
   <string name="id_wallets">지갑</string>
   <string name="id_warning">경고!</string>
   <string name="id_warning_nononion_address">경고: .onion이 아닌 주소 탐지</string>
@@ -437,7 +439,7 @@
   <string name="id_your_pin_or_your_mnemonic_will">지갑을 사용하기 위해서는 비밀번호 또는 니모닉(복원 코드)이 필요합니다.</string>
   <string name="id_your_s_sent_to_s_has_been">%s으로 보낸 거래 %s가 컨펌되었습니다.</string>
   <string name="id_your_transactions_will_be_shown">거래 내역은 여기에 표시됩니다.</string>
-  <string name="id_your_twofactor_threshold_is_s">Your Two-Factor threshold is %s.</string>
+  <string name="id_your_twofactor_threshold_is_s">지갑의 2FA 한도는 %s입니다.</string>
   <string name="id_your_wallet_is_not_yet_fully">지갑의 보안이 낮습니다.\n2FA를 설정해주세요.</string>
   <string name="id_your_watchonly_username_will_be">조회전용 사용자 명은 이 기기에 암호화되지 않은 상태로 저장됩니다. 만일 이 기기가 해킹당할 시에는 제3자로부터 거래가 감시될 수 있습니다. 계속하시려면 "확인"을 눌러 주세요.</string>
 </resources>

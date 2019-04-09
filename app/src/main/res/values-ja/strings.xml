@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">ハードウェア・ウォレットを再接続した後、お試しください。</string>
   <string name="id_please_secure_your_mnemonic_and">Mnemonicを安全な場所に保管した後、利用規約に同意して下さい。</string>
   <string name="id_please_select_the_checkbox">チェックボックスを選択して下さい</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">カードをタップして下さい</string>
   <string name="id_privacy_policy">プライバシー政策</string>
   <string name="id_problem_with_key_1s">キー%1$s の問題</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Socks5ホストネーム</string>
   <string name="id_socks5_port">Socks5ポート</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">問題が生じました。</string>
   <string name="id_spv_is_always_synchronized_on">SPVはWiFiやEthernetを通じて常に同時性を保つようになっています。一方、モバイルデータを使用中にも同時性を保つよう設計されている為、ご利用中のデータプランによっては通信費が過剰に計算されることもある為注意して下さい。</string>
   <string name="id_spv_not_fully_synced">SPVが完全にシンクロされていません</string>

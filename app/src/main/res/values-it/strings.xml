@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Connetti nuovamente il tuo hardware wallet prima di riprovare</string>
   <string name="id_please_secure_your_mnemonic_and">Conserva la tua mnemonica in maniera sicura e conferma di accettare i Termini di Servizio</string>
   <string name="id_please_select_the_checkbox">Spunta la casella</string>
+  <string name="id_please_set_and_enable_socks5">Specifica ed abilita SOCKS5 proxy e porta per usare Tor</string>
   <string name="id_please_tap_card">Please tap card</string>
   <string name="id_privacy_policy">Privacy Policy</string>
   <string name="id_problem_with_key_1s">Problema con il tasto %1$s</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy e porta devono essere specificati</string>
   <string name="id_something_went_wrong">Qualcosa è andato storto</string>
   <string name="id_spv_is_always_synchronized_on">La sincronizzazione SPV è attiva su rete WiFi o Ethernet. Questa opzione abilita la sincronizzazione tramite dati mobili. Prestare attenzione al traffico dati.</string>
   <string name="id_spv_not_fully_synced">Sincronizzazione SPV non completa</string>

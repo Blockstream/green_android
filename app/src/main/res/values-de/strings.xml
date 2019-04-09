@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Bitte verknüpfen Sie ihre Hardware Wallet erneut bevor Sie es nochmal versuchen.</string>
   <string name="id_please_secure_your_mnemonic_and">Bitte sichern Sie Ihren Merksatz und bestätigen Sie die Allgemeinen Geschäftsbedingungen</string>
   <string name="id_please_select_the_checkbox">Bitte markieren Sie das Feld</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Bitte tippen Sie die Karte an</string>
   <string name="id_privacy_policy">Datenschutzerklärung</string>
   <string name="id_problem_with_key_1s">Problem mit Schlüssel %1$s</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">Etwas lief schief</string>
   <string name="id_spv_is_always_synchronized_on">SPV ist immer auf WiFi und Ethernet Netzwerken synchronisiert. Diese Einstellung synchronisiert auch bei mobilen Datenauschtausch. Eventuelle Zusatskosten können anfallen.</string>
   <string name="id_spv_not_fully_synced">SPV nicht komplett synchronisiert</string>

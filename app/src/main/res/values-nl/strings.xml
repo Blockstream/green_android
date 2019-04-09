@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Sluit je hardware wallet opnieuw aan voordat je het opnieuw probeert.</string>
   <string name="id_please_secure_your_mnemonic_and">Stel je woordenlijst veilig en bevestig dat je akkoord gaat met de dienstvoorwaarden.</string>
   <string name="id_please_select_the_checkbox">Selecteer het selectievakje</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Tik de kaart aan</string>
   <string name="id_privacy_policy">Privacybeleid</string>
   <string name="id_problem_with_key_1s">Probleem met sleutel %1$s</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">Er is iets misgegaan</string>
   <string name="id_spv_is_always_synchronized_on">SPV wordt altijd gesynchroniseerd op niet-mobiele netwerken zoals WiFi of Ethernet. Deze instelling zorgt dat synchronisatie ook plaatsvindt op mobiele netwerken. Dit kan duur zijn, afhankelijk van je dataplan, dus wees voorzichtig.</string>
   <string name="id_spv_not_fully_synced">SPV niet volledig gesynchroniseerd</string>

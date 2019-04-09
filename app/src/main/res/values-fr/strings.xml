@@ -56,7 +56,7 @@
   <string name="id_clear">EFFACER</string>
   <string name="id_completed">Complété</string>
   <string name="id_confirm_code">Confirmez le code</string>
-  <string name="id_confirm_passphrase">Confirm passphrase</string>
+  <string name="id_confirm_passphrase">Confirmez le mot de passe</string>
   <string name="id_confirmation">Confirmation</string>
   <string name="id_confirmation_in_12_blocks_2">Confirmation en 12 blocs, 2 heures en moyenne</string>
   <string name="id_confirmation_in_24_blocks_4">Confirmation dans 24 blocs, 4 heures en moyenne</string>
@@ -128,7 +128,7 @@
   <string name="id_error_logging_in_with_hardware">Erreur d\'identification avec le hardware wallet</string>
   <string name="id_error_nfc_tag_not_writable">Erreur : étiquette NFC non inscriptible</string>
   <string name="id_error_nfc_tag_too_small">Erreur : étiquette NFC trop petite</string>
-  <string name="id_error_passphrases_do_not_match">Error: passphrases do not match</string>
+  <string name="id_error_passphrases_do_not_match">Erreur : les mots de passe ne correspondent pas</string>
   <string name="id_estimated_blocks_until">Nombre de blocs estimés avant confirmation: %d</string>
   <string name="id_example_89014283334011612858333">Exemple : 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Reconnectez votre hardware wallet, puis essayez à nouveau.</string>
   <string name="id_please_secure_your_mnemonic_and">Merci de placer votre mnémonique en lieu sûr et de confirmer que vous acceptez les conditions d\'utilisation</string>
   <string name="id_please_select_the_checkbox">Veuillez sélectionner la case</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Tapez sur la carte</string>
   <string name="id_privacy_policy">Politique de confidentialité</string>
   <string name="id_problem_with_key_1s">Problème avec la clé %1$s</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">SMS</string>
   <string name="id_socks5_hostname">Nom d\'hôte Socks5</string>
   <string name="id_socks5_port">Port Socks5</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">Un problème est apparu</string>
   <string name="id_spv_is_always_synchronized_on">SPV se synchronise toujours sur des réseaux non mobiles, tels que WiFi ou Ethernet. Ce réglage permet de le synchroniser aussi sur les réseaux de data mobile. Selon votre forfait cela peut entraîner des frais importants, à utiliser avec précaution.</string>
   <string name="id_spv_not_fully_synced">Synchronisation SPV incomplète</string>

@@ -56,7 +56,7 @@
   <string name="id_clear">ОЧИСТИТЬ</string>
   <string name="id_completed">Завершено</string>
   <string name="id_confirm_code">Подтвердите код</string>
-  <string name="id_confirm_passphrase">Confirm passphrase</string>
+  <string name="id_confirm_passphrase">Подтвердите кодовую фразу</string>
   <string name="id_confirmation">Подтверждение</string>
   <string name="id_confirmation_in_12_blocks_2">Подтверждение в 12 блоках, в среднем 2 часа</string>
   <string name="id_confirmation_in_24_blocks_4">Подтверждение в 24 блоках, в среднем 4 часа</string>
@@ -128,7 +128,7 @@
   <string name="id_error_logging_in_with_hardware">Ошибка при входе в аппаратный кошелек</string>
   <string name="id_error_nfc_tag_not_writable">Ошибка: невозможно создать NFC-тег</string>
   <string name="id_error_nfc_tag_too_small">Ошибка: NFC-тег слишком мал</string>
-  <string name="id_error_passphrases_do_not_match">Error: passphrases do not match</string>
+  <string name="id_error_passphrases_do_not_match">Ошибка: кодовая фраза не совпадает</string>
   <string name="id_estimated_blocks_until">Приблизительно блоков до подтверждения: %d</string>
   <string name="id_example_89014283334011612858333">Пример: 8.90.14.2:8333,40.116.12.85:8333</string>
   <string name="id_face_id">Face ID</string>
@@ -265,6 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Повторно подключите аппаратный кошелек, прежде чем повторять попытку.</string>
   <string name="id_please_secure_your_mnemonic_and">Сохраните вашу мнемоническую фразу и подтвердите согласие с условиями предоставления услуги</string>
   <string name="id_please_select_the_checkbox">Установите флажок</string>
+  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Пожалуйста, нажмите на карточку</string>
   <string name="id_privacy_policy">Политика конфиденциальности</string>
   <string name="id_problem_with_key_1s">Проблема с ключом %1$s</string>
@@ -341,6 +342,7 @@
   <string name="id_sms">СМС</string>
   <string name="id_socks5_hostname">Имя узла Socks5</string>
   <string name="id_socks5_port">Порт Socks5</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
   <string name="id_something_went_wrong">Что-то пошло не так</string>
   <string name="id_spv_is_always_synchronized_on">SPV всегда синхронизируется в  таких сетях, как WiFi или Ethernet. Этот параметр также синхронизируется при использовании мобильных данных. Это может быть дорого в зависимости от вашего тарифного плана, поэтому будьте внимательны при включении.</string>
   <string name="id_spv_not_fully_synced">SPV-синхронизация произошла не полностью</string>
