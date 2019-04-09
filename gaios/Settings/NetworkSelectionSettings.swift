@@ -34,9 +34,9 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         content.socks5Port.text = NSLocalizedString("id_socks5_port", comment: "")
         content.torLabel.text = NSLocalizedString("id_connect_with_tor", comment: "")
         content.saveButton.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
-        content.saveButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+        content.saveButton.addTarget(self, action: #selector(save), for: .touchUpInside)
         content.saveButton.setGradient(true)
-        content.proxySwitch.addTarget(self, action: #selector(click), for: .valueChanged)
+        content.proxySwitch.addTarget(self, action: #selector(changeProxy), for: .valueChanged)
         content.cancelButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         content.socks5Hostname.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: content.socks5Hostname.frame.height))
         content.socks5Port.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: content.socks5Port.frame.height))
@@ -53,8 +53,8 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        content.saveButton.removeTarget(self, action: #selector(click), for: .touchUpInside)
-        content.proxySwitch.removeTarget(self, action: #selector(click), for: .valueChanged)
+        content.saveButton.removeTarget(self, action: #selector(save), for: .touchUpInside)
+        content.proxySwitch.removeTarget(self, action: #selector(changeProxy), for: .valueChanged)
         content.cancelButton.removeTarget(self, action: #selector(back), for: .touchUpInside)
     }
 
@@ -118,14 +118,29 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         dismiss(animated: true, completion: nil)
     }
 
-    @objc func click(_ sender: Any?) {
-        if sender is UIButton {
-            UserDefaults.standard.set(["network": currentNetworkSelection!, "proxy": content.proxySwitch.isOn, "tor": content.torSwitch.isOn, "socks5_hostname": content.socks5Hostname.text ?? "", "socks5_port": content.socks5Port.text ?? ""], forKey: "network_settings")
+    @objc func save(_ sender: UIButton) {
+        let socks5Hostname = content.socks5Hostname.text ?? ""
+        let socks5Port = content.socks5Port.text ?? ""
+        var errorMessage = ""
+        if content.proxySwitch.isOn && ( socks5Hostname.isEmpty || socks5Port.isEmpty ) {
+            errorMessage = NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: "")
+        } else if content.torSwitch.isOn && !content.proxySwitch.isOn {
+            errorMessage = NSLocalizedString("id_please_set_and_enable_socks5", comment: "")
+        } else {
+            // save network setup
+            UserDefaults.standard.set(["network": currentNetworkSelection!, "proxy": content.proxySwitch.isOn, "tor": content.torSwitch.isOn, "socks5_hostname": socks5Hostname, "socks5_port": socks5Port], forKey: "network_settings")
             onSave!()
             dismiss(animated: true, completion: nil)
-        } else if let switcher = sender as? UISwitch {
-            content.proxySettings.isHidden = !switcher.isOn
-       }
+            return
+        }
+        // show warning alert
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: errorMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
+        present(alert, animated: true, completion: nil)
+    }
+
+    @objc func changeProxy(_ sender: UISwitch) {
+        content.proxySettings.isHidden = !sender.isOn
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
