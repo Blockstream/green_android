@@ -17,7 +17,9 @@ class VerifyMnemonicsViewController: UIViewController {
         super.viewDidLoad()
         expectedWordNumbers = generateRandomWordNumbers()
         newRandomWords()
-        title = getTitle()
+        content.viewTitle.text = getTitle()
+        updateProcessBar()
+        navigationItem.titleView = content.progressBarView
         reload()
     }
 
@@ -57,7 +59,8 @@ class VerifyMnemonicsViewController: UIViewController {
                 questionCounter += 1
                 newRandomWords()
                 reload()
-                title = getTitle()
+                updateProcessBar()
+                content.viewTitle.text = getTitle()
             }
         } else {
             Toast.show(NSLocalizedString("id_wrong_choice_check_your", comment: ""), timeout: Toast.LONG)
@@ -100,6 +103,15 @@ class VerifyMnemonicsViewController: UIViewController {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
             Toast.show(message, timeout: Toast.SHORT)
+        }
+    }
+
+    func updateProcessBar() {
+        content.processNodes[questionCounter].backgroundColor = UIColor.customMatrixGreen()
+        content.processNodes[questionCounter].borderColor = UIColor.customMatrixGreen()
+
+        if questionCounter > 0 {
+            content.processConnectors[questionCounter - 1].backgroundColor = UIColor.customMatrixGreen()
         }
     }
 
@@ -166,7 +178,18 @@ class VerifyMnemonicsView: UIView {
     @IBOutlet weak var button2: DesignableButton!
     @IBOutlet weak var button3: DesignableButton!
     @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak var viewTitle: UILabel!
+    @IBOutlet weak var processNode1: UIView!
+    @IBOutlet weak var processNode2: UIView!
+    @IBOutlet weak var processNode3: UIView!
+    @IBOutlet weak var processNode4: UIView!
+    @IBOutlet weak var progressBarConnector1: UIView!
+    @IBOutlet weak var progressBarConnector2: UIView!
+    @IBOutlet weak var progressBarConnector3: UIView!
+    @IBOutlet weak var progressBarView: UIView!
     lazy var buttonsArray: [UIButton] = [button0, button1, button2, button3]
+    lazy var processNodes: [UIView] = [processNode1, processNode2, processNode3, processNode4]
+    lazy var processConnectors: [UIView] = [progressBarConnector1, progressBarConnector2, progressBarConnector3]
 
     override init(frame: CGRect) {
         super.init(frame: frame)

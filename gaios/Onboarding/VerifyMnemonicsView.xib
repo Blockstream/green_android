@@ -17,7 +17,16 @@
                 <outlet property="button1" destination="AfR-VJ-e7v" id="seD-0A-75z"/>
                 <outlet property="button2" destination="wd5-vg-DFh" id="zck-MV-owC"/>
                 <outlet property="button3" destination="kIn-So-B9o" id="Jlm-mJ-dpU"/>
+                <outlet property="processNode1" destination="pcC-kS-cqu" id="a4J-Dt-ijm"/>
+                <outlet property="processNode2" destination="l7Y-Vy-SOM" id="7Sj-uC-sNw"/>
+                <outlet property="processNode3" destination="4bb-7S-p5u" id="qoD-0y-E9P"/>
+                <outlet property="processNode4" destination="Uvp-av-LCI" id="Ccj-Gf-dgJ"/>
+                <outlet property="progressBarConnector1" destination="zDk-gj-ZH5" id="rxD-X4-Gsi"/>
+                <outlet property="progressBarConnector2" destination="uIJ-Wv-Ivw" id="ugd-Dj-j2u"/>
+                <outlet property="progressBarConnector3" destination="gJN-n0-4st" id="vMq-2T-Pso"/>
+                <outlet property="progressBarView" destination="3lB-FB-pmB" id="x00-Dz-VDD"/>
                 <outlet property="textLabel" destination="qOu-qM-qPA" id="aA7-Na-y10"/>
+                <outlet property="viewTitle" destination="5CI-kO-c49" id="5i0-Lv-Qjc"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -159,24 +168,164 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5CI-kO-c49">
+                    <rect key="frame" x="16" y="60" width="343" height="46"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3lB-FB-pmB">
+                    <rect key="frame" x="117.5" y="514" width="140" height="35"/>
+                    <subviews>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pcC-kS-cqu">
+                            <rect key="frame" x="5" y="25" width="10" height="10"/>
+                            <color key="backgroundColor" red="0.16470588235294117" green="0.18823529411764706" blue="0.21176470588235294" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="10" id="Aef-bu-nlU"/>
+                                <constraint firstAttribute="width" constant="10" id="os2-bI-VWZ"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="5"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" name="customTitaniumLight"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zDk-gj-ZH5">
+                            <rect key="frame" x="14.5" y="29.5" width="10" height="1"/>
+                            <color key="backgroundColor" name="customTitaniumLight"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="glC-5n-FgV"/>
+                            </constraints>
+                        </view>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l7Y-Vy-SOM">
+                            <rect key="frame" x="25" y="25" width="10" height="10"/>
+                            <color key="backgroundColor" red="0.16470588235294117" green="0.18823529411764706" blue="0.21176470588235294" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="10" id="6kq-aU-H68"/>
+                                <constraint firstAttribute="height" constant="10" id="yqs-fl-RpK"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="5"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" name="customTitaniumLight"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uIJ-Wv-Ivw">
+                            <rect key="frame" x="34.5" y="29.5" width="10" height="1"/>
+                            <color key="backgroundColor" name="customTitaniumLight"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="YvC-b1-jmx"/>
+                            </constraints>
+                        </view>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4bb-7S-p5u">
+                            <rect key="frame" x="45" y="25" width="10" height="10"/>
+                            <color key="backgroundColor" red="0.16470588235294117" green="0.18823529411764706" blue="0.21176470588235294" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="10" id="45B-d3-eZL"/>
+                                <constraint firstAttribute="width" constant="10" id="eRc-nB-AX2"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="5"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" name="customTitaniumLight"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gJN-n0-4st">
+                            <rect key="frame" x="54.5" y="29.5" width="10" height="1"/>
+                            <color key="backgroundColor" name="customTitaniumLight"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="6VG-wz-WNG"/>
+                            </constraints>
+                        </view>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Uvp-av-LCI">
+                            <rect key="frame" x="65" y="25" width="10" height="10"/>
+                            <color key="backgroundColor" red="0.16470588235294117" green="0.18823529411764706" blue="0.21176470588235294" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="10" id="NJb-VA-M9p"/>
+                                <constraint firstAttribute="height" constant="10" id="Ynb-pd-rSn"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="5"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" name="customTitaniumLight"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="gJN-n0-4st" firstAttribute="centerY" secondItem="3lB-FB-pmB" secondAttribute="centerY" id="0uv-mU-pmg"/>
+                        <constraint firstItem="l7Y-Vy-SOM" firstAttribute="centerY" secondItem="3lB-FB-pmB" secondAttribute="centerY" id="3ef-iK-0lg"/>
+                        <constraint firstItem="l7Y-Vy-SOM" firstAttribute="leading" secondItem="zDk-gj-ZH5" secondAttribute="trailing" constant="0.5" id="6rJ-V7-LS6"/>
+                        <constraint firstItem="zDk-gj-ZH5" firstAttribute="leading" secondItem="pcC-kS-cqu" secondAttribute="trailing" constant="-0.5" id="DNZ-Q5-yF6"/>
+                        <constraint firstItem="4bb-7S-p5u" firstAttribute="leading" secondItem="l7Y-Vy-SOM" secondAttribute="trailing" constant="10" id="DaR-KT-fiq"/>
+                        <constraint firstItem="Uvp-av-LCI" firstAttribute="leading" secondItem="gJN-n0-4st" secondAttribute="trailing" constant="0.5" id="GB1-M2-5x3"/>
+                        <constraint firstItem="4bb-7S-p5u" firstAttribute="centerY" secondItem="3lB-FB-pmB" secondAttribute="centerY" id="GOh-Mk-gXQ"/>
+                        <constraint firstItem="zDk-gj-ZH5" firstAttribute="centerY" secondItem="3lB-FB-pmB" secondAttribute="centerY" id="J3j-4T-tEB"/>
+                        <constraint firstItem="Uvp-av-LCI" firstAttribute="leading" secondItem="4bb-7S-p5u" secondAttribute="trailing" constant="10" id="OPb-95-SrL"/>
+                        <constraint firstItem="pcC-kS-cqu" firstAttribute="centerY" secondItem="3lB-FB-pmB" secondAttribute="centerY" id="Oow-3E-myF"/>
+                        <constraint firstItem="gJN-n0-4st" firstAttribute="leading" secondItem="4bb-7S-p5u" secondAttribute="trailing" constant="-0.5" id="QCW-Gn-sUP"/>
+                        <constraint firstItem="pcC-kS-cqu" firstAttribute="leading" secondItem="3lB-FB-pmB" secondAttribute="leading" constant="5" id="QSJ-AA-soW"/>
+                        <constraint firstAttribute="height" constant="60" id="Z8Y-aU-del"/>
+                        <constraint firstAttribute="trailing" secondItem="Uvp-av-LCI" secondAttribute="trailing" constant="5" id="bLj-I1-519"/>
+                        <constraint firstItem="Uvp-av-LCI" firstAttribute="centerY" secondItem="3lB-FB-pmB" secondAttribute="centerY" id="day-g1-6eM"/>
+                        <constraint firstItem="l7Y-Vy-SOM" firstAttribute="leading" secondItem="pcC-kS-cqu" secondAttribute="trailing" constant="10" id="gfp-qZ-NWS"/>
+                        <constraint firstItem="uIJ-Wv-Ivw" firstAttribute="leading" secondItem="l7Y-Vy-SOM" secondAttribute="trailing" constant="-0.5" id="iJx-aX-haa"/>
+                        <constraint firstItem="uIJ-Wv-Ivw" firstAttribute="centerY" secondItem="3lB-FB-pmB" secondAttribute="centerY" id="nUX-6Y-gFw"/>
+                        <constraint firstItem="4bb-7S-p5u" firstAttribute="leading" secondItem="uIJ-Wv-Ivw" secondAttribute="trailing" constant="0.5" id="w7K-Xw-Y4B"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" name="customTitaniumDark"/>
             <constraints>
                 <constraint firstItem="kIn-So-B9o" firstAttribute="top" secondItem="wd5-vg-DFh" secondAttribute="bottom" constant="16" id="0R9-ox-Wb6"/>
                 <constraint firstItem="wd5-vg-DFh" firstAttribute="top" secondItem="AfR-VJ-e7v" secondAttribute="bottom" constant="16" id="25L-hv-EFz"/>
                 <constraint firstItem="AfR-VJ-e7v" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="2Yn-sU-etn"/>
+                <constraint firstItem="3lB-FB-pmB" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="41h-qw-68k"/>
+                <constraint firstItem="3lB-FB-pmB" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="60S-4Q-oiX"/>
+                <constraint firstItem="5CI-kO-c49" firstAttribute="top" secondItem="oXU-Pc-Ke9" secondAttribute="top" constant="40" id="8b2-ya-Bef"/>
                 <constraint firstItem="AfR-VJ-e7v" firstAttribute="width" secondItem="Ijj-J0-mY4" secondAttribute="width" id="BrS-nL-uJM"/>
-                <constraint firstItem="qOu-qM-qPA" firstAttribute="top" secondItem="oXU-Pc-Ke9" secondAttribute="top" constant="40" id="Kma-gQ-D0G"/>
                 <constraint firstItem="wd5-vg-DFh" firstAttribute="width" secondItem="Ijj-J0-mY4" secondAttribute="width" id="Ky9-sv-Ust"/>
                 <constraint firstItem="wd5-vg-DFh" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="OT7-gi-Yf8"/>
+                <constraint firstItem="3lB-FB-pmB" firstAttribute="top" secondItem="kIn-So-B9o" secondAttribute="bottom" constant="40" id="TOz-3H-uDx"/>
+                <constraint firstItem="5CI-kO-c49" firstAttribute="leading" secondItem="oXU-Pc-Ke9" secondAttribute="leading" constant="16" id="Vhn-qT-f3n"/>
                 <constraint firstItem="Ijj-J0-mY4" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="Wzg-P8-bLu"/>
+                <constraint firstItem="oXU-Pc-Ke9" firstAttribute="trailing" secondItem="5CI-kO-c49" secondAttribute="trailing" constant="16" id="bsc-OM-xPI"/>
                 <constraint firstItem="AfR-VJ-e7v" firstAttribute="top" secondItem="Ijj-J0-mY4" secondAttribute="bottom" constant="16" id="kna-KN-BbZ"/>
                 <constraint firstItem="qOu-qM-qPA" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="mLN-b4-GBP"/>
                 <constraint firstItem="Ijj-J0-mY4" firstAttribute="top" secondItem="qOu-qM-qPA" secondAttribute="bottom" constant="40" id="sTF-4S-prY"/>
+                <constraint firstItem="qOu-qM-qPA" firstAttribute="top" secondItem="5CI-kO-c49" secondAttribute="bottom" constant="40" id="uef-2Q-aZb"/>
                 <constraint firstItem="kIn-So-B9o" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="xdK-pC-hUt"/>
                 <constraint firstItem="kIn-So-B9o" firstAttribute="width" secondItem="Ijj-J0-mY4" secondAttribute="width" id="yX1-K7-IaS"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="oXU-Pc-Ke9"/>
+            <point key="canvasLocation" x="39.200000000000003" y="46.326836581709152"/>
         </view>
     </objects>
     <resources>
