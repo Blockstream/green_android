@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PinLoginView" customModule="gaios" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PinView" customModule="gaios" customModuleProvider="target">
             <connections>
                 <outlet property="attempts" destination="MLg-nQ-uKb" id="Vfd-yf-yON"/>
                 <outlet property="cancelButton" destination="Xd3-9Y-iSc" id="q5e-xL-ohF"/>
@@ -49,7 +49,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ydf-Bg-MF5">
-                    <rect key="frame" x="139.5" y="136" width="40" height="1"/>
+                    <rect key="frame" x="139.5" y="157.5" width="40" height="1"/>
                     <color key="backgroundColor" name="customTitaniumLight"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="Uad-gT-6HQ"/>
@@ -57,7 +57,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UfZ-nZ-W3C">
-                    <rect key="frame" x="195.5" y="136" width="40" height="1"/>
+                    <rect key="frame" x="195.5" y="157.5" width="40" height="1"/>
                     <color key="backgroundColor" name="customTitaniumLight"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="IVH-P5-xT8"/>
@@ -65,7 +65,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j5W-1e-Qfg">
-                    <rect key="frame" x="251.5" y="136" width="40" height="1"/>
+                    <rect key="frame" x="251.5" y="157.5" width="40" height="1"/>
                     <color key="backgroundColor" name="customTitaniumLight"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="Znh-89-awM"/>
@@ -73,7 +73,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ODb-nd-fQj">
-                    <rect key="frame" x="83.5" y="136" width="40" height="1"/>
+                    <rect key="frame" x="83.5" y="157.5" width="40" height="1"/>
                     <color key="backgroundColor" name="customTitaniumLight"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="5yF-fw-hdv"/>
@@ -81,7 +81,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hGa-Vr-h1w">
-                    <rect key="frame" x="307.5" y="136" width="40" height="1"/>
+                    <rect key="frame" x="307.5" y="157.5" width="40" height="1"/>
                     <color key="backgroundColor" name="customTitaniumLight"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="4rw-F1-bBb"/>
@@ -89,7 +89,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vI1-Oq-ikB">
-                    <rect key="frame" x="27.5" y="136" width="40" height="1"/>
+                    <rect key="frame" x="27.5" y="157.5" width="40" height="1"/>
                     <color key="backgroundColor" name="customTitaniumLight"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="5a2-AS-5eI"/>
@@ -97,7 +97,7 @@
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ceX-yT-Zxl">
-                    <rect key="frame" x="38.5" y="110" width="18" height="21"/>
+                    <rect key="frame" x="38.5" y="131.5" width="18" height="21"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="18" id="0Hg-dM-Czn"/>
                         <constraint firstAttribute="height" constant="21" id="bi6-bC-d2r"/>
@@ -107,7 +107,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="buK-9b-oOi">
-                    <rect key="frame" x="94.5" y="110" width="18" height="21"/>
+                    <rect key="frame" x="94.5" y="131.5" width="18" height="21"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="18" id="8KR-Si-sJs"/>
                         <constraint firstAttribute="height" constant="21" id="nDl-1u-DRf"/>
@@ -117,7 +117,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UJU-Y9-vp1">
-                    <rect key="frame" x="150.5" y="110" width="18" height="21"/>
+                    <rect key="frame" x="150.5" y="131.5" width="18" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="M0P-w6-Fgh"/>
                         <constraint firstAttribute="width" constant="18" id="bZ8-Uf-9EO"/>
@@ -127,7 +127,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qhx-dm-cV5">
-                    <rect key="frame" x="206.5" y="110" width="18" height="21"/>
+                    <rect key="frame" x="206.5" y="131.5" width="18" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="F12-3v-4p3"/>
                         <constraint firstAttribute="width" constant="18" id="J6y-lY-9l8"/>
@@ -137,7 +137,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Tb-Ip-23F">
-                    <rect key="frame" x="262.5" y="110" width="18" height="21"/>
+                    <rect key="frame" x="262.5" y="131.5" width="18" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="kzJ-30-NUs"/>
                         <constraint firstAttribute="width" constant="18" id="mIy-PW-gHj"/>
@@ -147,7 +147,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ynJ-Df-nsW">
-                    <rect key="frame" x="318.5" y="110" width="18" height="21"/>
+                    <rect key="frame" x="318.5" y="131.5" width="18" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="YZj-hd-R2V"/>
                         <constraint firstAttribute="width" constant="18" id="iHr-CZ-syt"/>
@@ -352,7 +352,7 @@
         </view>
     </objects>
     <resources>
-        <image name="erase" width="50" height="50"/>
+        <image name="erase" width="25" height="25"/>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

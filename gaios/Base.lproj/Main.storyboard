@@ -333,7 +333,7 @@
                         <segue destination="o6l-5o-Ocm" kind="push" identifier="enterMnemonic" id="XPe-Xy-Qrf"/>
                         <segue destination="K3z-Ps-3aO" kind="push" identifier="createWallet" id="Sx5-0D-cpp"/>
                         <segue destination="0c7-Wv-kP2" kind="push" identifier="watchonly" id="FTn-9c-Qc3"/>
-                        <segue destination="kWT-Yh-qgi" kind="push" identifier="pin" id="8GO-7h-4o5"/>
+                        <segue destination="rMM-Df-D90" kind="push" identifier="pin" id="QEt-l0-XBh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uYz-un-mGa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -359,17 +359,17 @@
             </objects>
             <point key="canvasLocation" x="-1785" y="753"/>
         </scene>
-        <!--Enter Pin-->
+        <!--Pin Set View Controller-->
         <scene sceneID="aHV-SQ-KCX">
             <objects>
-                <viewController storyboardIdentifier="PinLoginViewController" id="kWT-Yh-qgi" customClass="PinLoginViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="DDp-YV-A2x" customClass="PinLoginView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                <viewController storyboardIdentifier="PinSetViewController" id="kWT-Yh-qgi" customClass="PinSetViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DDp-YV-A2x" customClass="PinView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="tP3-hE-v6d"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Enter Pin" id="QuL-mu-old">
+                    <navigationItem key="navigationItem" id="QuL-mu-old" propertyAccessControl="none">
                         <barButtonItem key="backBarButtonItem" title=" " id="EKp-3z-N7f"/>
                     </navigationItem>
                     <connections>
@@ -1606,6 +1606,25 @@
             </objects>
             <point key="canvasLocation" x="8813" y="-2344"/>
         </scene>
+        <!--Pin Login View Controller-->
+        <scene sceneID="jcB-Pl-M1Z">
+            <objects>
+                <viewController storyboardIdentifier="PinLoginViewController" id="rMM-Df-D90" customClass="PinLoginViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="faf-6K-g3N" customClass="PinView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="HnC-zZ-qEn"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="gil-TD-AX7"/>
+                    <connections>
+                        <outlet property="content" destination="faf-6K-g3N" id="FkX-X6-5Ny"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TDa-ki-BDK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2408" y="743"/>
+        </scene>
         <!--Tab View Controller-->
         <scene sceneID="VnM-9c-bim">
             <objects>
@@ -1641,7 +1660,7 @@
         <!--Navigation Controller-->
         <scene sceneID="ncR-TD-Ar4">
             <objects>
-                <navigationController storyboardIdentifier="PinLoginNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="lvA-Oh-Rjc" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="PinLoginNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="lvA-Oh-Rjc" propertyAccessControl="all" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="DyG-kk-yYk">
                         <rect key="frame" x="0.0" y="20" width="320" height="44"/>
@@ -1649,7 +1668,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="kWT-Yh-qgi" kind="relationship" relationship="rootViewController" id="qmH-aQ-bII"/>
+                        <segue destination="rMM-Df-D90" kind="relationship" relationship="rootViewController" id="Onv-2S-vYj"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="leu-KA-lcH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1688,9 +1707,10 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="EcC-We-I1f"/>
-        <segue reference="nPw-9e-cll"/>
+        <segue reference="Onv-2S-vYj"/>
+        <segue reference="ON0-2j-3cM"/>
+        <segue reference="Uzj-6y-k3B"/>
         <segue reference="XPe-Xy-Qrf"/>
-        <segue reference="8GO-7h-4o5"/>
+        <segue reference="rZR-ak-fSt"/>
     </inferredMetricsTieBreakers>
 </document>

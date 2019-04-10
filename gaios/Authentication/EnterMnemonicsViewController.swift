@@ -174,9 +174,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let pinController = segue.destination as? PinLoginViewController {
-            pinController.setPinMode = true
-            pinController.restoreMode = true
+        if let pinController = segue.destination as? PinSetViewController {
+            pinController.mode = .restore
         }
     }
 

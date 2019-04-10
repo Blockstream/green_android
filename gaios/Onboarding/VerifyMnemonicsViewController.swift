@@ -36,8 +36,8 @@ class VerifyMnemonicsViewController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let pinController = segue.destination as? PinLoginViewController {
-            pinController.setPinMode = true
+        if let pinController = segue.destination as? PinSetViewController {
+            pinController.mode = .create
         }
     }
 
