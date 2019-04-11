@@ -39,6 +39,8 @@ class PgpViewController: KeyboardViewController {
         }.catch {_ in
             settings.pgp = value
             let alert = UIAlertController(title: NSLocalizedString("id_pgp_key", comment: ""), message: NSLocalizedString("id_invalid_pgp_key", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
+            })
             self.present(alert, animated: true, completion: nil)
         }
     }
