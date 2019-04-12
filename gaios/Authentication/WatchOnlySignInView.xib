@@ -32,14 +32,14 @@
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WW7-Js-dEW">
-                    <rect key="frame" x="16" y="369" width="343" height="48"/>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="username" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WW7-Js-dEW">
+                    <rect key="frame" x="16" y="431.5" width="343" height="48"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="48" id="2Yb-Kl-OXF"/>
                     </constraints>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits" keyboardAppearance="alert" textContentType="username"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardAppearance="alert" enablesReturnKeyAutomatically="YES" textContentType="username"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
                             <real key="value" value="1"/>
@@ -91,21 +91,20 @@
             </subviews>
             <color key="backgroundColor" name="customTitaniumDark"/>
             <constraints>
-                <constraint firstItem="30Z-74-cOo" firstAttribute="top" secondItem="9iL-AW-1kj" secondAttribute="bottom" constant="15" id="4bM-28-6DR"/>
                 <constraint firstItem="RvG-Tq-cpr" firstAttribute="leading" secondItem="7na-R2-gKS" secondAttribute="leading" constant="16" id="8op-Ov-dE3"/>
                 <constraint firstItem="7na-R2-gKS" firstAttribute="trailing" secondItem="WW7-Js-dEW" secondAttribute="trailing" constant="16" id="95A-iX-CN3"/>
                 <constraint firstItem="30Z-74-cOo" firstAttribute="centerY" secondItem="s0O-wL-gvg" secondAttribute="centerY" id="A4t-hP-A3k"/>
-                <constraint firstItem="RvG-Tq-cpr" firstAttribute="top" secondItem="30Z-74-cOo" secondAttribute="bottom" constant="39" id="GN3-zu-0fQ"/>
+                <constraint firstItem="RvG-Tq-cpr" firstAttribute="top" secondItem="30Z-74-cOo" secondAttribute="bottom" constant="16" id="GN3-zu-0fQ"/>
                 <constraint firstItem="9iL-AW-1kj" firstAttribute="leading" secondItem="7na-R2-gKS" secondAttribute="leading" constant="16" id="Lmj-sP-FkJ"/>
                 <constraint firstItem="hh8-69-COU" firstAttribute="leading" secondItem="7na-R2-gKS" secondAttribute="leading" constant="20" id="O6e-3Q-mJz"/>
                 <constraint firstItem="s0O-wL-gvg" firstAttribute="leading" secondItem="7na-R2-gKS" secondAttribute="leading" constant="16" id="S2h-zt-e0E"/>
                 <constraint firstItem="7na-R2-gKS" firstAttribute="trailing" secondItem="30Z-74-cOo" secondAttribute="trailing" constant="16" id="UXM-KD-S0l"/>
                 <constraint firstItem="30Z-74-cOo" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="s0O-wL-gvg" secondAttribute="trailing" constant="8" symbolic="YES" id="UzM-ma-8Xx"/>
                 <constraint firstItem="WW7-Js-dEW" firstAttribute="leading" secondItem="7na-R2-gKS" secondAttribute="leading" constant="16" id="Xg0-lY-OKF"/>
-                <constraint firstItem="WW7-Js-dEW" firstAttribute="top" secondItem="hh8-69-COU" secondAttribute="bottom" constant="47" id="b0i-B2-xoU"/>
+                <constraint firstItem="WW7-Js-dEW" firstAttribute="top" secondItem="hh8-69-COU" secondAttribute="bottom" constant="16" id="b0i-B2-xoU"/>
                 <constraint firstItem="7na-R2-gKS" firstAttribute="trailing" secondItem="RvG-Tq-cpr" secondAttribute="trailing" constant="16" id="bZe-4b-uD4"/>
-                <constraint firstItem="7na-R2-gKS" firstAttribute="bottom" secondItem="RvG-Tq-cpr" secondAttribute="bottom" constant="56" id="eJZ-Gr-ikr"/>
-                <constraint firstItem="hh8-69-COU" firstAttribute="top" secondItem="7na-R2-gKS" secondAttribute="top" constant="50" id="gIj-OE-e3c"/>
+                <constraint firstItem="7na-R2-gKS" firstAttribute="bottom" secondItem="RvG-Tq-cpr" secondAttribute="bottom" constant="16" id="eJZ-Gr-ikr"/>
+                <constraint firstItem="hh8-69-COU" firstAttribute="top" secondItem="7na-R2-gKS" secondAttribute="top" id="gIj-OE-e3c"/>
                 <constraint firstItem="7na-R2-gKS" firstAttribute="trailing" secondItem="9iL-AW-1kj" secondAttribute="trailing" constant="16" id="k6o-qW-6nM"/>
                 <constraint firstItem="7na-R2-gKS" firstAttribute="trailing" secondItem="hh8-69-COU" secondAttribute="trailing" constant="20" id="kFN-yw-jag"/>
                 <constraint firstItem="9iL-AW-1kj" firstAttribute="top" secondItem="WW7-Js-dEW" secondAttribute="bottom" constant="20" id="m4o-2v-aey"/>

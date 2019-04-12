@@ -13,6 +13,7 @@ class WatchOnlySignIn: KeyboardViewController {
         }
     }
     @IBOutlet var content: WatchOnlySignInView!
+    var buttonConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +52,19 @@ class WatchOnlySignIn: KeyboardViewController {
         } else {
             self.username = nil
         }
+    }
+
+    override func keyboardWillShow(notification: NSNotification) {
+        super.keyboardWillShow(notification: notification)
+        buttonConstraint?.isActive = false
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        buttonConstraint = content.loginButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
+        buttonConstraint?.isActive = true
+    }
+
+    override func keyboardWillHide(notification: NSNotification) {
+        super.keyboardWillShow(notification: notification)
+        buttonConstraint?.isActive = false
     }
 
     @objc func click(_ sender: Any) {
