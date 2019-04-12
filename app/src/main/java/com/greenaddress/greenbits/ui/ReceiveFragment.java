@@ -9,16 +9,21 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
@@ -26,24 +31,24 @@ import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.QrBitmap;
 
-import org.bitcoinj.core.Coin;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Observer;
 
 
-public class ReceiveFragment extends SubaccountFragment implements
-    CurrencyView.OnConversionFinishListener {
+public class ReceiveFragment extends SubaccountFragment implements TextWatcher, View.OnClickListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();
 
     private TextView mAddressText;
     private ImageView mAddressImage;
-    private CurrencyView mCurrency;
+    private FontFitEditText mAmountText;
+    private Button mUnitButton;
+    private Boolean mIsFiat = false;
 
     private String mCurrentAddress = "";
-    private Coin mCurrentAmount;
+    private ObjectNode mCurrentAmount;  // output from GA_convert_amount
     private List<TransactionData> mTxList = new ArrayList<>();
     private BitmapWorkerTask mBitmapWorkerTask;
 
@@ -51,8 +56,6 @@ public class ReceiveFragment extends SubaccountFragment implements
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (mCurrency != null)
-            mCurrency.setIsPausing(false);
         if (!isDisconnected()) {
             final int subaccount = getGAService().getModel().getCurrentSubaccount();
             onUpdateReceiveAddress(getGAService().getModel().getReceiveAddressObservable(subaccount));
@@ -63,8 +66,6 @@ public class ReceiveFragment extends SubaccountFragment implements
     @Override
     public void onPause() {
         super.onPause();
-        if (mCurrency != null)
-            mCurrency.setIsPausing(true);
         Log.d(TAG, "onPause -> " + TAG);
     }
 
@@ -80,15 +81,17 @@ public class ReceiveFragment extends SubaccountFragment implements
 
         mAddressImage = UI.find(mView, R.id.receiveQrImageView);
         mAddressText = UI.find(mView, R.id.receiveAddressText);
-        mCurrency = UI.find(mView, R.id.currency_view);
-        mCurrency.setService(getGAService());
-        mCurrency.setOnConversionFinishListener(this);
-        if (savedInstanceState != null) {
-            final Boolean pausing = savedInstanceState.getBoolean("pausing", false);
-            mCurrency.setIsPausing(pausing);
-        }
+        mAmountText = UI.find(mView, R.id.amountEditText);
+        mUnitButton = UI.find(mView, R.id.unitButton);
 
         UI.find(mView, R.id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
+
+        mAmountText.addTextChangedListener(this);
+        mUnitButton.setOnClickListener(this);
+
+        mUnitButton.setText(mIsFiat ? getFiatCurrency() : getGAService().getBitcoinUnit());
+        mUnitButton.setPressed(!mIsFiat);
+        mUnitButton.setSelected(!mIsFiat);
 
         final int subaccount = getGAService().getModel().getCurrentSubaccount();
         mTxList = getGAService().getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
@@ -124,28 +127,80 @@ public class ReceiveFragment extends SubaccountFragment implements
         getGaActivity().runOnUiThread(() -> {
             mCurrentAddress = observable.getReceiveAddress();
             if (mCurrentAddress != null && !mCurrentAddress.isEmpty())
-                conversionFinish();
+                update();
         });
     }
 
     @Override
     public void onUpdateBalance(final BalanceDataObservable observable) {}
 
-    @Override
-    public void conversionFinish() {
+    public void update() {
         if (mBitmapWorkerTask != null)
             mBitmapWorkerTask.cancel(true);
-        mCurrentAmount = mCurrency.getCoin();
         mBitmapWorkerTask = new BitmapWorkerTask();
         mBitmapWorkerTask.execute();
-        if (mCurrentAmount == null || mCurrentAmount.value == 0)
+        if (mCurrentAmount == null || mCurrentAmount.get("satoshi").asLong() == 0)
             mAddressText.setText(mCurrentAddress);
         else
             mAddressText.setText(getAddressUri());
     }
 
+    public boolean isFiat() { return mIsFiat; }
+
+    private String getFiatCurrency() {
+        return getGAService().getFiatCurrency();
+    }
+
+    private String getBitcoinUnit() {
+        return getGAService().getBitcoinUnit();
+    }
+
+    private String getBitcoinUnitClean() {
+        final String unit = getBitcoinUnit();
+        return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        final String key = isFiat() ? "fiat" : getBitcoinUnitClean();
+        final String value = mAmountText.getText().toString();
+        final ObjectMapper mapper = new ObjectMapper();
+        final ObjectNode amount = mapper.createObjectNode();
+        amount.put(key, value.isEmpty() ? "0" : value);
+        try {
+            // avoid updating the view if changing from fiat to btc or vice versa
+            if (mCurrentAmount == null || !mCurrentAmount.get(key).asText().equals(value)) {
+                mCurrentAmount = getGAService().getSession().convert(amount);
+                update();
+            }
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {}
+
+    @Override
+    public void onClick(final View view) {
+        // Toggle unit display and selected state
+        mIsFiat = !mIsFiat;
+        mUnitButton.setText(mIsFiat ? getFiatCurrency() : getBitcoinUnit());
+        mUnitButton.setPressed(!mIsFiat);
+        mUnitButton.setSelected(!mIsFiat);
+
+        if (mCurrentAmount != null) {
+            mAmountText.setText(mIsFiat ? mCurrentAmount.get("fiat").asText() : mCurrentAmount.get(
+                                    getBitcoinUnitClean()).asText());
+            update();
+        }
+    }
+
     class BitmapWorkerTask extends AsyncTask<Object, Object, Bitmap> {
-        final Coin amount;
+        final ObjectNode amount;
         final String address;
         final int qrCodeBackground = 0; // Transparent background
 
@@ -203,12 +258,14 @@ public class ReceiveFragment extends SubaccountFragment implements
     private String getAddressUri() {
         return getAddressUri(mCurrentAddress, mCurrentAmount);
     }
-    private String getAddressUri(final String address, final Coin amount) {
+    private String getAddressUri(final String address, final ObjectNode amount) {
         String qrCodeText;
-        if (amount == null || amount.value == 0 || TextUtils.isEmpty(address)) {
+        if (amount == null || amount.get("satoshi").asLong() == 0 || TextUtils.isEmpty(address)) {
             qrCodeText = address;
         } else {
-            qrCodeText = String.format(Locale.US,"bitcoin:%s?amount=%s",address,amount.toPlainString());
+            String s = amount.get("btc").asText();
+            s = s.contains(".") ? s.replaceAll("0*$","").replaceAll("\\.$","") : s;
+            qrCodeText = String.format(Locale.US,"bitcoin:%s?amount=%s", address, s);
         }
         return qrCodeText;
     }
@@ -247,14 +304,10 @@ public class ReceiveFragment extends SubaccountFragment implements
     public void onViewStateRestored(final Bundle savedInstanceState) {
         Log.d(TAG, "onViewStateRestored -> " + TAG);
         super.onViewStateRestored(savedInstanceState);
-        if (mCurrency != null)
-            mCurrency.setIsPausing(false);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mCurrency != null)
-            outState.putBoolean("pausing", mCurrency.isPausing());
     }
 }

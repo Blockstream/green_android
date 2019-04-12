@@ -36,11 +36,9 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.utils.Fiat;
 
 import java.io.File;
 import java.io.IOException;
@@ -460,30 +458,6 @@ public class GaService extends Service  {
 
     public BalanceData getBalanceData(final int subAccount) {
         return getModel().getBalanceDataObservable(subAccount).getBalanceData();
-    }
-
-    public Fiat coinToFiat(final Coin btcValue) {
-        try {
-            final BalanceData balanceReq = new BalanceData();
-            balanceReq.setSatoshi(btcValue.value);
-            final BalanceData balanceRes = mSession.convertBalance(balanceReq);
-            return balanceRes.getFiatAsFiat();
-        } catch (final IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public Coin fiatToCoin(final Fiat fiatValue) {
-        try {
-            final BalanceData balanceReq = new BalanceData();
-            balanceReq.setFiatAsFiat(fiatValue);
-            final BalanceData balanceRes = mSession.convertBalance(balanceReq);
-            return balanceRes.getSatoshiAsCoin();
-        } catch (final IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     public String getFiatCurrency() {
