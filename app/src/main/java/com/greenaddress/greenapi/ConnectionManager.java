@@ -174,6 +174,7 @@ public class ConnectionManager extends Observable {
     public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver) {
 
         try {
+            connect();
             setState(ConnState.LOGGINGIN);
             this.mHWDevice = hwDevice;
             this.mHWResolver = hwResolver;

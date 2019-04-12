@@ -66,6 +66,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 mService.resetSession();
                 mService.getConnectionManager().connect();
                 mService.getSession().registerUser(this, null, mnemonic).resolve(null, null);
+                mService.resetSession();
                 mService.getConnectionManager().loginWithMnemonic(mnemonic, "");
             } catch (final Exception ex) {
                 if (getCode(ex) == GDK.GA_RECONNECT) {

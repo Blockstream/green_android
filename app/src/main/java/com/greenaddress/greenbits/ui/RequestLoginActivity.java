@@ -242,6 +242,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
                 final ConnectionManager cm = mService.getConnectionManager();
                 cm.connect();
                 mService.getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
+                mService.resetSession();
                 cm.login(parent, mHwDeviceData, mHwResolver);
             } catch (final Exception e) {
                 e.printStackTrace();
