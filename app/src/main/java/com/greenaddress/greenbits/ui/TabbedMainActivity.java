@@ -108,7 +108,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         if (uri == null)
             return;
 
-        final Intent intent = new Intent(this, SendActivity.class);
+        final Intent intent = new Intent(this, SendAmountActivity.class);
         final String text = uri.toString();
         try {
             final int subaccount = mService.getModel().getCurrentSubaccount();

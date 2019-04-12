@@ -1,13 +1,13 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -30,18 +30,17 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
+import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
-public class SendInputFragment extends GAFragment implements View.OnClickListener, CurrencyView2.Listener,
+public class SendAmountActivity extends GaActivity implements View.OnClickListener, CurrencyView2.Listener,
     CurrencyView2.BalanceConversionProvider {
-    private static final String TAG = SendInputFragment.class.getSimpleName();
+    private static final String TAG = SendAmountActivity.class.getSimpleName();
 
     private boolean mSendAll = false;
-    private OnCallbackListener mCallbackListener;
     private MaterialDialog mCustomFeeDialog;
     private ObjectNode mTx;
     private Boolean isKeyboardOpen;
 
-    private View mView;
     private TextView mRecipientText;
     private TextView mAccountBalance;
     private CurrencyView2 mAmountView;
@@ -60,28 +59,24 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView -> " + TAG);
         final int[] mBlockTargets = getBlockTargets();
-        // Get arguments from bundle
-        final Bundle b = this.getArguments();
-        if (b == null)
-            return mView;
-
-        final GaService service = getGAService();
+        final GaService service = mService;
 
         // Create UI views
-        mView = inflater.inflate(R.layout.fragment_send_input, container, false);
-        mRecipientText = UI.find(mView, R.id.addressText);
-        mAccountBalance = UI.find(mView, R.id.accountBalanceText);
-        mAmountView = UI.find(mView, R.id.sendAmountCurrency);
+        setContentView(R.layout.activity_send_amount);
+        UI.preventScreenshots(this);
+        setTitleBackTransparent();
+        mRecipientText = UI.find(this, R.id.addressText);
+        mAccountBalance = UI.find(this, R.id.accountBalanceText);
+        mAmountView = UI.find(this, R.id.sendAmountCurrency);
         mAmountView.setListener(this);
 
-        mSendAllButton = UI.find(mView, R.id.sendallButton);
+        mSendAllButton = UI.find(this, R.id.sendallButton);
 
-        mNextButton = UI.find(mView, R.id.nextButton);
+        mNextButton = UI.find(this, R.id.nextButton);
         mNextButton.setOnClickListener(this);
         UI.disable(mNextButton);
 
@@ -93,22 +88,19 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
         for (int i = 0; i < mButtonIds.length; ++i) {
             mFeeEstimates[i] = estimates.get(mBlockTargets[i]);
-            mFeeButtons[i] = mView.findViewById(mButtonIds[i]);
+            mFeeButtons[i] = this.findViewById(mButtonIds[i]);
             final String summary = String.format("(%s)", UI.getFeeRateString(estimates.get(mBlockTargets[i])));
             // TODO: blocksPerHour should be set to 60 for liquid
-            final String expectedConfirmationTime = getExpectedConfirmationTime(getContext(), 6, mBlockTargets[i]);
+            final String expectedConfirmationTime = getExpectedConfirmationTime(this, 6, mBlockTargets[i]);
             final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : expectedConfirmationTime);
             mFeeButtons[i].init(buttonText, summary, i == 3);
             mFeeButtons[i].setOnClickListener(this);
         }
 
-        // Setup vars
-        mCallbackListener = (OnCallbackListener) getGaActivity();
-
         // Create the initial transaction
         try {
             if (mTx == null) {
-                final String tx = b.getString(INTENT_STRING_TX);
+                final String tx = getIntent().getStringExtra(INTENT_STRING_TX);
                 final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
                 // Fee
                 // FIXME: If default fee is custom then fetch it here
@@ -138,7 +130,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                 mAccountBalance.setVisibility(View.GONE);
             } else {
                 mAmountView.requestFocus();
-                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             }
 
             // Select the fee button that is the next highest rate from the old tx
@@ -170,17 +162,18 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             }
 
             updateTransaction(mRecipientText);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // FIXME: Toast and go back to main activity since we must be disconnected
             throw new RuntimeException(e);
         }
 
-        UI.attachHideKeyboardListener(getActivity(), mView);
+        final View contentView = findViewById(android.R.id.content);
+        UI.attachHideKeyboardListener(this, contentView);
 
-        mView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        contentView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             Rect r = new Rect();
-            mView.getWindowVisibleDisplayFrame(r);
-            int screenHeight = mView.getRootView().getHeight();
+            contentView.getWindowVisibleDisplayFrame(r);
+            int screenHeight = contentView.getHeight();
 
             // r.bottom is the position above soft keypad or device button.
             // if keypad is shown, the r.bottom is smaller than that before.
@@ -190,8 +183,6 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
             isKeyboardOpen = (keypadHeight > screenHeight * 0.15); // 0.15 ratio is perhaps enough to determine keypad height.
         });
-
-        return mView;
     }
 
     private int[] getBlockTargets() {
@@ -217,14 +208,14 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (isDisconnected()) {
+    public void onResumeWithService() {
+        super.onResumeWithService();
+        if (mService.isDisconnected()) {
             return;
         }
 
         // Setup balance
-        final GaService service = getGAService();
+        final GaService service = mService;
         final BalanceData balanceData = service.getBalanceData(service.getModel().getCurrentSubaccount());
         mAccountBalance.setText(service.getValueString(balanceData.toObjectNode(), false, true));
 
@@ -241,10 +232,10 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onPauseWithService() {
+        super.onPauseWithService();
         mAmountView.onPause();
-        mCustomFeeDialog = UI.dismiss(getGaActivity(), mCustomFeeDialog);
+        mCustomFeeDialog = UI.dismiss(this, mCustomFeeDialog);
         mSendAllButton.setOnClickListener(null);
         for (int i = 0; i < mButtonIds.length; ++i)
             mFeeButtons[i].setOnClickListener(null);
@@ -255,14 +246,13 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         if (view == mNextButton) {
             if (isKeyboardOpen) {
                 InputMethodManager inputManager = (InputMethodManager)
-                                                  getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                  this.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-                final View currentFocus = getActivity().getCurrentFocus();
+                final View currentFocus = getCurrentFocus();
                 inputManager.hideSoftInputFromWindow(currentFocus == null ? null : currentFocus.getWindowToken(),
                                                      InputMethodManager.HIDE_NOT_ALWAYS);
             } else {
-                if (mCallbackListener != null)
-                    mCallbackListener.onFinish(mTx);
+                onFinish(mTx);
             }
         } else if (view == mSendAllButton) {
             mSendAll = !mSendAll;
@@ -291,7 +281,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         final String hint = UI.getFeeRateString(customValue);
         final String initValue = String.format(Locale.US, "%.2f", customValue/1000.0);
 
-        mCustomFeeDialog = new MaterialDialog.Builder(getActivity())
+        mCustomFeeDialog = new MaterialDialog.Builder(this)
                            .title(R.string.id_set_custom_fee_rate)
                            .positiveText(android.R.string.ok)
                            .negativeText(android.R.string.cancel)
@@ -308,14 +298,14 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                 final double feePerByte = Double.valueOf(rateText);
                 final long feePerKB = (long) (feePerByte * 1000);
                 if (feePerKB < mMinFeeRate) {
-                    UI.toast(getGaActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
-                                                        String.format(Locale.US, "%.2f", mMinFeeRate/1000.0)),
+                    UI.toast(this, getString(R.string.id_fee_rate_must_be_at_least_s,
+                                             String.format(Locale.US, "%.2f", mMinFeeRate/1000.0)),
                              Toast.LENGTH_LONG);
                     throw new Exception();
                 }
                 final Long oldFeeRate = getOldFeeRate(mTx);
                 if (oldFeeRate != null && feePerKB < oldFeeRate) {
-                    UI.toast(getGaActivity(), R.string.id_requested_fee_rate_too_low, Toast.LENGTH_LONG);
+                    UI.toast(this, R.string.id_requested_fee_rate_too_low, Toast.LENGTH_LONG);
                     return;
                 }
 
@@ -333,7 +323,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
 
     private void updateTransaction(final View caller)
     {
-        if (!isAdded() || isDetached() || getGaActivity() == null)
+        if (isFinishing())
             return;
 
         ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
@@ -355,7 +345,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             changed |= !satoshi.toString().equals(replacedValue == null ? "" : replacedValue.toString());
         }
 
-        final GDKSession session = getGAService().getSession();
+        final GDKSession session = mService.getSession();
         final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
         final JsonNode replacedValue = mTx.replace("fee_rate", fee_rate);
         changed |= !fee_rate.toString().equals(replacedValue == null ? "" : replacedValue.toString());
@@ -396,7 +386,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
             final String feeRateString = UI.getFeeRateString(currentEstimate);
             mFeeButtons[i].setSummary(mVsize == null ?
                                       String.format("(%s)", feeRateString) :
-                                      String.format("%s (%s)", getGAService().getValueString(
+                                      String.format("%s (%s)", mService.getValueString(
                                                         (currentEstimate * mVsize)/1000L,
                                                         mAmountView.isFiat(), true),
                                                     feeRateString));
@@ -404,7 +394,7 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
     }
 
     public ObjectNode convertAmount(final ObjectNode amount) throws IOException, RuntimeException {
-        return getGAService().getSession().convert(amount);
+        return mService.getSession().convert(amount);
     }
 
     public void amountEntered() {
@@ -416,9 +406,6 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
         updateFeeSummaries();
     }
 
-    public interface OnCallbackListener {
-        void onFinish(final JsonNode transactionData);
-    }
 
     private String getExpectedConfirmationTime(Context context, final int blocksPerHour, final int blocks) {
         final int n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour);
@@ -426,5 +413,34 @@ public class SendInputFragment extends GAFragment implements View.OnClickListene
                                            (blocks == blocksPerHour ? R.string.id_hour : R.string.id_hours) :
                                            R.string.id_minutes);
         return String.format(Locale.getDefault(), " ~ %d %s", n, s);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_BITCOIN_URL_SEND && resultCode == RESULT_OK) {
+            setResult(resultCode);
+            finishOnUiThread();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+        case android.R.id.home:
+            onBackPressed();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void onFinish(final JsonNode transactionData) {
+        // Open next fragment
+        final Intent intent = new Intent(this, SendConfirmActivity.class);
+        intent.putExtra("transaction", transactionData.toString());
+        if (mService.getConnectionManager().isHW())
+            intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
+        startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
 }

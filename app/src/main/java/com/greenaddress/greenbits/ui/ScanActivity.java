@@ -363,7 +363,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     public void onInserted(final String scanned) {
         final GaService service = ((GreenAddressApplication) getApplication()).mService;
 
-        final Intent result = new Intent(this, SendActivity.class);
+        final Intent result = new Intent(this, SendAmountActivity.class);
         result.putExtra("internal_qr", true);
         final Integer subaccount = service.getModel().getCurrentSubaccount();
 

@@ -217,7 +217,13 @@
             android:screenOrientation="portrait"
             />
         <activity
-            android:name=".SendActivity"
+            android:name=".SendAmountActivity"
+            android:label="@string/id_send"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            />
+        <activity
+            android:name=".SendConfirmActivity"
             android:label="@string/id_send"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"

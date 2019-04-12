@@ -412,7 +412,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             bumpTxData.setSubaccount(subaccount);
             Log.d(TAG,"createTransactionRaw(" + bumpTxData.toString() + ")");
             final ObjectNode tx = session.createTransactionRaw(bumpTxData);
-            final Intent intent = new Intent(this, SendActivity.class);
+            final Intent intent = new Intent(this, SendAmountActivity.class);
             intent.putExtra(INTENT_STRING_TX, tx.toString());
             startActivity(intent);
             finish();
