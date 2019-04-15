@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PinData;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public abstract class LoginActivity extends GaActivity implements Observer, NetworkSettingsFragment.Listener {
+public abstract class LoginActivity extends GaActivity implements Observer {
 
     protected void onLoggedIn() {
         final Intent intent = new Intent(LoginActivity.this, TabbedMainActivity.class);
@@ -90,13 +91,4 @@ public abstract class LoginActivity extends GaActivity implements Observer, Netw
         } catch (final Exception ignored) {}
         return 1;
     }
-
-    protected void openNetworkSettings() {
-        final NetworkSettingsFragment dialogFragment = new NetworkSettingsFragment();
-        dialogFragment.setListener(this);
-        dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
-    }
-
-    @Override
-    public void onSelectNetwork() {}
 }

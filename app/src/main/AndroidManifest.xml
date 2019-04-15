@@ -240,6 +240,10 @@
             android:name=".TrezorPassphraseActivity"
             android:screenOrientation="portrait"
             />
+        <activity
+            android:name=".NetworkSettingsActivity"
+            android:screenOrientation="portrait"
+            />
 
     </application>
 

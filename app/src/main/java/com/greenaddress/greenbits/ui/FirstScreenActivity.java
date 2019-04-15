@@ -11,7 +11,9 @@ import android.widget.TextView.BufferType;
 
 import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
 
-public class FirstScreenActivity extends LoginActivity implements NetworkSettingsFragment.Listener {
+public class FirstScreenActivity extends LoginActivity {
+
+    public static final int NETWORK_SELECTOR_REQUEST = 51341;
     private Button mSelectNetwork;
     private TextView mWalletDetected;
 
@@ -33,7 +35,8 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
                                                  R.string.id_green_only_supports_one_pin_for));
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
-        mSelectNetwork.setOnClickListener(v -> openNetworkSettings());
+        mSelectNetwork.setOnClickListener(v -> { startActivityForResult(new Intent(this, NetworkSettingsActivity.class),
+                                                                        NETWORK_SELECTOR_REQUEST); });
 
         mWalletDetected = UI.find( this, R.id.walletDetected);
         SpannableStringBuilder builder = new SpannableStringBuilder();
@@ -83,6 +86,12 @@ public class FirstScreenActivity extends LoginActivity implements NetworkSetting
     }
 
     @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NETWORK_SELECTOR_REQUEST && resultCode == RESULT_OK)
+            onSelectNetwork();
+    }
+
     public void onSelectNetwork() {
         mSelectNetwork.setText(mService.getNetwork().getName());
         UI.showIf(mService.hasPin(), mWalletDetected);
