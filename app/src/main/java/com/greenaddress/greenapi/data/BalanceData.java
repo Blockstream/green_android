@@ -7,13 +7,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.utils.Fiat;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
-
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BalanceData extends JSONData {
@@ -29,34 +22,6 @@ public class BalanceData extends JSONData {
     private String mbtc;
     private String ubtc;
     private Long satoshi;
-
-    @JsonIgnore
-    public Coin getSatoshiAsCoin() {
-        return Coin.valueOf(getSatoshi());
-    }
-
-    @JsonIgnore
-    public Double getFiatRateAsDouble() {
-        if (fiatRate == null || fiatRate.isEmpty())
-            return null;
-        return Double.valueOf(fiatRate);
-    }
-
-    @JsonIgnore
-    public Fiat getFiatAsFiat() {
-        if (fiat == null || fiat.isEmpty())
-            return null;
-        final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        final DecimalFormat f = new DecimalFormat("##.0000", symbols);
-        final String formattedValue = f.format(Float.valueOf(fiat));
-        return Fiat.parseFiat(fiatCurrency, formattedValue);
-    }
-
-    @JsonIgnore
-    public void setFiatAsFiat(final Fiat fiatValue) {
-        setFiat(fiatValue.toPlainString());
-        setFiatCurrency(fiatValue.currencyCode);
-    }
 
     @JsonIgnore
     public ObjectNode toObjectNode() {
