@@ -130,6 +130,7 @@ public class NetworkSettingsActivity extends GaActivity {
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_networksettings);
+        getSupportActionBar().hide();
         mProxySection = UI.find(this, R.id.proxySection);
         mSwitchTor = UI.find(this, R.id.switchEnableTor);
         mSocks5Host = UI.find(this, R.id.socks5Host);
