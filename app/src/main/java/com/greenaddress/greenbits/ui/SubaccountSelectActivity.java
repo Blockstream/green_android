@@ -42,7 +42,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
             final String fiatString = mService.getValueString(total.toObjectNode(), true, true);
             mTotalAmountBtc.setText(btcString);
             mTotalAmountFiat.setText(" ≈ " + fiatString);
-        } catch (IOException e) {
+        } catch (final RuntimeException | IOException e) {
             e.printStackTrace();
         }
     }
