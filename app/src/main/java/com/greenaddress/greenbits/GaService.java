@@ -461,15 +461,7 @@ public class GaService extends Service  {
     }
 
     public String getFiatCurrency() {
-        try {
-            final BalanceData balanceReq = new BalanceData();
-            balanceReq.setSatoshi(0L);
-            final BalanceData balanceRes = mSession.convertBalance(balanceReq);
-            return balanceRes.getFiatCurrency();
-        } catch (final IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return mModel.getSettings().getPricing().getCurrency();
     }
 
     private void onNetConnectivityChanged() {
