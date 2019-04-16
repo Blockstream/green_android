@@ -39,6 +39,14 @@ public class WatchOnlyPreferenceFragment extends GAPreferenceFragment
                                                    BuildConfig.VERSION_NAME,
                                                    BuildConfig.BUILD_TYPE)));
 
+        // Terms of service
+        final Preference termsOfUse = find(PrefKeys.TERMS_OF_USE);
+        termsOfUse.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/tos.html"));
+
+        // Privacy policy
+        final Preference privacyPolicy = find(PrefKeys.PRIVACY_POLICY);
+        privacyPolicy.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/privacy.html"));
+
         ((Preference) find("logout")).setOnPreferenceClickListener(this);
     }
 
