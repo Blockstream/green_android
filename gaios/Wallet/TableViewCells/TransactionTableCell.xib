@@ -51,29 +51,22 @@
                             <color key="textColor" name="customTitaniumMedium"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REPLACEABLE" textAlignment="natural" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fmS-hJ-Lu6">
-                            <rect key="frame" x="40" y="21" width="64" height="14"/>
+                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bump_fee" translatesAutoresizingMaskIntoConstraints="NO" id="6f1-X0-rs4">
+                            <rect key="frame" x="40" y="19" width="20" height="18"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="14" id="KLU-yA-DI4"/>
+                                <constraint firstAttribute="width" constant="20" id="66a-KO-k5f"/>
+                                <constraint firstAttribute="height" constant="18" id="JCF-CA-bad"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" name="customTitaniumMedium"/>
-                            <nil key="highlightedColor"/>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="2"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
-                        </label>
+                        </imageView>
                     </subviews>
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="IeI-c0-CbE" secondAttribute="bottom" constant="20" id="6gh-AJ-C4j"/>
                         <constraint firstItem="IeI-c0-CbE" firstAttribute="top" secondItem="Ibg-h6-Z32" secondAttribute="bottom" constant="8" id="9Ge-DQ-o83"/>
+                        <constraint firstItem="6f1-X0-rs4" firstAttribute="centerY" secondItem="Ibg-h6-Z32" secondAttribute="centerY" id="Ki6-lD-sZD"/>
                         <constraint firstAttribute="trailing" secondItem="gle-3F-dUj" secondAttribute="trailing" id="QJk-Ri-t81"/>
+                        <constraint firstItem="6f1-X0-rs4" firstAttribute="leading" secondItem="Ibg-h6-Z32" secondAttribute="trailing" constant="10" id="SjB-2I-ijF"/>
                         <constraint firstItem="gle-3F-dUj" firstAttribute="centerY" secondItem="Ibg-h6-Z32" secondAttribute="centerY" id="SpP-K5-Uhf"/>
                         <constraint firstItem="a3b-3L-Usg" firstAttribute="centerY" secondItem="IeI-c0-CbE" secondAttribute="centerY" id="cHz-rT-FgM"/>
-                        <constraint firstItem="fmS-hJ-Lu6" firstAttribute="centerY" secondItem="Ibg-h6-Z32" secondAttribute="centerY" id="q5L-7D-rp8"/>
-                        <constraint firstItem="fmS-hJ-Lu6" firstAttribute="leading" secondItem="Ibg-h6-Z32" secondAttribute="trailing" constant="10" id="qsg-pp-71f"/>
                         <constraint firstItem="Ibg-h6-Z32" firstAttribute="top" secondItem="Kgy-Kq-zWp" secondAttribute="top" constant="20" id="vzT-WP-h0d"/>
                         <constraint firstItem="Ibg-h6-Z32" firstAttribute="leading" secondItem="Kgy-Kq-zWp" secondAttribute="leading" id="z99-Uq-xFz"/>
                         <constraint firstAttribute="trailing" secondItem="a3b-3L-Usg" secondAttribute="trailing" id="zkz-7J-Hoo"/>
@@ -93,14 +86,15 @@
             <connections>
                 <outlet property="address" destination="IeI-c0-CbE" id="wEN-be-Hgb"/>
                 <outlet property="amount" destination="gle-3F-dUj" id="Uda-zs-tLJ"/>
+                <outlet property="bumpFee" destination="6f1-X0-rs4" id="uIQ-N8-2Lm"/>
                 <outlet property="date" destination="Ibg-h6-Z32" id="dch-Kx-VEC"/>
-                <outlet property="replaceable" destination="fmS-hJ-Lu6" id="hAS-Rc-oBY"/>
                 <outlet property="status" destination="a3b-3L-Usg" id="2O8-A0-BSa"/>
             </connections>
             <point key="canvasLocation" x="9.5999999999999996" y="91.754122938530742"/>
         </view>
     </objects>
     <resources>
+        <image name="bump_fee" width="18" height="18"/>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

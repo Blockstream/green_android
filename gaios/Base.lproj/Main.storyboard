@@ -1164,14 +1164,20 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oqw-jz-Y0x">
                                                     <rect key="frame" x="16" y="0.0" width="288" height="43.5"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aiF-dg-pv2">
-                                                            <rect key="frame" x="16" y="13" width="45" height="18"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="aiF-dg-pv2">
+                                                            <rect key="frame" x="16" y="13" width="80" height="18"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="80" id="rYh-Mh-9ho"/>
+                                                            </constraints>
                                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="increase fee" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DYq-Bc-CyH">
-                                                            <rect key="frame" x="158.5" y="13" width="83.5" height="18"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="increase fee" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="DYq-Bc-CyH">
+                                                            <rect key="frame" x="114" y="13" width="135" height="18"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="135" id="btF-j1-dMk"/>
+                                                            </constraints>
                                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                             <color key="textColor" name="customTitaniumLight"/>
                                                             <nil key="highlightedColor"/>
@@ -1179,19 +1185,19 @@
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ljW-Z4-mEh">
                                                             <rect key="frame" x="250" y="7" width="30" height="30"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="30" id="LrH-MF-U4K"/>
-                                                                <constraint firstAttribute="width" constant="30" id="x8j-Yg-Stx"/>
+                                                                <constraint firstAttribute="width" secondItem="ljW-Z4-mEh" secondAttribute="height" multiplier="29:30" id="rms-nO-GCn"/>
                                                             </constraints>
                                                         </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" name="customCardDark"/>
                                                     <constraints>
                                                         <constraint firstItem="ljW-Z4-mEh" firstAttribute="leading" secondItem="DYq-Bc-CyH" secondAttribute="trailing" constant="8" id="Bt1-GY-ijd"/>
+                                                        <constraint firstItem="DYq-Bc-CyH" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="aiF-dg-pv2" secondAttribute="trailing" constant="10" id="Feo-aa-A6q"/>
                                                         <constraint firstItem="aiF-dg-pv2" firstAttribute="leading" secondItem="oqw-jz-Y0x" secondAttribute="leading" constant="16" id="Kk5-kv-dP7"/>
-                                                        <constraint firstItem="DYq-Bc-CyH" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="aiF-dg-pv2" secondAttribute="trailing" priority="100" constant="18" id="PY9-aY-vxA"/>
                                                         <constraint firstItem="ljW-Z4-mEh" firstAttribute="centerY" secondItem="oqw-jz-Y0x" secondAttribute="centerY" id="Tf4-ra-S3T"/>
                                                         <constraint firstAttribute="trailing" secondItem="ljW-Z4-mEh" secondAttribute="trailing" constant="8" id="UOs-PR-Zmx"/>
                                                         <constraint firstItem="DYq-Bc-CyH" firstAttribute="centerY" secondItem="oqw-jz-Y0x" secondAttribute="centerY" id="Wo9-XX-Xuu"/>
+                                                        <constraint firstItem="ljW-Z4-mEh" firstAttribute="width" secondItem="oqw-jz-Y0x" secondAttribute="width" multiplier="0.08" id="wwr-uo-RkK"/>
                                                         <constraint firstItem="aiF-dg-pv2" firstAttribute="centerY" secondItem="oqw-jz-Y0x" secondAttribute="centerY" id="xji-LH-rSz"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>

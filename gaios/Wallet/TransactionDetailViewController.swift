@@ -172,7 +172,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
             statusImage.isHidden = false
         }
         if transaction.canRBF && !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive {
-            statusImage.image = UIImage(named: "arrow_right")
+            statusImage.image = UIImage(named: "bump_fee")
             statusImage.isHidden = false
             increasefeeLabel.isHidden = false
         } else {

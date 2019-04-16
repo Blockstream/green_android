@@ -7,23 +7,17 @@ class TransactionTableCell: UITableViewCell {
     @IBOutlet weak var address: UILabel!
     @IBOutlet weak var amount: UILabel!
     @IBOutlet weak var date: UILabel!
-    @IBOutlet weak var replaceable: UILabel!
+    @IBOutlet weak var bumpFee: UIImageView!
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        replaceable.layer.masksToBounds = true
-        replaceable.layer.cornerRadius = 4
-        replaceable.layer.borderWidth = 1
-        replaceable.layer.borderColor = UIColor.customTitaniumLight().cgColor
-
     }
 
     func setup(with transaction: Transaction) {
-        replaceable.isHidden = !transaction.canRBF
+        bumpFee.isHidden = !transaction.canRBF
         amount.text = transaction.amount()
         selectionStyle = .none
         date.text = transaction.date()
-        replaceable.text = "  " + NSLocalizedString("id_replaceable", comment: "").uppercased() + "  "
         if !transaction.memo.isEmpty {
             address.text = transaction.memo
         } else if transaction.type == "redeposit" {
