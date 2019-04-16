@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,20 +34,24 @@ import java.util.Locale;
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
-public class SendAmountActivity extends GaActivity implements View.OnClickListener, CurrencyView2.Listener,
-    CurrencyView2.BalanceConversionProvider {
+public class SendAmountActivity extends GaActivity implements TextWatcher, View.OnClickListener {
     private static final String TAG = SendAmountActivity.class.getSimpleName();
 
     private boolean mSendAll = false;
     private MaterialDialog mCustomFeeDialog;
     private ObjectNode mTx;
-    private Boolean isKeyboardOpen;
+    private Boolean isKeyboardOpen = false;
 
     private TextView mRecipientText;
     private TextView mAccountBalance;
-    private CurrencyView2 mAmountView;
     private Button mNextButton;
     private Button mSendAllButton;
+
+    private FontFitEditText mAmountText;
+    private Button mUnitButton;
+
+    private boolean mIsFiat = false;
+    private ObjectNode mCurrentAmount; // output from GA_convert_amount
 
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;
@@ -71,8 +77,16 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
         setTitleBackTransparent();
         mRecipientText = UI.find(this, R.id.addressText);
         mAccountBalance = UI.find(this, R.id.accountBalanceText);
-        mAmountView = UI.find(this, R.id.sendAmountCurrency);
-        mAmountView.setListener(this);
+
+        mAmountText = UI.find(this, R.id.amountText);
+        mUnitButton = UI.find(this, R.id.unitButton);
+
+        mAmountText.addTextChangedListener(this);
+        mUnitButton.setOnClickListener(this);
+
+        mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinUnit());
+        mUnitButton.setPressed(!isFiat());
+        mUnitButton.setSelected(!isFiat());
 
         mSendAllButton = UI.find(this, R.id.sendallButton);
 
@@ -117,7 +131,8 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
             if (node != null && node.asLong() != 0L) {
                 final long newSatoshi = node.asLong();
                 try {
-                    mAmountView.setAmounts(service.getSession().convertSatoshi(newSatoshi));
+                    mCurrentAmount = service.getSession().convertSatoshi(newSatoshi);
+                    mAmountText.setText(mCurrentAmount.get(getBitcoinUnitClean()).asText());
                 } catch (final RuntimeException | IOException e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
                 }
@@ -125,11 +140,11 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
 
             final JsonNode readOnlyNode = mTx.get("addressees_read_only");
             if (readOnlyNode != null && readOnlyNode.asBoolean()) {
-                mAmountView.setEnabled(false);
+                mAmountText.setEnabled(false);
                 mSendAllButton.setVisibility(View.GONE);
                 mAccountBalance.setVisibility(View.GONE);
             } else {
-                mAmountView.requestFocus();
+                mAmountText.requestFocus();
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             }
 
@@ -227,14 +242,12 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
             mFeeButtons[i].setOnClickListener(this);
         }
 
-        mAmountView.onResume(this, service.getBitcoinUnit(), service.getFiatCurrency());
         // FIXME: Update fee estimates (also update them if notified)
     }
 
     @Override
     public void onPauseWithService() {
         super.onPauseWithService();
-        mAmountView.onPause();
         mCustomFeeDialog = UI.dismiss(this, mCustomFeeDialog);
         mSendAllButton.setOnClickListener(null);
         for (int i = 0; i < mButtonIds.length; ++i)
@@ -257,9 +270,21 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
         } else if (view == mSendAllButton) {
             mSendAll = !mSendAll;
             updateTransaction(null);
-            mAmountView.setSendAll(mSendAll);
+            mAmountText.setEnabled(!mSendAll);
             mSendAllButton.setPressed(mSendAll);
             mSendAllButton.setSelected(mSendAll);
+        } else if (view == mUnitButton) {
+            // Toggle unit display and selected state
+            mIsFiat = !mIsFiat;
+            mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinUnit());
+            mUnitButton.setPressed(!isFiat());
+            mUnitButton.setSelected(!isFiat());
+            updateFeeSummaries();
+
+            if (mCurrentAmount != null) {
+                mAmountText.setText(isFiat() ? mCurrentAmount.get("fiat").asText() : mCurrentAmount.get(
+                                        getBitcoinUnitClean()).asText());
+            }
         } else {
             // Fee Button
             for (int i = 0; i < mButtonIds.length; ++i) {
@@ -320,9 +345,7 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
         }).show();
     }
 
-
-    private void updateTransaction(final View caller)
-    {
+    private void updateTransaction(final View caller) {
         if (isFinishing())
             return;
 
@@ -335,12 +358,9 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
         if (mSendAll) {
             // Send all was clicked and enabled. Mark changed to update amounts
             changed |= mSendAllButton == caller;
-        } else {
+        } else if (mCurrentAmount != null) {
             // We are only changed if the amount entered has changed
-            final LongNode satoshi = new LongNode(mAmountView.getSatoshi());
-
-            // toString() and the null check are required because jackson is completely insane:
-            // set(LongNode(0)); replace(LongNode(0)).equals(LongNode(0)) is false.
+            final LongNode satoshi = new LongNode(mCurrentAmount.get("satoshi").asLong());
             final JsonNode replacedValue = addressee.replace("satoshi", satoshi);
             changed |= !satoshi.toString().equals(replacedValue == null ? "" : replacedValue.toString());
         }
@@ -365,7 +385,12 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
             if (error.isEmpty()) {
                 // The tx is valid so show the updated amount
                 try {
-                    mAmountView.setAmounts(session.convertSatoshi(addressee.get("satoshi").asLong()));
+                    final long newSatoshi = addressee.get("satoshi").asLong();
+                    // avoid updating view if value hasn't changed
+                    if (mSendAll || (mCurrentAmount != null && mCurrentAmount.get("satoshi").asLong() != newSatoshi)) {
+                        mCurrentAmount = session.convertSatoshi(newSatoshi);
+                        mAmountText.setText(mCurrentAmount.get(isFiat() ? "fiat" : getBitcoinUnitClean()).asText());
+                    }
                 } catch (final RuntimeException | IOException e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
                 }
@@ -388,24 +413,10 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
                                       String.format("(%s)", feeRateString) :
                                       String.format("%s (%s)", mService.getValueString(
                                                         (currentEstimate * mVsize)/1000L,
-                                                        mAmountView.isFiat(), true),
+                                                        isFiat(), true),
                                                     feeRateString));
         }
     }
-
-    public ObjectNode convertAmount(final ObjectNode amount) throws IOException, RuntimeException {
-        return mService.getSession().convert(amount);
-    }
-
-    public void amountEntered() {
-        updateTransaction(null);
-    }
-
-    @Override
-    public void onCurrencyChange() {
-        updateFeeSummaries();
-    }
-
 
     private String getExpectedConfirmationTime(Context context, final int blocksPerHour, final int blocks) {
         final int n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour);
@@ -443,4 +454,45 @@ public class SendAmountActivity extends GaActivity implements View.OnClickListen
             intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
+
+    private boolean isFiat() {
+        return mIsFiat;
+    }
+
+    private String getFiatCurrency() {
+        return mService.getFiatCurrency();
+    }
+
+    private String getBitcoinUnit() {
+        return mService.getBitcoinUnit();
+    }
+
+    private String getBitcoinUnitClean() {
+        final String unit = getBitcoinUnit();
+        return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        final String key = isFiat() ? "fiat" : getBitcoinUnitClean();
+        final String value = mAmountText.getText().toString();
+        final ObjectMapper mapper = new ObjectMapper();
+        final ObjectNode amount = mapper.createObjectNode();
+        amount.put(key, value.isEmpty() ? "0" : value);
+        try {
+            // avoid updating the view if changing from fiat to btc or vice versa
+            if (!mSendAll && (mCurrentAmount == null || !mCurrentAmount.get(key).asText().equals(value))) {
+                mCurrentAmount = mService.getSession().convert(amount);
+                updateTransaction(null);
+            }
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {}
 }
