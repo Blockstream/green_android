@@ -70,7 +70,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         super.onCreatePreferences(savedInstanceState, rootKey);
         addPreferencesFromResource(R.xml.preference_general);
         setHasOptionsMenu(true);
-        attachObservers();
 
         // PIN
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);

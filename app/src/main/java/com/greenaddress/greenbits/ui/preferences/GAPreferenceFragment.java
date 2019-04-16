@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,13 +20,17 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
     private static final String TAG = GAPreferenceFragment.class.getSimpleName();
 
     protected GaService mService;
+    private GreenAddressApplication mApp;
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
-        final GreenAddressApplication app;
-        app = ((GreenAddressApplication) getActivity().getApplication());
-        mService = app.mService;
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        mApp = (GreenAddressApplication) getActivity().getApplication();
+        mService = mApp.mService;
     }
+
+    @Override
+    public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {}
 
     private static final Preference.OnPreferenceChangeListener onPreferenceChanged =
         new Preference.OnPreferenceChangeListener() {
@@ -55,31 +60,6 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
 
     protected < T > T find(final String preferenceName) {
         return (T) findPreference(preferenceName);
-    }
-
-    protected void removePreference(final Preference pref) {
-        if (pref != null)
-            getPreferenceScreen().removePreference(pref);
-    }
-
-    protected void removePreference(final String preferenceName) {
-        removePreference(findPreference(preferenceName));
-    }
-
-    protected boolean verifyServiceOK() {
-        if (mService == null || !mService.getConnectionManager().isPostLogin()) {
-            // If we are restored and our service has not been destroyed, its
-            // state is unreliable and our parent activity should shortly
-            // be calling finish(). Avoid accessing the service in this case,
-            // and help the activity along in case it needs prompting to die.
-            final Activity activity = getActivity();
-            if (activity != null) {
-                UI.toast(activity, R.string.id_unable_to_contact_the_green, Toast.LENGTH_LONG);
-                activity.finish();
-            }
-            return false;
-        }
-        return true;
     }
 
     protected void logout() {
