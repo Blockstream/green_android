@@ -41,8 +41,9 @@ class WatchOnlySignIn: KeyboardViewController {
     @objc func rememberSwitch(_ sender: UISwitch) {
         if sender.isOn {
             let alert = UIAlertController(title: NSLocalizedString("id_warning_the_username_will_be", comment: ""), message: NSLocalizedString("id_your_watchonly_username_will_be", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
                 sender.isOn = false
+            })
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
                 sender.isOn = true
             })
