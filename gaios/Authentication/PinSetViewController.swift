@@ -53,7 +53,12 @@ class PinSetViewController: UIViewController {
             pinCode = ""
             reload()
         } else if sender == content.skipButton {
-            segue()
+            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("id_you_will_need_to_reenter_your", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .default) { _ in
+                self.segue()
+            })
+            self.present(alert, animated: true, completion: nil)
         }
     }
 
