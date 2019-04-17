@@ -20,6 +20,7 @@ class WatchOnlySignIn: KeyboardViewController {
 
         content.titlelabel.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
         content.rememberTitle.text = NSLocalizedString("id_remember_username", comment: "")
+        content.warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
         content.rememberSwitch.addTarget(self, action: #selector(rememberSwitch), for: .valueChanged)
         content.loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         content.loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
@@ -113,6 +114,7 @@ class WatchOnlySignInView: UIView {
     @IBOutlet weak var rememberSwitch: UISwitch!
     @IBOutlet weak var rememberTitle: UILabel!
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var warningLabel: UILabel!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
