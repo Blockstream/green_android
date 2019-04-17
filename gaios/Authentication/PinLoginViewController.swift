@@ -57,6 +57,7 @@ class PinLoginViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         ScreenLocker.shared.startObserving()
+        if content == nil { return }
         content.cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.skipButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
