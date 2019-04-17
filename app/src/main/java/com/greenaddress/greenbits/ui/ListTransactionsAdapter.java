@@ -18,8 +18,6 @@ import android.widget.TextView;
 
 import com.greenaddress.greenbits.GaService;
 
-import org.bitcoinj.core.Coin;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,8 +50,7 @@ public class ListTransactionsAdapter extends
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         final TransactionItem txItem = mTxItems.get(position);
-        final Coin coin = Coin.valueOf(txItem.amount);
-        holder.textValue.setText(UI.formatCoinValueWithUnit(mService, coin));
+        holder.textValue.setText(txItem.getAmountWithUnit(mService));
 
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
@@ -122,7 +119,7 @@ public class ListTransactionsAdapter extends
         holder.listNumberConfirmation.setTextColor(getColor(confirmationsColor));
 
         final int amountColor;
-        if (txItem.amount > 0)
+        if (txItem.type == TransactionItem.TYPE.IN)
             amountColor = R.color.green;
         else
             amountColor = R.color.white;

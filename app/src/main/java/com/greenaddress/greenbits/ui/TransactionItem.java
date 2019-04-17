@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
+import android.util.Log;
+
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
@@ -7,11 +9,13 @@ import com.greenaddress.greenbits.GaService;
 
 import org.bitcoinj.core.Sha256Hash;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class TransactionItem implements Serializable {
 
@@ -24,7 +28,7 @@ public class TransactionItem implements Serializable {
     public final TYPE type;
     private final int currentBlock;
     private final Integer blockHeight;
-    public final long amount;
+    public final long satoshi;
     public String counterparty;
     public final JSONMap receivedOnEp;
     public final boolean replaceable;
@@ -44,7 +48,7 @@ public class TransactionItem implements Serializable {
     public Integer subaccount;
 
     public String toString() {
-        return String.format("%s %s %s %s", date.toString(), type.name(), amount, counterparty);
+        return String.format("%s %s %s %s", date.toString(), type.name(), satoshi, counterparty);
     }
 
     public int getConfirmations() {
@@ -77,20 +81,18 @@ public class TransactionItem implements Serializable {
         counterparty = "";
         this.subaccount = subaccount;
 
-        long tmpAmount = txData.getSatoshi();
+        satoshi = txData.getSatoshi();
 
         switch (txData.getType()) {
         case "outgoing":
-            amount = -tmpAmount;
             type = TYPE.OUT;
             counterparty = txData.getAddressee();
             break;
         case "incoming":
-            amount = tmpAmount;
             type = TYPE.IN;
             break;
         case "redeposit":
-            amount = -tmpAmount;       // fee
+            // the amount is the fee
             type = TYPE.REDEPOSIT;
             break;
         default:
@@ -121,5 +123,17 @@ public class TransactionItem implements Serializable {
         date = txData.getCreatedAt();
         replaceable = !service.isElements() &&
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
+    }
+
+    public String getAmountWithUnit(final GaService service) {
+        final String unit = service.getBitcoinUnit();
+        final String unitKey = unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
+        try {
+            final String amount = service.getSession().convertSatoshi(this.satoshi).get(unitKey).asText();
+            return (type == TYPE.IN ? "" : "-") + amount + " " + unit;
+        } catch (final RuntimeException | IOException e) {
+            Log.e("", "Conversion error: " + e.getLocalizedMessage());
+            return "";
+        }
     }
 }

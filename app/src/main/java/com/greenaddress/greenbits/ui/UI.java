@@ -36,10 +36,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
-import com.greenaddress.greenbits.GaService;
-
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.utils.MonetaryFormat;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -67,10 +63,6 @@ public abstract class UI {
         FEE_TARGET(int block) { mBlock = block; }
         public int getBlock() { return mBlock; }
     }
-
-    private static final MonetaryFormat BTC = new MonetaryFormat().shift(0).minDecimals(8).noCode();
-    private static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(5).noCode();
-    private static final MonetaryFormat UBTC = new MonetaryFormat().shift(6).minDecimals(2).noCode();
 
     // Class to unify cancel and dismiss handling */
     private static class DialogCloseHandler implements DialogInterface.OnCancelListener,
@@ -389,27 +381,6 @@ public abstract class UI {
                                       LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
-    }
-
-    private static MonetaryFormat getUnitFormat(final GaService service) {
-        final String unit = service.getBitcoinUnit();
-        if (MonetaryFormat.CODE_BTC.equals(unit))
-            return BTC;
-        if (MonetaryFormat.CODE_MBTC.equals(unit))
-            return MBTC;
-        return UBTC;
-    }
-
-    static String formatCoinValue(final GaService service, final Coin value) {
-        return getUnitFormat(service).format(value).toString();
-    }
-
-    static String formatCoinValueWithUnit(final GaService service, final Coin value) {
-        return getUnitFormat(service).format(value).toString() + " " + service.getBitcoinUnit();
-    }
-
-    static Coin parseCoinValue(final GaService service, final String value) {
-        return getUnitFormat(service).parse(value);
     }
 
     public static String getFeeRateString(final long feePerKB) {

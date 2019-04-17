@@ -123,11 +123,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mUnconfirmedText.setTextColor(getResources().getColor(confirmationsColor));
 
         // Set amount
-        boolean negative = mTxItem.amount < 0;
+        boolean negative = mTxItem.type != TransactionItem.TYPE.IN;
         String btc;
         String fiat;
         try {
-            final ObjectNode amount = mService.getSession().convertSatoshi(negative ? -mTxItem.amount : mTxItem.amount);
+            final ObjectNode amount = mService.getSession().convertSatoshi(mTxItem.satoshi);
             btc = mService.getValueString(amount, false, true);
             fiat = mService.getValueString(amount, true, true);
         } catch (final RuntimeException | IOException e) {
