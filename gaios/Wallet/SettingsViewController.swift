@@ -564,6 +564,7 @@ extension SettingsViewController: UITableViewDelegate {
         let header = UITableViewCell()
         header.textLabel?.text = toString(sections[section])
         header.imageView?.image = getHeaderImage(from: section)
+        header.isUserInteractionEnabled = false
         return header
     }
 
