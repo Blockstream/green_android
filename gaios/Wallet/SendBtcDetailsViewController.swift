@@ -93,9 +93,9 @@ class SendBtcDetailsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         content.amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        content.reviewButton.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
-        content.sendAllFundsButton.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
-        content.currencySwitch.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
+        content.reviewButton.addTarget(self, action: #selector(reviewButtonClick(_:)), for: .touchUpInside)
+        content.sendAllFundsButton.addTarget(self, action: #selector(sendAllFundsButtonClick(_:)), for: .touchUpInside)
+        content.currencySwitch.addTarget(self, action: #selector(currencySwitchClick(_:)), for: .touchUpInside)
 
         if transaction.satoshi != 0 {
             updateAmountData(transaction.satoshi)
@@ -114,9 +114,9 @@ class SendBtcDetailsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         content.amountTextField.removeTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        content.reviewButton.removeTarget(self, action: #selector(click(_:)), for: .touchUpInside)
-        content.sendAllFundsButton.removeTarget(self, action: #selector(click(_:)), for: .touchUpInside)
-        content.currencySwitch.removeTarget(self, action: #selector(click(_:)), for: .touchUpInside)
+        content.reviewButton.removeTarget(self, action: #selector(reviewButtonClick(_:)), for: .touchUpInside)
+        content.sendAllFundsButton.removeTarget(self, action: #selector(sendAllFundsButtonClick(_:)), for: .touchUpInside)
+        content.currencySwitch.removeTarget(self, action: #selector(currencySwitchClick(_:)), for: .touchUpInside)
     }
 
     func getOldFeeRate() -> UInt64? {
@@ -163,20 +163,24 @@ class SendBtcDetailsViewController: UIViewController {
         }.done { _ in }.catch { _ in }
     }
 
-    @objc func click(_ sender: UIButton?) {
-        if sender == content.sendAllFundsButton {
-            content.sendAllFundsButton.isSelected = !content.sendAllFundsButton.isSelected
-            updateTransaction()
-            updateAmountTextField(true)
-        } else if sender == content.reviewButton {
-            self.performSegue(withIdentifier: "confirm", sender: self)
-        } else if sender == content.currencySwitch {
-            isFiat = !isFiat
-            setCurrencySwitch()
-            updateAmountTextField(true)
-            updateMaxAmountLabel()
-            updateTransaction()
-        }
+    @objc func sendAllFundsButtonClick(_ sender: UIButton) {
+        content.sendAllFundsButton.isSelected = !content.sendAllFundsButton.isSelected
+        content.amountTextField.isEnabled = !content.sendAllFundsButton.isSelected
+        content.amountTextField.isUserInteractionEnabled = !content.sendAllFundsButton.isSelected
+        updateTransaction()
+        updateAmountTextField(true)
+    }
+
+    @objc func reviewButtonClick(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "confirm", sender: self)
+    }
+
+    @objc func currencySwitchClick(_ sender: UIButton) {
+        isFiat = !isFiat
+        setCurrencySwitch()
+        updateAmountTextField(true)
+        updateMaxAmountLabel()
+        updateTransaction()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -237,7 +241,7 @@ class SendBtcDetailsViewController: UIViewController {
         content.reviewButton.setGradient(enable)
     }
 
-    @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
+    @objc func dismissKeyboard (_ sender: UITapGestureRecognizer?) {
         content.amountTextField.resignFirstResponder()
     }
 
@@ -312,10 +316,11 @@ class SendBtcDetailsViewController: UIViewController {
         case content.customFeeButton:
             showFeeCustomPopup()
         default:
-            return
+            break
         }
         updateFeeButtons()
         updateTransaction()
+        dismissKeyboard(nil)
     }
 }
 
