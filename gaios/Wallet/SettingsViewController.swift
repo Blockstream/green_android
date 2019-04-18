@@ -488,7 +488,7 @@ class SettingsViewController: UIViewController {
     func showDefaultCustomRate() {
         guard let settings = getGAService().getSettings() else { return }
         let hint = String(format: "%.02f", Float(settings.customFeeRate ?? 1000) / 1000)
-        let popup = PopupEditable(self, title: NSLocalizedString("id_default_custom_fee_rate", comment: ""), hint: hint, text: hint, keyboardType: .numberPad)
+        let popup = PopupEditable(self, title: NSLocalizedString("id_default_custom_fee_rate", comment: ""), message: "", hint: hint, text: hint, keyboardType: .numberPad)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
             guard let value = value as? String else { throw GaError.GenericError }
             let amount = value.replacingOccurrences(of: ",", with: ".")
@@ -527,7 +527,7 @@ class SettingsViewController: UIViewController {
 
     func showResetTwoFactor() {
         let hint = "jane@example.com"
-        let popup = PopupEditable(self, title: NSLocalizedString("id_request_twofactor_reset", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
+        let popup = PopupEditable(self, title: NSLocalizedString("id_request_twofactor_reset", comment: ""), message: NSLocalizedString("id_resetting_your_twofactor_takes", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
             guard let email = value as? String else { throw GaError.GenericError }
             return try getGAService().getSession().resetTwoFactor(email: email, isDispute: false)
@@ -536,7 +536,7 @@ class SettingsViewController: UIViewController {
 
     func showDisputeTwoFactor() {
         let hint = "jane@example.com"
-        let popup = PopupEditable(self, title: NSLocalizedString("id_dispute_twofactor_reset", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
+        let popup = PopupEditable(self, title: NSLocalizedString("id_dispute_twofactor_reset", comment: ""), message: NSLocalizedString("id_warning_there_is_already_a", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
             guard let email = value as? String else { throw GaError.GenericError }
             return try getGAService().getSession().resetTwoFactor(email: email, isDispute: true)

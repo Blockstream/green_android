@@ -43,11 +43,13 @@ class PopupEditable: PopupPromise {
     let title: String
     let hint: String?
     let text: String?
+    let message: String?
     let keyboardType: UIKeyboardType?
 
-    init(_ view: UIViewController, title: String, hint: String?, text: String?, keyboardType: UIKeyboardType?) {
+    init(_ view: UIViewController, title: String, message: String?, hint: String?, text: String?, keyboardType: UIKeyboardType?) {
         self.viewController = view
         self.title = title
+        self.message = message
         self.hint = hint
         self.text = text
         self.keyboardType = keyboardType
@@ -55,7 +57,7 @@ class PopupEditable: PopupPromise {
 
     func show() -> Promise<String> {
         return Promise { result in
-            let alert = UIAlertController(title: title, message: "", preferredStyle: .alert)
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addTextField { (textField) in
                 textField.placeholder = self.hint ?? ""
                 textField.text = self.text ?? ""
