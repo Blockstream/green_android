@@ -558,6 +558,8 @@ extension SettingsViewController: UITableViewDelegate {
         guard let header = view as? UITableViewCell else { return }
         header.textLabel?.textColor = UIColor.customMatrixGreen()
         header.textLabel?.font = UIFont.systemFont(ofSize: 16.00, weight: .light)
+        header.textLabel?.adjustsFontSizeToFitWidth = true
+        header.textLabel?.minimumScaleFactor = 0.5
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

@@ -10,12 +10,19 @@ class InitialViewController: UIViewController {
         content.createButton.setTitle(NSLocalizedString("id_create_new_wallet", comment: ""), for: .normal)
         content.createButton.setGradient(true)
         content.restoreButton.setTitle(NSLocalizedString("id_restore_green_wallet", comment: ""), for: .normal)
-        content.walletDetectedLabel.text = NSLocalizedString("id_a_wallet_is_detected_on_this", comment: "")
-        content.walletLoginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
-        content.walletLoginButton.addTarget(self, action: #selector(loginClicked), for: .touchUpInside)
         content.walletDetectionStackView.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(loginClicked))
         content.walletDetectionStackView.addGestureRecognizer(tapGesture)
+        setLogInText()
+    }
+
+    func setLogInText() {
+        let greyString = NSLocalizedString("id_a_wallet_is_detected_on_this", comment: "")
+        let greenString = NSLocalizedString("id_log_in", comment: "")
+        let finalString = NSMutableAttributedString(string: greyString + " " + greenString)
+        finalString.setColor(color: UIColor.customTitaniumLight(), forText: greenString)
+        finalString.setColor(color: UIColor.customMatrixGreen(), forText: greenString)
+        content.walletDetectedLabel.attributedText = finalString
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -97,7 +104,6 @@ class InitialView: UIView {
     @IBOutlet weak var restoreButton: UIButton!
     @IBOutlet weak var networkButton: UIButton!
     @IBOutlet weak var walletDetectedLabel: UILabel!
-    @IBOutlet weak var walletLoginButton: UIButton!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
