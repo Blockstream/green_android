@@ -221,17 +221,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         // Mnemonic
         mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
         if (!mService.getConnectionManager().isHW()) {
-            final String mnemonic = mService.getMnemonic();
-            if ( mnemonic != null) {
-                mMemonicPref.setSummary(getString(R.string.id_touch_to_display));
-                mMemonicPref.setOnPreferenceClickListener(preference -> {
-                    if (mMemonicPref.getSummary().equals(mnemonic))
-                        mMemonicPref.setSummary(getString(R.string.id_touch_to_display));
-                    else
-                        mMemonicPref.setSummary(mnemonic);
-                    return false;
-                });
-            }
+            final String touchToDisplay = getString(R.string.id_touch_to_display);
+            mMemonicPref.setSummary(touchToDisplay);
+            mMemonicPref.setOnPreferenceClickListener(preference -> {
+                if (mMemonicPref.getSummary().equals(touchToDisplay))
+                    mMemonicPref.setSummary(mService.getMnemonic());
+                else
+                    mMemonicPref.setSummary(touchToDisplay);
+                return false;
+            });
         }
 
         // Auto logout timeout
