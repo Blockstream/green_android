@@ -29,7 +29,7 @@
   <string name="id_all">전부</string>
   <string name="id_allows_you_to_quickly_check">잔액을 확인, 또는 돈을 받거나 종이 지갑을 sweep 할 수 있습니다. 감시모드에서는 송금은 할 수 없습니다.</string>
   <string name="id_always">항상</string>
-  <string name="id_amount">양</string>
+  <string name="id_amount">금액</string>
   <string name="id_are_you_sure_you_want_to_view">정말로 %s를 사용하여 거래를 확인하시겠습니까?</string>
   <string name="id_attempts_remaining_d">남은 시도: %d</string>
   <string name="id_auto_logout_timeout">자동 로그아웃 시간</string>
@@ -186,7 +186,7 @@
   <string name="id_last_ping_1d_ms">마지막 핑: %1$d ms</string>
   <string name="id_later">이후</string>
   <string name="id_ledger_dashboard_detected">Ledger 대시 보드가 감지되었습니다. 올바른 앱을 열어 사용하세요.</string>
-  <string name="id_lets_get_you_set_up">설정 해보실까요?</string>
+  <string name="id_lets_get_you_set_up">새로운 지갑을 만들어 볼까요?</string>
   <string name="id_loading_transactions">거래 로딩중...</string>
   <string name="id_log_in">로그인</string>
   <string name="id_log_in_using_mnemonic">니모닉(복원 코드)을 사용하여 로그인하기</string>
@@ -265,7 +265,7 @@
   <string name="id_please_reconnect_your_hardware">다시 시도하기 전에 하드웨어 지갑을 다시 연결하세요.</string>
   <string name="id_please_secure_your_mnemonic_and">니모닉(복원 코드)을 안전하게 보관하시고 이용약관에 동의해주세요</string>
   <string name="id_please_select_the_checkbox">확인란을 선택해주세요</string>
-  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
+  <string name="id_please_set_and_enable_socks5">Tor를 사용하기 위해서 SOCKS5 프록시와 포트를 활성화/설정해 주세요</string>
   <string name="id_please_tap_card">카드를 터치해 주세요</string>
   <string name="id_privacy_policy">개인정보처리방침</string>
   <string name="id_problem_with_key_1s">키 %1$s에 문제있음</string>
@@ -300,7 +300,7 @@
   <string name="id_reuse_androids_authentication">안드로이드 인증 재사용하기</string>
   <string name="id_review">검토</string>
   <string name="id_s_blocks_left">%s 블록 남음</string>
-  <string name="id_s_from_s">%s 부터 %s</string>
+  <string name="id_s_from_s">%s 데이터 %s에서 가져옴</string>
   <string name="id_s_network">%s 네트워크</string>
   <string name="id_save">저장</string>
   <string name="id_save_your_mnemonic">니모닉(복원 코드)을 기록해 두세요</string>
@@ -342,7 +342,7 @@
   <string name="id_sms">문자</string>
   <string name="id_socks5_hostname">Socks5 호스트 명</string>
   <string name="id_socks5_port">Socks5 포트</string>
-  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 프록시와 포트를 설정하여야 합니다</string>
   <string name="id_something_went_wrong">문제가 발생하였습니다.</string>
   <string name="id_spv_is_always_synchronized_on">SPV는 데이터를 사용하지 않고 항상 Wifi나 Ethernet을 사용하여 동기화됩니다. 이 설정을 키면 모바일 데이터를 사용할 때도 동기화됩니다. 이는 요금제에 따라 매우 비쌀 수 있어 활성화 하실 때 유의해 주세요.</string>
   <string name="id_spv_not_fully_synced">SPV가 완전히 동기화되지 않음</string>

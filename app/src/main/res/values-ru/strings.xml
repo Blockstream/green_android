@@ -265,7 +265,7 @@
   <string name="id_please_reconnect_your_hardware">Повторно подключите аппаратный кошелек, прежде чем повторять попытку.</string>
   <string name="id_please_secure_your_mnemonic_and">Сохраните вашу мнемоническую фразу и подтвердите согласие с условиями предоставления услуги</string>
   <string name="id_please_select_the_checkbox">Установите флажок</string>
-  <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
+  <string name="id_please_set_and_enable_socks5">Пожалуйста, включите SOCKS5 прокси и задайте порт для использования Tor</string>
   <string name="id_please_tap_card">Пожалуйста, нажмите на карточку</string>
   <string name="id_privacy_policy">Политика конфиденциальности</string>
   <string name="id_problem_with_key_1s">Проблема с ключом %1$s</string>
@@ -342,7 +342,7 @@
   <string name="id_sms">СМС</string>
   <string name="id_socks5_hostname">Имя узла Socks5</string>
   <string name="id_socks5_port">Порт Socks5</string>
-  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
+  <string name="id_socks5_proxy_and_port_must_be">SOCKS5 прокси и порт должны быть настроены</string>
   <string name="id_something_went_wrong">Что-то пошло не так</string>
   <string name="id_spv_is_always_synchronized_on">SPV всегда синхронизируется в  таких сетях, как WiFi или Ethernet. Этот параметр также синхронизируется при использовании мобильных данных. Это может быть дорого в зависимости от вашего тарифного плана, поэтому будьте внимательны при включении.</string>
   <string name="id_spv_not_fully_synced">SPV-синхронизация произошла не полностью</string>
