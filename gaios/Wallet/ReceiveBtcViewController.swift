@@ -9,16 +9,21 @@ class ReceiveBtcViewController: KeyboardViewController {
     var wallet: WalletItem?
     var selectedType = TransactionType.BTC
     var gestureTap: UITapGestureRecognizer?
+    var gestureTapQRCode: UITapGestureRecognizer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_receive", comment: "")
         tabBarController?.tabBar.isHidden = true
         gestureTap = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
+        gestureTapQRCode = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
         content.amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                              attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+
+        content.walletQRCode.addGestureRecognizer(gestureTapQRCode!)
         content.walletQRCode.isUserInteractionEnabled = true
         content.walletAddressLabel.isUserInteractionEnabled = true
+        content.walletAddressLabel.addGestureRecognizer(gestureTap!)
         content.amountLabel.text = NSLocalizedString("id_amount", comment: "")
         content.shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
         content.shareButton.setGradient(true)
@@ -27,8 +32,6 @@ class ReceiveBtcViewController: KeyboardViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
-        content.walletQRCode.removeGestureRecognizer(gestureTap!)
-        content.walletAddressLabel.removeGestureRecognizer(gestureTap!)
         content.amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.fiatSwitchButton.addTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         content.shareButton.addTarget(self, action: #selector(shareButtonClicked(_:)), for: .touchUpInside)
@@ -39,7 +42,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
         guard gestureTap != nil else { return }
-        content.walletQRCode.removeGestureRecognizer(gestureTap!)
+        content.walletQRCode.removeGestureRecognizer(gestureTapQRCode!)
         content.walletAddressLabel.removeGestureRecognizer(gestureTap!)
         content.amountTextfield.removeTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.fiatSwitchButton.removeTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
