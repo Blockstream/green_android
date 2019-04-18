@@ -1,21 +1,21 @@
 PODS:
-  - NVActivityIndicatorView (4.6.1):
-    - NVActivityIndicatorView/Presenter (= 4.6.1)
-  - NVActivityIndicatorView/Presenter (4.6.1)
-  - PromiseKit (6.8.3):
-    - PromiseKit/CorePromise (= 6.8.3)
-    - PromiseKit/Foundation (= 6.8.3)
-    - PromiseKit/UIKit (= 6.8.3)
-  - PromiseKit/CorePromise (6.8.3)
-  - PromiseKit/Foundation (6.8.3):
+  - NVActivityIndicatorView (4.7.0):
+    - NVActivityIndicatorView/Presenter (= 4.7.0)
+  - NVActivityIndicatorView/Presenter (4.7.0)
+  - PromiseKit (6.8.4):
+    - PromiseKit/CorePromise (= 6.8.4)
+    - PromiseKit/Foundation (= 6.8.4)
+    - PromiseKit/UIKit (= 6.8.4)
+  - PromiseKit/CorePromise (6.8.4)
+  - PromiseKit/Foundation (6.8.4):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.8.3):
+  - PromiseKit/UIKit (6.8.4):
     - PromiseKit/CorePromise
   - SwiftLint (0.31.0)
 
 DEPENDENCIES:
-  - NVActivityIndicatorView (= 4.6.1)
-  - PromiseKit (= 6.8.3)
+  - NVActivityIndicatorView (= 4.7.0)
+  - PromiseKit (= 6.8.4)
   - SwiftLint (= 0.31.0)
 
 SPEC REPOS:
@@ -25,10 +25,10 @@ SPEC REPOS:
     - SwiftLint
 
 SPEC CHECKSUMS:
-  NVActivityIndicatorView: 4ca19fccc84595a78957336a086d00a49be6ce61
-  PromiseKit: 94c6e781838c5bf4717677d0d882b0e7250c80fc
+  NVActivityIndicatorView: b19ddab2576f805cbe0fb2306cba3476e09a1dea
+  PromiseKit: 51794a832647e7b819336dc2279039ce9f1cc49b
   SwiftLint: 7a0227733d786395817373b2d0ca799fd0093ff3
 
-PODFILE CHECKSUM: 6c815957d8f554111fc2450490c3b3a54eff84f5
+PODFILE CHECKSUM: 027503eebae164929407c78ecf16c95b96fa62a5
 
 COCOAPODS: 1.6.1
