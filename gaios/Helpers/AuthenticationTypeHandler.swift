@@ -192,7 +192,7 @@ class AuthenticationTypeHandler {
 
     fileprivate static func queryForData(method: String, forNetwork: String) -> [CFString: Any] {
         return queryFor(method: method, forNetwork: forNetwork)
-                        .merging([kSecReturnData: kCFBooleanTrue]) { (current, _) in current }
+                        .merging([kSecReturnData: kCFBooleanTrue ?? true]) { (current, _) in current }
     }
 
     fileprivate static func set(method: String, data: [String: Any], forNetwork: String) throws {

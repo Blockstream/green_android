@@ -68,13 +68,13 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     func setupCurrencyButton() {
         guard let settings = getGAService().getSettings() else { return }
         if !isFiat {
-            content.currencyButton.setTitle(settings.denomination.toString(), for: UIControlState.normal)
+            content.currencyButton.setTitle(settings.denomination.toString(), for: UIControl.State.normal)
             content.currencyButton.backgroundColor = UIColor.customMatrixGreen()
         } else {
-            content.currencyButton.setTitle(settings.getCurrency(), for: UIControlState.normal)
+            content.currencyButton.setTitle(settings.getCurrency(), for: UIControl.State.normal)
             content.currencyButton.backgroundColor = UIColor.clear
         }
-        content.currencyButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        content.currencyButton.setTitleColor(UIColor.white, for: UIControl.State.normal)
     }
 
     @objc func click(_ sender: Any?) {
@@ -149,7 +149,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     override func keyboardWillShow(notification: NSNotification) {
         // Modified slightly for use in Green from the public release at "Managing the Keyboard" from Text Programming Guide for iOS
         super.keyboardWillShow(notification: notification)
-        if let kbSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        if let kbSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: kbSize.height, right: 0.0)
             content.scrollView.contentInset = contentInsets
             content.scrollView.scrollIndicatorInsets = contentInsets

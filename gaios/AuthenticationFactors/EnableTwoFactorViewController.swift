@@ -78,7 +78,8 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
     }
 
     func reloadData() {
-        guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return }
+        let dataTwoFactorConfig = try? getSession().getTwoFactorConfig()
+        guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         factors.removeAll()
         factors.append(FactorItem(name: NSLocalizedString("id_email", comment: ""), image: UIImage.init(named: "2fa_email")!, enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, type: .email))

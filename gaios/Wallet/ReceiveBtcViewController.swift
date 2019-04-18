@@ -16,7 +16,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         tabBarController?.tabBar.isHidden = true
         gestureTap = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
         content.amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
+                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
         content.walletQRCode.isUserInteractionEnabled = true
         content.walletAddressLabel.isUserInteractionEnabled = true
         content.amountLabel.text = NSLocalizedString("id_amount", comment: "")
@@ -89,8 +89,8 @@ class ReceiveBtcViewController: KeyboardViewController {
     @objc func fiatSwitchButtonClick(_ sender: Any) {
         let satoshi = getSatoshi()
         guard let settings = getGAService().getSettings() else { return }
-        let res = try? getSession().convertAmount(input: ["satoshi": satoshi])
-        guard res != nil, let data = res! else { return }
+        let amount = try? getSession().convertAmount(input: ["satoshi": satoshi])
+        guard let data = amount else { return }
         if selectedType == TransactionType.BTC {
             selectedType = TransactionType.FIAT
             content.amountTextfield.text = String(format: "%@", data["fiat"] as? String ?? "")
@@ -106,13 +106,13 @@ class ReceiveBtcViewController: KeyboardViewController {
     func setButton() {
         guard let settings = getGAService().getSettings() else { return }
         if selectedType == TransactionType.BTC {
-            content.fiatSwitchButton.setTitle(settings.denomination.toString(), for: UIControlState.normal)
+            content.fiatSwitchButton.setTitle(settings.denomination.toString(), for: UIControl.State.normal)
             content.fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
-            content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControl.State.normal)
         } else {
-            content.fiatSwitchButton.setTitle(settings.getCurrency(), for: UIControlState.normal)
+            content.fiatSwitchButton.setTitle(settings.getCurrency(), for: UIControl.State.normal)
             content.fiatSwitchButton.backgroundColor = UIColor.clear
-            content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+            content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControl.State.normal)
         }
     }
 

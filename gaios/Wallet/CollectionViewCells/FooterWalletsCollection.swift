@@ -17,7 +17,7 @@ class FooterWalletsCollection: UICollectionViewCell {
         border.fillColor = UIColor.clear.cgColor
         border.lineDashPattern = [3, 3]
         border.lineWidth = 1
-        border.lineCap = kCALineCapRound
+        border.lineCap = CAShapeLayerLineCap.round
         border.path = UIBezierPath(roundedRect: border.frame, cornerRadius: 8).cgPath
         let bgView = UIView.init(frame: self.contentView.bounds)
         bgView.layer.insertSublayer(border, at: 0)

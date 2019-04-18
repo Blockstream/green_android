@@ -265,14 +265,11 @@ func signTransaction(transaction: Transaction) -> Promise<TwoFactorCall> {
 }
 
 func convertAmount(details: [String: Any]) -> [String: Any]? {
-    guard let conversion = try? getSession().convertAmount(input: details) else {
-        return nil
-    }
-    return conversion
+    return try? getSession().convertAmount(input: details)
 }
 
 func getFeeEstimates() -> [UInt64]? {
-    guard let estimates = try? getSession().getFeeEstimates() else { return nil }
+    let estimates = try? getSession().getFeeEstimates()
     return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
 }
 

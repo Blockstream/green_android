@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 
 // Behind everything, especially the root window.
-let UIWindowLevelBackground: UIWindow.Level = UIWindowLevel(-1)
+let UIWindowLevelBackground: UIWindow.Level = UIWindow.Level(-1)
 // In front everything, especially the root window and status bar.
-let UIWindowLevelScreenBlocking: UIWindow.Level = UIWindowLevelStatusBar + UIWindowLevel(1)
+let UIWindowLevelScreenBlocking: UIWindow.Level = UIWindow.Level.statusBar.rawValue + UIWindow.Level(1)
 
 class ScreenLockWindow: UIWindow {
     public static let shared = ScreenLockWindow()

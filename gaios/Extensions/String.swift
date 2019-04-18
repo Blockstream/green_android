@@ -20,36 +20,34 @@ extension String {
 
     static func toBtc(satoshi: UInt64, showDenomination: Bool = true) -> String {
         guard let settings = getGAService().getSettings() else { return "" }
-        let res = try? getSession().convertAmount(input: ["satoshi": satoshi])
-        guard res != nil, let data = res! else { return "" }
-        guard let value = data[settings.denomination.rawValue] as? String else { return "" }
+        let amount = try? getSession().convertAmount(input: ["satoshi": satoshi])
+        guard let data = amount, let value = data[settings.denomination.rawValue] as? String else { return "" }
         return String(format: showDenomination ? "%@ %@" : "%@", value, settings.denomination.toString())
     }
 
     static func toFiat(satoshi: UInt64, showCurrency: Bool = true) -> String {
         guard let settings = getGAService().getSettings() else { return "" }
-        let res = try? getSession().convertAmount(input: ["satoshi": satoshi])
-        guard res != nil, let data = res! else { return "" }
-        guard let value = data["fiat"] as? String else { return "" }
+        let amount = try? getSession().convertAmount(input: ["satoshi": satoshi])
+        guard let data = amount, let value = data["fiat"] as? String else { return "" }
         return String(format: showCurrency ? "%@ %@" : "%@", value, settings.getCurrency())
     }
 
     static func toSatoshi(fiat: String) -> UInt64 {
-        let res = try? getSession().convertAmount(input: ["fiat": fiat])
-        guard res != nil, let data = res! else { return 0 }
-        return data["satoshi"] as? UInt64 ?? 0
+        let amount = try? getSession().convertAmount(input: ["fiat": fiat])
+        guard let data = amount, let value = data["satoshi"] as? UInt64 else { return 0 }
+        return value
     }
 
     static func toSatoshi(amount: String) -> UInt64 {
         guard let settings = getGAService().getSettings() else { return 0 }
-        let res = try? getSession().convertAmount(input: [settings.denomination.rawValue: amount])
-        guard res != nil, let data = res! else { return 0 }
-        return data["satoshi"] as? UInt64 ?? 0
+        let amount = try? getSession().convertAmount(input: [settings.denomination.rawValue: amount])
+        guard let data = amount, let value = data["satoshi"] as? UInt64 else { return 0 }
+        return value
     }
 
     func heightWithConstrainedWidth(width: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
-        let boundingBox = self.boundingRect(with: constraintRect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedStringKey.font: font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedString.Key.font: font], context: nil)
         return boundingBox.height
     }
 
@@ -59,11 +57,11 @@ extension NSMutableAttributedString {
 
     func setColor(color: UIColor, forText stringValue: String) {
         let range: NSRange = self.mutableString.range(of: stringValue, options: .caseInsensitive)
-        self.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: range)
+        self.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: range)
     }
 
     func setFont(font: UIFont, stringValue: String) {
         let range: NSRange = self.mutableString.range(of: stringValue, options: .caseInsensitive)
-        self.addAttributes([NSAttributedStringKey.font: font], range: range)
+        self.addAttributes([NSAttributedString.Key.font: font], range: range)
     }
 }

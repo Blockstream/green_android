@@ -18,9 +18,9 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         let footerNib = UINib(nibName: "FooterWalletsCollection", bundle: nil)
         collectionView.register(cellNib, forCellWithReuseIdentifier: cellId)
         collectionView.register(headerNib, forSupplementaryViewOfKind:
-            UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
+            UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
         collectionView.register(footerNib, forSupplementaryViewOfKind:
-            UICollectionElementKindSectionFooter, withReuseIdentifier: footerId)
+            UICollectionView.elementKindSectionFooter, withReuseIdentifier: footerId)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -59,7 +59,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
-        case UICollectionElementKindSectionHeader:
+        case UICollectionView.elementKindSectionHeader:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
                 headerId, for: indexPath) as? HeaderWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
             let satoshi = wallets.map { $0.balance.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
@@ -69,7 +69,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             header.btcLabel.text = String.toBtc(satoshi: satoshi)
             header.fiatLabel.text = String.toFiat(satoshi: satoshi)
             return header
-        case UICollectionElementKindSectionFooter:
+        case UICollectionView.elementKindSectionFooter:
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
                 footerId, for: indexPath) as? FooterWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
             footer.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")

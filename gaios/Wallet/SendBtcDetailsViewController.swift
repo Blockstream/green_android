@@ -53,7 +53,7 @@ class SendBtcDetailsViewController: UIViewController {
         uiErrorLabel = UIErrorLabel(self.view)
         content.errorLabel.isHidden = true
         content.amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+                                                                   attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
 
         if transaction.addresseesReadOnly {
             content.amountTextField.isEnabled = false
@@ -146,13 +146,13 @@ class SendBtcDetailsViewController: UIViewController {
     func setCurrencySwitch() {
         guard let settings = getGAService().getSettings() else { return }
         if !isFiat {
-            content.currencySwitch.setTitle(settings.denomination.toString(), for: UIControlState.normal)
+            content.currencySwitch.setTitle(settings.denomination.toString(), for: UIControl.State.normal)
             content.currencySwitch.backgroundColor = UIColor.customMatrixGreen()
         } else {
-            content.currencySwitch.setTitle(settings.getCurrency(), for: UIControlState.normal)
+            content.currencySwitch.setTitle(settings.getCurrency(), for: UIControl.State.normal)
             content.currencySwitch.backgroundColor = UIColor.clear
         }
-        content.currencySwitch.setTitleColor(UIColor.white, for: UIControlState.normal)
+        content.currencySwitch.setTitleColor(UIColor.white, for: UIControl.State.normal)
         updateFeeButtons()
     }
 
@@ -282,7 +282,7 @@ class SendBtcDetailsViewController: UIViewController {
             }
             textField.keyboardType = .decimalPad
             textField.attributedPlaceholder = NSAttributedString(string: String(Double(feeRate) / 1000),
-                                                                          attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+                                                                          attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { [weak alert] (_) in
             alert?.dismiss(animated: true, completion: nil)

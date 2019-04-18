@@ -51,11 +51,11 @@ class TOSView: UIView {
         tosString.addAttribute(.link, value: "https://greenaddress.it/tos", range: NSRange(location: whiteString.count + 1, length: linkString.count))
         tosString.setColor(color: UIColor.white, forText: whiteString)
         let linkAttributes: [String: Any] = [
-            NSAttributedStringKey.foregroundColor.rawValue: UIColor.customMatrixGreen(),
-            NSAttributedStringKey.underlineColor.rawValue: UIColor.customMatrixGreen(),
-            NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
+            NSAttributedString.Key.foregroundColor.rawValue: UIColor.customMatrixGreen(),
+            NSAttributedString.Key.underlineColor.rawValue: UIColor.customMatrixGreen(),
+            NSAttributedString.Key.underlineStyle.rawValue: NSUnderlineStyle.single.rawValue
         ]
-        tosTextView.linkTextAttributes = linkAttributes
+        tosTextView.linkTextAttributes = convertToOptionalNSAttributedStringKeyDictionary(linkAttributes)
         tosTextView.attributedText = tosString
         tosTextView.font = UIFont.systemFont(ofSize: 16)
         tosTextView.isUserInteractionEnabled = true
@@ -73,7 +73,7 @@ class TOSView: UIView {
         let accept = nextButton.isEnabled
         tosButton.backgroundColor = accept ? UIColor.customMatrixGreen() : UIColor.clear
         tosButton.layer.borderColor =  UIColor.customTitaniumLight().cgColor
-        tosButton.setImage(accept ? UIImage(named: "check") : nil, for: UIControlState.normal)
+        tosButton.setImage(accept ? UIImage(named: "check") : nil, for: UIControl.State.normal)
         tosButton.tintColor = UIColor.white
         nextButton.setGradient(accept)
     }
@@ -82,4 +82,10 @@ class TOSView: UIView {
         super.layoutSubviews()
         nextButton.updateGradientLayerFrame()
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+private func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

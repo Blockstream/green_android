@@ -12,7 +12,8 @@ class SetGauthViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_google_authenticator_qr_code", comment: "")
 
-        guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return }
+        let dataTwoFactorConfig = try? getSession().getTwoFactorConfig()
+        guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         gauthData = twoFactorConfig.gauth.data
         guard let secret = twoFactorConfig.gauthSecret() else {

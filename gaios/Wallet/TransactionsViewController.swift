@@ -36,7 +36,7 @@ class TransactionsController: UITableViewController {
         tableView.isUserInteractionEnabled = true
         tableView.tableHeaderView = getWalletCardView()
         tableView.bounces = true
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
@@ -70,7 +70,7 @@ class TransactionsController: UITableViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         guard let headerView = tableView.tableHeaderView else { return }
-        let height = headerView.systemLayoutSizeFitting(UILayoutFittingCompressedSize).height
+        let height = headerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         if height != headerView.frame.size.height {
             headerView.frame.size.height = height
             tableView.tableHeaderView = headerView

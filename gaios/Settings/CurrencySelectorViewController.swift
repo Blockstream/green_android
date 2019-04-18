@@ -20,7 +20,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         tableView.separatorColor = UIColor.customTitaniumMedium()
         textField.delegate = self
         textField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_search", comment: ""),
-                                                   attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+                                                   attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
 
         tableView.rowHeight = 50

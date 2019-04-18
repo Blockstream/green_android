@@ -18,9 +18,10 @@ class TwoFactorLimitViewController: KeyboardViewController {
         content.nextButton.setGradient(true)
         content.limitTextField.becomeFirstResponder()
         content.limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                                  attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+                                                                  attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         content.limitTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return }
+        let dataTwoFactorConfig = try? getSession().getTwoFactorConfig()
+        guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         guard let settings = getGAService().getSettings() else { return }
         limits = twoFactorConfig.limits
@@ -33,7 +34,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     override func keyboardWillShow(notification: NSNotification) {
-        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 
@@ -41,11 +42,11 @@ class TwoFactorLimitViewController: KeyboardViewController {
         guard let settings = getGAService().getSettings() else { return }
         let satoshi = getSatoshi()
         if isFiat {
-            content.fiatButton.setTitle(settings.getCurrency(), for: UIControlState.normal)
+            content.fiatButton.setTitle(settings.getCurrency(), for: UIControl.State.normal)
             content.fiatButton.backgroundColor = UIColor.clear
             content.convertedLabel.text = "≈ " + String.toBtc(satoshi: satoshi)
         } else {
-            content.fiatButton.setTitle(settings.denomination.toString(), for: UIControlState.normal)
+            content.fiatButton.setTitle(settings.denomination.toString(), for: UIControl.State.normal)
             content.fiatButton.backgroundColor = UIColor.customMatrixGreen()
             content.convertedLabel.text = "≈ " + String.toFiat(satoshi: satoshi)
         }

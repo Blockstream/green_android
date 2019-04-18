@@ -25,7 +25,7 @@ class WatchOnlySignIn: KeyboardViewController {
         content.loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         content.loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.loginButton.setGradient(true)
-        let attributes = [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()]
+        let attributes = [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()]
         content.usernameTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_username", comment: ""), attributes: attributes)
         content.passwordTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("id_password", comment: ""), attributes: attributes)
         let height = content.usernameTextField.frame.height
@@ -59,7 +59,7 @@ class WatchOnlySignIn: KeyboardViewController {
     override func keyboardWillShow(notification: NSNotification) {
         super.keyboardWillShow(notification: notification)
         buttonConstraint?.isActive = false
-        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         buttonConstraint = content.loginButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
         buttonConstraint?.isActive = true
     }

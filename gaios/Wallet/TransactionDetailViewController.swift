@@ -49,7 +49,7 @@ class TransactionDetailViewController: KeyboardViewController {
     @IBAction func viewInExplorerClicked(_ sender: Any) {
         let currentNetwork: String = getNetwork().lowercased()
         let configNetwork = try? getGdkNetwork(currentNetwork)
-        guard let config = configNetwork as? [String: Any] else { return }
+        guard let config = configNetwork else { return }
         guard let baseUrl = config["tx_explorer_url"] as? String else { return }
         guard let url: URL = URL(string: baseUrl + self.transaction.hash) else { return }
         let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!

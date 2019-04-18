@@ -84,7 +84,7 @@ class SystemMessageView: UIView {
         let accept = confirmButton.isEnabled
         acceptCheck.backgroundColor = accept ? UIColor.customMatrixGreen() : UIColor.clear
         acceptCheck.layer.borderColor =  UIColor.customTitaniumLight().cgColor
-        acceptCheck.setImage(accept ? UIImage(named: "check") : nil, for: UIControlState.normal)
+        acceptCheck.setImage(accept ? UIImage(named: "check") : nil, for: UIControl.State.normal)
         acceptCheck.tintColor = UIColor.white
         confirmButton.setGradient(accept)
     }

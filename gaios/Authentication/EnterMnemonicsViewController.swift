@@ -54,7 +54,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
     @objc override func keyboardWillShow(notification: NSNotification) {
         super.keyboardWillShow(notification: notification)
-        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         let contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height, right: 0.0)
         mnemonicWords.contentInset = contentInset
         mnemonicWords.scrollIndicatorInsets = contentInset
@@ -81,7 +81,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         let nextSection = nextRow == 0 ? (currIndexPath!.section + 1) % (isPasswordProtected ? 9 : 8) : currIndexPath!.section
         let nextIndexPath = IndexPath(row: nextRow, section: nextSection)
         if let cell = mnemonicWords.cellForItem(at: nextIndexPath) as? MnemonicWordCell {
-            mnemonicWords.selectItem(at: nextIndexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.centeredVertically)
+            mnemonicWords.selectItem(at: nextIndexPath, animated: false, scrollPosition: UICollectionView.ScrollPosition.centeredVertically)
             cell.wordText.becomeFirstResponder()
         }
     }

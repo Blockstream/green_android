@@ -12,14 +12,14 @@ class SetEmailViewController: KeyboardViewController {
         title = NSLocalizedString("id_enter_your_email_address", comment: "")
         content.textField.becomeFirstResponder()
         content.textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
-                                                             attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.nextButton.setGradient(true)
     }
 
     override func keyboardWillShow(notification: NSNotification) {
-        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 

@@ -24,9 +24,9 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
         #endif
 
         content.socks5Hostname.attributedPlaceholder = NSAttributedString(string: "Socks5 Hostname",
-                                                               attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+                                                               attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         content.socks5Port.attributedPlaceholder = NSAttributedString(string: "Socks5 Port",
-                                                                 attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+                                                                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         content.titleLabel.text = NSLocalizedString("id_choose_your_network", comment: "")
         content.proxyLabel.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         content.proxySettingsLabel.text = NSLocalizedString("id_proxy_settings", comment: "")
@@ -100,7 +100,7 @@ class NetworkSelectionSettings: KeyboardViewController, UITextFieldDelegate, UIS
 
     @objc override func keyboardWillShow(notification: NSNotification) {
         super.keyboardWillShow(notification: notification)
-        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         let contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height + content.socks5Port.frame.height, right: 0.0)
         content.scrollView.contentInset = contentInset
         content.scrollView.scrollIndicatorInsets = contentInset

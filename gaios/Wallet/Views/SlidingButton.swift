@@ -147,7 +147,7 @@ import UIKit
         else {
             let dragPointWidthDifference=(self.frame.size.width-self.dragPoint.frame.size.width);
 
-            if (panGestureRecognizer?.state == UIGestureRecognizerState.began || panGestureRecognizer?.state == UIGestureRecognizerState.changed) {
+            if (panGestureRecognizer?.state == UIGestureRecognizer.State.began || panGestureRecognizer?.state == UIGestureRecognizer.State.changed) {
                 panGestureRecognizer?.isEnabled=false // NOTE: This is to cancel any current gesture during a rotation/resize.
                 panGestureRecognizer?.isEnabled=true
                 ////
@@ -256,7 +256,7 @@ import UIKit
         self.backgroundColor              = self.buttonColor
 
         self.dragPoint                    = UIView(frame: CGRect(x: dragPointDefaultOriginX(), y: 0, width: self.frame.size.width, height: self.frame.size.height))
-        self.dragPoint.autoresizingMask=[UIViewAutoresizing.flexibleHeight]
+        self.dragPoint.autoresizingMask=[UIView.AutoresizingMask.flexibleHeight]
 
         self.dragPoint.backgroundColor    = dragPointColor
         let gradientLayer = self.dragPoint.makeGradient(colours: [UIColor.customMatrixGreen(), UIColor.customMatrixGreenDark()], locations: nil)
@@ -274,7 +274,7 @@ import UIKit
             ////
 
             self.buttonLabel               = UILabel(frame: CGRect(x: dragPointX, y: 0, width: self.frame.size.width - dragPointWidth, height: self.frame.size.height))
-            self.buttonLabel.autoresizingMask=[UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
+            self.buttonLabel.autoresizingMask=[UIView.AutoresizingMask.flexibleWidth, UIView.AutoresizingMask.flexibleHeight]
 
             self.buttonLabel.adjustsFontSizeToFitWidth=true
             self.buttonLabel.minimumScaleFactor=0.6
@@ -295,7 +295,7 @@ import UIKit
             self.dragPointButtonLabel.textColor     = self.dragPointTextColor
             self.dragPoint.addSubview(self.dragPointButtonLabel)
         }
-        self.bringSubview(toFront: self.dragPoint)
+        self.bringSubviewToFront(self.dragPoint)
 
         if self.imageName != UIImage(){
             let width: CGFloat = 17
@@ -367,7 +367,7 @@ import UIKit
             }
             ////
 
-            UIView.transition(with: self, duration: abs(Double(velocityX) * 0.0002) + 0.2, options: UIViewAnimationOptions.curveEaseOut, animations: {
+            UIView.transition(with: self, duration: abs(Double(velocityX) * 0.0002) + 0.2, options: UIView.AnimationOptions.curveEaseOut, animations: {
             }, completion: { (Status) in
                 if Status {
                     self.animationFinished()

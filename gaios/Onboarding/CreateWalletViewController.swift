@@ -13,7 +13,7 @@ class CreateWalletViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_write_down_the_words", comment: "")
 
-        let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(CreateWalletViewController.back(sender:)))
+        let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(CreateWalletViewController.back(sender:)))
         navigationItem.leftBarButtonItem = newBackButton
         navigationItem.hidesBackButton = true
 

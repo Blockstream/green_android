@@ -28,7 +28,7 @@ class PinLoginViewController: UIViewController {
         imageView.image = networkImage
         navigationItem.titleView = imageView
         navigationItem.setHidesBackButton(true, animated: false)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(PinLoginViewController.back))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
         content.title.text = NSLocalizedString("id_enter_pin", comment: "")
         content.skipButton.isHidden = true
     }

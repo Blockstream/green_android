@@ -39,7 +39,7 @@ class PinView: UIView {
         deleteButton.imageView?.contentMode = .scaleAspectFill
         let background = getBackgroundImage(UIColor.customMatrixGreenDark().cgColor)
         keyButton?.enumerated().forEach { (_, button) in
-            button.setBackgroundImage(background, for: UIControlState.highlighted)
+            button.setBackgroundImage(background, for: UIControl.State.highlighted)
         }
     }
 }

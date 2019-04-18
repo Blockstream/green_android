@@ -13,8 +13,8 @@ class SetPhoneViewController: KeyboardViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_enter_phone_number", comment: "")
         content.countryCodeField.becomeFirstResponder()
-        content.countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
-        content.textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedStringKey.foregroundColor: UIColor.customTitaniumLight()])
+        content.countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
+        content.textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.nextButton.setGradient(true)
@@ -26,7 +26,7 @@ class SetPhoneViewController: KeyboardViewController {
     }
 
     override func keyboardWillShow(notification: NSNotification) {
-        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }
 
