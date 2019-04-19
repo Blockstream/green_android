@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -30,9 +30,8 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Address" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IeI-c0-CbE">
-                            <rect key="frame" x="0.0" y="44" width="185" height="18"/>
+                            <rect key="frame" x="0.0" y="44" width="54.5" height="18"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="185" id="WKS-6R-ejD"/>
                                 <constraint firstAttribute="height" constant="18" id="bsY-eg-Url"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
@@ -45,7 +44,7 @@
                             <color key="textColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="completed" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a3b-3L-Usg">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="completed" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a3b-3L-Usg">
                             <rect key="frame" x="279.5" y="44.5" width="68.5" height="17"/>
                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="14"/>
                             <color key="textColor" name="customTitaniumMedium"/>
@@ -63,10 +62,12 @@
                         <constraint firstAttribute="bottom" secondItem="IeI-c0-CbE" secondAttribute="bottom" constant="20" id="6gh-AJ-C4j"/>
                         <constraint firstItem="IeI-c0-CbE" firstAttribute="top" secondItem="Ibg-h6-Z32" secondAttribute="bottom" constant="8" id="9Ge-DQ-o83"/>
                         <constraint firstItem="6f1-X0-rs4" firstAttribute="centerY" secondItem="Ibg-h6-Z32" secondAttribute="centerY" id="Ki6-lD-sZD"/>
+                        <constraint firstItem="a3b-3L-Usg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IeI-c0-CbE" secondAttribute="trailing" constant="16" id="Mah-NG-Oko"/>
                         <constraint firstAttribute="trailing" secondItem="gle-3F-dUj" secondAttribute="trailing" id="QJk-Ri-t81"/>
                         <constraint firstItem="6f1-X0-rs4" firstAttribute="leading" secondItem="Ibg-h6-Z32" secondAttribute="trailing" constant="10" id="SjB-2I-ijF"/>
                         <constraint firstItem="gle-3F-dUj" firstAttribute="centerY" secondItem="Ibg-h6-Z32" secondAttribute="centerY" id="SpP-K5-Uhf"/>
                         <constraint firstItem="a3b-3L-Usg" firstAttribute="centerY" secondItem="IeI-c0-CbE" secondAttribute="centerY" id="cHz-rT-FgM"/>
+                        <constraint firstItem="gle-3F-dUj" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6f1-X0-rs4" secondAttribute="trailing" constant="16" id="fYH-Sm-taN"/>
                         <constraint firstItem="Ibg-h6-Z32" firstAttribute="top" secondItem="Kgy-Kq-zWp" secondAttribute="top" constant="20" id="vzT-WP-h0d"/>
                         <constraint firstItem="Ibg-h6-Z32" firstAttribute="leading" secondItem="Kgy-Kq-zWp" secondAttribute="leading" id="z99-Uq-xFz"/>
                         <constraint firstAttribute="trailing" secondItem="a3b-3L-Usg" secondAttribute="trailing" id="zkz-7J-Hoo"/>
