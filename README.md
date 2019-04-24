@@ -18,17 +18,17 @@ cd green_ios
 
 Install Xcode.
 
-Get the command line tools, or ensure they are up to date
+Get the command line tools with: (ensure to use "Software Update" to install updates)
 
-`xcode-select --install`
+`sudo xcode-select --install`
 
-Make sure `xcode-select -p` returns `/Applications/Xcode.app/Contents/Developer` . Otherwise run:
+Make sure `xcode-select --print-path` returns `/Applications/Xcode.app/Contents/Developer` . Otherwise run:
 
-`xcode-select -s /Applications/Xcode.app/Contents/Developer`
+`sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer`
 
 On macOS 10.14 Mojave, you have to run another step after installing the command line tools:
 
-`installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /`
+`sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /`
 
 
 ### Local requirements
