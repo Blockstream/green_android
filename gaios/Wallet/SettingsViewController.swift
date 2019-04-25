@@ -601,9 +601,9 @@ extension SettingsViewController: UITableViewDelegate {
         case .Autolock: showAutolock()
         case .Pgp: performSegue(withIdentifier: "pgp", sender: nil)
         case .TermsOfUse:
-            UIApplication.shared.open(URL(string: "https://greenaddress.it/tos.html")!)
+            UIApplication.shared.open(URL(string: "https://blockstream.com/green/terms/")!)
         case .PrivacyPolicy:
-            UIApplication.shared.open(URL(string: "https://greenaddress.it/privacy.html")!)
+            UIApplication.shared.open(URL(string: "https://blockstream.com/green/privacy/")!)
         case .Version:
             break
         }

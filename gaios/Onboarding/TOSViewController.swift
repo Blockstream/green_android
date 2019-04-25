@@ -48,7 +48,7 @@ class TOSView: UIView {
         let whiteString = NSLocalizedString("id_i_agree_to_the", comment: "")
         let linkString = NSLocalizedString("id_terms_of_service", comment: "")
         let tosString = NSMutableAttributedString(string: whiteString + " " + linkString)
-        tosString.addAttribute(.link, value: "https://greenaddress.it/tos", range: NSRange(location: whiteString.count + 1, length: linkString.count))
+        tosString.addAttribute(.link, value: "https://blockstream.com/green/terms/", range: NSRange(location: whiteString.count + 1, length: linkString.count))
         tosString.setColor(color: UIColor.white, forText: whiteString)
         let linkAttributes: [String: Any] = [
             NSAttributedString.Key.foregroundColor.rawValue: UIColor.customMatrixGreen(),
