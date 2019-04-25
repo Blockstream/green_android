@@ -125,34 +125,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
 
-    public void onNewSubaccountButtonClicked() {
-        mSubaccountDialog = new MaterialDialog.Builder(TabbedMainActivity.this)
-                            .title(R.string.id_add_wallet)
-                            .input(getString(R.string.id_name), "", false, new MaterialDialog.InputCallback() {
-            @Override
-            public void onInput(@NonNull final MaterialDialog dialog, final CharSequence input) {
-                createSubaccount(input.toString(), "2of2");
-            }
-        }).show();
-    }
-
-    private void createSubaccount(final String name, final String type) {
-        mService.getExecutor().execute(() ->
-        {
-            try {
-                final ConnectionManager cm = mService.getConnectionManager();
-                final GDKTwoFactorCall call = mService.getSession().createSubAccount(this, name, type);
-                call.resolve(null, cm.getHWResolver());
-                final ObjectNode result = call.getStatus().getResult();
-                final SubaccountData data = (new ObjectMapper()).treeToValue(result, SubaccountData.class);
-                mService.getModel().getSubaccountDataObservable().add(data);
-            } catch (final Exception e) {
-                e.printStackTrace();
-                UI.toast(TabbedMainActivity.this, e.toString(), Toast.LENGTH_LONG);
-            }
-        });
-    }
-
     private void launch() {
 
         setContentView(R.layout.activity_tabbed_main);
@@ -268,37 +240,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         case REQUEST_TX_DETAILS:
             break;
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        final boolean isResetActive = mService.getModel().isTwoFAReset();
-        final boolean isWatchOnly = mService.isWatchOnly();
-        final int id = R.menu.account_menu;
-        getMenuInflater().inflate(id, menu);
-        final boolean visible = !isResetActive && !isWatchOnly && mViewPager.getCurrentItem() == 1;
-        // FIXME add subaccount removed at the moment
-        setMenuItemVisible(menu, R.id.action_add, false /* visible */);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        // FIXME add subaccount removed at the moment
-        setMenuItemVisible(menu, R.id.action_add, false /* mViewPager.getCurrentItem() == 1 */ );
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.action_add:
-            onNewSubaccountButtonClicked();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
