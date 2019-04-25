@@ -13,7 +13,7 @@ import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.EventData;
 
-public class MessagesActivity extends GaActivity
+public class MessagesActivity extends LoggedActivity
     implements View.OnClickListener {
 
     private static final String TAG = MessagesActivity.class.getSimpleName();
@@ -26,6 +26,11 @@ public class MessagesActivity extends GaActivity
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
+            return;
+        }
+
         setContentView(R.layout.activity_messages);
 
         mMessageText = UI.find(this, R.id.system_message_text);

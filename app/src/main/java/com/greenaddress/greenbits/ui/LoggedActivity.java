@@ -16,8 +16,10 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null)
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
             return;
+        }
         if (mService.isDisconnected()) {
             toFirst();
             return;
@@ -29,7 +31,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null)
+        if (mService == null || mService.getModel() == null)
             return;
         mService.getConnectionManager().deleteObserver(this);
         mService.getModel().getToastObservable().deleteObserver(this);
@@ -60,7 +62,10 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     public void logout() {
-        startLoading();
+        if (mService == null || getModel() == null) {
+            toFirst();
+            return;
+        }
         mService.getConnectionManager().deleteObserver(this);
         mService.getExecutor().execute(() -> {
             mService.disconnect();
@@ -68,7 +73,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         });
     }
 
-    private void toFirst() {
+    public void toFirst() {
         toScreen(new Intent(this, FirstScreenActivity.class));
         finishOnUiThread();
     }

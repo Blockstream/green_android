@@ -66,7 +66,7 @@ public class TwoFactorActivity extends LoggedActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setTitleBackTransparent();
 
-        if (mService.getModel().getTwoFactorConfig() == null) {
+        if (mService.getModel() == null) {
             finish();
             return;
         }

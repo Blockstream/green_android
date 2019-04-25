@@ -34,7 +34,7 @@ import java.util.Locale;
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
-public class SendAmountActivity extends GaActivity implements TextWatcher, View.OnClickListener {
+public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
     private static final String TAG = SendAmountActivity.class.getSimpleName();
 
     private boolean mSendAll = false;
@@ -66,6 +66,10 @@ public class SendAmountActivity extends GaActivity implements TextWatcher, View.
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
+            return;
+        }
 
         Log.d(TAG, "onCreateView -> " + TAG);
         final int[] mBlockTargets = getBlockTargets();
@@ -225,6 +229,10 @@ public class SendAmountActivity extends GaActivity implements TextWatcher, View.
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
+            return;
+        }
         if (mService.isDisconnected()) {
             return;
         }
@@ -249,9 +257,9 @@ public class SendAmountActivity extends GaActivity implements TextWatcher, View.
     public void onPauseWithService() {
         super.onPauseWithService();
         mCustomFeeDialog = UI.dismiss(this, mCustomFeeDialog);
-        mSendAllButton.setOnClickListener(null);
+        UI.unmapClick(mSendAllButton);
         for (int i = 0; i < mButtonIds.length; ++i)
-            mFeeButtons[i].setOnClickListener(null);
+            UI.unmapClick(mFeeButtons[i]);
     }
 
     @Override

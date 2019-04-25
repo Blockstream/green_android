@@ -91,6 +91,11 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         super.onCreate(savedInstanceState);
         UI.preventScreenshots(this);
 
+        final GaService service = ((GreenAddressApplication) getApplication()).mService;
+        if (service == null || service.getModel() == null) {
+            finish();
+            return;
+        }
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -114,7 +119,6 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, 0);
 
-        final GaService service = ((GreenAddressApplication) getApplication()).mService;
         mAddressEditText = UI.find(this, R.id.addressEdit);
         mAddressEditText.setHint(
             service.isWatchOnly() ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
@@ -154,7 +158,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     protected void onResume() {
         super.onResume();
         final GaService service = ((GreenAddressApplication) getApplication()).mService;
-        if (service == null || service.isDisconnected()) {
+        if (service == null || service.getModel() == null) {
             finish();
             return;
         }
@@ -174,10 +178,17 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     @Override
     protected void onDestroy() {
         // cancel background thread
-        cameraHandler.removeCallbacksAndMessages(null);
-        cameraThread.quit();
+        if (cameraHandler != null) {
+            cameraHandler.removeCallbacksAndMessages(null);
+        }
 
-        previewView.setSurfaceTextureListener(null);
+        if (cameraThread != null) {
+            cameraThread.quit();
+        }
+
+        if (previewView != null) {
+            previewView.setSurfaceTextureListener(null);
+        }
 
         // We're removing the requested orientation because if we don't, somehow the requested orientation is
         // bleeding through to the calling activity, forcing it into a locked state until it is restarted.

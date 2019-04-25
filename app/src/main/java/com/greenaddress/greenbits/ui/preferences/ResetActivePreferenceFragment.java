@@ -20,9 +20,13 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         addPreferencesFromResource(R.xml.preference_resetactive);
         setHasOptionsMenu(true);
+
+        if (mService == null || mService.getModel() == null) {
+            logout();
+            return;
+        }
 
         //  Logout
         final Preference logout = find(PrefKeys.LOGOUT);

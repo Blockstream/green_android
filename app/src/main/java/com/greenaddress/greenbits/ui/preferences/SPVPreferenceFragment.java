@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -29,9 +30,13 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
+
+        if (mService == null || mService.getModel() == null) {
+            logout();
+            return;
+        }
 
         mTrustedPeer = find("trusted_peer");
         mResetSPV = find("reset_spv");

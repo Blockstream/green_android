@@ -18,6 +18,11 @@ public class SettingsActivity extends GaPreferenceActivity {
             return;
         }
 
+        if (getGAApp().mService == null || getGAApp().mService.getModel() == null) {
+            logout();
+            return;
+        }
+
         final Fragment fragment;
         if (preference.equals(SPVPreferenceFragment.class.getName()))
             fragment = new SPVPreferenceFragment();

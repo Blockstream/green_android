@@ -16,9 +16,13 @@ public class WatchOnlyPreferenceFragment extends GAPreferenceFragment
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         addPreferencesFromResource(R.xml.preference_watchonly);
         setHasOptionsMenu(true);
+
+        if (mService == null || mService.getModel() == null) {
+            logout();
+            return;
+        }
 
         // Network & Logout
         final Preference logout = find(PrefKeys.LOGOUT);
@@ -27,7 +31,7 @@ public class WatchOnlyPreferenceFragment extends GAPreferenceFragment
                               getString(R.string.id_log_out), ContextCompat.getColor(getContext(), R.color.red)));
         logout.setOnPreferenceClickListener(preference -> {
             logout.setEnabled(false);
-            ((LoggedActivity) getActivity()).logout();
+            logout();
             return false;
         });
 

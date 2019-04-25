@@ -69,6 +69,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        if (mService == null || mService.getModel() == null)
+            return;
         UI.preventScreenshots(this);
         final Intent intent = getIntent();
         mIsBitcoinUri = isBitcoinScheme(intent) ||
@@ -197,7 +199,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
-
+        if (mService == null || mService.getModel() == null)
+            return;
         mService.getModel().getActiveAccountObservable().addObserver(this);
         mService.getModel().getEventDataObservable().addObserver(this);
         mService.getModel().getConnMsgObservable().addObserver(this);
@@ -230,10 +233,11 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     @Override
     public void onPauseWithService() {
         super.onPauseWithService();
-
+        mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
+        if (mService == null || mService.getModel() == null)
+            return;
         mService.getModel().getActiveAccountObservable().deleteObserver(this);
         mService.getModel().getEventDataObservable().deleteObserver(this);
-        mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
     }
 
     @Override

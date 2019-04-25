@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TwoFactorActivity;
 import com.greenaddress.greenbits.ui.UI;
@@ -27,12 +28,17 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
-public class SecurityActivity extends GaActivity implements View.OnClickListener, Observer {
+public class SecurityActivity extends LoggedActivity implements View.OnClickListener, Observer {
     private static final int REQUEST_2FA = 100;
     private ViewAdapter mMethodsAdapter;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
+            return;
+        }
+
         setContentView(R.layout.activity_onboarding_security);
         setTitle("");
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
@@ -70,15 +76,18 @@ public class SecurityActivity extends GaActivity implements View.OnClickListener
     protected void onResumeWithService() {
         super.onResumeWithService();
         UI.mapClick(this, R.id.nextButton, this);
-        initEnabledMethods();
-        mService.getModel().getTwoFactorConfigDataObservable().addObserver(this);
+        if (mService != null && mService.getModel() != null) {
+            initEnabledMethods();
+            mService.getModel().getTwoFactorConfigDataObservable().addObserver(this);
+        }
     }
 
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
         UI.unmapClick(UI.find(this, R.id.nextButton));
-        mService.getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
+        if (mService != null && mService.getModel() != null)
+            mService.getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
     }
 
     @Override

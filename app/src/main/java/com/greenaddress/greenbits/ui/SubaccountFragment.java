@@ -50,6 +50,8 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
+        if (getGAService() == null || getGAService().getModel() == null)
+            return;
         detachObservers();
     }
 
@@ -57,6 +59,8 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
+        if (getGAService() == null || getGAService().getModel() == null)
+            return;
         if (!isDisconnected()) {
             setupObservers();
             attachObservers();

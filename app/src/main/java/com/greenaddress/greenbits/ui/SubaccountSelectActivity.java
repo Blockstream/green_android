@@ -20,6 +20,11 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
 
     @Override
     protected void onCreateWithService(Bundle savedInstanceState) {
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
+            return;
+        }
+
         SubaccountSelectFragment fragment = new SubaccountSelectFragment();
         getSupportFragmentManager().beginTransaction()
         .add(R.id.fragment_container, fragment).commit();
@@ -50,6 +55,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
+        if (mService == null || mService.getModel() == null)
+            return;
         if (mService.isDisconnected()) {
             return;
         }
@@ -63,6 +70,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
+        if (mService == null || mService.getModel() == null)
+            return;
         final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
         for (int i = 0; i < balanceObservables.size(); i++) {
             balanceObservables.valueAt(i).deleteObserver(this);

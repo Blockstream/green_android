@@ -56,6 +56,8 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
+        if (getGAService() == null || getGAService().getModel() == null)
+            return;
         if (!isDisconnected()) {
             final int subaccount = getGAService().getModel().getCurrentSubaccount();
             onUpdateReceiveAddress(getGAService().getModel().getReceiveAddressObservable(subaccount));

@@ -24,7 +24,7 @@ import com.greenaddress.greenbits.ui.components.SwipeButton;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class SendConfirmActivity extends GaActivity implements SwipeButton.OnActiveListener {
+public class SendConfirmActivity extends LoggedActivity implements SwipeButton.OnActiveListener {
     private static final String TAG = SendConfirmActivity.class.getSimpleName();
 
     private HWDeviceData mHwData;
@@ -33,7 +33,10 @@ public class SendConfirmActivity extends GaActivity implements SwipeButton.OnAct
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
+            return;
+        }
         final CreateTransactionData mTxData;
         try {
             mTxJson = getIntent().getStringExtra("transaction");

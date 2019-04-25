@@ -31,6 +31,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.PopupMethodResolver;
@@ -70,6 +71,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         super.onCreatePreferences(savedInstanceState, rootKey);
         addPreferencesFromResource(R.xml.preference_general);
         setHasOptionsMenu(true);
+
+        if (mService == null || mService.getModel() == null) {
+            logout();
+            return;
+        }
 
         // PIN
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
@@ -510,6 +516,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     @Override
     public void onResume() {
         super.onResume();
+        if (mService == null || mService.getModel() == null)
+            return;
         initSummaries();
         mPinPref.setChecked(mService.hasPin());
         attachObservers();
@@ -519,6 +527,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     @Override
     public void onPause() {
         super.onPause();
+        if (mService == null || mService.getModel() == null)
+            return;
         detachObservers();
     }
 

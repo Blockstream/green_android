@@ -84,6 +84,13 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    protected void logout() {
+        final Intent intent = new Intent(this, FirstScreenActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        runOnUiThread(() -> finish());
+    }
+
     public void toast(final int id) {
         UI.toast(this, id, Toast.LENGTH_LONG);
     }

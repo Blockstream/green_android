@@ -8,6 +8,11 @@ public class ReceiveActivity extends LoggedActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        if (mService == null || mService.getModel() == null) {
+            toFirst();
+            return;
+        }
+
         setContentView(R.layout.activity_receive);
         UI.preventScreenshots(this);
         setTitleBackTransparent();
