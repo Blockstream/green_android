@@ -9,7 +9,7 @@ class SetEmailViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_enter_your_email_address", comment: "")
+        content.headerTitle.text = NSLocalizedString("id_enter_your_email_address", comment: "")
         content.textField.becomeFirstResponder()
         content.textField.attributedPlaceholder = NSAttributedString(string: "email@domain.com",
                                                              attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
@@ -60,6 +60,7 @@ class SetEmailView: UIView {
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
+    @IBOutlet weak var headerTitle: UILabel!
 
     override init(frame: CGRect) {
         super.init(frame: frame)

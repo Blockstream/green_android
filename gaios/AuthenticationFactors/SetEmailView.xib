@@ -14,6 +14,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SetEmailView" customModule="gaios" customModuleProvider="target">
             <connections>
                 <outlet property="buttonConstraint" destination="Yhc-DE-6uw" id="jJR-0H-fhn"/>
+                <outlet property="headerTitle" destination="Rom-WD-Ljv" id="cwy-Uq-ZvA"/>
                 <outlet property="nextButton" destination="vKr-i6-vW8" id="jzk-XW-utD"/>
                 <outlet property="textField" destination="W0y-cg-St9" id="qpb-uB-qcF"/>
             </connections>
@@ -23,16 +24,6 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="email@domain.com" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W0y-cg-St9">
-                    <rect key="frame" x="25" y="124" width="325" height="36"/>
-                    <color key="tintColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="36" id="Mym-4d-ok9"/>
-                    </constraints>
-                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" keyboardAppearance="alert" textContentType="email"/>
-                </textField>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sSI-3Z-06B">
                     <rect key="frame" x="25" y="160" width="325" height="1"/>
                     <color key="backgroundColor" name="customMatrixGreen"/>
@@ -51,18 +42,37 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your email address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Rom-WD-Ljv">
+                    <rect key="frame" x="25" y="45" width="325" height="24"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="email@domain.com" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W0y-cg-St9">
+                    <rect key="frame" x="25" y="133" width="325" height="36"/>
+                    <color key="tintColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="Mym-4d-ok9"/>
+                    </constraints>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" keyboardAppearance="alert" textContentType="email"/>
+                </textField>
             </subviews>
             <color key="backgroundColor" name="customTitaniumDark"/>
             <constraints>
                 <constraint firstItem="vKr-i6-vW8" firstAttribute="leading" secondItem="b7k-0p-I9g" secondAttribute="leading" id="1Gc-Cq-xXP"/>
                 <constraint firstItem="sSI-3Z-06B" firstAttribute="top" secondItem="W0y-cg-St9" secondAttribute="bottom" id="AjC-2o-ich"/>
-                <constraint firstItem="W0y-cg-St9" firstAttribute="top" secondItem="b7k-0p-I9g" secondAttribute="top" constant="104" id="GQc-OK-9ej"/>
+                <constraint firstItem="b7k-0p-I9g" firstAttribute="trailing" secondItem="Rom-WD-Ljv" secondAttribute="trailing" constant="25" id="CkQ-Nc-E0K"/>
+                <constraint firstItem="Rom-WD-Ljv" firstAttribute="top" secondItem="b7k-0p-I9g" secondAttribute="top" constant="25" id="KG6-Hx-IJN"/>
                 <constraint firstItem="W0y-cg-St9" firstAttribute="leading" secondItem="b7k-0p-I9g" secondAttribute="leading" constant="25" id="VNr-MH-rDc"/>
+                <constraint firstItem="Rom-WD-Ljv" firstAttribute="leading" secondItem="b7k-0p-I9g" secondAttribute="leading" constant="25" id="Vqg-qj-FVf"/>
                 <constraint firstItem="b7k-0p-I9g" firstAttribute="bottom" secondItem="vKr-i6-vW8" secondAttribute="bottom" id="Yhc-DE-6uw"/>
                 <constraint firstItem="b7k-0p-I9g" firstAttribute="trailing" secondItem="W0y-cg-St9" secondAttribute="trailing" constant="25" id="bNb-cR-Vah"/>
                 <constraint firstItem="sSI-3Z-06B" firstAttribute="leading" secondItem="W0y-cg-St9" secondAttribute="leading" id="hll-Da-FHo"/>
                 <constraint firstItem="sSI-3Z-06B" firstAttribute="trailing" secondItem="W0y-cg-St9" secondAttribute="trailing" id="mev-Hf-k9V"/>
                 <constraint firstItem="b7k-0p-I9g" firstAttribute="trailing" secondItem="vKr-i6-vW8" secondAttribute="trailing" id="ozC-5b-rcy"/>
+                <constraint firstItem="W0y-cg-St9" firstAttribute="top" secondItem="Rom-WD-Ljv" secondAttribute="bottom" constant="100" id="taI-Qp-w5f"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="b7k-0p-I9g"/>
             <point key="canvasLocation" x="110" y="54"/>

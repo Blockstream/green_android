@@ -11,7 +11,7 @@ class SetPhoneViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_enter_phone_number", comment: "")
+        content.headerTitle.text = NSLocalizedString("id_enter_phone_number", comment: "")
         content.countryCodeField.becomeFirstResponder()
         content.countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         content.textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
@@ -73,6 +73,7 @@ class SetPhoneView: UIView {
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
+    @IBOutlet weak var headerTitle: UILabel!
 
     override init(frame: CGRect) {
         super.init(frame: frame)

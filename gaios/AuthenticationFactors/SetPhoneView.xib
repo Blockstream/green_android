@@ -15,6 +15,7 @@
             <connections>
                 <outlet property="buttonConstraint" destination="Rum-vz-alL" id="tP9-Ek-dMp"/>
                 <outlet property="countryCodeField" destination="Bq3-Gf-UEg" id="WYw-T0-MZP"/>
+                <outlet property="headerTitle" destination="y15-zd-ClI" id="ig1-rQ-vl2"/>
                 <outlet property="nextButton" destination="0gW-ik-Q9y" id="hYN-6D-Lwa"/>
                 <outlet property="textField" destination="5su-O7-0Fc" id="WXd-ak-nNy"/>
             </connections>
@@ -57,7 +58,7 @@
                     <rect key="frame" x="32" y="170" width="60" height="40"/>
                     <color key="backgroundColor" name="customLowerBar"/>
                     <constraints>
-                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="3wx-ff-EEK"/>
+                        <constraint firstAttribute="height" constant="40" id="3wx-ff-EEK"/>
                         <constraint firstAttribute="width" constant="60" id="dum-wK-6QK"/>
                     </constraints>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -72,15 +73,24 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </textField>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y15-zd-ClI">
+                    <rect key="frame" x="25" y="45" width="325" height="24"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" name="customTitaniumDark"/>
             <constraints>
                 <constraint firstItem="5su-O7-0Fc" firstAttribute="leading" secondItem="Bq3-Gf-UEg" secondAttribute="trailing" constant="8" id="0u0-eE-KaB"/>
                 <constraint firstItem="0gW-ik-Q9y" firstAttribute="trailing" secondItem="vfm-gK-1kz" secondAttribute="trailing" id="2H5-oz-QcH"/>
                 <constraint firstItem="vfm-gK-1kz" firstAttribute="trailing" secondItem="5su-O7-0Fc" secondAttribute="trailing" constant="32" id="4eV-7y-ikl"/>
+                <constraint firstItem="y15-zd-ClI" firstAttribute="leading" secondItem="vfm-gK-1kz" secondAttribute="leading" constant="25" id="EdG-3H-wZf"/>
+                <constraint firstItem="vfm-gK-1kz" firstAttribute="trailing" secondItem="y15-zd-ClI" secondAttribute="trailing" constant="25" id="JiP-Le-hyy"/>
                 <constraint firstItem="Bq3-Gf-UEg" firstAttribute="centerY" secondItem="5su-O7-0Fc" secondAttribute="centerY" id="LUr-2E-mov"/>
+                <constraint firstItem="y15-zd-ClI" firstAttribute="top" secondItem="vfm-gK-1kz" secondAttribute="top" constant="25" id="MWg-Xf-Hu3"/>
                 <constraint firstItem="vfm-gK-1kz" firstAttribute="bottom" secondItem="0gW-ik-Q9y" secondAttribute="bottom" id="Rum-vz-alL"/>
-                <constraint firstItem="5su-O7-0Fc" firstAttribute="top" secondItem="vfm-gK-1kz" secondAttribute="top" constant="150" id="XDN-VP-tz7"/>
+                <constraint firstItem="5su-O7-0Fc" firstAttribute="top" secondItem="y15-zd-ClI" secondAttribute="bottom" constant="100" id="ZMK-IX-a5i"/>
                 <constraint firstItem="0gW-ik-Q9y" firstAttribute="leading" secondItem="vfm-gK-1kz" secondAttribute="leading" id="b1s-fQ-JLz"/>
                 <constraint firstItem="Bq3-Gf-UEg" firstAttribute="leading" secondItem="vfm-gK-1kz" secondAttribute="leading" constant="32" id="wNa-7H-xD9"/>
             </constraints>
